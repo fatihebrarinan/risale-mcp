@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sözler Taksimat Kontrolü</title>
+<style>/*__STYLE__*/</style>
+</head>
+<body>
+<aside class="sidebar">
+  <header class="sidebar-head">
+    <h1>Sözler</h1>
+    <p class="muted">Taksimat kontrolü</p>
+    <input type="search" id="search" placeholder="Başlıklarda ara…" autocomplete="off">
+  </header>
+  <nav id="tree" class="tree" aria-label="Başlık ağacı"></nav>
+  <footer class="sidebar-foot">
+    <div id="stats" class="stats"></div>
+    <div class="foot-actions">
+      <button type="button" id="export">Notları dışa aktar</button>
+      <label class="button">İçe aktar<input type="file" id="import" accept="application/json" hidden></label>
+    </div>
+  </footer>
+</aside>
+<main id="content" class="content"></main>
+<script id="data" type="application/json">__DATA__</script>
+<script>/*__SCRIPT__*/</script>
+</body>
+</html>
