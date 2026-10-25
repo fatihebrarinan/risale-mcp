@@ -13,7 +13,8 @@ Kurulumda:
 - Arapça parçalar geçtikleri cümleye bağlanır. Âyet kaynakları ("Bakara Sûresi, 2:255",
   Hayrat baskısında "Sûre-i Bakara, 255") sûre ve âyet numarasına çözülür; sûre adlarının
   numaraları da numaralı kaynaklardan öğrenilir. Çözülemeyenler raporda listelenir, numarası boş kalır.
-- Sonunda sayılar JSON'larla karşılaştırılır; tutmazsa veritabanı yazılmaz.
+- Sonunda sayılar JSON'larla karşılaştırılır, mecmuaların işaret ettiği ana cilt kimlikleri
+  aranır; tutmazsa veritabanı yazılmaz.
 """
 
 import argparse
@@ -246,6 +247,15 @@ def _verify(conn: sqlite3.Connection, report: BuildReport) -> None:
         " LEFT JOIN nodes n ON n.id = s.node_id WHERE p.id IS NULL OR n.id IS NULL").fetchone()[0]
     if orphans:
         wrong.append(f"paragrafı ya da düğümü olmayan cümle: {orphans}")
+    # Mecmua ana cildin kimliklerine işaret eder; ana cilt yeniden üretilip kimlikleri değiştiyse
+    # mecmua da yeniden eşlenmelidir (`build --all`).
+    for table, column, target in (("paragraph_sources", "source_paragraph_id", "paragraphs"),
+                                  ("node_sources", "source_node_id", "nodes")):
+        dangling = conn.execute(f"SELECT {column} FROM {table} WHERE {column} NOT IN (SELECT id FROM {target})"
+                                " LIMIT 3").fetchall()
+        if dangling:
+            wrong.append(f"{table}: ana ciltte bulunmayan kimlik, ör. {[r[0] for r in dangling]};"
+                         " mecmuaları yeniden eşleyin")
     if wrong:
         raise RuntimeError("Veritabanı JSON'larla tutmuyor:\n  " + "\n  ".join(wrong))
 

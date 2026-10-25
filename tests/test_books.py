@@ -161,6 +161,30 @@ def test_inline_arabic_and_hasiye():
     assert besmele["kind"] == "arabic"
 
 
+def test_arabic_without_meal_and_adjacent_arabic():
+    plain = {"type": "RTL", "children": [text("بِاسْمِهِ")]}                  # erisale meal vermemiş
+    book, _ = parse(
+        ("H1", [regular("Birinci Söz")]),
+        ("CenteredParagraph", [plain]),
+        ("Paragraph", [{"type": "Mark", "children": [text("[4]")]}, arabic("فَهَذَا", id_=3),
+                       arabic("حَسْبُنَا", id_=4), regular(" son.")]),
+    )
+    bismihi, paragraph = book.paragraphs
+    assert bismihi["kind"] == "arabic" and bismihi["arabic"] == [{"start": 0, "end": 9, "kind": "arabi"}]
+    assert paragraph["text"] == "[4]فَهَذَا حَسْبُنَا son."                     # art arda iki parça: araya boşluk
+    assert [paragraph["text"][a["start"]:a["end"]] for a in paragraph["arabic"]] == ["فَهَذَا", "حَسْبُنَا"]
+
+
+def test_text_builder_drops_bom_and_spans_without_arabic():
+    builder = TextBuilder()
+    builder.add("\ufeffSaîdü’n-Nûrsî", ArabicSpan(0, 0, "arabi"), key=1)       # kaynakta yanlış işaretli imza
+    builder.add(" ", None)
+    builder.add("بِسْمِ", ArabicSpan(0, 0, "ayet"), key=2)
+    text = Text.from_builder(builder)
+    assert text.text == "Saîdü’n-Nûrsî بِسْمِ"
+    assert [(a.start, a.kind) for a in text.arabic] == [(14, "ayet")]
+
+
 def test_poem_lines_until_break_form_one_paragraph():
     book, _ = parse(
         ("H1", [regular("Birinci Söz")]),

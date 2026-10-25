@@ -16,8 +16,8 @@
 | 1 | Kızıl İcaz | `—` | ❌ kaynak bulunamadı | ⬜ | Arapça mantık eseri. |
 | 2 | Ta'likat | `—` | ❌ kaynak bulunamadı | ⬜ | Arapça mantık eseri. |
 | 3 | Divan-ı Harb-i Örfî | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 40 düğüm, 310 paragraf, 842 cümle |  |
-| 4 | Nutuk | `yeniasya/eskisaiddonemieserleri` | ✅ indirildi | ✅ 13 düğüm, 117 paragraf, 190 cümle; %36 ana cilde eşlendi | Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde. |
-| 5 | Makalat | `yeniasya/eskisaiddonemieserleri` | ✅ indirildi | ✅ 43 düğüm, 312 paragraf, 870 cümle; %18 ana cilde eşlendi |  |
+| 4 | Nutuk | `yeniasya/eskisaiddonemieserleri` | ✅ indirildi | ✅ 13 düğüm, 113 paragraf, 190 cümle; %34 ana cilde eşlendi | Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde. |
+| 5 | Makalat | `yeniasya/eskisaiddonemieserleri` | ✅ indirildi | ✅ 43 düğüm, 300 paragraf, 870 cümle; %15 ana cilde eşlendi |  |
 | 6 | Muhakemat | `erisale/muhakemat` | ✅ indirildi | ✅ 63 düğüm, 791 paragraf, 2304 cümle |  |
 | 7 | Hutbe-i Şamiye | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 67 düğüm, 487 paragraf, 1420 cümle |  |
 | 8 | Münazarat | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 162 düğüm, 532 paragraf, 1866 cümle |  |
@@ -41,11 +41,11 @@
 |---:|---|---|---|---|---|
 | 22 | Sözler | `erisale/sozler` | ✅ indirildi | ✅ 690 düğüm, 4305 paragraf, 13183 cümle |  |
 | 23 | Mektubat | `erisale/mektubat` | ✅ indirildi | ✅ 680 düğüm, 3565 paragraf, 9371 cümle |  |
-| 24 | Lem'alar | `erisale/lemalar` | ✅ indirildi | ✅ 741 düğüm, 3273 paragraf, 9229 cümle |  |
-| 25 | Şualar | `erisale/sualar` | ✅ indirildi | ✅ 850 düğüm, 4414 paragraf, 9846 cümle |  |
+| 24 | Lem'alar | `erisale/lemalar` | ✅ indirildi | ✅ 741 düğüm, 3273 paragraf, 8954 cümle |  |
+| 25 | Şualar | `erisale/sualar` | ✅ indirildi | ✅ 850 düğüm, 4414 paragraf, 9827 cümle |  |
 | 26 | Rumuzat-ı Semaniye | `erisale/mektubat` | ⏸️ ertelendi | ⬜ | Hususi bir risale; kullanıcı kararıyla şimdilik eklenmiyor. erisale'de metin yok. |
 | 27 | Barla Lahikası | `erisale/barla-lahikasi` | ✅ indirildi | ✅ 405 düğüm, 2382 paragraf, 6618 cümle |  |
-| 28 | Kastamonu Lahikası | `erisale/kastamonu-lahikasi` | ✅ indirildi | ✅ 213 düğüm, 1520 paragraf, 4032 cümle |  |
+| 28 | Kastamonu Lahikası | `erisale/kastamonu-lahikasi` | ✅ indirildi | ✅ 213 düğüm, 1520 paragraf, 4030 cümle |  |
 | 29 | Emirdağ Lahikası | `erisale/emirdag-lahikasi` | ✅ indirildi | ✅ 425 düğüm, 3073 paragraf, 7948 cümle | İki cilt. |
 | 30 | Tarihçe-i Hayat | `erisale/tarihce-i-hayat` | ✅ indirildi | ✅ 546 düğüm, 4226 paragraf, 11244 cümle |  |
 
@@ -53,16 +53,16 @@
 
 | # | Eser | Kaynak | Ham veri | Ayrıştırma | Not |
 |---:|---|---|---|---|---|
-| 31 | Asâ-yı Mûsâ | `erisale/asa-yi-musa` | ✅ indirildi | ✅ 177 düğüm, 1289 paragraf, 51 cümle; %97 ana cilde eşlendi |  |
-| 32 | Zülfikâr | `risale_online/zulfikar` | ✅ indirildi | ✅ 254 düğüm, 2444 paragraf, 747 cümle; %82 ana cilde eşlendi |  |
-| 33 | Tılsımlar Mecmuası | `risale_online/tilsimlar` | ✅ indirildi | ✅ 134 düğüm, 1174 paragraf, 306 cümle; %80 ana cilde eşlendi |  |
-| 34 | Sikke-i Tasdik-i Gaybî | `erisale/sikke-i-tasdik-i-gaybi` | ⚠️ 15 blok sitede yok | ✅ 253 düğüm, 1639 paragraf, 1610 cümle; %65 ana cilde eşlendi |  |
+| 31 | Asâ-yı Mûsâ | `erisale/asa-yi-musa` | ✅ indirildi | ✅ 177 düğüm, 1270 paragraf, 51 cümle; %97 ana cilde eşlendi |  |
+| 32 | Zülfikâr | `risale_online/zulfikar` | ✅ indirildi | ✅ 254 düğüm, 2079 paragraf, 756 cümle; %79 ana cilde eşlendi |  |
+| 33 | Tılsımlar Mecmuası | `risale_online/tilsimlar` | ✅ indirildi | ✅ 134 düğüm, 939 paragraf, 263 cümle; %79 ana cilde eşlendi |  |
+| 34 | Sikke-i Tasdik-i Gaybî | `erisale/sikke-i-tasdik-i-gaybi` | ⚠️ 15 blok sitede yok | ✅ 253 düğüm, 1586 paragraf, 1610 cümle; %64 ana cilde eşlendi |  |
 | 35 | İman ve Küfür Muvazeneleri | `erisale/iman-ve-kufur-muvazeneleri` | ✅ indirildi | ✅ 146 düğüm, 1011 paragraf, 69 cümle; %98 ana cilde eşlendi |  |
-| 36 | Siracü'n-Nur | `risale_online/siracun-nur` | ✅ indirildi | ✅ 250 düğüm, 1590 paragraf, 1672 cümle; %59 ana cilde eşlendi |  |
-| 37 | Küçük Sözler | `risaleoku/ksozler` | ✅ indirildi | ✅ 26 düğüm, 285 paragraf, 67 cümle; %76 ana cilde eşlendi |  |
+| 36 | Siracü'n-Nur | `risale_online/siracun-nur` | ✅ indirildi | ✅ 250 düğüm, 1320 paragraf, 1633 cümle; %54 ana cilde eşlendi |  |
+| 37 | Küçük Sözler | `risaleoku/ksozler` | ✅ indirildi | ✅ 26 düğüm, 266 paragraf, 67 cümle; %75 ana cilde eşlendi |  |
 | 38 | Fihrist Risalesi | `risaleoku/osfihrist` | ⏸️ ertelendi | ⬜ | Yalnızca Osmanlıca bulundu. |
-| 39 | Gençlik Rehberi | `risale_online/genclik-rehberi` | ✅ indirildi | ✅ 47 düğüm, 206 paragraf, 163 cümle; %73 ana cilde eşlendi |  |
-| 40 | Hanımlar Rehberi | `risale_online/hanimlar-rehberi` | ✅ indirildi | ✅ 83 düğüm, 494 paragraf, 523 cümle; %58 ana cilde eşlendi |  |
+| 39 | Gençlik Rehberi | `risale_online/genclik-rehberi` | ✅ indirildi | ✅ 47 düğüm, 176 paragraf, 163 cümle; %69 ana cilde eşlendi |  |
+| 40 | Hanımlar Rehberi | `risale_online/hanimlar-rehberi` | ✅ indirildi | ✅ 83 düğüm, 400 paragraf, 514 cümle; %51 ana cilde eşlendi |  |
 
 ## Hizbler
 

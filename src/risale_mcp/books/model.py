@@ -14,6 +14,8 @@ import unicodedata
 from dataclasses import dataclass, field
 
 REF_SEPARATOR = " › "
+# Arapça yazı: harfler, harekeler, sunum biçimleri ("﷽" dahil).
+ARABIC_SCRIPT = re.compile(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFC]")
 
 
 @dataclass
@@ -60,7 +62,7 @@ class TextBuilder:
 
     def add(self, text: str, arabic: ArabicSpan | None = None, key: object = None) -> None:
         """`arabic` verilirse parça Arapçadır; aynı `key` ile art arda gelen parçalar tek parça sayılır."""
-        text = re.sub(r"\s+", " ", text)
+        text = re.sub(r"\s+", " ", text.replace("\ufeff", ""))   # sıfır genişlikli boşluk (BOM) atılır
         if not self._length or self._ends_with_space():
             text = text.lstrip()
         if not text:
@@ -83,9 +85,12 @@ class TextBuilder:
         self.footnotes.append(FootnoteMark(max(offset, 0), content))
 
     def build(self) -> str:
+        """Düz metin. Arapça harf taşımayan Arapça parça (kaynakta yanlış işaretli imza,
+        noktalama) işaretsiz kalır."""
         text = "".join(self._parts).rstrip()
         for span in self.arabic:
             span.end = min(span.end, len(text))
+        self.arabic = [span for span in self.arabic if ARABIC_SCRIPT.search(text, span.start, span.end)]
         for mark in self.footnotes:
             mark.offset = min(mark.offset, len(text))
         return text

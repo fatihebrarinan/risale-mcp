@@ -24,6 +24,21 @@ def test_risale_online_paragraph_html():
     assert Text.from_builder(parsed.hasiyeler["1"]).text == "Seneye işârettir"
 
 
+def test_risale_online_mehaz_without_arabic_class_is_arabic():
+    html = ('<p class="paragraf"><span class="kelime-grup OsmanlicaStandartKirmizi" data-mehaz-id="352" '
+            'data-mehaz-latince-meal="Bâkî olan, O’dur" data-mehaz-latince-kaynak="(Arabî ibâre)">'
+            'اَلْبَاق۪ي هُوَ الْبَاق۪ي</span></p>')
+    parsed = risale_online._ParagraphHTML()
+    parsed.feed(html)
+    text = Text.from_builder(parsed.main)
+    assert text.is_arabic() and text.arabic[0].meal == "Bâkî olan, O’dur"
+
+
+def test_risale_online_stanza_numbers_are_not_text():
+    assert risale_online._STANZA_NUMBER.fullmatch("12")
+    assert not risale_online._STANZA_NUMBER.fullmatch("1339 Hicrî")
+
+
 def test_risaleoku_page_blocks_and_toc():
     page = (
         '<div id="dim-bottom" class="dim-overlay"></div>\n  </div>\n'

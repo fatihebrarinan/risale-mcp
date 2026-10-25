@@ -7,7 +7,8 @@ Kullanım:
 Çıktılar:
     data/books/<eser>.json            eserin başlık ağacı, paragrafları, hâşiyeleri, cümleleri
     data/interim/outline/<eser>.txt   elle kontrol için girintili başlık ağacı
-Sonunda `ESERLER.md` kontrol listesi yenilenir.
+Sonunda `ESERLER.md` kontrol listesi yenilenir ve veritabanı (`data/risale.db`) bütün
+JSON'lardan yeniden kurulur (`--no-db` ile atlanır).
 """
 
 import argparse
@@ -17,7 +18,7 @@ import sys
 from collections import Counter
 from functools import cache
 
-from risale_mcp import checklist, sentences
+from risale_mcp import build_db, checklist, sentences
 from risale_mcp.books import erisale as erisale_parser
 from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
@@ -45,6 +46,7 @@ def mapping_report(report: MappingReport) -> list[str]:
         f"  ana cilde eşlenen   : {report.mapped}/{total} paragraf ({report.mapped / max(total, 1):.0%}) "
         f"{dict(report.sources.most_common(6))}",
         f"  mecmuaya özgü       : {report.unique} paragraf, {report.unique_hasiye} hâşiye",
+        f"  birleşen eşleme     : {report.merged} paragraf (ana cilt paragrafı bölünmüş)",
         *(f"      {s}" for s in report.unique_samples[:6]),
     ]
 
@@ -138,6 +140,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("works", nargs="*", help="katalogdaki eser slug'ları")
     parser.add_argument("--all", action="store_true", help="ayrıştırıcısı olan bütün eserler")
+    parser.add_argument("--no-db", action="store_true", help="veritabanını yeniden kurma")
     args = parser.parse_args()
     if not (args.all or args.works):
         sys.exit("Eser slug'ı ya da --all verin.")
@@ -152,6 +155,8 @@ def main() -> None:
             continue
         build_work(work)
     checklist.main()
+    if not args.no_db:
+        print("\nveritabanı:\n" + "\n".join(build_db.build().lines()))
 
 
 if __name__ == "__main__":

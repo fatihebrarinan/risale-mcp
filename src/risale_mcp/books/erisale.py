@@ -51,7 +51,9 @@ LABEL_TYPES = {"Heading", "Mark", "Bold", "BoldItalic"}
 
 # ---------------------------------------------------------------- satır içi metin
 
-def _render(node: dict, builder: TextBuilder, skip_headings: bool) -> None:
+def _render(node: dict, builder: TextBuilder, skip_headings: bool, rtl_parent: dict | None = None) -> None:
+    """`rtl_parent`: içinde bulunulan `RTL` düğümü. Meali ve türü verilmemiş Arapça da
+    (`rtl` bilgisi olmayan RTL metni) Arapça parçadır; türü bilinmediği için "arabi" sayılır."""
     kind = node.get("type")
     if kind == "Meta" or (kind == "Heading" and skip_headings):
         return
@@ -64,17 +66,26 @@ def _render(node: dict, builder: TextBuilder, skip_headings: bool) -> None:
         if rtl:
             span = ArabicSpan(0, 0, rtl.get("type") or "arabi", rtl.get("txn") or None, rtl.get("ref") or None)
             builder.add(node["value"], span, key=rtl.get("id"))
+        elif rtl_parent is not None:
+            builder.add(node["value"], ArabicSpan(0, 0, "arabi"), key=id(rtl_parent))
         else:
             builder.add(node["value"])
         return
+    _render_children(node, builder, skip_headings, node if kind == "RTL" else rtl_parent)
+
+
+def _render_children(node: dict, builder: TextBuilder, skip_headings: bool, rtl_parent: dict | None = None) -> None:
+    previous = None
     for child in node.get("children", []):
-        _render(child, builder, skip_headings)
+        if previous is not None and previous.get("type") == child.get("type") == "RTL":
+            builder.add(" ")                      # erisale art arda iki Arapça parçayı boşluksuz verir
+        _render(child, builder, skip_headings, rtl_parent)
+        previous = child
 
 
 def inline_text(content: dict, skip_headings: bool = False) -> Text:
     builder = TextBuilder()
-    for child in content.get("children", []):
-        _render(child, builder, skip_headings)
+    _render_children(content, builder, skip_headings)
     return Text.from_builder(builder)
 
 

@@ -42,3 +42,21 @@ def test_mapping_replaces_text_with_source_and_keeps_unique():
     assert by_id["m/soz-10/p001"]["source"] == ["sozler/10/p002"]           # kısa: sonrakinden geriye bağlandı
     assert "text" not in by_id["m/soz-10/p002"]
     assert book["outline"][1]["sources"] == ["sozler/10"]
+
+
+def test_split_canonical_paragraph_maps_once():
+    """Hayrat şiirin her satırını ayrı paragraf yapar: hepsi aynı ana cilt paragrafını gösterir, tek kayıt olur."""
+    half = len(DOKUZUNCU.split()) // 2
+    first, second = " ".join(DOKUZUNCU.split()[:half]), " ".join(DOKUZUNCU.split()[half:])
+    book = {
+        "outline": [{"id": "m", "parent_id": None}],
+        "paragraphs": [
+            {"id": "m/p001", "node_id": "m", "kind": "paragraph", "text": first},
+            {"id": "m/p002", "node_id": "m", "kind": "paragraph", "text": second},
+            {"id": "m/p003", "node_id": "m", "kind": "paragraph", "text": ONUNCU_DEVAMI},
+        ],
+    }
+    report = map_to_canonical(book, canonical())
+    assert [(p["id"], p["source"]) for p in book["paragraphs"]] == [
+        ("m/p001", ["sozler/10/p003"]), ("m/p003", ["sozler/10/p004"])]
+    assert report.merged == 1

@@ -32,7 +32,7 @@ Eserlerin listesi, her birinin kaynağı ve durumu tek yerde tutulur: `src/risal
 | **erisale.com** | Birincil kaynak (≈30 eser) | Standart baskı. Her bölüm ayrı sayfa; sayfa listesi `sitemap-tr.xml`'den. Metin sayfaya gömülü RSC verisinde yapısal ağaç olarak gelir: blok türleri (`H2`, `H3`, `Paragraph`, `CenteredParagraph`, `HeadingDescription`…), satır içi başlıklar (`Heading`), Arapça (`RTL`, türü âyet/hadis/Arapça, meali `rtl.txn`), hâşiye tam geçtiği yerde (`FootnoteRef` → `Footnote`). `blockIndex` kitap içinde süreklidir; boşluk = eksik bölüm. robots.txt yalnızca `/api/` yolunu yasaklar; biz yalnızca okuma sayfalarını indiririz. |
 | risale.online | Zülfikâr, Tılsımlar, Sirâcü'n-Nûr, Gençlik ve Hanımlar Rehberi (mecmualar) | Hayrat baskısı, JSON API (`/risale-api/fihrist`, `/risale-api/paragraf`). Yapı fihristten (sayfa numaralı, iç içe); paragraf HTML'i kelime gruplarıdır, Arapça meali ve kaynağıyla (`data-mehaz-*`), hâşiye `<aside>`. |
 | risaleoku.com | Hizbler, Arapça Mesnevî, Küçük Sözler, (Fihrist Risalesi) | `/oku/<kitap>` okuyucu sayfası: sayfa sayısı, kitabın başladığı sayfa (`baslangic`) ve fihrist ağacı (`#treemenu1`); `/ajax/<kitap>/<n>` sayfa metni. Renkli `font` "tefekkür" boyamasıdır, başlık değildir. Arapça Mesnevî'nin ağacı boş: başlıklar ortalı "الرسالة …" satırlarından; ilk başlıktan önceki sayfalar tahkik edenin girişidir. Hizbü Envâri'l-Hakāik Cevşenü'l-Kebîr'i içerir. `Crawl-delay: 10`. |
-| Yeni Asya | Makalat, Nutuk (son çare) | "Eski Saîd Dönemi Eserleri" cildinin `basic-html` katmanı (`page<n>.html`): her satır konumu ve yazı tipiyle ayrı. Gövde `font1`, lügat ve editör notu `font7` (atılır), müellifin hâşiyesi `font10`. Arapça okunamaz (yerine "[Arapça]" ve not). Gövde yazı tipi D, E, G, K, L, N, O, Ö, P, R, S, T, Ü, Z büyük harflerini küçük basar; cümle başında onarılır, cümle içindeki özel isimler düzeltilemez. Eser sınırı: ardından "Bu Esere Ait Takdim" gelen ya da sayfasında büyük başlık (`font25`) olan içindekiler girdisi. |
+| Yeni Asya | Makalat, Nutuk (son çare) | "Eski Saîd Dönemi Eserleri" cildinin `basic-html` katmanı (`page<n>.html`): her satır konumu ve yazı tipiyle ayrı. Gövde `font1`, lügat ve editör notu `font7` (atılır), müellifin hâşiyesi `font10`. Arapça okunamaz (yerine "[Arapça]" ve not; Makalat'ta 28, Nutuk'ta 9 paragraf). Gövde yazı tipi D, E, G, K, L, N, O, Ö, P, R, S, T, Ü, Z büyük harflerini küçük basar; cümle başında onarılır, cümle içindeki özel isimler düzeltilemez. Eser sınırı: ardından "Bu Esere Ait Takdim" gelen ya da sayfasında büyük başlık (`font25`) olan içindekiler girdisi. |
 
 - **Ertelendi:** Fihrist Risalesi (yalnızca Osmanlıca bulundu), Rumuzat-ı Semaniye (hususi bir risale; kullanıcı kararıyla şimdilik eklenmiyor).
 - **Kaynağı bulunamadı:** Kızıl İcaz, Ta'likat (ikisi de yalnızca basılı ve akademik çalışmalarda), Hizb-i Nurî (kısmen Lem'alar'da). Aşama 4'teki web aramasında da serbest bir metin bulunamadı.
@@ -67,7 +67,7 @@ risale-mcp/
 │   │   └── logs/                  # toplu indirme günlükleri
 │   ├── interim/                   # Ara çıktılar
 │   │   ├── erisale/<kitap>.blocks.json   # birleştirilmiş, doğrulanmış bloklar (git'e eklenmez)
-│   │   ├── review/<eser>.html     # kontrol arayüzü, eser başına bir dosya (git'e eklenmez)
+│   │   ├── review/index.html      # kontrol arayüzü: bütün eserler tek sayfada; metinler review/data/<eser>.js (git'e eklenmez)
 │   │   ├── outline/<eser>.txt     # elle kontrol için girintili başlık ağacı (git'e eklenmez)
 │   │   └── build.log              # son toplu ayrıştırmanın raporu
 │   ├── books/<eser>.json          # Her eserin JSON'u (git'e eklenmez)
@@ -95,7 +95,7 @@ risale-mcp/
 │   │   ├── risaleoku.py      # risaleoku sayfaları (yalnızca ham kayıt + doğrulama)
 │   │   └── yeniasya.py       # Yeni Asya basic-html sayfaları (yalnızca ham kayıt + doğrulama)
 │   ├── normalize.py    # Türkçe metin normalizasyonu, sıra sayıları, slug
-│   ├── review_ui.py    # Kontrol arayüzü: kitap JSON'u → review.html
+│   ├── review_ui.py    # Kontrol arayüzü: kitap JSON'ları → review/index.html + data/<eser>.js
 │   ├── review_assets/  # Arayüzün template.html, style.css, app.js dosyaları
 │   ├── db.py           # Aşama 5: veritabanı şeması ve salt okunur bağlantı
 │   ├── build_db.py     # Aşama 5: JSON → SQLite CLI'ı (sûre/âyet çözümü, doğrulama)
@@ -121,7 +121,7 @@ risale-mcp/
 
 Eserlerin iç yapısı düzensizdir: Söz, Makam, Mebhas, Mesele, Nükte, Hakikat, Esas, Lem'a, İşaret, Remiz, Hâşiye, Zeyl, Mektub, Şuâ vb. Bu yüzden **sabit sütunlar yerine esnek bir başlık yolu** kullanılır.
 
-Her eser `data/books/<eser>.json` dosyasıdır (`uv run python -m risale_mcp.build --all`).
+Her eser `data/books/<eser>.json` dosyasıdır (`uv run python -m risale_mcp.build --all`). `build` sonunda veritabanını da yeniden kurar (`--no-db` ile atlanır).
 
 - Üst alanlar: `work`, `title`, `group`, `language` (`tr` | `ar`), `source`.
 - **`outline`**: başlık ağacı, kitap sırasıyla. İlk kayıt eserin kendisidir (kök).
@@ -157,6 +157,8 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve son çare
 - Metinler baskıdan bağımsız kelimelere indirilir (`normalize.match_words`: işaretler, noktalama, Arapça harf çeşitleri gider; "Risâle-i Nûr’un" = "Risale-i Nur’un"), 5 kelimelik diziler karşılaştırılır.
 - En çok diziyi paylaşan ana cilt paragrafından başlanır, yakın komşular kapsamı artırdıkça eklenir. Dizilerin en az %35'i ve en az 3 dizi tutarsa eşlenir.
 - Aynı metin birden çok yerdeyse önceki eşlemenin ardından gelen seçilir; kısa paragraflar ("﷽") önceki ya da sonraki eşlemenin komşusuysa bağlanır.
+- Mecmua bir ana cilt paragrafını bölmüşse (Hayrat şiirin her satırını ayrı paragraf yapar) art arda gelen, ana ciltte örtüşen eşlemeler tek kayıtta birleşir; kimlikler yeniden numaralanmaz.
+- Hayrat baskısının şiirlerdeki kıta numaraları ("1", "2"… tek başına paragraf) ana ciltlerde yoktur, atılır.
 - Eşlenemeyen paragraflar mecmuaya özgüdür ve metinleriyle kalır (ör. Sekizinci ve On Sekizinci Lem'a'nın asıl yeri Sikke-i Tasdik-i Gaybî'dir).
 - Eşleme oranları `ESERLER.md`'de. Erisale mecmualarında %66–99, Hayrat baskısındakilerde %59–82 (kalanlar çoğunlukla Hayrat'ın kendi başlık ve tanıtım satırları).
 
@@ -181,7 +183,8 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve son çare
 - **Yazım işaretleri:** Aramada şapkalı ve uzatma işaretli harfler (â, î, û, ā, ī, ū, à) düz harfle eşleşmeli. Kesmeler (' ' ‘ ’) ve bölünmez tire (U+2011) normalleştirilmeli.
 - **Orijinal metin:** `text` alanı asla değiştirilmez.
 - **Hâşiyeler** ana metinden ayrılır ve geçtikleri cümleye bağlanır.
-- **Arapça** korunur ve işaretlenir; erisale'nin âyet/hadis/Arapça ayrımı saklanır.
+- **Arapça** korunur ve işaretlenir; erisale'nin âyet/hadis/Arapça ayrımı saklanır. Meali ve türü verilmemiş Arapça (erisale'de `rtl` bilgisi olmayan `RTL`, risale.online'da `data-mehaz-*` taşıyan her parça) da Arapça parçadır, türü `arabi`. erisale art arda iki Arapça parçayı boşluksuz verir; araya boşluk konur. Arapça harf taşımayan "Arapça" parça işaretsiz kalır.
+- erisale'nin Arapça metindeki köşeli numaraları ("[4]فَهَذَا…") Arapça asıl ile hâşiyedeki tercümesini eşleştirir; metinde kalır.
 
 ## Veritabanı (Aşama 5)
 
@@ -200,21 +203,21 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve son çare
 Ayrıştırılan başlık ağacını, metni ve cümle bölmesini elle kontrol etmek içindir. `data/books/<eser>.json` okur.
 
 ```
-uv run python -m risale_mcp.review_ui [eser…]   # data/interim/review/<eser>.html üret (varsayılan: hepsi)
-xdg-open data/interim/review/sozler.html
+uv run python -m risale_mcp.review_ui [eser…]   # data/interim/review/ üret (eser verilirse yalnızca onların metni yenilenir)
+xdg-open data/interim/review/index.html
 ```
 
-- **Eser başına tek dosya:** Veri, stil ve betik dosyanın içine gömülüdür; sunucu ya da internet gerekmez. Kenar çubuğundaki seçici aynı klasördeki başka bir eserin dosyasına geçer. Kaynak dosyalar `src/risale_mcp/review_assets/` altındadır; `review_ui.py` yalnızca bunları birleştirir.
+- **Tek sayfa, bütün eserler:** Sol paneldeki ağaçta eserler gruplarıyla (Eski Said dönemi, ana ciltler, mecmualar, Hizbler) durur. Bütün başlık ağaçları `index.html`'e gömülüdür; bir eserin paragraf ve cümleleri `data/<eser>.js` dosyasındadır ve o eserden bir başlık açılınca `<script>` ile yüklenir. Sunucu ya da internet gerekmez. Kaynak dosyalar `src/risale_mcp/review_assets/` altındadır; `review_ui.py` yalnızca bunları birleştirir.
 - **Sayfa bilgisi yok.** Gezinme tamamen hiyerarşiktir.
 - **Sol panel:** Başlık ağacı ve başlıklarda arama.
 - **Sağ panel:** Seçilen düğümün yolu, başlığı, alt başlığı, kimliği ve kendi metni; hâşiyeler (metindeki işarete tıklanınca vurgulanır); alt bölümler; önceki/sonraki bölüm (← / →).
 - **Arapça eserler** sağdan sola gösterilir. **Mecmualarda** ana cilde eşlenen paragrafın yerinde, ana cildin o bölümünü açan bağlantı durur; düğüm başlığında ana ciltteki karşılıkları listelenir.
 - **Cümleler:** Her cümlenin başında küçük numarası durur. Numaraya tıklanınca cümlenin atfı, incipit'i, kimliği ve işaret düğmeleri açılır. İşaretli cümlenin altı yeşil (✓) ya da kırmızı (✗) çizilir. Arapça paragraflar sağdan sola gösterilir; Kur'an işaretlerinin düzgün görünmesi için Amiri ya da Scheherazade New yazı tipi gerekir.
-- **URL:** Seçili düğümü tutar (`review.html#sozler/10/on-iki-hakikat/hakikat-09`).
+- **URL:** Seçili düğümü tutar (`index.html#sozler/10/on-iki-hakikat/hakikat-09`); mecmuadaki ana cilt bağlantıları aynı sayfada açılır. ← / → bütün eserler boyunca kitap sırasında gezer.
 - **İşaretler:**
-  - Her düğüme, paragrafa ve cümleye "✓ doğru / ✗ hatalı / ✎ not" konabilir; eser başına ayrı olarak `localStorage`'da saklanır.
-  - Dışa aktarılan JSON'da her kayıtta `id`, `target` (`node` | `passage` | `sentence` | `missing`), `ref`, `incipit`, `status`, `note` bulunur. Bu dosya ayrıştırma düzeltmelerinin girdisidir.
-  - "İçe aktar" ile başka bir tarayıcıya taşınabilir.
+  - Her düğüme, paragrafa ve cümleye "✓ doğru / ✗ hatalı / ✎ not" konabilir; eser başına ayrı anahtarda (`risale-review:<eser>`) `localStorage`'da saklanır.
+  - Dışa aktarma bütün eserlerin işaretlerini tek dosyaya yazar (`risale-kontrol-notlari.json`). Her kayıtta `book`, `id`, `target` (`node` | `passage` | `sentence` | `missing`), `ref`, `incipit`, `status`, `note` bulunur. Bu dosya ayrıştırma düzeltmelerinin girdisidir.
+  - "İçe aktar" ile başka bir tarayıcıya taşınabilir; eski, eser başına dışa aktarılmış dosyaları da okur.
   - Cümle işaretleri incipit ve düğümle birlikte saklanır. Kimlik kayarsa işaret, açılışta aynı düğümde (yoksa bütün eserde tek eşleşen) incipit'ten yeniden bağlanır. Bağlanamayan `target: "missing"` olarak görünür.
 
 ## MCP araçları (ilk sürüm)

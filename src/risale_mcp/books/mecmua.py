@@ -16,6 +16,10 @@ Eşleme baskıdan bağımsızdır: metinler `match_words` ile işaretsiz kelimel
   gelen yer seçilir.
 - Kısa paragraflar ("Bak!") ancak bir önceki eşlemenin devamıysa ya da ana ciltlerde tek
   bir yerde geçiyorsa eşlenir.
+- Mecmua bir ana cilt paragrafını birkaç paragrafa bölmüşse (Hayrat baskısı şiirin her
+  satırını ayrı paragraf yapar), aynı düğümde art arda gelen ve ana ciltte örtüşen eşlemeler
+  tek kayıtta birleşir; ana cilt paragrafı okunurken bir kez görünür. Kimlikler yeniden
+  numaralanmaz, birleşen kaydın kimliği ilkininkidir.
 """
 
 import json
@@ -117,6 +121,7 @@ class MappingReport:
     unique_hasiye: int = 0
     sources: Counter = field(default_factory=Counter)        # ana cilt -> eşlenen paragraf sayısı
     unique_samples: list[str] = field(default_factory=list)
+    merged: int = 0                                          # öncekiyle birleşen eşlenmiş paragraf
 
 
 def _fill_short_backwards(mains: list[dict], found: list[list[int]], index: CanonicalIndex) -> None:
@@ -145,10 +150,13 @@ def map_to_canonical(book: dict, index: CanonicalIndex) -> MappingReport:
     found_by_id = {p["id"]: f for p, f in zip(mains, found)}
 
     mapped_ids: set[str] = set()
+    merged_into: dict[str, str] = {}            # birleşen paragraf -> birleştiği kayıt
     node_sources: dict[str, list[str]] = defaultdict(list)
     kept = []
     for p in book["paragraphs"]:
         if p["kind"] == "hasiye":
+            if p["parent_id"] in merged_into:
+                p = p | {"parent_id": merged_into[p["parent_id"]]}
             if p["parent_id"] in mapped_ids:
                 if index.match(p["text"], None):
                     continue                    # hâşiye de ana ciltte: metniyle orada duruyor
@@ -168,8 +176,16 @@ def map_to_canonical(book: dict, index: CanonicalIndex) -> MappingReport:
         for _, _, node in canonical:
             if node not in node_sources[p["node_id"]]:
                 node_sources[p["node_id"]].append(node)
-        kept.append({"id": p["id"], "node_id": p["node_id"], "kind": p["kind"],
-                     "source": [pid for _, pid, _ in canonical]})
+        source = [pid for _, pid, _ in canonical]
+        previous = kept[-1] if kept else None
+        if previous and "source" in previous and previous["node_id"] == p["node_id"] \
+                and not set(previous["source"]).isdisjoint(source):
+            previous["source"] += [pid for pid in source if pid not in previous["source"]]
+            merged_into[p["id"]] = previous["id"]
+            mapped_ids.add(previous["id"])
+            report.merged += 1
+            continue
+        kept.append({"id": p["id"], "node_id": p["node_id"], "kind": p["kind"], "source": source})
     book["paragraphs"] = kept
     for node in book["outline"]:
         if node["id"] in node_sources:

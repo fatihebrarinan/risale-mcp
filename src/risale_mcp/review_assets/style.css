@@ -116,6 +116,9 @@ button:hover, .button:hover { border-color: var(--accent); }
 }
 .issue-dot.on { visibility: visible; }
 .search-hit > .tree-row .tree-title { font-weight: 600; }
+.tree-group > .tree-row { font-weight: 600; color: var(--muted); text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.04em; margin-top: 6px; }
+.tree-group > ul { padding-left: 0; }
+.tree-group > ul > li > .tree-row .tree-title { font-family: var(--serif); font-size: 1rem; }
 
 .sidebar-foot { padding: 10px 16px 14px; border-top: 1px solid var(--border); }
 .stats { font-size: 0.85rem; margin-bottom: 8px; }
@@ -235,7 +238,6 @@ button:hover, .button:hover { border-color: var(--accent); }
 }
 
 /* ---------------------------------------------------------------- cümleler */
-#book { width: 100%; margin: 6px 0 2px; font: inherit; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: inherit; }
 .sentence { border-radius: 3px; transition: background 0.15s; }
 .sentence.selected { background: var(--flash); }
 .sentence.status-ok { text-decoration: underline 2px var(--ok); text-underline-offset: 4px; }

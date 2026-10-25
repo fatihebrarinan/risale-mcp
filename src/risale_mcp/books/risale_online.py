@@ -11,6 +11,8 @@ yapıyı ve eşlemeye yetecek temiz metni çıkarmaktır.
   ve kaynağıyla (`data-mehaz-*`) işaretlenir; hâşiye işareti (`data-hasiye-no`) konumuyla,
   hâşiye metni (`<aside>`) ayrı kayıt olarak gelir.
 - Ortalı paragraf `center`, sağa yaslı kısa paragraf imzadır.
+- Yalnızca bir sayıdan oluşan paragraf, Hayrat baskısının şiirlerde kıtalara verdiği sıra
+  numarasıdır ("1", "2"…); ana ciltlerde yoktur, metne girmez.
 """
 
 import re
@@ -25,6 +27,7 @@ from risale_mcp.normalize import match_words
 from risale_mcp.sources import risale_online as source
 
 _ALIGN = re.compile(r"hizalama-([\w-]*)")
+_STANZA_NUMBER = re.compile(r"\d{1,3}")
 
 
 def arabic_kind(source_label: str) -> str:
@@ -62,7 +65,7 @@ class _ParagraphHTML(HTMLParser):
         if "data-hasiye-no" in a and self._target is self.main:
             self.main.mark_footnote(a["data-hasiye-no"])
             self._stack.append(("skip", a))
-        elif "Arabi" in a.get("class", ""):
+        elif "Arabi" in a.get("class", "") or "data-mehaz-id" in a:      # meal ve kaynağı olan her parça Arapçadır
             self._stack.append(("arabic", a))
         else:
             self._stack.append(("text", a))
@@ -157,6 +160,8 @@ def parse_work(work: Work, root: Path) -> Book:
         text = Text.from_builder(parsed.main)
         if not text.text or match_words(text.text) in heading_titles:
             continue                                # başlığın kendisi: düğüm başlığında duruyor
+        if _STANZA_NUMBER.fullmatch(text.text):
+            continue                                # kıta numarası
         node = stack[-1][1]
         extra = {}
         kind = "paragraph"

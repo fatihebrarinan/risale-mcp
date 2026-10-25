@@ -1,19 +1,23 @@
 "use strict";
 
+// Sayfaya gömülü veri: eserler, gruplar ve bütün eserlerin başlık ağaçları. Bir eserin paragraf
+// ve cümleleri `data/<eser>.js` dosyasındadır; o eserden bir başlık açılınca yüklenir.
 const DATA = JSON.parse(document.getElementById("data").textContent);
-const STORAGE_KEY = `risale-review:${DATA.book}`;
+const STORAGE_PREFIX = "risale-review:";   // işaretler eser başına ayrı anahtarda: risale-review:sozler
 const ROOT = "";
 
 // ------------------------------------------------------------------ indeksler
 
-const nodes = new Map();        // id -> outline kaydı
-const order = [];               // kitap sırasıyla düğüm kimlikleri
+const works = new Map(DATA.works.map((w) => [w.slug, w]));
+const nodes = new Map();        // id -> outline kaydı (bütün eserler)
+const order = [];               // eserler katalog, düğümler kitap sırasıyla
 const childrenOf = new Map();   // ebeveyn kimliği -> çocuk kimlikleri
-const passagesOf = new Map();   // düğüm kimliği -> ana pasajlar (sıralı)
+const passagesOf = new Map();   // düğüm kimliği -> ana pasajlar (sıralı); yüklenen eserler
 const hasiyeOf = new Map();     // pasaj kimliği -> hâşiyeler
 const passageById = new Map();
-const sentencesOf = new Map();   // paragraf kimliği -> cümleleri (sıralı)
+const sentencesOf = new Map();  // paragraf kimliği -> cümleleri (sıralı)
 const sentenceById = new Map();
+const sentencesOfWork = new Map();
 
 function pushTo(map, key, value) {
   if (!map.has(key)) map.set(key, []);
@@ -25,16 +29,8 @@ for (const node of DATA.outline) {
   order.push(node.id);
   pushTo(childrenOf, node.parent_id ?? ROOT, node.id);
 }
-for (const p of DATA.passages) {
-  passageById.set(p.id, p);
-  if (p.kind === "hasiye") pushTo(hasiyeOf, p.parent_id, p);
-  else pushTo(passagesOf, p.node_id, p);
-}
-for (const s of DATA.sentences) {
-  sentenceById.set(s.id, s);
-  pushTo(sentencesOf, s.p, s);
-}
 
+const workOf = (id) => id.split("/")[0];
 const children = (id) => childrenOf.get(id) ?? [];
 const ownPassages = (id) => passagesOf.get(id) ?? [];
 
@@ -44,10 +40,12 @@ function ancestors(id) {
   return chain;
 }
 
+/** Paragraf, hâşiye ve cümle kimlikleri düğümün altındadır: sozler/10/p003/h1, sozler/10/c032/h1/c002.
+ * Düğüm, eserin metni yüklenmeden de kimlikten bulunur. */
 function nodeIdOf(targetId) {
   if (nodes.has(targetId)) return targetId;
-  const paragraphId = sentenceById.get(targetId)?.p ?? targetId;
-  return passageById.get(paragraphId)?.node_id ?? null;
+  const nodeId = targetId.replace(/\/[pc]\d{3,}(\/.*)?$/, "");
+  return nodes.has(nodeId) ? nodeId : null;
 }
 
 const targetKind = (id) =>
@@ -62,61 +60,114 @@ function fold(text) {
     .replace(/['’]/g, "");
 }
 
+// ------------------------------------------------------------------ eser metinlerinin yüklenmesi
+
+const loading = new Map();      // eser -> Promise
+
+const RisaleReview = {
+  /** `data/<eser>.js` bunu çağırır. */
+  register(view) {
+    for (const p of view.passages) {
+      passageById.set(p.id, p);
+      if (p.kind === "hasiye") pushTo(hasiyeOf, p.parent_id, p);
+      else pushTo(passagesOf, p.node_id, p);
+    }
+    for (const s of view.sentences) {
+      sentenceById.set(s.id, s);
+      pushTo(sentencesOf, s.p, s);
+    }
+    sentencesOfWork.set(view.book, view.sentences);
+    if (Marks.reanchor(view.book)) onMarksChanged();
+  },
+};
+window.RisaleReview = RisaleReview;
+
+function loadWork(slug) {
+  if (!loading.has(slug)) {
+    loading.set(slug, new Promise((resolve, reject) => {
+      const script = el("script", { src: `data/${slug}.js` });
+      script.addEventListener("load", resolve);
+      script.addEventListener("error", () => {
+        loading.delete(slug);
+        reject(new Error(`data/${slug}.js yüklenemedi; \`uv run python -m risale_mcp.review_ui\` çalıştırın.`));
+      });
+      document.head.append(script);
+    }));
+  }
+  return loading.get(slug);
+}
+
 // ------------------------------------------------------------------ işaret deposu
 
 const Marks = {
-  data: {},
+  byWork: {},     // eser -> {kimlik -> işaret}
 
   load() {
-    try {
-      this.data = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "{}");
-    } catch {
-      this.data = {};
+    for (const slug of works.keys()) {
+      try {
+        this.byWork[slug] = JSON.parse(localStorage.getItem(STORAGE_PREFIX + slug) ?? "{}");
+      } catch {
+        this.byWork[slug] = {};
+      }
     }
   },
 
-  save() {
+  save(slug) {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
+      localStorage.setItem(STORAGE_PREFIX + slug, JSON.stringify(this.byWork[slug]));
     } catch (err) {
       console.warn("İşaretler kaydedilemedi:", err);
     }
   },
 
+  of(slug) {
+    return (this.byWork[slug] ??= {});
+  },
+
+  *entries() {
+    for (const [slug, marks] of Object.entries(this.byWork)) {
+      for (const [id, mark] of Object.entries(marks)) yield [id, mark, slug];
+    }
+  },
+
   get(id) {
-    return this.data[id] ?? { status: null, note: "" };
+    return this.of(workOf(id))[id] ?? { status: null, note: "" };
   },
 
   /** `patch` cümle işaretlerinde bağlamı da taşır: {incipit, node}; kimlik kayarsa işaret bundan bulunur. */
   update(id, patch) {
+    const slug = workOf(id);
+    const marks = this.of(slug);
     const next = { ...this.get(id), ...patch };
-    if (!next.status && !next.note) delete this.data[id];
-    else this.data[id] = next;
-    this.save();
+    if (!next.status && !next.note) delete marks[id];
+    else marks[id] = next;
+    this.save(slug);
   },
 
-  /** Kimliği artık bulunmayan cümle işaretlerini aynı düğümde (yoksa bütün eserde tek eşleşen)
-   * incipit'ten yeniden bağlar. Bölme kuralları değişince numaralar kayabilir. */
-  reanchor() {
+  /** Eserin metni yüklenince, kimliği artık bulunmayan cümle işaretlerini aynı düğümde (yoksa
+   * bütün eserde tek eşleşen) incipit'ten yeniden bağlar. Bölme kuralları değişince numaralar kayabilir. */
+  reanchor(slug) {
+    const marks = this.of(slug);
+    const sentences = sentencesOfWork.get(slug) ?? [];
     let moved = 0;
-    for (const [id, mark] of Object.entries(this.data)) {
+    for (const [id, mark] of Object.entries(marks)) {
       if (targetKind(id) !== "missing" || !mark.incipit) continue;
       const same = (s) => s.incipit.startsWith(mark.incipit) || mark.incipit.startsWith(s.incipit);
-      const inNode = DATA.sentences.filter((s) => same(s) && nodeIdOf(s.id) === mark.node);
-      const anywhere = DATA.sentences.filter(same);
+      const inNode = sentences.filter((s) => same(s) && nodeIdOf(s.id) === mark.node);
+      const anywhere = sentences.filter(same);
       const match = inNode.length === 1 ? inNode[0] : anywhere.length === 1 ? anywhere[0] : null;
-      if (!match || this.data[match.id]) continue;
-      this.data[match.id] = { ...mark, incipit: match.incipit, node: nodeIdOf(match.id) };
-      delete this.data[id];
+      if (!match || marks[match.id]) continue;
+      marks[match.id] = { ...mark, incipit: match.incipit, node: nodeIdOf(match.id) };
+      delete marks[id];
       moved++;
     }
-    if (moved) this.save();
+    if (moved) this.save(slug);
     return moved;
   },
 
   counts() {
     const c = { ok: 0, bad: 0, note: 0 };
-    for (const m of Object.values(this.data)) {
+    for (const [, m] of this.entries()) {
       if (m.status === "ok") c.ok++;
       if (m.status === "bad") c.bad++;
       if (m.note) c.note++;
@@ -139,31 +190,45 @@ function el(tag, attrs = {}, ...kids) {
   return node;
 }
 
-const nodeLink = (id, text = nodes.get(id).title) => el("a", { href: `#${id}` }, text);
+const nodeLink = (id, text = nodes.get(id)?.title ?? id) => el("a", { href: `#${id}` }, text);
 
 // ------------------------------------------------------------------ ağaç
 
 const treeEl = document.getElementById("tree");
 const treeItems = new Map();    // düğüm kimliği -> <li>
+const groupItems = new Map();   // grup -> <li>
 
-function buildTreeList(parentId) {
+function treeRow(title, kids, meta) {
+  return el("div", { class: "tree-row", title },
+    el("span", { class: "caret" }, kids ? "▸" : ""),
+    el("span", { class: "tree-title" }, title),
+    el("span", { class: "tree-meta" }, meta),
+    el("span", { class: "tree-mark" }),
+    el("span", { class: "issue-dot", title: "Bu bölümde hatalı işaretli öğe var" }));
+}
+
+function buildTreeList(ids) {
   const ul = el("ul");
-  for (const id of children(parentId)) {
+  for (const id of ids) {
     const node = nodes.get(id);
     const kids = children(id);
-    const meta = [kids.length && `${kids.length} alt`, ownPassages(id).length && `¶${ownPassages(id).length}`]
-      .filter(Boolean).join(" · ");
-
-    const row = el("div", { class: "tree-row", title: node.title },
-      el("span", { class: "caret" }, kids.length ? "▸" : ""),
-      el("span", { class: "tree-title" }, node.title),
-      el("span", { class: "tree-meta" }, meta),
-      el("span", { class: "tree-mark" }),
-      el("span", { class: "issue-dot", title: "Bu bölümde hatalı işaretli öğe var" }));
-
-    const li = el("li", { dataset: { id } }, row);
-    if (kids.length) li.append(buildTreeList(id));
+    const meta = [kids.length && `${kids.length} alt`, node.p && `¶${node.p}`].filter(Boolean).join(" · ");
+    const li = el("li", { dataset: { id } }, treeRow(node.title, kids.length, meta));
+    if (kids.length) li.append(buildTreeList(kids));
     treeItems.set(id, li);
+    ul.append(li);
+  }
+  return ul;
+}
+
+/** En üstte gruplar (Eski Said dönemi, ana ciltler…), altlarında eserlerin ağaçları. */
+function buildTree() {
+  const ul = el("ul");
+  for (const group of DATA.groups) {
+    const roots = DATA.works.filter((w) => w.group === group.id).map((w) => w.slug);
+    const li = el("li", { class: "tree-group", dataset: { group: group.id } },
+      treeRow(group.title, roots.length, `${roots.length} eser`), buildTreeList(roots));
+    groupItems.set(group.id, li);
     ul.append(li);
   }
   return ul;
@@ -179,6 +244,10 @@ function onTreeClick(event) {
   const row = event.target.closest(".tree-row");
   if (!row) return;
   const li = row.parentElement;
+  if (li.classList.contains("tree-group")) {
+    setOpen(li, !li.classList.contains("open"));
+    return;
+  }
   const id = li.dataset.id;
   const hasKids = children(id).length > 0;
 
@@ -193,7 +262,11 @@ function onTreeClick(event) {
   }
 }
 
+const groupItemOf = (id) => groupItems.get(works.get(workOf(id))?.group);
+
 function revealInTree(id) {
+  const group = groupItemOf(id);
+  if (group) setOpen(group, true);
   for (const anc of ancestors(id)) setOpen(treeItems.get(anc), true);
   treeEl.querySelector(".tree-row.selected")?.classList.remove("selected");
   const row = treeItems.get(id)?.querySelector(":scope > .tree-row");
@@ -205,37 +278,39 @@ function revealInTree(id) {
 
 function applySearch(query) {
   const q = fold(query.trim());
-  for (const li of treeItems.values()) li.classList.remove("filtered-out", "force-open", "search-hit");
+  for (const li of [...treeItems.values(), ...groupItems.values()]) {
+    li.classList.remove("filtered-out", "force-open", "search-hit");
+  }
   if (!q) return;
 
   const visible = new Set();
+  const visibleGroups = new Set();
   for (const id of order) {
     const node = nodes.get(id);
     if (!fold(`${node.title} ${node.subtitle ?? ""}`).includes(q)) continue;
     treeItems.get(id).classList.add("search-hit");
     visible.add(id);
+    visibleGroups.add(groupItemOf(id));
     for (const anc of ancestors(id)) {
       visible.add(anc);
       treeItems.get(anc).classList.add("force-open");
     }
   }
   for (const [id, li] of treeItems) if (!visible.has(id)) li.classList.add("filtered-out");
+  for (const li of groupItems.values()) li.classList.add(visibleGroups.has(li) ? "force-open" : "filtered-out");
 }
 
 /** Ağaçtaki işaret simgelerini ve "altında hata var" noktalarını yeniler. */
 function refreshTreeMarks() {
-  const ownBad = new Map();
-  for (const [id, mark] of Object.entries(Marks.data)) {
-    if (mark.status === "bad") {
-      const nodeId = nodeIdOf(id);
-      if (nodeId) ownBad.set(nodeId, true);
-    }
+  const ownBad = new Set();
+  for (const [id, mark] of Marks.entries()) {
+    const nodeId = mark.status === "bad" ? nodeIdOf(id) : null;
+    if (nodeId) ownBad.add(nodeId);
   }
   const subtreeBad = new Map();
   for (let i = order.length - 1; i >= 0; i--) {
     const id = order[i];
-    const bad = ownBad.get(id) || children(id).some((c) => subtreeBad.get(c));
-    subtreeBad.set(id, bad);
+    subtreeBad.set(id, ownBad.has(id) || children(id).some((c) => subtreeBad.get(c)));
   }
   for (const [id, li] of treeItems) {
     const status = Marks.get(id).status;
@@ -243,6 +318,10 @@ function refreshTreeMarks() {
     markEl.className = `tree-mark ${status ?? ""}`;
     markEl.textContent = status === "ok" ? "✓" : status === "bad" ? "✗" : "";
     li.querySelector(":scope > .tree-row .issue-dot").classList.toggle("on", Boolean(subtreeBad.get(id)));
+  }
+  for (const [group, li] of groupItems) {
+    const bad = DATA.works.some((w) => w.group === group && subtreeBad.get(w.slug));
+    li.querySelector(":scope > .tree-row .issue-dot").classList.toggle("on", bad);
   }
 }
 
@@ -402,10 +481,7 @@ function flash(hasiyeler, label) {
 }
 
 /** Ana cilde eşlenmiş paragraf: metin orada durur, burada yalnızca bağlantısı gösterilir. */
-const canonicalLink = (paragraphId) => {
-  const node = paragraphId.replace(/\/p\d+(\/h\d+)*$/, "");
-  return el("a", { href: `${node.split("/")[0]}.html#${node}` }, paragraphId);
-};
+const canonicalLink = (paragraphId) => el("a", { href: `#${nodeIdOf(paragraphId) ?? workOf(paragraphId)}` }, paragraphId);
 
 function renderSourcePassage(passage) {
   const links = passage.source.flatMap((pid, i) => (i ? [", ", canonicalLink(pid)] : [canonicalLink(pid)]));
@@ -430,7 +506,8 @@ function renderPassage(passage) {
 }
 
 function renderBreadcrumb(id) {
-  const nav = el("nav", { class: "breadcrumb" }, DATA.title);
+  const group = DATA.groups.find((g) => g.id === works.get(workOf(id)).group);
+  const nav = el("nav", { class: "breadcrumb" }, group.title);
   for (const anc of ancestors(id)) nav.append(el("span", { class: "sep" }, "›"), nodeLink(anc));
   nav.append(el("span", { class: "sep" }, "›"), nodes.get(id).title);
   return nav;
@@ -455,10 +532,7 @@ function renderHeader(id) {
     el("h2", {}, node.title),
     node.subtitle ? el("p", { class: "subtitle" }, node.subtitle) : null,
     node.sources ? el("p", { class: "node-sources" }, "Ana ciltteki karşılığı: ",
-      ...node.sources.flatMap((id, i) => {
-        const link = el("a", { href: `${id.split("/")[0]}.html#${id}` }, id);
-        return i ? [", ", link] : [link];
-      })) : null,
+      ...node.sources.flatMap((source, i) => (i ? [", ", nodeLink(source, source)] : [nodeLink(source, source)]))) : null,
     el("div", { class: "node-id" }, code, copyBtn),
     el("div", { class: "node-review" },
       el("span", { class: "label" }, "Bu başlığın yeri ve adı:"),
@@ -484,6 +558,7 @@ function renderPager(id) {
 }
 
 function showNode(id) {
+  const work = works.get(workOf(id));
   const passages = ownPassages(id);
   const inner = el("div", { class: "content-inner" },
     renderBreadcrumb(id),
@@ -493,18 +568,26 @@ function showNode(id) {
       : el("p", { class: "empty" }, "Bu başlığın kendine ait paragrafı yok; metin alt bölümlerinde."),
     renderChildren(id),
     renderPager(id));
+  document.body.classList.toggle("lang-ar", work.language === "ar");
   contentEl.replaceChildren(inner);
   contentEl.scrollTop = 0;
   revealInTree(id);
-  document.title = `${nodes.get(id).title} · ${DATA.title} Taksimat Kontrolü`;
+  document.title = `${nodes.get(id).title} · ${work.title} · ${DATA.title}`;
+}
+
+function showMessage(...lines) {
+  contentEl.replaceChildren(el("div", { class: "welcome" }, ...lines));
 }
 
 function showWelcome() {
-  contentEl.replaceChildren(el("div", { class: "welcome" },
-    el("h2", {}, `${DATA.title} taksimat kontrolü`),
-    el("p", {}, "Soldaki ağaçtan bir başlık seçin. ← / → tuşlarıyla kitap sırasında gezinebilirsiniz."),
-    el("p", {}, `${order.length} başlık · ${DATA.passages.filter((p) => p.kind !== "hasiye").length} paragraf · ${DATA.sentences.length} cümle`),
-    el("p", {}, "Cümlenin başındaki küçük numaraya tıklayınca o cümlenin atfı ve işaret düğmeleri açılır.")));
+  document.body.classList.remove("lang-ar");
+  const total = (key) => DATA.works.reduce((sum, w) => sum + w.counts[key], 0);
+  showMessage(
+    el("h2", {}, DATA.title),
+    el("p", {}, "Soldaki ağaçtan bir eser ya da başlık seçin. ← / → tuşlarıyla kitap sırasında gezinebilirsiniz."),
+    el("p", {}, `${DATA.works.length} eser · ${total("nodes")} başlık · ${total("passages")} paragraf · ${total("sentences")} cümle`),
+    el("p", {}, "Cümlenin başındaki küçük numaraya tıklayınca o cümlenin atfı ve işaret düğmeleri açılır."));
+  document.title = DATA.title;
 }
 
 // ------------------------------------------------------------------ gezinme
@@ -513,10 +596,21 @@ function navigate(id) {
   location.hash = id;
 }
 
-function route() {
+async function route() {
   const id = decodeURIComponent(location.hash.slice(1));
-  if (nodes.has(id)) showNode(id);
-  else showWelcome();
+  if (!nodes.has(id)) {
+    showWelcome();
+    return;
+  }
+  const slug = workOf(id);
+  if (!sentencesOfWork.has(slug)) showMessage(el("p", {}, `${works.get(slug).title} yükleniyor…`));
+  try {
+    await loadWork(slug);
+  } catch (err) {
+    showMessage(el("p", {}, err.message));
+    return;
+  }
+  if (decodeURIComponent(location.hash.slice(1)) === id) showNode(id);   // bu arada başka başlık seçilmediyse
 }
 
 function onKeydown(event) {
@@ -530,8 +624,13 @@ function onKeydown(event) {
 
 // ------------------------------------------------------------------ dışa / içe aktarma
 
-function exportMarks() {
-  const items = Object.entries(Marks.data).map(([id, mark]) => ({
+/** Bütün eserlerin işaretleri tek dosyada; her kayıt eserini taşır. Atıf ve türün doğru çıkması
+ * için işaretli eserlerin metni önce yüklenir. */
+async function exportMarks() {
+  const marked = [...new Set([...Marks.entries()].map(([, , slug]) => slug))];
+  await Promise.allSettled(marked.map(loadWork));
+  const items = [...Marks.entries()].map(([id, mark, book]) => ({
+    book,
     id,
     target: targetKind(id),
     ref: refOf(id),
@@ -539,15 +638,17 @@ function exportMarks() {
     status: mark.status,
     note: mark.note,
   }));
-  items.sort((a, b) => order.indexOf(nodeIdOf(a.id)) - order.indexOf(nodeIdOf(b.id)));
+  const position = (item) => order.indexOf(nodeIdOf(item.id) ?? item.book);
+  items.sort((a, b) => position(a) - position(b));
 
-  const payload = { book: DATA.book, exported_at: new Date().toISOString(), items };
+  const payload = { exported_at: new Date().toISOString(), books: marked, items };
   const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const link = el("a", { href: URL.createObjectURL(blob), download: `${DATA.book}-kontrol-notlari.json` });
+  const link = el("a", { href: URL.createObjectURL(blob), download: "risale-kontrol-notlari.json" });
   link.click();
   URL.revokeObjectURL(link.href);
 }
 
+/** Bu dosyayı da, eski eser başına dosyaları da ({book, items}) okur. */
 async function importMarks(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -557,7 +658,7 @@ async function importMarks(event) {
       const context = item.incipit ? { incipit: item.incipit, node: nodeIdOf(item.id) ?? undefined } : {};
       Marks.update(item.id, { ...context, status: item.status ?? null, note: item.note ?? "" });
     }
-    Marks.reanchor();
+    for (const slug of sentencesOfWork.keys()) Marks.reanchor(slug);
     onMarksChanged();
     route();
   } catch (err) {
@@ -568,18 +669,8 @@ async function importMarks(event) {
 
 // ------------------------------------------------------------------ başlat
 
-function buildBookPicker() {
-  const select = document.getElementById("book");
-  for (const book of DATA.books) select.append(el("option", { value: book.slug }, book.title));
-  select.value = DATA.book;
-  select.addEventListener("change", () => (location.href = `${select.value}.html`));
-}
-
-document.body.classList.toggle("lang-ar", DATA.language === "ar");
 Marks.load();
-Marks.reanchor();
-buildBookPicker();
-treeEl.append(buildTreeList(ROOT));
+treeEl.append(buildTree());
 treeEl.addEventListener("click", onTreeClick);
 document.getElementById("search").addEventListener("input", (e) => applySearch(e.target.value));
 document.getElementById("export").addEventListener("click", exportMarks);
