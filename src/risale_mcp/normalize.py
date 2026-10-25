@@ -66,7 +66,7 @@ _SLUG_MAP = str.maketrans("çğıöşüâîû", "cgiosuaiu")
 
 def slugify(text: str) -> str:
     s = tr_lower(text).translate(_SLUG_MAP)
-    s = re.sub(r"['’`]", "", s)
+    s = re.sub(r"['’‘ʼ`]", "", s)
     return re.sub(r"[^a-z0-9]+", "-", s).strip("-")
 
 
@@ -75,5 +75,5 @@ def fold(text: str) -> str:
     s = tr_lower(text)
     # Yalnızca şapka (U+0302) kaldırılır; ç, ğ, ö, ş, ü korunur.
     s = unicodedata.normalize("NFC", unicodedata.normalize("NFD", s).replace("̂", ""))
-    s = re.sub(r"['’`]", "", s)
+    s = re.sub(r"['’‘ʼ`]", "", s)
     return re.sub(r"\s+", " ", s).strip()

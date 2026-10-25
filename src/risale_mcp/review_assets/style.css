@@ -10,9 +10,8 @@
   --bad: #b3362c;
   --note: #8a6d12;
   --hasiye-bg: #f6f2e8;
-  --arabic-bg: #ecebe7;
   --flash: #fbe7a6;
-  --serif: "Noto Serif", "Georgia", "Times New Roman", serif;
+  --serif: "Noto Serif", "Georgia", "Times New Roman", "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif;
   --sans: system-ui, -apple-system, "Segoe UI", "Noto Sans", sans-serif;
 }
 
@@ -29,7 +28,6 @@
     --bad: #ef7d73;
     --note: #e3c35e;
     --hasiye-bg: #2a2824;
-    --arabic-bg: #302e2a;
     --flash: #5a4a1c;
   }
 }
@@ -158,18 +156,11 @@ button:hover, .button:hover { border-color: var(--accent); }
 .passage.status-bad { box-shadow: inset 3px 0 0 var(--bad); }
 .pnum { font-family: var(--serif); color: var(--accent); font-weight: 600; text-align: right; padding-top: 2px; }
 .ptext { font-family: var(--serif); font-size: 1.07rem; line-height: 1.7; }
+.kind-arabic .ptext { direction: rtl; text-align: right; font-size: 1.3rem; }
+.kind-poem .ptext, .kind-table .ptext { white-space: pre-line; }
+.kind-quote .ptext { padding-left: 12px; border-left: 3px solid var(--border); }
+.kind-signature .ptext { text-align: right; font-weight: 600; }
 .passage .marks { grid-column: 2; margin-top: 6px; }
-
-.arabic-inline, .arabic-block {
-  font-family: var(--sans);
-  font-size: 0.78rem;
-  color: var(--muted);
-  background: var(--arabic-bg);
-  border-radius: 4px;
-  padding: 1px 6px;
-  white-space: nowrap;
-}
-.arabic-block { display: inline-block; padding: 6px 14px; font-size: 0.85rem; }
 
 .ref {
   font: inherit;

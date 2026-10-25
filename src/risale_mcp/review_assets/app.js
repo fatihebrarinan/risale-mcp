@@ -3,7 +3,7 @@
 const DATA = JSON.parse(document.getElementById("data").textContent);
 const STORAGE_KEY = `risale-review:${DATA.book}`;
 const ROOT = "";
-const TOKEN = /(\((?:Haşiye(?:-\s*\d+)?|\*+)\)|\[Arapça metin\]|\[Arapça\])/;
+const TOKEN = /(\(Haşiye-\d+\))/;   // metne yerleştirilmiş hâşiye işareti
 
 // ------------------------------------------------------------------ indeksler
 
@@ -283,15 +283,13 @@ function markControls(targetId, { container } = {}) {
 
 const contentEl = document.getElementById("content");
 
-/** Metni güvenli biçimde (textContent ile) çizer; hâşiye atıflarını ve Arapça yer tutucuları işaretler. */
+/** Metni güvenli biçimde (textContent ile) çizer; hâşiye işaretlerini düğmeye çevirir. */
 function renderText(text, onRefClick) {
   const frag = document.createDocumentFragment();
   for (const part of text.split(TOKEN)) {
     if (!part) continue;
-    if (part === "[Arapça metin]") frag.append(el("span", { class: "arabic-block" }, "Arapça metin"));
-    else if (part === "[Arapça]") frag.append(el("span", { class: "arabic-inline" }, "Arapça"));
-    else if (part.startsWith("(") && TOKEN.test(part)) {
-      const label = part.slice(1, -1).replace(/\s+/g, "");
+    if (TOKEN.test(part)) {
+      const label = part.slice(1, -1);
       frag.append(el("button", { type: "button", class: "ref", onclick: () => onRefClick(label) }, part));
     } else frag.append(part);
   }
@@ -303,14 +301,15 @@ const paragraphNumber = (passage) => Number(passage.id.match(/\/p(\d+)$/)[1]);
 function renderHasiye(hasiye) {
   const name = hasiye.ref.split(" › ").pop();
   const box = el("div", { class: "hasiye", dataset: { label: hasiye.label } },
-    el("div", { class: "hasiye-head" }, el("strong", {}, name), ` · PDF etiketi: ${hasiye.label}`),
+    el("div", { class: "hasiye-head" }, el("strong", {}, name)),
     el("div", { class: "ptext" }, renderText(hasiye.text, () => {})));
-  box.append(markControls(hasiye.id, { container: box }));
+  box.append(markControls(hasiye.id, { container: box }),
+    ...(hasiyeOf.get(hasiye.id) ?? []).map(renderHasiye));   // hâşiyenin hâşiyesi
   return box;
 }
 
 function renderPassage(passage) {
-  const article = el("article", { class: "passage", id: passage.id });
+  const article = el("article", { class: `passage kind-${passage.kind}`, id: passage.id });
   const hasiyeler = (hasiyeOf.get(passage.id) ?? []).map(renderHasiye);
 
   const flashHasiye = (label) => {
@@ -357,7 +356,8 @@ function renderHeader(id) {
     el("div", { class: "node-id" }, code, copyBtn),
     el("div", { class: "node-review" },
       el("span", { class: "label" }, "Bu başlığın yeri ve adı:"),
-      markControls(id)));
+      markControls(id)),
+    ...(hasiyeOf.get(id) ?? []).map(renderHasiye));   // başlıktaki hâşiyeler
 }
 
 function renderChildren(id) {
@@ -390,12 +390,12 @@ function showNode(id) {
   contentEl.replaceChildren(inner);
   contentEl.scrollTop = 0;
   revealInTree(id);
-  document.title = `${nodes.get(id).title} · Sözler Taksimat Kontrolü`;
+  document.title = `${nodes.get(id).title} · ${DATA.title} Taksimat Kontrolü`;
 }
 
 function showWelcome() {
   contentEl.replaceChildren(el("div", { class: "welcome" },
-    el("h2", {}, "Sözler taksimat kontrolü"),
+    el("h2", {}, `${DATA.title} taksimat kontrolü`),
     el("p", {}, "Soldaki ağaçtan bir başlık seçin. ← / → tuşlarıyla kitap sırasında gezinebilirsiniz."),
     el("p", {}, `${order.length} başlık · ${DATA.passages.length} pasaj`)));
 }

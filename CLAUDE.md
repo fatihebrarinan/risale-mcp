@@ -4,28 +4,54 @@ Bu dosya projenin kalıcı bağlamıdır. Her oturumda önce bunu oku.
 
 ## Amaç
 
-Risale-i Nur Külliyatı'nı yapay zekâ modellerinin **kaynağa bağlı kalarak** kullanabileceği bir MCP sunucusu geliştirmek. MVP yalnızca **Sözler** kitabını kapsar.
+Bediüzzaman Said Nursî'nin **bütün eserlerini** (Eski Said eserleri, Risale-i Nur ana ciltleri, Lâhikalar, Tarihçe-i Hayat, mecmualar, Hizbler) yapay zekâ modellerinin **kaynağa bağlı kalarak** kullanabileceği bir MCP sunucusu geliştirmek.
 
 Nihai kullanım hedefleri:
-1. Model bir konuda yorum yaptığında, dayandığı yeri tam adresiyle göstersin (ör. `Sözler › Onuncu Söz › Dokuzuncu Hakikat › ¶3`).
-2. Bir konunun Külliyat'ta geçtiği yerler listelenebilsin.
-3. Farklı bakış açılarıyla yapılan yorumlar da metindeki pasajlara dayansın.
+1. Model bir konuda yorum yaptığında, dayandığı yeri **cümle düzeyinde** tam adresiyle göstersin.
+2. Bir konunun eserlerde geçtiği yerler listelenebilsin.
+3. Farklı bakış açılarıyla yapılan yorumlar da metindeki cümlelere dayansın.
 
-MVP yalnızca 1. hedefin altyapısını kurar. 2. ve 3. hedefler sonraki aşamalardır.
+İlk hedef 1. hedefin altyapısıdır. 2. ve 3. hedefler sonraki aşamalardır.
 
-## Temel ilke
+## Temel ilkeler
 
-**Her pasajın adresi veriden gelir, asla tahmin edilmez.** Sunucunun döndürdüğü her metin parçası, kitaptaki hiyerarşik konumunu ve PDF sayfa numarasını taşır. Adres üretemediğimiz metin, adres uydurularak değil, açıkça "adres belirsiz" işaretiyle saklanır.
+- **Her adres veriden gelir, asla tahmin edilmez.** Adres üretemediğimiz metin, adres uydurularak değil, açıkça "adres belirsiz" işaretiyle saklanır.
+- **Atıf birimi cümledir.** Paragraflar yalnızca görüntü ve bağlam için tutulur.
+  - MCP ↔ model arasında: `Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › 32. cümle`
+  - Model ↔ kullanıcı arasında: `Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › "Şüphesiz ki bu haşri gösterir…"` (cümlenin ilk kelimeleri)
+- **Sayfa numarası yoktur.** Hiçbir veri dosyasında basılı sayfa bilgisi tutulmaz.
+- **Metin tek yerde durur.** Mecmualar (Asâ-yı Mûsâ, Zülfikâr…) ana ciltlerdeki metne işaret eden içindekiler listeleridir; yalnızca mecmuaya özgü parçalar mecmuada saklanır.
+- **Kaynak web'dir.** Ham yanıtlar bir kez indirilip diske kaydedilir; ayrıştırma her zaman diskten yapılır.
+
+## Kapsam ve kaynaklar
+
+Eserlerin listesi, her birinin kaynağı ve durumu tek yerde tutulur: `src/risale_mcp/catalog.py`. Her eserin hangi aşamada olduğu `ESERLER.md` kontrol listesindedir (`uv run python -m risale_mcp.checklist` ile diskten üretilir, elle düzenlenmez).
+
+| Site | Rol | Notlar |
+|---|---|---|
+| **erisale.com** | Birincil kaynak (≈30 eser) | Standart baskı. Her bölüm ayrı sayfa; sayfa listesi `sitemap-tr.xml`'den. Metin sayfaya gömülü RSC verisinde yapısal ağaç olarak gelir: blok türleri (`H2`, `H3`, `Paragraph`, `CenteredParagraph`, `HeadingDescription`…), satır içi başlıklar (`Heading`), Arapça (`RTL`, türü âyet/hadis/Arapça, meali `rtl.txn`), hâşiye tam geçtiği yerde (`FootnoteRef` → `Footnote`). `blockIndex` kitap içinde süreklidir; boşluk = eksik bölüm. robots.txt yalnızca `/api/` yolunu yasaklar; biz yalnızca okuma sayfalarını indiririz. |
+| risale.online | Zülfikâr, Tılsımlar, Sirâcü'n-Nûr, Gençlik ve Hanımlar Rehberi | Hayrat baskısı, JSON API (`/risale-api/fihrist`, `/risale-api/paragraf`). |
+| risaleoku.com | Hizbler, Arapça Mesnevî, Küçük Sözler, (Fihrist Risalesi) | `/oku/<kitap>` içindekiler ve sayfa sayısı, `/ajax/<kitap>/<n>` sayfa metni. `Crawl-delay: 10`. |
+| Yeni Asya | Makalat, Nutuk (son çare) | Sayfa çevirmeli kitabın `basic-html` katmanı (`page<n>.html`, ilk 404'e kadar): harf kodlaması bozuk (`ş→fl`, `ı→›`, `İ→‹`), satır sonu tireli, lügat karışık, Arapça yok. |
+
+- **Ertelendi:** Fihrist Risalesi (yalnızca Osmanlıca bulundu), Rumuzat-ı Semaniye (hususi bir risale; kullanıcı kararıyla şimdilik eklenmiyor).
+- **Kaynağı bulunamadı:** Kızıl İcaz, Ta'likat, Hizb-i Nurî.
+- **Doğrulanacak:** el-Mesnevî el-Arabî, Hizbü Envâri'l-Hakāik.
+- **Sitede eksik:** Sikke-i Tasdik-i Gaybî'de aynı başlıklı iki bölüm aynı adresi paylaştığından 15 blok indirilemiyor; `gaps` alanında işaretli. Mecmua eşlemesinde (Aşama 4) ana ciltlerden tamamlanacak.
+- Bir kaynak kitabı birden çok esere bölünebilir: erisale'nin "İlk Dönem Eserleri" kitabı Divan-ı Harb-i Örfî, Münazarat, Sünuhat vb. eserlere ayrılır. Lemeat (Sözler'in sonu) ve Hakikat Çekirdekleri (Mektubat'ın sonu) ayrı eserdir. Seçim, katalogdaki bölüm slug önekleriyle yapılır.
+
+Kullanım kişiseldir. Uygulama olarak yayımlanırsa kaynak sitelerden izin alınacak. Ham ve ara veri git'e eklenmez.
 
 ## Teknik tercihler
 
 - Dil: Python 3.11+
 - Ortam ve bağımlılıklar: `uv`
-- PDF okuma: PyMuPDF (`pymupdf`). Font boyutu ve kalınlık bilgisi başlık tespitinde kullanılacak.
-- Veritabanı: SQLite + FTS5 (kelime araması). Anlamsal arama MVP'de **yok**.
+- HTTP: standart kütüphane (`urllib`), `sources/http.py` içindeki nazik istemci (istekler arası bekleme, yeniden deneme). Varsayılan bekleme 5 sn; risaleoku için 10 sn.
+- Veritabanı: SQLite + FTS5 (kelime araması). Anlamsal arama ilk sürümde **yok**.
 - MCP: resmi Python SDK'sı (`mcp` paketi, FastMCP). Not: `@modelcontextprotocol/sdk` TypeScript paketidir, kullanmıyoruz.
 - Test: `pytest` + MCP Inspector + Claude Code'a `claude mcp add` ile bağlayarak elle deneme.
 - Platform: Linux Mint.
+- PDF kodu ve PyMuPDF Aşama 2'deki karşılaştırmadan sonra kaldırıldı (git geçmişinde `da37ba2`).
 
 ## Klasör yapısı
 
@@ -33,110 +59,162 @@ MVP yalnızca 1. hedefin altyapısını kurar. 2. ve 3. hedefler sonraki aşamal
 risale-mcp/
 ├── CLAUDE.md
 ├── data/
-│   ├── raw/            # Kaynak PDF (git'e eklenmez)
-│   ├── interim/        # Ayrıştırma ara çıktıları: sozler.json, outline.txt,
-│   │                   #   fihrist_check.txt, review.html (kontrol arayüzü)
-│   └── risale.db       # SQLite veritabanı (git'e eklenmez)
+│   ├── raw/                       # Ham kaynak yanıtları (git'e eklenmez)
+│   │   ├── erisale/               # sitemap-tr.xml, <kitap>/manifest.json, pages/<bölüm>.html.gz
+│   │   ├── risale_online/         # eserler.json, <kitap>/fihrist.json, paragraf/<ilk>-<son>.json
+│   │   ├── risaleoku/             # <kitap>/index.html.gz, pages/<n>.html.gz
+│   │   ├── yeniasya/              # <kitap>/toc.html.gz, pages/<n>.html.gz
+│   │   └── logs/                  # toplu indirme günlükleri
+│   ├── interim/                   # Ara çıktılar
+│   │   ├── erisale/<kitap>.blocks.json   # birleştirilmiş, doğrulanmış bloklar (git'e eklenmez)
+│   │   └── review.html            # kontrol arayüzü
+│   │   ├── outline/<eser>.txt     # elle kontrol için girintili başlık ağacı (git'e eklenmez)
+│   │   └── build.log              # son toplu ayrıştırmanın raporu
+│   ├── books/<eser>.json          # Her eserin JSON'u (git'e eklenmez)
+│   └── risale.db                  # SQLite veritabanı (git'e eklenmez)
 ├── src/risale_mcp/
-│   ├── inspect_pdf.py  # Aşama 1: PDF yapısını inceleme
-│   ├── parse.py        # Aşama 2: PDF → hiyerarşik JSON
+│   ├── paths.py        # Proje klasörleri
+│   ├── catalog.py      # Bütün eserler, kaynakları ve durumları
+│   ├── checklist.py    # ESERLER.md kontrol listesi
+│   ├── fetch.py        # Aşama 1: indirme ve bütünlük doğrulama CLI'ı
+│   ├── build.py        # Aşama 2: ham veri -> data/books/<eser>.json CLI'ı
+│   ├── headings.py     # Başlık türü, numarası, kimlikteki yerel ad
+│   ├── books/
+│   │   ├── model.py          # Kaynaktan bağımsız eser modeli: düğüm, paragraf, hâşiye, Arapça parça
+│   │   └── erisale.py        # erisale blokları -> eser modeli
+│   ├── sources/
+│   │   ├── http.py           # Nazik HTTP istemcisi
+│   │   ├── archive.py        # Ham yanıtı diske yazma, önbellekten okuma
+│   │   ├── erisale.py        # erisale: sitemap, ham arşiv, blok çıkarma, birleştirme, doğrulama
+│   │   ├── risale_online.py  # risale.online JSON API (yalnızca ham kayıt + doğrulama)
+│   │   ├── risaleoku.py      # risaleoku sayfaları (yalnızca ham kayıt + doğrulama)
+│   │   └── yeniasya.py       # Yeni Asya basic-html sayfaları (yalnızca ham kayıt + doğrulama)
 │   ├── normalize.py    # Türkçe metin normalizasyonu, sıra sayıları, slug
-│   ├── review_ui.py    # Taksimat kontrol arayüzü: sozler.json → review.html
+│   ├── review_ui.py    # Kontrol arayüzü: kitap JSON'u → review.html
 │   ├── review_assets/  # Arayüzün template.html, style.css, app.js dosyaları
-│   ├── build_db.py     # Aşama 3: JSON → SQLite
-│   └── server.py       # Aşama 4: MCP sunucusu
+│   ├── build_db.py     # Aşama 4: JSON → SQLite
+│   └── server.py       # Aşama 5: MCP sunucusu
 └── tests/
-    ├── test_parse.py         # Yardımcılar ve sozler.json yapı testleri
-    ├── test_review_ui.py     # Arayüz üreticisi testleri
+    ├── test_catalog.py
+    ├── test_erisale.py
+    ├── test_sources.py
+    ├── test_normalize.py
+    ├── test_headings.py
+    ├── test_books.py
+    ├── test_review_ui.py
     └── golden_questions.md   # Kullanıcının yazdığı test soruları
 ```
 
 ## Veri modeli
 
-Risale'nin iç yapısı düzensizdir: Söz, Makam, Mebhas, Mesele, Nükte, Hakikat, Esas, Lem'a, İşaret, Remiz, Hâşiye, Zeyl vb. Bu yüzden **sabit sütunlar yerine esnek bir başlık yolu** kullanılır.
+Eserlerin iç yapısı düzensizdir: Söz, Makam, Mebhas, Mesele, Nükte, Hakikat, Esas, Lem'a, İşaret, Remiz, Hâşiye, Zeyl, Mektub, Şuâ vb. Bu yüzden **sabit sütunlar yerine esnek bir başlık yolu** kullanılır.
 
-`passages` tablosu (taslak, Aşama 1 bulgularına göre güncellenebilir):
+Her eser `data/books/<eser>.json` dosyasıdır (`uv run python -m risale_mcp.build --all`). Cümleler Aşama 3'te eklenecek.
 
-| Alan | Açıklama |
-|---|---|
-| `id` | Kararlı kimlik, ör. `sozler/10/hakikat-09/p003` |
-| `book` | `sozler` |
-| `path` | JSON liste, ör. `["Onuncu Söz", "Dokuzuncu Hakikat"]` |
-| `ref` | İnsan okunur adres, ör. `Sözler › Onuncu Söz › Dokuzuncu Hakikat › ¶3` |
-| `seq` | Kitap içindeki genel sıra (komşu pasajlar için) |
-| `text` | Orijinal metin, değiştirilmeden |
-| `text_search` | Aramaya özel normalize edilmiş metin |
-| `kind` | `paragraph`, `hasiye`, `arabic`, `heading` |
-| `parent_id` | Hâşiyeler için bağlı olduğu pasaj |
-| `page_start`, `page_end` | PDF sayfa numaraları |
+- **`outline`**: başlık ağacı, kitap sırasıyla. İlk kayıt eserin kendisidir (kök).
+  - `id`, `parent_id`, `title` (basılı başlık), `ref` (`Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat`)
+  - isteğe bağlı: `subtitle`, `toc_title` (kaynağın içindekilerdeki adı, farklıysa), `type`, `number`, `heading` (`H1`…`H6` ya da `inline`), `url` (kaynaktaki bölüm sayfası; doğrulama için)
+- **`paragraphs`**: görüntü ve bağlam için, kitap sırasıyla; hâşiye bağlı olduğu kaydın hemen ardından gelir.
+  - `id` (`<düğüm>/p003`), `node_id`, `kind`, `text`
+  - `kind`: `paragraph`, `arabic` (tamamı Arapça), `poem` (kıta; satırlar `\n` ile), `quote`, `signature`, `table`, `hasiye`
+  - `arabic`: metindeki Arapça parçalar `[{start, end, kind, meal, source}]`; `kind` âyet/hadis/arabi/farsi…, `source` âyette "Bakara Sûresi, 2:117"
+  - isteğe bağlı: `center` (ortalı), `continued` (araya giren bloktan sonra süren paragraf)
+  - hâşiyede: `parent_id` (paragraf, hâşiye ya da başlıktaysa düğüm), `offset` (işaretin metindeki konumu), kimlik `<paragraf>/h1`
+- **`notes`**: kaynağın editör notları; metne girmez.
+- **`gaps`**: kaynakta bulunamayan bloklar `{node_id, missing_blocks, after}`. Metin uydurulmaz.
+- Sonraki aşamada **`sentences`**: atıf birimi. Alanlar:
+  - `id`, ör. `sozler/10/on-iki-hakikat/hakikat-09/c032`
+  - `node_id`, `paragraph_id`, `n` (düğüm içindeki sıra)
+  - `text` (orijinal, değiştirilmeden), `incipit` (ilk kelimeler)
+  - `ref`, ör. `Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › 32. cümle`
 
-Ek olarak `outline` tablosu: başlık ağacı (id, başlık, seviye, ebeveyn, ilk ve son `seq`).
+### Ayrıştırma kuralları (erisale, Aşama 2)
+Ayrıntı `books/erisale.py` başındaki açıklamadadır. Özet:
+- Her H1–H6 başlığı bir düğümdür; ağaç başlık seviyelerinden kurulur. Grup başlıkları ("On iki Hakikat") da düğümdür ve atıfta görünür.
+- `TocOnly` başlık yalnızca içindekilerde görünür ama düğümdür. `BookOnly` başlık yeni düğüm açmaz, eşleşen düğümün basılı başlığıdır. Atıflarda basılı başlık kullanılır; içindekiler adı `toc_title`'dadır.
+- Başlıktaki satır içi başlık ve başlıktan hemen sonraki `HeadingDescription` alt başlıktır.
+- Paragraf başındaki biçimli numaralı etiket ("Birinci Esas:", "Birinci Kâr:") düğüm açar; etiket metinde de kalır. Yeni seri, açık seri aynı bölümde sürüyorsa onun içine, sürmüyorsa yanına yerleşir.
+- Seçilen bölümlerde tek bir en üst başlık varsa o eserin kendisidir (İlk Dönem Eserleri içindeki "Münâzarât").
+- Kimlikler: kitap düzeyindeki ana birim yalnızca numara (`sozler/10`, `mektubat/29`), numaralı birim `hakikat-09`, numarasız tür `hatime`, diğerleri başlığın slug'ı; Lâhika mektupları erisale numarası (`emirdag-lahikasi/297`). Aynı adlı kardeşler `-2`, `-3` eki alır.
+
+### Cümle kuralları
+- Numaralar her düğümün **kendi metninde** 1'den başlar; alt düğümler kendi sayımını yapar.
+- **Hâşiye cümleleri** kendi içinde numaralanır: `… › 32. cümle › Hâşiye › 2. cümle`. Bir cümlede birden çok hâşiye varsa `Hâşiye 1`, `Hâşiye 2`.
+- **Bölme:**
+  - Cümle şu işaretlerden sonra, ardından büyük harf ya da tırnak gelirse biter: `.` `!` `?` `…` `‥`
+  - `;` ve `:` cümleyi bitirmez ("Hiç mümkün müdür ki;", "Elcevab:").
+  - Kısaltmalar korunur: (A.S.M.), (asm), (R.A.), Hz. vb.
+- **Arapça:**
+  - Tamamen Arapça bir blok tek cümledir.
+  - Cümle içindeki Arapça o cümlede kalır.
+- **`incipit`:** O düğüm içinde başka bir cümleyle karışmayacak kadar uzun tutulur (en az 4 kelime).
+- **Kayan numaralara karşı önlem:** Bölme kuralları değişirse numaralar kayabilir. Bu yüzden kurallar altın örnek testlerle kilitlenir, her cümlenin metin özeti (hash) ve `incipit`'i saklanır. Eski atıflar ve kontrol işaretleri `incipit`'ten yeniden bulunur.
 
 ### Dikkat edilecek noktalar
-- **Türkçe büyük/küçük harf:** Python'un `str.lower()` fonksiyonu `İ` ve `I` harflerini Türkçe kurallara göre çevirmez. `normalize.py` içinde Türkçeye özel bir dönüşüm yaz. Şapkalı harfler (â, î, û) aramada düz harfle eşleşmeli. Orijinal `text` alanı ise asla değiştirilmez.
-- **Sayfa üstbilgi/altbilgileri:** Her sayfadaki tekrar eden başlık ve sayfa numaraları metne karışmamalı.
-- **Hâşiyeler (dipnotlar):** Ana metinden ayrılmalı ve bağlı oldukları pasaja işaret etmeli.
-- **Arapça metinler:** Korunmalı ve `kind` alanıyla işaretlenmeli.
-- **Sayfaya bölünmüş paragraflar:** Sayfa sonunda bölünen paragraflar birleştirilmeli.
-
-### Verilen kararlar (Aşama 1–2)
-- **Arapça:** Kaynak PDF'teki Arapça fontların Unicode eşlemesi yok. Şimdilik yer tutucu kullanılıyor: blok için `kind="arabic"` ve `[Arapça metin]`, cümle içinde `[Arapça]`. Ham glif kodları `arabic_glyphs` alanında saklanır; ileride başka PDF'lerle karşılaştırılarak çözülecek.
-- **Sayfa numarası ikincildir:** `page_start` ve `page_end` PDF'ten alınır, ama pasajlar hiyerarşik adresle anılır (`Sözler › Onuncu Söz › Dokuzuncu Hakikat › ¶3`).
-- **Düğümler:** Her numaralı Hakikat, Nükte, Esas, Sır vb. ayrı bir düğümdür. Başlıkların hemen altındaki açıklama satırları `subtitle` alanına yazılır.
-- **Hâşiyeler** `seq` almaz; `parent_id` ile bağlı oldukları pasaja işaret eder. Adres örneği: `… › ¶3 › Hâşiye`; bir pasajın birden fazla hâşiyesi varsa `Hâşiye 1`, `Hâşiye 2`.
-- Birinci Söz'den önceki giriş metni için yapay bir `sozler/giris` düğümü vardır.
+- **Türkçe büyük/küçük harf:** Python'un `str.lower()` fonksiyonu `İ` ve `I` harflerini Türkçe kurallara göre çevirmez; `normalize.py` kullanılır.
+- **Yazım işaretleri:** Aramada şapkalı ve uzatma işaretli harfler (â, î, û, ā, ī, ū, à) düz harfle eşleşmeli. Kesmeler (' ' ‘ ’) ve bölünmez tire (U+2011) normalleştirilmeli.
+- **Orijinal metin:** `text` alanı asla değiştirilmez.
+- **Hâşiyeler** ana metinden ayrılır ve geçtikleri cümleye bağlanır.
+- **Arapça** korunur ve işaretlenir; erisale'nin âyet/hadis/Arapça ayrımı saklanır.
 
 ## Taksimat kontrol arayüzü
 
-Ayrıştırılan başlık ağacını kitapla yan yana elle kontrol etmek içindir.
+Ayrıştırılan başlık ağacını ve metni elle kontrol etmek içindir. `data/books/<eser>.json` okur. Aşama 3'te kitap seçici, cümle numaraları ve cümle düzeyinde işaretlerle güncellenecek.
 
 ```
-uv run python -m risale_mcp.parse       # sozler.json üret
-uv run python -m risale_mcp.review_ui   # data/interim/review.html üret
+uv run python -m risale_mcp.review_ui [eser]   # data/interim/review.html üret (varsayılan: sozler)
 xdg-open data/interim/review.html
 ```
 
-- **Tek dosya:** Veri, stil ve betik dosyanın içine gömülüdür; sunucu ya da internet gerekmez. Kaynak dosyalar `src/risale_mcp/review_assets/` altındadır. `review_ui.py` yalnızca bunları birleştirir.
-- **Sayfa bilgisi yok:** Arayüzde hiçbir yerde sayfa numarası olmaz, `page_*` alanları HTML'e hiç yazılmaz. Gezinme tamamen hiyerarşiktir.
+- **Tek dosya:** Veri, stil ve betik dosyanın içine gömülüdür; sunucu ya da internet gerekmez. Kaynak dosyalar `src/risale_mcp/review_assets/` altındadır; `review_ui.py` yalnızca bunları birleştirir.
+- **Sayfa bilgisi yok.** Gezinme tamamen hiyerarşiktir.
 - **Sol panel:** Başlık ağacı ve başlıklarda arama.
-- **Sağ panel:** Seçilen düğümün yolu, başlığı, alt başlığı ve kimliği; numaralı paragraflar (`¶n`); paragrafın altında hâşiyeler; alt bölümlerin listesi; önceki/sonraki bölüm bağlantıları (← / → tuşları da çalışır). Her düğüme tıklanınca o düğümün kendi paragrafları görünür.
-- **URL:** Seçili düğümü tutar (`review.html#sozler/10/hakikat-09`).
+- **Sağ panel:** Seçilen düğümün yolu, başlığı, alt başlığı, kimliği ve kendi metni; hâşiyeler (metindeki işarete tıklanınca vurgulanır); alt bölümler; önceki/sonraki bölüm (← / →). Arapça paragraflar sağdan sola gösterilir; Kur'an işaretlerinin düzgün görünmesi için Amiri ya da Scheherazade New yazı tipi gerekir.
+- **URL:** Seçili düğümü tutar (`review.html#sozler/10/on-iki-hakikat/hakikat-09`).
 - **İşaretler:**
-  - Her düğüme ve pasaja "✓ doğru / ✗ hatalı / ✎ not" konabilir. İşaretler tarayıcının `localStorage`'ında saklanır (`risale-review:sozler`).
-  - Ağaçta, altında hatalı işaret bulunan düğümler kırmızı noktayla gösterilir.
-  - "Notları dışa aktar" düğmesi `sozler-kontrol-notlari.json` dosyasını indirir. Her kayıtta `id`, `target` (node/passage/missing), `ref`, `status`, `note` bulunur. Bu dosya ayrıştırma düzeltmelerinin girdisidir.
-  - "İçe aktar" ile başka bir tarayıcıya ya da bilgisayara taşınabilir.
-- **Uyarı:** Kimlikler ayrıştırma kurallarına bağlıdır. `parse.py` değişince bazı kimlikler değişebilir; eski işaretler dışa aktarımda `target: "missing"` olarak görünür.
+  - Her düğüme ve pasaja "✓ doğru / ✗ hatalı / ✎ not" konabilir; `localStorage`'da saklanır.
+  - Dışa aktarılan JSON'da her kayıtta `id`, `target`, `ref`, `status`, `note` bulunur. Bu dosya ayrıştırma düzeltmelerinin girdisidir.
+  - "İçe aktar" ile başka bir tarayıcıya taşınabilir.
+  - Kimlikler ayrıştırma kurallarına bağlıdır; değişen kimlikler `target: "missing"` olarak görünür.
 
-## MCP araçları (MVP)
+## MCP araçları (ilk sürüm)
 
-1. **`get_outline(book: str = "sozler", depth: int = 2)`**
-   Kitabın başlık ağacını döndürür.
-2. **`get_passage(id: str, context: int = 0)`**
-   Bir pasajı `ref` ve sayfa bilgisiyle döndürür. `context > 0` ise önceki ve sonraki pasajları da ekler. Hâşiyeleri de içerir.
-3. **`search_passages(query: str, limit: int = 20)`**
-   FTS5 ile BM25 sıralı kelime araması yapar. Her sonuç için `id`, `ref`, kısa önizleme ve sayfa bilgisi döner.
+1. **`list_books()`**: eserleri ve gruplarını döndürür.
+2. **`get_outline(book: str, depth: int = 2)`**: eserin başlık ağacını döndürür.
+3. **`get_passage(id: str, context: int = 0)`**: bir cümleyi ya da cümle aralığını `ref` ve `incipit` ile döndürür. `context > 0` ise komşu cümleleri de ekler. Hâşiyeleri de içerir.
+4. **`search(query: str, book: str | None = None, limit: int = 20)`**: cümle düzeyinde FTS5/BM25 araması. Her sonuçta `id`, `ref`, `incipit` ve kısa önizleme döner.
+5. **`find_sentence(node: str, incipit: str)`**: kullanıcının alıntıladığı ilk kelimelerden cümleyi bulur.
 
-Sonraki aşamalar (MVP'de yapma): `find_topic` (etiket tabanlı konu fihristi), anlamsal arama, atıf doğrulama.
+Sonraki aşamalar: `find_topic` (etiket tabanlı konu fihristi), anlamsal arama, atıf doğrulama.
 
 ### Sunucu talimatları (`instructions` alanı)
 Sunucu, istemci modele şu kuralları iletmeli:
-- Risale'ye ait her iddiayı araç sonuçlarındaki `ref` ile göster. Adres uydurma.
-- Araç sonuçlarında bulunmayan bilgiyi Risale'ye atfetme. Bulamazsan bunu açıkça söyle.
+- Eserlere ait her iddiayı araç sonuçlarındaki `ref` ile göster. Adres uydurma.
+- Kullanıcıya cümleyi numarasıyla değil, `incipit` ile göster.
+- Araç sonuçlarında bulunmayan bilgiyi eserlere atfetme. Bulamazsan bunu açıkça söyle.
 - Metnin söylediği ile senin yorumunu ayrı başlıklar altında ver.
 
 ## Çalışma kuralları
 
 - Aşamaları sırayla yap. Her aşamanın sonunda **dur**, bulguları özetle ve onay bekle.
-- Ayrıştırma kurallarını tahmine dayanarak yazma. Önce PDF'i incele, örnek sayfaları göster.
+- Ayrıştırma kurallarını tahmine dayanarak yazma. Önce kaynağın ham verisini incele, örnekleri göster.
 - Her aşamada kullanıcının elle doğrulayabileceği bir çıktı üret (örnek JSON, başlık ağacı, sayım tablosu).
 - Belirsiz durumlarda en makul varsayımı yap, ama bunu açıkça belirt.
+- Kaynak sitelere nazik davran: isteklerin arasında bekle, ham yanıtı kaydet, aynı sayfayı ikinci kez indirme.
 - Kod tanımlayıcıları İngilizce, açıklamalar ve kullanıcıyla iletişim Türkçe.
 
 ## Aşamalar
 
-1. **PDF inceleme:** Yapıyı, fontları, başlık örüntülerini, üstbilgileri ve hâşiyeleri raporla. Ayrıştırma kurallarını öner.
-2. **Ayrıştırma:** PDF'ten hiyerarşik JSON üret. Başlık ağacını PDF'in fihristiyle karşılaştır.
-3. **Veritabanı:** SQLite ve FTS5 kurulumu, normalizasyon, birim testler.
-4. **MCP sunucusu:** Üç aracı yaz. MCP Inspector ile test et.
-5. **Uçtan uca test:** `claude mcp add` ile bağla, `tests/golden_questions.md` sorularıyla dene. Adreslerin doğruluğunu elle kontrol et.
+Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılması ve kontrol arayüzü. Aşama 1 ve 2 tamamlandı.
+
+1. **İndirici:** Katalog, nazik istemci, dört sitenin indiricisi ve bütünlük doğrulaması. Önce Sözler pilotu, ardından bütün eserler toplu indirildi:
+   `uv run python -m risale_mcp.fetch get --all --site <site>` (her site ayrı süreçte; günlükler `data/raw/logs/`).
+2. **Ayrıştırıcı:** erisale blokları → `data/books/<eser>.json` (başlık ağacı, paragraflar, hâşiyeler): `uv run python -m risale_mcp.build --all`. erisale'deki 27 eser ayrıştırıldı; Sözler PDF çıktısıyla karşılaştırıldı, PDF kodu silindi.
+3. **Cümleler:** Cümle bölücü ve altın örnek testleri. Kontrol arayüzüne kitap seçici, cümle numaraları ve cümle düzeyinde işaretler eklenir. Kullanıcı Sözler'i kontrol eder.
+4. **Diğer eserler:**
+   - risale.online, risaleoku ve Yeni Asya kaynaklarının ayrıştırıcıları (`books/` altında, aynı modelle).
+   - Mecmuaların ana ciltlere eşlenmesi.
+   - Bulunamayan eserler için kaynak araması.
+5. **Veritabanı:** SQLite ve FTS5 kurulumu, normalizasyon, birim testler.
+6. **MCP sunucusu:** Araçları yaz. MCP Inspector ile test et.
+7. **Uçtan uca test:** `claude mcp add` ile bağla, `tests/golden_questions.md` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.

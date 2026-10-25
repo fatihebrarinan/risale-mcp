@@ -1,0 +1,90 @@
+{
+  "book": "sozler",
+  "exported_at": "2026-10-24T15:03:00.236Z",
+  "items": [
+    {
+      "id": "sozler/1/p005",
+      "target": "passage",
+      "ref": "Sözler › Birinci Söz › ¶5",
+      "status": null,
+      "note": "Sonraki \"Evet, nasıl ki görsen\" paragrafıyla birleşsin.\n"
+    },
+    {
+      "id": "sozler/1/p006",
+      "target": "passage",
+      "ref": "Sözler › Birinci Söz › ¶6",
+      "status": null,
+      "note": "Evet, havada dalların'dan sonrası yeni paragraf olsun."
+    },
+    {
+      "id": "sozler/1/p009",
+      "target": "passage",
+      "ref": "Sözler › Birinci Söz › ¶9",
+      "status": null,
+      "note": "bir padişahın kıymettar 'dan sonrası yeni paragraf."
+    },
+    {
+      "id": "sozler/makam-02/p003",
+      "target": "passage",
+      "ref": "Sözler › Ondördüncü Lem'anın İkinci Makamı › ¶3",
+      "status": null,
+      "note": "Bir öncek, paragrafla birleşsin."
+    },
+    {
+      "id": "sozler/makam-02/p005",
+      "target": "passage",
+      "ref": "Sözler › Ondördüncü Lem'anın İkinci Makamı › ¶5",
+      "status": null,
+      "note": "bir önceki paragraf ile birleşsin."
+    },
+    {
+      "id": "sozler/makam-02/sir-02/p002",
+      "target": "passage",
+      "ref": "Sözler › Ondördüncü Lem'anın İkinci Makamı › İkinci Sır › ¶2",
+      "status": null,
+      "note": "bir sonraki paragraf ile birleşsin\n"
+    },
+    {
+      "id": "sozler/makam-02/sir-03/p007",
+      "target": "passage",
+      "ref": "Sözler › Ondördüncü Lem'anın İkinci Makamı › Üçüncü Sır › ¶7",
+      "status": null,
+      "note": "bir önceki paragraf ile birleştir"
+    },
+    {
+      "id": "sozler/makam-02/sir-03/p008",
+      "target": "passage",
+      "ref": "Sözler › Ondördüncü Lem'anın İkinci Makamı › Üçüncü Sır › ¶8",
+      "status": null,
+      "note": "evet, zemin yüzünde den sonr yeni paragraf."
+    },
+    {
+      "id": "sozler/makam-02/sir-04/p004",
+      "target": "passage",
+      "ref": "Sözler › Ondördüncü Lem'anın İkinci Makamı › Dördüncü Sır › ¶4",
+      "status": null,
+      "note": "bir önceki paragraf ile birleştir"
+    },
+    {
+      "id": "sozler/makam-02/sir-04/p005",
+      "target": "passage",
+      "ref": "Sözler › Ondördüncü Lem'anın İkinci Makamı › Dördüncü Sır › ¶5",
+      "status": null,
+      "note": "İşte bismillah'dan sonra yeni paragraf."
+    },
+    {
+      "id": "sozler/makam-02/sir-05/p002",
+      "target": "passage",
+      "ref": "Sözler › Ondördüncü Lem'anın İkinci Makamı › Beşinci Sır › ¶2",
+      "status": null,
+      "note": "1. paragraf ile birleştir\n"
+    },
+    {
+      "id": "sozler/makam-02/sir-05/p003",
+      "target": "passage",
+      "ref": "Sözler › Ondördüncü Lem'anın İkinci Makamı › Beşinci Sır › ¶3",
+      "status": null,
+      "note": "1. paragraf ile birleştir."
+    }
+  ]
+}
