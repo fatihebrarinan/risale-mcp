@@ -218,8 +218,9 @@ def _insert_book(conn: sqlite3.Connection, book: dict, suras: SuraNames, report:
     _insert_arabic(conn, book, suras, report)
     conn.executemany("INSERT INTO notes VALUES (?, ?, ?, ?)",
                      [(work, n["node_id"], n.get("after"), n["text"]) for n in book.get("notes", [])])
-    conn.executemany("INSERT INTO gaps VALUES (?, ?, ?, ?)",
-                     [(work, g["node_id"], g.get("after"), g["missing_blocks"]) for g in book.get("gaps", [])])
+    conn.executemany("INSERT INTO gaps VALUES (?, ?, ?, ?, ?)",
+                     [(work, g["node_id"], g.get("after"), g["missing_blocks"], g.get("note"))
+                      for g in book.get("gaps", [])])
     c = report.counts
     c["nodes"] += len(book["outline"])
     c["paragraphs"] += len(book["paragraphs"])
@@ -250,7 +251,7 @@ def _verify(conn: sqlite3.Connection, report: BuildReport) -> None:
     # Mecmua ana cildin kimliklerine işaret eder; ana cilt yeniden üretilip kimlikleri değiştiyse
     # mecmua da yeniden eşlenmelidir (`build --all`).
     for table, column, target in (("paragraph_sources", "source_paragraph_id", "paragraphs"),
-                                  ("node_sources", "source_node_id", "nodes")):
+                                  ("node_sources", "source_node_id", "nodes"), ("gaps", "after", "paragraphs")):
         dangling = conn.execute(f"SELECT {column} FROM {table} WHERE {column} NOT IN (SELECT id FROM {target})"
                                 " LIMIT 3").fetchall()
         if dangling:

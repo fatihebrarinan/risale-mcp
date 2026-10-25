@@ -18,6 +18,8 @@ Kısmı" (ortalı satır). Katalogdaki bölüm seçici `nutuklar` ya da `makalel
   kaynak bilgisi) ve `notes`'a gider. İşaretin ayraçları ("[*]", "(*)") metne girmez.
 - "***" ayraçları ve sayfa başındaki nâşir girişi atılır. Birkaç kelimelik "Said…" ya da
   "Bediüzzaman" satırı imzadır.
+- Yeni Asya baskısında olup bu baskıda bulunmayan parçalar (`EDITION_GAPS`, iki baskının
+  karşılaştırılmasından) `gaps`'e yazılır; metinleri alınmaz.
 """
 
 import re
@@ -47,6 +49,32 @@ _MARK_AFTER = re.compile(r"^\s*\]")
 _AUTHOR = re.compile(r"\s*\(Müellif\)\s*$")
 _SIGNATURE = re.compile(r"^(?:Molla |Bediüzzaman |)Said\b|^Bediüzzaman$")
 _SEPARATOR = re.compile(r"[\s*]+")
+
+
+@dataclass(frozen=True)
+class EditionGap:
+    """Bu baskıda olmayan parça. Yeri: `after` (önceki paragrafın ilk kelimeleri) ya da düğümün başı/sonu."""
+    node: str                     # eser içindeki düğüm: "makale-18"
+    paragraphs: int               # Yeni Asya'daki paragraf sayısı (paragrafın bir kısmıysa 1)
+    note: str
+    after: str | None = None
+    at_start: bool = False
+
+
+EDITION_GAPS: dict[str, tuple[EditionGap, ...]] = {
+    "makalat": (
+        EditionGap("makale-11", 1, "Yeni Asya baskısındaki Hâtime (“Benim perişan sözlerimin…”) bu baskıda yok.",
+                   after="İstanbul’u Avrupa’ya kıyas etmişler"),
+        EditionGap("makale-12/madde-08", 1, "Yeni Asya baskısındaki “Hem de, muvazene-i devleti muhafaza eden "
+                   "milliyetimiz İslâmiyet’ten başka yoktur.” cümlesi bu baskıda yok.",
+                   after="İleride tavaif-i mülük temelleri"),
+        EditionGap("makale-17", 1, "Yeni Asya baskısındaki “Biraderim Başmuharrir Bey’e” (“Edipler edepli "
+                   "olmalıdırlar…”) bu baskıda yok.", at_start=True),
+        EditionGap("makale-18", 3, "Yeni Asya baskısındaki “Asker Kardeşlerime” (Serbestî, 152) bu baskıda yok."),
+        EditionGap("makale-18", 1, "Yeni Asya baskısındaki “Umum Zabitanımıza!” (Serbestî, 154; “Geçenki "
+                   "makale-i âciziyede…”) bu baskıda yok."),
+    ),
+}
 
 
 def unpresent(text: str) -> str:
@@ -328,4 +356,18 @@ def parse_work(work: Work, root: Path) -> Book:
         else:
             writer.paragraph(current, block)
         i += 1
+    for gap in EDITION_GAPS.get(work.slug, ()):
+        book.gaps.append(_gap_record(book, gap))
     return book
+
+
+def _gap_record(book: Book, gap: EditionGap) -> dict:
+    node_id = f"{book.slug}/{gap.node}"
+    own = [p for p in book.paragraphs if p["node_id"] == node_id and p["kind"] != "hasiye"]
+    if gap.after is not None:
+        after = next((p["id"] for p in own if p["text"].startswith(gap.after)), None)
+        if after is None:
+            raise ValueError(f"{node_id}: eksik parçanın yeri bulunamadı ({gap.after!r})")
+    else:
+        after = None if gap.at_start or not own else own[-1]["id"]
+    return {"node_id": node_id, "missing_blocks": gap.paragraphs, "after": after, "note": gap.note}

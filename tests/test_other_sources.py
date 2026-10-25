@@ -146,3 +146,16 @@ def test_kastamonur_makaleler_has_own_footnotes_and_publication_line(tmp_path):
     assert article["subtitle"] == "Şark ve Kürdistan Gazetesi Sayı: 1 19 Teşrin-i Sani 1324"
     assert [p["text"] for p in book["paragraphs"]] == ["Gazeteler iki vazife deruhte etmiştir."]
     assert [n["text"] for n in book["notes"]] == ["Makalenin nâşir notu."]                 # bölümün kendi listesi
+
+
+def test_kastamonur_edition_gap_is_anchored_to_paragraph(tmp_path):
+    from risale_mcp.books.model import Book
+    book = Book("makalat", "Makalat", {})
+    node = book.add_node(book.root, "makale-11", "Yaşasın Şeriat-ı Ahmedî")
+    book.add_paragraph(node, "paragraph", Text("İstanbul’u Avrupa’ya kıyas etmişler."))
+    book.add_paragraph(node, "paragraph", Text("Yaşasın Şeriat-ı Garrâ!.."))
+    gap = kastamonur.EditionGap("makale-11", 1, "Hâtime yok.", after="İstanbul’u Avrupa’ya")
+    assert kastamonur._gap_record(book, gap) == {"node_id": "makalat/makale-11", "missing_blocks": 1,
+                                                 "after": "makalat/makale-11/p001", "note": "Hâtime yok."}
+    end = kastamonur._gap_record(book, kastamonur.EditionGap("makale-11", 3, "Makale yok."))
+    assert end["after"] == "makalat/makale-11/p002"                                      # düğümün sonu

@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -154,12 +154,14 @@ CREATE TABLE notes (
     text    TEXT NOT NULL
 );
 
--- Kaynakta bulunamayan bloklar; metin uydurulmaz.
+-- Kaynakta bulunamayan bloklar; metin uydurulmaz. `after` NULL ise düğümün başındadır.
+-- `note`: eksiğin açıklaması (ör. başka bir baskıda olup bu baskıda olmayan makale).
 CREATE TABLE gaps (
     work           TEXT NOT NULL REFERENCES works(slug),
     node_id        TEXT NOT NULL,
     after          TEXT,
-    missing_blocks INTEGER NOT NULL
+    missing_blocks INTEGER NOT NULL,
+    note           TEXT
 );
 
 -- Arama dizinleri: satır numarası `sentences.seq` / `nodes.seq`. Metin önceden normalleştirilir;

@@ -139,7 +139,7 @@ Her eser `data/books/<eser>.json` dosyasıdır (`uv run python -m risale_mcp.bui
   - mecmuada ana cilde eşlenmiş paragrafta `text` yoktur; `source` ana ciltteki paragraf kimlikleridir (baskılar paragrafları farklı bölebildiği için birden çok olabilir). Bu paragrafların cümlesi de ana ciltte durur.
   - hâşiyede: `parent_id` (paragraf, hâşiye ya da başlıktaysa düğüm), `offset` (işaretin metindeki konumu), `anchor` (bağlı olduğu cümle; başlıktaysa düğüm), kimlik `<paragraf>/h1`
 - **`notes`**: kaynağın editör notları; metne girmez.
-- **`gaps`**: kaynakta bulunamayan bloklar `{node_id, missing_blocks, after}`. Metin uydurulmaz.
+- **`gaps`**: kaynakta bulunamayan bloklar `{node_id, missing_blocks, after, note?}` (`after` yoksa düğümün başı). Metin uydurulmaz. Makalat'ta Yeni Asya baskısında olup Âsâr-ı Bedîiyye'de olmayan 5 parça da burada (`books/kastamonur.py`, `EDITION_GAPS`).
 - **`sentences`**: atıf birimi, kitap sırasıyla. Alanlar:
   - `id`, ör. `sozler/10/on-iki-hakikat/hakikat-09/c032`; hâşiye cümlesi `…/c032/h1/c002`
   - `node_id`, `paragraph_id`, `n` (düğüm içindeki, hâşiyede hâşiye içindeki sıra)
