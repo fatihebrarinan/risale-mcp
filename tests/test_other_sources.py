@@ -98,7 +98,7 @@ KASTAMONUR_PAGE = """<html><body><div class="a2a">paylaş</div>
 <p><strong>Prens Sabahaddin Beyin Fikrine Cevap</strong> (*)[*<sup class="reference">[1]</sup>]</p>
 <p>Hayat ittihaddadır.[**<sup class="reference">[2]</sup>] Zira <span dir="rtl">ﻣَﻦْ ﻛَﺎﻥَ ﻟِﻠَّﻪِ</span> hürriyet var.</p>
 <h3><strong>Birinci Hakikat</strong></h3>
-<p>Timarhaneyi kabul ettim.[Haşiye<sup class="reference">[3]</sup>]</p>
+<p>Timarhaneyi kabul ettim.[Haşiye<sup class="reference">[3]</sup>] Rezil olur.[2<sup class="reference">[1]</sup>]</p>
 <p>Bediüzzaman</p>
 <ol class="references">
 <li id="cite_note-1"><span>Misbah’da başka türlü yazılmış.</span></li>
@@ -134,7 +134,8 @@ def test_kastamonur_nutuk(tmp_path):
     assert main["text"][main["arabic"][0]["start"]:main["arabic"][0]["end"]] == "مَنْ كَانَ لِلَّهِ"
     hasiye = [p for p in book["paragraphs"] if p["kind"] == "hasiye"]
     assert [h["text"] for h in hasiye] == ["Kadınlaşmış erkek…", "İhsan-ı şahâneyi kabul etmedim."]   # (Müellif), [Haşiye]
-    assert [n["text"] for n in book["notes"]] == ["Misbah’da başka türlü yazılmış."]          # nâşir notu, metne girmez
+    assert [n["text"] for n in book["notes"]] == ["Misbah’da başka türlü yazılmış."] * 2      # nâşir notu, metne girmez
+    assert texts["nutuk/nutuk-02/hakikat-01/p001"]["text"] == "Timarhaneyi kabul ettim. Rezil olur."   # "[2[1]]" de işarettir
     assert texts["nutuk/nutuk-02/hakikat-01/p002"]["kind"] == "signature"
 
 

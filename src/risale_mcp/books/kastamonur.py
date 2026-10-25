@@ -12,7 +12,8 @@ Kısmı" (ortalı satır). Katalogdaki bölüm seçici `nutuklar` ya da `makalel
   biçimleri standart harflere çevrilir (NFKC). "ﷺ", "﷽" gibi kelime bitişikleri korunur.
   Meali verilmediği için türü "arabi"dir. Bölüm başlarındaki Osmanlıca başlık ("ﻧﻄﻘﻠﺮ") atılır.
 - Dipnotlar `<sup class="reference">` ile işaretlidir, metni bölümün sonundaki listededir;
-  numaralar her bölümde baştan başlar. Metinde "[Haşiye]" diye işaretli ya da "(Müellif)" ile
+  numaralar her bölümde baştan başlar. İşaret "[*[12]]", "[Haşiye[12]]" ya da baskının kendi
+  numarasıyla "[2[12]]" biçimindedir. Metinde "[Haşiye]" diye işaretli ya da "(Müellif)" ile
   biten dipnot müellifin hâşiyesidir. Diğerleri nâşirin notudur (Misbah nüshasıyla farklar,
   kaynak bilgisi) ve `notes`'a gider. İşaretin ayraçları ("[*]", "(*)") metne girmez.
 - "***" ayraçları ve sayfa başındaki nâşir girişi atılır. Birkaç kelimelik "Said…" ya da
@@ -41,7 +42,7 @@ _ARTICLE = re.compile(r"(Nutuk|Makale)\s*[–-]\s*(\d+)")
 _PUBLICATION = re.compile(r"\bGazete(si)?\b|\bSayı\b|\bNo:|\b1[23]\d\d\b|\b19\d\d\b|Bu makale|Âsâr-ı Bediiyye|"
                           r"^(Volkan|İkdam|Mizân|Serbestî|Sebil-ür Reşad)$")
 _PUBLICATION_WORDS = 20
-_MARK_BEFORE = re.compile(r"\s*(?:\(\*\)\s*)?\[\s*(\*+|Haşiye)\s*$")
+_MARK_BEFORE = re.compile(r"\s*(?:\(\*\)\s*)?\[\s*(\*+|Haşiye|\d+)\s*$")   # "[*", "[**", "[Haşiye", "[2" (baskının numarası)
 _MARK_AFTER = re.compile(r"^\s*\]")
 _AUTHOR = re.compile(r"\s*\(Müellif\)\s*$")
 _SIGNATURE = re.compile(r"^(?:Molla |Bediüzzaman |)Said\b|^Bediüzzaman$")
