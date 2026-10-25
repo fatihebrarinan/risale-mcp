@@ -27,7 +27,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 
 from risale_mcp.books.model import ArabicSpan, Book, Node, Text, TextBuilder
-from risale_mcp.catalog import Work
+from risale_mcp.catalog import Group, Work
 from risale_mcp.headings import HeadingInfo, clean_label, local_id, parse_heading, parse_inline_label
 from risale_mcp.normalize import fold, slugify
 from risale_mcp.sources.erisale import BookBlocks
@@ -127,6 +127,8 @@ class _Parser:
                        "sections": list(work.source.sections), "exclude": list(work.source.exclude)},
         })
         self.report = ParseReport()
+        # Mecmuada Söz ile Mektub yan yana durabilir: kimlik numarayla değil türle başlar (soz-10).
+        self.is_mecmua = work.group is Group.MECMUA
         self.urls = {p.slug: p.url for p in source.pages}
         self.missing = set(source.missing)
         self.blocks = [b for b in source.blocks if work.source.includes(b["page"])]
@@ -245,7 +247,7 @@ class _Parser:
             info = parse_heading(toc_title)
         slug_source = title if re.search(r"[a-z]", slugify(title)) else (toc_title or title)
         node = self.book.add_node(
-            parent, local_id(info, slug_source, top_level=parent is self.book.root), title,
+            parent, local_id(info, slug_source, top_level=parent is self.book.root and not self.is_mecmua), title,
             type=info.type, number=info.number, heading=f"H{level}", subtitle=subtitle,
             toc_title=toc_title, url=self.urls.get(block["page"]))
         self.stack.append((level, node))

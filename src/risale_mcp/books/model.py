@@ -52,6 +52,9 @@ class TextBuilder:
         self.footnotes: list[FootnoteMark] = []
         self._arabic_key: object = None  # son Arapça parçanın kaynaktaki kimliği
 
+    def is_empty(self) -> bool:
+        return not self._length
+
     def _ends_with_space(self) -> bool:
         return bool(self._parts) and self._parts[-1].endswith(" ")
 

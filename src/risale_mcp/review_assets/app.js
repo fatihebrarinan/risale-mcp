@@ -401,7 +401,21 @@ function flash(hasiyeler, label) {
   setTimeout(() => target.classList.remove("flash"), 1200);
 }
 
+/** Ana cilde eşlenmiş paragraf: metin orada durur, burada yalnızca bağlantısı gösterilir. */
+const canonicalLink = (paragraphId) => {
+  const node = paragraphId.replace(/\/p\d+(\/h\d+)*$/, "");
+  return el("a", { href: `${node.split("/")[0]}.html#${node}` }, paragraphId);
+};
+
+function renderSourcePassage(passage) {
+  const links = passage.source.flatMap((pid, i) => (i ? [", ", canonicalLink(pid)] : [canonicalLink(pid)]));
+  return el("article", { class: "passage source", id: passage.id },
+    el("div", { class: "pnum" }, `¶${paragraphNumber(passage)}`),
+    el("div", { class: "ptext" }, "Metni ana ciltte: ", ...links));
+}
+
 function renderPassage(passage) {
+  if (passage.source) return renderSourcePassage(passage);
   const article = el("article", { class: `passage kind-${passage.kind}`, id: passage.id });
   const hasiyeler = (hasiyeOf.get(passage.id) ?? []).map(renderHasiye);
   const { panel, toggle } = sentencePanel();
@@ -440,6 +454,11 @@ function renderHeader(id) {
   return el("header", { class: "node-head" },
     el("h2", {}, node.title),
     node.subtitle ? el("p", { class: "subtitle" }, node.subtitle) : null,
+    node.sources ? el("p", { class: "node-sources" }, "Ana ciltteki karşılığı: ",
+      ...node.sources.flatMap((id, i) => {
+        const link = el("a", { href: `${id.split("/")[0]}.html#${id}` }, id);
+        return i ? [", ", link] : [link];
+      })) : null,
     el("div", { class: "node-id" }, code, copyBtn),
     el("div", { class: "node-review" },
       el("span", { class: "label" }, "Bu başlığın yeri ve adı:"),
@@ -556,6 +575,7 @@ function buildBookPicker() {
   select.addEventListener("change", () => (location.href = `${select.value}.html`));
 }
 
+document.body.classList.toggle("lang-ar", DATA.language === "ar");
 Marks.load();
 Marks.reanchor();
 buildBookPicker();

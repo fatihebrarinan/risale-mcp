@@ -23,7 +23,7 @@ from risale_mcp.paths import BOOKS_DIR, INTERIM_DIR, ROOT
 OUT_DIR = INTERIM_DIR / "review"
 ASSETS = Path(__file__).resolve().parent / "review_assets"
 
-OUTLINE_FIELDS = ("id", "title", "subtitle", "parent_id", "ref")
+OUTLINE_FIELDS = ("id", "title", "subtitle", "parent_id", "ref", "sources")
 
 
 def available_books() -> list[dict]:
@@ -42,7 +42,10 @@ def to_view(book: dict, books: list[dict]) -> dict:
 
     passages = []
     for p in book["paragraphs"]:            # hâşiye, bağlı olduğu kayıttan sonra gelir
-        record = {"id": p["id"], "node_id": p["node_id"], "kind": p["kind"], "text": p["text"]}
+        # Ana cilde eşlenmiş paragrafın metni yoktur; `source` ana ciltteki paragraflardır.
+        record = {"id": p["id"], "node_id": p["node_id"], "kind": p["kind"], "text": p.get("text", "")}
+        if "source" in p:
+            record["source"] = p["source"]
         if p["kind"] == "hasiye":
             siblings = hasiyeler[p["parent_id"]]
             k = siblings.index(p["id"]) + 1
@@ -56,6 +59,7 @@ def to_view(book: dict, books: list[dict]) -> dict:
     return {
         "book": book["work"],
         "title": book["title"],
+        "language": book.get("language", "tr"),
         "books": books,
         "outline": [{f: n[f] for f in OUTLINE_FIELDS if n.get(f) is not None} for n in book["outline"]],
         "passages": passages,

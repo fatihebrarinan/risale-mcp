@@ -54,6 +54,7 @@ class Work:
     source: SourceRef | None
     status: Status = Status.READY
     note: str = ""
+    language: str = "tr"            # metnin dili: "tr" ya da "ar" (Arapça eserler sağdan sola)
 
 
 def _erisale(book: str, *sections: str, exclude: tuple[str, ...] = ()) -> SourceRef:
@@ -68,8 +69,8 @@ _E, _A, _M, _H = Group.ESKI_SAID, Group.ANA_CILT, Group.MECMUA, Group.HIZB
 
 WORKS: tuple[Work, ...] = (
     # --- Eski Said dönemi
-    Work("kizil-icaz", "Kızıl İcaz", _E, None, Status.MISSING, "Arapça mantık eseri."),
-    Work("talikat", "Ta'likat", _E, None, Status.MISSING, "Arapça mantık eseri."),
+    Work("kizil-icaz", "Kızıl İcaz", _E, None, Status.MISSING, "Arapça mantık eseri.", language="ar"),
+    Work("talikat", "Ta'likat", _E, None, Status.MISSING, "Arapça mantık eseri.", language="ar"),
     Work("divan-i-harb-i-orfi", "Divan-ı Harb-i Örfî", _E, _ilk_donem("divan-i-harb-i-orfi")),
     Work("nutuk", "Nutuk", _E, SourceRef(Site.YENIASYA, "eskisaiddonemieserleri", ("nutuk",)),
          note="Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde."),
@@ -90,7 +91,7 @@ WORKS: tuple[Work, ...] = (
     Work("suaat-i-marifetin-nebi", "Şuaat-ı Marifetü'n-Nebi", _E, _ilk_donem("suaat-i-marifetin-nebi-asm")),
     Work("nokta", "Nokta", _E, _ilk_donem("nokta-risalesi")),
     Work("el-mesnevi-el-arabi", "el-Mesnevî el-Arabî en-Nurî", _E, SourceRef(Site.RISALEOKU, "ar_mesnevi"),
-         Status.VERIFY, "Arapça asıl; baskısı doğrulanmalı."),
+         note="Arapça asıl; İhsan Kasım es-Sâlihî tahkiki (Külliyât-ı Resâili'n-Nûr 6).", language="ar"),
     Work("mesnevi-i-nuriye", "Mesnevî-i Nuriye", _E, _erisale("mesnevi-i-nuriye"),
          note="el-Mesnevî el-Arabî'nin Türkçesi."),
     Work("nurun-ilk-kapisi", "Nur'un İlk Kapısı", _E, _ilk_donem("nurun-ilk-kapisi")),
@@ -119,12 +120,11 @@ WORKS: tuple[Work, ...] = (
     Work("genclik-rehberi", "Gençlik Rehberi", _M, SourceRef(Site.RISALE_ONLINE, "genclik-rehberi")),
     Work("hanimlar-rehberi", "Hanımlar Rehberi", _M, SourceRef(Site.RISALE_ONLINE, "hanimlar-rehberi")),
     # --- Hizbler
-    Work("hizbul-kuranil-muazzam", "Hizbü'l-Kur'ani'l-Muazzam", _H, SourceRef(Site.RISALEOKU, "hizbkuran")),
+    Work("hizbul-kuranil-muazzam", "Hizbü'l-Kur'ani'l-Muazzam", _H, SourceRef(Site.RISALEOKU, "hizbkuran"), language="ar"),
     Work("hizb-i-nuri", "Hizbü'l-Ekber-i Nurî (Hizb-i Nurî)", _H, None, Status.MISSING,
-         "Kısmen Lem'alar'da."),
+         "Kısmen Lem'alar'da.", language="ar"),
     Work("hizbu-envaril-hakaik", "Hizbü Envari'l-Hakaiki'n-Nuriye (Büyük Cevşen)", _H,
-         SourceRef(Site.RISALEOKU, "hizbulhakaik"), Status.VERIFY,
-         "risaleoku'da ayrıca 'cevsen' kitabı da var; hangisinin karşılık geldiği doğrulanmalı."),
+         SourceRef(Site.RISALEOKU, "hizbulhakaik"), note="Cevşenü'l-Kebîr bu cildin içindedir.", language="ar"),
 )
 
 _BY_SLUG = {work.slug: work for work in WORKS}

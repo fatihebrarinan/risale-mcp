@@ -259,3 +259,9 @@ button:hover, .button:hover { border-color: var(--accent); }
 .sentence-panel code { font-size: 0.78rem; color: var(--muted); }
 .hasiye .sentence-panel { grid-column: auto; }
 
+/* ---------------------------------------------------------------- Arapça eserler, mecmualar */
+.lang-ar .ptext { direction: rtl; text-align: right; font-size: 1.2rem; }
+.passage.source .ptext { font-family: var(--sans); font-size: 0.85rem; color: var(--muted); }
+.passage.source a, .node-sources a { font-family: var(--sans); font-size: 0.8rem; }
+.node-sources { margin: 4px 0; font-size: 0.85rem; color: var(--muted); }
+

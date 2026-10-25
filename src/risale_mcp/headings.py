@@ -25,7 +25,7 @@ KNOWN_TYPES = {fold(t): t for t in [
     "Lâhika", "Fasıl", "Bahis", "Âyet", "Nota", "Devâ", "Cinayet", "Ricâ", "Muhal", "Madde",
     "Emare", "Telvih", "Meslek", "Cümle", "Me'haz", "Desise", "Katre", "Menzil", "İkaz", "Alâmet",
     "Şehadet", "Kelâm", "Maden", "Düstur", "Nevi", "Hadise", "Şube", "Umde", "Varta", "Şık",
-    "Keramet", "Hatıra",
+    "Keramet", "Hatıra", "Vehim", "Cinayet",
 ]}
 # Ek alınca ses düşen türler: "Remzi", "Sırrı", "Kısmı", "Vechi", "Aslı".
 KNOWN_TYPES |= {fold(stem): KNOWN_TYPES[fold(t)] for stem, t in [

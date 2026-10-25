@@ -58,6 +58,10 @@ def fetch_book(book: str, root: Path, client: PoliteClient, *,
                    book_id=book_id, page_count=page_count)
 
 
+def read_fihrist(book: str, root: Path) -> list[dict]:
+    return json.loads(read_raw(root / book / "fihrist.json"))
+
+
 def load_paragraphs(book: str, root: Path) -> list[dict]:
     manifest = json.loads((root / book / "manifest.json").read_text(encoding="utf-8"))
     paragraphs = []

@@ -19,14 +19,34 @@ from functools import cache
 
 from risale_mcp import checklist, sentences
 from risale_mcp.books import erisale as erisale_parser
+from risale_mcp.books import risale_online as risale_online_parser
+from risale_mcp.books import risaleoku as risaleoku_parser
+from risale_mcp.books import yeniasya as yeniasya_parser
+from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
 from risale_mcp.books.model import Book
-from risale_mcp.catalog import WORKS, Site, Status, Work, get_work
+from risale_mcp.catalog import WORKS, Group, Site, Status, Work, get_work
 from risale_mcp.paths import BOOKS_DIR, INTERIM_DIR, RAW_DIR, ROOT
 from risale_mcp.sources import erisale
 
 OUTLINE_DIR = INTERIM_DIR / "outline"
 HASIYE_ID = re.compile(r"/h\d+/")
-PARSEABLE_SITES = {Site.ERISALE}
+PARSEABLE_SITES = set(Site)
+
+
+@cache
+def _canonical_index() -> CanonicalIndex:
+    """Ana ciltlerin eşleme dizini; ana ciltler mecmualardan önce üretildiği için diskten okunur."""
+    return CanonicalIndex.load(BOOKS_DIR)
+
+
+def mapping_report(report: MappingReport) -> list[str]:
+    total = report.mapped + report.unique
+    return [
+        f"  ana cilde eşlenen   : {report.mapped}/{total} paragraf ({report.mapped / max(total, 1):.0%}) "
+        f"{dict(report.sources.most_common(6))}",
+        f"  mecmuaya özgü       : {report.unique} paragraf, {report.unique_hasiye} hâşiye",
+        *(f"      {s}" for s in report.unique_samples[:6]),
+    ]
 
 
 @cache
@@ -47,19 +67,25 @@ def outline_text(book: Book) -> str:
     return "\n".join(lines) + "\n"
 
 
-def report(book: Book, parse: erisale_parser.ParseReport, sentence_list: list[dict]) -> list[str]:
+def report(book: Book, sentence_list: list[dict]) -> list[str]:
     nodes = book.nodes()
     kinds = Counter(p["kind"] for p in book.paragraphs)
     arabic = sum(len(p.get("arabic", [])) for p in book.paragraphs)
     has_text = {p["node_id"] for p in book.paragraphs}
     empty = [n.id for n in nodes if not n.children and n.id not in has_text]
-    lines = [
-        f"{book.slug}: {len(nodes)} düğüm (satır içi {parse.inline_nodes}), "
-        f"{len(book.paragraphs) - kinds['hasiye']} paragraf, {kinds['hasiye']} hâşiye, {arabic} Arapça parça",
+    return [
+        f"{book.slug}: {len(nodes)} düğüm, {len(book.paragraphs) - kinds['hasiye']} paragraf, "
+        f"{kinds['hasiye']} hâşiye, {arabic} Arapça parça",
         f"  paragraf türleri     : {dict(kinds.most_common())}",
         f"  cümle                : {len(sentence_list)} (hâşiyelerde {sum(bool(HASIYE_ID.search(s['id'])) for s in sentence_list)})",
         f"  metinsiz yaprak düğüm: {len(empty)} {empty[:5]}",
         f"  aynı adlı kardeş     : {len(book.renamed)} {book.renamed[:5]}",
+    ]
+
+
+def erisale_report(book: Book, parse: erisale_parser.ParseReport) -> list[str]:
+    lines = [
+        f"  satır içi düğüm      : {parse.inline_nodes}",
         f"  eşsiz BookOnly       : {len(parse.unmatched_book_only)} {parse.unmatched_book_only[:5]}",
         f"  başlıksız açıklama   : {parse.stray_descriptions}",
         f"  editör notu          : {len(book.notes)}",
@@ -70,16 +96,37 @@ def report(book: Book, parse: erisale_parser.ParseReport, sentence_list: list[di
     return lines
 
 
+def parse(work: Work) -> tuple[Book, list[str]]:
+    """Eserin kaynağına göre ayrıştırıcıyı seçer: (eser, ayrıştırıcıya özgü rapor satırları)."""
+    if work.source.site is Site.ERISALE:
+        book, parse_report = erisale_parser.parse_work(work, _erisale_book(work.source.book))
+        return book, erisale_report(book, parse_report)
+    if work.source.site is Site.RISALE_ONLINE:
+        return risale_online_parser.parse_work(work, RAW_DIR / Site.RISALE_ONLINE), []
+    if work.source.site is Site.RISALEOKU:
+        return risaleoku_parser.parse_work(work, RAW_DIR / Site.RISALEOKU), []
+    if work.source.site is Site.YENIASYA:
+        return yeniasya_parser.parse_work(work, RAW_DIR / Site.YENIASYA), []
+    raise ValueError(f"{work.source.site} için ayrıştırıcı yok")
+
+
+def needs_mapping(work: Work) -> bool:
+    """Mecmualar ve son çare kaynaktaki eserler: metni ana ciltlerde olan paragraflar oraya işaret eder."""
+    return work.group is Group.MECMUA or work.source.site is Site.YENIASYA
+
+
 def build_work(work: Work) -> None:
-    book, parse = erisale_parser.parse_work(work, _erisale_book(work.source.book))
+    book, extra = parse(work)
     BOOKS_DIR.mkdir(parents=True, exist_ok=True)
     OUTLINE_DIR.mkdir(parents=True, exist_ok=True)
     data = book.to_json()
+    if needs_mapping(work):
+        extra += mapping_report(map_to_canonical(data, _canonical_index()))
     data["sentences"] = sentences.segment(data)
     out = BOOKS_DIR / f"{work.slug}.json"
     out.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     (OUTLINE_DIR / f"{work.slug}.txt").write_text(outline_text(book), encoding="utf-8")
-    print("\n" + "\n".join(report(book, parse, data["sentences"])))
+    print("\n" + "\n".join(report(book, data["sentences"]) + extra))
     print(f"  yazıldı: {out.relative_to(ROOT)}", flush=True)
 
 
@@ -96,6 +143,8 @@ def main() -> None:
         sys.exit("Eser slug'ı ya da --all verin.")
 
     works = [w for w in WORKS if _parseable(w)] if args.all else [get_work(s) for s in args.works]
+    # Eşleme dizini ana ciltlerden kurulur: onlar önce üretilmeli.
+    works = [w for w in works if not needs_mapping(w)] + [w for w in works if needs_mapping(w)]
     for work in works:
         if not _parseable(work):
             reason = "ertelendi" if work.status is Status.DEFERRED else "bu kaynağın ayrıştırıcısı Aşama 4'te yazılacak"

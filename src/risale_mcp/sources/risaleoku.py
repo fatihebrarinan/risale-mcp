@@ -33,6 +33,12 @@ def page_count(index_html: str) -> int:
 
 
 def page_text(page_html: str) -> str:
+    """Sayfanın yalnızca metin bölgesindeki düz metin (okuyucu araçları ve menü hariç)."""
+    start = page_html.find('<div id="dim-bottom"')
+    if start >= 0:
+        start = page_html.find("</div>", page_html.find("</div>", start) + 6) + 6
+        end = page_html.find('<input type="hidden" id="baslangic"')
+        page_html = page_html[start:end if end >= 0 else None]
     return " ".join(html_lib.unescape(_TAG.sub(" ", page_html)).split())
 
 
@@ -70,6 +76,6 @@ def check_book(book: str, root: Path) -> tuple[list[str], bool]:
     lines = [
         f"risaleoku/{book}: {total} sayfa, {chars:,} karakter",
         f"  eksik sayfa: {len(missing)} {missing[:20]}",
-        f"  boş sayfa  : {len(empty)} {empty[:20]}",
+        f"  boş sayfa  : {len(empty)} {empty[:20]} (baskıdaki boş arka yüzler; hata sayılmaz)",
     ]
-    return lines, not (missing or empty)
+    return lines, not missing

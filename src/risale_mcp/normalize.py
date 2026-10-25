@@ -77,3 +77,17 @@ def fold(text: str) -> str:
     s = unicodedata.normalize("NFC", unicodedata.normalize("NFD", s).replace("̂", ""))
     s = re.sub(r"['’‘ʼ`]", "", s)
     return re.sub(r"\s+", " ", s).strip()
+
+
+def match_words(text: str) -> list[str]:
+    """Baskılar arası eşleme için kelimeler: Türkçe küçük harf, bütün işaretler (şapka, uzatma,
+    Türkçe harflerin çengeli, Arapça hareke) ve noktalama atılmış.
+    'Risâle-i Nûr’un' ve 'Risale-i Nur’un' aynı kelimelere iner: ['risale', 'i', 'nurun']."""
+    s = unicodedata.normalize("NFD", tr_lower(text))
+    s = "".join(ch for ch in s if not unicodedata.category(ch).startswith("M"))
+    s = re.sub(r"['’‘ʼ`]", "", s).translate(_ARABIC_LETTER_VARIANTS)
+    return re.findall(r"\w+", s)
+
+
+# Baskılar Arapça harfleri farklı kodlayabilir: Farsça ye/kef, elif maksure, elif çeşitleri.
+_ARABIC_LETTER_VARIANTS = str.maketrans({"ی": "ي", "ى": "ي", "ک": "ك", "ٱ": "ا", "أ": "ا", "إ": "ا", "آ": "ا"})

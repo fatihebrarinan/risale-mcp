@@ -53,7 +53,12 @@ def _parsed_status(work: Work) -> str:
     if not path.exists():
         return TODO
     book = json.loads(path.read_text(encoding="utf-8"))
-    return f"{DONE} {len(book['outline'])} düğüm, {len(book['paragraphs'])} paragraf"
+    mains = [p for p in book["paragraphs"] if p["kind"] != "hasiye"]
+    status = f"{DONE} {len(book['outline'])} düğüm, {len(mains)} paragraf, {len(book.get('sentences', []))} cümle"
+    mapped = sum("source" in p for p in mains)
+    if mapped:
+        status += f"; %{100 * mapped // len(mains)} ana cilde eşlendi"
+    return status
 
 
 def rows() -> list[Row]:
@@ -71,7 +76,7 @@ def render(table: list[Row]) -> str:
         "> Eserlerin listesi ve kaynakları: `src/risale_mcp/catalog.py`.",
         "",
         f"- **Ham veri:** {raw_done}/{len(table)} eser indirildi.",
-        f"- **Ayrıştırma (Aşama 2):** {parsed}/{len(table)} eser.",
+        f"- **Ayrıştırma:** {parsed}/{len(table)} eser.",
         f"- **Kaynağı bulunamayan:** {', '.join(missing) or 'yok'}.",
         "",
         f"İşaretler: {DONE} tamam · {PARTIAL} kısmen · {TODO} yapılmadı · {NONE} kaynak yok · {PAUSED} ertelendi",

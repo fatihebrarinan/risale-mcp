@@ -1,9 +1,10 @@
 """Aşama 3: cümleler. Atıf birimi cümledir.
 
 Bölme kuralları (CLAUDE.md "Cümle kuralları"):
-- Cümle `.` `!` `?` `…` `‥` (ve ardından gelebilecek kapanış tırnağı/parantezi) ile biter;
+- Cümle `.` `!` `?` `؟` `…` `‥` (ve ardından gelebilecek kapanış tırnağı/parantezi) ile biter;
   ancak ardından boşluk ve şunlardan biri gelirse: büyük harf, açılış tırnağı ya da
-  parantezi, Arapça bir parça ("…gördüm. اَيُحِبُّ…") ya da madde numarası ("2. Yâhut").
+  parantezi, Arapça bir parça ya da harf ("…gördüm. اَيُحِبُّ…"; Arapça nesirde her cümle
+  böyle başlar) ya da madde numarası ("2. Yâhut").
 - `;` ve `:` cümleyi bitirmez ("Hiç mümkün müdür ki;", "Elcevab:").
 - Kısaltma ve baş harflerden sonra bölünmez: "Hz.", "Dr.", "M. Kemâl", "(İ.G.Z.)";
   madde numarasından ("1.") sonra da bölünmez.
@@ -28,7 +29,8 @@ from risale_mcp.books.model import REF_SEPARATOR
 from risale_mcp.normalize import fold
 from risale_mcp.paths import BOOKS_DIR, ROOT
 
-_END = re.compile(r"[.!?…‥]+[”’\"»)\]']*(?=\s)")
+_END = re.compile(r"[.!?؟…‥]+[”’\"»)\]']*(?=\s)")
+_ARABIC_LETTER = re.compile(r"[\u0600-\u06FF]")
 _OPENERS = "“\"‘'«("
 _LIST_MARKER = re.compile(r"\d{1,2}\.\s+\S")
 _INITIALS = re.compile(r"(?:[A-ZÇĞİÖŞÜÂÎÛ]\.)*[A-ZÇĞİÖŞÜÂÎÛ]")
@@ -65,7 +67,8 @@ def _no_break_before(text: str, dot: int) -> bool:
 
 def _starts_sentence(text: str, i: int, arabic: list[bool]) -> bool:
     ch = text[i]
-    return ch.isupper() or ch in _OPENERS or arabic[i] or bool(_LIST_MARKER.match(text, i))
+    return (ch.isupper() or ch in _OPENERS or arabic[i] or bool(_ARABIC_LETTER.match(ch))
+            or bool(_LIST_MARKER.match(text, i)))
 
 
 def split(text: str, arabic: list[dict] | None = None) -> list[tuple[int, int]]:
@@ -138,6 +141,9 @@ def segment(book: dict) -> list[dict]:
     hasiye_prefix: dict[str, tuple[str, str, int]] = {}      # hâşiye paragrafı -> (önek, bağlantı, k)
 
     for p in book["paragraphs"]:
+        if "text" not in p:                     # mecmuada ana cilde eşlenmiş: cümleleri orada
+            spans_of[p["id"]] = []
+            continue
         if p["kind"] == "hasiye":
             parent = p["parent_id"]
             anchor = parent if parent in node_refs else (_containing(spans_of[parent], p["offset"]) or p["node_id"])
