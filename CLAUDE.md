@@ -47,7 +47,7 @@ Kullanım kişiseldir. Uygulama olarak yayımlanırsa kaynak sitelerden izin al�
 - Dil: Python 3.11+
 - Ortam ve bağımlılıklar: `uv`
 - HTTP: standart kütüphane (`urllib`), `sources/http.py` içindeki nazik istemci (istekler arası bekleme, yeniden deneme). Varsayılan bekleme 5 sn; risaleoku için 10 sn.
-- Veritabanı: SQLite + FTS5 (kelime araması). Anlamsal arama ilk sürümde **yok**.
+- Veritabanı: SQLite + FTS5 (kelime araması). Anlamsal arama ilk sürümde **yok**; şema ona hazırdır (bkz. Veritabanı).
 - MCP: resmi Python SDK'sı (`mcp` paketi, FastMCP). Not: `@modelcontextprotocol/sdk` TypeScript paketidir, kullanmıyoruz.
 - Test: `pytest` + MCP Inspector + Claude Code'a `claude mcp add` ile bağlayarak elle deneme.
 - Platform: Linux Mint.
@@ -97,8 +97,10 @@ risale-mcp/
 │   ├── normalize.py    # Türkçe metin normalizasyonu, sıra sayıları, slug
 │   ├── review_ui.py    # Kontrol arayüzü: kitap JSON'u → review.html
 │   ├── review_assets/  # Arayüzün template.html, style.css, app.js dosyaları
-│   ├── build_db.py     # Aşama 4: JSON → SQLite
-│   └── server.py       # Aşama 5: MCP sunucusu
+│   ├── db.py           # Aşama 5: veritabanı şeması ve salt okunur bağlantı
+│   ├── build_db.py     # Aşama 5: JSON → SQLite CLI'ı (sûre/âyet çözümü, doğrulama)
+│   ├── search.py       # Aşama 5: sorgu dili → FTS5, cümle ve başlık araması
+│   └── server.py       # Aşama 6: MCP sunucusu
 └── tests/
     ├── test_catalog.py
     ├── test_erisale.py
@@ -111,6 +113,7 @@ risale-mcp/
     ├── test_sentences.py
     ├── golden/sentences_sozler.json  # kilitli altın örnekler (Sözler'den seçilmiş düğümler)
     ├── test_review_ui.py
+    ├── test_build_db.py
     └── golden_questions.md   # Kullanıcının yazdığı test soruları
 ```
 
@@ -180,6 +183,18 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve son çare
 - **Hâşiyeler** ana metinden ayrılır ve geçtikleri cümleye bağlanır.
 - **Arapça** korunur ve işaretlenir; erisale'nin âyet/hadis/Arapça ayrımı saklanır.
 
+## Veritabanı (Aşama 5)
+
+`uv run python -m risale_mcp.build_db` komutu `data/books/*.json` dosyalarından `data/risale.db`'yi her seferinde sıfırdan kurar (≈17 sn). Asıl kaynak JSON'lardır, veritabanı elle düzenlenmez. Kurulum geçici dosyaya yapılır, sayılar JSON'larla tutmazsa veritabanı yazılmaz. Şemanın açıklaması `db.py`'de, kurulum kuralları `build_db.py`'nin başındadır.
+
+- **Tablolar:** `works` (katalogdaki bütün eserler; JSON'u olmayanlar `built = 0`), `nodes` (`ord`..`last_ord` alt ağaçtır), `node_sources`, `paragraphs` (eşlenmiş mecmua paragrafında `text` NULL), `paragraph_sources`, `sentences`, `arabic` (cümleye bağlı; âyette `sura`, `ayah_start`, `ayah_end`), `sura_names`, `notes`, `gaps`, `meta`. Arama dizinleri `sentences_fts` ve `nodes_fts` (başlık, alt başlık, içindekiler adı).
+- **Kimlikler:** `id` JSON'daki kalıcı kimliktir; `seq` yalnızca bu veritabanında geçerli tamsayı anahtardır ve okuma sırasını verir.
+- **Normalizasyon:** Dizin ve sorgu `normalize.search_words` biçimindedir. Şapka, çengel (ş/s, ç/c, ğ/g, ö/o, ü/u), Arapça hareke, kesme ve tatvil yok sayılır; ayrıca **ı = i** sayılır (klavyesiz "isik" → "ışık"). Biçim değişirse `db.NORMALIZATION` artırılır.
+- **Sorgu dili** (`search.py`): kelimeler (hepsi geçmeli), `"tam ifade"`, `haşr*` (kelime başı), `OR`, `-kelime` / `NOT`, `NEAR(a b, 5)`. Sıralama BM25'tir; kısa cümleler öne çıkma eğilimindedir.
+- **Mecmualar:** Ana cilde eşlenen paragrafların cümlesi yoktur. Bu yüzden aynı cümle aramada iki kez çıkmaz.
+- **Âyetler:** İki biçim çözülür: "Bakara Sûresi, 2:255" ve Hayrat'ın "Sûre-i Bakara, 255" biçimi. Sûre adlarının numaraları, veride numarasıyla geçen yazılışlardan öğrenilir. Birden çok âyet sayılmışsa ilk aralık alınır. 4.001 âyetin hepsi çözüldü.
+- **Anlamsal aramaya hazırlık:** Vektörler ayrı bir dosyada `(model, sentences.hash)` anahtarıyla tutulacak. Böylece veritabanı yeniden kurulsa da kaybolmaz; cümle metni değişmedikçe geçerli kalır. Sonuçlar `sentences.hash` üzerinden birleşir ve kelime aramasıyla aynı `search.Hit` biçiminde döner. Birleştirme RRF gibi sıraya dayalı olacak, çünkü puanlar yalnızca kendi araması içinde karşılaştırılabilir.
+
 ## Taksimat kontrol arayüzü
 
 Ayrıştırılan başlık ağacını, metni ve cümle bölmesini elle kontrol etmek içindir. `data/books/<eser>.json` okur.
@@ -230,13 +245,13 @@ Sunucu, istemci modele şu kuralları iletmeli:
 
 ## Aşamalar
 
-Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılması ve kontrol arayüzü. Aşama 1, 2 ve 3 tamamlandı (cümle kontrolü kullanım sırasında sürecek); Aşama 4 kullanıcının kontrolünü bekliyor.
+Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılması ve kontrol arayüzü. Aşama 1–4 tamamlandı (cümle ve eşleme kontrolü kullanım sırasında sürecek); Aşama 5 kullanıcının kontrolünü bekliyor.
 
 1. **İndirici:** Katalog, nazik istemci, dört sitenin indiricisi ve bütünlük doğrulaması. Önce Sözler pilotu, ardından bütün eserler toplu indirildi:
    `uv run python -m risale_mcp.fetch get --all --site <site>` (her site ayrı süreçte; günlükler `data/raw/logs/`).
 2. **Ayrıştırıcı:** erisale blokları → `data/books/<eser>.json` (başlık ağacı, paragraflar, hâşiyeler): `uv run python -m risale_mcp.build --all`. erisale'deki 27 eser ayrıştırıldı; Sözler PDF çıktısıyla karşılaştırıldı, PDF kodu silindi.
 3. **Cümleler:** Cümle bölücü (`sentences.py`, `build` içinde çalışır) ve altın örnek testleri; kontrol arayüzüne kitap seçici, cümle numaraları ve cümle düzeyinde işaretler eklendi. Kullanıcı Sözler'i kontrol eder.
 4. **Diğer eserler:** risale.online, risaleoku ve Yeni Asya ayrıştırıcıları; mecmuaların ana ciltlere eşlenmesi; bulunamayan eserler için kaynak araması. 38/43 eser ayrıştırıldı (`ESERLER.md`).
-5. **Veritabanı:** SQLite ve FTS5 kurulumu, normalizasyon, birim testler.
+5. **Veritabanı:** SQLite ve FTS5 kurulumu, normalizasyon, sorgu dili, âyet dizini, birim testler: `uv run python -m risale_mcp.build_db`.
 6. **MCP sunucusu:** Araçları yaz. MCP Inspector ile test et.
 7. **Uçtan uca test:** `claude mcp add` ile bağla, `tests/golden_questions.md` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.

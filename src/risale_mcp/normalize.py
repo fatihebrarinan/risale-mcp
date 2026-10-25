@@ -91,3 +91,12 @@ def match_words(text: str) -> list[str]:
 
 # Baskılar Arapça harfleri farklı kodlayabilir: Farsça ye/kef, elif maksure, elif çeşitleri.
 _ARABIC_LETTER_VARIANTS = str.maketrans({"ی": "ي", "ى": "ي", "ک": "ك", "ٱ": "ا", "أ": "ا", "إ": "ا", "آ": "ا"})
+
+# Aramada ayrıca: ı = i (Türkçe klavyesiz yazım) ve Arapça uzatma çizgisi (tatvil) yok sayılır.
+_SEARCH_FOLD = str.maketrans({"ı": "i", "ـ": None})
+
+
+def search_words(text: str) -> list[str]:
+    """Arama dizini ve sorgular için kelimeler: `match_words` ile aynı, ek olarak ı = i.
+    'Haşr’i', 'hasri' ve 'HAŞRİ' aynı kelimeye iner; 'ışık' 'isik' ile bulunur."""
+    return [w for w in (w.translate(_SEARCH_FOLD) for w in match_words(text)) if w]

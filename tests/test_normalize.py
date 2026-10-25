@@ -2,7 +2,7 @@
 
 import pytest
 
-from risale_mcp.normalize import fold, ordinal_word, parse_ordinal, slugify, tr_lower, tr_title
+from risale_mcp.normalize import fold, ordinal_word, parse_ordinal, search_words, slugify, tr_lower, tr_title
 
 
 @pytest.mark.parametrize("word,n", [
@@ -34,3 +34,11 @@ def test_fold_removes_only_circumflex_and_apostrophes():
 def test_slugify():
     assert slugify("Hâtime") == "hatime"
     assert slugify("Mes'ele") == slugify("Mes‘ele") == "mesele"
+
+
+def test_search_words_folds_marks_and_dotless_i():
+    assert search_words("Haşr’i") == search_words("hasri") == search_words("HAŞRİ") == ["hasri"]
+    assert search_words("ışık İSLÂM") == ["isik", "islam"]
+    assert search_words("Risâle‑i Nûr") == ["risale", "i", "nur"]                   # bölünmez tire
+    assert search_words("اَلْحَمْدُ لِلّٰهِ") == search_words("الحمد لله")             # hareke
+    assert search_words("اللّٰـهُ") == search_words("الله")                          # uzatma çizgisi

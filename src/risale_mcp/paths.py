@@ -7,3 +7,4 @@ DATA_DIR = ROOT / "data"
 RAW_DIR = DATA_DIR / "raw"          # ham kaynak yanıtları
 INTERIM_DIR = DATA_DIR / "interim"  # ara çıktılar
 BOOKS_DIR = DATA_DIR / "books"      # her eserin nihai JSON'u
+DB_PATH = DATA_DIR / "risale.db"    # JSON'lardan kurulan SQLite veritabanı
