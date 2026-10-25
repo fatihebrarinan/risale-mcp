@@ -1,7 +1,7 @@
 [project]
 name = "risale-mcp"
 version = "0.1.0"
-description = "Add your description here"
+description = "Sentence-level, citable MCP access to the works of Bediüzzaman Said Nursî"
 readme = "README.md"
 authors = [
     { name = "fatihebrarinan", email = "fatihebrarinan@protonmail.com" }
@@ -10,6 +10,9 @@ requires-python = ">=3.11"
 dependencies = [
     "mcp[cli]>=2.3.0",
 ]
+
+[project.scripts]
+risale-mcp = "risale_mcp.server:main"
 
 [build-system]
 requires = ["uv_build>=0.13.5,<0.14.0"]

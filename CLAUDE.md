@@ -104,7 +104,8 @@ risale-mcp/
 │   ├── db.py           # Aşama 5: veritabanı şeması ve salt okunur bağlantı
 │   ├── build_db.py     # Aşama 5: JSON → SQLite CLI'ı (sûre/âyet çözümü, doğrulama)
 │   ├── search.py       # Aşama 5: sorgu dili → FTS5, cümle ve başlık araması
-│   └── server.py       # Aşama 6: MCP sunucusu
+│   ├── library.py      # Aşama 6: veritabanı üzerindeki okuma işleri (MCP'den bağımsız)
+│   └── server.py       # Aşama 6: MCP sunucusu (araçlar, kaynaklar, hazır komutlar)
 └── tests/
     ├── test_catalog.py
     ├── test_erisale.py
@@ -117,7 +118,9 @@ risale-mcp/
     ├── test_sentences.py
     ├── golden/sentences_sozler.json  # kilitli altın örnekler (Sözler'den seçilmiş düğümler)
     ├── test_review_ui.py
+    ├── conftest.py           # ortak küçük veritabanı (iki elle yazılmış eser)
     ├── test_build_db.py
+    ├── test_server.py
     └── golden_questions.md   # Kullanıcının yazdığı test soruları
 ```
 
@@ -224,22 +227,42 @@ xdg-open data/interim/review/index.html
   - "İçe aktar" ile başka bir tarayıcıya taşınabilir; eski, eser başına dışa aktarılmış dosyaları da okur.
   - Cümle işaretleri incipit ve düğümle birlikte saklanır. Kimlik kayarsa işaret, açılışta aynı düğümde (yoksa bütün eserde tek eşleşen) incipit'ten yeniden bağlanır. Bağlanamayan `target: "missing"` olarak görünür.
 
-## MCP araçları (ilk sürüm)
+## MCP sunucusu (Aşama 6)
 
-1. **`list_books()`**: eserleri ve gruplarını döndürür.
-2. **`get_outline(book: str, depth: int = 2)`**: eserin başlık ağacını döndürür.
-3. **`get_passage(id: str, context: int = 0)`**: bir cümleyi ya da cümle aralığını `ref` ve `incipit` ile döndürür. `context > 0` ise komşu cümleleri de ekler. Hâşiyeleri de içerir.
-4. **`search(query: str, book: str | None = None, limit: int = 20)`**: cümle düzeyinde FTS5/BM25 araması. Her sonuçta `id`, `ref`, `incipit` ve kısa önizleme döner.
-5. **`find_sentence(node: str, incipit: str)`**: kullanıcının alıntıladığı ilk kelimelerden cümleyi bulur.
+`src/risale_mcp/server.py` (resmi Python SDK 2.x, `MCPServer`; v1'deki adı FastMCP). Veritabanı işleri `library.py`'dedir; sunucu yalnızca araç, kaynak ve hazır komut katmanıdır. Sunucunun adı `risale`, adresleri `risale://…`.
 
-Sonraki aşamalar: `find_topic` (etiket tabanlı konu fihristi), anlamsal arama, atıf doğrulama.
+```
+uv run risale-mcp                                       # stdio (Claude Desktop / Claude Code başlatır)
+uv run risale-mcp --transport streamable-http           # yerel HTTP 127.0.0.1:8000/mcp (kimlik doğrulamasız)
+npx @modelcontextprotocol/inspector uv run risale-mcp   # MCP Inspector
+```
 
-### Sunucu talimatları (`instructions` alanı)
-Sunucu, istemci modele şu kuralları iletmeli:
-- Eserlere ait her iddiayı araç sonuçlarındaki `ref` ile göster. Adres uydurma.
-- Kullanıcıya cümleyi numarasıyla değil, `incipit` ile göster.
-- Araç sonuçlarında bulunmayan bilgiyi eserlere atfetme. Bulamazsan bunu açıkça söyle.
-- Metnin söylediği ile senin yorumunu ayrı başlıklar altında ver.
+Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
+```json
+{"mcpServers": {"risale": {"command": "/home/fatih/.local/bin/uv",
+  "args": ["--directory", "/home/fatih/Belgeler/Coding/Projects/risale-mcp", "run", "risale-mcp"]}}}
+```
+
+- **Dil:** Modelin okuduğu her şey (talimatlar, araç ve parametre açıklamaları, hazır komutlar, hata iletileri) İngilizcedir; model kullanıcıya onun dilinde cevap verir. Kod açıklamaları Türkçe.
+- **Sonuçlar** sıkıştırılmış JSON metnidir (SDK'nın girintili JSON'u uzun metinde boşa token harcar). Bütün araçlar salt okunur (`read_only_hint`).
+- **Veritabanı yenilenince** (`build`/`build_db`) sunucu yeniden başlatılmadan bir sonraki çağrıda yeni dosyayı açar.
+- **Hatalar:** bilinmeyen kimlik, geçersiz sorgu gibi düzeltilebilir hatalar modele açıklamalı ileti olarak gider (`ToolError`).
+
+| Araç | İşi |
+|---|---|
+| `list_works(group?)` | Eserler, kimlikleri, grupları, boyutları; metni bulunamayanlar `available: false` |
+| `get_outline(section, depth=2)` | Başlık ağacı; her düğümde alt ağacın ana metin cümle sayısı, derinlik sınırında `subsections` |
+| `read_section(section, cursor?, max_words=1500)` | Bölümü alt bölümleriyle kitap sırasıyla okur: başlıklar (`ref`), paragraflar (cümle `id` + metin), hâşiyeler (`hasiye_of`), âyet/hadis meal ve kaynağı, eksikler (`gap`). Paragraf sınırında sayfalar, `next_cursor` ile sürer. Mecmuada eşlenmiş paragraf ana cildin cümleleriyle (`canonical`) gelir. |
+| `get_passage(id, context=0)` | Cümle ya da aralık (`…/c010..c015`), `ref` ve `incipit` ile; bağlı hâşiyeler ve âyet mealleri |
+| `search(query, work?, group?, limit=20, offset=0)` | Cümle araması (`search.py` sorgu dili); toplam, eser başına sayı, eşleşen başlıklar |
+| `find_sentence(incipit, scope?)` | İlk kelimelerden cümle (işaretsiz; son kelime eksik olabilir) |
+| `find_ayah(sura, ayah?)` | Âyetin geçtiği cümleler; sûre numarası ya da adı |
+
+- **Kaynaklar** (kullanıcının sohbete eklediği bağlam): `risale://works`, `risale://outline/{work}`, `risale://text/{+section}` (ör. `risale://text/sozler/10`; numaralı cümlelerle Markdown).
+- **Hazır komutlar** (İngilizce adlar): `topic_survey(topic, scope?)` konunun eserlerde geçtiği yerler (2. hedef), `text_and_commentary(question)` "metin ne diyor" ve "yorum" ayrı (3. hedef), `discuss(topic)` müzakere, `self_test(section)` bölümden soru sorup cevabı metinle denetler, `lesson_plan(subject)` atıflı ders planı.
+- **Sunucu talimatları:** atıfı araç sonucundan al ve uydurma; kullanıcıya cümleyi numarasıyla değil yol + incipit ile göster; bulamazsan söyle; metni ve yorumu ayır; önce ara, sonra bağlamı oku.
+
+Sonraki aşamalar: konu fihristi, anlamsal arama (vektörler `sentences.hash` ile), atıf doğrulama.
 
 ## Çalışma kuralları
 
@@ -252,7 +275,7 @@ Sunucu, istemci modele şu kuralları iletmeli:
 
 ## Aşamalar
 
-Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılması ve kontrol arayüzü. Aşama 1–4 tamamlandı (cümle ve eşleme kontrolü kullanım sırasında sürecek); Aşama 5 kullanıcının kontrolünü bekliyor.
+Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılması ve kontrol arayüzü. Aşama 1–5 tamamlandı (cümle ve eşleme kontrolü kullanım sırasında sürecek); Aşama 6 kullanıcının kontrolünü bekliyor.
 
 1. **İndirici:** Katalog, nazik istemci, dört sitenin indiricisi ve bütünlük doğrulaması. Önce Sözler pilotu, ardından bütün eserler toplu indirildi:
    `uv run python -m risale_mcp.fetch get --all --site <site>` (her site ayrı süreçte; günlükler `data/raw/logs/`).
@@ -260,5 +283,5 @@ Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılmas�
 3. **Cümleler:** Cümle bölücü (`sentences.py`, `build` içinde çalışır) ve altın örnek testleri; kontrol arayüzüne kitap seçici, cümle numaraları ve cümle düzeyinde işaretler eklendi. Kullanıcı Sözler'i kontrol eder.
 4. **Diğer eserler:** risale.online, risaleoku ve kastamonur.com (önce Yeni Asya) ayrıştırıcıları; mecmuaların ana ciltlere eşlenmesi; bulunamayan eserler için kaynak araması. 38/43 eser ayrıştırıldı (`ESERLER.md`).
 5. **Veritabanı:** SQLite ve FTS5 kurulumu, normalizasyon, sorgu dili, âyet dizini, birim testler: `uv run python -m risale_mcp.build_db`.
-6. **MCP sunucusu:** Araçları yaz. MCP Inspector ile test et.
-7. **Uçtan uca test:** `claude mcp add` ile bağla, `tests/golden_questions.md` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.
+6. **MCP sunucusu:** `library.py` + `server.py`; araçlar, kaynaklar, hazır komutlar; süreç içi istemciyle testler. MCP Inspector ile elle deneme.
+7. **Uçtan uca test:** Claude Desktop'a (ya da `claude mcp add` ile Claude Code'a) bağla, `tests/golden_questions.md` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.
