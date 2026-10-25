@@ -231,3 +231,12 @@ def test_no_page_numbers_and_lemeat_separate(sozler):
     raw = json.dumps(sozler, ensure_ascii=False)
     assert "pageNumber" not in raw and "page_start" not in raw
     assert not any(n["id"].startswith("sozler/lemeat") for n in sozler["outline"])
+
+
+def test_signature_parts_are_lines():
+    book, _ = parse(
+        ("H1", [regular("Birinci Söz")]),
+        ("Signature", [regular("Umum Risale‑i Nur Şâkirdleri nâmına"), {"type": "Bold", "children": [text("Said Nursî")]}]),
+        ("H1", [regular("İkinci Söz")]),
+    )
+    assert book.paragraphs[0]["text"] == "Umum Risale‑i Nur Şâkirdleri nâmına\nSaid Nursî"

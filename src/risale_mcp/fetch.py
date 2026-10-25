@@ -78,6 +78,7 @@ def check_erisale(book_id: str) -> bool:
     print(f"  ilk blockIndex   : {book.first_index} (1 beklenir; 0 kitap başlığıdır)")
     print(f"  eksik blockIndex : {len(book.missing)} {book.missing[:20]}")
     print(f"  çelişen blok     : {len(book.conflicts)} {book.conflicts[:20]}")
+    print(f"  çözülemeyen başvuru: {len(book.unresolved)} {book.unresolved[:20]}")
     print(f"  boş sayfa        : {[p.slug for p in book.pages if p.first_block is None]}")
     print(f"  blok türleri     : {dict(top_level.most_common())}")
     print(f"  bütün düğümler   : {dict(types.most_common())}")
@@ -85,7 +86,7 @@ def check_erisale(book_id: str) -> bool:
         n = sum(work.source.includes(p.slug) for p in book.pages)
         print(f"  -> {work.slug}: {n} sayfa")
     print(f"  yazıldı: {out.relative_to(ROOT)}")
-    return not (book.missing or book.conflicts)
+    return not (book.missing or book.conflicts or book.unresolved)
 
 
 @dataclass(frozen=True)

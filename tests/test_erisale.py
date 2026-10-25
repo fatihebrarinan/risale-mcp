@@ -71,3 +71,17 @@ def test_archive_roundtrip(tmp_path):
 
     assert archive.read_manifest("sozler") == pages
     assert extract_blocks(archive.read_page(pages[0]))[0]["blockIndex"] == 0
+
+
+def test_extract_blocks_resolves_text_rows():
+    long_text = "O vakit nev'‑i insan der ki: “Eğer…”"
+    size = format(len(long_text.encode("utf-8")), "x")
+    payload = (
+        '{"bookId":"sozler","blockIndex":7,"sectionIndex":1,"pageNumber":0,"content":{"type":"Paragraph",'
+        '"children":[{"type":"Text","value":"$4c"},{"type":"Text","value":"$$5 kuruş"},{"type":"Text","value":"$9z"}]}}'
+        f"\n4c:T{size},{long_text}5:[]"
+    )
+    html = f'<script>self.__next_f.push([1,{json.dumps(payload)}])</script>'
+    block = extract_blocks(html)[0]
+    values = [c["value"] for c in block["content"]["children"]]
+    assert values == [long_text, "$5 kuruş", "$9z"]       # "$9z" başvuru değil, olduğu gibi kalır

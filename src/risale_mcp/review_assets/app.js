@@ -3,7 +3,6 @@
 const DATA = JSON.parse(document.getElementById("data").textContent);
 const STORAGE_KEY = `risale-review:${DATA.book}`;
 const ROOT = "";
-const TOKEN = /(\(Haşiye-\d+\))/;   // metne yerleştirilmiş hâşiye işareti
 
 // ------------------------------------------------------------------ indeksler
 
@@ -13,6 +12,8 @@ const childrenOf = new Map();   // ebeveyn kimliği -> çocuk kimlikleri
 const passagesOf = new Map();   // düğüm kimliği -> ana pasajlar (sıralı)
 const hasiyeOf = new Map();     // pasaj kimliği -> hâşiyeler
 const passageById = new Map();
+const sentencesOf = new Map();   // paragraf kimliği -> cümleleri (sıralı)
+const sentenceById = new Map();
 
 function pushTo(map, key, value) {
   if (!map.has(key)) map.set(key, []);
@@ -29,6 +30,10 @@ for (const p of DATA.passages) {
   if (p.kind === "hasiye") pushTo(hasiyeOf, p.parent_id, p);
   else pushTo(passagesOf, p.node_id, p);
 }
+for (const s of DATA.sentences) {
+  sentenceById.set(s.id, s);
+  pushTo(sentencesOf, s.p, s);
+}
 
 const children = (id) => childrenOf.get(id) ?? [];
 const ownPassages = (id) => passagesOf.get(id) ?? [];
@@ -41,8 +46,13 @@ function ancestors(id) {
 
 function nodeIdOf(targetId) {
   if (nodes.has(targetId)) return targetId;
-  return passageById.get(targetId)?.node_id ?? null;
+  const paragraphId = sentenceById.get(targetId)?.p ?? targetId;
+  return passageById.get(paragraphId)?.node_id ?? null;
 }
+
+const targetKind = (id) =>
+  nodes.has(id) ? "node" : sentenceById.has(id) ? "sentence" : passageById.has(id) ? "passage" : "missing";
+const refOf = (id) => nodes.get(id)?.ref ?? sentenceById.get(id)?.ref ?? passageById.get(id)?.ref ?? null;
 
 /** Arama için: Türkçe küçük harf, şapkasız, kesme işaretsiz. */
 function fold(text) {
@@ -77,11 +87,31 @@ const Marks = {
     return this.data[id] ?? { status: null, note: "" };
   },
 
+  /** `patch` cümle işaretlerinde bağlamı da taşır: {incipit, node}; kimlik kayarsa işaret bundan bulunur. */
   update(id, patch) {
     const next = { ...this.get(id), ...patch };
     if (!next.status && !next.note) delete this.data[id];
     else this.data[id] = next;
     this.save();
+  },
+
+  /** Kimliği artık bulunmayan cümle işaretlerini aynı düğümde (yoksa bütün eserde tek eşleşen)
+   * incipit'ten yeniden bağlar. Bölme kuralları değişince numaralar kayabilir. */
+  reanchor() {
+    let moved = 0;
+    for (const [id, mark] of Object.entries(this.data)) {
+      if (targetKind(id) !== "missing" || !mark.incipit) continue;
+      const same = (s) => s.incipit.startsWith(mark.incipit) || mark.incipit.startsWith(s.incipit);
+      const inNode = DATA.sentences.filter((s) => same(s) && nodeIdOf(s.id) === mark.node);
+      const anywhere = DATA.sentences.filter(same);
+      const match = inNode.length === 1 ? inNode[0] : anywhere.length === 1 ? anywhere[0] : null;
+      if (!match || this.data[match.id]) continue;
+      this.data[match.id] = { ...mark, incipit: match.incipit, node: nodeIdOf(match.id) };
+      delete this.data[id];
+      moved++;
+    }
+    if (moved) this.save();
+    return moved;
   },
 
   counts() {
@@ -231,7 +261,7 @@ function onMarksChanged() {
 
 // ------------------------------------------------------------------ işaret kontrolleri
 
-function markControls(targetId, { container } = {}) {
+function markControls(targetId, { container, context = {} } = {}) {
   const box = el("div", { class: "marks" });
   const note = el("textarea", { placeholder: "Not (ör. bu başlık bir üst bölüme ait)…" });
   const okBtn = el("button", { type: "button", title: "Doğru" }, "✓ Doğru");
@@ -252,7 +282,7 @@ function markControls(targetId, { container } = {}) {
   }
 
   function setStatus(status) {
-    Marks.update(targetId, { status: Marks.get(targetId).status === status ? null : status });
+    Marks.update(targetId, { ...context, status: Marks.get(targetId).status === status ? null : status });
     render();
     onMarksChanged();
   }
@@ -266,7 +296,7 @@ function markControls(targetId, { container } = {}) {
   });
   note.value = Marks.get(targetId).note;
   note.addEventListener("input", () => {
-    Marks.update(targetId, { note: note.value.trim() ? note.value : "" });
+    Marks.update(targetId, { ...context, note: note.value.trim() ? note.value : "" });
     onMarksChanged();
   });
   note.addEventListener("blur", () => {
@@ -283,46 +313,103 @@ function markControls(targetId, { container } = {}) {
 
 const contentEl = document.getElementById("content");
 
-/** Metni güvenli biçimde (textContent ile) çizer; hâşiye işaretlerini düğmeye çevirir. */
-function renderText(text, onRefClick) {
+function applyStatus(elem, id) {
+  const mark = Marks.get(id);
+  elem.classList.toggle("status-ok", mark.status === "ok");
+  elem.classList.toggle("status-bad", mark.status === "bad");
+  elem.classList.toggle("has-note", Boolean(mark.note));
+}
+
+/** Paragrafı cümle cümle çizer (textContent ile, güvenli). Her cümlenin başında numara
+ * düğmesi, hâşiye işaretleri de metindeki konumlarında düğme olarak durur. */
+function renderSentences(passage, { onRefClick, onSentenceClick }) {
   const frag = document.createDocumentFragment();
-  for (const part of text.split(TOKEN)) {
-    if (!part) continue;
-    if (TOKEN.test(part)) {
-      const label = part.slice(1, -1);
-      frag.append(el("button", { type: "button", class: "ref", onclick: () => onRefClick(label) }, part));
-    } else frag.append(part);
+  const text = passage.text;
+  const sentences = sentencesOf.get(passage.id) ?? [];
+  const markersOf = sentences.map(() => []);
+  for (const h of hasiyeOf.get(passage.id) ?? []) {
+    let i = sentences.findIndex((s) => h.offset <= s.e);      // işaret cümle sonundaki noktadan hemen sonra olabilir
+    if (i < 0) i = sentences.length - 1;
+    if (i >= 0) markersOf[i].push(h);
   }
+
+  let pos = 0;
+  sentences.forEach((s, i) => {
+    if (s.s > pos) frag.append(text.slice(pos, s.s));
+    const span = el("span", { class: "sentence", dataset: { id: s.id } });
+    span.append(el("button", { type: "button", class: "snum", title: s.ref, onclick: () => onSentenceClick(s, span) }, String(s.n)));
+    let cur = s.s;
+    for (const h of markersOf[i]) {
+      const at = Math.min(Math.max(h.offset, s.s), s.e);
+      span.append(text.slice(cur, at), " ",
+        el("button", { type: "button", class: "ref", onclick: () => onRefClick(h.label) }, `(${h.label})`));
+      cur = at;
+    }
+    span.append(text.slice(cur, s.e));
+    applyStatus(span, s.id);
+    frag.append(span);
+    pos = s.e;
+  });
+  if (pos < text.length) frag.append(text.slice(pos));
   return frag;
+}
+
+/** Seçilen cümlenin atfı, incipit'i, kimliği ve işaret düğmeleri. Aynı cümleye yeniden tıklanınca kapanır. */
+function sentencePanel() {
+  const panel = el("div", { class: "sentence-panel", hidden: "" });
+  let current = null;
+  return {
+    panel,
+    toggle(s, span) {
+      current?.classList.remove("selected");
+      if (current === span) {
+        current = null;
+        panel.hidden = true;
+        return;
+      }
+      current = span;
+      span.classList.add("selected");
+      panel.replaceChildren(
+        el("div", { class: "sentence-ref" }, s.ref),
+        el("div", { class: "sentence-incipit" }, `“${s.incipit}…”`),
+        el("code", {}, s.id),
+        markControls(s.id, { container: span, context: { incipit: s.incipit, node: nodeIdOf(s.id) } }));
+      panel.hidden = false;
+    },
+  };
 }
 
 const paragraphNumber = (passage) => Number(passage.id.match(/\/p(\d+)$/)[1]);
 
 function renderHasiye(hasiye) {
   const name = hasiye.ref.split(" › ").pop();
-  const box = el("div", { class: "hasiye", dataset: { label: hasiye.label } },
+  const nested = (hasiyeOf.get(hasiye.id) ?? []).map(renderHasiye);   // hâşiyenin hâşiyesi
+  const { panel, toggle } = sentencePanel();
+  const box = el("div", { class: "hasiye", dataset: { label: hasiye.label ?? "" } },
     el("div", { class: "hasiye-head" }, el("strong", {}, name)),
-    el("div", { class: "ptext" }, renderText(hasiye.text, () => {})));
-  box.append(markControls(hasiye.id, { container: box }),
-    ...(hasiyeOf.get(hasiye.id) ?? []).map(renderHasiye));   // hâşiyenin hâşiyesi
+    el("div", { class: "ptext" }, renderSentences(hasiye, { onRefClick: (label) => flash(nested, label), onSentenceClick: toggle })),
+    panel);
+  box.append(markControls(hasiye.id, { container: box }), ...nested);
   return box;
+}
+
+function flash(hasiyeler, label) {
+  const target = hasiyeler.find((h) => h.dataset.label === label) ?? hasiyeler[0];
+  if (!target) return;
+  target.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  target.classList.add("flash");
+  setTimeout(() => target.classList.remove("flash"), 1200);
 }
 
 function renderPassage(passage) {
   const article = el("article", { class: `passage kind-${passage.kind}`, id: passage.id });
   const hasiyeler = (hasiyeOf.get(passage.id) ?? []).map(renderHasiye);
-
-  const flashHasiye = (label) => {
-    const target = hasiyeler.find((h) => h.dataset.label === label) ?? hasiyeler[0];
-    if (!target) return;
-    target.scrollIntoView({ block: "nearest", behavior: "smooth" });
-    target.classList.add("flash");
-    setTimeout(() => target.classList.remove("flash"), 1200);
-  };
+  const { panel, toggle } = sentencePanel();
 
   article.append(
     el("div", { class: "pnum" }, `¶${paragraphNumber(passage)}`),
-    el("div", { class: "ptext" }, renderText(passage.text, flashHasiye)),
+    el("div", { class: "ptext" }, renderSentences(passage, { onRefClick: (label) => flash(hasiyeler, label), onSentenceClick: toggle })),
+    panel,
     markControls(passage.id, { container: article }),
     ...hasiyeler);
   return article;
@@ -397,7 +484,8 @@ function showWelcome() {
   contentEl.replaceChildren(el("div", { class: "welcome" },
     el("h2", {}, `${DATA.title} taksimat kontrolü`),
     el("p", {}, "Soldaki ağaçtan bir başlık seçin. ← / → tuşlarıyla kitap sırasında gezinebilirsiniz."),
-    el("p", {}, `${order.length} başlık · ${DATA.passages.length} pasaj`)));
+    el("p", {}, `${order.length} başlık · ${DATA.passages.filter((p) => p.kind !== "hasiye").length} paragraf · ${DATA.sentences.length} cümle`),
+    el("p", {}, "Cümlenin başındaki küçük numaraya tıklayınca o cümlenin atfı ve işaret düğmeleri açılır.")));
 }
 
 // ------------------------------------------------------------------ gezinme
@@ -424,17 +512,14 @@ function onKeydown(event) {
 // ------------------------------------------------------------------ dışa / içe aktarma
 
 function exportMarks() {
-  const items = Object.entries(Marks.data).map(([id, mark]) => {
-    const isNode = nodes.has(id);
-    const ref = isNode ? nodes.get(id).ref : passageById.get(id)?.ref;
-    return {
-      id,
-      target: isNode ? "node" : passageById.has(id) ? "passage" : "missing",
-      ref: ref ?? null,
-      status: mark.status,
-      note: mark.note,
-    };
-  });
+  const items = Object.entries(Marks.data).map(([id, mark]) => ({
+    id,
+    target: targetKind(id),
+    ref: refOf(id),
+    incipit: mark.incipit ?? null,
+    status: mark.status,
+    note: mark.note,
+  }));
   items.sort((a, b) => order.indexOf(nodeIdOf(a.id)) - order.indexOf(nodeIdOf(b.id)));
 
   const payload = { book: DATA.book, exported_at: new Date().toISOString(), items };
@@ -449,7 +534,11 @@ async function importMarks(event) {
   if (!file) return;
   try {
     const payload = JSON.parse(await file.text());
-    for (const item of payload.items ?? []) Marks.update(item.id, { status: item.status ?? null, note: item.note ?? "" });
+    for (const item of payload.items ?? []) {
+      const context = item.incipit ? { incipit: item.incipit, node: nodeIdOf(item.id) ?? undefined } : {};
+      Marks.update(item.id, { ...context, status: item.status ?? null, note: item.note ?? "" });
+    }
+    Marks.reanchor();
     onMarksChanged();
     route();
   } catch (err) {
@@ -460,7 +549,16 @@ async function importMarks(event) {
 
 // ------------------------------------------------------------------ başlat
 
+function buildBookPicker() {
+  const select = document.getElementById("book");
+  for (const book of DATA.books) select.append(el("option", { value: book.slug }, book.title));
+  select.value = DATA.book;
+  select.addEventListener("change", () => (location.href = `${select.value}.html`));
+}
+
 Marks.load();
+Marks.reanchor();
+buildBookPicker();
 treeEl.append(buildTreeList(ROOT));
 treeEl.addEventListener("click", onTreeClick);
 document.getElementById("search").addEventListener("input", (e) => applySearch(e.target.value));

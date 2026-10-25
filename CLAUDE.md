@@ -67,7 +67,7 @@ risale-mcp/
 │   │   └── logs/                  # toplu indirme günlükleri
 │   ├── interim/                   # Ara çıktılar
 │   │   ├── erisale/<kitap>.blocks.json   # birleştirilmiş, doğrulanmış bloklar (git'e eklenmez)
-│   │   └── review.html            # kontrol arayüzü
+│   │   ├── review/<eser>.html     # kontrol arayüzü, eser başına bir dosya (git'e eklenmez)
 │   │   ├── outline/<eser>.txt     # elle kontrol için girintili başlık ağacı (git'e eklenmez)
 │   │   └── build.log              # son toplu ayrıştırmanın raporu
 │   ├── books/<eser>.json          # Her eserin JSON'u (git'e eklenmez)
@@ -79,6 +79,7 @@ risale-mcp/
 │   ├── fetch.py        # Aşama 1: indirme ve bütünlük doğrulama CLI'ı
 │   ├── build.py        # Aşama 2: ham veri -> data/books/<eser>.json CLI'ı
 │   ├── headings.py     # Başlık türü, numarası, kimlikteki yerel ad
+│   ├── sentences.py    # Aşama 3: cümle bölücü, incipit, atıflar, altın örnekler
 │   ├── books/
 │   │   ├── model.py          # Kaynaktan bağımsız eser modeli: düğüm, paragraf, hâşiye, Arapça parça
 │   │   └── erisale.py        # erisale blokları -> eser modeli
@@ -101,6 +102,8 @@ risale-mcp/
     ├── test_normalize.py
     ├── test_headings.py
     ├── test_books.py
+    ├── test_sentences.py
+    ├── golden/sentences_sozler.json  # kilitli altın örnekler (Sözler'den seçilmiş düğümler)
     ├── test_review_ui.py
     └── golden_questions.md   # Kullanıcının yazdığı test soruları
 ```
@@ -109,7 +112,7 @@ risale-mcp/
 
 Eserlerin iç yapısı düzensizdir: Söz, Makam, Mebhas, Mesele, Nükte, Hakikat, Esas, Lem'a, İşaret, Remiz, Hâşiye, Zeyl, Mektub, Şuâ vb. Bu yüzden **sabit sütunlar yerine esnek bir başlık yolu** kullanılır.
 
-Her eser `data/books/<eser>.json` dosyasıdır (`uv run python -m risale_mcp.build --all`). Cümleler Aşama 3'te eklenecek.
+Her eser `data/books/<eser>.json` dosyasıdır (`uv run python -m risale_mcp.build --all`).
 
 - **`outline`**: başlık ağacı, kitap sırasıyla. İlk kayıt eserin kendisidir (kök).
   - `id`, `parent_id`, `title` (basılı başlık), `ref` (`Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat`)
@@ -119,13 +122,14 @@ Her eser `data/books/<eser>.json` dosyasıdır (`uv run python -m risale_mcp.bui
   - `kind`: `paragraph`, `arabic` (tamamı Arapça), `poem` (kıta; satırlar `\n` ile), `quote`, `signature`, `table`, `hasiye`
   - `arabic`: metindeki Arapça parçalar `[{start, end, kind, meal, source}]`; `kind` âyet/hadis/arabi/farsi…, `source` âyette "Bakara Sûresi, 2:117"
   - isteğe bağlı: `center` (ortalı), `continued` (araya giren bloktan sonra süren paragraf)
-  - hâşiyede: `parent_id` (paragraf, hâşiye ya da başlıktaysa düğüm), `offset` (işaretin metindeki konumu), kimlik `<paragraf>/h1`
+  - hâşiyede: `parent_id` (paragraf, hâşiye ya da başlıktaysa düğüm), `offset` (işaretin metindeki konumu), `anchor` (bağlı olduğu cümle; başlıktaysa düğüm), kimlik `<paragraf>/h1`
 - **`notes`**: kaynağın editör notları; metne girmez.
 - **`gaps`**: kaynakta bulunamayan bloklar `{node_id, missing_blocks, after}`. Metin uydurulmaz.
-- Sonraki aşamada **`sentences`**: atıf birimi. Alanlar:
-  - `id`, ör. `sozler/10/on-iki-hakikat/hakikat-09/c032`
-  - `node_id`, `paragraph_id`, `n` (düğüm içindeki sıra)
-  - `text` (orijinal, değiştirilmeden), `incipit` (ilk kelimeler)
+- **`sentences`**: atıf birimi, kitap sırasıyla. Alanlar:
+  - `id`, ör. `sozler/10/on-iki-hakikat/hakikat-09/c032`; hâşiye cümlesi `…/c032/h1/c002`
+  - `node_id`, `paragraph_id`, `n` (düğüm içindeki, hâşiyede hâşiye içindeki sıra)
+  - `start`, `end`: paragraf metnindeki konum; `text` bu dilimin kendisidir (değiştirilmez)
+  - `incipit` (ilk kelimeler), `hash` (metnin SHA-1 özetinin ilk 12 hanesi)
   - `ref`, ör. `Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › 32. cümle`
 
 ### Ayrıştırma kuralları (erisale, Aşama 2)
@@ -141,14 +145,17 @@ Ayrıntı `books/erisale.py` başındaki açıklamadadır. Özet:
 - Numaralar her düğümün **kendi metninde** 1'den başlar; alt düğümler kendi sayımını yapar.
 - **Hâşiye cümleleri** kendi içinde numaralanır: `… › 32. cümle › Hâşiye › 2. cümle`. Bir cümlede birden çok hâşiye varsa `Hâşiye 1`, `Hâşiye 2`.
 - **Bölme:**
-  - Cümle şu işaretlerden sonra, ardından büyük harf ya da tırnak gelirse biter: `.` `!` `?` `…` `‥`
+  - Cümle şu işaretlerden (ve ardından gelebilecek kapanış tırnağından) sonra biter: `.` `!` `?` `…` `‥`. Şart: ardından büyük harf, açılış tırnağı ya da parantezi, Arapça bir parça ya da madde numarası ("2. Yâhut") gelmeli.
   - `;` ve `:` cümleyi bitirmez ("Hiç mümkün müdür ki;", "Elcevab:").
-  - Kısaltmalar korunur: (A.S.M.), (asm), (R.A.), Hz. vb.
+  - Kısaltma ve baş harflerden sonra bölünmez: "Hz.", "Dr.", "No.", "M. Kemâl", "(İ.G.Z.)". Madde numarasından ("1.") sonra da bölünmez.
+  - Tırnak içindeki konuşma da aynı kurala uyar; büyük harfle süren her cümlesi ayrı cümledir.
+  - Şiir düz metin gibi bölünür; tablonun her satırı ve imza bir cümledir.
 - **Arapça:**
   - Tamamen Arapça bir blok tek cümledir.
-  - Cümle içindeki Arapça o cümlede kalır.
+  - Cümle içindeki Arapça o cümlede kalır; Arapça parçanın içinde bölünmez.
+  - Cümle sonundan sonra gelen Arapça ("…gördüm. اَيُحِبُّ اَحَدُكُمْ… âyeti") yeni cümle başlatır.
 - **`incipit`:** O düğüm içinde başka bir cümleyle karışmayacak kadar uzun tutulur (en az 4 kelime).
-- **Kayan numaralara karşı önlem:** Bölme kuralları değişirse numaralar kayabilir. Bu yüzden kurallar altın örnek testlerle kilitlenir, her cümlenin metin özeti (hash) ve `incipit`'i saklanır. Eski atıflar ve kontrol işaretleri `incipit`'ten yeniden bulunur.
+- **Kayan numaralara karşı önlem:** Bölme kuralları değişirse numaralar kayabilir. Bu yüzden kurallar `tests/test_sentences.py` ve `tests/golden/sentences_sozler.json` ile kilitlenir; her cümlenin metin özeti (hash) ve `incipit`'i saklanır. Eski atıflar ve kontrol işaretleri `incipit`'ten yeniden bulunur. Kurallar bilerek değiştirilirse altın örnekler `uv run python -m risale_mcp.sentences --golden` ile yenilenir ve fark gözden geçirilir.
 
 ### Dikkat edilecek noktalar
 - **Türkçe büyük/küçük harf:** Python'un `str.lower()` fonksiyonu `İ` ve `I` harflerini Türkçe kurallara göre çevirmez; `normalize.py` kullanılır.
@@ -159,23 +166,24 @@ Ayrıntı `books/erisale.py` başındaki açıklamadadır. Özet:
 
 ## Taksimat kontrol arayüzü
 
-Ayrıştırılan başlık ağacını ve metni elle kontrol etmek içindir. `data/books/<eser>.json` okur. Aşama 3'te kitap seçici, cümle numaraları ve cümle düzeyinde işaretlerle güncellenecek.
+Ayrıştırılan başlık ağacını, metni ve cümle bölmesini elle kontrol etmek içindir. `data/books/<eser>.json` okur.
 
 ```
-uv run python -m risale_mcp.review_ui [eser]   # data/interim/review.html üret (varsayılan: sozler)
-xdg-open data/interim/review.html
+uv run python -m risale_mcp.review_ui [eser…]   # data/interim/review/<eser>.html üret (varsayılan: hepsi)
+xdg-open data/interim/review/sozler.html
 ```
 
-- **Tek dosya:** Veri, stil ve betik dosyanın içine gömülüdür; sunucu ya da internet gerekmez. Kaynak dosyalar `src/risale_mcp/review_assets/` altındadır; `review_ui.py` yalnızca bunları birleştirir.
+- **Eser başına tek dosya:** Veri, stil ve betik dosyanın içine gömülüdür; sunucu ya da internet gerekmez. Kenar çubuğundaki seçici aynı klasördeki başka bir eserin dosyasına geçer. Kaynak dosyalar `src/risale_mcp/review_assets/` altındadır; `review_ui.py` yalnızca bunları birleştirir.
 - **Sayfa bilgisi yok.** Gezinme tamamen hiyerarşiktir.
 - **Sol panel:** Başlık ağacı ve başlıklarda arama.
-- **Sağ panel:** Seçilen düğümün yolu, başlığı, alt başlığı, kimliği ve kendi metni; hâşiyeler (metindeki işarete tıklanınca vurgulanır); alt bölümler; önceki/sonraki bölüm (← / →). Arapça paragraflar sağdan sola gösterilir; Kur'an işaretlerinin düzgün görünmesi için Amiri ya da Scheherazade New yazı tipi gerekir.
+- **Sağ panel:** Seçilen düğümün yolu, başlığı, alt başlığı, kimliği ve kendi metni; hâşiyeler (metindeki işarete tıklanınca vurgulanır); alt bölümler; önceki/sonraki bölüm (← / →).
+- **Cümleler:** Her cümlenin başında küçük numarası durur. Numaraya tıklanınca cümlenin atfı, incipit'i, kimliği ve işaret düğmeleri açılır. İşaretli cümlenin altı yeşil (✓) ya da kırmızı (✗) çizilir. Arapça paragraflar sağdan sola gösterilir; Kur'an işaretlerinin düzgün görünmesi için Amiri ya da Scheherazade New yazı tipi gerekir.
 - **URL:** Seçili düğümü tutar (`review.html#sozler/10/on-iki-hakikat/hakikat-09`).
 - **İşaretler:**
-  - Her düğüme ve pasaja "✓ doğru / ✗ hatalı / ✎ not" konabilir; `localStorage`'da saklanır.
-  - Dışa aktarılan JSON'da her kayıtta `id`, `target`, `ref`, `status`, `note` bulunur. Bu dosya ayrıştırma düzeltmelerinin girdisidir.
+  - Her düğüme, paragrafa ve cümleye "✓ doğru / ✗ hatalı / ✎ not" konabilir; eser başına ayrı olarak `localStorage`'da saklanır.
+  - Dışa aktarılan JSON'da her kayıtta `id`, `target` (`node` | `passage` | `sentence` | `missing`), `ref`, `incipit`, `status`, `note` bulunur. Bu dosya ayrıştırma düzeltmelerinin girdisidir.
   - "İçe aktar" ile başka bir tarayıcıya taşınabilir.
-  - Kimlikler ayrıştırma kurallarına bağlıdır; değişen kimlikler `target: "missing"` olarak görünür.
+  - Cümle işaretleri incipit ve düğümle birlikte saklanır. Kimlik kayarsa işaret, açılışta aynı düğümde (yoksa bütün eserde tek eşleşen) incipit'ten yeniden bağlanır. Bağlanamayan `target: "missing"` olarak görünür.
 
 ## MCP araçları (ilk sürüm)
 
@@ -205,12 +213,12 @@ Sunucu, istemci modele şu kuralları iletmeli:
 
 ## Aşamalar
 
-Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılması ve kontrol arayüzü. Aşama 1 ve 2 tamamlandı.
+Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılması ve kontrol arayüzü. Aşama 1 ve 2 tamamlandı; Aşama 3 kullanıcının kontrolünü bekliyor.
 
 1. **İndirici:** Katalog, nazik istemci, dört sitenin indiricisi ve bütünlük doğrulaması. Önce Sözler pilotu, ardından bütün eserler toplu indirildi:
    `uv run python -m risale_mcp.fetch get --all --site <site>` (her site ayrı süreçte; günlükler `data/raw/logs/`).
 2. **Ayrıştırıcı:** erisale blokları → `data/books/<eser>.json` (başlık ağacı, paragraflar, hâşiyeler): `uv run python -m risale_mcp.build --all`. erisale'deki 27 eser ayrıştırıldı; Sözler PDF çıktısıyla karşılaştırıldı, PDF kodu silindi.
-3. **Cümleler:** Cümle bölücü ve altın örnek testleri. Kontrol arayüzüne kitap seçici, cümle numaraları ve cümle düzeyinde işaretler eklenir. Kullanıcı Sözler'i kontrol eder.
+3. **Cümleler:** Cümle bölücü (`sentences.py`, `build` içinde çalışır) ve altın örnek testleri; kontrol arayüzüne kitap seçici, cümle numaraları ve cümle düzeyinde işaretler eklendi. Kullanıcı Sözler'i kontrol eder.
 4. **Diğer eserler:**
    - risale.online, risaleoku ve Yeni Asya kaynaklarının ayrıştırıcıları (`books/` altında, aynı modelle).
    - Mecmuaların ana ciltlere eşlenmesi.

@@ -5,18 +5,19 @@ Kullanım:
     uv run python -m risale_mcp.build --all           # ayrıştırıcısı olan bütün eserler (şimdilik erisale)
 
 Çıktılar:
-    data/books/<eser>.json            eserin başlık ağacı, paragrafları, hâşiyeleri
+    data/books/<eser>.json            eserin başlık ağacı, paragrafları, hâşiyeleri, cümleleri
     data/interim/outline/<eser>.txt   elle kontrol için girintili başlık ağacı
 Sonunda `ESERLER.md` kontrol listesi yenilenir.
 """
 
 import argparse
 import json
+import re
 import sys
 from collections import Counter
 from functools import cache
 
-from risale_mcp import checklist
+from risale_mcp import checklist, sentences
 from risale_mcp.books import erisale as erisale_parser
 from risale_mcp.books.model import Book
 from risale_mcp.catalog import WORKS, Site, Status, Work, get_work
@@ -24,6 +25,7 @@ from risale_mcp.paths import BOOKS_DIR, INTERIM_DIR, RAW_DIR, ROOT
 from risale_mcp.sources import erisale
 
 OUTLINE_DIR = INTERIM_DIR / "outline"
+HASIYE_ID = re.compile(r"/h\d+/")
 PARSEABLE_SITES = {Site.ERISALE}
 
 
@@ -45,7 +47,7 @@ def outline_text(book: Book) -> str:
     return "\n".join(lines) + "\n"
 
 
-def report(book: Book, parse: erisale_parser.ParseReport) -> list[str]:
+def report(book: Book, parse: erisale_parser.ParseReport, sentence_list: list[dict]) -> list[str]:
     nodes = book.nodes()
     kinds = Counter(p["kind"] for p in book.paragraphs)
     arabic = sum(len(p.get("arabic", [])) for p in book.paragraphs)
@@ -55,6 +57,7 @@ def report(book: Book, parse: erisale_parser.ParseReport) -> list[str]:
         f"{book.slug}: {len(nodes)} düğüm (satır içi {parse.inline_nodes}), "
         f"{len(book.paragraphs) - kinds['hasiye']} paragraf, {kinds['hasiye']} hâşiye, {arabic} Arapça parça",
         f"  paragraf türleri     : {dict(kinds.most_common())}",
+        f"  cümle                : {len(sentence_list)} (hâşiyelerde {sum(bool(HASIYE_ID.search(s['id'])) for s in sentence_list)})",
         f"  metinsiz yaprak düğüm: {len(empty)} {empty[:5]}",
         f"  aynı adlı kardeş     : {len(book.renamed)} {book.renamed[:5]}",
         f"  eşsiz BookOnly       : {len(parse.unmatched_book_only)} {parse.unmatched_book_only[:5]}",
@@ -71,10 +74,12 @@ def build_work(work: Work) -> None:
     book, parse = erisale_parser.parse_work(work, _erisale_book(work.source.book))
     BOOKS_DIR.mkdir(parents=True, exist_ok=True)
     OUTLINE_DIR.mkdir(parents=True, exist_ok=True)
+    data = book.to_json()
+    data["sentences"] = sentences.segment(data)
     out = BOOKS_DIR / f"{work.slug}.json"
-    out.write_text(json.dumps(book.to_json(), ensure_ascii=False, indent=1), encoding="utf-8")
+    out.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     (OUTLINE_DIR / f"{work.slug}.txt").write_text(outline_text(book), encoding="utf-8")
-    print("\n" + "\n".join(report(book, parse)))
+    print("\n" + "\n".join(report(book, parse, data["sentences"])))
     print(f"  yazıldı: {out.relative_to(ROOT)}", flush=True)
 
 

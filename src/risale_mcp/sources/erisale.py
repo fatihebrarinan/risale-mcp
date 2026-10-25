@@ -10,6 +10,10 @@ verisinde yapısal bir ağaç olarak durur:
 `blockIndex` kitap içinde sürekli bir sıra numarasıdır; bütün sayfaların blokları
 birleştirilince boşluk kalmamalıdır. Bu, eksik bölüm olup olmadığının kanıtıdır.
 
+Uzun metinler bloğun içinde değil, aynı akışta ayrı bir metin satırında durur:
+`"value": "$4c"` değeri `4c:T53a,<1338 baytlık metin>` satırına başvurur. Düz `$` ile
+başlayan bir metin `$$` olarak kaçırılır.
+
 robots.txt yalnızca `/api/` yolunu yasaklar; biz yalnızca okuma sayfalarını indiririz.
 """
 
@@ -34,6 +38,7 @@ _SITEMAP_NS = {"sm": "http://www.sitemaps.org/schemas/sitemap/0.9"}
 _PAGE_URL = re.compile(rf"^{re.escape(BASE_URL)}/tr/([^/]+)/([^/]+)$")
 _RSC_PUSH = re.compile(r'self\.__next_f\.push\(\[1,"((?:[^"\\]|\\.)*)"\]\)')
 _BLOCK_START = re.compile(r'\{"bookId":')
+_REFERENCE = re.compile(r"\$([0-9a-f]+)")
 _TITLE = re.compile(r"<title>(.*?)</title>", re.S)
 _TITLE_SEP = " — "
 
@@ -65,9 +70,40 @@ def rsc_payload(html: str) -> str:
     return "".join(json.loads(f'"{chunk}"') for chunk in _RSC_PUSH.findall(html))
 
 
+def _text_row(payload: bytes, row: str) -> str | None:
+    """`<satır>:T<onaltılık bayt uzunluğu>,<metin>` biçimindeki metin satırı."""
+    match = re.search(rb"(?<![0-9a-f])" + row.encode() + rb":T([0-9a-f]+),", payload)
+    if match is None:
+        return None
+    return payload[match.end(): match.end() + int(match[1], 16)].decode("utf-8")
+
+
+def _resolve(node, payload: bytes):
+    """Bloğun içindeki "$4c" başvurularını metin satırlarıyla değiştirir; çözülemeyen kalır."""
+    if isinstance(node, dict):
+        return {key: _resolve(value, payload) for key, value in node.items()}
+    if isinstance(node, list):
+        return [_resolve(value, payload) for value in node]
+    if isinstance(node, str) and node.startswith("$"):
+        if node.startswith("$$"):
+            return node[1:]
+        if (match := _REFERENCE.fullmatch(node)) and (text := _text_row(payload, match[1])) is not None:
+            return text
+    return node
+
+
+def has_unresolved_reference(node) -> bool:
+    if isinstance(node, dict):
+        return any(has_unresolved_reference(v) for v in node.values())
+    if isinstance(node, list):
+        return any(has_unresolved_reference(v) for v in node)
+    return isinstance(node, str) and bool(_REFERENCE.fullmatch(node))
+
+
 def extract_blocks(html: str) -> list[dict]:
-    """Sayfadaki metin bloklarını `blockIndex` sırasıyla döndürür."""
+    """Sayfadaki metin bloklarını `blockIndex` sırasıyla, başvuruları çözülmüş olarak döndürür."""
     payload = rsc_payload(html)
+    payload_bytes = payload.encode("utf-8")
     decoder = json.JSONDecoder()
     blocks: dict[int, dict] = {}
     for match in _BLOCK_START.finditer(payload):
@@ -76,6 +112,7 @@ def extract_blocks(html: str) -> list[dict]:
         except json.JSONDecodeError:
             continue
         if "blockIndex" in obj and "content" in obj:
+            obj["content"] = _resolve(obj["content"], payload_bytes)
             blocks.setdefault(obj["blockIndex"], obj)
     return [blocks[i] for i in sorted(blocks)]
 
@@ -177,6 +214,7 @@ class BookBlocks:
     first_index: int | None = None
     missing: list[int] = field(default_factory=list)    # ilk ve son blok arasında hiçbir sayfada bulunmayanlar
     conflicts: list[int] = field(default_factory=list)  # iki sayfada farklı içerikle geçenler
+    unresolved: list[int] = field(default_factory=list)  # çözülemeyen "$4c" başvurusu taşıyanlar
 
     def to_json(self) -> dict:
         return {
@@ -186,6 +224,7 @@ class BookBlocks:
             "first_index": self.first_index,
             "missing": self.missing,
             "conflicts": self.conflicts,
+            "unresolved": self.unresolved,
             "blocks": self.blocks,
         }
 
@@ -213,6 +252,7 @@ def merge_pages(book: str, pages: list[tuple[Page, str]]) -> BookBlocks:
         result.first_index = min(merged)
         result.missing = sorted(set(range(min(merged), max(merged) + 1)) - merged.keys())
     result.blocks = [merged[i] for i in sorted(merged) if merged[i]["content"]["type"] != _PAGE_BLOCK]
+    result.unresolved = [b["index"] for b in result.blocks if has_unresolved_reference(b["content"])]
     return result
 
 

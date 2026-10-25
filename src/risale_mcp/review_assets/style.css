@@ -157,7 +157,7 @@ button:hover, .button:hover { border-color: var(--accent); }
 .pnum { font-family: var(--serif); color: var(--accent); font-weight: 600; text-align: right; padding-top: 2px; }
 .ptext { font-family: var(--serif); font-size: 1.07rem; line-height: 1.7; }
 .kind-arabic .ptext { direction: rtl; text-align: right; font-size: 1.3rem; }
-.kind-poem .ptext, .kind-table .ptext { white-space: pre-line; }
+.kind-poem .ptext, .kind-table .ptext, .kind-signature .ptext { white-space: pre-line; }
 .kind-quote .ptext { padding-left: 12px; border-left: 3px solid var(--border); }
 .kind-signature .ptext { text-align: right; font-weight: 600; }
 .passage .marks { grid-column: 2; margin-top: 6px; }
@@ -233,3 +233,29 @@ button:hover, .button:hover { border-color: var(--accent); }
   .sidebar { border-right: none; border-bottom: 1px solid var(--border); }
   .content { padding: 20px 16px 48px; }
 }
+
+/* ---------------------------------------------------------------- cümleler */
+#book { width: 100%; margin: 6px 0 2px; font: inherit; padding: 4px 6px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: inherit; }
+.sentence { border-radius: 3px; transition: background 0.15s; }
+.sentence.selected { background: var(--flash); }
+.sentence.status-ok { text-decoration: underline 2px var(--ok); text-underline-offset: 4px; }
+.sentence.status-bad { text-decoration: underline 2px var(--bad); text-underline-offset: 4px; }
+.snum {
+  font: 600 0.62em var(--sans);
+  vertical-align: super;
+  margin: 0 2px 0 1px;
+  padding: 0 2px;
+  border: none;
+  background: none;
+  color: var(--muted);
+  cursor: pointer;
+}
+.snum:hover, .sentence.selected .snum { color: var(--accent); }
+.sentence.has-note .snum { color: var(--accent); text-decoration: underline; }
+.kind-arabic .snum { vertical-align: baseline; }
+.sentence-panel { grid-column: 2; margin: 6px 0 2px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.85rem; }
+.sentence-panel .sentence-ref { font-weight: 600; }
+.sentence-panel .sentence-incipit { color: var(--muted); margin: 2px 0 4px; }
+.sentence-panel code { font-size: 0.78rem; color: var(--muted); }
+.hasiye .sentence-panel { grid-column: auto; }
+

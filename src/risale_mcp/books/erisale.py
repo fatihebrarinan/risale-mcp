@@ -302,7 +302,10 @@ class _Parser:
         label = _inline_label(content)
         if label:
             self._open_inline_node(label)
-        text = inline_text(content)
+        if content["type"] == "Signature":             # her parça ayrı satır: "… nâmına" / "Said Nursî"
+            text = Text.join([inline_text({"children": [c]}) for c in content.get("children", [])], "\n")
+        else:
+            text = inline_text(content)
         if not text.text and not text.footnotes:
             return
         kind = PARAGRAPH_KINDS.get(content["type"], "paragraph")
