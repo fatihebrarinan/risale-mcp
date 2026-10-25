@@ -105,7 +105,8 @@ risale-mcp/
 │   ├── build_db.py     # Aşama 5: JSON → SQLite CLI'ı (sûre/âyet çözümü, doğrulama)
 │   ├── search.py       # Aşama 5: sorgu dili → FTS5, cümle ve başlık araması
 │   ├── library.py      # Aşama 6: veritabanı üzerindeki okuma işleri (MCP'den bağımsız)
-│   └── server.py       # Aşama 6: MCP sunucusu (araçlar, kaynaklar, hazır komutlar)
+│   ├── server.py       # Aşama 6: MCP sunucusu (araçlar, kaynaklar, hazır komutlar)
+│   └── golden.py       # Aşama 7: altın sorularla uçtan uca deneme (Claude Code istemci)
 └── tests/
     ├── test_catalog.py
     ├── test_erisale.py
@@ -121,7 +122,10 @@ risale-mcp/
     ├── conftest.py           # ortak küçük veritabanı (iki elle yazılmış eser)
     ├── test_build_db.py
     ├── test_server.py
-    └── golden_questions.md   # Kullanıcının yazdığı test soruları
+    ├── test_golden.py
+    └── golden/
+        ├── golden_questions.md   # kullanıcının yazdığı test soruları
+        └── questions.json        # aynı sorular, doğrulanmış beklenen bölümlerle (düzenek bunu okur)
 ```
 
 ## Veri modeli
@@ -264,6 +268,21 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 
 Sonraki aşamalar: konu fihristi, anlamsal arama (vektörler `sentences.hash` ile), atıf doğrulama.
 
+## Uçtan uca deneme (Aşama 7)
+
+Linux'ta Claude Desktop olmadığı için MCP istemcisi olarak Claude Code kullanılır. Üç katman:
+
+1. **Araç düzeyi:** `npx @modelcontextprotocol/inspector uv run risale-mcp` (tarayıcıda araçları elle çağırma).
+2. **Elle sohbet:** `uv run python -m risale_mcp.golden sandbox ~/risale-deneme` sonra `cd ~/risale-deneme && claude`. Klasör proje dışındadır (Claude Code üst klasörlerdeki `CLAUDE.md`'yi okur); yalnızca bu sunucu açık, dosya/kabuk/web araçları kapalıdır. Hazır komutlar `/mcp__risale__topic_survey`, kaynaklar `@risale:risale://text/sozler/10`.
+3. **Altın sorular:** `uv run python -m risale_mcp.golden run A1 B7 …` (ya da `--all`). Her soru `claude -p` ile geçici, boş bir klasörde, yerleşik araçlar kapalı (`--tools ""`), yalnızca bu sunucuyla (`--strict-mcp-config`) ve varsayılan modelle sorulur. `--bare` kullanılmaz (OAuth'u kapatır). Döküm ve rapor: `data/interim/golden/<zaman>/` (`report.md`, git'e eklenmez).
+
+Raporun otomatik kontrolleri:
+- **Atıflar:** cevaptaki "Yol › … › “ilk kelimeler”" ya da "… › 32. cümle" zincirleri veritabanında aranır: ✓ cümle bulundu, ◑ alıntı metinde var ama cümle başı değil, ◐ yalnızca bölüm, ✗ bölüm ya da cümle yok (uydurma olabilir).
+- **Beklenen bölüm:** model okudu mu (`read_section`, `get_passage`, `find_sentence`; arama sonucu ve başlık ağacı okumak sayılmaz), cevapta adı geçiyor mu.
+- **Araç kullanımı:** çağrılar, parametreleri ve hatalar.
+
+Metin–yorum ayrımı, özetin doğruluğu ve tuzak sorulardaki davranış elle değerlendirilir. İlk denemede (A1, B7, D16, K5) dört sorunun dördünde model doğru yeri buldu, tuzakta uydurmadı, yorumu ayrı başlıkta verdi.
+
 ## Çalışma kuralları
 
 - Aşamaları sırayla yap. Her aşamanın sonunda **dur**, bulguları özetle ve onay bekle.
@@ -284,4 +303,4 @@ Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılmas�
 4. **Diğer eserler:** risale.online, risaleoku ve kastamonur.com (önce Yeni Asya) ayrıştırıcıları; mecmuaların ana ciltlere eşlenmesi; bulunamayan eserler için kaynak araması. 38/43 eser ayrıştırıldı (`ESERLER.md`).
 5. **Veritabanı:** SQLite ve FTS5 kurulumu, normalizasyon, sorgu dili, âyet dizini, birim testler: `uv run python -m risale_mcp.build_db`.
 6. **MCP sunucusu:** `library.py` + `server.py`; araçlar, kaynaklar, hazır komutlar; süreç içi istemciyle testler. MCP Inspector ile elle deneme.
-7. **Uçtan uca test:** Claude Desktop'a (ya da `claude mcp add` ile Claude Code'a) bağla, `tests/golden_questions.md` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.
+7. **Uçtan uca test:** `golden.py` ile Claude Code'u istemci yaparak (Linux'ta Claude Desktop yok) `tests/golden/` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.
