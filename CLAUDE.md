@@ -32,7 +32,8 @@ Eserlerin listesi, her birinin kaynağı ve durumu tek yerde tutulur: `src/risal
 | **erisale.com** | Birincil kaynak (≈30 eser) | Standart baskı. Her bölüm ayrı sayfa; sayfa listesi `sitemap-tr.xml`'den. Metin sayfaya gömülü RSC verisinde yapısal ağaç olarak gelir: blok türleri (`H2`, `H3`, `Paragraph`, `CenteredParagraph`, `HeadingDescription`…), satır içi başlıklar (`Heading`), Arapça (`RTL`, türü âyet/hadis/Arapça, meali `rtl.txn`), hâşiye tam geçtiği yerde (`FootnoteRef` → `Footnote`). `blockIndex` kitap içinde süreklidir; boşluk = eksik bölüm. robots.txt yalnızca `/api/` yolunu yasaklar; biz yalnızca okuma sayfalarını indiririz. |
 | risale.online | Zülfikâr, Tılsımlar, Sirâcü'n-Nûr, Gençlik ve Hanımlar Rehberi (mecmualar) | Hayrat baskısı, JSON API (`/risale-api/fihrist`, `/risale-api/paragraf`). Yapı fihristten (sayfa numaralı, iç içe); paragraf HTML'i kelime gruplarıdır, Arapça meali ve kaynağıyla (`data-mehaz-*`), hâşiye `<aside>`. |
 | risaleoku.com | Hizbler, Arapça Mesnevî, Küçük Sözler, (Fihrist Risalesi) | `/oku/<kitap>` okuyucu sayfası: sayfa sayısı, kitabın başladığı sayfa (`baslangic`) ve fihrist ağacı (`#treemenu1`); `/ajax/<kitap>/<n>` sayfa metni. Renkli `font` "tefekkür" boyamasıdır, başlık değildir. Arapça Mesnevî'nin ağacı boş: başlıklar ortalı "الرسالة …" satırlarından; ilk başlıktan önceki sayfalar tahkik edenin girişidir. Hizbü Envâri'l-Hakāik Cevşenü'l-Kebîr'i içerir. `Crawl-delay: 10`. |
-| Yeni Asya | Makalat, Nutuk (son çare) | "Eski Saîd Dönemi Eserleri" cildinin `basic-html` katmanı (`page<n>.html`): her satır konumu ve yazı tipiyle ayrı. Gövde `font1`, lügat ve editör notu `font7` (atılır), müellifin hâşiyesi `font10`. Arapça okunamaz (yerine "[Arapça]" ve not; Makalat'ta 28, Nutuk'ta 9 paragraf). Gövde yazı tipi D, E, G, K, L, N, O, Ö, P, R, S, T, Ü, Z büyük harflerini küçük basar; cümle başında onarılır, cümle içindeki özel isimler düzeltilemez. Eser sınırı: ardından "Bu Esere Ait Takdim" gelen ya da sayfasında büyük başlık (`font25`) olan içindekiler girdisi. |
+| kastamonur.com | Makalat, Nutuk | Âsâr-ı Bedîiyye baskısından "Nutuklar ve Makaleler" tek bir WordPress yazısıdır (MediaWiki'den aktarılmış): `h1` "Nutuklar" ve ortalı "Makaleler Kısmı" iki bölüm, her `h2` ("Makale – 5") bir makale, basılı adı altındaki tamamı kalın paragraf, yayın satırları alt başlık, `h3` alt bölüm. Arapça `dir="rtl"` ve Unicode sunum biçimleriyle (NFKC ile standart harfe çevrilir). Dipnotlar `<sup class="reference">`, numaraları her bölümde baştan; "(Müellif)" ya da "[Haşiye]" müellifin hâşiyesi, diğerleri nâşir notu (`notes`). Sitede Makale – 13 yok, "Makale – 16" iki kez. Site "TELİF UYARISI" taşır: izinsiz ve kaynaksız kullanılamaz. |
+| Yeni Asya | (artık kullanılmıyor) | Makalat ve Nutuk'un eski kaynağı. "Eski Saîd Dönemi Eserleri" cildinin `basic-html` katmanı; Arapça okunamadığı ("[Arapça]") için kastamonur.com'a geçildi. Ham veri ve ayrıştırıcı karşılaştırma için duruyor. |
 
 - **Ertelendi:** Fihrist Risalesi (yalnızca Osmanlıca bulundu), Rumuzat-ı Semaniye (hususi bir risale; kullanıcı kararıyla şimdilik eklenmiyor).
 - **Kaynağı bulunamadı:** Kızıl İcaz, Ta'likat (ikisi de yalnızca basılı ve akademik çalışmalarda), Hizb-i Nurî (kısmen Lem'alar'da). Aşama 4'teki web aramasında da serbest bir metin bulunamadı.
@@ -63,7 +64,8 @@ risale-mcp/
 │   │   ├── erisale/               # sitemap-tr.xml, <kitap>/manifest.json, pages/<bölüm>.html.gz
 │   │   ├── risale_online/         # eserler.json, <kitap>/fihrist.json, paragraf/<ilk>-<son>.json
 │   │   ├── risaleoku/             # <kitap>/index.html.gz, pages/<n>.html.gz
-│   │   ├── yeniasya/              # <kitap>/toc.html.gz, pages/<n>.html.gz
+│   │   ├── yeniasya/              # <kitap>/toc.html.gz, pages/<n>.html.gz (artık kullanılmıyor)
+│   │   ├── kastamonur/            # <yazı>/manifest.json, page.html.gz
 │   │   └── logs/                  # toplu indirme günlükleri
 │   ├── interim/                   # Ara çıktılar
 │   │   ├── erisale/<kitap>.blocks.json   # birleştirilmiş, doğrulanmış bloklar (git'e eklenmez)
@@ -85,15 +87,17 @@ risale-mcp/
 │   │   ├── erisale.py        # erisale blokları -> eser modeli
 │   │   ├── risale_online.py  # risale.online fihrist + paragraf HTML'i -> eser modeli
 │   │   ├── risaleoku.py      # risaleoku sayfaları + fihrist ağacı -> eser modeli
-│   │   ├── yeniasya.py       # Yeni Asya satır düzeni -> eser modeli (onarımlarla)
-│   │   └── mecmua.py         # Mecmuaların (ve Yeni Asya eserlerinin) ana ciltlere eşlenmesi
+│   │   ├── yeniasya.py       # Yeni Asya satır düzeni -> eser modeli (artık kullanılmıyor)
+│   │   ├── kastamonur.py     # kastamonur.com yazısı -> Nutuk ve Makalat
+│   │   └── mecmua.py         # Mecmuaların (ve ikincil kaynaktaki eserlerin) ana ciltlere eşlenmesi
 │   ├── sources/
 │   │   ├── http.py           # Nazik HTTP istemcisi
 │   │   ├── archive.py        # Ham yanıtı diske yazma, önbellekten okuma
 │   │   ├── erisale.py        # erisale: sitemap, ham arşiv, blok çıkarma, birleştirme, doğrulama
 │   │   ├── risale_online.py  # risale.online JSON API (yalnızca ham kayıt + doğrulama)
 │   │   ├── risaleoku.py      # risaleoku sayfaları (yalnızca ham kayıt + doğrulama)
-│   │   └── yeniasya.py       # Yeni Asya basic-html sayfaları (yalnızca ham kayıt + doğrulama)
+│   │   ├── yeniasya.py       # Yeni Asya basic-html sayfaları (artık kullanılmıyor)
+│   │   └── kastamonur.py     # kastamonur.com yazısı (yalnızca ham kayıt + doğrulama)
 │   ├── normalize.py    # Türkçe metin normalizasyonu, sıra sayıları, slug
 │   ├── review_ui.py    # Kontrol arayüzü: kitap JSON'ları → review/index.html + data/<eser>.js
 │   ├── review_assets/  # Arayüzün template.html, style.css, app.js dosyaları
@@ -153,7 +157,7 @@ Ayrıntı `books/erisale.py` başındaki açıklamadadır. Özet:
 - Kimlikler: kitap düzeyindeki ana birim yalnızca numara (`sozler/10`, `mektubat/29`), numaralı birim `hakikat-09`, numarasız tür `hatime`, diğerleri başlığın slug'ı; Lâhika mektupları erisale numarası (`emirdag-lahikasi/297`). Aynı adlı kardeşler `-2`, `-3` eki alır.
 
 ### Mecmuaların eşlenmesi (Aşama 4)
-Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve son çare kaynaktaki (Yeni Asya) eserler ana ciltlere (Eski Said eserleri ve ana ciltler, erisale/risaleoku) eşlenir:
+Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve ikincil kaynaktaki eserler (`catalog.SECONDARY_SITES`: Âsâr-ı Bedîiyye'den Makalat ve Nutuk) ana ciltlere (Eski Said eserleri ve ana ciltler, erisale/risaleoku) eşlenir:
 - Metinler baskıdan bağımsız kelimelere indirilir (`normalize.match_words`: işaretler, noktalama, Arapça harf çeşitleri gider; "Risâle-i Nûr’un" = "Risale-i Nur’un"), 5 kelimelik diziler karşılaştırılır.
 - En çok diziyi paylaşan ana cilt paragrafından başlanır, yakın komşular kapsamı artırdıkça eklenir. Dizilerin en az %35'i ve en az 3 dizi tutarsa eşlenir.
 - Aynı metin birden çok yerdeyse önceki eşlemenin ardından gelen seçilir; kısa paragraflar ("﷽") önceki ya da sonraki eşlemenin komşusuysa bağlanır.
@@ -254,7 +258,7 @@ Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılmas�
    `uv run python -m risale_mcp.fetch get --all --site <site>` (her site ayrı süreçte; günlükler `data/raw/logs/`).
 2. **Ayrıştırıcı:** erisale blokları → `data/books/<eser>.json` (başlık ağacı, paragraflar, hâşiyeler): `uv run python -m risale_mcp.build --all`. erisale'deki 27 eser ayrıştırıldı; Sözler PDF çıktısıyla karşılaştırıldı, PDF kodu silindi.
 3. **Cümleler:** Cümle bölücü (`sentences.py`, `build` içinde çalışır) ve altın örnek testleri; kontrol arayüzüne kitap seçici, cümle numaraları ve cümle düzeyinde işaretler eklendi. Kullanıcı Sözler'i kontrol eder.
-4. **Diğer eserler:** risale.online, risaleoku ve Yeni Asya ayrıştırıcıları; mecmuaların ana ciltlere eşlenmesi; bulunamayan eserler için kaynak araması. 38/43 eser ayrıştırıldı (`ESERLER.md`).
+4. **Diğer eserler:** risale.online, risaleoku ve kastamonur.com (önce Yeni Asya) ayrıştırıcıları; mecmuaların ana ciltlere eşlenmesi; bulunamayan eserler için kaynak araması. 38/43 eser ayrıştırıldı (`ESERLER.md`).
 5. **Veritabanı:** SQLite ve FTS5 kurulumu, normalizasyon, sorgu dili, âyet dizini, birim testler: `uv run python -m risale_mcp.build_db`.
 6. **MCP sunucusu:** Araçları yaz. MCP Inspector ile test et.
 7. **Uçtan uca test:** `claude mcp add` ile bağla, `tests/golden_questions.md` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.

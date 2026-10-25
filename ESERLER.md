@@ -16,8 +16,8 @@
 | 1 | Kızıl İcaz | `—` | ❌ kaynak bulunamadı | ⬜ | Arapça mantık eseri. |
 | 2 | Ta'likat | `—` | ❌ kaynak bulunamadı | ⬜ | Arapça mantık eseri. |
 | 3 | Divan-ı Harb-i Örfî | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 40 düğüm, 310 paragraf, 842 cümle |  |
-| 4 | Nutuk | `yeniasya/eskisaiddonemieserleri` | ✅ indirildi | ✅ 13 düğüm, 113 paragraf, 190 cümle; %34 ana cilde eşlendi | Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde. |
-| 5 | Makalat | `yeniasya/eskisaiddonemieserleri` | ✅ indirildi | ✅ 43 düğüm, 300 paragraf, 870 cümle; %15 ana cilde eşlendi |  |
+| 4 | Nutuk | `kastamonur/nutuklar-ve-makaleler-asar-i-bediiyyeden` | ✅ indirildi | ✅ 24 düğüm, 162 paragraf, 270 cümle; %30 ana cilde eşlendi | Âsâr-ı Bedîiyye baskısı. Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde. |
+| 5 | Makalat | `kastamonur/nutuklar-ve-makaleler-asar-i-bediiyyeden` | ✅ indirildi | ✅ 62 düğüm, 432 paragraf, 945 cümle; %18 ana cilde eşlendi | Âsâr-ı Bedîiyye baskısı; sitede Makale – 13 yok. |
 | 6 | Muhakemat | `erisale/muhakemat` | ✅ indirildi | ✅ 63 düğüm, 791 paragraf, 2304 cümle |  |
 | 7 | Hutbe-i Şamiye | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 67 düğüm, 487 paragraf, 1420 cümle |  |
 | 8 | Münazarat | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 162 düğüm, 532 paragraf, 1866 cümle |  |

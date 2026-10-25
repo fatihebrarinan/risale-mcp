@@ -1,7 +1,10 @@
-"""Aşama 4 ayrıştırıcıları: risale.online, risaleoku, Yeni Asya (ağ gerektirmez)."""
+"""Aşama 4 ayrıştırıcıları: risale.online, risaleoku, Yeni Asya, kastamonur (ağ gerektirmez)."""
 
-from risale_mcp.books import risale_online, risaleoku, yeniasya
+import gzip
+
+from risale_mcp.books import kastamonur, risale_online, risaleoku, yeniasya
 from risale_mcp.books.model import Text
+from risale_mcp.catalog import Group, Site, SourceRef, Work
 
 
 def test_risale_online_paragraph_html():
@@ -82,3 +85,63 @@ def test_yeniasya_work_boundaries():
     assert [e.title for e in entries] == ["Hamidiye Alaylarına Dair"] and end == 111
     entries, end = yeniasya.work_entries(toc, "nutuk", title_pages={17, 167, 199})
     assert [e.title for e in entries] == ["İfade-i Meram"] and end == 199       # Münazarat'ta takdim yok
+
+
+KASTAMONUR_PAGE = """<html><body><div class="a2a">paylaş</div>
+<h3><span><b>Nutuklar ve Makaleler</b></span></h3>
+<p>Not: Bu kısım iki bölümdür.</p>
+<h1><span dir="rtl">ﻧﻄﻘﻠﺮ</span></h1>
+<h1><strong>Nutuklar</strong></h1>
+<p><strong>İfade-i Meram</strong></p>
+<p>Kader bana Türkçeyi az vermiş.</p>
+<h2><strong><span class="mw-headline">Nutuk &#8211; 2</span></strong></h2>
+<p><strong>Prens Sabahaddin Beyin Fikrine Cevap</strong> (*)[*<sup class="reference">[1]</sup>]</p>
+<p>Hayat ittihaddadır.[**<sup class="reference">[2]</sup>] Zira <span dir="rtl">ﻣَﻦْ ﻛَﺎﻥَ ﻟِﻠَّﻪِ</span> hürriyet var.</p>
+<h3><strong>Birinci Hakikat</strong></h3>
+<p>Timarhaneyi kabul ettim.[Haşiye<sup class="reference">[3]</sup>]</p>
+<p>Bediüzzaman</p>
+<ol class="references">
+<li id="cite_note-1"><span>Misbah’da başka türlü yazılmış.</span></li>
+<li id="cite_note-2"><span>Kadınlaşmış erkek… (Müellif)</span></li>
+<li id="cite_note-3"><span>İhsan-ı şahâneyi kabul etmedim.</span></li>
+</ol>
+<div style="text-align: center;"><strong>Makaleler Kısmı (2)</strong></div>
+<h2><strong>Makale &#8211; 1</strong></h2>
+<p><strong>Kürdler Neye Muhtaçtır?</strong>[*<sup class="reference">[1]</sup>]</p>
+<p>Şark ve Kürdistan Gazetesi Sayı: 1 19 Teşrin-i Sani 1324</p>
+<p>Gazeteler iki vazife deruhte etmiştir.</p>
+<ol class="references"><li id="cite_note-1"><span>Makalenin nâşir notu.</span></li></ol>
+<div class="wpautbox-below">yazar</div></body></html>"""
+
+
+def kastamonur_book(tmp_path, section: str):
+    book = "nutuklar-ve-makaleler"
+    (tmp_path / book).mkdir()
+    (tmp_path / book / "page.html.gz").write_bytes(gzip.compress(KASTAMONUR_PAGE.encode("utf-8")))
+    work = Work("nutuk", "Nutuk", Group.ESKI_SAID, SourceRef(Site.KASTAMONUR, book, (section,)))
+    return kastamonur.parse_work(work, tmp_path).to_json()
+
+
+def test_kastamonur_nutuk(tmp_path):
+    book = kastamonur_book(tmp_path, "nutuklar")
+    nodes = {n["id"]: n for n in book["outline"]}
+    assert list(nodes) == ["nutuk", "nutuk/ifade-i-meram", "nutuk/nutuk-02", "nutuk/nutuk-02/hakikat-01"]
+    article = nodes["nutuk/nutuk-02"]
+    assert (article["title"], article["toc_title"], article["number"]) == ("Prens Sabahaddin Beyin Fikrine Cevap", "Nutuk – 2", 2)
+    texts = {p["id"]: p for p in book["paragraphs"]}
+    main = texts["nutuk/nutuk-02/p001"]
+    assert main["text"] == "Hayat ittihaddadır. Zira مَنْ كَانَ لِلَّهِ hürriyet var."   # ayraçsız, standart harfler
+    assert main["text"][main["arabic"][0]["start"]:main["arabic"][0]["end"]] == "مَنْ كَانَ لِلَّهِ"
+    hasiye = [p for p in book["paragraphs"] if p["kind"] == "hasiye"]
+    assert [h["text"] for h in hasiye] == ["Kadınlaşmış erkek…", "İhsan-ı şahâneyi kabul etmedim."]   # (Müellif), [Haşiye]
+    assert [n["text"] for n in book["notes"]] == ["Misbah’da başka türlü yazılmış."]          # nâşir notu, metne girmez
+    assert texts["nutuk/nutuk-02/hakikat-01/p002"]["kind"] == "signature"
+
+
+def test_kastamonur_makaleler_has_own_footnotes_and_publication_line(tmp_path):
+    book = kastamonur_book(tmp_path, "makaleler")
+    article = book["outline"][1]
+    assert (article["id"], article["title"]) == ("nutuk/makale-01", "Kürdler Neye Muhtaçtır?")
+    assert article["subtitle"] == "Şark ve Kürdistan Gazetesi Sayı: 1 19 Teşrin-i Sani 1324"
+    assert [p["text"] for p in book["paragraphs"]] == ["Gazeteler iki vazife deruhte etmiştir."]
+    assert [n["text"] for n in book["notes"]] == ["Makalenin nâşir notu."]                 # bölümün kendi listesi

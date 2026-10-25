@@ -20,12 +20,13 @@ from functools import cache
 
 from risale_mcp import build_db, checklist, sentences
 from risale_mcp.books import erisale as erisale_parser
+from risale_mcp.books import kastamonur as kastamonur_parser
 from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
 from risale_mcp.books import yeniasya as yeniasya_parser
 from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
 from risale_mcp.books.model import Book
-from risale_mcp.catalog import WORKS, Group, Site, Status, Work, get_work
+from risale_mcp.catalog import SECONDARY_SITES, WORKS, Group, Site, Status, Work, get_work
 from risale_mcp.paths import BOOKS_DIR, INTERIM_DIR, RAW_DIR, ROOT
 from risale_mcp.sources import erisale
 
@@ -109,12 +110,14 @@ def parse(work: Work) -> tuple[Book, list[str]]:
         return risaleoku_parser.parse_work(work, RAW_DIR / Site.RISALEOKU), []
     if work.source.site is Site.YENIASYA:
         return yeniasya_parser.parse_work(work, RAW_DIR / Site.YENIASYA), []
+    if work.source.site is Site.KASTAMONUR:
+        return kastamonur_parser.parse_work(work, RAW_DIR / Site.KASTAMONUR), []
     raise ValueError(f"{work.source.site} için ayrıştırıcı yok")
 
 
 def needs_mapping(work: Work) -> bool:
     """Mecmualar ve son çare kaynaktaki eserler: metni ana ciltlerde olan paragraflar oraya işaret eder."""
-    return work.group is Group.MECMUA or work.source.site is Site.YENIASYA
+    return work.group is Group.MECMUA or work.source.site in SECONDARY_SITES
 
 
 def build_work(work: Work) -> None:

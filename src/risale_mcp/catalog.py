@@ -30,7 +30,12 @@ class Site(StrEnum):
     ERISALE = "erisale"              # erisale.com: standart baskı, birincil kaynak
     RISALE_ONLINE = "risale_online"  # risale.online: Hayrat baskısı
     RISALEOKU = "risaleoku"          # risaleoku.com
-    YENIASYA = "yeniasya"            # yeniasya.com.tr/risaleinur: bozuk kodlu PDF metni, son çare
+    YENIASYA = "yeniasya"            # yeniasya.com.tr/risaleinur: bozuk kodlu PDF metni, Arapçasız (artık kullanılmıyor)
+    KASTAMONUR = "kastamonur"        # kastamonur.com: Âsâr-ı Bedîiyye'den Nutuklar ve Makaleler
+
+
+# Bu kaynaklardaki eserler ana metin sayılmaz: ana ciltlerde de geçen parçaları oraya eşlenir.
+SECONDARY_SITES = frozenset({Site.YENIASYA, Site.KASTAMONUR})
 
 
 @dataclass(frozen=True)
@@ -66,15 +71,17 @@ def _ilk_donem(*sections: str) -> SourceRef:
 
 
 _E, _A, _M, _H = Group.ESKI_SAID, Group.ANA_CILT, Group.MECMUA, Group.HIZB
+_ASAR_I_BEDIIYYE = "nutuklar-ve-makaleler-asar-i-bediiyyeden"   # kastamonur.com'daki yazı
 
 WORKS: tuple[Work, ...] = (
     # --- Eski Said dönemi
     Work("kizil-icaz", "Kızıl İcaz", _E, None, Status.MISSING, "Arapça mantık eseri.", language="ar"),
     Work("talikat", "Ta'likat", _E, None, Status.MISSING, "Arapça mantık eseri.", language="ar"),
     Work("divan-i-harb-i-orfi", "Divan-ı Harb-i Örfî", _E, _ilk_donem("divan-i-harb-i-orfi")),
-    Work("nutuk", "Nutuk", _E, SourceRef(Site.YENIASYA, "eskisaiddonemieserleri", ("nutuk",)),
-         note="Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde."),
-    Work("makalat", "Makalat", _E, SourceRef(Site.YENIASYA, "eskisaiddonemieserleri", ("makalat",))),
+    Work("nutuk", "Nutuk", _E, SourceRef(Site.KASTAMONUR, _ASAR_I_BEDIIYYE, ("nutuklar",)),
+         note="Âsâr-ı Bedîiyye baskısı. Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde."),
+    Work("makalat", "Makalat", _E, SourceRef(Site.KASTAMONUR, _ASAR_I_BEDIIYYE, ("makaleler",)),
+         note="Âsâr-ı Bedîiyye baskısı; sitede Makale – 13 yok."),
     Work("muhakemat", "Muhakemat", _E, _erisale("muhakemat")),
     Work("hutbe-i-samiye", "Hutbe-i Şamiye", _E, _ilk_donem("hutbe-i-samiye")),
     Work("munazarat", "Münazarat", _E, _ilk_donem("munazarat")),
