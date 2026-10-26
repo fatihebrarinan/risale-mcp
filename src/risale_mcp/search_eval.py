@@ -2,7 +2,12 @@
 
 Kullanım:
     uv run python -m risale_mcp.search_eval check          # seti denetle, gözden geçirme sayfasını üret
-    uv run python -m risale_mcp.search_eval run words      # bir aramayı ölç (words, words-or, …)
+    uv run python -m risale_mcp.search_eval run words      # bir aramayı ölç
+    uv run --env-file .env python -m risale_mcp.search_eval run words-or semantic:voyage-4-large hybrid:voyage-4-large
+
+Aramalar: `words` (bugünkü kelime araması, bütün kelimeler geçmeli), `words-or` (kelimelerden biri),
+`semantic:<model>[:<seçenek>]` (vektör araması; `embeddings.py`), `hybrid:<model>[:<seçenek>]`
+(vektör ve `words-or` sonuçları RRF ile birleşir). Birden çok arama verilirse karşılaştırma tablosu yazılır.
 
 Değerlendirme seti `tests/golden/semantic_queries.json`'dadır: günümüz Türkçesiyle sorulmuş
 kavramlar ve her birinin asıl işlendiği bölümler (`expected`), kabul edilen yan bölümler
@@ -26,6 +31,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
+from risale_mcp import embeddings
 from risale_mcp import search as fts
 from risale_mcp.db import connect
 from risale_mcp.normalize import search_words
@@ -35,9 +41,11 @@ QUERIES = ROOT / "tests" / "golden" / "semantic_queries.json"
 OUT_DIR = INTERIM_DIR / "search_eval"
 DEPTH = 20                 # her aramadan alınan sonuç sayısı
 CUTOFFS = (5, 10, 20)
+RRF_K = 60                 # karma aramada sıraların birleştirilmesi: puan = Σ 1 / (RRF_K + sıra)
+POOL = 100                 # karma aramada her aramadan alınan sonuç
 
-# Arama: (bağlantı, soru, sonuç sayısı) -> cümlelerin düğüm kimlikleri, en uygun önce.
-Retriever = Callable[[sqlite3.Connection, str, int], list[str]]
+# Arama: (bağlantı, soru, sonuç sayısı) -> (cümle, düğüm) listesi, en uygun önce.
+Retriever = Callable[[sqlite3.Connection, str, int], list[tuple[str, str]]]
 
 
 @dataclass(frozen=True)
@@ -64,19 +72,62 @@ def first_rank(nodes: list[str], sections: list[str]) -> int | None:
 
 # ---------------------------------------------------------------- aramalar
 
-def _words(conn: sqlite3.Connection, query: str, k: int) -> list[str]:
+def _words(conn: sqlite3.Connection, query: str, k: int) -> list[tuple[str, str]]:
     """Bugünkü kelime araması, sorunun kelimeleriyle (hepsi geçmeli)."""
     words = search_words(query)
-    return [h.node_id for h in fts.search(conn, " ".join(words), limit=k)] if words else []
+    return [(h.sentence_id, h.node_id) for h in fts.search(conn, " ".join(words), limit=k)] if words else []
 
 
-def _words_or(conn: sqlite3.Connection, query: str, k: int) -> list[str]:
+def _words_or(conn: sqlite3.Connection, query: str, k: int) -> list[tuple[str, str]]:
     """Kelimelerden herhangi biri (BM25 sıralaması): kelime aramasının en iyimser hâli."""
     words = search_words(query)
-    return [h.node_id for h in fts.search(conn, " OR ".join(words), limit=k)] if words else []
+    return [(h.sentence_id, h.node_id) for h in fts.search(conn, " OR ".join(words), limit=k)] if words else []
 
 
-RETRIEVERS: dict[str, Retriever] = {"words": _words, "words-or": _words_or}
+def _semantic(spec: str) -> Retriever:
+    """`<model>[:<seçenek>]` için vektör araması. Birimler ilk çağrıda bir kez okunur."""
+    name, _, variant = spec.partition(":")
+    model = embeddings.MODELS[name]
+    variant = variant or ("context" if model.contextual else "sentence")
+    store = embeddings.VectorStore(model.name, variant)
+    if not store.keys:
+        sys.exit(f"{name}.{variant} için vektör yok; önce `python -m risale_mcp.embeddings build {name}`.")
+    sentences: dict[str, list[tuple[str, str]]] = {}
+
+    def retrieve(conn: sqlite3.Connection, query: str, k: int) -> list[tuple[str, str]]:
+        if not sentences:
+            sentences.update((u.key, u.sentences) for u in embeddings.units(conn, variant))
+        out = []
+        for key, _ in store.nearest(embeddings.query_vector(model, query), list(sentences), k):
+            out += sentences[key]
+        return out[:k]
+    return retrieve
+
+
+def _hybrid(spec: str) -> Retriever:
+    semantic = _semantic(spec)
+
+    def retrieve(conn: sqlite3.Connection, query: str, k: int) -> list[tuple[str, str]]:
+        return rrf([semantic(conn, query, POOL), _words_or(conn, query, POOL)])[:k]
+    return retrieve
+
+
+def rrf(rankings: list[list[tuple[str, str]]]) -> list[tuple[str, str]]:
+    """Sıralamaların birleşimi (Reciprocal Rank Fusion): puanlar değil sıralar toplanır."""
+    scores: dict[tuple[str, str], float] = {}
+    for ranking in rankings:
+        for rank, hit in enumerate(ranking, 1):
+            scores[hit] = scores.get(hit, 0) + 1 / (RRF_K + rank)
+    return sorted(scores, key=lambda hit: -scores[hit])
+
+
+def retriever(name: str) -> Retriever:
+    if name in ("words", "words-or"):
+        return {"words": _words, "words-or": _words_or}[name]
+    kind, _, spec = name.partition(":")
+    if kind not in ("semantic", "hybrid") or spec.split(":")[0] not in embeddings.MODELS:
+        sys.exit(f"Bilinmeyen arama {name!r}; modeller: {', '.join(embeddings.MODELS)}.")
+    return _semantic(spec) if kind == "semantic" else _hybrid(spec)
 
 
 # ---------------------------------------------------------------- ölçüm
@@ -84,7 +135,7 @@ RETRIEVERS: dict[str, Retriever] = {"words": _words, "words-or": _words_or}
 def evaluate(conn: sqlite3.Connection, retriever: Retriever, queries: list[Query]) -> list[dict]:
     rows = []
     for q in queries:
-        nodes = retriever(conn, q.query, DEPTH)
+        nodes = [node for _, node in retriever(conn, q.query, DEPTH)]
         rows.append({"id": q.id, "query": q.query, "rank": first_rank(nodes, q.expected),
                      "any_rank": first_rank(nodes, q.expected + q.related)})
     return rows
@@ -102,17 +153,27 @@ def _rank(rank: int | None) -> str:
     return str(rank) if rank else "—"
 
 
-def run(name: str, conn: sqlite3.Connection) -> Path:
-    rows = evaluate(conn, RETRIEVERS[name], load_queries())
-    summary = summarize(rows)
-    lines = [f"# Arama değerlendirmesi: `{name}`", "", f"{datetime.now():%Y-%m-%d %H:%M}, {len(rows)} soru", "",
-             " · ".join(f"**{k}** {v:.2f}" for k, v in summary.items()), "",
-             "| Soru | | Beklenen bölümün sırası | Beklenen ya da yan |", "|---|---|---|---|",
-             *(f"| {r['id']} | {r['query']} | {_rank(r['rank'])} | {_rank(r['any_rank'])} |" for r in rows), ""]
+def run(names: list[str], conn: sqlite3.Connection) -> Path:
+    """Aramaları ölçer; özet tablo ve soru başına beklenen bölümün sırası (yan bölümler parantez içinde)."""
+    queries = load_queries()
+    results = {name: evaluate(conn, retriever(name), queries) for name in names}
+    summaries = {name: summarize(rows) for name, rows in results.items()}
+    metrics = list(next(iter(summaries.values())))
+    lines = ["# Arama değerlendirmesi", "", f"{datetime.now():%Y-%m-%d %H:%M}, {len(queries)} soru", "",
+             "| Arama | " + " | ".join(metrics) + " |", "|---|" + "---|" * len(metrics),
+             *(f"| `{name}` | " + " | ".join(f"{v:.2f}" for v in summary.values()) + " |"
+               for name, summary in summaries.items()),
+             "", "Soru başına beklenen bölümün sırası (— = ilk 20'de yok; parantez içinde yan bölümler dahil):", "",
+             "| Soru | | " + " | ".join(f"`{n}`" for n in names) + " |", "|---|---|" + "---|" * len(names)]
+    for i, q in enumerate(queries):
+        cells = [f"{_rank(results[n][i]['rank'])} ({_rank(results[n][i]['any_rank'])})" for n in names]
+        lines.append(f"| {q.id} | {q.query} | " + " | ".join(cells) + " |")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out = OUT_DIR / f"{name}.md"
-    out.write_text("\n".join(lines), encoding="utf-8")
-    print(" · ".join(f"{k} {v:.2f}" for k, v in summary.items()))
+    out = OUT_DIR / ("compare.md" if len(names) > 1 else f"{names[0].replace(':', '_')}.md")
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    width = max(map(len, names))
+    for name, summary in summaries.items():
+        print(f"{name:{width}}  " + " · ".join(f"{k} {v:.2f}" for k, v in summary.items()))
     print(f"rapor: {out.relative_to(ROOT)}")
     return out
 
@@ -177,15 +238,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     commands = parser.add_subparsers(dest="command", required=True)
     commands.add_parser("check", help="seti denetle, gözden geçirme sayfasını üret")
-    run_parser = commands.add_parser("run", help="bir aramayı ölç")
-    run_parser.add_argument("retriever", choices=sorted(RETRIEVERS))
+    run_parser = commands.add_parser("run", help="aramaları ölç ve karşılaştır")
+    run_parser.add_argument("retrievers", nargs="+", help="words, words-or, semantic:<model>, hybrid:<model>")
     parser.add_argument("--db", type=Path, default=DB_PATH)
     args = parser.parse_args()
     conn = connect(args.db)
     if args.command == "check":
         check(conn)
     else:
-        run(args.retriever, conn)
+        run(args.retrievers, conn)
 
 
 if __name__ == "__main__":

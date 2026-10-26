@@ -11,3 +11,4 @@ data/interim/review/
 data/interim/golden/
 data/interim/search_eval/
 .env
+data/vectors/
