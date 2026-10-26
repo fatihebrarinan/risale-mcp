@@ -12,6 +12,7 @@ Okuma birimleri:
 - Cümle ve hâşiye kimlikleri eser verisindeki gibi kalıcıdır (`sozler/10/c032/h1/c002`).
 """
 
+import re
 import sqlite3
 from collections import defaultdict
 from itertools import accumulate
@@ -253,11 +254,12 @@ class Library:
         Ana metin cümlelerine bağlı hâşiyeler cümlenin altında gelir."""
         first_id, _, last_id = passage_id.partition("..")
         first = self._sentence(first_id.strip())
+        note = None
         if last_id:
             last_id = last_id.strip()
             if "/" not in last_id:                     # kısa biçim: aynı düğümde "c015"
                 last_id = f"{first['id'].rsplit('/', 1)[0]}/{last_id}"
-            last = self._sentence(last_id)
+            last, note = self._range_end(last_id)
             if last["work"] != first["work"] or last["seq"] < first["seq"]:
                 raise LibraryError("A range must run forward inside one work: first..last.")
             if last["seq"] - first["seq"] >= MAX_RANGE:
@@ -294,7 +296,24 @@ class Library:
                 record["hasiye"] = notes[r["id"]]
             out.append(record)
         node = self._node(first["node_id"])
-        return {"section": node["id"], "section_ref": node["ref"], "sentences": out}
+        result = {"section": node["id"], "section_ref": node["ref"], "sentences": out}
+        if note:
+            result["note"] = note
+        return result
+
+    def _range_end(self, sentence_id: str) -> tuple[sqlite3.Row, str | None]:
+        """Aralığın son cümlesi. Bölümün son cümlesini aşan numara ("c029", bölümde 24 cümle varken)
+        bölümün sonuna çekilir; model aralığın ucunu çoğu zaman tahmin eder."""
+        try:
+            return self._sentence(sentence_id), None
+        except LibraryError:
+            node_id, _, local = sentence_id.rpartition("/")
+            number = re.fullmatch(r"c(\d+)", local)
+            last = self.conn.execute("SELECT * FROM sentences WHERE node_id = ? AND hasiye = 0 ORDER BY n DESC LIMIT 1",
+                                     (node_id,)).fetchone()
+            if number is None or last is None or int(number[1]) <= last["n"]:
+                raise
+        return last, f"Section {node_id!r} has {last['n']} sentences; the range ends at {last['id']}."
 
     def _hasiye_of(self, sentence_ids: list[str]) -> dict[str, list[dict]]:
         """Cümle -> ona bağlı hâşiyelerin cümleleri."""

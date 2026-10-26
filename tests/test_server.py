@@ -96,6 +96,14 @@ def test_passage_with_context_range_and_hasiye(library):
         library.passage("sozler/10/c099")
 
 
+def test_passage_range_past_the_section_end_stops_there(library):
+    passage = library.passage("sozler/10/c001..c009")             # bölümde iki cümle var
+    assert [s["id"] for s in passage["sentences"]] == ["sozler/10/c001", "sozler/10/c002"]
+    assert passage["note"] == "Section 'sozler/10' has 2 sentences; the range ends at sozler/10/c002."
+    with pytest.raises(LibraryError, match="No sentence"):
+        library.passage("sozler/10/c001..sozler/99/c003")         # bilinmeyen bölüm kesilmez
+
+
 def test_find_sentence_by_opening_words(library):
     assert [m["id"] for m in library.find_sentence("elbette hasr-i cism")["matches"]] == ["sozler/10/c002"]
     assert library.find_sentence("Elbette haşr", scope="sozler/11")["matches"] == []
@@ -137,7 +145,7 @@ async def test_server_lists_tools_prompts_and_resources(library):
     async with Client(create_server(library)) as client:
         tools = {t.name: t for t in (await client.list_tools()).tools}
         assert set(tools) == {"list_works", "get_outline", "read_section", "get_passage", "search",
-                              "find_sentence", "find_ayah"}
+                              "find_sentence", "find_ayah", "verify_citations"}
         assert all(t.annotations.read_only_hint for t in tools.values())
         prompts = {p.name for p in (await client.list_prompts()).prompts}
         assert prompts == {"topic_survey", "text_and_commentary", "discuss", "self_test", "lesson_plan"}
@@ -153,6 +161,14 @@ async def test_server_tool_returns_compact_json_and_readable_errors(library):
         assert ", " not in result.content[0].text.split('"text"')[0]           # girintisiz JSON
         error = await client.call_tool("get_outline", {"section": "sozler/99"})
         assert error.is_error and "get_outline to see section ids" in error.content[0].text
+
+
+async def test_server_verifies_citations(library):
+    async with Client(create_server(library)) as client:
+        result = await client.call_tool("verify_citations", {"text": "Sözler › Onuncu Söz › “Böyle bir cümle yok”"})
+        report = json.loads(result.content[0].text)
+        assert (report["checked"], report["problems"]) == (1, 1)
+        assert report["citations"][0]["status"] == "quote_not_found"
 
 
 async def test_server_resources_and_prompts(library):

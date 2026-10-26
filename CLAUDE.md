@@ -105,6 +105,7 @@ risale-mcp/
 │   ├── build_db.py     # Aşama 5: JSON → SQLite CLI'ı (sûre/âyet çözümü, doğrulama)
 │   ├── search.py       # Aşama 5: sorgu dili → FTS5, cümle ve başlık araması
 │   ├── library.py      # Aşama 6: veritabanı üzerindeki okuma işleri (MCP'den bağımsız)
+│   ├── citations.py    # Atıf denetimi: metindeki "Eser › Bölüm › “ilk kelimeler”" atıfları (araç ve altın sorular)
 │   ├── server.py       # Aşama 6: MCP sunucusu (araçlar, kaynaklar, hazır komutlar)
 │   └── golden.py       # Aşama 7: altın sorularla uçtan uca deneme (Claude Code istemci)
 └── tests/
@@ -122,6 +123,7 @@ risale-mcp/
     ├── conftest.py           # ortak küçük veritabanı (iki elle yazılmış eser)
     ├── test_build_db.py
     ├── test_server.py
+    ├── test_citations.py
     ├── test_golden.py
     └── golden/
         ├── golden_questions.md   # kullanıcının yazdığı test soruları
@@ -257,16 +259,24 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 | `list_works(group?)` | Eserler, kimlikleri, grupları, boyutları; metni bulunamayanlar `available: false` |
 | `get_outline(section, depth=2)` | Başlık ağacı; her düğümde alt ağacın ana metin cümle sayısı, derinlik sınırında `subsections` |
 | `read_section(section, cursor?, max_words=1500)` | Bölümü alt bölümleriyle kitap sırasıyla okur: başlıklar (`ref`), paragraflar (cümle `id` + metin), hâşiyeler (`hasiye_of`), âyet/hadis meal ve kaynağı, eksikler (`gap`). Paragraf sınırında sayfalar, `next_cursor` ile sürer. Mecmuada eşlenmiş paragraf ana cildin cümleleriyle (`canonical`) gelir. |
-| `get_passage(id, context=0)` | Cümle ya da aralık (`…/c010..c015`), `ref` ve `incipit` ile; bağlı hâşiyeler ve âyet mealleri |
+| `get_passage(id, context=0)` | Cümle ya da aralık (`…/c010..c015`), `ref` ve `incipit` ile; bağlı hâşiyeler ve âyet mealleri. Bölümün sonunu aşan aralık son cümlede kesilir (`note`). |
 | `search(query, work?, group?, limit=20, offset=0)` | Cümle araması (`search.py` sorgu dili); toplam, eser başına sayı, eşleşen başlıklar |
 | `find_sentence(incipit, scope?)` | İlk kelimelerden cümle (işaretsiz; son kelime eksik olabilir) |
 | `find_ayah(sura, ayah?)` | Âyetin geçtiği cümleler; sûre numarası ya da adı |
+| `verify_citations(text)` | Taslak cevaptaki atıfları denetler: bölüm var mı, alıntı bir cümlenin başı mı; sorunlu atfa tam atıf ya da alıntının asıl yeri önerilir |
+
+### Atıf denetimi (`citations.py`)
+Ayrıntı modülün başındaki açıklamadadır. `verify_citations` aracı ve altın soru raporu aynı denetimi kullanır.
+- Satır `›` işaretlerinden bölünür; bir satırda birden çok atıf, atıftan önce ve sonra düz yazı olabilir. Atıf alıntıyla ya da "32. cümle" ile biter.
+- Başlık basılı adla, içindekiler adıyla, tür ve numarayla ("İkinci Makam" = "Yirminci Söz’ün İkinci Makamı"), ekli ("Dördüncü Söz'de"), "(asm)" gibi ayraçsız ya da "…" ile kısaltılmış yazılabilir; ara başlıklar atlanabilir. Bunlar geçerlidir ama tam yolu yazılmamış sayılır (`exact`), araç tam atfı verir.
+- "…", "aynı yer", "(› …" ve eser adı yazılmamış yol bir önceki atfa göre çözülür. Yol birden çok bölüme uyarsa önce alıntının geçtiği, sonra önceki atfa yakın, ana ciltteki ve üst seviyedeki bölüm seçilir.
+- Sonuçlar: `ok`, `section`, `mid_sentence`, `quote_not_found` (alıntının asıl yeri `elsewhere`), `no_such_sentence`, `unknown_section`, `ambiguous`.
 
 - **Kaynaklar** (kullanıcının sohbete eklediği bağlam): `risale://works`, `risale://outline/{work}`, `risale://text/{+section}` (ör. `risale://text/sozler/10`; numaralı cümlelerle Markdown).
 - **Hazır komutlar** (İngilizce adlar): `topic_survey(topic, scope?)` konunun eserlerde geçtiği yerler (2. hedef), `text_and_commentary(question)` "metin ne diyor" ve "yorum" ayrı (3. hedef), `discuss(topic)` müzakere, `self_test(section)` bölümden soru sorup cevabı metinle denetler, `lesson_plan(subject)` atıflı ders planı.
-- **Sunucu talimatları:** atıfı araç sonucundan al ve uydurma; kullanıcıya cümleyi numarasıyla değil yol + incipit ile göster; bulamazsan söyle; metni ve yorumu ayır; önce ara, sonra bağlamı oku.
+- **Sunucu talimatları:** atıfı araç sonucundan al ve uydurma; kullanıcıya cümleyi numarasıyla değil yol + incipit ile göster; yolu eserden başlayarak tam ve kısaltmadan yaz, önceki atfa göre göreli yazma, `›` işaretini yalnızca atıfta kullan; tırnağı yalnızca metnin kendi sözlerine koy; cevaptan önce atıfları `verify_citations` ile denetle; bulamazsan söyle; metni ve yorumu ayır; önce ara, sonra bağlamı oku.
 
-Sonraki aşamalar: konu fihristi, anlamsal arama (vektörler `sentences.hash` ile), atıf doğrulama.
+Sonraki aşamalar: anlamsal arama (vektörler `sentences.hash` ile), konu fihristi.
 
 ## Uçtan uca deneme (Aşama 7)
 
@@ -277,11 +287,11 @@ Linux'ta Claude Desktop olmadığı için MCP istemcisi olarak Claude Code kulla
 3. **Altın sorular:** `uv run python -m risale_mcp.golden run A1 B7 …` (ya da `--all`). Her soru `claude -p` ile geçici, boş bir klasörde, yerleşik araçlar kapalı (`--tools ""`), yalnızca bu sunucuyla (`--strict-mcp-config`) ve varsayılan modelle sorulur. `--bare` kullanılmaz (OAuth'u kapatır). Döküm ve rapor: `data/interim/golden/<zaman>/` (`report.md`, git'e eklenmez).
 
 Raporun otomatik kontrolleri:
-- **Atıflar:** cevaptaki "Yol › … › “ilk kelimeler”" ya da "… › 32. cümle" zincirleri veritabanında aranır: ✓ cümle bulundu, ◑ alıntı metinde var ama cümle başı değil, ◐ yalnızca bölüm, ✗ bölüm ya da cümle yok (uydurma olabilir).
+- **Atıflar:** cevaptaki "Yol › … › “ilk kelimeler”" ya da "… › 32. cümle" zincirleri `citations.py` ile veritabanında aranır: ✓ cümle bulundu, ◑ alıntı metinde var ama cümle başı değil, ◐ yalnızca bölüm, ✗ bölüm ya da cümle yok (uydurma olabilir; alıntı başka yerdeyse orası gösterilir). Doğru ama kısaltılmış yolla yazılan atıflar tabloda "(n kısa)" diye sayılır.
 - **Beklenen bölüm:** model okudu mu (`read_section`, `get_passage`, `find_sentence`; arama sonucu ve başlık ağacı okumak sayılmaz), cevapta adı geçiyor mu.
 - **Araç kullanımı:** çağrılar, parametreleri ve hatalar.
 
-Metin–yorum ayrımı, özetin doğruluğu ve tuzak sorulardaki davranış elle değerlendirilir. İlk denemede (A1, B7, D16, K5) dört sorunun dördünde model doğru yeri buldu, tuzakta uydurmadı, yorumu ayrı başlıkta verdi.
+Metin–yorum ayrımı, özetin doğruluğu ve tuzak sorulardaki davranış elle değerlendirilir. İlk denemede (A1, B7, D16, K5) dört sorunun dördünde model doğru yeri buldu, tuzakta uydurmadı, yorumu ayrı başlıkta verdi. 25 sorunun tamamında (`20261026-113635`) 428 alıntının hiçbiri uydurma çıkmadı, dört tuzağın dördü doğru. Atıfların çoğu kısaltılmış ya da göreli yolla yazılmıştı; bunun üzerine talimatlara tam yol kuralı ve `verify_citations` eklendi.
 
 ## Çalışma kuralları
 
@@ -294,7 +304,7 @@ Metin–yorum ayrımı, özetin doğruluğu ve tuzak sorulardaki davranış elle
 
 ## Aşamalar
 
-Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılması ve kontrol arayüzü. Aşama 1–5 tamamlandı (cümle ve eşleme kontrolü kullanım sırasında sürecek); Aşama 6 kullanıcının kontrolünü bekliyor.
+Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılması ve kontrol arayüzü. Aşama 1–7 tamamlandı (cümle ve eşleme kontrolü kullanım sırasında sürecek). Ardından atıf denetimi (`citations.py`, `verify_citations`) eklendi.
 
 1. **İndirici:** Katalog, nazik istemci, dört sitenin indiricisi ve bütünlük doğrulaması. Önce Sözler pilotu, ardından bütün eserler toplu indirildi:
    `uv run python -m risale_mcp.fetch get --all --site <site>` (her site ayrı süreçte; günlükler `data/raw/logs/`).

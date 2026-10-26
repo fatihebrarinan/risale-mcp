@@ -4,7 +4,7 @@ import json
 
 import pytest
 
-from risale_mcp.golden import Checker, Transcript, ToolCall, evaluate, load_questions, read_transcript, sandbox
+from risale_mcp.golden import Checker, ToolCall, Transcript, evaluate, load_questions, read_transcript, sandbox
 from risale_mcp.library import Library
 from risale_mcp.paths import ROOT
 
@@ -39,24 +39,6 @@ def test_read_transcript_collects_calls_answer_and_cost(tmp_path):
     assert [(c.name, c.arguments, c.result) for c in t.calls] == [("search", {"query": "haşir"}, "{\"total\":1}")]
 
 
-@pytest.mark.parametrize("line,status", [
-    ("Bkz. Sözler › Onuncu Söz › “Elbette haşr-i cismânî…”", "ok"),
-    ("**Onuncu Söz › Birinci Hakikat** › \"Kıyâmet ve mîzan\"", "ok"),          # eser adı yazılmadan
-    ("Sözler › Onuncu Söz › 2. cümle", "ok"),
-    ("Sözler › Onuncu Söz › 1. cümle › Hâşiye › 1. cümle", "ok"),
-    ("Sözler › Onuncu Söz", "section"),
-    ("Sözler › Onuncu Söz › On Beşinci Hakikat", "unresolved"),                  # uydurma bölüm
-    ("Sözler › Onuncu Söz › “Böyle bir cümle yok…”", "unresolved"),
-    ("Giriş: Sözler › Onuncu Söz › \"Elbette 'haşr-i' cismânî\" ve \"başka\"", "ok"),     # iki alıntı, iç tırnak
-    ("Sözler › Onuncu Söz › 9. cümle", "unresolved"),
-    ("**Sözler › Onuncu Söz** bölümünde yer alıyor; \"Kıyâmet\" der.", "section"),        # başlıktan sonra düz yazı
-    ("(Sözler › Onuncu Söz › \"haşr-i cismânî olacak\")", "inside"),                    # cümle başı değil
-])
-def test_citations_are_checked_against_database(checker, line, status):
-    (citation,) = checker.citations(f"Metin şöyle der.\n{line}\n")
-    assert citation.status == status
-
-
 def test_evaluate_reports_read_and_named_sections(checker):
     question = {"id": "A1", "sections": ["sozler/10", "sozler/11"]}
     transcript = Transcript(answer="Onuncu Söz’de anlatılır: Sözler › Onuncu Söz › “Elbette haşr-i…”",
@@ -65,7 +47,8 @@ def test_evaluate_reports_read_and_named_sections(checker):
     result = evaluate(question, transcript, checker)
     assert result["sections"] == [{"id": "sozler/10", "read": True, "named": True},
                                   {"id": "sozler/11", "read": False, "named": False}]   # ağaca bakmak okumak değil
-    assert result["unresolved"] == []
+    assert result["problems"] == []
+    assert [c.sentence for c in result["citations"]] == ["sozler/10/c002"]
 
 
 def test_sandbox_must_be_outside_project(tmp_path):

@@ -24,6 +24,7 @@ from mcp.server.mcpserver.exceptions import ToolError
 from mcp_types import ToolAnnotations
 from pydantic import Field
 
+from risale_mcp.citations import CitationChecker, summary
 from risale_mcp.db import DatabaseError
 from risale_mcp.library import Library, LibraryError
 from risale_mcp.paths import DB_PATH
@@ -45,10 +46,17 @@ invent references, ids, quotations or section names.
 2. When you show a reference to the user, give the section path and the sentence's opening words in \
 quotes instead of its number, e.g. Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › \
 "Hiç mümkün müdür ki; ölmüş…". The opening words are the sentence's incipit.
-3. If the tools do not return something, say that you could not find it in the works. Do not fill \
+3. Write every reference in full, from the work down, exactly as the tools' ref gives it: printed \
+titles unshortened ("Yirminci Söz’ün İkinci Makamı", not "İkinci Makam"), no levels left out, and \
+never relative to an earlier reference ("…", "same place", a bare "Birinci Mebhas"). Use › only in \
+references, not for your own labels.
+4. Put quotation marks only around the text's own words, never around your paraphrase.
+5. Before giving an answer that contains references, pass them to verify_citations and correct every \
+one it flags.
+6. If the tools do not return something, say that you could not find it in the works. Do not fill \
 the gap from memory.
-4. Keep what the text says apart from your own interpretation, under separate headings.
-5. Answer in the user's language (usually Turkish); quote the text as returned.
+7. Keep what the text says apart from your own interpretation, under separate headings.
+8. Answer in the user's language (usually Turkish); quote the text as returned.
 
 How to navigate:
 - search finds sentences by words; marks and Turkish letters are optional ("hasir" finds "haşir"). \
@@ -119,6 +127,7 @@ def _section_markdown(section: dict) -> str:
 def create_server(library: Library) -> MCPServer:
     server = MCPServer(NAME, title="Risale-i Nur", instructions=INSTRUCTIONS,
                        description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.")
+    citations = CitationChecker(library)
 
     @server.tool(annotations=READ_ONLY)
     def list_works(
@@ -159,7 +168,8 @@ def create_server(library: Library) -> MCPServer:
         context: Annotated[int, Field(description="Neighbouring sentences to add on each side.", ge=0, le=20)] = 0,
     ) -> str:
         """Get sentences with their ref, incipit and text, the hâşiyes attached to them, and the meaning of quoted
-        verses. Use it to check a quotation or to fetch the exact citation of a sentence."""
+        verses. Use it to check a quotation or to fetch the exact citation of a sentence. A range that runs past
+        the end of its section stops at the section's last sentence (see note)."""
         with _tool_errors():
             return _json(library.passage(id, context))
 
@@ -199,6 +209,17 @@ def create_server(library: Library) -> MCPServer:
         Arabic text, its meaning and source."""
         with _tool_errors():
             return _json(library.find_ayah(sura, ayah, limit, offset))
+
+    @server.tool(annotations=READ_ONLY)
+    def verify_citations(
+        text: Annotated[str, Field(description="Your draft answer, or the lines of it that contain references.")],
+    ) -> str:
+        """Check the references in a draft answer against the works before you send it. Finds every
+        "Work › Section › “opening words”" (or "› 12. cümle") reference and reports, for each, whether the section
+        exists and the quoted words start a sentence there. Flagged references come with a problem and, where
+        possible, the full reference to use instead or where the quoted words really occur."""
+        with _tool_errors():
+            return _json(summary(citations.check(text)))
 
     # ------------------------------------------------------------ kaynaklar (kullanıcının eklediği bağlam)
 

@@ -19,7 +19,7 @@ SOZLER = {
         {"id": "sozler", "parent_id": None, "title": "Sözler", "ref": "Sözler"},
         {"id": "sozler/10", "parent_id": "sozler", "title": "Onuncu Söz", "subtitle": "Haşre dâir",
          "ref": "Sözler › Onuncu Söz"},
-        {"id": "sozler/10/hakikat-01", "parent_id": "sozler/10", "title": "Birinci Hakikat",
+        {"id": "sozler/10/hakikat-01", "parent_id": "sozler/10", "title": "Birinci Hakikat", "type": "Hakikat", "number": 1,
          "ref": "Sözler › Onuncu Söz › Birinci Hakikat"},
         {"id": "sozler/11", "parent_id": "sozler", "title": "Onbirinci Söz", "ref": "Sözler › Onbirinci Söz"},
     ],

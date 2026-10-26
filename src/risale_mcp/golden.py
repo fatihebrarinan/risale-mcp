@@ -13,8 +13,9 @@ veriyi okuyamaz, web'de arayamaz. Model varsayılan modeldir.
 
 Döküm (`stream-json`) `data/interim/golden/<zaman>/<soru>.jsonl` dosyasına yazılır; rapor aynı
 klasördeki `report.md`'dir. Otomatik kontroller:
-- Atıflar: cevaptaki "Yol › Yol › “ilk kelimeler…”" atıfları veritabanında aranır. Bölümü ya da
-  cümlesi bulunamayan atıf uydurma olabilir.
+- Atıflar: cevaptaki "Yol › Yol › “ilk kelimeler…”" atıfları `citations.py` ile veritabanında aranır
+  (modelin `verify_citations` aracıyla aynı denetim). Bölümü ya da cümlesi bulunamayan atıf uydurma
+  olabilir; kısaltılmış yolla yazılan atıf geçerlidir ama ayrıca sayılır.
 - Beklenen bölüm: model beklenen bölümü (alt bölümleriyle) okudu mu, cevapta adı geçiyor mu.
 - Araç kullanımı: hangi araçlar, kaç kez, hatalı çağrılar.
 Metin–yorum ayrımı ve özetin doğruluğu elle değerlendirilir (rapordaki "Değerlendirme" satırı).
@@ -33,7 +34,8 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-from risale_mcp.library import Library, LibraryError
+from risale_mcp.citations import Citation, CitationChecker
+from risale_mcp.library import Library
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import INTERIM_DIR, ROOT
 
@@ -156,114 +158,19 @@ def read_transcript(path: Path) -> Transcript:
 
 # ---------------------------------------------------------------- kontroller
 
-# Yolun hemen ardından gelen alıntı: önce düz tırnak ("…" içinde “…” olabilir), sonra kıvrık tırnak.
-_QUOTED = (re.compile(r'^"\s*(.+?)\s*(?:…|\.\.\.)?\s*"'), re.compile(r"^[“«]\s*(.+?)\s*(?:…|\.\.\.)?\s*[”»]"))
-_SENTENCE_NO = re.compile(r"^(\d+)\.\s*cümle$")
-_TRIM = " -–—:;,.()[]"
-
-
-@dataclass
-class Citation:
-    text: str
-    status: str            # "ok", "inside" (alıntı metinde var ama cümle başı değil), "section", "unresolved"
-    node: str | None = None
-    detail: str = ""
-
-
 def _key(text: str) -> str:
     return " ".join(search_words(text))
 
 
-def _quote(text: str) -> tuple[str | None, str]:
-    """Metnin başındaki alıntı ve geri kalanı."""
-    text = text.strip(" :–—")
-    for pattern in _QUOTED:
-        if m := pattern.match(text):
-            return m[1], text[m.end():]
-    return None, text
-
-
 class Checker:
-    """Cevabı ve araç çağrılarını veritabanına karşı denetler."""
+    """Cevabı ve araç çağrılarını veritabanına karşı denetler. Atıflar `citations.py`'de denetlenir."""
 
     def __init__(self, library: Library) -> None:
         self.library = library
-        self.refs: dict[tuple[str, ...], str] = {}
-        self.by_last: dict[str, list[tuple[tuple[str, ...], str]]] = {}    # son başlık -> (yol, düğüm)
-        for node_id, ref in library.conn.execute("SELECT id, ref FROM nodes"):
-            path = tuple(_key(p) for p in ref.split("›"))
-            if path not in self.refs:
-                self.refs[path] = node_id
-                self.by_last.setdefault(path[-1], []).append((path, node_id))
+        self.verifier = CitationChecker(library)
 
     def citations(self, answer: str) -> list[Citation]:
-        out = []
-        for line in answer.splitlines():
-            for chain in re.findall(r"[^\n›]*(?:›[^\n›]*)+", line):
-                parts = [re.sub(r"[*_`]+", "", p) for p in chain.split("›")]
-                parts = [p.strip(_TRIM) for p in parts[:-1]] + [parts[-1].strip()]
-                if len(parts) >= 2 and all(parts[:-1]):
-                    out.append(self._resolve(parts))
-        return out
-
-    def _resolve(self, parts: list[str]) -> Citation:
-        """Atıf zinciri: [önündeki metin + eser, bölüm…, başlık ya da alıntı + ardından gelen metin]."""
-        incipit, _ = _quote(parts[-1])
-        middle = parts[1:-1] if incipit is not None else parts[1:]
-        # "… › 32. cümle (› Hâşiye › 2. cümle)": yol ilk cümle numarasına kadardır.
-        sentence_no = None
-        for i, p in enumerate(middle):
-            if m := _SENTENCE_NO.match(p.strip(_TRIM)):
-                sentence_no, middle, incipit = int(m[1]), middle[:i], None
-                break
-        head = parts[0].split()
-        tail = middle[-1].split() if middle and incipit is None and sentence_no is None else None
-        node, path = self._match(head, middle[:-1] if tail is not None else middle, tail)
-        text = " › ".join(path) + (f" › “{incipit}”" if incipit else "") + (f" › {sentence_no}. cümle" if sentence_no else "")
-        if node is None:
-            return Citation(" › ".join(p.strip(_TRIM) for p in parts)[:160], "unresolved",
-                            detail="bölüm yolu veritabanında yok")
-        if sentence_no is not None:
-            found = self.library.conn.execute("SELECT 1 FROM sentences WHERE node_id = ? AND n = ? AND hasiye = 0",
-                                              (node, sentence_no)).fetchone()
-            return Citation(text, "ok" if found else "unresolved", node, "" if found else "bu numarada cümle yok")
-        if incipit is None:
-            return Citation(text, "section", node)
-        return self._check_quote(text, node, incipit)
-
-    def _match(self, head: list[str], middle: list[str], tail: list[str] | None) -> tuple[str | None, list[str]]:
-        """İlk parçanın sonundan ve (alıntısız atıfta) son parçanın başından en uzun uyan kelime dizileri."""
-        tails = [tail[:j] for j in range(len(tail), 0, -1)] if tail else [None]
-        for k in range(len(head)):
-            for end in tails:
-                path = [" ".join(head[k:]).strip(_TRIM), *middle] + ([" ".join(end)] if end else [])
-                if node := self._node([_key(p) for p in path]):
-                    return node, path
-        return None, []
-
-    def _node(self, path: list[str]) -> str | None:
-        """Tam yol ya da (eser adı yazılmamışsa) tek bir düğüme uyan yol sonu."""
-        path = tuple(path)
-        if path in self.refs:
-            return self.refs[path]
-        tails = [node for ref, node in self.by_last.get(path[-1], ()) if ref[-len(path):] == path]
-        return tails[0] if len(tails) == 1 else None
-
-    def _check_quote(self, text: str, node: str, incipit: str) -> Citation:
-        try:
-            matches = self.library.find_sentence(incipit, scope=node)["matches"]
-        except LibraryError:
-            matches = []
-        if matches:
-            return Citation(text, "ok", node, matches[0]["id"])
-        # Alıntı bir cümlenin başı değil ama bölümün metninde geçiyor mu (cümle sınırını aşan alıntı)?
-        words = _key(incipit)
-        paragraphs = self.library.conn.execute(
-            "SELECT p.text FROM paragraphs p JOIN nodes n ON n.id = p.node_id JOIN nodes r ON r.id = ?"
-            " WHERE n.work = r.work AND n.ord BETWEEN r.ord AND r.last_ord AND p.text IS NOT NULL", (node,))
-        if words and any(words in _key(p[0]) for p in paragraphs):
-            return Citation(text, "inside", node, "alıntı metinde var, ama bir cümlenin başı değil")
-        return Citation(text, "unresolved", node, "bu sözler bölümün metninde yok")
+        return self.verifier.check(answer)
 
     def read_sections(self, calls: list[ToolCall]) -> set[str]:
         """Modelin metnini okuduğu düğümler (read_section, get_passage; aramada çıkan sonuçlar sayılmaz)."""
@@ -298,7 +205,7 @@ def evaluate(question: dict, transcript: Transcript, checker: Checker) -> dict:
         "tools": len(transcript.calls),
         "tool_errors": sum(c.error for c in transcript.calls),
         "citations": citations,
-        "unresolved": [c for c in citations if c.status == "unresolved"],
+        "problems": [c for c in citations if c.status not in _VERIFIED],
         "sections": sections,
     }
 
@@ -322,9 +229,10 @@ def report(run_dir: Path) -> Path:
         q = questions[path.stem]
         t = read_transcript(path)
         e = evaluate(q, t, checker)
-        ok = sum(c.status in ("ok", "section") for c in e["citations"])
+        ok = sum(c.status in _VERIFIED for c in e["citations"])
+        short = sum(c.status in _VERIFIED and not c.exact for c in e["citations"])
         expected = " ".join(f"{_mark(s['read'])}{_mark(s['named'])}" for s in e["sections"]) or "—"
-        rows.append(f"| {q['id']} | {q['category']} | {e['tools']} ({e['tool_errors']} hata) | {ok}/{len(e['citations'])} "
+        rows.append(f"| {q['id']} | {q['category']} | {e['tools']} ({e['tool_errors']} hata) | {ok}/{len(e['citations'])}{f' ({short} kısa)' if short else ''} "
                     f"| {expected} | {t.seconds or 0:.0f} sn | {t.failure or ''} |")
         lines = [f"## {q['id']} · {q['category']}", "", f"**Soru:** {q['question']}", "",
                  f"**Beklenen:** {q['expected']}", ""]
@@ -339,8 +247,7 @@ def report(run_dir: Path) -> Path:
                       *(f"- `{s['id']}` {checker.title(s['id'])}: {_mark(s['read'])} {_mark(s['named'])}"
                         for s in e["sections"]), ""]
         if e["citations"]:
-            lines += ["**Atıflar:**", "", *(f"- {_CITATION_MARK[c.status]} {c.text}" + (f" — {c.detail}" if c.detail else "")
-                                           for c in e["citations"]), ""]
+            lines += ["**Atıflar:**", "", *map(_citation_line, e["citations"]), ""]
         lines += ["**Değerlendirme:** ⬜ doğru ⬜ kısmen ⬜ yanlış — not:", "", "---", ""]
         sections.append("\n".join(lines))
     header = ["# Altın sorular", "", f"Çalıştırma: `{run_dir.name}`", "",
@@ -353,7 +260,26 @@ def report(run_dir: Path) -> Path:
     return out
 
 
-_CITATION_MARK = {"ok": "✓", "inside": "◑", "section": "◐ (yalnızca bölüm)", "unresolved": "✗"}
+_VERIFIED = ("ok", "mid_sentence", "section")      # adresi doğru atıflar
+_CITATION_MARK = {"ok": "✓", "mid_sentence": "◑", "section": "◐ (yalnızca bölüm)"}
+
+
+def _citation_line(c: Citation) -> str:
+    """✓ cümle bulundu, ◑ alıntı metinde ama cümle başı değil, ◐ yalnızca bölüm, ✗ bulunamadı."""
+    if c.status in _VERIFIED:
+        detail = "" if c.exact else f" — kısaltılmış yol; tam atıf: {c.cite_as}"
+        if c.status == "mid_sentence":
+            detail = " — alıntı metinde var, ama bir cümlenin başı değil" + detail
+        return f"- {_CITATION_MARK[c.status]} {c.written}{detail}"
+    detail = {
+        "quote_not_found": f"bu sözler {c.ref} metninde yok",
+        "no_such_sentence": f"{c.ref} içinde {c.number}. cümle yok",
+        "unknown_section": f"“{c.missing}” bölümü yok" + (f" ({c.ref} altında)" if c.ref else ""),
+        "ambiguous": "yol birden çok bölüme uyuyor: " + "; ".join(c.candidates),
+    }[c.status]
+    if c.elsewhere:
+        detail += "; alıntının geçtiği yer: " + "; ".join(e["cite_as"] for e in c.elsewhere)
+    return f"- ✗ {c.written} — {detail}"
 
 
 # ---------------------------------------------------------------- elle deneme klasörü
