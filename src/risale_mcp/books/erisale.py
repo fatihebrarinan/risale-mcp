@@ -5,13 +5,16 @@ Kurallar:
 - `TocOnly` başlık yalnızca sitenin içindekiler listesinde görünür ama yine düğümdür:
   "On iki Hakikat" gibi grup başlıkları kendi giriş metnini taşıyabilir.
 - `BookOnly` başlık yeni düğüm açmaz; aynı seviyedeki açık `TocOnly` düğümün basılı
-  başlığıdır. İçindekilerdeki ad `toc_title` alanına geçer.
+  başlığıdır. İçindekilerdeki ad `toc_title` alanına geçer. Eşi olmayan `BookOnly` başlık
+  eserin künye sayfasındaysa (henüz bölüm açılmamışken) kitabın adının bir satırıdır
+  ("… Reçetesi / Veyâhut / Bediüzzaman’ın MÜNÂZARÂTI"): ortalı satır olarak metinde kalır.
 - Başlığın içindeki satır içi başlık ("Onuncu Söz" + "Haşir Bahsi") ve başlıktan hemen
   sonraki `HeadingDescription` blokları alt başlıktır.
 - Paragraf başındaki biçimli numaralı etiket ("Birinci Esas:", "Birinci Kâr:") düğüm
   açar; düğüm aynı türden bir sonraki etikete ya da bir sonraki blok başlığına kadar
   sürer. Diğer etiketler ("Birincisi:", "Onuncu Söz'den") metinde kalır. Etiket metinde
-  de kalır, çünkü basılı metnin parçasıdır.
+  de kalır, çünkü basılı metnin parçasıdır. Bölümün kendi başlığını tekrarlayan etiket
+  ("Birinci Kelime: “El‑Emel”" başlığının altında "Birinci Kelime:") yeni düğüm açmaz.
 - Seçilen bölümlerde tek bir en üst başlık varsa (ör. İlk Dönem Eserleri içindeki
   "Münâzarât") o başlık eserin kendisidir, ayrı düğüm açmaz.
 - Paragraf türleri: paragraph, arabic, poem, quote, signature, table, hasiye. Art arda gelen
@@ -219,6 +222,10 @@ class _Parser:
                 self.toc_only[level] = node
         elif _directive(content, "BookOnly") is not None:
             node = self.toc_only.pop(level, None) or self._printed_heading_of(level, title)
+            if node is None and not self.book.root.children:      # künye sayfası: kitabın adının bir satırı
+                self._paragraph({"type": "CenteredParagraph",
+                                 "children": [c for c in content.get("children", []) if c.get("type") != "Meta"]})
+                return
             if node is None:
                 self.report.unmatched_book_only.append(f"{block['index']}: {title}")
                 node = self._open_node(block, level, raw_title, title, subtitle)
@@ -285,8 +292,8 @@ class _Parser:
 
     def _open_inline_node(self, label: str) -> None:
         info = parse_inline_label(label)
-        if info is None:
-            return
+        if info is None or (self.current.type, self.current.number) == (info.type, info.number):
+            return                                    # etiket yok ya da bölümün kendi başlığını tekrarlıyor
         same = next((i for i in range(len(self.inline) - 1, -1, -1) if self.inline[i].type == info.type), None)
         if same is not None:
             del self.inline[same:]                    # aynı serinin sonraki halkası: kardeş

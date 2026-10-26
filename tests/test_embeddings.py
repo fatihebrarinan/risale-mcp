@@ -53,6 +53,15 @@ def test_build_embeds_only_missing_units_and_survives_reload(conn, fake_provider
     assert len(fake_provider) == calls and again.keys == store.keys       # hepsi depoda: istek yok
 
 
+def test_vectors_of_changed_text_are_dropped(tmp_path):
+    store = embeddings.VectorStore("m", "sentence", tmp_path)
+    store.add(["a", "b", "c"], np.eye(3, dtype=np.float32))
+    assert store.keep({"a", "c"}) == 1
+    reloaded = embeddings.VectorStore("m", "sentence", tmp_path)
+    assert reloaded.keys == ["a", "c"] and reloaded.vectors.shape == (2, 3)
+    assert reloaded.keep({"a", "c"}) == 0
+
+
 def test_nearest_ranks_by_cosine_similarity(tmp_path):
     store = embeddings.VectorStore("m", "sentence", tmp_path)
     store.add(["a", "b", "c"], np.array([[1, 0], [0.8, 0.6], [0, 1]], dtype=np.float32))

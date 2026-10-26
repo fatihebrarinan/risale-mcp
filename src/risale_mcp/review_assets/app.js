@@ -4,6 +4,10 @@
 // ve cümleleri `data/<eser>.js` dosyasındadır; o eserden bir başlık açılınca yüklenir.
 const DATA = JSON.parse(document.getElementById("data").textContent);
 const STORAGE_PREFIX = "risale-review:";   // işaretler eser başına ayrı anahtarda: risale-review:sozler
+// İşaret dönemi: tarayıcıdaki dönem bundan farklıysa bütün işaretler silinir. Sıfırlamak için artırılır
+// (2: 2026-10-26, kullanıcı metinleri baştan gözden geçiriyor).
+const MARKS_EPOCH = "2";
+const EPOCH_KEY = "risale-review-epoch";
 const ROOT = "";
 
 // ------------------------------------------------------------------ indeksler
@@ -103,12 +107,25 @@ const Marks = {
   byWork: {},     // eser -> {kimlik -> işaret}
 
   load() {
+    this.resetIfNewEpoch();
     for (const slug of works.keys()) {
       try {
         this.byWork[slug] = JSON.parse(localStorage.getItem(STORAGE_PREFIX + slug) ?? "{}");
       } catch {
         this.byWork[slug] = {};
       }
+    }
+  },
+
+  resetIfNewEpoch() {
+    try {
+      if (localStorage.getItem(EPOCH_KEY) === MARKS_EPOCH) return;
+      const old = Array.from({length: localStorage.length}, (_, i) => localStorage.key(i))
+        .filter((key) => key?.startsWith(STORAGE_PREFIX));
+      old.forEach((key) => localStorage.removeItem(key));
+      localStorage.setItem(EPOCH_KEY, MARKS_EPOCH);
+    } catch (err) {
+      console.warn("İşaretler sıfırlanamadı:", err);
     }
   },
 

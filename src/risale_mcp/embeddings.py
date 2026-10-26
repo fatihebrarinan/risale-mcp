@@ -247,12 +247,30 @@ class VectorStore:
             return
         new = np.concatenate(self._pending)
         self.vectors = new if self.vectors.size == 0 else np.concatenate([self.vectors, new])
-        self._pending, self._norms = [], None
+        self._pending = []
+        self._write()
+
+    def _write(self) -> None:
+        self._norms = None
         self.path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(".tmp.npy")
         np.save(tmp, self.vectors)
         self.keys_path.write_text(json.dumps(self.keys), encoding="utf-8")
         tmp.replace(self.path)
+
+    def keep(self, keys: set[str]) -> int:
+        """Yalnızca `keys`'teki vektörler kalır, her anahtardan bir tane (metni değişmiş birimlerin eski
+        vektörleri silinir)."""
+        self.save()
+        seen: set[str] = set()
+        rows = [i for i, k in enumerate(self.keys) if k in keys and not (k in seen or seen.add(k))]
+        removed = len(self.keys) - len(rows)
+        if removed:
+            self.keys = [self.keys[i] for i in rows]
+            self.vectors = self.vectors[rows]
+            self.index = {k: i for i, k in enumerate(self.keys)}
+            self._write()
+        return removed
 
     def scores(self, query: np.ndarray) -> np.ndarray:
         """Her satırın sorguyla kosinüs benzerliği."""
@@ -315,11 +333,14 @@ def _document_batches(docs: list[list[Unit]], model: Model) -> Iterator[list[lis
 
 
 def build(model: Model, variant: str, conn: sqlite3.Connection) -> VectorStore:
-    """Depoda olmayan birimlerin vektörlerini çıkarır."""
+    """Depoda olmayan birimlerin vektörlerini çıkarır; artık hiçbir birime ait olmayanları siler."""
     if (variant == "context") != model.contextual:
         raise EmbeddingError("`context` yalnızca bağlamlı modellerle, bağlamlı modeller yalnızca `context` ile.")
     store = VectorStore(model.name, variant, dtype=np.int8 if model.int8 else np.float16)
-    todo = [u for u in units(conn, variant) if u.key not in store]
+    current = units(conn, variant)
+    if removed := store.keep({u.key for u in current}):
+        print(f"{model.name}.{variant}: artık ya da tekrar eden {removed} vektör silindi", flush=True)
+    todo = list({u.key: u for u in current if u.key not in store}.values())   # aynı metinli bölümler bir kez
     print(f"{model.name}.{variant}: {len(store.keys)} vektör var, {len(todo)} eksik", flush=True)
     started, spent, done = time.monotonic(), 0, 0
     if model.contextual:
