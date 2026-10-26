@@ -276,7 +276,7 @@ Ayrıntı modülün başındaki açıklamadadır. `verify_citations` aracı ve a
 - **Hazır komutlar** (İngilizce adlar): `topic_survey(topic, scope?)` konunun eserlerde geçtiği yerler (2. hedef), `text_and_commentary(question)` "metin ne diyor" ve "yorum" ayrı (3. hedef), `discuss(topic)` müzakere, `self_test(section)` bölümden soru sorup cevabı metinle denetler, `lesson_plan(subject)` atıflı ders planı.
 - **Sunucu talimatları:** atıfı araç sonucundan al ve uydurma; kullanıcıya cümleyi numarasıyla değil yol + incipit ile göster; yolu eserden başlayarak tam ve kısaltmadan yaz, önceki atfa göre göreli yazma, `›` işaretini yalnızca atıfta kullan; tırnağı yalnızca metnin kendi sözlerine koy; cevaptan önce atıfları `verify_citations` ile denetle; bulamazsan söyle; metni ve yorumu ayır; önce ara, sonra bağlamı oku.
 
-Sonraki aşamalar: anlamsal arama (vektörler `sentences.hash` ile), konu fihristi.
+Sonraki aşamalar için bkz. "Aşamalar" (8–12).
 
 ## Uçtan uca deneme (Aşama 7)
 
@@ -314,3 +314,11 @@ Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılmas�
 5. **Veritabanı:** SQLite ve FTS5 kurulumu, normalizasyon, sorgu dili, âyet dizini, birim testler: `uv run python -m risale_mcp.build_db`.
 6. **MCP sunucusu:** `library.py` + `server.py`; araçlar, kaynaklar, hazır komutlar; süreç içi istemciyle testler. MCP Inspector ile elle deneme.
 7. **Uçtan uca test:** `golden.py` ile Claude Code'u istemci yaparak (Linux'ta Claude Desktop yok) `tests/golden/` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.
+
+Sonraki aşamalar (henüz başlanmadı; sıra kullanıcıyla birlikte belirlenecek):
+
+8. **Anlamsal arama:** Bugün arama kelimeye bağlıdır; "ümitsizlik" diye sorulunca "ye'se düşmeyiniz" geçen yer bulunmaz. Cümle vektörleri ayrı dosyada `(model, sentences.hash)` anahtarıyla tutulur, sonuçlar kelime aramasıyla RRF ile birleşir (bkz. Veritabanı). Model seçimi (Türkçe ve Osmanlıca kelimeler, yerel mi API mi) aşamanın başında denenerek yapılır; altın sorular ölçüt olur.
+9. **Konu fihristi (2. hedef):** Konu → cümle listeleri. Anlamsal aramanın üzerine kurulur; konu listesi ve her konunun cümleleri elle gözden geçirilebilir bir dosyada durur, sunucuya araç ya da kaynak olarak eklenir.
+10. **Kontrol işaretlerinin işlenmesi:** Arayüzden dışa aktarılan `risale-kontrol-notlari.json` dosyasındaki ✓/✗ ve notlar ayrıştırıcı düzeltmelerine dönüşür. Her ✗ için kök neden bulunur, kural düzeltilir, altın örnekler gerekirse yenilenir; düzeltilemeyenler açıkça listelenir.
+11. **Eksik eserler:** Fihrist Risalesi, Rumuzat-ı Semaniye, Kızıl İcaz, Ta'likat, Hizb-i Nurî. Kaynak bulunmasına bağlıdır (bkz. Kapsam ve kaynaklar).
+12. **Sunucu kimlik doğrulaması ve uzaktan erişim:** Amaç sunucuyu claude.ai'den (tarayıcı ve telefon) özel bağlayıcı olarak kullanmak. Bugün `streamable-http` kimlik doğrulamasızdır ve yalnızca `127.0.0.1`'de dinler; bu hâliyle dışarı açılmaz, çünkü metinler herkese açılmış olur (kaynak sitelerin telif uyarısı, kullanım kişiseldir). Yapılacaklar: MCP'nin yetkilendirme yöntemi (OAuth 2.1) ile tek kullanıcılı erişim, sunucuyu dışarı açan bir tünel (Cloudflare Tunnel, Tailscale Funnel gibi), stdio kullanımının değişmemesi, yetkisiz isteğin reddedildiğini gösteren testler. claude.ai bağlayıcılarının ve SDK'nın güncel gereksinimleri aşamanın başında belgelerden doğrulanır; tahminle yazılmaz.
