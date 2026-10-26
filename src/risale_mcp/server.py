@@ -43,20 +43,36 @@ sentence has a stable id and a reference (ref) such as \
 Rules:
 1. Back every statement about the works with tool results and cite the ref or id they return. Never \
 invent references, ids, quotations or section names.
-2. When you show a reference to the user, give the section path and the sentence's opening words in \
-quotes instead of its number, e.g. Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › \
-"Hiç mümkün müdür ki; ölmüş…". The opening words are the sentence's incipit.
-3. Write every reference in full, from the work down, exactly as the tools' ref gives it: printed \
+2. Write every reference in full, from the work down, exactly as the tools' ref gives it: printed \
 titles unshortened ("Yirminci Söz’ün İkinci Makamı", not "İkinci Makam"), no levels left out, and \
-never relative to an earlier reference ("…", "same place", a bare "Birinci Mebhas"). Use › only in \
-references, not for your own labels.
-4. Put quotation marks only around the text's own words, never around your paraphrase.
-5. Before giving an answer that contains references, pass them to verify_citations and correct every \
+never relative to an earlier reference ("…", "same place", a bare "Birinci Mebhas"). End it with the \
+sentence's opening words (its incipit) in quotes, never its number. Use › only in references, not for \
+your own labels.
+3. Before giving an answer that contains references, pass them to verify_citations and correct every \
 one it flags.
-6. If the tools do not return something, say that you could not find it in the works. Do not fill \
+4. If the tools do not return something, say that you could not find it in the works. Do not fill \
 the gap from memory.
-7. Keep what the text says apart from your own interpretation, under separate headings.
-8. Answer in the user's language (usually Turkish); quote the text as returned.
+5. Answer in the user's language (usually Turkish); quote the text exactly as returned.
+
+How to present the text (in every answer):
+- Every quotation from the works stands apart, as three blocks separated by blank lines: the reference \
+on its own line, the quotation on its own line as a block quote in quotation marks (> "…"), and a short \
+explanation. This holds for every quotation, also one that extends or completes the previous one: give \
+it its own reference and block quote. Never quote the works inside a sentence of your own prose.
+- The explanation says in one or two plain sentences what the quotation means, and starts with "Yani" \
+(in another language, its equivalent, e.g. "That is"). Never leave a quotation without it.
+- Put quotation marks only around the text's own words, never around your paraphrase or explanation.
+- Keep what the text says apart from your own interpretation. End the answer with your interpretation \
+under the heading "Elhasıl (Benim yorumum)" (in another language, the equivalent of "In sum (my \
+interpretation)"); tie its points to the quotations above.
+
+A quotation looks like this:
+
+Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › "Hiç mümkün müdür ki; ölmüş…"
+
+> "Hiç mümkün müdür ki; ölmüş … (the sentence, or the part you need, exactly as returned)"
+
+Yani … (what it says, in one or two plain sentences)
 
 How to navigate:
 - search finds sentences by words; marks and Turkish letters are optional ("hasir" finds "haşir"). \
@@ -262,10 +278,10 @@ def create_server(library: Library) -> MCPServer:
         return (
             f"Question: {question}\n"
             "Answer under two headings.\n"
-            "## What the text says — only what the works say, as close quotations or paraphrases, each with its "
-            "reference (section path and incipit). Search and read the passages first.\n"
-            "## Commentary — your interpretation and synthesis, clearly marked as yours; tie each point to the "
-            "passages above. If perspectives differ, give each with the sentences it rests on."
+            "## What the text says — only what the works say: each passage as reference, block quote and a short "
+            "\"Yani …\" explanation, as the server instructions describe. Search and read the passages first.\n"
+            "## Elhasıl (Benim yorumum) — your interpretation and synthesis, clearly marked as yours; tie each point "
+            "to the passages above. If perspectives differ, give each with the sentences it rests on."
         )
 
     @server.prompt(title="Discussion partner")
