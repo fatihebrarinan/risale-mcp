@@ -54,15 +54,20 @@ references, not for your own labels.
 4. Put quotation marks only around the text's own words, never around your paraphrase.
 5. Every quotation from the works stands on its own line as a block quote in quotation marks \
 (> "…"), with a blank line before and after it. This holds for every quotation of a sentence or part \
-of one, also a short one and one that extends or completes the previous quotation ("the next sentence \
-adds: …" is followed by its own block quote). Inside your own prose, quote at most a single term or \
-name (e.g. "tefânî").
-6. Before giving an answer that contains references, pass them to verify_citations and correct every \
+of one, also a short one. Inside your own prose, quote at most a single term or name (e.g. "tefânî").
+6. When a parable, an example or one line of thought runs over several consecutive sentences of one \
+section, do not split it into separate quotations: quote the sentences together in one block and give \
+one reference for all of them, with the first sentence's opening words and the number of sentences, \
+always in this form: Sözler › Birinci Söz › "Bedevî Arab çöllerinde seyahat eden…" ile başlayan 4 \
+cümle. At most 8 sentences per reference; the sentences stay inside one section (a new heading starts \
+a new reference) and hâşiyes are cited separately. get_passage with a range (first..last) returns the \
+reference to use (cite_as). A single sentence is cited on its own as in rule 2.
+7. Before giving an answer that contains references, pass them to verify_citations and correct every \
 one it flags.
-7. If the tools do not return something, say that you could not find it in the works. Do not fill \
+8. If the tools do not return something, say that you could not find it in the works. Do not fill \
 the gap from memory.
-8. Keep what the text says apart from your own interpretation, under separate headings.
-9. Answer in the user's language (usually Turkish); quote the text as returned.
+9. Keep what the text says apart from your own interpretation, under separate headings.
+10. Answer in the user's language (usually Turkish); quote the text as returned.
 
 How to navigate:
 - semantic_search finds passages by meaning: use it for concepts and questions in today's words, \
@@ -179,8 +184,9 @@ def create_server(library: Library) -> MCPServer:
         context: Annotated[int, Field(description="Neighbouring sentences to add on each side.", ge=0, le=20)] = 0,
     ) -> str:
         """Get sentences with their ref, incipit and text, the hâşiyes attached to them, and the meaning of quoted
-        verses. Use it to check a quotation or to fetch the exact citation of a sentence. A range that runs past
-        the end of its section stops at the section's last sentence (see note)."""
+        verses. Use it to check a quotation or to fetch the exact citation of a sentence. For a range of up to 8
+        sentences in one section it also returns cite_as, the reference to show for all of them. A range that
+        runs past the end of its section stops at the section's last sentence (see note)."""
         with _tool_errors():
             return _json(library.passage(id, context))
 
@@ -242,9 +248,11 @@ def create_server(library: Library) -> MCPServer:
         text: Annotated[str, Field(description="Your draft answer, or the lines of it that contain references.")],
     ) -> str:
         """Check the references in a draft answer against the works before you send it. Finds every
-        "Work › Section › “opening words”" (or "› 12. cümle") reference and reports, for each, whether the section
-        exists and the quoted words start a sentence there. Flagged references come with a problem and, where
-        possible, the full reference to use instead or where the quoted words really occur."""
+        "Work › Section › “opening words”" reference (also "… ile başlayan N cümle" for consecutive sentences, or
+        "› 12. cümle") and reports, for each, whether the section exists, the quoted words start a sentence there,
+        a range stays within 8 sentences of its section, and the block quote next to it is in the cited sentences.
+        Flagged references come with a problem and, where possible, the full reference to use instead or where
+        the quoted words really occur. Pass the whole draft so that block quotes are checked too."""
         with _tool_errors():
             return _json(summary(citations.check(text)))
 

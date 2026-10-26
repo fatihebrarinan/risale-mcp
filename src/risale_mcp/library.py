@@ -26,6 +26,7 @@ from risale_mcp.paths import DB_PATH
 from risale_mcp.semantic import SemanticIndex, SemanticUnavailable
 
 MAX_RANGE = 100          # get_passage'ın bir seferde döndürdüğü en çok cümle
+MAX_CITED = 8            # tek atıfla verilebilecek en çok ardışık cümle (aynı bölümde)
 MAX_RESULTS = 50
 PREVIEW_CHARS = 400      # arama sonucunda gösterilen en uzun cümle metni
 ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen Arapça türleri
@@ -37,6 +38,17 @@ class LibraryError(ValueError):
 
 def _preview(text: str) -> str:
     return text if len(text) <= PREVIEW_CHARS else text[:PREVIEW_CHARS].rsplit(" ", 1)[0] + " …"
+
+
+def opening(incipit: str, text: str) -> str:
+    """Kullanıcıya gösterilen ilk kelimeler; cümle daha uzunsa "…" ile."""
+    return incipit if len(incipit) >= len(text.rstrip()) else incipit + "…"
+
+
+def cite(section_ref: str, opening_words: str, count: int = 1) -> str:
+    """Kullanıcıya gösterilen atıf: yol › “ilk kelimeler…”; ardışık cümlelerde “…” ile başlayan N cümle."""
+    quoted = f"{section_ref} › “{opening_words}”"
+    return quoted if count == 1 else f"{quoted} ile başlayan {count} cümle"
 
 
 def _placeholders(items) -> str:
@@ -258,12 +270,13 @@ class Library:
         Ana metin cümlelerine bağlı hâşiyeler cümlenin altında gelir."""
         first_id, _, last_id = passage_id.partition("..")
         first = self._sentence(first_id.strip())
-        note = None
+        notes: list[str] = []
         if last_id:
             last_id = last_id.strip()
             if "/" not in last_id:                     # kısa biçim: aynı düğümde "c015"
                 last_id = f"{first['id'].rsplit('/', 1)[0]}/{last_id}"
             last, note = self._range_end(last_id)
+            notes += [note] if note else []
             if last["work"] != first["work"] or last["seq"] < first["seq"]:
                 raise LibraryError("A range must run forward inside one work: first..last.")
             if last["seq"] - first["seq"] >= MAX_RANGE:
@@ -287,7 +300,7 @@ class Library:
 
         shown = [*before, *rows, *after]
         targets = {r["id"] for r in rows}
-        notes = self._hasiye_of([r["id"] for r in shown]) if not hasiye_only else {}
+        hasiye = self._hasiye_of([r["id"] for r in shown]) if not hasiye_only else {}
         arabic = self._arabic_of([r["id"] for r in shown])
         out = []
         for r in shown:
@@ -296,13 +309,20 @@ class Library:
                 record["target"] = r["id"] in targets
             if arabic.get(r["id"]):
                 record["arabic"] = arabic[r["id"]]
-            if notes.get(r["id"]):
-                record["hasiye"] = notes[r["id"]]
+            if hasiye.get(r["id"]):
+                record["hasiye"] = hasiye[r["id"]]
             out.append(record)
         node = self._node(first["node_id"])
         result = {"section": node["id"], "section_ref": node["ref"], "sentences": out}
-        if note:
-            result["note"] = note
+        if len(rows) > 1 and not hasiye_only:
+            if len({r["node_id"] for r in rows}) > 1:
+                notes.append("The range spans several sections; cite each section's sentences separately.")
+            elif len(rows) > MAX_CITED:
+                notes.append(f"Cite at most {MAX_CITED} consecutive sentences at once; quote the key part.")
+            else:
+                result["cite_as"] = cite(node["ref"], opening(rows[0]["incipit"], rows[0]["text"]), len(rows))
+        if notes:
+            result["note"] = " ".join(notes)
         return result
 
     def _range_end(self, sentence_id: str) -> tuple[sqlite3.Row, str | None]:

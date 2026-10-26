@@ -11,6 +11,7 @@ import shutil
 import pytest
 from mcp import Client
 
+from conftest import FIRST
 from risale_mcp.library import Library, LibraryError
 from risale_mcp.paths import DB_PATH
 from risale_mcp.server import INSTRUCTIONS, create_server
@@ -94,6 +95,15 @@ def test_passage_with_context_range_and_hasiye(library):
         library.passage("sozler/10/c002..c001")
     with pytest.raises(LibraryError, match="No sentence"):
         library.passage("sozler/10/c099")
+
+
+def test_passage_range_gives_one_reference_for_its_sentences(library):
+    passage = library.passage("sozler/10/c001..c002")
+    assert passage["cite_as"] == f"Sözler › Onuncu Söz › “{FIRST[:20]}…” ile başlayan 2 cümle"   # örnek incipit: ilk 20 harf
+    single = library.passage("sozler/10/c002")
+    assert "cite_as" not in single
+    spanning = library.passage("sozler/10/c001..sozler/10/hakikat-01/c001")
+    assert "cite_as" not in spanning and "several sections" in spanning["note"]
 
 
 def test_passage_range_past_the_section_end_stops_there(library):

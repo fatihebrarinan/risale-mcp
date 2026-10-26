@@ -81,6 +81,44 @@ def test_summary_counts_problems(checker):
     assert result["citations"][1]["problem"].startswith("No section “On Beşinci Hakikat” under Sözler › Onuncu Söz")
 
 
+# ---------------------------------------------------------------- ardışık cümleler ve alıntı blokları
+
+@pytest.mark.parametrize("line,status,covered", [
+    ("Sözler › Onuncu Söz › “Bakara’da…” ile başlayan 2 cümle", "ok", 2),
+    ("Sözler › Onuncu Söz › 1.–2. cümle", "ok", 2),
+    ("Sözler › Onuncu Söz › “Bakara’da…” ile başlayan 3 cümle", "range_past_section", 2),   # bölümde iki cümle var
+    ("Sözler › Onuncu Söz › “Bakara’da…” ile başlayan 9 cümle", "range_too_long", 2),
+])
+def test_ranges_of_consecutive_sentences(checker, line, status, covered):
+    (citation,) = checker.check(line)
+    assert (citation.status, citation.count > 1, len(citation.covered)) == (status, True, covered)
+
+
+def test_range_reference_names_the_number_of_sentences(checker):
+    (citation,) = checker.check("Sözler › Onuncu Söz › 1.–2. cümle")
+    assert citation.cite_as.endswith("” ile başlayan 2 cümle") and citation.problem() is None
+    (past,) = checker.check("Sözler › Onuncu Söz › “Bakara’da…” ile başlayan 3 cümle")
+    assert "only 2 sentence(s)" in past.problem() and past.cite_as.endswith("ile başlayan 2 cümle")
+
+
+@pytest.mark.parametrize("text,block_ok", [
+    ("Sözler › Onuncu Söz › “Bakara’da…” ile başlayan 2 cümle\n\n> \"Bakara’da … denildi. Elbette haşr-i cismânî olacak.\"", True),
+    ("> \"Elbette haşr-i cismânî olacak.\"\n\n(Sözler › Onuncu Söz › “Elbette haşr-i…”)", True),        # atıf altta
+    ("Sözler › Onuncu Söz › “Elbette haşr-i…”\n\n> \"Elbette rûh bâkîdir.\"", False),                  # metinde yok
+    ("Sözler › Onuncu Söz › “Elbette haşr-i…”\n\n> \"Bakara’da denildi.\"", False),                    # başka cümle
+])
+def test_block_quote_must_be_in_the_cited_sentences(checker, text, block_ok):
+    (citation,) = checker.check(text)
+    assert citation.block_ok is block_ok and citation.verified is block_ok
+    assert (citation.problem() is None) is block_ok
+
+
+def test_block_between_two_references_belongs_to_the_one_it_matches(checker):
+    first, second = checker.check("Sözler › Onuncu Söz › “Elbette haşr-i…”\n\n> \"Elbette haşr-i cismânî olacak.\"\n\n"
+                                  "Sözler › Onuncu Söz › Birinci Hakikat › “Kıyâmet…”\n\n> \"Kıyâmet ve mîzan günü gelecek.\"")
+    assert (first.block_ok, second.block_ok) == (True, True)
+
+
 # ---------------------------------------------------------------- gerçek veritabanı
 
 @pytest.fixture

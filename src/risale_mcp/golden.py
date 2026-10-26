@@ -205,7 +205,7 @@ def evaluate(question: dict, transcript: Transcript, checker: Checker) -> dict:
         "tools": len(transcript.calls),
         "tool_errors": sum(c.error for c in transcript.calls),
         "citations": citations,
-        "problems": [c for c in citations if c.status not in _VERIFIED],
+        "problems": [c for c in citations if not c.verified],
         "sections": sections,
     }
 
@@ -229,10 +229,11 @@ def report(run_dir: Path) -> Path:
         q = questions[path.stem]
         t = read_transcript(path)
         e = evaluate(q, t, checker)
-        ok = sum(c.status in _VERIFIED for c in e["citations"])
-        short = sum(c.status in _VERIFIED and not c.exact for c in e["citations"])
+        ok = sum(c.verified for c in e["citations"])
+        short = sum(c.verified and not c.exact for c in e["citations"])
+        ranges = sum(c.verified and c.count > 1 for c in e["citations"])
         expected = " ".join(f"{_mark(s['read'])}{_mark(s['named'])}" for s in e["sections"]) or "—"
-        rows.append(f"| {q['id']} | {q['category']} | {e['tools']} ({e['tool_errors']} hata) | {ok}/{len(e['citations'])}{f' ({short} kısa)' if short else ''} "
+        rows.append(f"| {q['id']} | {q['category']} | {e['tools']} ({e['tool_errors']} hata) | {ok}/{len(e['citations'])}{f' ({short} kısa)' if short else ''}{f' ({ranges} aralık)' if ranges else ''} "
                     f"| {expected} | {t.seconds or 0:.0f} sn | {t.failure or ''} |")
         lines = [f"## {q['id']} · {q['category']}", "", f"**Soru:** {q['question']}", "",
                  f"**Beklenen:** {q['expected']}", ""]
@@ -260,13 +261,12 @@ def report(run_dir: Path) -> Path:
     return out
 
 
-_VERIFIED = ("ok", "mid_sentence", "section")      # adresi doğru atıflar
 _CITATION_MARK = {"ok": "✓", "mid_sentence": "◑", "section": "◐ (yalnızca bölüm)"}
 
 
 def _citation_line(c: Citation) -> str:
-    """✓ cümle bulundu, ◑ alıntı metinde ama cümle başı değil, ◐ yalnızca bölüm, ✗ bulunamadı."""
-    if c.status in _VERIFIED:
+    """✓ cümle bulundu, ◑ alıntı metinde ama cümle başı değil, ◐ yalnızca bölüm, ✗ bulunamadı ya da yanlış."""
+    if c.verified:
         detail = "" if c.exact else f" — kısaltılmış yol; tam atıf: {c.cite_as}"
         if c.status == "mid_sentence":
             detail = " — alıntı metinde var, ama bir cümlenin başı değil" + detail
@@ -276,7 +276,9 @@ def _citation_line(c: Citation) -> str:
         "no_such_sentence": f"{c.ref} içinde {c.number}. cümle yok",
         "unknown_section": f"“{c.missing}” bölümü yok" + (f" ({c.ref} altında)" if c.ref else ""),
         "ambiguous": "yol birden çok bölüme uyuyor: " + "; ".join(c.candidates),
-    }[c.status]
+        "range_too_long": f"aralık {c.count} cümle; en çok 8",
+        "range_past_section": f"aralık bölümü aşıyor; bölümde {len(c.covered)} cümle kalıyor",
+    }.get(c.status) or "yanındaki alıntı bloğu atfın cümlelerinde yok"
     if c.elsewhere:
         detail += "; alıntının geçtiği yer: " + "; ".join(e["cite_as"] for e in c.elsewhere)
     return f"- ✗ {c.written} — {detail}"

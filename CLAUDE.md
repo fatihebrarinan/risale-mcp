@@ -19,6 +19,7 @@ Nihai kullanım hedefleri:
 - **Atıf birimi cümledir.** Paragraflar yalnızca görüntü ve bağlam için tutulur.
   - MCP ↔ model arasında: `Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › 32. cümle`
   - Model ↔ kullanıcı arasında: `Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › "Şüphesiz ki bu haşri gösterir…"` (cümlenin ilk kelimeleri)
+  - Bir temsil, misal ya da tek bir düşünce aynı bölümde birkaç cümle sürüyorsa ardışık cümleler tek atıfla verilir (en çok 8; paragraf sınırı yok, çünkü paragraflar her yerde anlama göre ayrılmamıştır): `Sözler › Birinci Söz › "Bedevî Arab çöllerinde…" ile başlayan 4 cümle`; MCP ↔ model arasında kimlik `…/c004..c007`, yol `… › 4.–7. cümle`.
 - **Sayfa numarası yoktur.** Hiçbir veri dosyasında basılı sayfa bilgisi tutulmaz.
 - **Metin tek yerde durur.** Mecmualar (Asâ-yı Mûsâ, Zülfikâr…) ana ciltlerdeki metne işaret eden içindekiler listeleridir; yalnızca mecmuaya özgü parçalar mecmuada saklanır.
 - **Kaynak web'dir.** Ham yanıtlar bir kez indirilip diske kaydedilir; ayrıştırma her zaman diskten yapılır.
@@ -286,23 +287,25 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 | `list_works(group?)` | Eserler, kimlikleri, grupları, boyutları; metni bulunamayanlar `available: false` |
 | `get_outline(section, depth=2)` | Başlık ağacı; her düğümde alt ağacın ana metin cümle sayısı, derinlik sınırında `subsections` |
 | `read_section(section, cursor?, max_words=1500)` | Bölümü alt bölümleriyle kitap sırasıyla okur: başlıklar (`ref`), paragraflar (cümle `id` + metin), hâşiyeler (`hasiye_of`), âyet/hadis meal ve kaynağı, eksikler (`gap`). Paragraf sınırında sayfalar, `next_cursor` ile sürer. Mecmuada eşlenmiş paragraf ana cildin cümleleriyle (`canonical`) gelir. |
-| `get_passage(id, context=0)` | Cümle ya da aralık (`…/c010..c015`), `ref` ve `incipit` ile; bağlı hâşiyeler ve âyet mealleri. Bölümün sonunu aşan aralık son cümlede kesilir (`note`). |
+| `get_passage(id, context=0)` | Cümle ya da aralık (`…/c010..c015`), `ref` ve `incipit` ile; bağlı hâşiyeler ve âyet mealleri. Bir bölümde en çok 8 cümlelik aralıkta kullanıcıya gösterilecek atıf (`cite_as`: "… ile başlayan N cümle"). Bölümün sonunu aşan aralık son cümlede kesilir (`note`). |
 | `search(query, work?, group?, limit=20, offset=0)` | Cümle araması (`search.py` sorgu dili); toplam, eser başına sayı, eşleşen başlıklar |
 | `find_sentence(incipit, scope?)` | İlk kelimelerden cümle (işaretsiz; son kelime eksik olabilir) |
 | `find_ayah(sura, ayah?)` | Âyetin geçtiği cümleler; sûre numarası ya da adı |
 | `semantic_search(query, work?, group?, limit=10, offset=0)` | Anlamca en yakın cümleler (`similarity`) ve konunun yoğunlaştığı bölümler (`sections`); kavram ve günümüz Türkçesiyle sorular için. Kelime araması (`search`) ayrı kalır. |
-| `verify_citations(text)` | Taslak cevaptaki atıfları denetler: bölüm var mı, alıntı bir cümlenin başı mı; sorunlu atfa tam atıf ya da alıntının asıl yeri önerilir |
+| `verify_citations(text)` | Taslak cevaptaki atıfları denetler: bölüm var mı, alıntı bir cümlenin başı mı, aralık 8 cümleyi ve bölümü aşıyor mu, yanındaki alıntı bloğu atfın cümlelerinde mi; sorunlu atfa tam atıf ya da alıntının asıl yeri önerilir |
 
 ### Atıf denetimi (`citations.py`)
 Ayrıntı modülün başındaki açıklamadadır. `verify_citations` aracı ve altın soru raporu aynı denetimi kullanır.
 - Satır `›` işaretlerinden bölünür; bir satırda birden çok atıf, atıftan önce ve sonra düz yazı olabilir. Atıf alıntıyla ya da "32. cümle" ile biter.
 - Başlık basılı adla, içindekiler adıyla, tür ve numarayla ("İkinci Makam" = "Yirminci Söz’ün İkinci Makamı"), ekli ("Dördüncü Söz'de"), "(asm)" gibi ayraçsız ya da "…" ile kısaltılmış yazılabilir; ara başlıklar atlanabilir. Bunlar geçerlidir ama tam yolu yazılmamış sayılır (`exact`), araç tam atfı verir.
 - "…", "aynı yer", "(› …" ve eser adı yazılmamış yol bir önceki atfa göre çözülür. Yol birden çok bölüme uyarsa önce alıntının geçtiği, sonra önceki atfa yakın, ana ciltteki ve üst seviyedeki bölüm seçilir.
-- Sonuçlar: `ok`, `section`, `mid_sentence`, `quote_not_found` (alıntının asıl yeri `elsewhere`), `no_such_sentence`, `unknown_section`, `ambiguous`.
+- Ardışık cümleler: "“…” ile başlayan N cümle" ya da "› 4.–7. cümle". Aralık bulunan cümleden başlar, aynı bölümün ana metninde (hâşiyede aynı hâşiyede) sürer; 8'i aşarsa `range_too_long`, bölümü aşarsa `range_past_section`.
+- Alıntı bloğu: atfın hemen önündeki ya da ardındaki `> "…"` bloğu (araya yalnızca boş satır girebilir) atfın kapsadığı cümlelerde aranır; "…" ile atlanan yer serbesttir. İki atıf arasındaki blok uyduğu atfa bağlanır. Uymazsa `block_ok` yanlıştır.
+- Sonuçlar: `ok`, `section`, `mid_sentence`, `quote_not_found` (alıntının asıl yeri `elsewhere`), `no_such_sentence`, `unknown_section`, `ambiguous`, `range_too_long`, `range_past_section`.
 
 - **Kaynaklar** (kullanıcının sohbete eklediği bağlam): `risale://works`, `risale://outline/{work}`, `risale://text/{+section}` (ör. `risale://text/sozler/10`; numaralı cümlelerle Markdown).
 - **Hazır komutlar** (İngilizce adlar): `topic_survey(topic, scope?)` konunun eserlerde geçtiği yerler (2. hedef), `text_and_commentary(question)` "metin ne diyor" ve "yorum" ayrı (3. hedef), `discuss(topic)` müzakere, `self_test(section)` bölümden soru sorup cevabı metinle denetler, `lesson_plan(subject)` atıflı ders planı.
-- **Sunucu talimatları:** atıfı araç sonucundan al ve uydurma; kullanıcıya cümleyi numarasıyla değil yol + incipit ile göster; yolu eserden başlayarak tam ve kısaltmadan yaz, önceki atfa göre göreli yazma, `›` işaretini yalnızca atıfta kullan; tırnağı yalnızca metnin kendi sözlerine koy; her alıntıyı (kısa olanlar ve öncekini genişletenler de) düz yazının içinde değil, kendi satırında tırnak içinde alıntı bloğu (`> "…"`) olarak ver, düz yazıda en çok tek bir terim tırnağa alınır (kullanıcının isteği); cevaptan önce atıfları `verify_citations` ile denetle; bulamazsan söyle; metni ve yorumu ayır; önce ara, sonra bağlamı oku.
+- **Sunucu talimatları:** atıfı araç sonucundan al ve uydurma; kullanıcıya cümleyi numarasıyla değil yol + incipit ile göster; yolu eserden başlayarak tam ve kısaltmadan yaz, önceki atfa göre göreli yazma, `›` işaretini yalnızca atıfta kullan; tırnağı yalnızca metnin kendi sözlerine koy; aynı bölümde birkaç cümle süren temsil, misal ya da düşünceyi tek blokta ve "… ile başlayan N cümle" atfıyla ver (en çok 8 cümle, hâşiye ayrı); her alıntıyı (kısa olanlar ve öncekini genişletenler de) düz yazının içinde değil, kendi satırında tırnak içinde alıntı bloğu (`> "…"`) olarak ver, düz yazıda en çok tek bir terim tırnağa alınır (kullanıcının isteği); cevaptan önce atıfları `verify_citations` ile denetle; bulamazsan söyle; metni ve yorumu ayır; önce ara, sonra bağlamı oku.
 
 Sonraki aşamalar için bkz. "Aşamalar" (8–12).
 
@@ -315,7 +318,7 @@ Linux'ta Claude Desktop olmadığı için MCP istemcisi olarak Claude Code kulla
 3. **Altın sorular:** `uv run python -m risale_mcp.golden run A1 B7 …` (ya da `--all`). Her soru `claude -p` ile geçici, boş bir klasörde, yerleşik araçlar kapalı (`--tools ""`), yalnızca bu sunucuyla (`--strict-mcp-config`) ve varsayılan modelle sorulur. `--bare` kullanılmaz (OAuth'u kapatır). Döküm ve rapor: `data/interim/golden/<zaman>/` (`report.md`, git'e eklenmez).
 
 Raporun otomatik kontrolleri:
-- **Atıflar:** cevaptaki "Yol › … › “ilk kelimeler”" ya da "… › 32. cümle" zincirleri `citations.py` ile veritabanında aranır: ✓ cümle bulundu, ◑ alıntı metinde var ama cümle başı değil, ◐ yalnızca bölüm, ✗ bölüm ya da cümle yok (uydurma olabilir; alıntı başka yerdeyse orası gösterilir). Doğru ama kısaltılmış yolla yazılan atıflar tabloda "(n kısa)" diye sayılır.
+- **Atıflar:** cevaptaki "Yol › … › “ilk kelimeler”" ya da "… › 32. cümle" zincirleri `citations.py` ile veritabanında aranır: ✓ cümle bulundu, ◑ alıntı metinde var ama cümle başı değil, ◐ yalnızca bölüm, ✗ bölüm ya da cümle yok (uydurma olabilir; alıntı başka yerdeyse orası gösterilir). Yanındaki alıntı bloğu atfın cümlelerinde olmayan atıf da ✗ sayılır. Doğru ama kısaltılmış yolla yazılan atıflar tabloda "(n kısa)", ardışık cümle atıfları "(n aralık)" diye sayılır.
 - **Beklenen bölüm:** model okudu mu (`read_section`, `get_passage`, `find_sentence`; arama sonucu ve başlık ağacı okumak sayılmaz), cevapta adı geçiyor mu.
 - **Araç kullanımı:** çağrılar, parametreleri ve hatalar.
 
