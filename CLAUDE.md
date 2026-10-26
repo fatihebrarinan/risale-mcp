@@ -48,7 +48,8 @@ Kullanım kişiseldir. Uygulama olarak yayımlanırsa kaynak sitelerden izin al�
 - Dil: Python 3.11+
 - Ortam ve bağımlılıklar: `uv`
 - HTTP: standart kütüphane (`urllib`), `sources/http.py` içindeki nazik istemci (istekler arası bekleme, yeniden deneme). Varsayılan bekleme 5 sn; risaleoku için 10 sn.
-- Veritabanı: SQLite + FTS5 (kelime araması). Anlamsal arama ilk sürümde **yok**; şema ona hazırdır (bkz. Veritabanı).
+- Veritabanı: SQLite + FTS5 (kelime araması). Anlamsal arama: Voyage `voyage-context-4` vektörleri ayrı dosyada, benzerlik numpy ile (bkz. Anlamsal arama).
+- API anahtarları proje klasöründeki `.env` dosyasında (`VOYAGE_API_KEY`, `OPENAI_API_KEY`; git'e eklenmez, `env.py` okur). Her şey ileride bir internet sunucusuna taşınacakmış gibi tasarlanır: sunucuda yalnızca numpy, sağlayıcı SDK'sı yok.
 - MCP: resmi Python SDK'sı (`mcp` paketi, FastMCP). Not: `@modelcontextprotocol/sdk` TypeScript paketidir, kullanmıyoruz.
 - Test: `pytest` + MCP Inspector + Claude Code'a `claude mcp add` ile bağlayarak elle deneme.
 - Platform: Linux Mint.
@@ -60,6 +61,7 @@ Kullanım kişiseldir. Uygulama olarak yayımlanırsa kaynak sitelerden izin al�
 risale-mcp/
 ├── CLAUDE.md
 ├── data/
+│   ├── vectors/                   # Anlamsal arama vektörleri <model>.<seçenek>.npy + .keys.json (git'e eklenmez)
 │   ├── raw/                       # Ham kaynak yanıtları (git'e eklenmez)
 │   │   ├── erisale/               # sitemap-tr.xml, <kitap>/manifest.json, pages/<bölüm>.html.gz
 │   │   ├── risale_online/         # eserler.json, <kitap>/fihrist.json, paragraf/<ilk>-<son>.json
@@ -106,6 +108,10 @@ risale-mcp/
 │   ├── search.py       # Aşama 5: sorgu dili → FTS5, cümle ve başlık araması
 │   ├── library.py      # Aşama 6: veritabanı üzerindeki okuma işleri (MCP'den bağımsız)
 │   ├── citations.py    # Atıf denetimi: metindeki "Eser › Bölüm › “ilk kelimeler”" atıfları (araç ve altın sorular)
+│   ├── env.py          # .env dosyasındaki API anahtarları
+│   ├── embeddings.py   # Aşama 8: vektör sağlayıcıları (Voyage, OpenAI), vektör deposu, vektör çıkarma CLI'ı
+│   ├── semantic.py     # Aşama 8: sunucunun anlamsal araması (en yakın cümleler, bölüm sıralaması)
+│   ├── search_eval.py  # Aşama 8: arama değerlendirmesi (hit@k, MRR) ve model karşılaştırması
 │   ├── server.py       # Aşama 6: MCP sunucusu (araçlar, kaynaklar, hazır komutlar)
 │   └── golden.py       # Aşama 7: altın sorularla uçtan uca deneme (Claude Code istemci)
 └── tests/
@@ -124,10 +130,14 @@ risale-mcp/
     ├── test_build_db.py
     ├── test_server.py
     ├── test_citations.py
+    ├── test_embeddings.py
+    ├── test_semantic.py
+    ├── test_search_eval.py
     ├── test_golden.py
     └── golden/
         ├── golden_questions.md   # kullanıcının yazdığı test soruları
-        └── questions.json        # aynı sorular, doğrulanmış beklenen bölümlerle (düzenek bunu okur)
+        ├── questions.json        # aynı sorular, doğrulanmış beklenen bölümlerle (düzenek bunu okur)
+        └── semantic_queries.json # anlamsal arama değerlendirme seti (50 soru, kullanıcı onayladı)
 ```
 
 ## Veri modeli
@@ -209,7 +219,24 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve ikincil k
 - **Sorgu dili** (`search.py`): kelimeler (hepsi geçmeli), `"tam ifade"`, `haşr*` (kelime başı), `OR`, `-kelime` / `NOT`, `NEAR(a b, 5)`. Sıralama BM25'tir; kısa cümleler öne çıkma eğilimindedir.
 - **Mecmualar:** Ana cilde eşlenen paragrafların cümlesi yoktur. Bu yüzden aynı cümle aramada iki kez çıkmaz.
 - **Âyetler:** İki biçim çözülür: "Bakara Sûresi, 2:255" ve Hayrat'ın "Sûre-i Bakara, 255" biçimi. Sûre adlarının numaraları, veride numarasıyla geçen yazılışlardan öğrenilir. Birden çok âyet sayılmışsa ilk aralık alınır. 4.001 âyetin hepsi çözüldü.
-- **Anlamsal aramaya hazırlık:** Vektörler ayrı bir dosyada `(model, sentences.hash)` anahtarıyla tutulacak. Böylece veritabanı yeniden kurulsa da kaybolmaz; cümle metni değişmedikçe geçerli kalır. Sonuçlar `sentences.hash` üzerinden birleşir ve kelime aramasıyla aynı `search.Hit` biçiminde döner. Birleştirme RRF gibi sıraya dayalı olacak, çünkü puanlar yalnızca kendi araması içinde karşılaştırılabilir.
+- **Anlamsal arama** veritabanında değil, ayrı vektör dosyasındadır (bkz. Anlamsal arama); veritabanı yeniden kurulsa da vektörler kaybolmaz.
+
+## Anlamsal arama (Aşama 8)
+
+Kelime araması metindeki kelimelere bağlıdır: "ümitsizlik" diye sorulunca "ye's" geçen yer bulunmaz. Anlamsal arama cümlelerin anlamca yakınlığına bakar. İki arama ayrı araçtır (`search`, `semantic_search`); birleştirmek (RRF) değerlendirmede sonucu bozdu.
+
+```
+uv run python -m risale_mcp.embeddings build voyage-context-4    # eksik vektörleri çıkar (yalnızca değişen metin)
+uv run python -m risale_mcp.embeddings status                    # depolar ve eksikler
+uv run python -m risale_mcp.search_eval run words server sections  # değerlendirme
+```
+
+- **Model:** Voyage `voyage-context-4` (`embeddings.SEARCH_MODEL`). Bağlamlı modeldir: bir bölümün kendi cümleleri birlikte gönderilir (uzun bölüm ≈8 bin tokenlık parçalara bölünür), her cümlenin vektörü bölümün bağlamını taşır. Vektörler sağlayıcıdan 512 boyutlu int8 alınır (≈56 MB); 1024 boyutlu float16 ile aynı isabet.
+- **Anahtar:** vektörü çıkarılan metinden gelir (bölüm metninin özeti + cümlenin sırası). Ayrıştırma bir bölümü değiştirirse yalnızca onun vektörleri yeniden çıkarılır; `build` sonunda eksik vektör sayısını bildirir. Vektörü olmayan cümle aranmaz, sonuçta `unindexed_sentences` sayılır.
+- **Sorgu:** her aramada sorunun vektörü Voyage'dan alınır (bellekte önbellek), benzerlik yerelde (numpy, kosinüs). Anahtar ya da vektör yoksa araç modele açıklamalı hata verir, kelime aramasına yönlendirir.
+- **Bölümler:** en yakın 300 cümle kendi bölümüne ve üst bölümlerine puan verir (bölüm başına en çok 5); en yüksek 5 bölüm `sections`'tadır. Asıl işlendiği yeri cümlelerden iyi bulur.
+- **Değerlendirme:** `tests/golden/semantic_queries.json` (50 soru, günümüz Türkçesi, beklenen ve yan bölümler; kullanıcı onayladı) ve `search_eval.py`. Ölçüler: hit@k (beklenen bölümden bir cümle ilk k sonuçta), MRR, any@10 (yan bölümler dahil). Raporlar `data/interim/search_eval/`.
+- **Model karşılaştırması** (2026-10-26, ilk 10'da beklenen bölüm / MRR): kelime araması %2 / 0,02, kelimelerden biri %18 / 0,09, OpenAI `3-small` %26 / 0,11, `3-large` %48 / 0,27, Voyage `multilingual-2` %42 / 0,20, `4-lite` %42 / 0,24, `4` %46 / 0,27, `4-large` %70 / 0,40, `4-large` + bölüm yolu %52 / 0,26, **`context-4` %74 / 0,49**, `context-4` + kelime araması (RRF) %64 / 0,38. Ölçüm temkinlidir: kaçırılan sorularda model çoğu zaman konunun başka bir geçtiği yeri bulur.
 
 ## Taksimat kontrol arayüzü
 
@@ -263,6 +290,7 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 | `search(query, work?, group?, limit=20, offset=0)` | Cümle araması (`search.py` sorgu dili); toplam, eser başına sayı, eşleşen başlıklar |
 | `find_sentence(incipit, scope?)` | İlk kelimelerden cümle (işaretsiz; son kelime eksik olabilir) |
 | `find_ayah(sura, ayah?)` | Âyetin geçtiği cümleler; sûre numarası ya da adı |
+| `semantic_search(query, work?, group?, limit=10, offset=0)` | Anlamca en yakın cümleler (`similarity`) ve konunun yoğunlaştığı bölümler (`sections`); kavram ve günümüz Türkçesiyle sorular için. Kelime araması (`search`) ayrı kalır. |
 | `verify_citations(text)` | Taslak cevaptaki atıfları denetler: bölüm var mı, alıntı bir cümlenin başı mı; sorunlu atfa tam atıf ya da alıntının asıl yeri önerilir |
 
 ### Atıf denetimi (`citations.py`)
@@ -315,9 +343,9 @@ Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılmas�
 6. **MCP sunucusu:** `library.py` + `server.py`; araçlar, kaynaklar, hazır komutlar; süreç içi istemciyle testler. MCP Inspector ile elle deneme.
 7. **Uçtan uca test:** `golden.py` ile Claude Code'u istemci yaparak (Linux'ta Claude Desktop yok) `tests/golden/` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.
 
-Sonraki aşamalar (henüz başlanmadı; sıra kullanıcıyla birlikte belirlenecek):
+Sonraki aşamalar (sıra kullanıcıyla birlikte belirlenir):
 
-8. **Anlamsal arama:** Bugün arama kelimeye bağlıdır; "ümitsizlik" diye sorulunca "ye'se düşmeyiniz" geçen yer bulunmaz. Cümle vektörleri ayrı dosyada `(model, sentences.hash)` anahtarıyla tutulur, sonuçlar kelime aramasıyla RRF ile birleşir (bkz. Veritabanı). Model seçimi (Türkçe ve Osmanlıca kelimeler, yerel mi API mi) aşamanın başında denenerek yapılır; altın sorular ölçüt olur.
+8. **Anlamsal arama:** A: değerlendirme seti (50 soru, kullanıcı onayladı); B: yerel/API modellerin karşılaştırması (kullanıcı API'yi tercih etti; `voyage-context-4` seçildi); C: `semantic_search` aracı, bölüm sıralaması, 512 boyut int8 depo. Bkz. Anlamsal arama.
 9. **Konu fihristi (2. hedef):** Konu → cümle listeleri. Anlamsal aramanın üzerine kurulur; konu listesi ve her konunun cümleleri elle gözden geçirilebilir bir dosyada durur, sunucuya araç ya da kaynak olarak eklenir.
 10. **Kontrol işaretlerinin işlenmesi:** Arayüzden dışa aktarılan `risale-kontrol-notlari.json` dosyasındaki ✓/✗ ve notlar ayrıştırıcı düzeltmelerine dönüşür. Her ✗ için kök neden bulunur, kural düzeltilir, altın örnekler gerekirse yenilenir; düzeltilemeyenler açıkça listelenir.
 11. **Eksik eserler:** Fihrist Risalesi, Rumuzat-ı Semaniye, Kızıl İcaz, Ta'likat, Hizb-i Nurî. Kaynak bulunmasına bağlıdır (bkz. Kapsam ve kaynaklar).

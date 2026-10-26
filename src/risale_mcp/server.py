@@ -26,6 +26,7 @@ from pydantic import Field
 
 from risale_mcp.citations import CitationChecker, summary
 from risale_mcp.db import DatabaseError
+from risale_mcp.env import load_env
 from risale_mcp.library import Library, LibraryError
 from risale_mcp.paths import DB_PATH
 
@@ -64,8 +65,13 @@ the gap from memory.
 9. Answer in the user's language (usually Turkish); quote the text as returned.
 
 How to navigate:
-- search finds sentences by words; marks and Turkish letters are optional ("hasir" finds "haşir"). \
-Use quotes for phrases, * for word beginnings, OR, -word to exclude, NEAR(a b, 5).
+- semantic_search finds passages by meaning: use it for concepts and questions in today's words, \
+which the text often expresses with other, Ottoman words ("ümitsizlik" finds "ye's"). It also names \
+the sections where the topic concentrates. Its results are candidates: read them in context before \
+relying on them.
+- search finds sentences by the text's own words; marks and Turkish letters are optional ("hasir" \
+finds "haşir"). Use it for exact words, phrases, names and technical terms. Use quotes for phrases, \
+* for word beginnings, OR, -word to exclude, NEAR(a b, 5).
 - Then read the context with read_section (a section and its subsections, in book order, page by \
 page with next_cursor) or get_passage (a sentence or range with neighbours and hâşiyes).
 - get_outline shows the structure of a work or section; list_works lists the works and their ids.
@@ -194,6 +200,22 @@ def create_server(library: Library) -> MCPServer:
             return _json(library.search(query, work, group, limit, offset))
 
     @server.tool(annotations=READ_ONLY)
+    def semantic_search(
+        query: Annotated[str, Field(description="A question or concept in your own (today's) words, e.g. "
+                                                "'Ölüm neden bir nimettir?' or 'ümitsizlik'.")],
+        work: Annotated[str | None, Field(description="Only this work id.")] = None,
+        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua or hizb.")] = None,
+        limit: Annotated[int, Field(ge=1, le=50)] = 10,
+        offset: Annotated[int, Field(ge=0)] = 0,
+    ) -> str:
+        """Find passages by meaning rather than by exact words: the sentences closest in meaning to the query (id,
+        ref, incipit, similarity) and the sections where the topic concentrates. Use it for concepts and questions;
+        the text often says the same thing with other, older words. For exact words, phrases or terms use search.
+        Read the context of a result with get_passage or read_section before relying on it."""
+        with _tool_errors():
+            return _json(library.semantic_search(query, work, group, limit, offset))
+
+    @server.tool(annotations=READ_ONLY)
     def find_sentence(
         incipit: Annotated[str, Field(description="The first words of the sentence, as the user quotes them.")],
         scope: Annotated[str | None, Field(description="Only inside this work or section id.")] = None,
@@ -252,8 +274,9 @@ def create_server(library: Library) -> MCPServer:
         where = f" Limit the survey to {scope}." if scope else ""
         return (
             f"Survey where the topic “{topic}” is treated in the works.{where}\n"
-            "1. Search with several formulations (synonyms, Ottoman and modern spellings, word beginnings with *). "
-            "Use by_work and matching_sections to see where it concentrates.\n"
+            "1. Find the passages with semantic_search (the topic as a concept and as a question; its sections show "
+            "where it concentrates) and with search for the text's own terms (Ottoman and modern spellings, word "
+            "beginnings with *; by_work shows the spread).\n"
             "2. For the main passages, read enough context (get_passage with context, or read_section) to be sure "
             "the passage is really about the topic.\n"
             "3. Report the places grouped by work, in the works' order: for each, the reference with the incipit "
@@ -314,6 +337,7 @@ def main() -> None:
     parser.add_argument("--host", default="127.0.0.1", help="HTTP için; yalnızca bu bilgisayar")
     parser.add_argument("--port", type=int, default=8000)
     args = parser.parse_args()
+    load_env()                                    # VOYAGE_API_KEY: proje klasöründeki .env
     library = Library(args.db)
     library.conn                                  # veritabanı yoksa başlarken açık hata
     server = create_server(library)

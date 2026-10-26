@@ -8,7 +8,8 @@ Kullanım:
     data/books/<eser>.json            eserin başlık ağacı, paragrafları, hâşiyeleri, cümleleri
     data/interim/outline/<eser>.txt   elle kontrol için girintili başlık ağacı
 Sonunda `ESERLER.md` kontrol listesi yenilenir ve veritabanı (`data/risale.db`) bütün
-JSON'lardan yeniden kurulur (`--no-db` ile atlanır).
+JSON'lardan yeniden kurulur (`--no-db` ile atlanır). Metni değişen cümlelerin anlamsal arama
+vektörü yoksa bildirilir; `python -m risale_mcp.embeddings build voyage-context-4` tamamlar.
 """
 
 import argparse
@@ -18,7 +19,7 @@ import sys
 from collections import Counter
 from functools import cache
 
-from risale_mcp import build_db, checklist, sentences
+from risale_mcp import build_db, checklist, embeddings, sentences
 from risale_mcp.books import erisale as erisale_parser
 from risale_mcp.books import kastamonur as kastamonur_parser
 from risale_mcp.books import risale_online as risale_online_parser
@@ -27,7 +28,8 @@ from risale_mcp.books import yeniasya as yeniasya_parser
 from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
 from risale_mcp.books.model import Book
 from risale_mcp.catalog import SECONDARY_SITES, WORKS, Group, Site, Status, Work, get_work
-from risale_mcp.paths import BOOKS_DIR, INTERIM_DIR, RAW_DIR, ROOT
+from risale_mcp.db import connect
+from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, RAW_DIR, ROOT
 from risale_mcp.sources import erisale
 
 OUTLINE_DIR = INTERIM_DIR / "outline"
@@ -160,6 +162,9 @@ def main() -> None:
     checklist.main()
     if not args.no_db:
         print("\nveritabanı:\n" + "\n".join(build_db.build().lines()))
+        if count := embeddings.missing(connect(DB_PATH)):
+            print(f"\nanlamsal arama: {count} cümlenin vektörü yok; tamamlamak için "
+                  f"`uv run python -m risale_mcp.embeddings build {embeddings.SEARCH_MODEL}`")
 
 
 if __name__ == "__main__":

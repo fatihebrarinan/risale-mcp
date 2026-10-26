@@ -150,7 +150,7 @@ async def test_server_lists_tools_prompts_and_resources(library):
     async with Client(create_server(library)) as client:
         tools = {t.name: t for t in (await client.list_tools()).tools}
         assert set(tools) == {"list_works", "get_outline", "read_section", "get_passage", "search",
-                              "find_sentence", "find_ayah", "verify_citations"}
+                              "find_sentence", "find_ayah", "verify_citations", "semantic_search"}
         assert all(t.annotations.read_only_hint for t in tools.values())
         prompts = {p.name for p in (await client.list_prompts()).prompts}
         assert prompts == {"topic_survey", "text_and_commentary", "discuss", "self_test", "lesson_plan"}

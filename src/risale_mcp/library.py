@@ -20,8 +20,10 @@ from pathlib import Path
 
 from risale_mcp import search as fts
 from risale_mcp.db import connect
+from risale_mcp.embeddings import EmbeddingError
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import DB_PATH
+from risale_mcp.semantic import SemanticIndex, SemanticUnavailable
 
 MAX_RANGE = 100          # get_passage'ın bir seferde döndürdüğü en çok cümle
 MAX_RESULTS = 50
@@ -42,10 +44,12 @@ def _placeholders(items) -> str:
 
 
 class Library:
-    def __init__(self, path: Path = DB_PATH) -> None:
+    def __init__(self, path: Path = DB_PATH, vectors_dir: Path | None = None) -> None:
         self.path = path
+        self.vectors_dir = vectors_dir
         self._conn: sqlite3.Connection | None = None
         self._version: int | None = None
+        self._semantic: tuple[sqlite3.Connection, SemanticIndex] | None = None
 
     @property
     def conn(self) -> sqlite3.Connection:
@@ -381,6 +385,50 @@ class Library:
         if sections:
             result["matching_sections"] = [{"id": s.node_id, "ref": s.ref} for s in sections]
         return result
+
+    def semantic_search(self, query: str, work: str | None = None, group: str | None = None,
+                        limit: int = 10, offset: int = 0) -> dict:
+        """Anlamca en yakın cümleler ve konunun yoğunlaştığı bölümler (`semantic.py`)."""
+        if not query.strip():
+            raise LibraryError("Give a question or a concept to search for.")
+        works = None
+        if work:
+            self._node(work)
+            works = {work}
+        elif group:
+            works = {r[0] for r in self.conn.execute("SELECT slug FROM works WHERE group_name = ?", (group,))}
+            if not works:
+                raise LibraryError(f"Unknown group {group!r}; groups are: eski-said, ana-cilt, mecmua, hizb.")
+        try:
+            hits, sections = self._semantic_index().search(query, works, min(max(limit, 1), MAX_RESULTS), max(offset, 0))
+        except SemanticUnavailable:
+            raise LibraryError("Semantic search is not available on this server (no sentence vectors); "
+                               "use search with the text's own words.") from None
+        except EmbeddingError as error:
+            raise LibraryError(f"Semantic search failed ({error}); use search with the text's own words.") from None
+        ids = [h.sentence_id for h in hits]
+        rows = {r["id"]: r for r in self.conn.execute(
+            f"SELECT id, ref, incipit, text FROM sentences WHERE id IN ({_placeholders(ids)})", ids)}
+        refs = {}
+        if sections and offset == 0:
+            ids_ = [s.node_id for s in sections]
+            refs = dict(self.conn.execute(f"SELECT id, ref FROM nodes WHERE id IN ({_placeholders(ids_)})", ids_).fetchall())
+        result = {
+            "results": [{"id": h.sentence_id, "ref": rows[h.sentence_id]["ref"], "incipit": rows[h.sentence_id]["incipit"],
+                         "text": _preview(rows[h.sentence_id]["text"]), "similarity": round(h.score, 3)} for h in hits],
+        }
+        if refs:
+            result["sections"] = [{"id": s.node_id, "ref": refs[s.node_id], "matches": s.matches} for s in sections]
+        if unindexed := self._semantic_index().unindexed:
+            result["unindexed_sentences"] = unindexed
+        return result
+
+    def _semantic_index(self) -> SemanticIndex:
+        """Veritabanı yeniden kurulunca (yeni bağlantı) eşleme de yenilenir."""
+        conn = self.conn
+        if self._semantic is None or self._semantic[0] is not conn:
+            self._semantic = (conn, SemanticIndex(conn, directory=self.vectors_dir))
+        return self._semantic[1]
 
     def find_ayah(self, sura: str, ayah: int | None = None, limit: int = 30, offset: int = 0) -> dict:
         """Bir sûrenin (ya da âyetin) eserlerde geçtiği yerler. `sura` numara ya da ad ("Bakara")."""

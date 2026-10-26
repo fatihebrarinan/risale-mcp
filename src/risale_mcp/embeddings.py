@@ -1,12 +1,12 @@
 """Aşama 8: cümle vektörleri (anlamsal arama).
 
 Kullanım:
-    uv run --env-file .env python -m risale_mcp.embeddings build voyage-4-large            # eksik vektörleri çıkar
-    uv run --env-file .env python -m risale_mcp.embeddings build openai-3-large --variant title
+    uv run python -m risale_mcp.embeddings build voyage-4-large            # eksik vektörleri çıkar
+    uv run python -m risale_mcp.embeddings build openai-3-large --variant title
     uv run python -m risale_mcp.embeddings status                                          # depolar ve eksikler
 
 Sağlayıcılar API'dir; anahtarlar ortam değişkenindedir (`VOYAGE_API_KEY`, `OPENAI_API_KEY`;
-proje klasöründeki `.env` dosyası `uv run --env-file .env` ile verilir). İstekler standart
+proje klasöründeki `.env` dosyasından okunur, bkz. `env.py`). İstekler standart
 kütüphaneyle yapılır; sunucuya yalnızca numpy gerekir. Bütün modeller 1024 boyutla kullanılır
 (boyutu sabit olan `voyage-multilingual-2` dışında).
 
@@ -18,7 +18,9 @@ Vektörü çıkarılan metin (birim) seçeneğe (`variant`) göre değişir:
 Anahtar vektörü çıkarılan metinden gelir. Veritabanı yeniden kurulsa da metin değişmedikçe vektör
 geçerli kalır; yalnızca değişen ya da yeni birimlerin vektörü çıkarılır.
 
-Depo: `data/vectors/<model>.<variant>.npy` (float16, birim uzunlukta) ve aynı adlı `.keys.json`.
+Depo: `data/vectors/<model>.<variant>.npy` ve aynı adlı `.keys.json`. Vektörler float16 birim vektördür;
+sunucunun modeli (`SEARCH_MODEL`, `voyage-context-4`) ise 512 boyutlu int8 vektörleri sağlayıcıdan hazır alır
+(≈56 MB; değerlendirmede 1024 boyutlu float16 ile aynı isabet).
 Değerlendirme sorularının vektörleri `data/vectors/queries.<model>.json`'da önbelleğe alınır.
 """
 
@@ -39,6 +41,7 @@ from pathlib import Path
 import numpy as np
 
 from risale_mcp.db import connect
+from risale_mcp.env import load_env
 from risale_mcp.paths import DATA_DIR, DB_PATH, ROOT
 
 VECTORS_DIR = DATA_DIR / "vectors"
@@ -58,6 +61,7 @@ class Model:
     max_items: int          # bir istekte en çok metin
     dimensions: int | None = DIMENSIONS     # None: modelin kendi boyutu
     contextual: bool = False
+    int8: bool = False      # belge vektörleri sağlayıcıdan 8 bitlik tamsayı olarak alınır (sorgular float)
 
 
 MODELS = {m.name: m for m in [
@@ -65,11 +69,13 @@ MODELS = {m.name: m for m in [
     Model("voyage-4", "voyage", "voyage-4", 320_000, 1000),
     Model("voyage-4-lite", "voyage", "voyage-4-lite", 1_000_000, 1000),
     Model("voyage-multilingual-2", "voyage", "voyage-multilingual-2", 120_000, 1000, dimensions=None),
-    Model("voyage-context-4", "voyage", "voyage-context-4", 32_000, 1000, contextual=True),
+    # Anlamsal aramanın modeli (SEARCH_MODEL): 512 boyut ve int8 isabeti düşürmeden depoyu dörtte bire indirir.
+    Model("voyage-context-4", "voyage", "voyage-context-4", 32_000, 1000, dimensions=512, contextual=True, int8=True),
     Model("openai-3-large", "openai", "text-embedding-3-large", 100_000, 2048),   # büyük isteklerde bağlantı kopuyor
     Model("openai-3-small", "openai", "text-embedding-3-small", 100_000, 2048),
 ]}
 VARIANTS = ("sentence", "title", "context")
+SEARCH_MODEL = "voyage-context-4"     # sunucunun anlamsal araması (Aşama 8'deki karşılaştırmayla seçildi)
 
 
 class EmbeddingError(RuntimeError):
@@ -86,7 +92,7 @@ def _post(url: str, key_name: str, body: dict) -> dict:
     """JSON isteği; hız sınırında ve sunucu hatasında bekleyip yeniden dener."""
     key = os.environ.get(key_name)
     if not key:
-        raise EmbeddingError(f"{key_name} tanımlı değil; komutu `uv run --env-file .env …` ile çalıştırın.")
+        raise EmbeddingError(f"{key_name} is not set (project .env file or environment).")
     request = urllib.request.Request(url, data=json.dumps(body).encode(),
                                      headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"})
     for attempt in range(RETRIES):
@@ -129,6 +135,8 @@ def embed_documents(model: Model, documents: list[list[str]]) -> tuple[list[np.n
     body = {"inputs": documents, "model": model.api_name, "input_type": "document"}
     if model.dimensions:
         body["output_dimension"] = model.dimensions
+    if model.int8:
+        body["output_dtype"] = "int8"
     result = _post("https://api.voyageai.com/v1/contextualizedembeddings", "VOYAGE_API_KEY", body)
     out = [None] * len(documents)
     for doc in result["data"]:
@@ -206,19 +214,24 @@ def _tokens(texts: list[str]) -> int:
 # ---------------------------------------------------------------- depo
 
 class VectorStore:
-    """Anahtar → birim uzunlukta vektör (float16). Diskte `.npy` ve `.keys.json`."""
+    """Anahtar → vektör. Diskte `.npy` (float16 birim vektör ya da sağlayıcının int8 vektörü) ve `.keys.json`.
+    Benzerlik kosinüstür; int8 vektörlerin uzunluğu bir kez hesaplanır."""
 
-    def __init__(self, model: str, variant: str, directory: Path | None = None) -> None:
+    BLOCK = 16_384           # puanlar bu kadar satırlık bloklarla hesaplanır (geçici bellek küçük kalır)
+
+    def __init__(self, model: str, variant: str, directory: Path | None = None, dtype=np.float16) -> None:
         directory = directory or VECTORS_DIR
         self.path = directory / f"{model}.{variant}.npy"
         self.keys_path = directory / f"{model}.{variant}.keys.json"
         self.keys: list[str] = []
-        self.vectors = np.zeros((0, 0), dtype=np.float16)
+        self.vectors = np.zeros((0, 0), dtype=dtype)
         if self.path.exists():
             self.keys = json.loads(self.keys_path.read_text(encoding="utf-8"))
             self.vectors = np.load(self.path)
+        self.dtype = self.vectors.dtype
         self.index = {k: i for i, k in enumerate(self.keys)}
-        self._pending: list[tuple[list[str], np.ndarray]] = []
+        self._pending: list[np.ndarray] = []
+        self._norms: np.ndarray | None = None
 
     def __contains__(self, key: str) -> bool:
         return key in self.index
@@ -227,24 +240,36 @@ class VectorStore:
         for k in keys:
             self.index[k] = len(self.keys)
             self.keys.append(k)
-        self._pending.append((keys, _unit(vectors).astype(np.float16)))
+        self._pending.append(vectors.astype(np.int8) if self.dtype == np.int8 else _unit(vectors).astype(self.dtype))
 
     def save(self) -> None:
         if not self._pending:
             return
-        new = np.concatenate([v for _, v in self._pending])
+        new = np.concatenate(self._pending)
         self.vectors = new if self.vectors.size == 0 else np.concatenate([self.vectors, new])
-        self._pending = []
+        self._pending, self._norms = [], None
         self.path.parent.mkdir(parents=True, exist_ok=True)
         tmp = self.path.with_suffix(".tmp.npy")
         np.save(tmp, self.vectors)
         self.keys_path.write_text(json.dumps(self.keys), encoding="utf-8")
         tmp.replace(self.path)
 
+    def scores(self, query: np.ndarray) -> np.ndarray:
+        """Her satırın sorguyla kosinüs benzerliği."""
+        query = _unit(query.astype(np.float32))
+        out = np.concatenate([self.vectors[i:i + self.BLOCK].astype(np.float32) @ query
+                              for i in range(0, len(self.vectors), self.BLOCK)])
+        if self.dtype == np.int8:
+            if self._norms is None:
+                self._norms = np.concatenate([np.linalg.norm(self.vectors[i:i + self.BLOCK].astype(np.float32), axis=1)
+                                              for i in range(0, len(self.vectors), self.BLOCK)])
+            out /= np.where(self._norms == 0, 1, self._norms)
+        return out
+
     def nearest(self, query: np.ndarray, keys: list[str], k: int) -> list[tuple[str, float]]:
-        """`keys` arasından sorguya en yakın k birim (kosinüs benzerliği)."""
+        """`keys` arasından sorguya en yakın k birim."""
         rows = np.array([self.index[key] for key in keys if key in self.index])
-        scores = self.vectors[rows].astype(np.float32) @ query.astype(np.float32)
+        scores = self.scores(query)[rows]
         top = np.argsort(-scores)[:k]
         return [(self.keys[rows[i]], float(scores[i])) for i in top]
 
@@ -293,7 +318,7 @@ def build(model: Model, variant: str, conn: sqlite3.Connection) -> VectorStore:
     """Depoda olmayan birimlerin vektörlerini çıkarır."""
     if (variant == "context") != model.contextual:
         raise EmbeddingError("`context` yalnızca bağlamlı modellerle, bağlamlı modeller yalnızca `context` ile.")
-    store = VectorStore(model.name, variant)
+    store = VectorStore(model.name, variant, dtype=np.int8 if model.int8 else np.float16)
     todo = [u for u in units(conn, variant) if u.key not in store]
     print(f"{model.name}.{variant}: {len(store.keys)} vektör var, {len(todo)} eksik", flush=True)
     started, spent, done = time.monotonic(), 0, 0
@@ -326,6 +351,15 @@ def build(model: Model, variant: str, conn: sqlite3.Connection) -> VectorStore:
     return store
 
 
+def missing(conn: sqlite3.Connection, model_name: str = SEARCH_MODEL) -> int:
+    """Anlamsal aramada vektörü olmayan cümle sayısı (ayrıştırma metni değiştirdiyse)."""
+    model = MODELS[model_name]
+    variant = "context" if model.contextual else "sentence"
+    keys_path = VECTORS_DIR / f"{model.name}.{variant}.keys.json"
+    known = set(json.loads(keys_path.read_text(encoding="utf-8"))) if keys_path.exists() else set()
+    return sum(len(u.sentences) for u in units(conn, variant) if u.key not in known)
+
+
 # ---------------------------------------------------------------- sorgu önbelleği
 
 def query_vector(model: Model, query: str) -> np.ndarray:
@@ -348,6 +382,7 @@ def main() -> None:
     commands.add_parser("status", help="depolar ve eksik vektörler")
     parser.add_argument("--db", type=Path, default=DB_PATH)
     args = parser.parse_args()
+    load_env()
     conn = connect(args.db)
     if args.command == "build":
         model = MODELS[args.model]

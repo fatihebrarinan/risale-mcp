@@ -3,11 +3,13 @@
 Kullanım:
     uv run python -m risale_mcp.search_eval check          # seti denetle, gözden geçirme sayfasını üret
     uv run python -m risale_mcp.search_eval run words      # bir aramayı ölç
-    uv run --env-file .env python -m risale_mcp.search_eval run words-or semantic:voyage-4-large hybrid:voyage-4-large
+    uv run python -m risale_mcp.search_eval run words-or semantic:voyage-4-large hybrid:voyage-4-large
 
 Aramalar: `words` (bugünkü kelime araması, bütün kelimeler geçmeli), `words-or` (kelimelerden biri),
 `semantic:<model>[:<seçenek>]` (vektör araması; `embeddings.py`), `hybrid:<model>[:<seçenek>]`
-(vektör ve `words-or` sonuçları RRF ile birleşir). Birden çok arama verilirse karşılaştırma tablosu yazılır.
+(vektör ve `words-or` sonuçları RRF ile birleşir), `server` (sunucunun anlamsal araması, `semantic.py`),
+`sections` (sunucunun bölüm sıralaması: isabet, sıralanan bölümün beklenen bölümün içinde ya da
+üstünde olmasıdır). Birden çok arama verilirse karşılaştırma tablosu yazılır.
 
 Değerlendirme seti `tests/golden/semantic_queries.json`'dadır: günümüz Türkçesiyle sorulmuş
 kavramlar ve her birinin asıl işlendiği bölümler (`expected`), kabul edilen yan bölümler
@@ -31,9 +33,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 
-from risale_mcp import embeddings
+from risale_mcp import embeddings, semantic
 from risale_mcp import search as fts
 from risale_mcp.db import connect
+from risale_mcp.env import load_env
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import DB_PATH, INTERIM_DIR, ROOT
 
@@ -121,9 +124,22 @@ def rrf(rankings: list[list[tuple[str, str]]]) -> list[tuple[str, str]]:
     return sorted(scores, key=lambda hit: -scores[hit])
 
 
+def _server(sections: bool) -> Retriever:
+    index: list[semantic.SemanticIndex] = []
+
+    def retrieve(conn: sqlite3.Connection, query: str, k: int) -> list[tuple[str, str]]:
+        if not index:
+            index.append(semantic.SemanticIndex(conn))
+        hits, ranked = index[0].search(query, limit=k)
+        return [(s.node_id, s.node_id) for s in ranked] if sections else [(h.sentence_id, h.node_id) for h in hits]
+    return retrieve
+
+
 def retriever(name: str) -> Retriever:
     if name in ("words", "words-or"):
         return {"words": _words, "words-or": _words_or}[name]
+    if name in ("server", "sections"):
+        return _server(name == "sections")
     kind, _, spec = name.partition(":")
     if kind not in ("semantic", "hybrid") or spec.split(":")[0] not in embeddings.MODELS:
         sys.exit(f"Bilinmeyen arama {name!r}; modeller: {', '.join(embeddings.MODELS)}.")
@@ -242,6 +258,7 @@ def main() -> None:
     run_parser.add_argument("retrievers", nargs="+", help="words, words-or, semantic:<model>, hybrid:<model>")
     parser.add_argument("--db", type=Path, default=DB_PATH)
     args = parser.parse_args()
+    load_env()
     conn = connect(args.db)
     if args.command == "check":
         check(conn)
