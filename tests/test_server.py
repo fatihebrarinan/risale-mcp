@@ -13,7 +13,7 @@ from mcp import Client
 
 from risale_mcp.library import Library, LibraryError
 from risale_mcp.paths import DB_PATH
-from risale_mcp.server import create_server
+from risale_mcp.server import INSTRUCTIONS, create_server
 
 pytestmark = pytest.mark.anyio
 
@@ -137,6 +137,11 @@ def test_rebuilt_database_is_reopened(small_db, tmp_path):
     os.utime(path, ns=(0, 0))                                                 # build_db dosyayı değiştirdi
     assert lib.conn is not old
     lib.close()
+
+
+def test_instructions_ask_for_quotations_as_block_quotes():
+    """Kullanıcının isteği: eserlerden her alıntı kendi satırında, tırnak içinde alıntı bloğu."""
+    assert '(> "…")' in INSTRUCTIONS
 
 
 # ---------------------------------------------------------------- MCP protokolü

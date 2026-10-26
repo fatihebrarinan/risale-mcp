@@ -51,12 +51,17 @@ titles unshortened ("Yirminci Söz’ün İkinci Makamı", not "İkinci Makam"),
 never relative to an earlier reference ("…", "same place", a bare "Birinci Mebhas"). Use › only in \
 references, not for your own labels.
 4. Put quotation marks only around the text's own words, never around your paraphrase.
-5. Before giving an answer that contains references, pass them to verify_citations and correct every \
+5. Every quotation from the works stands on its own line as a block quote in quotation marks \
+(> "…"), with a blank line before and after it. This holds for every quotation of a sentence or part \
+of one, also a short one and one that extends or completes the previous quotation ("the next sentence \
+adds: …" is followed by its own block quote). Inside your own prose, quote at most a single term or \
+name (e.g. "tefânî").
+6. Before giving an answer that contains references, pass them to verify_citations and correct every \
 one it flags.
-6. If the tools do not return something, say that you could not find it in the works. Do not fill \
+7. If the tools do not return something, say that you could not find it in the works. Do not fill \
 the gap from memory.
-7. Keep what the text says apart from your own interpretation, under separate headings.
-8. Answer in the user's language (usually Turkish); quote the text as returned.
+8. Keep what the text says apart from your own interpretation, under separate headings.
+9. Answer in the user's language (usually Turkish); quote the text as returned.
 
 How to navigate:
 - search finds sentences by words; marks and Turkish letters are optional ("hasir" finds "haşir"). \
