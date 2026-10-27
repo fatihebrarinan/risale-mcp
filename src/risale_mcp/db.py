@@ -168,6 +168,22 @@ CREATE TABLE ayah_quotes (
 );
 CREATE INDEX ayah_quotes_ayah ON ayah_quotes(sura, ayah_start);
 
+-- Âyet ilişkileri (Aşama 14, `ayah_links.py`): Risale'nin bir yerinin bir âyetle kurduğu bağ, kanıt cümlesiyle.
+-- "Tefsir" diye anılmaz. `kind`: isaret, acilis, izah, dayanak, risale. `scope`: section (bölümün tamamı)
+-- ya da sentence (yalnız kanıt cümlesi). `strength`: strong (bölüm kapsamlı ve izah) ya da weak.
+CREATE TABLE ayah_links (
+    sura        INTEGER NOT NULL,
+    ayah_start  INTEGER NOT NULL,
+    ayah_end    INTEGER NOT NULL,
+    kind        TEXT NOT NULL,
+    strength    TEXT NOT NULL,
+    node_id     TEXT NOT NULL REFERENCES nodes(id),
+    scope       TEXT NOT NULL,
+    evidence_id TEXT NOT NULL REFERENCES sentences(id)
+);
+CREATE INDEX ayah_links_ayah ON ayah_links(sura, ayah_start);
+CREATE INDEX ayah_links_node ON ayah_links(node_id);
+
 CREATE TABLE quran_suras (
     number  INTEGER PRIMARY KEY,
     name    TEXT NOT NULL,

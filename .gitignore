@@ -14,3 +14,4 @@ data/interim/search_eval/
 data/vectors/
 data/quran.json
 data/interim/quran/
+data/interim/ayah_links/

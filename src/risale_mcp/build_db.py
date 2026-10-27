@@ -29,6 +29,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
+from risale_mcp.ayah_links import find_links
 from risale_mcp.catalog import WORKS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
 from risale_mcp.normalize import search_words
@@ -110,6 +111,7 @@ class BuildReport:
     ayah_problems: list = field(default_factory=list)          # (sonuç, paragraf, kaynak, metin)
     located: Counter = field(default_factory=Counter)          # işaretsiz Kur'ân metni
     unlocated: list = field(default_factory=list)              # (paragraf, numara): bulunamayan işaretsiz alıntı
+    links: Counter = field(default_factory=Counter)            # âyet ilişkileri: "tür/güç" -> sayı
 
     def ayah_report(self) -> str:
         """Kaynağın âyet numarası Kur'ân metniyle tutmayan yerler ve bulunamayan işaretsiz alıntılar."""
@@ -142,6 +144,9 @@ class BuildReport:
                          f" {checks['near']} komşu âyette, {checks['differs']} farklı, {checks['empty']} boş")
             lines.append(f"  işaretsiz âyet: {self.located['bulundu']} bulundu, {self.located['bulunamadı']} numarasız"
                          f" ve {self.located['numaralı, bulunamadı']} numaralı alıntı bulunamadı")
+        if self.links:
+            strong = sum(n for k, n in self.links.items() if k.endswith("/strong"))
+            lines.append(f"  âyet ilişkisi: {sum(self.links.values())} ({strong} güçlü)")
         if self.unresolved_ayah:
             lines.append(f"  çözülemeyen âyet kaynağı: {sum(self.unresolved_ayah.values())}")
             lines += [f"      {n}× {s}" for s, n in self.unresolved_ayah.most_common(10)]
@@ -280,6 +285,17 @@ def _insert_located(conn: sqlite3.Connection, located: list, quran: Quran, sente
                       match.sura, match.start, match.end))
 
 
+def _insert_links(conn: sqlite3.Connection, report: BuildReport) -> None:
+    """Âyet ilişkileri: bütün eserler ve âyet eşlemesi yazıldıktan sonra veritabanından çıkarılır."""
+    conn.row_factory = sqlite3.Row
+    links = find_links(conn)
+    conn.row_factory = None
+    conn.executemany("INSERT INTO ayah_links VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                     [(l.sura, l.ayah_start, l.ayah_end, l.kind, l.strength, l.node_id, l.scope, l.evidence_id)
+                      for l in links])
+    report.links.update(f"{l.kind}/{l.strength}" for l in links)
+
+
 def _insert_quran(conn: sqlite3.Connection, quran: Quran, report: BuildReport) -> None:
     data = quran.data
     conn.executemany("INSERT INTO quran_translators VALUES (?, ?, ?)",
@@ -385,6 +401,7 @@ def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH, quran_path: Path | N
                     report.works += 1
             if quran:
                 _insert_quran(conn, quran, report)
+                _insert_links(conn, report)
             sura_rows = suras.rows()
             # Veride hiç numarasıyla geçmeyen sûreler de adıyla aranabilsin (Kur'ân katmanının Türkçe adları).
             learned = {key for key, _, _ in sura_rows}

@@ -30,6 +30,7 @@ MAX_CITED = 8            # tek atıfla verilebilecek en çok ardışık cümle (
 MAX_RESULTS = 50
 PREVIEW_CHARS = 400      # arama sonucunda gösterilen en uzun cümle metni
 ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen Arapça türleri
+MAX_LINKS = 30           # find_ayah'ın bir âyet için döndürdüğü en çok ilişki
 MAX_AYAHS = 30           # get_ayah'ın bir seferde döndürdüğü en çok âyet (bağlam hariç)
 QURAN_ATTRIBUTION = ("Arabic text: Tanzil Project (tanzil.net), Medina Mushaf script. Translations: Diyanet İşleri "
                      "Başkanlığı and Türkiye Diyanet Vakfı, via Tanzil (non-commercial use).")
@@ -194,6 +195,13 @@ class Library:
             gaps[g["after"] or g["node_id"]].append(
                 {"gap": g["note"] or f"{g['missing_blocks']} block(s) missing at the source; text not invented."})
 
+        verses = defaultdict(list)
+        for v in self.conn.execute(
+                "SELECT l.node_id, l.kind, l.sura, l.ayah_start, l.ayah_end, l.evidence_id FROM ayah_links l"
+                " JOIN nodes n ON n.id = l.node_id WHERE l.scope = 'section' AND n.work = ? AND n.ord BETWEEN ? AND ?"
+                " ORDER BY l.rowid", (root["work"], root["ord"], root["last_ord"])):
+            verses[v["node_id"]].append({"verse": self._verse_ref(v["sura"], v["ayah_start"], v["ayah_end"]),
+                                         "kind": v["kind"], "evidence": v["evidence_id"]})
         items: list[dict] = []
         heading_at = 0
         first_ord = node_ord[page[0]["node_id"]] if page else root["ord"]
@@ -207,6 +215,8 @@ class Library:
                 item = {"section": n["id"], "title": n["title"], "ref": n["ref"]}
                 if n["subtitle"]:
                     item["subtitle"] = n["subtitle"]
+                if n["id"] in verses:
+                    item["linked_verses"] = verses[n["id"]]
                 if continued and n["ord"] == ord_:
                     item["continued"] = True
                 items.append(item)
@@ -499,7 +509,19 @@ class Library:
         result = {"sura": number, "name": self._sura_name(number), "ayah": ayah, "total": total, "results": results}
         if ayah is not None and self._has_quran():
             result["quran"] = self.ayahs(number, ayah)["ayahs"][0]
+            result["links"] = self._links(number, ayah)
         return result
+
+    def _links(self, sura: int, ayah: int) -> list[dict]:
+        """Âyetle bağ kuran yerler (güçlüler önce, kitap sırasıyla), kanıt cümleleriyle."""
+        rows = self.conn.execute(
+            "SELECT l.kind, l.strength, l.scope, n.id AS node_id, n.ref AS node_ref, s.id AS sid, s.ref AS sref,"
+            " s.incipit, s.text FROM ayah_links l JOIN nodes n ON n.id = l.node_id JOIN sentences s ON s.id = l.evidence_id"
+            " WHERE l.sura = ? AND ? BETWEEN l.ayah_start AND l.ayah_end"
+            " ORDER BY l.strength = 'weak', s.seq LIMIT ?", (sura, ayah, MAX_LINKS)).fetchall()
+        return [{"kind": r["kind"], "strength": r["strength"], "scope": r["scope"], "section": r["node_id"],
+                 "ref": r["node_ref"], "evidence": {"id": r["sid"], "ref": r["sref"],
+                                                    "opening": opening(r["incipit"], r["text"])}} for r in rows]
 
     def ayahs(self, sura: str | int, ayah: int, end: int | None = None, context: int = 0) -> dict:
         """Kur'ân'dan âyet ya da âyet aralığı: harekeli metin (Medine Mushafı hattı) ve Diyanet mealleri."""
@@ -528,16 +550,27 @@ class Library:
             " WHERE sura = :s UNION ALL SELECT sura, ayah_start, ayah_end FROM ayah_quotes WHERE sura = :s) q"
             " ON a.ayah BETWEEN q.ayah_start AND q.ayah_end WHERE a.sura = :s AND a.ayah BETWEEN :f AND :l"
             " GROUP BY a.ayah", {"s": number, "f": first, "l": last}).fetchall())
+        links = defaultdict(lambda: {"strong": 0, "weak": 0})
+        for r in self.conn.execute(
+                "SELECT a.ayah, l.strength, count(*) AS n FROM quran_ayahs a JOIN ayah_links l ON l.sura = a.sura"
+                " AND a.ayah BETWEEN l.ayah_start AND l.ayah_end WHERE a.sura = ? AND a.ayah BETWEEN ? AND ?"
+                " GROUP BY a.ayah, l.strength", (number, first, last)):
+            links[r["ayah"]][r["strength"]] = r["n"]
         out = []
         for r in self.conn.execute("SELECT ayah, text FROM quran_ayahs WHERE sura = ? AND ayah BETWEEN ? AND ?"
                                    " ORDER BY ayah", (number, first, last)):
             item = {"ayah": r["ayah"], "ref": f"{self._sura_name(number)} Sûresi, {number}:{r['ayah']}",
                     "text": r["text"], "translations": meals[r["ayah"]],
                     "quoted_in_works": quoted.get(r["ayah"], 0)}
+            if r["ayah"] in links:
+                item["linked_in_works"] = links[r["ayah"]]
             if not ayah <= r["ayah"] <= end:
                 item["context"] = True
             out.append(item)
         return {"sura": number, "name": self._sura_name(number), "ayahs": out, "attribution": QURAN_ATTRIBUTION}
+
+    def _verse_ref(self, sura: int, start: int, end: int) -> str:
+        return f"{self._sura_name(sura)} Sûresi, {sura}:{_ayah_span(start, end)}"
 
     def _has_quran(self) -> bool:
         return self.conn.execute("SELECT EXISTS (SELECT 1 FROM quran_ayahs)").fetchone()[0] == 1

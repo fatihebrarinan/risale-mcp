@@ -94,6 +94,7 @@ risale-mcp/
 │   │   ├── review/index.html      # kontrol arayüzü: bütün eserler tek sayfada; metinler review/data/<eser>.js (git'e eklenmez)
 │   │   ├── outline/<eser>.txt     # elle kontrol için girintili başlık ağacı (git'e eklenmez)
 │   │   ├── quran/ayah_check.md    # âyet denetimi: kaynağın numarası Kur'ân metniyle tutmayan yerler
+│   │   ├── ayah_links/            # links.md (bütün âyet ilişkileri), sample-<tur>.md (gözden geçirme örneklemi)
 │   │   └── build.log              # son toplu ayrıştırmanın raporu
 │   ├── books/<eser>.json          # Her eserin JSON'u (git'e eklenmez)
 │   ├── quran.json                 # Kur'ân katmanı: metin, mealler, sûre adları (git'e eklenmez)
@@ -131,6 +132,7 @@ risale-mcp/
 │   ├── search.py       # Aşama 5: sorgu dili → FTS5, cümle ve başlık araması
 │   ├── library.py      # Aşama 6: veritabanı üzerindeki okuma işleri (MCP'den bağımsız)
 │   ├── quran.py        # Aşama 13: Kur'ân katmanı (ham -> data/quran.json), harf iskeleti, âyet eşleme
+│   ├── ayah_links.py   # Aşama 14: âyet ilişkileri (kurallar, gözden geçirme raporu ve örneklem)
 │   ├── citations.py    # Atıf denetimi: metindeki "Eser › Bölüm › “ilk kelimeler”" atıfları (araç ve altın sorular)
 │   ├── env.py          # .env dosyasındaki API anahtarları
 │   ├── embeddings.py   # Aşama 8: vektör sağlayıcıları (Voyage, OpenAI), vektör deposu, vektör çıkarma CLI'ı
@@ -159,9 +161,11 @@ risale-mcp/
     ├── test_search_eval.py
     ├── test_golden.py
     ├── test_quran.py
+    ├── test_ayah_links.py
     └── golden/
         ├── golden_questions.md   # kullanıcının yazdığı test soruları
         ├── questions.json        # aynı sorular, doğrulanmış beklenen bölümlerle (düzenek bunu okur)
+        ├── ayah_links_review.json  # kullanıcının âyet ilişkisi örneklem kararları (Aşama 14)
         └── semantic_queries.json # anlamsal arama değerlendirme seti (50 soru, kullanıcı onayladı)
 ```
 
@@ -240,7 +244,7 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve ikincil k
 
 `uv run python -m risale_mcp.build_db` komutu `data/books/*.json` dosyalarından `data/risale.db`'yi her seferinde sıfırdan kurar (≈17 sn). Asıl kaynak JSON'lardır, veritabanı elle düzenlenmez. Kurulum geçici dosyaya yapılır, sayılar JSON'larla tutmazsa veritabanı yazılmaz. Şemanın açıklaması `db.py`'de, kurulum kuralları `build_db.py`'nin başındadır.
 
-- **Tablolar:** `works` (katalogdaki bütün eserler; JSON'u olmayanlar `built = 0`), `nodes` (`ord`..`last_ord` alt ağaçtır), `node_sources`, `paragraphs` (eşlenmiş mecmua paragrafında `text` NULL), `paragraph_sources`, `sentences`, `arabic` (cümleye bağlı; âyette `sura`, `ayah_start`, `ayah_end`), `sura_names` (veriden öğrenilen yazılışlar ve Kur'ân katmanının 114 Türkçe adı), `notes`, `gaps`, `meta`; Kur'ân katmanı `quran_suras`, `quran_ayahs`, `quran_translators`, `quran_translations`, `ayah_quotes`. Arama dizinleri `sentences_fts` ve `nodes_fts` (başlık, alt başlık, içindekiler adı).
+- **Tablolar:** `works` (katalogdaki bütün eserler; JSON'u olmayanlar `built = 0`), `nodes` (`ord`..`last_ord` alt ağaçtır), `node_sources`, `paragraphs` (eşlenmiş mecmua paragrafında `text` NULL), `paragraph_sources`, `sentences`, `arabic` (cümleye bağlı; âyette `sura`, `ayah_start`, `ayah_end`), `sura_names` (veriden öğrenilen yazılışlar ve Kur'ân katmanının 114 Türkçe adı), `notes`, `gaps`, `meta`; Kur'ân katmanı `quran_suras`, `quran_ayahs`, `quran_translators`, `quran_translations`, `ayah_quotes`; âyet ilişkileri `ayah_links`. Arama dizinleri `sentences_fts` ve `nodes_fts` (başlık, alt başlık, içindekiler adı).
 - **Kimlikler:** `id` JSON'daki kalıcı kimliktir; `seq` yalnızca bu veritabanında geçerli tamsayı anahtardır ve okuma sırasını verir.
 - **Normalizasyon:** Dizin ve sorgu `normalize.search_words` biçimindedir. Şapka, çengel (ş/s, ç/c, ğ/g, ö/o, ü/u), Arapça hareke, kesme ve tatvil yok sayılır; ayrıca **ı = i** sayılır (klavyesiz "isik" → "ışık"). Biçim değişirse `db.NORMALIZATION` artırılır.
 - **Sorgu dili** (`search.py`): kelimeler (hepsi geçmeli), `"tam ifade"`, `haşr*` (kelime başı), `OR`, `-kelime` / `NOT`, `NEAR(a b, 5)`. Sıralama BM25'tir; kısa cümleler öne çıkma eğilimindedir.
@@ -265,6 +269,24 @@ uv run python -m risale_mcp.build_db      # Kur'ân tabloları, âyet denetimi v
 - **Kaynağın âyetleri denetlenir** (`arabic.ayah_check`): 4.000 âyetin 3.950'si numarasıyla tutar (`exact`), 8'i komşu âyette (`near`), 30'u kelimesi kelimesine tutmaz (`differs`: iktibas, tekrarlanan ifade, birden çok kaynak, Zülfikâr'da âyet diye işaretlenmiş şerh), 12'si boş. Veri değiştirilmez; `find_ayah` sonucunda `check` uyarısı gider. Liste `data/interim/quran/ayah_check.md`'de.
 - **İşaretsiz âyetler bulunur** (`ayah_quotes`): Hizb paragrafları numarayı mushaftaki gibi sonda verir ("…﴿٢﴾"); her numaradan önceki metin o numaralı âyetle biten yerde aranır. Kısa ve birden çok sûrede geçen âyet ("الٓمٓ﴿١﴾"), bölümde bulunan öbür âyetlerin en az %80'i aynı sûredense o sûrede aranır. el-Mesnevî el-Arabî'nin "﴿ … ﴾" alıntısı yalnızca Kur'ân'da tek yerde geçiyorsa (iskelette en az 6 harf) bağlanır. 2.373 alıntı bulundu (Hizbü'l-Kur'ân 1.848, Hizbü Envâr 266, el-Mesnevî el-Arabî 259); 161'i bağlanamadı (Hizbü Envâr'daki ﴿n﴾ sayaçları, dua içindeki iktibaslar, birden çok âyette geçen kısa ifadeler).
 - **Hizbü'l-Kur'ân'ın sûre sınırları** artık fihristten değil metindeki Arapça başlıklardan gelir (bkz. risaleoku satırı); 1.850 âyetin hepsi kendi sûresinin altındadır.
+
+## Âyet ilişkileri (Aşama 14)
+
+Risale'nin bir yerinin bir âyetle kurduğu bağ (`ayah_links` tablosu). `build_db` Kur'ân katmanını kurduktan sonra kurallarla çıkarır; ayrıntı `ayah_links.py` başındadır. Bu bağlar **"tefsir" diye anılmaz** (kullanıcının kararı): bir yerin bir âyetin tefsiri olduğu bir hükümdür, kural ise yalnızca metnin âyetle kurduğu bağı bulur; yanlışlıkla tefsir sınıfına alınan bir yan cümle vebal olur.
+
+```
+uv run python -m risale_mcp.ayah_links    # data/interim/ayah_links/links.md (hepsi) ve sample-<tur>.md (40'lık örneklem)
+```
+
+- **Türler:** `isaret` (âyetin geçtiği cümlede "işâret, remz, nükte, tefsir, mânâ, meâl"), `acilis` (bölümün ilk paragrafı âyet; Besmele sayılmaz), `izah` (âyetin hemen ardından ya da sonraki cümlenin başında müellifin "Yani"si; aslı Arapça eserlerde Türkçe ifade mütercimindir), `dayanak` ("… sırrınca, sırrıyla, fermânıyla"), `risale` (âyetin Risale-i Nur'a işâreti: Şualar › Birinci Şuâ ve başlığında "Risale-i Nur'a işâret" geçen bölümler; ayrı tür, kullanıcının kararı).
+- **Kapsam ve güç:** bağ bölümün ilk iki cümlesindeyse ve açılışta bölümün tamamı (`section`), değilse kanıt cümlesi (`sentence`). Bölüm kapsamlılar ve `izah` güçlü, öbürleri zayıf: zayıf ilişki yalnızca bir cümlenin âyete atfıdır, bölümün konusu gibi sunulmaz (kullanıcının "zayıf ilişki" fikri).
+- **İlk gözden geçirmeden çıkan kurallar** (kullanıcı, 1. tur): "işâret" gibi kelime âyete en çok 8 Türkçe kelime uzakta olmalı, âyet cümlenin başında değilse (önünde en çok 3 kelime: "İkinci Cümle: …") uzaktaki kelime bağ kurmaz; sûreyi adlandıran âyet ("Sûre‑i وَالتّ۪ينِ", "اِقْرَأْ … Sûresi") zayıf; cifir/ebced cümlesi, âyet başta değilse zayıf; "İşârât-ı Kur'âniye", "İşârâtü'l-İ'câz" risale adı, kanıt değil; mektup eserlerinde yalnız "وَاِنْ مِنْ شَيْءٍ اِلَّا يُسَبِّحُ بِحَمْدِه۪" ile açılış bir açılış ibaresidir, `acilis` değil (Sözler'in Pencereleri öyle değil).
+- **Kararlar kilitli:** kullanıcının örneklem kararları `tests/golden/ayah_links_review.json`'da; gerçek veritabanında hepsinin tuttuğu test edilir, yeni örneklem bunları dışarıda bırakır. Kaynakta âyet ile önündeki Arapça ayrı işaretlidir ("فَاسْتَمِعْ اٰيَةَ" `arabi`); tabloda âyetin eserdeki metni ayrı sütundur.
+- **Bilinen sorun:** İşaratü'l-İ'caz'da 15 bölümün başlığı aynıdır ("Âyetin Tefsiri"); atıf yolu bölümü ayırmaz (kimlikler `-2`, `-3`).
+- **Kapsam dışı:** Hizbler (Kur'ân metninin kendisi), mecmualar (metni ana ciltlerde), Fihrist bölümleri (özet).
+- **Sayılar** (2026-10-27, 1. tur düzeltmelerinden sonra): 883 ilişki, 255'i güçlü: `isaret` 86 güçlü / 437 zayıf, `acilis` 76, `izah` 55, `dayanak` 17 / 136, `risale` 21 / 55. 1. turda kullanıcının baktığı 22 güçlü ilişkiden 17'si doğru, 5'i yanlıştı; düzeltmeden sonra 22'si de kararıyla uyumlu. 2. turda (düzeltilmiş kurallarla, yeni 40'lık örneklem) 40'ın 40'ı doğru; 62 karar kilitli. Kullanıcının örneği (Lem'alar › Otuzuncu Lem'a › Altıncı Nükte › İkinci Şuâ › Birinci Mes'ele: Bakara 2:255, Hûd 11:56, Zümer 39:63) bölüm kapsamlı `isaret`'tir.
+- **Gözden geçirme:** güçlüler doğrudan kabul edilir; kullanıcı her turda 40'lık örneklemi (`sample-<tur>.md`) kontrol eder, bulduğu hatalar kurallara ve karar dosyasına döner. Zayıflar tek tek gözden geçirilmez.
+- **Araçlar:** `find_ayah` tek âyette `links` (güçlüler önce, kanıt cümlesiyle), `get_ayah` `linked_in_works`, `read_section` başlıkta `linked_verses`. Talimat: ilişkiyi türüyle ve kanıtıyla an, "tefsir" deme; ilişkili âyetleri her alıntının ardına ekleme, kullanıcı sorarsa ya da âyet soruyla ilgiliyse ver (kullanıcının isteği).
 
 ## Anlamsal arama (Aşama 8)
 
@@ -330,12 +352,12 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 |---|---|
 | `list_works(group?)` | Eserler, kimlikleri, grupları, boyutları; metni bulunamayanlar `available: false` |
 | `get_outline(section, depth=2)` | Başlık ağacı; her düğümde alt ağacın ana metin cümle sayısı, derinlik sınırında `subsections` |
-| `read_section(section, cursor?, max_words=1500)` | Bölümü alt bölümleriyle kitap sırasıyla okur: başlıklar (`ref`), paragraflar (cümle `id` + metin), hâşiyeler (`hasiye_of`), âyet/hadis meal ve kaynağı, eksikler (`gap`). Paragraf sınırında sayfalar, `next_cursor` ile sürer. Mecmuada eşlenmiş paragraf ana cildin cümleleriyle (`canonical`) gelir. |
+| `read_section(section, cursor?, max_words=1500)` | Bölümü alt bölümleriyle kitap sırasıyla okur: başlıklar (`ref`; bölümün bağ kurduğu âyetler `linked_verses`), paragraflar (cümle `id` + metin), hâşiyeler (`hasiye_of`), âyet/hadis meal ve kaynağı, eksikler (`gap`). Paragraf sınırında sayfalar, `next_cursor` ile sürer. Mecmuada eşlenmiş paragraf ana cildin cümleleriyle (`canonical`) gelir. |
 | `get_passage(id, context=0)` | Cümle ya da aralık (`…/c010..c015`), `ref` ve `incipit` ile; bağlı hâşiyeler ve âyet mealleri. Bir bölümde en çok 8 cümlelik aralıkta kullanıcıya gösterilecek atıf (`cite_as`: "… ile başlayan N cümle"). Bölümün sonunu aşan aralık son cümlede kesilir (`note`). |
 | `search(query, work?, group?, limit=20, offset=0)` | Cümle araması (`search.py` sorgu dili); toplam, eser başına sayı, eşleşen başlıklar |
 | `find_sentence(incipit, scope?)` | İlk kelimelerden cümle (işaretsiz; son kelime eksik olabilir) |
-| `find_ayah(sura, ayah?)` | Âyetin eserlerde geçtiği cümleler; sûre numarası ya da adı. `via: source` kaynağın işaretlediği, `via: text` Kur'ân metninde bulunan işaretsiz alıntı; `check` kaynağın numarası metinle tutmuyorsa uyarır; tek âyette âyetin kendisi (`quran`) |
-| `get_ayah(sura, ayah, end?, context=0)` | Kur'ân'dan âyet ya da aralık (en çok 30): harekeli metin, iki Diyanet meali (`covers_verses`: birlikte tercüme edilen âyetler), atıf (`ref`), eserlerde kaç kez geçtiği, Tanzil atfı |
+| `find_ayah(sura, ayah?)` | Âyetin eserlerde geçtiği cümleler; sûre numarası ya da adı. `via: source` kaynağın işaretlediği, `via: text` Kur'ân metninde bulunan işaretsiz alıntı; `check` kaynağın numarası metinle tutmuyorsa uyarır; tek âyette âyetin kendisi (`quran`) ve âyetle bağ kuran yerler (`links`: tür, güç, kanıt cümlesi; güçlüler önce) |
+| `get_ayah(sura, ayah, end?, context=0)` | Kur'ân'dan âyet ya da aralık (en çok 30): harekeli metin, iki Diyanet meali (`covers_verses`: birlikte tercüme edilen âyetler), atıf (`ref`), eserlerde kaç kez geçtiği ve kaç yerin bağ kurduğu (`linked_in_works`), Tanzil atfı |
 | `semantic_search(query, work?, group?, limit=10, offset=0)` | Anlamca en yakın cümleler (`similarity`) ve konunun yoğunlaştığı bölümler (`sections`); kavram ve günümüz Türkçesiyle sorular için. Kelime araması (`search`) ayrı kalır. |
 | `verify_citations(text)` | Taslak cevaptaki atıfları denetler: bölüm var mı, alıntı bir cümlenin başı mı, aralık 8 cümleyi ve bölümü aşıyor mu, yanındaki alıntı bloğu atfın cümlelerinde mi; sorunlu atfa tam atıf ya da alıntının asıl yeri önerilir |
 
@@ -350,7 +372,7 @@ Ayrıntı modülün başındaki açıklamadadır. `verify_citations` aracı ve a
 
 - **Kaynaklar** (kullanıcının sohbete eklediği bağlam): `risale://works`, `risale://outline/{work}`, `risale://text/{+section}` (ör. `risale://text/sozler/10`; numaralı cümlelerle Markdown).
 - **Hazır komutlar** (İngilizce adlar): `topic_survey(topic, scope?)` konunun eserlerde geçtiği yerler (2. hedef), `text_and_commentary(question)` "metin ne diyor" ve "yorum" ayrı (3. hedef), `discuss(topic)` müzakere, `self_test(section)` bölümden soru sorup cevabı metinle denetler, `lesson_plan(subject)` atıflı ders planı.
-- **Sunucu talimatları:** atıfı araç sonucundan al ve uydurma; kullanıcıya cümleyi numarasıyla değil yol + incipit ile göster; yolu eserden başlayarak tam ve kısaltmadan yaz, önceki atfa göre göreli yazma, `›` işaretini yalnızca atıfta kullan; tırnağı yalnızca metnin kendi sözlerine koy; aynı bölümde birkaç cümle süren temsil, misal ya da düşünceyi tek blokta ve "… ile başlayan N cümle" atfıyla ver (en çok 8 cümle, hâşiye ayrı); her alıntıyı (kısa olanlar ve öncekini genişletenler de) düz yazının içinde değil, kendi satırında tırnak içinde alıntı bloğu (`> "…"`) olarak ver, düz yazıda en çok tek bir terim tırnağa alınır (kullanıcının isteği); cevaptan önce atıfları `verify_citations` ile denetle; âyetin Arapçasını yalnızca harekeli ve `get_ayah`'tan (ya da eserin alıntıladığı gibi) ver, ezberden yazma, atfı "Bakara Sûresi, 2:255" biçiminde `›` olmadan yaz, Diyanet mealini adıyla an, birlikte tercüme edilen âyetleri söyle, hiçbir mealin Kur'ân'ın yerini tutmadığını hatırla; âyet ve hadis mealleri nâşirindir, müellife mal etme ve metin diye alıntılama, müellifin "Yani, …" izahı metindir; bulamazsan söyle; metni ve yorumu ayır; önce ara, sonra bağlamı oku.
+- **Sunucu talimatları:** atıfı araç sonucundan al ve uydurma; kullanıcıya cümleyi numarasıyla değil yol + incipit ile göster; yolu eserden başlayarak tam ve kısaltmadan yaz, önceki atfa göre göreli yazma, `›` işaretini yalnızca atıfta kullan; tırnağı yalnızca metnin kendi sözlerine koy; aynı bölümde birkaç cümle süren temsil, misal ya da düşünceyi tek blokta ve "… ile başlayan N cümle" atfıyla ver (en çok 8 cümle, hâşiye ayrı); her alıntıyı (kısa olanlar ve öncekini genişletenler de) düz yazının içinde değil, kendi satırında tırnak içinde alıntı bloğu (`> "…"`) olarak ver, düz yazıda en çok tek bir terim tırnağa alınır (kullanıcının isteği); cevaptan önce atıfları `verify_citations` ile denetle; âyetin Arapçasını yalnızca harekeli ve `get_ayah`'tan (ya da eserin alıntıladığı gibi) ver, ezberden yazma, atfı "Bakara Sûresi, 2:255" biçiminde `›` olmadan yaz, Diyanet mealini adıyla an, birlikte tercüme edilen âyetleri söyle, hiçbir mealin Kur'ân'ın yerini tutmadığını hatırla; âyet ilişkilerini asla "tefsir" diye anma, türüyle ve kanıt cümlesiyle ver, zayıf ilişkiyi bölümün konusu gibi sunma, ilişkili âyetleri her alıntının ardına ekleme (sorulursa ya da konuyla ilgiliyse ver); âyet ve hadis mealleri nâşirindir, müellife mal etme ve metin diye alıntılama, müellifin "Yani, …" izahı metindir; bulamazsan söyle; metni ve yorumu ayır; önce ara, sonra bağlamı oku.
 
 Sonraki aşamalar için bkz. "Aşamalar" (8–14).
 
@@ -399,4 +421,4 @@ Sonraki aşamalar (sıra kullanıcıyla birlikte belirlenir):
 11. **Eksik eserler:** Fihrist Risalesi, Rumuzat-ı Semaniye, Kızıl İcaz, Ta'likat, Hizb-i Nurî. Kaynak bulunmasına bağlıdır (bkz. Kapsam ve kaynaklar).
 12. **Sunucu kimlik doğrulaması ve uzaktan erişim** (2026-10-27'de kullanıcı kararıyla ertelendi; kişisel kullanım için yerelde Claude Code yeterli, ortak derlemlerde yeniden gündeme gelir): Amaç sunucuyu claude.ai'den (tarayıcı ve telefon) özel bağlayıcı olarak kullanmak. Bugün `streamable-http` kimlik doğrulamasızdır ve yalnızca `127.0.0.1`'de dinler; bu hâliyle dışarı açılmaz, çünkü metinler herkese açılmış olur (kaynak sitelerin telif uyarısı, kullanım kişiseldir). Yapılacaklar: MCP'nin yetkilendirme yöntemi (OAuth 2.1) ile tek kullanıcılı erişim, sunucuyu dışarı açan bir tünel (Cloudflare Tunnel, Tailscale Funnel gibi), stdio kullanımının değişmemesi, yetkisiz isteğin reddedildiğini gösteren testler. claude.ai bağlayıcılarının ve SDK'nın güncel gereksinimleri aşamanın başında belgelerden doğrulanır; tahminle yazılmaz.
 13. **Kur'ân katmanı:** Tanzil'den metin ve iki Diyanet meali, `get_ayah` aracı, kaynağın âyetlerinin denetimi ve işaretsiz âyetlerin bulunması. Bkz. Kur'ân katmanı.
-14. **Tefsir ilişkileri:** Risale'nin hangi bölümünün hangi âyeti açıkladığı. İlişki türleri: metnin açıkça söylediği ("…âyetlerin işâret ettiği…"), bölümün açıldığı âyet, müellifin "Yani" izahı, delil olarak anılan âyet. Kurallarla aday listesi çıkarılır (âyet geçen 3.332 cümle; ilk cümlesinde âyet geçen 563 bölüm, bunların 124'ünde "işâret, remz, sır, tefsir, nükte"; âyetten hemen sonra "Yani" en az 43 yer), kullanıcı gözden geçirir, onaylananlar tabloya ve araçlara girer. Model ilişkinin türünü ve kanıt cümlesini söyler; kendi çıkarımını metin gerçeği gibi sunmaz.
+14. **Âyet ilişkileri:** Risale'nin hangi yerinin hangi âyetle bağ kurduğu; kurallarla, kanıt cümlesiyle. "Tefsir" denmez (kullanıcının kararı: kuralla bulunan bağ bir hüküm değildir). Kullanıcı güçlü ilişkilerden 40'lık örneklemi gözden geçirir. Bkz. Âyet ilişkileri.

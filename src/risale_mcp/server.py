@@ -83,6 +83,15 @@ A translation with covers_verses renders those verses together; say so instead o
 the meaning of the one verse. \
 No translation renders the Qur'an exactly or can replace its Arabic text; present translations as an \
 aid to the meaning.
+13. Links between the works and verses (links in find_ayah, linked_verses in read_section) were found \
+by rules in the text's own wording; they are not verdicts. Never call a passage the tafsir (exegesis) \
+of a verse on their basis; name the link by its kind and show its evidence sentence: isaret (the text \
+says it points to, alludes to or explains the verse), acilis (the section opens with the verse), izah \
+(the author's own "Yani…" explanation of it; in works the author wrote in Arabic, such as İşaratü'l-İ'caz \
+and Mesnevî-i Nuriye, the Turkish wording is the translator's), dayanak (the text relies on it: "… sırrınca"), risale \
+(the verse's allusion to the Risale-i Nur). A weak link is only a reference in one sentence; do not \
+present it as what the section is about. Do not append linked verses to every quotation by default: \
+bring them up when the user asks about verses or when a verse matters to the question.
 
 How to navigate:
 - semantic_search finds passages by meaning: use it for concepts and questions in today's words, \
@@ -187,7 +196,9 @@ def create_server(library: Library) -> MCPServer:
         max_words: Annotated[int, Field(description="Approximate size of one page.", ge=200, le=8000)] = 1500,
     ) -> str:
         """Read a section and its subsections in book order. Returns headings (with refs), paragraphs as lists of
-        sentences (id and text), the author's hâşiyes (hasiye_of: the sentence they belong to), the publisher's
+        sentences (id and text), verses a heading's section links to (linked_verses: kind and evidence sentence;
+        mention them only when verses matter to the question),
+        the author's hâşiyes (hasiye_of: the sentence they belong to), the publisher's
         translations and sources of quoted verses and hadiths, and gaps where the source lacks text. Long sections
         come in pages: pass next_cursor back to continue."""
         with _tool_errors():
@@ -258,7 +269,8 @@ def create_server(library: Library) -> MCPServer:
         Arabic as quoted, the publisher's translation and its source. via 'source': the edition marks it as a
         verse; via 'text': an unmarked quotation found in the Qur'an's text (Hizbs, el-Mesnevî el-Arabî). check
         warns when the quoted words differ from the named verse. For one verse it also returns the verse itself
-        (quran), as get_ayah does."""
+        (quran), as get_ayah does, and links: the places that tie themselves to the verse, by kind, strength
+        and evidence sentence (strong first; see the instructions on how to name them)."""
         with _tool_errors():
             return _json(library.find_ayah(sura, ayah, limit, offset))
 
@@ -271,7 +283,8 @@ def create_server(library: Library) -> MCPServer:
     ) -> str:
         """Get a verse (or a range) of the Qur'an itself: the fully vowelled Arabic text (Medina Mushaf script),
         the Diyanet İşleri Başkanlığı and Türkiye Diyanet Vakfı translations, the ref to cite ("Bakara Sûresi,
-        2:255") and how often each verse is quoted in the works (find_ayah lists where). A translation that
+        2:255"), how often each verse is quoted in the works and how many places link to it (linked_in_works;
+        find_ayah lists both). A translation that
         renders several verses together says which (covers_verses); ask for that range to read it whole."""
         with _tool_errors():
             return _json(library.ayahs(sura, ayah, end, context))
