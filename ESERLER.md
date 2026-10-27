@@ -22,7 +22,7 @@
 | 7 | Hutbe-i Şamiye | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 60 düğüm, 487 paragraf, 1420 cümle |  |
 | 8 | Münazarat | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 161 düğüm, 533 paragraf, 1867 cümle |  |
 | 9 | İşaratü'l-İ'caz | `erisale/isaratul-icaz` | ✅ indirildi | ✅ 230 düğüm, 2364 paragraf, 5224 cümle |  |
-| 10 | İşârâtü'l-İ'câz (Arapça) | `rasaelalnour/isaretulicaz` | ✅ indirildi | ✅ 79 düğüm, 1283 paragraf, 3550 cümle | Arapça asıl; İhsan Kasım es-Sâlihî tahkiki. Türkçesi İşaratü'l-İ'caz (Abdülmecid Nursî tercümesi). |
+| 10 | İşârâtü'l-İ'câz (Arapça) | `rasaelalnour/isaretulicaz` | ✅ indirildi | ✅ 86 düğüm, 1283 paragraf, 3550 cümle | Arapça asıl; İhsan Kasım es-Sâlihî tahkiki. Türkçesi İşaratü'l-İ'caz (Abdülmecid Nursî tercümesi). |
 | 11 | Sünuhat | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 30 düğüm, 361 paragraf, 809 cümle |  |
 | 12 | Tuluat | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 9 düğüm, 109 paragraf, 243 cümle |  |
 | 13 | Rumuz | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 15 düğüm, 87 paragraf, 174 cümle |  |

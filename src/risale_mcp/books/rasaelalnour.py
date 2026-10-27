@@ -29,6 +29,10 @@ Yapı (kullanıcının kararları):
 - Fâtiha'nın bölümleri paragraf başındaki parantezli âyet parçasıyla açılır ("(الحَمْدُ)"); hangi
   parçanın bölüm olduğu ve kimliği Türkçe eserin bölümlerinden gelir (`FATIHA_SECTIONS`).
 - Ortalı "مقدمة", "فصل …" satırları ve tek başına duran "المبحث الاول:" gibi etiketler alt bölüm açar.
+
+Âyetler: muhakkikin dipnotu "سورة الأنعام: 90" ise hemen önündeki parantezli alıntı ("(فَبِهُداهُمُ اقْتَدِهْ)")
+âyettir; kaynağı bu nottur (Türkçe sûre adıyla "En'âm Sûresi, 6:90"). Aynı iskelete inen sûre adları
+(en-Nisâ / en-Nâs) Kur'ân metniyle ayrılır. Dipnotsuz alıntılar `build_db`'de Kur'ân metninde aranır.
 """
 
 import html
@@ -39,8 +43,9 @@ import zipfile
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from risale_mcp.books.model import Book, Node, Text
+from risale_mcp.books.model import ArabicSpan, Book, Node, Text
 from risale_mcp.catalog import Work
+from risale_mcp.quran import SURA_NAMES, Quran, arabic_sura_numbers, pieces, skeleton
 
 _PAGE_MARK = re.compile(r"^[^\d]{2,40}-\s*ص\s*:\s*\d+\s*$")
 _SEPARATOR = re.compile(r"^_{5,}$")
@@ -50,6 +55,7 @@ _AUTHOR_TAG = re.compile(r"\s*(?:[(（]\s*المؤلف\s*[)）]|[-–]\s*الم�
 _TRANSLATION_TAG = re.compile(r"\s*\(\s*ت\s*:\s*[\d\s,،-]+\)\s*\.?\s*$")
 _TERMINAL = tuple(".!?؟:»”\")…")
 _TATWEEL = re.compile(r"ـ+")
+_SURA_NOTE = re.compile(r"^\s*سورة\s+(.+?)\s*:\s*(\d+)(?:\s*[-–]\s*(\d+))?\s*\.?\s*$")   # "سورة الأنعام: 90"
 _VERSE_NUMBER = re.compile(r"(?<![\d])(\d{1,3})(?![\d])")
 NEXT_VERSES = 4                 # bölüm açan âyet satırı açılmış son âyetten en çok bu kadar ileride olur
 
@@ -68,6 +74,9 @@ ORDINALS = {"الاول": 1, "الأول": 1, "الاولى": 1, "الأولى":
 LABEL_TYPES = {"المبحث": ("Mebhas", "mebhas"), "المسألة": ("Mes'ele", "mesele"), "النكتة": ("Nükte", "nukte"),
                "المأخذ": ("Me'haz", "mehaz"), "الوجه": ("Vecih", "vecih"), "النقطة": ("Nokta", "nokta")}
 _LABEL = re.compile(r"^(" + "|".join(LABEL_TYPES) + r")\s+(\S+)\s*:?\s*$")
+# Paragraf başındaki etiket ("المسألة الثانية: …") de bölüm açar; etiket metinde kalır. Türkçe eserde bölüm
+# olmayan "النكتة" ve "المقام" açmaz.
+_INLINE_LABEL = re.compile(r"^(المبحث|المسألة|المأخذ|الوجه)\s+(\S+?)\s*:\s*\S")
 
 def _key(text: str) -> str:
     """Harekesiz, elif çeşitleri birleşmiş metin ("اِيَّاكَ نَعْبُدُ" -> "اياك نعبد"). Elif kalır: "الله" ≠ "لله"."""
@@ -325,6 +334,7 @@ class _Builder:
     def __init__(self, book: Book, section_ids: dict[tuple[int, int], str]) -> None:
         self.book = book
         self.section_ids = section_ids
+        self.quran = Quran.load()
         self.node: Node = book.root
         self.top: Node = book.root             # en üst bölüm (ön kısım, sûre)
         self.section: Node = book.root         # âyet bölümü (alt başlıkların ebeveyni)
@@ -394,6 +404,11 @@ class _Builder:
                 parent = self.node.parent if self.node.type == type_ else self.section
                 self.open(parent, f"{prefix}-{number:02d}", line.text.rstrip(), type=type_, number=number)
                 return
+        if (m := _INLINE_LABEL.match(text)) and (number := _number(m[2])):
+            type_, prefix = LABEL_TYPES[m[1]]
+            parent = self.node.parent if self.node.type == type_ else self.section
+            self.open(parent, f"{prefix}-{number:02d}", f"{m[1]} {m[2]}", type=type_, number=number,
+                      heading="inline")
         self.paragraph(line)
 
     def flush_verse(self) -> None:
@@ -422,8 +437,39 @@ class _Builder:
             kind, extra = "signature", {}
         else:
             kind, extra = "paragraph", ({"center": True} if line.align == "center" else {})
-        self.last = self.book.add_paragraph(self.node, kind, Text(line.text), **extra)
+        spans = [span for offset, note in line.marks if (span := self.verse_span(line.text, offset, note))]
+        self.last = self.book.add_paragraph(self.node, kind, Text(line.text, spans), **extra)
         self.hasiye(line, self.last)
+
+    def verse_span(self, text: str, offset: int, note: str) -> ArabicSpan | None:
+        """Notu "سورة X: n" olan işaretin hemen önündeki parantezli alıntı: kaynağı bu not olan âyet."""
+        m = _SURA_NOTE.match(note)
+        before = text[:offset].rstrip()
+        if not (m and before.endswith(")")):
+            return None
+        depth, open_at = 0, None
+        for i in range(len(before) - 1, -1, -1):
+            depth += {")": 1, "(": -1}.get(before[i], 0)
+            if depth == 0:
+                open_at = i
+                break
+        if open_at is None:
+            return None
+        start, end = open_at + 1, len(before) - 1
+        while start < end and text[start] == " ":
+            start += 1
+        while end > start and text[end - 1] == " ":
+            end -= 1
+        first, last = int(m[2]), int(m[3] or m[2])
+        candidates = sorted(arabic_sura_numbers().get(skeleton(m[1]), ()))
+        if len(candidates) > 1 and self.quran:                 # en-Nisâ / en-Nâs: metin hangisindeyse
+            parts = pieces(text[start:end])
+            candidates = [n for n in candidates if self.quran.contains(parts, n, first, last)] or candidates
+        if not candidates:
+            return None
+        sura = candidates[0]
+        ayahs = f"{first}" if first == last else f"{first}-{last}"
+        return ArabicSpan(start, end, "ayet", source=f"{SURA_NAMES[sura - 1]} Sûresi, {sura}:{ayahs}")
 
     def hasiye(self, line: Line, paragraph: dict | None) -> None:
         """Satırın dipnotları: müellifinki hâşiye, öbürleri not."""

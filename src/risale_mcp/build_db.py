@@ -34,7 +34,7 @@ from risale_mcp.catalog import WORKS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, ROOT
-from risale_mcp.quran import QURAN_PATH, SURA_NAMES, Quran
+from risale_mcp.quran import QURAN_PATH, SURA_NAMES, Quote, Quran, pieces, verse_context
 
 # "Bakara Sûresi, 2:255", "Âyet: Sûre-i Âl-i İmrân, 18", "Kalem Sûresi: 1", "Sûre-i Nasr, 1’den"
 _SURA_NAME = re.compile(r"^(?:Âyet:\s*)?(?:Sûre-i\s+(?P<pre>[^,:\d]+?)|(?P<post>[^,:\d]+?)\s+S[ûu]resi)\s*[,:]?\s*(?=\d)")
@@ -255,8 +255,29 @@ def _insert_arabic(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran
                 (p["id"], i, sentence_at(p["id"], part["start"]), part["start"], part["end"], part["kind"],
                  part.get("meal"), source, ayah and ayah.sura, ayah and ayah.start, ayah and ayah.end, check))
             report.counts["arabic"] += 1
+    if quran and book.get("language") == "ar" and (context := verse_context(book["outline"])):
+        located += _parenthesized(book, context, quran)
     if located:
         _insert_located(conn, located, quran, sentence_at, report)
+
+
+_PARENTHESIZED = re.compile(r"\(([^()]{2,200})\)")
+
+
+def _parenthesized(book: dict, context: dict, quran: Quran) -> list:
+    """Âyet âyet ilerleyen Arapça eserde (İşaratü'l-İ'caz) işaretsiz parantezli alıntılar: kaynağın âyet diye
+    işaretlediği parçaların dışında kalanlar, bulunduğu bölümün âyetlerinde ya da Kur'ân'da tek yerde."""
+    out = []
+    for p in book["paragraphs"]:
+        if not p.get("text"):
+            continue
+        marked = [(a["start"], a["end"]) for a in p.get("arabic", [])]
+        for m in _PARENTHESIZED.finditer(p["text"]):
+            if any(s < m.end() and m.start() < e for s, e in marked):
+                continue
+            if match := quran.locate_quote(m[1], context.get(p["node_id"])):
+                out.append((p["id"], p["node_id"], -1, 0, Quote(m.start(1), m.end(1), pieces(m[1]), None, match)))
+    return out
 
 
 def _insert_located(conn: sqlite3.Connection, located: list, quran: Quran, sentence_at, report: BuildReport) -> None:

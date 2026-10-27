@@ -10,7 +10,7 @@ import pytest
 
 from conftest import mini_quran
 from risale_mcp.build_db import build
-from risale_mcp.quran import Match, Quran, _mark_spans, pieces, skeleton, sura_ref
+from risale_mcp.quran import Match, Quran, _mark_spans, pieces, skeleton, sura_ref, verse_context
 
 
 @pytest.fixture(scope="module")
@@ -95,3 +95,14 @@ def test_build_links_unmarked_verses_and_uses_the_section_sura(tmp_path, quran):
     assert rows == [("hizbul-kuranil-muazzam/2-bakara/c001", 2, 255, 255),
                     ("hizbul-kuranil-muazzam/2-bakara/c002", 2, 1, 1)]
     assert report.located["bulundu"] == 2
+
+
+def test_verse_context_and_quotes_in_their_section(quran):
+    outline = [{"id": "w", "parent_id": None, "title": "w"},
+               {"id": "w/sure-i-bakara", "parent_id": "w", "title": "Sûre-i Bakara"},
+               {"id": "w/sure-i-bakara/255", "parent_id": "w/sure-i-bakara", "title": "255. Âyetin Tefsiri"},
+               {"id": "w/sure-i-bakara/255/mukaddime", "parent_id": "w/sure-i-bakara/255", "title": "مقدمة"}]
+    context = verse_context(outline)
+    assert context["w/sure-i-bakara/255/mukaddime"] == (2, 255, 255)                # alt bölüm üstününkini alır
+    assert quran.locate_quote("الحَيُّ الْقَيُّومُ", context["w/sure-i-bakara/255"]) == Match(2, 255, 255)
+    assert quran.locate_quote("ان", None) is None                                   # kısa ve bağlamsız

@@ -40,6 +40,9 @@ ROWS = [
     Row("(1) عن ابى أمامة رضى الله عنه."),                                 # çizgisiz sayfanın dipnotu
     page(4),
     c("الم 1"), Row("المبحث الاول:"), Row("ان الاعجاز قد تنفس."),
+    Row("المسألة الثانية: وفي الآية (فَبِهُداهُمُ اقْتَدِهْ) 1 اشارة."),       # etiket paragrafın başında
+    Row("_____________________"), Row("1 سورة الأنعام: 90"),
+    page(45),
     c("***"), c("خَتَمَ الله عَلَى قُلُوبِهِمْ"), c("وَلَهُمْ عَذابٌ عَظِيمٌ 2"),       # numara son satırda
     c("مـقـدمـة"), Row("اعلم!"),
     page(5),
@@ -62,7 +65,8 @@ def test_structure_follows_the_turkish_work(book):
     assert list(titles)[1:] == [
         "mukaddime-tercume", "mukaddime-tercume/tenbih", "mukaddime-tercume/tenbih/nukte-01",
         "ifadetul-meram", "kuran-nedir-tarifi-nasildir", "sure-i-fatiha", "sure-i-fatiha/el-hamdu",
-        "sure-i-bakara", "sure-i-bakara/1", "sure-i-bakara/1/mebhas-01", "sure-i-bakara/2",
+        "sure-i-bakara", "sure-i-bakara/1", "sure-i-bakara/1/mebhas-01", "sure-i-bakara/1/mesele-02",
+        "sure-i-bakara/2",
         "sure-i-bakara/2/mukaddime", "sure-i-bakara/3-4-ayetlerin-tefsiri"]
     assert titles["mukaddime-tercume"][1].startswith("İhsan Kasım")             # müellifin Türkçesinin tercümesi
     assert titles["sure-i-bakara/2"] == ("2. Âyetin Tefsiri", "خَتَمَ الله عَلَى قُلُوبِهِمْ وَلَهُمْ عَذابٌ عَظِيمٌ")
@@ -85,7 +89,7 @@ def test_footnotes_by_author_translator_and_editor(book):
     hasiye = [p for p in data["paragraphs"] if p["kind"] == "hasiye"]
     assert [(h["parent_id"].rsplit("/", 1)[-1], h["text"]) for h in hasiye] == [("p001", "جواب لما ..")]
     notes = [n["text"] for n in data["notes"][1:]]
-    assert notes == ["(Türkçe tercümeden) اى الانعام", "عن ابى أمامة رضى الله عنه."]
+    assert notes == ["(Türkçe tercümeden) اى الانعام", "عن ابى أمامة رضى الله عنه.", "سورة الأنعام: 90"]
 
 
 def test_real_isarat():
@@ -100,3 +104,11 @@ def test_real_isarat():
     # Arapça baskı 21 ve 22. âyetleri tek bölümde işler; Türkçede "Birinci kısım" basılı bir başlıktır.
     assert sections - ids == {"sure-i-bakara/21", "sure-i-bakara/22", "sure-i-bakara/kisim-01"}
     assert sum(p["kind"] == "hasiye" for p in data["paragraphs"]) == 6
+
+
+def test_editor_verse_notes_mark_the_quote_as_a_verse(book):
+    data, _ = book
+    p = next(p for p in data["paragraphs"] if p["node_id"].endswith("mesele-02"))
+    span = p["arabic"][0]
+    assert p["text"][span["start"]:span["end"]] == "فَبِهُداهُمُ اقْتَدِهْ"
+    assert (span["kind"], span["source"]) == ("ayet", "En'âm Sûresi, 6:90")

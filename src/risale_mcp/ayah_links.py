@@ -11,7 +11,9 @@ Türler (`kind`):
 - `isaret`: metin bağı kendisi söyler: âyetin geçtiği cümlede "işâret", "remz", "nükte", "tefsir",
   "mânâ", "meâl" ("…âyetlerin işâret ettiği…", "… âyeti buna işâret eder.").
 - `acilis`: bölüm âyetle açılır: ilk paragrafı (hâşiye sayılmaz) âyet olan Arapça paragraftır.
-  Besmele açılış sayılmaz.
+  Besmele açılış sayılmaz. Arapça eserde (İşaratü'l-İ'caz) bütün metin Arapçadır: Bakara'nın âyet bölümü
+  başlığındaki âyetle ("6. Âyetin Tefsiri", basılı âyet satırı alt başlıkta), Fâtiha'nın bölümü işlediği
+  âyet parçasıyla ("(الحَمْدُ) …"; `quran.FATIHA_VERSES`) açılır.
 - `izah`: müellifin kendi izahı: âyetten hemen sonra, ya da cümlesi âyetle bitiyorsa sonraki cümlenin
   başında "Yani". Aslı Arapça eserlerde (İşaratü'l-İ'caz, Mesnevî-i Nuriye) izah müellifin, Türkçe
   ifadesi mütercimindir.
@@ -51,7 +53,7 @@ from pathlib import Path
 from risale_mcp.db import connect
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import INTERIM_DIR, ROOT
-from risale_mcp.quran import skeleton
+from risale_mcp.quran import skeleton, verse_context
 
 OUT_DIR = INTERIM_DIR / "ayah_links"
 REVIEWS = ROOT / "tests" / "golden" / "ayah_links_review.json"   # kullanıcının örneklem kararları
@@ -189,7 +191,28 @@ def find_links(conn: sqlite3.Connection) -> list[Link]:
         if (r["sura"], r["ayah_start"]) == BESMELE or _letter_opening(r):
             continue
         add("risale" if _about_risale(r["node_id"], r["node_ref"]) else "acilis", r, "section", r["sid"])
+    _arabic_openings(conn, add)
     return out
+
+
+def _arabic_openings(conn: sqlite3.Connection, add) -> None:
+    """Arapça eserin (İşaratü'l-İ'caz) âyet bölümleri işledikleri âyetle açılır; kanıt bölümün ilk cümlesidir."""
+    rows = conn.execute("""
+        SELECT n.id AS node_id, n.ref AS node_ref, n.title, n.parent_id, n.work, n.ord, n.last_ord
+        FROM nodes n JOIN works w ON w.slug = n.work
+        WHERE w.language = 'ar' AND w.group_name NOT IN ('hizb', 'mecmua') ORDER BY n.seq""").fetchall()
+    context = verse_context([{"id": r["node_id"], "parent_id": r["parent_id"], "title": r["title"]} for r in rows])
+    for r in rows:
+        first = conn.execute(
+            "SELECT s.id FROM sentences s JOIN nodes n ON n.id = s.node_id WHERE n.work = ? AND n.ord BETWEEN ? AND ?"
+            " AND s.hasiye = 0 ORDER BY s.seq LIMIT 1", (r["work"], r["ord"], r["last_ord"])).fetchone()
+        if first is None:
+            continue
+        parent = (r["parent_id"] or "").rsplit("/", 1)[-1]
+        if parent in ("sure-i-bakara", "sure-i-fatiha") and r["node_id"] in context:
+            sura, start, end = context[r["node_id"]]
+            add("acilis", {"sura": sura, "ayah_start": start, "ayah_end": end, "node_id": r["node_id"],
+                           "node_ref": r["node_ref"]}, "section", first["id"])
 
 
 # ---------------------------------------------------------------- elle gözden geçirme

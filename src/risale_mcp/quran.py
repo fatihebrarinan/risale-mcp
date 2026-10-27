@@ -60,6 +60,8 @@ assert len(SURA_NAMES) == tanzil.SURAS
 # Mushaflarda Tanzil'deki addan başka adla anılan sûreler (Hizbü'l-Kur'ân'ın başlıkları).
 OTHER_SURA_NAMES = {"المؤمن": 40, "الانشراح": 94, "الزلزال": 99}
 
+MIN_CONTEXT = 3  # bölümün kendi âyetlerinde aranan parantezli alıntının iskeletteki en az harf sayısı
+MIN_CONTEXT_ONE = 2  # bölüm tek bir âyeti işliyorsa ("(رَبِّ)" -> "رب")
 MIN_UNIQUE = 6   # metinden (kaynak numarası olmadan) bulunan alıntının iskeletteki en az harf sayısı
 NEAR = 2         # kaynağın numarasından en çok bu kadar âyet uzakta bulunan alıntı "komşu" sayılır
 
@@ -190,6 +192,27 @@ class Quran:
                 out.append(Quote(m.start(), m.end(), parts, None, hits.pop() if len(hits) == 1 else None))
         return out
 
+    def locate_quote(self, text: str, context: tuple[int, int, int] | None) -> Match | None:
+        """Parantezli alıntı ("(الذين يؤمنون بالغيب)"): önce bölümün işlediği âyetlerde (tek âyet öncelikli),
+        sonra yalnızca Kur'ân'da tek bir yerde geçen uzun alıntıysa bütün Kur'ân'da."""
+        parts = pieces(text)
+        letters = sum(map(len, parts))
+        single = context is not None and context[1] == context[2]
+        if not parts or letters < (MIN_CONTEXT_ONE if single else MIN_CONTEXT):
+            return None
+        if context:
+            sura, first, last = context
+            for ayah in range(first, last + 1):
+                if self.contains(parts, sura, ayah, ayah):
+                    return Match(sura, ayah, ayah)
+            if self.contains(parts, sura, first, last):
+                return Match(sura, first, last)
+        longest = max(parts, key=len)
+        if len(longest) < MIN_UNIQUE:
+            return None
+        hits = {h for h in self.find(longest) if self.contains(parts, h.sura, h.start, h.end)}
+        return hits.pop() if len(hits) == 1 else None
+
     def in_sura(self, quote: "Quote", sura: int) -> Match | None:
         """Kısa ya da birden çok sûrede geçen numaralı âyet, bölümün sûresi veriden bilinince."""
         if quote.number is None:
@@ -210,6 +233,35 @@ class Quote:
 
 
 _DIGITS = str.maketrans("٠١٢٣٤٥٦٧٨٩", "0123456789")
+
+
+_VERSE_TITLE = re.compile(r"^(\d+)(?:[‑-](\d+))?\. Âyet")      # "6. Âyetin Tefsiri", "17‑20. Âyetlerin Tefsiri"
+_SURA_SECTIONS = {"sure-i-fatiha": (1, 1, 7), "sure-i-bakara": (2, None, None)}
+# Fâtiha'nın bölümleri (İşaratü'l-İ'caz'ın Türkçesi ve Arapçası aynı kimlikle) -> işlediği âyet.
+FATIHA_VERSES = {"bismillahi": 1, "er-rahmanir-rahim": 1, "el-hamdu": 2, "lillahi": 2, "rabbi": 2, "el-alemin": 2,
+                 "er-rahmanir-rahim-2": 3, "maliki-yevmid-din": 4, "iyyake-nabudu": 5, "ve-iyyake-nestein": 5,
+                 "ihdina": 6, "es-siratal-mustekim": 6, "siratallezine-enamte-aleyhim": 7,
+                 "gayril-magdubi-aleyhim": 7, "ve-led-dallin": 7}
+
+
+def verse_context(outline: list[dict]) -> dict[str, tuple[int, int, int]]:
+    """İşaratü'l-İ'caz gibi âyet âyet ilerleyen eserde her bölümün işlediği âyetler: düğüm -> (sûre, ilk, son).
+    Bakara'nın bölümü başlığındaki numaralardan ("6. Âyetin Tefsiri"), Fâtiha'nın bölümü işlediği âyet
+    parçasından (`FATIHA_VERSES`; ilk "Er-Rahmânir-Rahîm" Besmele'deki, ikincisi 3. âyet); alt bölümler üst
+    bölümünkini alır. Böyle bir yapısı olmayan eserde boştur."""
+    out: dict[str, tuple[int, int, int]] = {}
+    for node in outline:                      # başlık ağacı kitap sırasındadır: üst bölüm önce gelir
+        local = node["id"].rsplit("/", 1)[-1]
+        parent = node.get("parent_id")
+        if local in _SURA_SECTIONS and _SURA_SECTIONS[local][1]:
+            out[node["id"]] = _SURA_SECTIONS[local]
+        elif parent and parent.rsplit("/", 1)[-1] == "sure-i-fatiha" and local in FATIHA_VERSES:
+            out[node["id"]] = (1, FATIHA_VERSES[local], FATIHA_VERSES[local])
+        elif parent and parent.rsplit("/", 1)[-1] == "sure-i-bakara" and (m := _VERSE_TITLE.match(node["title"])):
+            out[node["id"]] = (2, int(m[1]), int(m[2] or m[1]))
+        elif parent in out:
+            out[node["id"]] = out[parent]
+    return out
 
 
 @cache
