@@ -5,6 +5,7 @@ Kullanım:
     uv run python -m risale_mcp.fetch get sozler        # indir (kaldığı yerden devam eder) ve doğrula
     uv run python -m risale_mcp.fetch get --all         # bütün eserler; --site ile tek site
     uv run python -m risale_mcp.fetch check sozler      # yalnızca diskteki ham veriyi doğrula
+    uv run python -m risale_mcp.fetch quran             # Kur'ân metni ve mealleri (tanzil.net)
 
 Ham sayfalar `data/raw/<site>/<kitap>/`, doğrulanmış blok listesi
 `data/interim/<site>/<kitap>.blocks.json` altına yazılır.
@@ -19,7 +20,7 @@ from typing import Callable
 
 from risale_mcp.catalog import WORKS, Site, Status, Work, get_work, works_from
 from risale_mcp.paths import INTERIM_DIR, RAW_DIR, ROOT
-from risale_mcp.sources import erisale, kastamonur, risale_online, risaleoku, yeniasya
+from risale_mcp.sources import erisale, kastamonur, risale_online, risaleoku, tanzil, yeniasya
 from risale_mcp.sources.http import PoliteClient
 
 DEFAULT_DELAY = 5.0                                 # saniye; siteleri yormamak için
@@ -157,6 +158,16 @@ def cmd_check(args: argparse.Namespace) -> None:
         sys.exit(1)
 
 
+def cmd_quran(args: argparse.Namespace) -> None:
+    # Kur'ân katalogdaki eserlerden değildir; tek bir arşiv olarak indirilir.
+    root = RAW_DIR / "tanzil"
+    tanzil.fetch_book("quran", root, PoliteClient(args.delay), refresh=args.refresh)
+    lines, ok = tanzil.check_book("quran", root)
+    print("\n".join(lines))
+    if not ok:
+        sys.exit(1)
+
+
 def _add_selection(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("works", nargs="*", help="katalogdaki eser slug'ları, ör. sozler lemeat")
     parser.add_argument("--all", action="store_true", help="katalogdaki bütün eserler")
@@ -175,6 +186,10 @@ def main() -> None:
     check = sub.add_parser("check", help="diskteki ham veriyi doğrula")
     _add_selection(check)
     check.set_defaults(func=cmd_check)
+    quran = sub.add_parser("quran", help="Kur'ân metni ve mealleri (tanzil.net)")
+    quran.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
+    quran.add_argument("--delay", type=float, default=DEFAULT_DELAY, help="istekler arası saniye")
+    quran.set_defaults(func=cmd_quran)
     args = parser.parse_args()
     args.func(args)
 

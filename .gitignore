@@ -12,3 +12,5 @@ data/interim/golden/
 data/interim/search_eval/
 .env
 data/vectors/
+data/quran.json
+data/interim/quran/

@@ -68,6 +68,21 @@ one it flags.
 the gap from memory.
 9. Keep what the text says apart from your own interpretation, under separate headings.
 10. Answer in the user's language (usually Turkish); quote the text as returned.
+11. The translations of quoted verses and hadiths (publisher_translation) were added by the \
+publishers, not by the author: Bediüzzaman quoted the Arabic and needed no translation, and editions \
+translate differently. Use them only to convey what the Arabic means, say they are the publisher's \
+translation, and never present them as the author's words or quote them as the text. The author's \
+own explanation of a verse is part of the text itself, often right after the Arabic ("Yani, …"); \
+quote and cite that as the text.
+12. Qur'anic verses: show a verse's Arabic only fully vowelled, copied exactly from get_ayah (or as \
+the works quote it); never write Qur'anic Arabic from memory and never drop its vowel marks. Cite a \
+verse by the ref get_ayah returns, e.g. "Bakara Sûresi, 2:255", without ›. When you give its meaning \
+from get_ayah, name the translation (Diyanet İşleri Başkanlığı meali, Türkiye Diyanet Vakfı meali) and \
+keep it apart from the publishers' translations in the works and from the author's own explanation. \
+A translation with covers_verses renders those verses together; say so instead of presenting it as \
+the meaning of the one verse. \
+No translation renders the Qur'an exactly or can replace its Arabic text; present translations as an \
+aid to the meaning.
 
 How to navigate:
 - semantic_search finds passages by meaning: use it for concepts and questions in today's words, \
@@ -81,7 +96,8 @@ finds "haşir"). Use it for exact words, phrases, names and technical terms. Use
 page with next_cursor) or get_passage (a sentence or range with neighbours and hâşiyes).
 - get_outline shows the structure of a work or section; list_works lists the works and their ids.
 - find_sentence locates a sentence the user quotes by its first words; find_ayah lists where a \
-Qur'anic verse is quoted.
+Qur'anic verse is quoted in the works; get_ayah gives a verse of the Qur'an itself, vowelled, with \
+two Diyanet translations and its neighbouring verses on request.
 - Compilations (mecmua) reuse text from the main volumes: such paragraphs come with the main \
 volume's sentences and refs; cite those. Hâşiye are the author's footnotes, attached to a sentence.
 """
@@ -171,9 +187,9 @@ def create_server(library: Library) -> MCPServer:
         max_words: Annotated[int, Field(description="Approximate size of one page.", ge=200, le=8000)] = 1500,
     ) -> str:
         """Read a section and its subsections in book order. Returns headings (with refs), paragraphs as lists of
-        sentences (id and text), the author's hâşiyes (hasiye_of: the sentence they belong to), meanings and
-        sources of quoted verses and hadiths, and gaps where the source lacks text. Long sections come in pages:
-        pass next_cursor back to continue."""
+        sentences (id and text), the author's hâşiyes (hasiye_of: the sentence they belong to), the publisher's
+        translations and sources of quoted verses and hadiths, and gaps where the source lacks text. Long sections
+        come in pages: pass next_cursor back to continue."""
         with _tool_errors():
             return _json(library.read_section(section, cursor, max_words))
 
@@ -183,10 +199,10 @@ def create_server(library: Library) -> MCPServer:
                                              "'sozler/10/c010..c015').")],
         context: Annotated[int, Field(description="Neighbouring sentences to add on each side.", ge=0, le=20)] = 0,
     ) -> str:
-        """Get sentences with their ref, incipit and text, the hâşiyes attached to them, and the meaning of quoted
-        verses. Use it to check a quotation or to fetch the exact citation of a sentence. For a range of up to 8
-        sentences in one section it also returns cite_as, the reference to show for all of them. A range that
-        runs past the end of its section stops at the section's last sentence (see note)."""
+        """Get sentences with their ref, incipit and text, the hâşiyes attached to them, and the publisher's
+        translation of quoted verses. Use it to check a quotation or to fetch the exact citation of a sentence. For a
+        range of up to 8 sentences in one section it also returns cite_as, the reference to show for all of them. A
+        range that runs past the end of its section stops at the section's last sentence (see note)."""
         with _tool_errors():
             return _json(library.passage(id, context))
 
@@ -239,9 +255,26 @@ def create_server(library: Library) -> MCPServer:
         offset: Annotated[int, Field(ge=0)] = 0,
     ) -> str:
         """List where a Qur'anic verse (or any verse of a sura) is quoted in the works, with the sentence, the
-        Arabic text, its meaning and source."""
+        Arabic as quoted, the publisher's translation and its source. via 'source': the edition marks it as a
+        verse; via 'text': an unmarked quotation found in the Qur'an's text (Hizbs, el-Mesnevî el-Arabî). check
+        warns when the quoted words differ from the named verse. For one verse it also returns the verse itself
+        (quran), as get_ayah does."""
         with _tool_errors():
             return _json(library.find_ayah(sura, ayah, limit, offset))
+
+    @server.tool(annotations=READ_ONLY)
+    def get_ayah(
+        sura: Annotated[str, Field(description="Sura number (1–114) or name, e.g. '2' or 'Bakara'.")],
+        ayah: Annotated[int, Field(description="Verse number.", ge=1)],
+        end: Annotated[int | None, Field(description="Last verse of a range (at most 30 verses).", ge=1)] = None,
+        context: Annotated[int, Field(description="Neighbouring verses to add on each side.", ge=0, le=10)] = 0,
+    ) -> str:
+        """Get a verse (or a range) of the Qur'an itself: the fully vowelled Arabic text (Medina Mushaf script),
+        the Diyanet İşleri Başkanlığı and Türkiye Diyanet Vakfı translations, the ref to cite ("Bakara Sûresi,
+        2:255") and how often each verse is quoted in the works (find_ayah lists where). A translation that
+        renders several verses together says which (covers_verses); ask for that range to read it whole."""
+        with _tool_errors():
+            return _json(library.ayahs(sura, ayah, end, context))
 
     @server.tool(annotations=READ_ONLY)
     def verify_citations(

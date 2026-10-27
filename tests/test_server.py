@@ -11,9 +11,10 @@ import shutil
 import pytest
 from mcp import Client
 
-from conftest import FIRST
+from conftest import FIRST, IHLAS, KURSI
 from risale_mcp.library import Library, LibraryError
 from risale_mcp.paths import DB_PATH
+from risale_mcp.quran import skeleton
 from risale_mcp.server import INSTRUCTIONS, create_server
 
 pytestmark = pytest.mark.anyio
@@ -89,7 +90,7 @@ def test_passage_with_context_range_and_hasiye(library):
     first, second = passage["sentences"]
     assert first["target"] and not second["target"]
     assert first["hasiye"] == [{"id": "sozler/10/c001/h1/c001", "ref": "sozler/10/c001/h1/c001", "text": "Işık geldi."}]
-    assert first["arabic"][0]["meal"].startswith("Allah")
+    assert first["arabic"][0]["publisher_translation"].startswith("Allah")
     assert [s["id"] for s in library.passage("sozler/10/c001..c002")["sentences"]] == ["sozler/10/c001", "sozler/10/c002"]
     with pytest.raises(LibraryError, match="forward"):
         library.passage("sozler/10/c002..c001")
@@ -130,6 +131,30 @@ def test_find_ayah_by_number_or_name(library):
         library.find_ayah("Yok")
 
 
+def test_find_ayah_marks_source_and_returns_the_verse(library):
+    result = library.find_ayah("2", 255)
+    assert result["results"][0]["via"] == "source" and "check" not in result["results"][0]
+    assert result["quran"]["text"] == KURSI                                   # âyetin kendisi, harekeli
+    differs = library.find_ayah("2", 1)["results"][0]                         # "قل هو الله احد" ama kaynak 2:1 diyor
+    assert "does not match" in differs["check"]
+
+
+def test_get_ayah_text_translations_and_context(library):
+    result = library.ayahs("İhlâs", 1)
+    verse = result["ayahs"][0]
+    assert (verse["ref"], verse["text"]) == ("İhlâs Sûresi, 112:1", IHLAS)
+    assert verse["translations"] == [{"translator": "Diyanet İşleri Başkanlığı meali", "text": "meal 1"},
+                                     {"translator": "Türkiye Diyanet Vakfı meali", "text": "vakıf meali 1"}]
+    assert "Tanzil" in result["attribution"]
+    ranged = library.ayahs("2", 254, context=1)["ayahs"]
+    assert [(v["ayah"], v.get("context", False), v["quoted_in_works"]) for v in ranged] == [
+        (253, True, 0), (254, False, 0), (255, True, 1)]
+    assert ranged[1]["translations"][0] == {"translator": "Diyanet İşleri Başkanlığı meali", "text": "ortak meal",
+                                            "covers_verses": "2:253-254"}
+    with pytest.raises(LibraryError, match="verses 1–255"):
+        library.ayahs("2", 256)
+
+
 def test_search_reports_totals_and_bad_queries(library):
     result = library.search("hasr*")
     assert result["total"] == 2 and result["by_work"] == {"sozler": 1, "asa-yi-musa": 1}
@@ -160,7 +185,7 @@ async def test_server_lists_tools_prompts_and_resources(library):
     async with Client(create_server(library)) as client:
         tools = {t.name: t for t in (await client.list_tools()).tools}
         assert set(tools) == {"list_works", "get_outline", "read_section", "get_passage", "search",
-                              "find_sentence", "find_ayah", "verify_citations", "semantic_search"}
+                              "find_sentence", "find_ayah", "get_ayah", "verify_citations", "semantic_search"}
         assert all(t.annotations.read_only_hint for t in tools.values())
         prompts = {p.name for p in (await client.list_prompts()).prompts}
         assert prompts == {"topic_survey", "text_and_commentary", "discuss", "self_test", "lesson_plan"}
@@ -223,3 +248,13 @@ def test_real_ayat_al_kursi_and_mecmua(real_library):
     items = real_library.read_section("tilsimlar/hasan-feyzinin-bir-kasidesi", max_words=300)["items"]
     canonical = [i for i in items if "canonical" in i]
     assert canonical and canonical[0]["canonical"]["paragraphs"][0].startswith("tarihce-i-hayat/")
+
+
+def test_real_quran_layer(real_library):
+    verse = real_library.ayahs("Bakara", 255)["ayahs"][0]
+    assert verse["ref"] == "Bakara Sûresi, 2:255" and len(verse["translations"]) == 2
+    assert skeleton(verse["text"]).startswith(skeleton("اَللّٰهُ لَٓا اِلٰهَ اِلَّا هُوَ"))
+    assert "\u064e" in verse["text"]                                          # harekeli (fetha)
+    # Hizbü'l-Kur'ân'daki işaretsiz âyetler de bulunur.
+    vias = {r["via"] for r in real_library.find_ayah("Yâsîn", 1, limit=50)["results"]}
+    assert vias == {"source", "text"}

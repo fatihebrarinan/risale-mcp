@@ -68,6 +68,29 @@ ASA = {
 }
 
 
+# Küçük Kur'ân katmanı: Bakara (255 âyet; yalnızca 1 ve 255 gerçek metin) ve İhlâs'ın ilk âyeti.
+KURSI = "ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ"
+IHLAS = "قُلْ هُوَ ٱللَّهُ أَحَدٌ"
+
+
+def _ayah(n: int, text: str, clean: str) -> dict:
+    return {"ayah": n, "text": text, "text_simple": text, "text_clean": clean,
+            "translations": {"diyanet-isleri": f"meal {n}", "diyanet-vakfi": f"vakıf meali {n}"}}
+
+
+def mini_quran() -> dict:
+    bakara = [_ayah(n, "نَصٌّ", "نص") for n in range(1, 256)]
+    bakara[0] = _ayah(1, "الٓمٓ", "الم")
+    bakara[254] = _ayah(255, KURSI, "الله لا إله إلا هو الحي القيوم")
+    for a in bakara[252:254]:                                                 # 253-254 birlikte tercüme edilmiş
+        a["translations"]["diyanet-isleri"] = "ortak meal"
+        a["spans"] = {"diyanet-isleri": [253, 254]}
+    return {"source": "test", "translations": [{"id": "diyanet-isleri", "name": "Diyanet İşleri Başkanlığı meali"},
+                                               {"id": "diyanet-vakfi", "name": "Türkiye Diyanet Vakfı meali"}],
+            "suras": [{"number": 2, "name": "Bakara", "name_ar": "البقرة", "ayahs": bakara},
+                      {"number": 112, "name": "İhlâs", "name_ar": "الإخلاص", "ayahs": [_ayah(1, IHLAS, "قل هو الله أحد")]}]}
+
+
 def _complete(book: dict, texts: dict[str, list[str]]) -> dict:
     """Cümleleri paragraf metninden sırayla keser; konumları elle yazmak gerekmez."""
     paragraphs = {p["id"]: p.get("text") for p in book["paragraphs"]}
@@ -89,6 +112,8 @@ def small_db(tmp_path_factory) -> tuple:
     for book in (SOZLER, ASA):
         data = _complete(book, sentences)
         (books / f"{book['work']}.json").write_text(json.dumps(data, ensure_ascii=False), "utf-8")
+    quran = tmp_path_factory.mktemp("quran") / "quran.json"
+    quran.write_text(json.dumps(mini_quran(), ensure_ascii=False), "utf-8")
     out = books / "test.db"
-    report: BuildReport = build(books, out)
+    report: BuildReport = build(books, out, quran)
     return out, report

@@ -30,6 +30,15 @@ MAX_CITED = 8            # tek atıfla verilebilecek en çok ardışık cümle (
 MAX_RESULTS = 50
 PREVIEW_CHARS = 400      # arama sonucunda gösterilen en uzun cümle metni
 ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen Arapça türleri
+MAX_AYAHS = 30           # get_ayah'ın bir seferde döndürdüğü en çok âyet (bağlam hariç)
+QURAN_ATTRIBUTION = ("Arabic text: Tanzil Project (tanzil.net), Medina Mushaf script. Translations: Diyanet İşleri "
+                     "Başkanlığı and Türkiye Diyanet Vakfı, via Tanzil (non-commercial use).")
+# Kaynağın âyet numarası Kur'ân metniyle tutmuyorsa modele giden uyarı (build_db, `ayah_check`).
+AYAH_CHECK_NOTES = {
+    "near": "the quoted text is in a neighbouring verse, not exactly the one the source names",
+    "differs": "the quoted text does not match the named verse word for word (adapted quotation, abridgement "
+               "or a wrong number in the source)",
+}
 
 
 class LibraryError(ValueError):
@@ -49,6 +58,10 @@ def cite(section_ref: str, opening_words: str, count: int = 1) -> str:
     """Kullanıcıya gösterilen atıf: yol › “ilk kelimeler…”; ardışık cümlelerde “…” ile başlayan N cümle."""
     quoted = f"{section_ref} › “{opening_words}”"
     return quoted if count == 1 else f"{quoted} ile başlayan {count} cümle"
+
+
+def _ayah_span(start: int, end: int) -> str:
+    return f"{start}" if start == end else f"{start}-{end}"
 
 
 def _placeholders(items) -> str:
@@ -228,10 +241,10 @@ class Library:
         arabic = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.paragraph_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
-                " a.kind, a.meal, a.source FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id"
+                " a.kind, a.meal AS publisher_translation, a.source FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id"
                 f" WHERE a.paragraph_id IN ({_placeholders(wanted)}) AND a.kind IN ({_placeholders(ANNOTATED_ARABIC)})"
                 " ORDER BY a.paragraph_id, a.ord", [*wanted, *ANNOTATED_ARABIC]):
-            arabic[a["paragraph_id"]].append({k: a[k] for k in ("text", "kind", "meal", "source") if a[k]})
+            arabic[a["paragraph_id"]].append({k: a[k] for k in ("text", "kind", "publisher_translation", "source") if a[k]})
         source_refs = {}
         if sources:
             source_refs = dict(self.conn.execute(
@@ -352,10 +365,10 @@ class Library:
         out = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.sentence_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
-                " a.kind, a.meal, a.source FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id"
+                " a.kind, a.meal AS publisher_translation, a.source FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id"
                 f" WHERE a.sentence_id IN ({_placeholders(sentence_ids)}) ORDER BY a.paragraph_id, a.ord", sentence_ids):
-            if a["meal"] or a["source"]:
-                out[a["sentence_id"]].append({k: a[k] for k in ("text", "kind", "meal", "source") if a[k]})
+            if a["publisher_translation"] or a["source"]:
+                out[a["sentence_id"]].append({k: a[k] for k in ("text", "kind", "publisher_translation", "source") if a[k]})
         return out
 
     def find_sentence(self, incipit: str, scope: str | None = None, limit: int = 10) -> dict:
@@ -451,24 +464,88 @@ class Library:
         return self._semantic[1]
 
     def find_ayah(self, sura: str, ayah: int | None = None, limit: int = 30, offset: int = 0) -> dict:
-        """Bir sûrenin (ya da âyetin) eserlerde geçtiği yerler. `sura` numara ya da ad ("Bakara")."""
+        """Bir sûrenin (ya da âyetin) eserlerde geçtiği yerler. `sura` numara ya da ad ("Bakara").
+
+        İki kaynaktan: kaynağın âyet diye işaretlediği Arapça (`via: source`, numarası kaynağın) ve kaynağın
+        işaretlemediği, Kur'ân metninde bulunan alıntılar (`via: text`; Hizbler, el-Mesnevî el-Arabî).
+        Kaynağın numarası Kur'ân metniyle tutmuyorsa `check` uyarır (iktibas, kısaltma ya da yanlış numara).
+        """
         number = self._sura_number(sura)
-        name = self.conn.execute("SELECT name FROM sura_names WHERE number = ? LIMIT 1", (number,)).fetchone()
-        where, params = "a.sura = ?", [number]
+        where, params = "q.sura = ?", [number]
         if ayah is not None:
-            where += " AND ? BETWEEN a.ayah_start AND a.ayah_end"
+            where += " AND ? BETWEEN q.ayah_start AND q.ayah_end"
             params.append(ayah)
-        total = self.conn.execute(f"SELECT count(*) FROM arabic a WHERE {where} AND a.sentence_id IS NOT NULL",
+        quotes = (
+            "SELECT 'source' AS via, a.sentence_id, a.paragraph_id, a.span_start, a.span_end, a.meal, a.source,"
+            " a.ayah_check, a.sura, a.ayah_start, a.ayah_end FROM arabic a WHERE a.sura IS NOT NULL"
+            " UNION ALL SELECT 'text', q.sentence_id, q.paragraph_id, q.span_start, q.span_end, NULL, NULL, NULL,"
+            " q.sura, q.ayah_start, q.ayah_end FROM ayah_quotes q")
+        total = self.conn.execute(f"SELECT count(*) FROM ({quotes}) q WHERE {where} AND q.sentence_id IS NOT NULL",
                                   params).fetchone()[0]
         rows = self.conn.execute(
-            "SELECT s.id, s.ref, s.incipit, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS arabic,"
-            " a.meal, a.source FROM arabic a JOIN sentences s ON s.id = a.sentence_id"
-            f" JOIN paragraphs p ON p.id = a.paragraph_id WHERE {where} ORDER BY s.seq LIMIT ? OFFSET ?",
+            "SELECT s.id, s.ref, s.incipit, substr(p.text, q.span_start + 1, q.span_end - q.span_start) AS arabic,"
+            " q.meal AS publisher_translation, q.source, q.via, q.ayah_check, q.ayah_start, q.ayah_end"
+            f" FROM ({quotes}) q JOIN sentences s ON s.id = q.sentence_id JOIN paragraphs p ON p.id = q.paragraph_id"
+            f" WHERE {where} ORDER BY s.seq LIMIT ? OFFSET ?",
             [*params, min(max(limit, 1), MAX_RESULTS), max(offset, 0)])
-        return {
-            "sura": number, "name": name[0] if name else None, "ayah": ayah, "total": total,
-            "results": [{k: r[k] for k in ("id", "ref", "incipit", "arabic", "meal", "source") if r[k]} for r in rows],
-        }
+        results = []
+        for r in rows:
+            item = {k: r[k] for k in ("id", "ref", "incipit", "arabic", "publisher_translation", "source") if r[k]}
+            item["ayahs"] = _ayah_span(r["ayah_start"], r["ayah_end"])
+            item["via"] = r["via"]
+            if r["ayah_check"] in AYAH_CHECK_NOTES:
+                item["check"] = AYAH_CHECK_NOTES[r["ayah_check"]]
+            results.append(item)
+        result = {"sura": number, "name": self._sura_name(number), "ayah": ayah, "total": total, "results": results}
+        if ayah is not None and self._has_quran():
+            result["quran"] = self.ayahs(number, ayah)["ayahs"][0]
+        return result
+
+    def ayahs(self, sura: str | int, ayah: int, end: int | None = None, context: int = 0) -> dict:
+        """Kur'ân'dan âyet ya da âyet aralığı: harekeli metin (Medine Mushafı hattı) ve Diyanet mealleri."""
+        if not self._has_quran():
+            raise LibraryError("The Qur'an layer is not installed in this database.")
+        number = self._sura_number(str(sura))
+        count = self.conn.execute("SELECT ayahs FROM quran_suras WHERE number = ?", (number,)).fetchone()[0]
+        end = ayah if end is None else end
+        if not 1 <= ayah <= end <= count:
+            raise LibraryError(f"{self._sura_name(number)} has verses 1–{count}; got {ayah}–{end}.")
+        if end - ayah + 1 > MAX_AYAHS:
+            raise LibraryError(f"At most {MAX_AYAHS} verses at a time.")
+        first, last = max(1, ayah - context), min(count, end + context)
+        translators = dict(self.conn.execute("SELECT id, name FROM quran_translators ORDER BY ord").fetchall())
+        meals = defaultdict(list)
+        for r in self.conn.execute(
+                "SELECT t.ayah, t.translator, t.text, t.first_ayah, t.last_ayah FROM quran_translations t"
+                " JOIN quran_translators q ON q.id = t.translator WHERE t.sura = ? AND t.ayah BETWEEN ? AND ?"
+                " ORDER BY q.ord", (number, first, last)):
+            meal = {"translator": translators[r["translator"]], "text": r["text"]}
+            if r["first_ayah"] != r["last_ayah"]:
+                meal["covers_verses"] = f"{number}:{r['first_ayah']}-{r['last_ayah']}"
+            meals[r["ayah"]].append(meal)
+        quoted = dict(self.conn.execute(
+            "SELECT a.ayah, count(*) FROM quran_ayahs a JOIN (SELECT sura, ayah_start, ayah_end FROM arabic"
+            " WHERE sura = :s UNION ALL SELECT sura, ayah_start, ayah_end FROM ayah_quotes WHERE sura = :s) q"
+            " ON a.ayah BETWEEN q.ayah_start AND q.ayah_end WHERE a.sura = :s AND a.ayah BETWEEN :f AND :l"
+            " GROUP BY a.ayah", {"s": number, "f": first, "l": last}).fetchall())
+        out = []
+        for r in self.conn.execute("SELECT ayah, text FROM quran_ayahs WHERE sura = ? AND ayah BETWEEN ? AND ?"
+                                   " ORDER BY ayah", (number, first, last)):
+            item = {"ayah": r["ayah"], "ref": f"{self._sura_name(number)} Sûresi, {number}:{r['ayah']}",
+                    "text": r["text"], "translations": meals[r["ayah"]],
+                    "quoted_in_works": quoted.get(r["ayah"], 0)}
+            if not ayah <= r["ayah"] <= end:
+                item["context"] = True
+            out.append(item)
+        return {"sura": number, "name": self._sura_name(number), "ayahs": out, "attribution": QURAN_ATTRIBUTION}
+
+    def _has_quran(self) -> bool:
+        return self.conn.execute("SELECT EXISTS (SELECT 1 FROM quran_ayahs)").fetchone()[0] == 1
+
+    def _sura_name(self, number: int) -> str | None:
+        row = self.conn.execute("SELECT name FROM quran_suras WHERE number = ?", (number,)).fetchone()
+        row = row or self.conn.execute("SELECT name FROM sura_names WHERE number = ? LIMIT 1", (number,)).fetchone()
+        return row[0] if row else None
 
     def _sura_number(self, sura: str) -> int:
         sura = str(sura).strip()

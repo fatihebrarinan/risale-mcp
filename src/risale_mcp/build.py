@@ -20,6 +20,7 @@ from collections import Counter
 from functools import cache
 
 from risale_mcp import build_db, checklist, embeddings, sentences
+from risale_mcp.quran import QURAN_PATH
 from risale_mcp.books import erisale as erisale_parser
 from risale_mcp.books import kastamonur as kastamonur_parser
 from risale_mcp.books import risale_online as risale_online_parser
@@ -161,7 +162,7 @@ def main() -> None:
         build_work(work)
     checklist.main()
     if not args.no_db:
-        print("\nveritabanı:\n" + "\n".join(build_db.build().lines()))
+        print("\nveritabanı:\n" + "\n".join(build_db.build(quran_path=QURAN_PATH).lines()))
         if count := embeddings.missing(connect(DB_PATH)):
             print(f"\nanlamsal arama: {count} cümlenin vektörü yok; tamamlamak için "
                   f"`uv run python -m risale_mcp.embeddings build {embeddings.SEARCH_MODEL}`")

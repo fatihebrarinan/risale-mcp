@@ -32,13 +32,16 @@ from pathlib import Path
 from risale_mcp.catalog import WORKS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
 from risale_mcp.normalize import search_words
-from risale_mcp.paths import BOOKS_DIR, DB_PATH, ROOT
+from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, ROOT
+from risale_mcp.quran import QURAN_PATH, SURA_NAMES, Quran
 
 # "Bakara Sûresi, 2:255", "Âyet: Sûre-i Âl-i İmrân, 18", "Kalem Sûresi: 1", "Sûre-i Nasr, 1’den"
 _SURA_NAME = re.compile(r"^(?:Âyet:\s*)?(?:Sûre-i\s+(?P<pre>[^,:\d]+?)|(?P<post>[^,:\d]+?)\s+S[ûu]resi)\s*[,:]?\s*(?=\d)")
 _SURA_AYAH = re.compile(r"(?P<sura>\d+)\s*:\s*(?P<start>\d+)(?:\s*-\s*(?P<end>\d+))?")
 _AYAH_ONLY = re.compile(r"(?P<start>\d+)(?:\s*-\s*(?P<end>\d+))?")
 NO_SOURCE = "REF-YOK"
+AYAH_REPORT = INTERIM_DIR / "quran" / "ayah_check.md"   # elle gözden geçirme için
+LOCATE_SURA_SHARE = 0.8   # bölümün sûresi: bulunan âyetlerinin en az bu payı aynı sûredense
 
 
 @dataclass(frozen=True)
@@ -103,6 +106,26 @@ class BuildReport:
     works: int = 0
     counts: Counter = field(default_factory=Counter)
     unresolved_ayah: Counter = field(default_factory=Counter)
+    ayah_checks: Counter = field(default_factory=Counter)      # kaynağın âyet numarası Kur'ân metniyle
+    ayah_problems: list = field(default_factory=list)          # (sonuç, paragraf, kaynak, metin)
+    located: Counter = field(default_factory=Counter)          # işaretsiz Kur'ân metni
+    unlocated: list = field(default_factory=list)              # (paragraf, numara): bulunamayan işaretsiz alıntı
+
+    def ayah_report(self) -> str:
+        """Kaynağın âyet numarası Kur'ân metniyle tutmayan yerler ve bulunamayan işaretsiz alıntılar."""
+        lines = ["# Âyet denetimi", "",
+                 "`build_db` üretir. Kaynağın âyet diye işaretleyip numarasını verdiği Arapça, Tanzil'in Kur'ân",
+                 "metniyle karşılaştırıldı. `near`: metin komşu âyette; `differs`: kelimesi kelimesine tutmuyor",
+                 "(iktibas, kısaltma ya da yanlış numara). Veri değiştirilmedi; araç modele uyarı verir.", ""]
+        for check in ("near", "differs"):
+            rows = [r for r in self.ayah_problems if r[0] == check]
+            lines += [f"## {check} ({len(rows)})", ""]
+            lines += [f"- `{pid}` — {source} — {text}" for _, pid, source, text in rows] + [""]
+        lines += [f"## Bulunamayan işaretsiz alıntılar ({len(self.unlocated)})", "",
+                  "Hizb ve el-Mesnevî el-Arabî'de ﴿ ﴾ içinde ya da ﴿numara﴾ ile biten, Kur'ân metninde tek bir",
+                  "yere bağlanamayan Arapça (birden çok âyette geçen kısa ifade, dua içinde iktibas, sayaç).", ""]
+        lines += [f"- `{pid}`" + (f" ﴿{n}﴾" if n is not None else "") for pid, n in self.unlocated]
+        return "\n".join(lines) + "\n"
 
     def lines(self) -> list[str]:
         c = self.counts
@@ -113,6 +136,12 @@ class BuildReport:
             f"  sûre adı     : {c['sura_names']} yazılış",
             f"  not / eksik  : {c['notes']} / {c['gaps']}",
         ]
+        if c["quran_ayahs"]:
+            checks = self.ayah_checks
+            lines.append(f"  Kur'ân       : {c['quran_ayahs']} âyet; kaynağın numarası metinle: {checks['exact']} tutuyor,"
+                         f" {checks['near']} komşu âyette, {checks['differs']} farklı, {checks['empty']} boş")
+            lines.append(f"  işaretsiz âyet: {self.located['bulundu']} bulundu, {self.located['bulunamadı']} numarasız"
+                         f" ve {self.located['numaralı, bulunamadı']} numaralı alıntı bulunamadı")
         if self.unresolved_ayah:
             lines.append(f"  çözülemeyen âyet kaynağı: {sum(self.unresolved_ayah.values())}")
             lines += [f"      {n}× {s}" for s, n in self.unresolved_ayah.most_common(10)]
@@ -182,40 +211,98 @@ def _insert_sentences(conn: sqlite3.Connection, work: str, sentences: list[dict]
                      (cur.lastrowid, " ".join(search_words(s["text"]))))
 
 
-def _insert_arabic(conn: sqlite3.Connection, book: dict, suras: SuraNames, report: BuildReport) -> None:
+def _insert_arabic(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran: Quran | None,
+                   report: BuildReport) -> None:
     # Paragraf -> (cümle başları, cümle kimlikleri); parça, başladığı cümleye bağlanır.
     starts: dict[str, tuple[list[int], list[str]]] = defaultdict(lambda: ([], []))
     for s in book["sentences"]:
         offsets, ids = starts[s["paragraph_id"]]
         offsets.append(s["start"])
         ids.append(s["id"])
+
+    def sentence_at(paragraph_id: str, offset: int) -> str | None:
+        offsets, ids = starts.get(paragraph_id, ([], []))
+        k = bisect.bisect_right(offsets, offset) - 1
+        return ids[k] if k >= 0 else None
+
+    located = []   # (paragraf, düğüm, parça sırası, parçanın başı, alıntı): işaretsiz Kur'ân metni
     for p in book["paragraphs"]:
-        offsets, ids = starts.get(p["id"], ([], []))
         for i, part in enumerate(p.get("arabic", [])):
-            k = bisect.bisect_right(offsets, part["start"]) - 1
             source = part.get("source") if part.get("source") != NO_SOURCE else None
-            ayah = None
+            text = p["text"][part["start"]:part["end"]] if p.get("text") else ""
+            ayah = check = None
             if part["kind"] == "ayet" and source:
                 report.counts["ayah"] += 1
                 ayah = parse_ayah_source(source, suras)
                 if ayah:
                     report.counts["ayah_resolved"] += 1
+                    if quran:
+                        check = quran.check(text, ayah.sura, ayah.start, ayah.end)
+                        report.ayah_checks[check] += 1
+                        if check in ("near", "differs"):
+                            report.ayah_problems.append((check, p["id"], source, text))
                 else:
                     report.unresolved_ayah[source] += 1
+            elif quran and part["kind"] != "ayet" and "﴿" in text:
+                located += [(p["id"], p["node_id"], i, part["start"], q) for q in quran.locate(text)]
             conn.execute(
-                "INSERT INTO arabic VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                (p["id"], i, ids[k] if k >= 0 else None, part["start"], part["end"], part["kind"],
-                 part.get("meal"), source, ayah and ayah.sura, ayah and ayah.start, ayah and ayah.end))
+                "INSERT INTO arabic VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (p["id"], i, sentence_at(p["id"], part["start"]), part["start"], part["end"], part["kind"],
+                 part.get("meal"), source, ayah and ayah.sura, ayah and ayah.start, ayah and ayah.end, check))
             report.counts["arabic"] += 1
+    if located:
+        _insert_located(conn, located, quran, sentence_at, report)
 
 
-def _insert_book(conn: sqlite3.Connection, book: dict, suras: SuraNames, report: BuildReport) -> None:
+def _insert_located(conn: sqlite3.Connection, located: list, quran: Quran, sentence_at, report: BuildReport) -> None:
+    """Kaynağın işaretlemediği âyetler. Numaralı ama birden çok sûrede geçen kısa âyet ("الٓمٓ﴿١﴾"),
+    bölümün öbür âyetlerinin hemen hepsi tek bir sûredense o sûrede aranır."""
+    node_suras: dict[str, Counter] = defaultdict(Counter)
+    for _, node, _, _, q in located:
+        if q.match:
+            node_suras[node][q.match.sura] += 1
+    n_in_part: Counter = Counter()
+    for paragraph, node, ord_, offset, q in located:
+        match = q.match
+        if match is None and node_suras[node]:
+            sura, count = node_suras[node].most_common(1)[0]
+            if count >= LOCATE_SURA_SHARE * sum(node_suras[node].values()):
+                match = quran.in_sura(q, sura)
+        if match is None:
+            report.located["bulunamadı" if q.number is None else "numaralı, bulunamadı"] += 1
+            report.unlocated.append((paragraph, q.number))
+            continue
+        report.located["bulundu"] += 1
+        n = n_in_part[(paragraph, ord_)]
+        n_in_part[(paragraph, ord_)] += 1
+        conn.execute("INSERT INTO ayah_quotes VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                     (paragraph, ord_, n, sentence_at(paragraph, offset + q.start), offset + q.start, offset + q.end,
+                      match.sura, match.start, match.end))
+
+
+def _insert_quran(conn: sqlite3.Connection, quran: Quran, report: BuildReport) -> None:
+    data = quran.data
+    conn.executemany("INSERT INTO quran_translators VALUES (?, ?, ?)",
+                     [(t["id"], i, t["name"]) for i, t in enumerate(data["translations"])])
+    for sura in data["suras"]:
+        conn.execute("INSERT INTO quran_suras VALUES (?, ?, ?, ?)",
+                     (sura["number"], sura["name"], sura["name_ar"], len(sura["ayahs"])))
+        conn.executemany("INSERT INTO quran_ayahs VALUES (?, ?, ?, ?)",
+                         [(sura["number"], a["ayah"], a["text"], a["text_simple"]) for a in sura["ayahs"]])
+        conn.executemany("INSERT INTO quran_translations VALUES (?, ?, ?, ?, ?, ?)",
+                         [(key, sura["number"], a["ayah"], text, *a.get("spans", {}).get(key, (a["ayah"], a["ayah"])))
+                          for a in sura["ayahs"] for key, text in a["translations"].items()])
+        report.counts["quran_ayahs"] += len(sura["ayahs"])
+
+
+def _insert_book(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran: Quran | None,
+                 report: BuildReport) -> None:
     work = book["work"]
     _insert_nodes(conn, work, book["outline"])
     _insert_paragraphs(conn, work, book["paragraphs"])
     hasiye = {p["id"] for p in book["paragraphs"] if p["kind"] == "hasiye"}
     _insert_sentences(conn, work, book["sentences"], hasiye)
-    _insert_arabic(conn, book, suras, report)
+    _insert_arabic(conn, book, suras, quran, report)
     conn.executemany("INSERT INTO notes VALUES (?, ?, ?, ?)",
                      [(work, n["node_id"], n.get("after"), n["text"]) for n in book.get("notes", [])])
     conn.executemany("INSERT INTO gaps VALUES (?, ?, ?, ?, ?)",
@@ -261,8 +348,10 @@ def _verify(conn: sqlite3.Connection, report: BuildReport) -> None:
         raise RuntimeError("Veritabanı JSON'larla tutmuyor:\n  " + "\n  ".join(wrong))
 
 
-def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH) -> BuildReport:
+def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH, quran_path: Path | None = None) -> BuildReport:
+    """`quran_path` verilirse (ve dosya varsa) Kur'ân katmanı kurulur, Risale'deki âyetler onunla eşlenir."""
     books = _load_books(books_dir)
+    quran = Quran.load(quran_path) if quran_path else None
     unknown = set(books) - {w.slug for w in WORKS}
     if unknown:
         raise ValueError(f"Katalogda olmayan eser JSON'u: {sorted(unknown)}")
@@ -292,9 +381,15 @@ def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH) -> BuildReport:
                     (work.slug, ord_, work.title, work.group, language, work.status, work.note or None,
                      source and source.site, source and source.book, int(data is not None), sha1))
                 if data:
-                    _insert_book(conn, data, suras, report)
+                    _insert_book(conn, data, suras, quran, report)
                     report.works += 1
+            if quran:
+                _insert_quran(conn, quran, report)
             sura_rows = suras.rows()
+            # Veride hiç numarasıyla geçmeyen sûreler de adıyla aranabilsin (Kur'ân katmanının Türkçe adları).
+            learned = {key for key, _, _ in sura_rows}
+            sura_rows += [(key, n, name) for n, name in enumerate(SURA_NAMES, 1)
+                          if (key := SuraNames.key(name)) not in learned]
             conn.executemany("INSERT INTO sura_names VALUES (?, ?, ?)", sura_rows)
             report.counts["sura_names"] = len(sura_rows)
             conn.executemany("INSERT INTO meta VALUES (?, ?)", [
@@ -320,11 +415,16 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--books", type=Path, default=BOOKS_DIR, help="eser JSON'larının klasörü")
     parser.add_argument("--out", type=Path, default=DB_PATH, help="yazılacak veritabanı")
+    parser.add_argument("--quran", type=Path, default=QURAN_PATH, help="Kur'ân katmanı (yoksa atlanır)")
     args = parser.parse_args()
     if not any(args.books.glob("*.json")):
         sys.exit(f"{args.books} içinde eser JSON'u yok; önce `uv run python -m risale_mcp.build --all`.")
-    report = build(args.books, args.out)
+    report = build(args.books, args.out, args.quran)
     print("\n".join(report.lines()))
+    if report.counts["quran_ayahs"]:
+        AYAH_REPORT.parent.mkdir(parents=True, exist_ok=True)
+        AYAH_REPORT.write_text(report.ayah_report(), encoding="utf-8")
+        print(f"  âyet denetimi: {AYAH_REPORT.relative_to(ROOT)}")
     out = args.out.resolve()
     shown = out.relative_to(ROOT) if out.is_relative_to(ROOT) else out
     print(f"  yazıldı: {shown} ({out.stat().st_size / 1e6:.0f} MB)")

@@ -66,6 +66,18 @@ def test_arabic_linked_to_sentence_and_ayah_resolved(db):
         ("sozler/11/c001", "ayet", "Sûre-i Bakara, 1’den", 2, 1, 1),
         ("sozler/11/c001", "arabi", None, None, None, None),                 # REF-YOK -> kaynak yok
     ]
+    # Kaynağın numarası Kur'ân metniyle denetlenir: 2:255 tutuyor; "قل هو الله احد" 2:1 değil.
+    checks = [r[0] for r in conn.execute("SELECT ayah_check FROM arabic ORDER BY paragraph_id, ord")]
+    assert checks == ["exact", "differs", None]
+
+
+def test_quran_layer(db):
+    conn, report = db
+    assert report.counts["quran_ayahs"] == 256
+    assert conn.execute("SELECT name FROM quran_suras WHERE number = 112").fetchone()[0] == "İhlâs"
+    assert conn.execute("SELECT count(*) FROM quran_translations").fetchone()[0] == 512
+    # Veride hiç geçmeyen sûre de Türkçe adıyla bulunur.
+    assert conn.execute("SELECT number FROM sura_names WHERE key = 'kadr'").fetchone()[0] == 97
 
 
 @pytest.mark.parametrize("source,expected", [

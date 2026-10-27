@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -123,6 +123,8 @@ CREATE INDEX sentences_paragraph ON sentences(paragraph_id, seq);
 CREATE INDEX sentences_hash ON sentences(hash);
 
 -- Metindeki Arapça (ve Farsça…) parçalar. Âyette kaynak çözülebildiyse sûre ve âyet numaraları dolu.
+-- `meal` nâşirin tercümesidir, müellifin değil. `ayah_check`: kaynağın verdiği numara Kur'ân metniyle
+-- (Tanzil) denetlendi: exact, near (metin komşu âyetlerde), differs (iktibas, kısaltma ya da yanlış numara), empty.
 CREATE TABLE arabic (
     paragraph_id TEXT NOT NULL REFERENCES paragraphs(id),
     ord          INTEGER NOT NULL,
@@ -135,6 +137,7 @@ CREATE TABLE arabic (
     sura         INTEGER,
     ayah_start   INTEGER,
     ayah_end     INTEGER,
+    ayah_check   TEXT,
     PRIMARY KEY (paragraph_id, ord)
 );
 CREATE INDEX arabic_ayah ON arabic(sura, ayah_start);
@@ -145,6 +148,56 @@ CREATE TABLE sura_names (
     key    TEXT PRIMARY KEY,
     number INTEGER NOT NULL,
     name   TEXT NOT NULL
+);
+
+-- Kur'ân katmanı (data/quran.json, Tanzil): atıf birimi âyettir. `text` Medine Mushafı hattı, harekeli
+-- (kullanıcıya gösterilen); `text_simple` imlâî yazım, harekeli. Mealler mütercimleriyle ayrı tabloda.
+-- Kaynağın âyet olarak işaretlemediği Kur'ân alıntıları (Hizbler, el-Mesnevî el-Arabî); Arapça parçanın
+-- içinde Tanzil metniyle bulundu. `n` parçadaki sırası; `span_*` paragraf metnindeki konumu.
+CREATE TABLE ayah_quotes (
+    paragraph_id TEXT NOT NULL REFERENCES paragraphs(id),
+    ord          INTEGER NOT NULL,
+    n            INTEGER NOT NULL,
+    sentence_id  TEXT REFERENCES sentences(id),
+    span_start   INTEGER NOT NULL,
+    span_end     INTEGER NOT NULL,
+    sura         INTEGER NOT NULL,
+    ayah_start   INTEGER NOT NULL,
+    ayah_end     INTEGER NOT NULL,
+    PRIMARY KEY (paragraph_id, ord, n)
+);
+CREATE INDEX ayah_quotes_ayah ON ayah_quotes(sura, ayah_start);
+
+CREATE TABLE quran_suras (
+    number  INTEGER PRIMARY KEY,
+    name    TEXT NOT NULL,
+    name_ar TEXT NOT NULL,
+    ayahs   INTEGER NOT NULL
+);
+
+CREATE TABLE quran_ayahs (
+    sura        INTEGER NOT NULL REFERENCES quran_suras(number),
+    ayah        INTEGER NOT NULL,
+    text        TEXT NOT NULL,
+    text_simple TEXT NOT NULL,
+    PRIMARY KEY (sura, ayah)
+);
+
+CREATE TABLE quran_translators (
+    id   TEXT PRIMARY KEY,
+    ord  INTEGER NOT NULL,
+    name TEXT NOT NULL
+);
+
+-- Bir meal art arda birkaç âyeti birlikte tercüme edebilir: `first_ayah`..`last_ayah` (tek âyette ikisi de `ayah`).
+CREATE TABLE quran_translations (
+    translator TEXT NOT NULL REFERENCES quran_translators(id),
+    sura       INTEGER NOT NULL,
+    ayah       INTEGER NOT NULL,
+    text       TEXT NOT NULL,
+    first_ayah INTEGER NOT NULL,
+    last_ayah  INTEGER NOT NULL,
+    PRIMARY KEY (sura, ayah, translator)
 );
 
 CREATE TABLE notes (
