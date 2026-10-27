@@ -10,6 +10,12 @@ Sayfanın metin bölgesi (`#okucerceve`) iki `<br>` ile paragraflara ayrılır.
 Yapı:
 - Okuyucu sayfasındaki fihrist ağacı (`#treemenu1`) varsa ondan gelir: her girdinin sayfası
   bellidir; düğüm o sayfada başlığıyla başlayan paragrafta (yoksa sayfanın ilk paragrafında) açılır.
+  Hizbü'l-Kur'ân'da fihrist güvenilmez: sûre girdisinin ("3-Âl-i İmran") sayfası bazen bir sayfa
+  geridir, bazı sûrelerin girdisi yoktur (Mürselât). Sûreler bu yüzden metindeki Arapça başlıktan
+  ("سُورَةُ اٰلِ عِمْرٰنَ") açılır; adı Tanzil'in sûre adlarıyla tanınır, numarası buradan gelir.
+  Girdisi olmayan sûre "77-Mürselât" adıyla eklenir. Başlıktan önce sayfada kalan âyetler önceki
+  sûrededir. Başlığı kaynakta bulunmayan sûre (Lokmân'ın başı sitede boş bir sayfadadır) fihristin
+  sayfasında açılır ve başında eksik (`gaps`) işaretlenir. Öbür Hizblerde ("Yasin Suresi") sûre, sayfasındaki ilk "سورة" satırında açılır.
 - Ağaç boşsa (el-Mesnevî el-Arabî) ortalı başlıklardan çıkarılır: "الرسالة …" birinci,
   "الباب …", "ذيل …", "القطعة …", "المقدمة", "تقريظ" ikinci seviyedir; başlığın hemen
   ardından gelen en çok iki kısa ortalı satır alt başlıktır. İlk başlıktan önceki sayfalar
@@ -30,6 +36,7 @@ from risale_mcp.books.model import ArabicSpan, Book, Node, Text, TextBuilder
 from risale_mcp.catalog import Work
 from risale_mcp.headings import local_id, parse_heading
 from risale_mcp.normalize import match_words
+from risale_mcp.quran import SURA_NAMES, arabic_sura_numbers, skeleton
 
 _PARAGRAPH_BREAK = re.compile(r"(?:<br\s*/?>\s*){2,}")
 _SEPARATOR = re.compile(r"^[*∗\s]+$")
@@ -40,6 +47,11 @@ CENTERED = {"ortali", "barla", "h1ortali"}
 ARABIC_TOP = re.compile(r"^(الرسالة|مقدمة المؤلف)")
 ARABIC_SUB = re.compile(r"^(الباب|ذيل|القطعة|المقدمة|تقريظ|الخاتمة)")
 SUBTITLE_LINES, SUBTITLE_WORDS = 2, 8
+SURA_ENTRY = re.compile(r"^\d+-|Sures", re.IGNORECASE)   # Hizb fihristinde sûre girdisi
+NUMBERED_SURA = re.compile(r"^(\d+)-")                    # Hizbü'l-Kur'ân: "3-Âl-i İmran"
+SURA_HEADING = "سورة"                                     # sayfadaki sûre başlığının ilk kelimesi
+SURA_HEADING_WORDS = 5
+MISSING_SURA_START = "The start of this sura (its heading and first verses) is missing at the source; text not invented."
 
 
 def page_region(page_html: str) -> str:
@@ -169,6 +181,7 @@ class _Heading:
     title: str
     subtitle: str = ""
     arabic_title: str = ""
+    missing_start: bool = False      # başlığı ve ilk metni kaynakta yok
 
 
 def load_blocks(book: str, root: Path, first_page: int, strip_footnote_marks: bool) -> list[Block | str]:
@@ -187,8 +200,29 @@ def load_blocks(book: str, root: Path, first_page: int, strip_footnote_marks: bo
     return blocks
 
 
+def _sura_headings(blocks: list[Block | str]) -> dict[int, tuple[int, str]]:
+    """Metindeki "سورة …" başlıkları: blok sırası -> (sûre numarası, satır). Aynı iskelete inen adlarda
+    (en-Nisâ, en-Nâs) sûreler sırayla geldiği için öncekinden büyük ilk numara seçilir."""
+    numbers = arabic_sura_numbers()
+    prefix = skeleton(SURA_HEADING)
+    out, previous = {}, 0
+    for i, block in enumerate(blocks):
+        if not isinstance(block, Block) or len(block.text.text.split()) > SURA_HEADING_WORDS:
+            continue
+        key = skeleton(block.text.text)                        # "سُورَةُالْحِجْرِ" boşluksuz da yazılır
+        if key.startswith(prefix) and match_words(block.text.text)[0].startswith(SURA_HEADING):
+            later = sorted(n for n in numbers.get(key[len(prefix):], ()) if n > previous)
+            if later:
+                out[i] = (later[0], block.text.text)
+                previous = later[0]
+    return out
+
+
 def _toc_starts(entries: list[TocEntry], blocks: list[Block | str]) -> dict[int, list[_Heading]]:
     starts: dict[int, list[_Heading]] = {}
+    numbered = [e for e in entries if NUMBERED_SURA.match(e.title)]
+    if numbered and (headings := _sura_headings(blocks)):
+        return _numbered_sura_starts(entries, numbered, headings, blocks)
     floor = 0
     for entry in entries:
         on_page = [i for i in range(floor, len(blocks)) if isinstance(blocks[i], Block) and blocks[i].page >= entry.page]
@@ -197,9 +231,33 @@ def _toc_starts(entries: list[TocEntry], blocks: list[Block | str]) -> dict[int,
         candidates = [i for i in on_page if blocks[i].page == entry.page] or on_page[:1]
         heads = [match_words(t)[:3] for t in (entry.title, entry.arabic_title) if t]
         titled = [i for i in candidates if any(h and match_words(blocks[i].text.text)[:len(h)] == h for h in heads)]
+        if not titled and SURA_ENTRY.search(entry.title):
+            titled = [i for i in candidates if i not in starts and match_words(blocks[i].text.text)[:1] == [SURA_HEADING]]
         start = titled[0] if titled else candidates[0]
         starts.setdefault(start, []).append(_Heading(entry.depth, entry.title, arabic_title=entry.arabic_title))
         floor = start
+    return starts
+
+
+def _numbered_sura_starts(entries: list[TocEntry], numbered: list[TocEntry], headings: dict[int, tuple[int, str]],
+                          blocks: list[Block | str]) -> dict[int, list[_Heading]]:
+    """Hizbü'l-Kur'ân: sûreler metindeki başlıklarından; fihristten yalnızca adları ve öbür girdiler."""
+    titles = {int(NUMBERED_SURA.match(e.title)[1]): e for e in numbered}
+    depth = numbered[0].depth
+    starts: dict[int, list[_Heading]] = {}
+    for i, (number, line) in headings.items():
+        entry = titles.pop(number, None)
+        title = entry.title if entry else f"{number}-{SURA_NAMES[number - 1]}"
+        starts[i] = [_Heading(depth, title, arabic_title=line)]
+    for entry in titles.values():                              # başlığı kaynakta yok: fihristin sayfası
+        i = next(i for i, b in enumerate(blocks) if isinstance(b, Block) and b.page >= entry.page)
+        if i in starts:
+            raise ValueError(f"{entry.title}: başlığı yok ve sayfası başka bir sûrenin başlığında başlıyor")
+        starts[i] = [_Heading(depth, entry.title, missing_start=True)]
+    # Sûre olmayan girdiler (kitabın adı) yalnızca ilk sûreden önce olabilir.
+    for entry in reversed(entries):
+        if entry not in numbered:
+            starts.setdefault(0, []).insert(0, _Heading(entry.depth, entry.title, arabic_title=entry.arabic_title))
     return starts
 
 
@@ -268,6 +326,8 @@ def parse_work(work: Work, root: Path) -> Book:
             node = book.add_node(stack[-1][1], local_id(info, slug_source, top_level=False), head.title,
                                  type=info.type, number=info.number, subtitle=head.subtitle)
             stack.append((head.depth, node))
+            if head.missing_start:
+                book.gaps.append({"node_id": node.id, "missing_blocks": 0, "note": MISSING_SURA_START})
             heading_words += [match_words(head.title), match_words(head.arabic_title)]
         if isinstance(block, str):                               # hâşiye: önceki paragrafa
             if last is not None:

@@ -159,3 +159,16 @@ def test_kastamonur_edition_gap_is_anchored_to_paragraph(tmp_path):
                                                  "after": "makalat/makale-11/p001", "note": "Hâtime yok."}
     end = kastamonur._gap_record(book, kastamonur.EditionGap("makale-11", 3, "Makale yok."))
     assert end["after"] == "makalat/makale-11/p002"                                      # düğümün sonu
+
+
+def test_hizb_suras_open_at_their_arabic_heading():
+    """Hizbü'l-Kur'ân: sûre fihristin sayfasında değil metindeki başlığında açılır; aynı iskelete inen
+    adlar (en-Nisâ / en-Nâs) sırayla ayrılır, başka adla anılan sûre (el-Mü'min) de tanınır."""
+    from risale_mcp.books.risaleoku import Block, _sura_headings
+    from risale_mcp.books.model import Text
+    from risale_mcp.quran import arabic_sura_numbers
+    if not arabic_sura_numbers():
+        pytest.skip("Tanzil ham verisi yok; önce `uv run python -m risale_mcp.fetch quran`")
+    lines = ["سُورَةُ النِّسَٓاءِ", "اٰيَةٌ", "سُورَةُ الْمُؤْمِنِ", "سُورَةُالْحِجْرِ", "سُورَةُ النَّاسِ"]
+    blocks = [Block(Text(t), page=1) for t in lines]
+    assert {i: n for i, (n, _) in _sura_headings(blocks).items()} == {0: 4, 2: 40, 4: 114}   # 15 sıradan önce: atlanır

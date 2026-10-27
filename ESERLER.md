@@ -68,6 +68,6 @@
 
 | # | Eser | Kaynak | Ham veri | Ayrıştırma | Not |
 |---:|---|---|---|---|---|
-| 41 | Hizbü'l-Kur'ani'l-Muazzam | `risaleoku/hizbkuran` | ✅ indirildi | ✅ 99 düğüm, 1973 paragraf, 1973 cümle |  |
+| 41 | Hizbü'l-Kur'ani'l-Muazzam | `risaleoku/hizbkuran` | ✅ indirildi | ✅ 99 düğüm, 1937 paragraf, 1937 cümle |  |
 | 42 | Hizbü'l-Ekber-i Nurî (Hizb-i Nurî) | `—` | ❌ kaynak bulunamadı | ⬜ | Kısmen Lem'alar'da. |
 | 43 | Hizbü Envari'l-Hakaiki'n-Nuriye (Büyük Cevşen) | `risaleoku/hizbulhakaik` | ✅ indirildi | ✅ 19 düğüm, 966 paragraf, 966 cümle | Cevşenü'l-Kebîr bu cildin içindedir. |
