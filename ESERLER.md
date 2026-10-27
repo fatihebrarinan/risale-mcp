@@ -32,7 +32,7 @@
 | 17 | Hakikat Çekirdekleri | `erisale/mektubat` | ✅ indirildi | ✅ 3 düğüm, 145 paragraf, 293 cümle | Standart baskıda Mektubat'ın sonunda. |
 | 18 | Şuaat-ı Marifetü'n-Nebi | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 28 düğüm, 254 paragraf, 545 cümle |  |
 | 19 | Nokta | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 65 düğüm, 241 paragraf, 750 cümle |  |
-| 20 | el-Mesnevî el-Arabî en-Nurî | `risaleoku/ar_mesnevi` | ✅ indirildi | ✅ 32 düğüm, 2423 paragraf, 6098 cümle | Arapça asıl; İhsan Kasım es-Sâlihî tahkiki (Külliyât-ı Resâili'n-Nûr 6). |
+| 20 | el-Mesnevî el-Arabî en-Nurî | `rasaelalnour/mesnevi` | ✅ indirildi | ✅ 120 düğüm, 1909 paragraf, 6794 cümle | Arapça asıl; Abdülkadir Badıllı'nın "el-Kâmil" baskısı (harekeli). Türkçesi Mesnevî-i Nuriye. |
 | 21 | Mesnevî-i Nuriye | `erisale/mesnevi-i-nuriye` | ✅ indirildi | ✅ 212 düğüm, 1990 paragraf, 5448 cümle | el-Mesnevî el-Arabî'nin Türkçesi. |
 | 22 | Nur'un İlk Kapısı | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 92 düğüm, 696 paragraf, 2236 cümle |  |
 
@@ -55,15 +55,15 @@
 | # | Eser | Kaynak | Ham veri | Ayrıştırma | Not |
 |---:|---|---|---|---|---|
 | 32 | Asâ-yı Mûsâ | `erisale/asa-yi-musa` | ✅ indirildi | ✅ 176 düğüm, 1270 paragraf, 51 cümle; %97 ana cilde eşlendi |  |
-| 33 | Zülfikâr | `risale_online/zulfikar` | ✅ indirildi | ✅ 254 düğüm, 2079 paragraf, 756 cümle; %79 ana cilde eşlendi |  |
+| 33 | Zülfikâr | `risale_online/zulfikar` | ✅ indirildi | ✅ 254 düğüm, 2078 paragraf, 755 cümle; %79 ana cilde eşlendi |  |
 | 34 | Tılsımlar Mecmuası | `risale_online/tilsimlar` | ✅ indirildi | ✅ 134 düğüm, 939 paragraf, 263 cümle; %79 ana cilde eşlendi |  |
 | 35 | Sikke-i Tasdik-i Gaybî | `erisale/sikke-i-tasdik-i-gaybi` | ⚠️ 15 blok sitede yok | ✅ 253 düğüm, 1586 paragraf, 1610 cümle; %64 ana cilde eşlendi |  |
 | 36 | İman ve Küfür Muvazeneleri | `erisale/iman-ve-kufur-muvazeneleri` | ✅ indirildi | ✅ 146 düğüm, 1011 paragraf, 69 cümle; %98 ana cilde eşlendi |  |
-| 37 | Siracü'n-Nur | `risale_online/siracun-nur` | ✅ indirildi | ✅ 250 düğüm, 1320 paragraf, 1633 cümle; %54 ana cilde eşlendi |  |
-| 38 | Küçük Sözler | `risaleoku/ksozler` | ✅ indirildi | ✅ 26 düğüm, 266 paragraf, 67 cümle; %75 ana cilde eşlendi |  |
+| 37 | Siracü'n-Nur | `risale_online/siracun-nur` | ✅ indirildi | ✅ 250 düğüm, 1320 paragraf, 1634 cümle; %54 ana cilde eşlendi |  |
+| 38 | Küçük Sözler | `risaleoku/ksozler` | ✅ indirildi | ✅ 26 düğüm, 266 paragraf, 66 cümle; %75 ana cilde eşlendi |  |
 | 39 | Fihrist Risalesi | `risaleoku/osfihrist` | ⏸️ ertelendi | ⬜ | Yalnızca Osmanlıca bulundu. |
 | 40 | Gençlik Rehberi | `risale_online/genclik-rehberi` | ✅ indirildi | ✅ 47 düğüm, 176 paragraf, 163 cümle; %69 ana cilde eşlendi |  |
-| 41 | Hanımlar Rehberi | `risale_online/hanimlar-rehberi` | ✅ indirildi | ✅ 83 düğüm, 400 paragraf, 514 cümle; %51 ana cilde eşlendi |  |
+| 41 | Hanımlar Rehberi | `risale_online/hanimlar-rehberi` | ✅ indirildi | ✅ 83 düğüm, 400 paragraf, 516 cümle; %50 ana cilde eşlendi |  |
 
 ## Hizbler
 

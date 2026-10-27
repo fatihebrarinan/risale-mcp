@@ -32,9 +32,10 @@ Eserlerin listesi, her birinin kaynağı ve durumu tek yerde tutulur: `src/risal
 |---|---|---|
 | **erisale.com** | Birincil kaynak (≈30 eser) | Standart baskı. Her bölüm ayrı sayfa; sayfa listesi `sitemap-tr.xml`'den. Metin sayfaya gömülü RSC verisinde yapısal ağaç olarak gelir: blok türleri (`H2`, `H3`, `Paragraph`, `CenteredParagraph`, `HeadingDescription`…), satır içi başlıklar (`Heading`), Arapça (`RTL`, türü âyet/hadis/Arapça, meali `rtl.txn`), hâşiye tam geçtiği yerde (`FootnoteRef` → `Footnote`). `blockIndex` kitap içinde süreklidir; boşluk = eksik bölüm. robots.txt yalnızca `/api/` yolunu yasaklar; biz yalnızca okuma sayfalarını indiririz. |
 | risale.online | Zülfikâr, Tılsımlar, Sirâcü'n-Nûr, Gençlik ve Hanımlar Rehberi (mecmualar) | Hayrat baskısı, JSON API (`/risale-api/fihrist`, `/risale-api/paragraf`). Yapı fihristten (sayfa numaralı, iç içe); paragraf HTML'i kelime gruplarıdır, Arapça meali ve kaynağıyla (`data-mehaz-*`), hâşiye `<aside>`. |
-| risaleoku.com | Hizbler, Arapça Mesnevî, Küçük Sözler, (Fihrist Risalesi) | `/oku/<kitap>` okuyucu sayfası: sayfa sayısı, kitabın başladığı sayfa (`baslangic`) ve fihrist ağacı (`#treemenu1`); `/ajax/<kitap>/<n>` sayfa metni. Renkli `font` "tefekkür" boyamasıdır, başlık değildir. Arapça Mesnevî'nin ağacı boş: başlıklar ortalı "الرسالة …" satırlarından; ilk başlıktan önceki sayfalar tahkik edenin girişidir. Hizbü'l-Kur'ân'ın fihristi güvenilmez (sûre sayfası bazen bir sayfa geri, bazı sûrelerin girdisi yok): sûreler metindeki "سُورَةُ …" başlığından açılır, adı Tanzil'in sûre adlarıyla tanınır (başka adla anılanlar `quran.OTHER_SURA_NAMES`; aynı iskelete inen adlar sırayla ayrılır), girdisi olmayan sûre "77-Mürselât" diye eklenir. Sitede Hizbü'l-Kur'ân'ın bir sayfası boştur (Lokmân'ın başı); `gaps`'te işaretli. Hizbü Envâri'l-Hakāik Cevşenü'l-Kebîr'i içerir. `Crawl-delay: 10`. |
+| risaleoku.com | Hizbler, Küçük Sözler, (Fihrist Risalesi); Arapça Mesnevî'nin eski kaynağı (ham verisi karşılaştırma için duruyor) | `/oku/<kitap>` okuyucu sayfası: sayfa sayısı, kitabın başladığı sayfa (`baslangic`) ve fihrist ağacı (`#treemenu1`); `/ajax/<kitap>/<n>` sayfa metni. Renkli `font` "tefekkür" boyamasıdır, başlık değildir. Arapça Mesnevî'nin ağacı boş: başlıklar ortalı "الرسالة …" satırlarından; ilk başlıktan önceki sayfalar tahkik edenin girişidir. Hizbü'l-Kur'ân'ın fihristi güvenilmez (sûre sayfası bazen bir sayfa geri, bazı sûrelerin girdisi yok): sûreler metindeki "سُورَةُ …" başlığından açılır, adı Tanzil'in sûre adlarıyla tanınır (başka adla anılanlar `quran.OTHER_SURA_NAMES`; aynı iskelete inen adlar sırayla ayrılır), girdisi olmayan sûre "77-Mürselât" diye eklenir. Sitede Hizbü'l-Kur'ân'ın bir sayfası boştur (Lokmân'ın başı); `gaps`'te işaretli. Hizbü Envâri'l-Hakāik Cevşenü'l-Kebîr'i içerir. `Crawl-delay: 10`. |
 | kastamonur.com | Makalat, Nutuk | Âsâr-ı Bedîiyye baskısından "Nutuklar ve Makaleler" tek bir WordPress yazısıdır (MediaWiki'den aktarılmış): `h1` "Nutuklar" ve ortalı "Makaleler Kısmı" iki bölüm, her `h2` ("Makale – 5") bir makale, basılı adı altındaki tamamı kalın paragraf, yayın satırları alt başlık, `h3` alt bölüm. Arapça `dir="rtl"` ve Unicode sunum biçimleriyle (NFKC ile standart harfe çevrilir). Dipnotlar `<sup class="reference">`, numaraları her bölümde baştan; "(Müellif)" ya da "[Haşiye]" müellifin hâşiyesi, diğerleri nâşir notu (`notes`). Sitede Makale – 13 yok, "Makale – 16" iki kez. Site "TELİF UYARISI" taşır: izinsiz ve kaynaksız kullanılamaz. |
-| rasaelalnour.com | Aslı Arapça eserlerin Arapçası (Aşama 15): İşârâtü'l-İ'câz; ileride Kızıl İcaz, Ta'likat | İhsan Kasım es-Sâlihî'nin Arapça Külliyatı; Word dosyaları RAR5 arşivinde (`/dosyalar/<kitap>.rar`). Sistemdeki eski 7z RAR5'i sessizce boş açar: `libarchive-c` kullanılır; .doc LibreOffice (`soffice`) ile .docx'e çevrilir (`data/interim/rasaelalnour/`). Word dosyası basılı kitabın düz dökümüdür, biçim stili yoktur; ayrıntı `books/rasaelalnour.py` başında. Saykalü'l-İslâm arşivinde Kızıl İcaz, Ta'likat ve Hutbe-i Şamiye'nin Arapçası da var (Hutbe: İhsan Kasım'ın Türkçeden tercümesi, aslı değil; kullanıcı "İhsan Kasım tercümesi" diye işaretlenerek alınmasını istedi). Sitede yalnızca telif satırı var; kullanım kişisel. |
+| rasaelalnour.com | Aslı Arapça eserlerin Arapçası (Aşama 15): İşârâtü'l-İ'câz, el-Mesnevî el-Arabî (Badıllı'nın "el-Kâmil" baskısı); ileride Kızıl İcaz, Ta'likat | İhsan Kasım es-Sâlihî'nin Arapça Külliyatı; Word dosyaları RAR5 arşivinde (`/dosyalar/<kitap>.rar`). Sistemdeki eski 7z RAR5'i sessizce boş açar: `libarchive-c` kullanılır; .doc LibreOffice (`soffice`) ile .docx'e çevrilir (`data/interim/rasaelalnour/`). Word dosyası basılı kitabın düz dökümüdür, biçim stili yoktur; ayrıntı `books/rasaelalnour.py` başında. Saykalü'l-İslâm arşivinde Kızıl İcaz, Ta'likat ve Hutbe-i Şamiye'nin Arapçası da var (Hutbe: İhsan Kasım'ın Türkçeden tercümesi, aslı değil; kullanıcı "İhsan Kasım tercümesi" diye işaretlenerek alınmasını istedi). Sitede yalnızca telif satırı var; kullanım kişisel. |
+| api.quran.com | Mushaf sayfa yazı tiplerinin (QCF v1) kelime kodları | Badıllı'nın Mesnevî baskısı âyetleri Kur'ân Kompleksi'nin sayfa yazı tipleriyle yazar ("QCF_P286": 286. sayfa; her karakter o sayfadaki bir kelimenin glifi). `/api/v4/verses/by_page/<n>?words=true&word_fields=code_v1,text_uthmani` her kelimenin kodunu, âyetini ve Osmanî metnini verir; yalnızca dosyada geçen 144 sayfa indirilir (2 sn arayla). |
 | tanzil.net | Kur'ân-ı Kerîm (Aşama 13) | Arapça metin üç biçimde (Medine Mushafı hattı `uthmani`, imlâî `simple`, harekesiz `simple-clean`) ve iki Diyanet meali (`tr.diyanet`, `tr.vakfi`), XML. Metin değiştirilmeden, kaynağı (Tanzil Project) ve tanzil.net bağlantısı belirtilerek kullanılır; mealler yalnızca ticari olmayan kullanım içindir. Meal dosyalarının açıklama satırları XML'de geçersiz `--` taşır; ayrıştırmadan önce atılır. robots.txt yalnızca `/res/` yolunu yasaklar. |
 | Yeni Asya | (artık kullanılmıyor) | Makalat ve Nutuk'un eski kaynağı. "Eski Saîd Dönemi Eserleri" cildinin `basic-html` katmanı; Arapça okunamadığı ("[Arapça]") için kastamonur.com'a geçildi. Ham veri ve ayrıştırıcı karşılaştırma için duruyor. |
 
@@ -90,6 +91,7 @@ risale-mcp/
 │   │   ├── kastamonur/            # <yazı>/manifest.json, page.html.gz
 │   │   ├── tanzil/                # manifest.json, quran-<biçim>.xml, tr.diyanet.xml, tr.vakfi.xml
 │   │   ├── rasaelalnour/          # <kitap>/archive.rar, manifest.json (isaretulicaz, saykulislam, mesnevi)
+│   │   ├── qurancom/              # pages/<sayfa>.json.gz: QCF glif kodlarının âyet ve kelimeleri
 │   │   ├── talikat/               # talikat.docx: Ta'likat'ın Türkçe tam tercümesi (Risale-i Nur Eğitim Programı)
 │   │   └── logs/                  # toplu indirme günlükleri
 │   ├── interim/                   # Ara çıktılar
@@ -119,6 +121,7 @@ risale-mcp/
 │   │   ├── yeniasya.py       # Yeni Asya satır düzeni -> eser modeli (artık kullanılmıyor)
 │   │   ├── kastamonur.py     # kastamonur.com yazısı -> Nutuk ve Makalat
 │   │   ├── rasaelalnour.py   # rasaelalnour Word dosyası -> İşârâtü'l-İ'câz'ın Arapça aslı
+│   │   ├── mesnevi_arabi.py  # Badıllı'nın Mesnevî Word dosyası (QCF âyetleri, Word dipnotları) -> el-Mesnevî el-Arabî
 │   │   └── mecmua.py         # Mecmuaların (ve ikincil kaynaktaki eserlerin) ana ciltlere eşlenmesi
 │   ├── sources/
 │   │   ├── http.py           # Nazik HTTP istemcisi
@@ -129,6 +132,7 @@ risale-mcp/
 │   │   ├── yeniasya.py       # Yeni Asya basic-html sayfaları (artık kullanılmıyor)
 │   │   ├── kastamonur.py     # kastamonur.com yazısı (yalnızca ham kayıt + doğrulama)
 │   │   ├── rasaelalnour.py   # rasaelalnour RAR arşivleri (ham kayıt, doğrulama, .doc -> .docx)
+│   │   ├── qurancom.py       # api.quran.com: QCF sayfa yazı tiplerinin kelime kodları
 │   │   └── tanzil.py         # tanzil.net Kur'ân metni ve mealleri (yalnızca ham kayıt + doğrulama)
 │   ├── normalize.py    # Türkçe metin normalizasyonu, sıra sayıları, slug
 │   ├── review_ui.py    # Kontrol arayüzü: kitap JSON'ları → review/index.html + data/<eser>.js
@@ -169,6 +173,7 @@ risale-mcp/
     ├── test_quran.py
     ├── test_ayah_links.py
     ├── test_rasaelalnour.py
+    ├── test_mesnevi_arabi.py
     └── golden/
         ├── golden_questions.md   # kullanıcının yazdığı test soruları
         ├── questions.json        # aynı sorular, doğrulanmış beklenen bölümlerle (düzenek bunu okur)
@@ -236,6 +241,7 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve ikincil k
   - Cümle içindeki Arapça o cümlede kalır; Arapça parçanın içinde bölünmez.
   - Cümle sonundan sonra gelen Arapça ("…gördüm. اَيُحِبُّ اَحَدُكُمْ… âyeti") yeni cümle başlatır. Arapça nesirde (el-Mesnevî el-Arabî) cümle `.` `؟` `!` sonrasında Arapça harfle başlar.
 - **`incipit`:** O düğüm içinde başka bir cümleyle karışmayacak kadar uzun tutulur (en az 4 kelime).
+- **Cümle sonu olarak "*":** eser `stops: "*"` taşıyorsa (Badıllı'nın el-Mesnevî el-Arabî baskısı) iki yanı boşluklu "*" ardından Arapça harf gelince cümleyi bitirir; öbür eserlerde "*" cümle bitirmez.
 - **Kayan numaralara karşı önlem:** Bölme kuralları değişirse numaralar kayabilir. Bu yüzden kurallar `tests/test_sentences.py` ve `tests/golden/sentences_sozler.json` ile kilitlenir; her cümlenin metin özeti (hash) ve `incipit`'i saklanır. Eski atıflar ve kontrol işaretleri `incipit`'ten yeniden bulunur. Kurallar bilerek değiştirilirse altın örnekler `uv run python -m risale_mcp.sentences --golden` ile yenilenir ve fark gözden geçirilir.
 
 ### Dikkat edilecek noktalar
@@ -301,7 +307,7 @@ Bediüzzaman'ın Arapça yazdığı eserlerin hem Arapça aslı hem Türkçesi t
 
 | Eser | Arapça | Türkçe |
 |---|---|---|
-| el-Mesnevî el-Arabî | `el-mesnevi-el-arabi` (risaleoku; rasaelalnour'da da var) | `mesnevi-i-nuriye` (erisale) |
+| el-Mesnevî el-Arabî | `el-mesnevi-el-arabi` (rasaelalnour, Badıllı'nın "el-Kâmil" baskısı) | `mesnevi-i-nuriye` (erisale) |
 | İşaratü'l-İ'caz | `isaratul-icaz-arabi` (rasaelalnour) | `isaratul-icaz` (erisale, Abdülmecid Nursî tercümesi) |
 | Kızıl İcaz | Saykalü'l-İslâm arşivinde (sırada) | ücretsiz kaynak yok; tam tercümeler basılı ve telifli (Akgündüz, Niyazi Beki) |
 | Ta'likat | Saykalü'l-İslâm arşivinde (sırada) | `data/raw/talikat/talikat.docx` (Arapçası yalnız resim) |
@@ -314,8 +320,16 @@ Bediüzzaman'ın Arapça yazdığı eserlerin hem Arapça aslı hem Türkçesi t
 - Bakara'nın âyet bölümleri Türkçe eserle aynı adı ("6. Âyetin Tefsiri") ve kimliği taşır (Türkçe eserin aynı âyetleri kapsayan bölümünden); basılı âyet satırı alt başlıktır. Âyet bölümü, açılmış son âyetten sonraki âyet numaralarını taşıyan ortalı satırlarla açılır (önünde "***" olabilir ya da olmayabilir; eksik basılmış numara sıradan tamamlanır); "***"tan sonra açılmış âyetleri tekrar eden satırlar ortalı paragraftır. Arapça baskı 21-22'yi tek bölümde işler (Türkçede ayrı).
 - Fâtiha'nın bölümleri paragraf başındaki parantezli âyet parçasıyla ("(الحَمْدُ)") açılır; kimlikler Türkçe eserden (`FATIHA_SECTIONS`). Ortalı "مقدمة", "فصل…" ve tek başına "المبحث الاول:" gibi etiketler alt bölümdür.
 - Paragraf başındaki numaralı "المسألة/المبحث/المأخذ/الوجه …:" etiketi de bölüm açar (Türkçedeki "Birinci Mes'ele" gibi; 28 ve 29. âyetler); Türkçede bölüm olmayan "النكتة", "المقام" açmaz.
-- **Âyetler:** muhakkikin "سورة الأنعام: 90" dipnotu, hemen önündeki parantezli alıntıyı âyet yapar (kaynağı bu not; Türkçe sûre adıyla "En'âm Sûresi, 6:90"): 89 alıntı, 88'i Kur'ân metniyle tutar. Dipnotsuz parantezli alıntılar `build_db`'de (`quran.verse_context`, `Quran.locate_quote`) bulunduğu bölümün işlediği âyetlerde aranır: Bakara'da başlıktaki numaralar, Fâtiha'da bölümün âyet parçası (`quran.FATIHA_VERSES`); bulunmazsa yalnızca Kur'ân'da tek yerde geçen uzun alıntı. 548 alıntı (`ayah_quotes`, `via: text`); bölüm tek âyeti işliyorsa iki harfli parça da ("(رَبِّ)") aranır. Her âyet bölümü işlediği âyetle `acilis` ilişkisi kurar (35).
+- **Âyetler:** muhakkikin "سورة الأنعام: 90" dipnotu, hemen önündeki parantezli alıntıyı âyet yapar (kaynağı bu not; Türkçe sûre adıyla "En'âm Sûresi, 6:90"): 89 alıntı, 88'i Kur'ân metniyle tutar. Dipnotsuz parantezli alıntılar `build_db`'de (`quran.verse_context`, `Quran.locate_quote`) bulunduğu bölümün işlediği âyetlerde aranır: Bakara'da başlıktaki numaralar, Fâtiha'da bölümün âyet parçası (`quran.FATIHA_VERSES`); bulunmazsa yalnızca Kur'ân'da tek yerde geçen uzun alıntı. 548 alıntı (`ayah_quotes`, `via: text`); bölüm tek âyeti işliyorsa iki harfli parça da ("(رَبِّ)") aranır. Her âyet bölümü işlediği âyetle `acilis` ilişkisi kurar (37).
 - Sayılar: 86 düğüm, 1.283 paragraf, 3.550 cümle, 6 hâşiye, 328 dipnot (1'i işaretsiz kaldı).
+
+**el-Mesnevî el-Arabî** (kullanıcının kararıyla Abdülkadir Badıllı'nın "el-Kâmil" baskısı; kurallar `books/mesnevi_arabi.py` başında). Neden bu baskı: tamamen harekeli (harflerin %80'i; risaleoku ve İhsan Kasım Word'ü %5–10), müellifin hâşiyeleri işaretli, Lem'alar ve Reşhalar Türkçe eserin numaralarıyla bölünmüş. risaleoku metninde dipnotlar yoktu.
+- Badıllı'nın ön sözü ve sondaki fihrist alınmaz; eser "ترجمة المقدمة التركية"den başlar. Müellifin Türkçe yazdığı Mukaddime'nin Arapçası tercümedir; alt başlıkta işaretli.
+- Risaleler ve bölümler Türkçe eserin kimliklerini taşır, başlıklar basılı Arapçadır: `mukaddime/nokta-01..05`, `itizar`, `lemalar/lema-01..14`, `reshalar/resha-01..14` (Ondördüncü Reşha'nın Katre ve Noktaları içinde), `lasiyyemalar`, `katre` (`bab-01..04`, Birinci Bâb'ın hâtimesi `bab-01/hatime`, `hatime` ve Nükte/Nokta dizisi, `zeyl` ve 22 Remz), `hubab` (Meclis-i Mebusan hutbesi, `zeylul-hubab`), `habbe` (`zeylul-habbe`, `zeyl`), `zuhre`, `zerre`, `semme`, `onuncu-risale`, `sule`. Türkçe Mesnevî'de olmayan "نور من أنوار نجوم القرآن" `nur` kimliğiyle; Türkçedeki "Nokta" risalesi bu baskıda yok. Paragraf başındaki "اَللَّمْعَةُ الرَّابِعَةُ:", "اَلرَّشْحَةُ …", "النُّقْطَةُ …" etiketleri bölüm açar (11–14: "الحادية عشرة").
+- Dipnotlar gerçek Word dipnotudur: "ـ المؤلف ـ" (harekeli de) müellifin hâşiyesi (9), "ـ الناشر ـ", nüsha farkları ("بتصحيح المؤلف", "في نسخة …") ve öbürleri naşirin notu (542).
+- **Âyetler:** 310 âyet QCF yazı tipiyle kodlu; glif kodları Quran.com verisiyle âyetin adresine ve Osmanî harekeli metnine çevrilir, kaynak glifin kendisidir (301'i Kur'ân metniyle birebir tutar). Tanınmayan glif aynı sayfada tanınan kelimelerin arasındaysa sayfa verisinden tamamlanır. "{اِعْلَمْ}" gibi süslü parantezler âyet değildir.
+- **Cümleler:** bu baskı cümleleri klasik baskılar gibi " * " ile ayırır; eserin JSON'u `stops: "*"` taşır ve cümle bölücü yalnızca bu eserde "*"ı da cümle sonu sayar (6.794 cümle).
+- Arapça Mesnevî'nin kimlikleri değişince ona eşlenen mecmualar (`build --all`) yeniden eşlendi.
 
 ## Anlamsal arama (Aşama 8)
 

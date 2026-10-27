@@ -257,14 +257,17 @@ def _insert_arabic(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran
             report.counts["arabic"] += 1
     if quran and book.get("language") == "ar" and (context := verse_context(book["outline"])):
         located += _parenthesized(book, context, quran)
+    if quran and book.get("stops") == "*":    # Badıllı'nın Mesnevî baskısı âyeti "{…}" içine yazar
+        located += _parenthesized(book, {}, quran, _BRACED)
     if located:
         _insert_located(conn, located, quran, sentence_at, report)
 
 
 _PARENTHESIZED = re.compile(r"\(([^()]{2,200})\)")
+_BRACED = re.compile(r"\{([^{}]{2,300})\}")
 
 
-def _parenthesized(book: dict, context: dict, quran: Quran) -> list:
+def _parenthesized(book: dict, context: dict, quran: Quran, pattern: re.Pattern = _PARENTHESIZED) -> list:
     """Âyet âyet ilerleyen Arapça eserde (İşaratü'l-İ'caz) işaretsiz parantezli alıntılar: kaynağın âyet diye
     işaretlediği parçaların dışında kalanlar, bulunduğu bölümün âyetlerinde ya da Kur'ân'da tek yerde."""
     out = []
@@ -272,7 +275,7 @@ def _parenthesized(book: dict, context: dict, quran: Quran) -> list:
         if not p.get("text"):
             continue
         marked = [(a["start"], a["end"]) for a in p.get("arabic", [])]
-        for m in _PARENTHESIZED.finditer(p["text"]):
+        for m in pattern.finditer(p["text"]):
             if any(s < m.end() and m.start() < e for s, e in marked):
                 continue
             if match := quran.locate_quote(m[1], context.get(p["node_id"])):

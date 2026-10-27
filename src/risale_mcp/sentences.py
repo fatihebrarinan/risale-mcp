@@ -10,6 +10,8 @@ Bölme kuralları (CLAUDE.md "Cümle kuralları"):
   madde numarasından ("1.") sonra da bölünmez.
 - Arapça parçanın içinde bölünmez. Tamamen Arapça paragraf ve imza tek cümledir,
   tablonun her satırı bir cümledir. Şiir de düz metin gibi bölünür.
+- Eser `stops: "*"` taşıyorsa (Badıllı'nın el-Mesnevî el-Arabî baskısı cümleleri klasik baskılardaki gibi
+  " * " ile ayırır) iki yanı boşluklu "*" de, ardından Arapça harf gelirse cümleyi bitirir.
 
 Numaralar her düğümün kendi metninde 1'den başlar. Hâşiye cümleleri, hâşiyenin bağlı
 olduğu cümlenin altında kendi içinde numaralanır:
@@ -30,6 +32,7 @@ from risale_mcp.normalize import fold
 from risale_mcp.paths import BOOKS_DIR, ROOT
 
 _END = re.compile(r"[.!?؟…‥]+[”’\"»)\]']*(?=\s)")
+_STAR_END = re.compile(r"[.!?؟…‥]+[”’\"»)\]']*(?=\s)|(?<=\s)\*(?=\s|$)")
 _ARABIC_LETTER = re.compile(r"[\u0600-\u06FF]")
 _OPENERS = "“\"‘'«("
 _LIST_MARKER = re.compile(r"\d{1,2}\.\s+\S")
@@ -71,17 +74,19 @@ def _starts_sentence(text: str, i: int, arabic: list[bool]) -> bool:
             or bool(_LIST_MARKER.match(text, i)))
 
 
-def split(text: str, arabic: list[dict] | None = None) -> list[tuple[int, int]]:
+def split(text: str, arabic: list[dict] | None = None, star: bool = False) -> list[tuple[int, int]]:
     """Düz metni cümlelere böler: (başlangıç, bitiş) karakter konumları, boşluksuz."""
     mask = _arabic_mask(text, arabic or [])
     bounds, start = [], 0
-    for match in _END.finditer(text):
+    for match in (_STAR_END if star else _END).finditer(text):
         if mask[match.start()]:
             continue
         nxt = match.end()
         while nxt < len(text) and text[nxt].isspace():
             nxt += 1
         if nxt == len(text) or not _starts_sentence(text, nxt, mask):
+            continue
+        if match.group() == "*" and not _ARABIC_LETTER.match(text[nxt]):
             continue
         if text[match.start()] == "." and match.group().count(".") == 1 and _no_break_before(text, match.start()):
             continue
@@ -91,7 +96,7 @@ def split(text: str, arabic: list[dict] | None = None) -> list[tuple[int, int]]:
     return [(s, e) for s, e in bounds if e > s]
 
 
-def split_paragraph(paragraph: dict) -> list[tuple[int, int]]:
+def split_paragraph(paragraph: dict, star: bool = False) -> list[tuple[int, int]]:
     text = paragraph["text"]
     if paragraph["kind"] in ("arabic", "signature"):
         return [(0, len(text))] if text else []
@@ -102,7 +107,7 @@ def split_paragraph(paragraph: dict) -> list[tuple[int, int]]:
                 out.append((pos, pos + len(line)))
             pos += len(line) + 1
         return out
-    return split(text, paragraph.get("arabic"))
+    return split(text, paragraph.get("arabic"), star)
 
 
 # ---------------------------------------------------------------- eserin cümleleri
@@ -152,7 +157,7 @@ def segment(book: dict) -> list[dict]:
             k = hasiye_count[anchor]
             hasiye_prefix[p["id"]] = (f"{anchor}/h{k}", anchor, k)
         spans = []
-        for m, (start, end) in enumerate(split_paragraph(p), 1):
+        for m, (start, end) in enumerate(split_paragraph(p, book.get("stops") == "*"), 1):
             if p["kind"] == "hasiye":
                 prefix, anchor, k = hasiye_prefix[p["id"]]
                 sid, n = f"{prefix}/c{m:03d}", m

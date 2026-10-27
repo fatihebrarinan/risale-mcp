@@ -23,6 +23,7 @@ from risale_mcp import build_db, checklist, embeddings, sentences
 from risale_mcp.quran import QURAN_PATH
 from risale_mcp.books import erisale as erisale_parser
 from risale_mcp.books import kastamonur as kastamonur_parser
+from risale_mcp.books import mesnevi_arabi as mesnevi_parser
 from risale_mcp.books import rasaelalnour as rasaelalnour_parser
 from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
@@ -32,6 +33,7 @@ from risale_mcp.books.model import Book
 from risale_mcp.catalog import SECONDARY_SITES, WORKS, Group, Site, Status, Work, get_work
 from risale_mcp.db import connect
 from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, RAW_DIR, ROOT
+from risale_mcp.sources import qurancom as qurancom_source
 from risale_mcp.sources import rasaelalnour as rasaelalnour_source
 from risale_mcp.sources import erisale
 
@@ -120,6 +122,11 @@ def parse(work: Work) -> tuple[Book, list[str]]:
     if work.source.site is Site.RASAELALNOUR:
         (name,) = work.source.sections                     # arşivdeki Word dosyası
         docx = rasaelalnour_source.docx(RAW_DIR / Site.RASAELALNOUR, work.source.book, name)
+        if work.slug == "el-mesnevi-el-arabi":
+            qurancom_source.fetch_pages(mesnevi_parser.qcf_pages(docx), RAW_DIR / "qurancom")
+            book, report = mesnevi_parser.parse(work, docx, RAW_DIR / "qurancom")
+            return book, [f"  QCF âyet               : {report.verses}, tanınmayan glif {report.unknown_glyphs}",
+                          f"  dipnot               : {report.footnotes}, müellifin hâşiyesi {report.hasiye}"]
         book, report = rasaelalnour_parser.parse_work(work, docx, BOOKS_DIR / "isaratul-icaz.json")
         return book, [f"  sayfa                : {report.pages}, birleşen paragraf {report.joined}",
                       f"  dipnot               : {report.footnotes}, işareti bulunamayan {len(report.unanchored)}"
