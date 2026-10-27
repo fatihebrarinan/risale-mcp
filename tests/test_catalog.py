@@ -14,8 +14,8 @@ def test_slugs_are_unique_and_url_safe():
 
 
 def test_every_listed_work_is_present():
-    # Kullanıcının listesindeki 42 madde; Mesnevî'nin Arapça aslı ve Türkçesi ayrı eser.
-    assert len(WORKS) == 43
+    # Kullanıcının listesindeki 42 madde; Mesnevî'nin ve İşaratü'l-İ'caz'ın Arapça aslı ve Türkçesi ayrı eser.
+    assert len(WORKS) == 44
 
 
 def test_missing_works_have_no_source_and_others_do():

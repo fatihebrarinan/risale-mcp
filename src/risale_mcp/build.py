@@ -23,6 +23,7 @@ from risale_mcp import build_db, checklist, embeddings, sentences
 from risale_mcp.quran import QURAN_PATH
 from risale_mcp.books import erisale as erisale_parser
 from risale_mcp.books import kastamonur as kastamonur_parser
+from risale_mcp.books import rasaelalnour as rasaelalnour_parser
 from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
 from risale_mcp.books import yeniasya as yeniasya_parser
@@ -31,6 +32,7 @@ from risale_mcp.books.model import Book
 from risale_mcp.catalog import SECONDARY_SITES, WORKS, Group, Site, Status, Work, get_work
 from risale_mcp.db import connect
 from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, RAW_DIR, ROOT
+from risale_mcp.sources import rasaelalnour as rasaelalnour_source
 from risale_mcp.sources import erisale
 
 OUTLINE_DIR = INTERIM_DIR / "outline"
@@ -115,6 +117,13 @@ def parse(work: Work) -> tuple[Book, list[str]]:
         return yeniasya_parser.parse_work(work, RAW_DIR / Site.YENIASYA), []
     if work.source.site is Site.KASTAMONUR:
         return kastamonur_parser.parse_work(work, RAW_DIR / Site.KASTAMONUR), []
+    if work.source.site is Site.RASAELALNOUR:
+        (name,) = work.source.sections                     # arşivdeki Word dosyası
+        docx = rasaelalnour_source.docx(RAW_DIR / Site.RASAELALNOUR, work.source.book, name)
+        book, report = rasaelalnour_parser.parse_work(work, docx, BOOKS_DIR / "isaratul-icaz.json")
+        return book, [f"  sayfa                : {report.pages}, birleşen paragraf {report.joined}",
+                      f"  dipnot               : {report.footnotes}, işareti bulunamayan {len(report.unanchored)}"
+                      f" {report.unanchored[:3]}"]
     raise ValueError(f"{work.source.site} için ayrıştırıcı yok")
 
 

@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.11"
 dependencies = [
+    "libarchive-c>=5.3",
     "mcp[cli]>=2.3.0",
     "numpy>=2.4.6",
 ]

@@ -32,6 +32,7 @@ class Site(StrEnum):
     RISALEOKU = "risaleoku"          # risaleoku.com
     YENIASYA = "yeniasya"            # yeniasya.com.tr/risaleinur: bozuk kodlu PDF metni, Arapçasız (artık kullanılmıyor)
     KASTAMONUR = "kastamonur"        # kastamonur.com: Âsâr-ı Bedîiyye'den Nutuklar ve Makaleler
+    RASAELALNOUR = "rasaelalnour"    # rasaelalnour.com: İhsan Kasım'ın Arapça Külliyatı (Word, RAR arşivi)
 
 
 # Bu kaynaklardaki eserler ana metin sayılmaz: ana ciltlerde de geçen parçaları oraya eşlenir.
@@ -86,6 +87,10 @@ WORKS: tuple[Work, ...] = (
     Work("hutbe-i-samiye", "Hutbe-i Şamiye", _E, _ilk_donem("hutbe-i-samiye")),
     Work("munazarat", "Münazarat", _E, _ilk_donem("munazarat")),
     Work("isaratul-icaz", "İşaratü'l-İ'caz", _E, _erisale("isaratul-icaz")),
+    Work("isaratul-icaz-arabi", "İşârâtü'l-İ'câz (Arapça)", _E,
+         SourceRef(Site.RASAELALNOUR, "isaretulicaz", ("إشارات الإعجاز.doc",)),
+         note="Arapça asıl; İhsan Kasım es-Sâlihî tahkiki. Türkçesi İşaratü'l-İ'caz (Abdülmecid Nursî tercümesi).",
+         language="ar"),
     Work("sunuhat", "Sünuhat", _E, _ilk_donem("sunuhat")),
     Work("tuluat", "Tuluat", _E, _ilk_donem("tuluat")),
     Work("rumuz", "Rumuz", _E, _ilk_donem("rumuz")),
