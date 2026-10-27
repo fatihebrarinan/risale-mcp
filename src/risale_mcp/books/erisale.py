@@ -36,7 +36,10 @@ from risale_mcp.normalize import fold, slugify
 from risale_mcp.sources.erisale import BookBlocks
 
 _HEADING = re.compile(r"H([1-6])")
-_LEADING_NUMBER = re.compile(r"^\d+\.\s+")
+# Başlığın başındaki numara çoğunlukla erisale'nin sıra numarasıdır ("1. Kur'ân hakikatlerini…" Lâhika
+# mektupları; numarası kimlikte durur) ve atılır. Ardından "Âyetin/Âyetlerin" geliyorsa numara başlığın
+# kendisidir ("6. Âyetin Tefsiri": altıncı âyetin tefsiri, İşaratü'l-İ'caz) ve kalır.
+_LEADING_NUMBER = re.compile(r"^\d+\.\s+(?![ÂA]yet(?:in|lerin)\b)")
 _SEGMENT_NUMBER = re.compile(r"\[\d+\]\s*")   # erisale'nin Arapça metindeki bölüm numarası: "[1]"
 PARAGRAPH_KINDS = {
     "Paragraph": "paragraph",

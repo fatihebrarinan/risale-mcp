@@ -128,6 +128,15 @@ def test_tree_from_heading_levels_and_directives():
     assert not report.unmatched_book_only
 
 
+def test_leading_number_is_dropped_unless_it_numbers_the_verse():
+    """Lâhika mektuplarının sıra numarası başlıktan atılır; "6. Âyetin Tefsiri"nde numara başlığın kendisidir."""
+    book = parse(("H1", [regular("1. Zaman cemaat zamanıdır")]), ("Paragraph", [regular("Metin.")]),
+                 ("H1", [regular("6. Âyetin Tefsiri")]), ("Paragraph", [regular("Metin.")]),
+                 ("H1", [regular("9‑10. Âyetlerin Tefsiri")]), ("Paragraph", [regular("Metin.")]))
+    titles = [n["title"] for n in book[0].to_json()["outline"][1:]]
+    assert titles == ["Zaman cemaat zamanıdır", "6. Âyetin Tefsiri", "9‑10. Âyetlerin Tefsiri"]
+
+
 def test_single_top_heading_is_the_work_itself():
     book, _ = parse(
         ("H1", [regular("Münâzarât"), meta("TocOnly=")]),
