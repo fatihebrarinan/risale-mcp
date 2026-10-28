@@ -5,6 +5,7 @@ import base64
 import hashlib
 import json
 import secrets
+from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 
 import pytest
@@ -276,3 +277,17 @@ def test_without_anonymous_mode_there_is_no_sign_in_tool(client):
     headers = open_session(client, token["access_token"])
     assert "sign_in" not in client.post("/mcp", headers=headers, json={
         "jsonrpc": "2.0", "id": 3, "method": "tools/list"}).text
+
+
+def test_icon_is_served_and_announced(client):
+    assert client.get("/favicon.ico").status_code == 200
+    assert client.get("/icon.png").headers["content-type"] == "image/png"
+    response = client.post("/mcp", headers=MCP_HEADERS, json={"jsonrpc": "2.0", "id": 1, "method": "ping"})
+    assert response.status_code == 401                            # ikon açık, MCP korumalı
+
+
+def test_server_info_carries_icons(small_db):
+    remote = create_server(Library(small_db[0]), PUBLIC, AuthStore(Path(small_db[0]).parent / "a.db"))
+    assert remote._lowlevel_server.icons[0].src == f"{PUBLIC}/icon.png"
+    local = create_server(Library(small_db[0]))
+    assert local._lowlevel_server.icons[0].src.startswith("data:image/png;base64,")

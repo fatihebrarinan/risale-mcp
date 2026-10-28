@@ -15,6 +15,7 @@ Araçlar sıkıştırılmış JSON metni döndürür (SDK'nın girintili JSON'u 
 """
 
 import argparse
+import base64
 import json
 import sys
 from collections.abc import Iterator
@@ -30,9 +31,10 @@ from mcp.server.auth.routes import build_resource_metadata_url
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.server.transport_security import TransportSecuritySettings
-from mcp_types import ToolAnnotations
+from mcp_types import Icon, ToolAnnotations
 from pydantic import Field
 from starlette.applications import Starlette
+from starlette.responses import Response
 
 from risale_mcp.auth import (
     ANON_SEMANTIC_PER_DAY,
@@ -195,6 +197,29 @@ def _section_markdown(section: dict) -> str:
 
 # ---------------------------------------------------------------- sunucu
 
+STATIC_DIR = Path(__file__).parent / "static"
+STATIC = {"/icon.png": ("icon.png", "image/png"), "/icon.svg": ("icon.svg", "image/svg+xml"),
+          "/favicon.ico": ("favicon.ico", "image/x-icon")}
+
+
+def _icons(public_url: str | None) -> list[Icon]:
+    """Sunucunun ikonu (MCP `icons`, 2025-11-25): HTTP'de adresiyle, stdio'da gömülü (data: URI)."""
+    if public_url:
+        base = public_url.rstrip("/")
+        return [Icon(src=f"{base}/icon.png", mime_type="image/png", sizes=["256x256"]),
+                Icon(src=f"{base}/icon.svg", mime_type="image/svg+xml", sizes=["any"])]
+    data = base64.b64encode((STATIC_DIR / "icon.png").read_bytes()).decode()
+    return [Icon(src=f"data:image/png;base64,{data}", mime_type="image/png", sizes=["256x256"])]
+
+
+def _static(name: str, media: str):
+    body = (STATIC_DIR / name).read_bytes()
+
+    async def endpoint(_request) -> Response:
+        return Response(body, media_type=media, headers={"Cache-Control": "public, max-age=86400"})
+    return endpoint
+
+
 def create_server(library: Library, public_url: str | None = None, store: AuthStore | None = None,
                   anonymous: bool = False, anonymous_semantic: int = ANON_SEMANTIC_PER_DAY) -> MCPServer:
     """`public_url` verilirse sunucu OAuth ile korunur (giriş sayfası `/login`) ve her istek kaydedilir.
@@ -208,7 +233,9 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                      "middleware": [usage_middleware(store)]}
     server = MCPServer(NAME, title="Risale-i Nur", instructions=INSTRUCTIONS,
                        description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
-                       **protected)
+                       icons=_icons(public_url), **protected)
+    for path, (name, media) in STATIC.items():               # ikon: istemciler sunucu adresinden de alabilir
+        server.custom_route(path, methods=["GET"], include_in_schema=False)(_static(name, media))
     if public_url:
         server.custom_route("/login", methods=["GET", "POST"], include_in_schema=False)(login_endpoint(provider))
     citations = CitationChecker(library)

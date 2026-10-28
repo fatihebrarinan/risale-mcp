@@ -164,6 +164,7 @@ risale-mcp/
 │   ├── semantic.py     # Aşama 8: sunucunun anlamsal araması (en yakın cümleler, bölüm sıralaması)
 │   ├── search_eval.py  # Aşama 8: arama değerlendirmesi (hit@k, MRR) ve model karşılaştırması
 │   ├── server.py       # Aşama 6: MCP sunucusu (araçlar, kaynaklar, hazır komutlar)
+│   ├── static/         # sunucunun ikonu (icon.svg, icon.png, favicon.ico): MCP `icons` ve /icon.png, /favicon.ico
 │   ├── auth.py         # Aşama 12: OAuth sağlayıcısı, giriş sayfası, hesaplar, oturumlar, kullanım kaydı (data/auth.db)
 │   └── golden.py       # Aşama 7: altın sorularla uçtan uca deneme (Claude Code istemci)
 └── tests/
