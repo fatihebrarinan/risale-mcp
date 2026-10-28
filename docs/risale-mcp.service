@@ -1,0 +1,23 @@
+# systemd kullanıcı servisi: sunucuyu bu bilgisayarda Tailscale Funnel arkasında çalıştırır (Aşama 12).
+# Kurulum (bir kez):
+#   mkdir -p ~/.config/systemd/user
+#   cp docs/risale-mcp.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+# Aç / kapat / durum / günlük:
+#   systemctl --user start risale-mcp
+#   systemctl --user stop risale-mcp
+#   systemctl --user status risale-mcp
+#   journalctl --user -u risale-mcp -f
+# Bilgisayar açılınca kendiliğinden başlasın isterseniz: systemctl --user enable risale-mcp
+
+[Unit]
+Description=Risale-i Nur MCP sunucusu (OAuth'lu HTTP, Tailscale Funnel arkasında)
+After=network-online.target
+
+[Service]
+ExecStart=/home/fatih/.local/bin/uv --directory /home/fatih/Belgeler/Coding/Projects/risale-mcp run risale-mcp --transport streamable-http --public-url https://fatih-thinkbook-15-g2-itl.taile0138b.ts.net
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target

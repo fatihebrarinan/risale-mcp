@@ -3,7 +3,9 @@
 Kullanım:
     uv run risale-mcp                                # stdio: Claude Desktop ve Claude Code başlatır
     uv run risale-mcp --db yol/risale.db
-    uv run risale-mcp --transport streamable-http    # yerel HTTP (127.0.0.1:8000/mcp), kimlik doğrulamasız
+    uv run risale-mcp --transport streamable-http --public-url https://<adres>   # OAuth'lu HTTP (Aşama 12)
+    uv run risale-mcp --transport streamable-http --no-auth   # yerel HTTP (127.0.0.1:8000/mcp), kimlik doğrulamasız
+    uv run risale-mcp auth add-user <ad>             # hesaplar, oturumlar, kullanım kaydı (bkz. auth.py)
     npx @modelcontextprotocol/inspector uv run risale-mcp   # MCP Inspector ile elle deneme
 
 Araçlar `library.Library` üzerinden veritabanını salt okunur kullanır; veritabanı yeniden
@@ -14,16 +16,22 @@ Araçlar sıkıştırılmış JSON metni döndürür (SDK'nın girintili JSON'u 
 
 import argparse
 import json
+import sys
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Annotated
+from urllib.parse import urlparse
 
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
+from mcp.server.transport_security import TransportSecuritySettings
 from mcp_types import ToolAnnotations
 from pydantic import Field
 
+from risale_mcp.auth import AuthStore, Provider, login_endpoint, usage_middleware
+from risale_mcp.auth import main as auth_main
+from risale_mcp.auth import settings as auth_settings
 from risale_mcp.citations import CitationChecker, summary
 from risale_mcp.db import DatabaseError
 from risale_mcp.env import load_env
@@ -92,6 +100,13 @@ and Mesnevî-i Nuriye, the Turkish wording is the translator's), dayanak (the te
 (the verse's allusion to the Risale-i Nur). A weak link is only a reference in one sentence; do not \
 present it as what the section is about. Do not append linked verses to every quotation by default: \
 bring them up when the user asks about verses or when a verse matters to the question.
+14. Some works are not all the author's words; check the subtitle and the paragraph kind. Works the \
+author wrote in Arabic exist in Arabic and in Turkish with parallel section ids (isaratul-icaz-arabi/… ↔ \
+isaratul-icaz/…); the Turkish is a translation. Sections marked as İhsan Kasım's translation (Hutbe-i \
+Şamiye (Arapça), the Nokta risale in el-Mesnevî el-Arabî, the Turkish-written prefaces) are translations of \
+Turkish originals: quote the original Turkish work when it exists. In Kızıl İcaz the "quote" paragraphs are \
+Ahdarî's Süllem verses that the author annotates, not his words; hâşiye records with commentary_by are his \
+brother Abdülmecid Nursî's commentary (şerh) on the author's text: cite them as his, never as the author's.
 
 How to navigate:
 - semantic_search finds passages by meaning: use it for concepts and questions in today's words, \
@@ -157,7 +172,9 @@ def _section_markdown(section: dict) -> str:
             text = " ".join(f"[{int(s['id'].rsplit('/c', 1)[1])}] {s['text']}" for s in item["sentences"])
             if "canonical" in item:
                 text += f" (main volume: {item['canonical']['ref']})"
-            lines += [f"> Hâşiye: {text}" if item["kind"] == "hasiye" else text, ""]
+            if item["kind"] == "hasiye":
+                text = f"> Commentary by {item['commentary_by']}: {text}" if "commentary_by" in item else f"> Hâşiye: {text}"
+            lines += [text, ""]
     if section["next_cursor"]:
         lines.append(f"[Continues; read the rest with read_section(cursor={section['next_cursor']!r}).]")
     return "\n".join(lines).strip() + "\n"
@@ -165,9 +182,19 @@ def _section_markdown(section: dict) -> str:
 
 # ---------------------------------------------------------------- sunucu
 
-def create_server(library: Library) -> MCPServer:
+def create_server(library: Library, public_url: str | None = None, store: AuthStore | None = None) -> MCPServer:
+    """`public_url` verilirse sunucu OAuth ile korunur (giriş sayfası `/login`) ve her istek kaydedilir."""
+    protected = {}
+    if public_url:
+        store = store or AuthStore()
+        provider = Provider(store, public_url)
+        protected = {"auth": auth_settings(public_url), "auth_server_provider": provider,
+                     "middleware": [usage_middleware(store)]}
     server = MCPServer(NAME, title="Risale-i Nur", instructions=INSTRUCTIONS,
-                       description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.")
+                       description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
+                       **protected)
+    if public_url:
+        server.custom_route("/login", methods=["GET", "POST"], include_in_schema=False)(login_endpoint(provider))
     citations = CitationChecker(library)
 
     @server.tool(annotations=READ_ONLY)
@@ -198,7 +225,8 @@ def create_server(library: Library) -> MCPServer:
         """Read a section and its subsections in book order. Returns headings (with refs), paragraphs as lists of
         sentences (id and text), verses a heading's section links to (linked_verses: kind and evidence sentence;
         mention them only when verses matter to the question),
-        the author's hâşiyes (hasiye_of: the sentence they belong to), the publisher's
+        the author's hâşiyes (hasiye_of: the sentence they belong to; with commentary_by, another person's
+        commentary, not the author's), the publisher's
         translations and sources of quoted verses and hadiths, and gaps where the source lacks text. Long sections
         come in pages: pass next_cursor back to continue."""
         with _tool_errors():
@@ -384,21 +412,46 @@ def create_server(library: Library) -> MCPServer:
     return server
 
 
+def http_security(public_url: str) -> TransportSecuritySettings:
+    """DNS rebinding koruması: tünel isteği dış adresin Host başlığıyla iletir, o da izinlidir."""
+    host = urlparse(public_url).netloc
+    return TransportSecuritySettings(
+        enable_dns_rebinding_protection=True, allowed_hosts=[host, "127.0.0.1:*", "localhost:*"],
+        allowed_origins=[f"https://{host}", "https://claude.ai", "https://claude.com",
+                         "http://127.0.0.1:*", "http://localhost:*"])
+
+
 def main() -> None:
+    if sys.argv[1:2] == ["auth"]:
+        auth_main(sys.argv[2:])
+        return
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--db", type=Path, default=DB_PATH, help="veritabanı dosyası")
     parser.add_argument("--transport", choices=("stdio", "streamable-http"), default="stdio")
-    parser.add_argument("--host", default="127.0.0.1", help="HTTP için; yalnızca bu bilgisayar")
+    parser.add_argument("--host", default="127.0.0.1", help="HTTP için dinlenen adres (tünel aynı makinede)")
     parser.add_argument("--port", type=int, default=8000)
+    parser.add_argument("--public-url", help="HTTP: sunucunun dışarıdan adresi (https://…); OAuth'u açar")
+    parser.add_argument("--no-auth", action="store_true", help="HTTP: kimlik doğrulamasız, yalnızca 127.0.0.1")
     args = parser.parse_args()
     load_env()                                    # VOYAGE_API_KEY: proje klasöründeki .env
     library = Library(args.db)
     library.conn                                  # veritabanı yoksa başlarken açık hata
-    server = create_server(library)
     if args.transport == "stdio":
-        server.run("stdio")
-    else:
-        server.run("streamable-http", host=args.host, port=args.port)
+        create_server(library).run("stdio")
+        return
+    if not (args.public_url or args.no_auth):
+        sys.exit("HTTP için --public-url https://… (OAuth) ya da --no-auth (yalnızca bu bilgisayar) verin.")
+    if args.no_auth and args.host != "127.0.0.1":
+        sys.exit("--no-auth yalnızca 127.0.0.1'de çalışır: metinler kimlik doğrulamasız dışarı açılmaz.")
+    security = None
+    if args.public_url:
+        if not args.public_url.startswith("https://"):
+            sys.exit("--public-url https:// ile başlamalı.")
+        if not AuthStore().users():
+            sys.exit("Henüz hesap yok: önce `risale-mcp auth add-user <ad>`.")
+        security = http_security(args.public_url)
+    server = create_server(library, args.public_url)
+    server.run("streamable-http", host=args.host, port=args.port, transport_security=security)
 
 
 if __name__ == "__main__":

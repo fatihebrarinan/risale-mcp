@@ -34,13 +34,15 @@ Eserlerin listesi, her birinin kaynağı ve durumu tek yerde tutulur: `src/risal
 | risale.online | Zülfikâr, Tılsımlar, Sirâcü'n-Nûr, Gençlik ve Hanımlar Rehberi (mecmualar) | Hayrat baskısı, JSON API (`/risale-api/fihrist`, `/risale-api/paragraf`). Yapı fihristten (sayfa numaralı, iç içe); paragraf HTML'i kelime gruplarıdır, Arapça meali ve kaynağıyla (`data-mehaz-*`), hâşiye `<aside>`. |
 | risaleoku.com | Hizbler, Küçük Sözler, (Fihrist Risalesi); Arapça Mesnevî'nin eski kaynağı (ham verisi karşılaştırma için duruyor) | `/oku/<kitap>` okuyucu sayfası: sayfa sayısı, kitabın başladığı sayfa (`baslangic`) ve fihrist ağacı (`#treemenu1`); `/ajax/<kitap>/<n>` sayfa metni. Renkli `font` "tefekkür" boyamasıdır, başlık değildir. Arapça Mesnevî'nin ağacı boş: başlıklar ortalı "الرسالة …" satırlarından; ilk başlıktan önceki sayfalar tahkik edenin girişidir. Hizbü'l-Kur'ân'ın fihristi güvenilmez (sûre sayfası bazen bir sayfa geri, bazı sûrelerin girdisi yok): sûreler metindeki "سُورَةُ …" başlığından açılır, adı Tanzil'in sûre adlarıyla tanınır (başka adla anılanlar `quran.OTHER_SURA_NAMES`; aynı iskelete inen adlar sırayla ayrılır), girdisi olmayan sûre "77-Mürselât" diye eklenir. Sitede Hizbü'l-Kur'ân'ın bir sayfası boştur (Lokmân'ın başı); `gaps`'te işaretli. Hizbü Envâri'l-Hakāik Cevşenü'l-Kebîr'i içerir. `Crawl-delay: 10`. |
 | kastamonur.com | Makalat, Nutuk | Âsâr-ı Bedîiyye baskısından "Nutuklar ve Makaleler" tek bir WordPress yazısıdır (MediaWiki'den aktarılmış): `h1` "Nutuklar" ve ortalı "Makaleler Kısmı" iki bölüm, her `h2` ("Makale – 5") bir makale, basılı adı altındaki tamamı kalın paragraf, yayın satırları alt başlık, `h3` alt bölüm. Arapça `dir="rtl"` ve Unicode sunum biçimleriyle (NFKC ile standart harfe çevrilir). Dipnotlar `<sup class="reference">`, numaraları her bölümde baştan; "(Müellif)" ya da "[Haşiye]" müellifin hâşiyesi, diğerleri nâşir notu (`notes`). Sitede Makale – 13 yok, "Makale – 16" iki kez. Site "TELİF UYARISI" taşır: izinsiz ve kaynaksız kullanılamaz. |
-| rasaelalnour.com | Aslı Arapça eserlerin Arapçası (Aşama 15): İşârâtü'l-İ'câz, el-Mesnevî el-Arabî (Badıllı'nın "el-Kâmil" baskısı); ileride Kızıl İcaz, Ta'likat | İhsan Kasım es-Sâlihî'nin Arapça Külliyatı; Word dosyaları RAR5 arşivinde (`/dosyalar/<kitap>.rar`). Sistemdeki eski 7z RAR5'i sessizce boş açar: `libarchive-c` kullanılır; .doc LibreOffice (`soffice`) ile .docx'e çevrilir (`data/interim/rasaelalnour/`). Word dosyası basılı kitabın düz dökümüdür, biçim stili yoktur; ayrıntı `books/rasaelalnour.py` başında. Saykalü'l-İslâm arşivinde Kızıl İcaz, Ta'likat ve Hutbe-i Şamiye'nin Arapçası da var (Hutbe: İhsan Kasım'ın Türkçeden tercümesi, aslı değil; kullanıcı "İhsan Kasım tercümesi" diye işaretlenerek alınmasını istedi). Sitede yalnızca telif satırı var; kullanım kişisel. |
+| rasaelalnour.com | Aslı Arapça eserlerin Arapçası (Aşama 11): İşârâtü'l-İ'câz, el-Mesnevî el-Arabî (Badıllı'nın "el-Kâmil" baskısı; Nokta risalesi İhsan Kasım baskısından), Saykalü'l-İslâm'dan Kızıl İcaz, Ta'likat ve Hutbe-i Şamiye'nin Arapçası | İhsan Kasım es-Sâlihî'nin Arapça Külliyatı; Word dosyaları RAR5 arşivinde (`/dosyalar/<kitap>.rar`). Sistemdeki eski 7z RAR5'i sessizce boş açar: `libarchive-c` kullanılır; .doc LibreOffice (`soffice`) ile .docx'e çevrilir (`data/interim/rasaelalnour/`). Word dosyası basılı kitabın düz dökümüdür, biçim stili yoktur; ayrıntı `books/rasaelalnour.py` başında. Saykalü'l-İslâm (`saykulislam`) dosyaları aynı düz dökümdür; ayrıştırıcısı `books/saykal.py` (Hutbe: İhsan Kasım'ın Türkçeden tercümesi, aslı değil; kullanıcının isteğiyle "İhsan Kasım tercümesi" diye işaretli). Sitede yalnızca telif satırı var; kullanım kişisel. |
+| Kullanıcının dosyaları (`kullanici`) | Rumuzat-ı Semaniye | İnternette serbest metni olmayan eserlerin kullanıcının verdiği PDF'leri; `data/` altına konur, `fetch get` ham arşive kopyalar (`sources/kullanici.py`). Rumuzat PDF'i LibreOffice çıktısıdır; Arapçası metin olarak bozuk okunur, glif kimliklerinden çözülür (`books/pdf_text.py`). Mektubat'ta da bulunan paragrafları oraya eşlenir (ikincil kaynak gibi). |
+| Keşif Yolculukları Risale-i Nur Eğitim Programı | Ta'likat'ın Türkçesi | Ediz Sözüer'in programı; kitapları Google Drive'da Word dosyası. Ta'likat kitabı Arapçanın sayfa resimleri ve Protranslate'in tam tercümesi; yalnız Türkçe metin okunur. Telif bildirimi "asliyetini korumak ve kaynak belirtmek şartıyla" serbest kullanım tanır. |
 | api.quran.com | Mushaf sayfa yazı tiplerinin (QCF v1) kelime kodları | Badıllı'nın Mesnevî baskısı âyetleri Kur'ân Kompleksi'nin sayfa yazı tipleriyle yazar ("QCF_P286": 286. sayfa; her karakter o sayfadaki bir kelimenin glifi). `/api/v4/verses/by_page/<n>?words=true&word_fields=code_v1,text_uthmani` her kelimenin kodunu, âyetini ve Osmanî metnini verir; yalnızca dosyada geçen 144 sayfa indirilir (2 sn arayla). |
-| tanzil.net | Kur'ân-ı Kerîm (Aşama 13) | Arapça metin üç biçimde (Medine Mushafı hattı `uthmani`, imlâî `simple`, harekesiz `simple-clean`) ve iki Diyanet meali (`tr.diyanet`, `tr.vakfi`), XML. Metin değiştirilmeden, kaynağı (Tanzil Project) ve tanzil.net bağlantısı belirtilerek kullanılır; mealler yalnızca ticari olmayan kullanım içindir. Meal dosyalarının açıklama satırları XML'de geçersiz `--` taşır; ayrıştırmadan önce atılır. robots.txt yalnızca `/res/` yolunu yasaklar. |
+| tanzil.net | Kur'ân-ı Kerîm (Aşama 9) | Arapça metin üç biçimde (Medine Mushafı hattı `uthmani`, imlâî `simple`, harekesiz `simple-clean`) ve iki Diyanet meali (`tr.diyanet`, `tr.vakfi`), XML. Metin değiştirilmeden, kaynağı (Tanzil Project) ve tanzil.net bağlantısı belirtilerek kullanılır; mealler yalnızca ticari olmayan kullanım içindir. Meal dosyalarının açıklama satırları XML'de geçersiz `--` taşır; ayrıştırmadan önce atılır. robots.txt yalnızca `/res/` yolunu yasaklar. |
 | Yeni Asya | (artık kullanılmıyor) | Makalat ve Nutuk'un eski kaynağı. "Eski Saîd Dönemi Eserleri" cildinin `basic-html` katmanı; Arapça okunamadığı ("[Arapça]") için kastamonur.com'a geçildi. Ham veri ve ayrıştırıcı karşılaştırma için duruyor. |
 
-- **Ertelendi:** Fihrist Risalesi (yalnızca Osmanlıca bulundu), Rumuzat-ı Semaniye (hususi bir risale; kullanıcı kararıyla şimdilik eklenmiyor).
-- **Kaynağı bulunamadı:** Kızıl İcaz, Ta'likat (ikisi de yalnızca basılı ve akademik çalışmalarda), Hizb-i Nurî (kısmen Lem'alar'da). Aşama 4'teki web aramasında da serbest bir metin bulunamadı.
+- **Ertelendi:** Fihrist Risalesi (yalnızca Osmanlıca bulundu; 2026-10-27 aramasında Latin harfli tek baskı Yeni Asya'nın basılı "Fihrist Risalesi"ydi (2024, telifli). Kullanıcının önerisi: ana ciltlerin fihrist bölümlerini bir mecmua olarak birleştirmek).
+- **Kaynağı bulunamadı:** Kızıl İcaz'ın Türkçesi (tam tercümeler basılı ve telifli; Arapçası `kizil-icaz-arabi`; kullanıcı kendi kitabından PDF yapacak). Hizb-i Nurî (Hizbü'l-Ekber-i Nurî): 2026-10-27'de nurpedia.org'da ("Risale:Hizb'ül Ekber-in Nuri", MediaWiki) 33 mertebe hâlinde harekeli Arapça ve Türkçe karşılığıyla bulundu; telif ve tercümenin kime ait olduğu belirsiz, kullanıcının kararı bekleniyor.
 - **Doğrulandı:** el-Mesnevî el-Arabî (İhsan Kasım es-Sâlihî tahkiki), Hizbü Envâri'l-Hakāik (Cevşenü'l-Kebîr'i içerir).
 - **Sitede eksik:** Sikke-i Tasdik-i Gaybî'de aynı başlıklı iki bölüm aynı adresi paylaştığından 15 blok indirilemiyor; `gaps` alanında işaretli. Mecmua eşlemesinde (Aşama 4) ana ciltlerden tamamlanacak.
 - Bir kaynak kitabı birden çok esere bölünebilir: erisale'nin "İlk Dönem Eserleri" kitabı Divan-ı Harb-i Örfî, Münazarat, Sünuhat vb. eserlere ayrılır. Lemeat (Sözler'in sonu) ve Hakikat Çekirdekleri (Mektubat'ın sonu) ayrı eserdir. Seçim, katalogdaki bölüm slug önekleriyle yapılır.
@@ -74,13 +76,15 @@ Aynı altyapı üç ayrı metin derlemine hizmet edecek. Kod tek olur, veri ve s
 - MCP: resmi Python SDK'sı (`mcp` paketi, FastMCP). Not: `@modelcontextprotocol/sdk` TypeScript paketidir, kullanmıyoruz.
 - Test: `pytest` + MCP Inspector + Claude Code'a `claude mcp add` ile bağlayarak elle deneme.
 - Platform: Linux Mint.
-- PDF kodu ve PyMuPDF Aşama 2'deki karşılaştırmadan sonra kaldırıldı (git geçmişinde `da37ba2`).
+- PDF: Aşama 2'deki PDF kodu karşılaştırmadan sonra kaldırıldı (`da37ba2`). PyMuPDF kullanıcının PDF'leri (Rumuzat) için yeniden bağımlılıktır; yalnızca ayrıştırmada kullanılır.
 
 ## Klasör yapısı
 
 ```
 risale-mcp/
 ├── CLAUDE.md
+├── docs/claude-proje-talimati.md   # claude.ai Projesi talimatı (bağlayıcıyla atıflı cevap için; kullanıcı yapıştırır)
+├── docs/risale-mcp.service        # sunucuyu bu bilgisayarda açıp kapatan systemd kullanıcı servisi (Aşama 12)
 ├── data/
 │   ├── vectors/                   # Anlamsal arama vektörleri <model>.<seçenek>.npy + .keys.json (git'e eklenmez)
 │   ├── raw/                       # Ham kaynak yanıtları (git'e eklenmez)
@@ -92,7 +96,8 @@ risale-mcp/
 │   │   ├── tanzil/                # manifest.json, quran-<biçim>.xml, tr.diyanet.xml, tr.vakfi.xml
 │   │   ├── rasaelalnour/          # <kitap>/archive.rar, manifest.json (isaretulicaz, saykulislam, mesnevi)
 │   │   ├── qurancom/              # pages/<sayfa>.json.gz: QCF glif kodlarının âyet ve kelimeleri
-│   │   ├── talikat/               # talikat.docx: Ta'likat'ın Türkçe tam tercümesi (Risale-i Nur Eğitim Programı)
+│   │   ├── kesif/talikat/         # talikat.docx, manifest.json: Ta'likat'ın Türkçe tam tercümesi (Keşif Yolculukları programı)
+│   │   ├── kullanici/<kitap>/     # <kitap>.pdf, manifest.json: kullanıcının verdiği PDF (Rumuzat-ı Semaniye)
 │   │   └── logs/                  # toplu indirme günlükleri
 │   ├── interim/                   # Ara çıktılar
 │   │   ├── erisale/<kitap>.blocks.json   # birleştirilmiş, doğrulanmış bloklar (git'e eklenmez)
@@ -104,7 +109,8 @@ risale-mcp/
 │   │   └── build.log              # son toplu ayrıştırmanın raporu
 │   ├── books/<eser>.json          # Her eserin JSON'u (git'e eklenmez)
 │   ├── quran.json                 # Kur'ân katmanı: metin, mealler, sûre adları (git'e eklenmez)
-│   └── risale.db                  # SQLite veritabanı (git'e eklenmez)
+│   ├── risale.db                  # SQLite veritabanı (git'e eklenmez)
+│   └── auth.db                    # hesaplar, OAuth istemcileri ve jetonları, kullanım kaydı (git'e eklenmez; risale.db gibi yeniden kurulmaz)
 ├── src/risale_mcp/
 │   ├── paths.py        # Proje klasörleri
 │   ├── catalog.py      # Bütün eserler, kaynakları ve durumları
@@ -122,6 +128,9 @@ risale-mcp/
 │   │   ├── kastamonur.py     # kastamonur.com yazısı -> Nutuk ve Makalat
 │   │   ├── rasaelalnour.py   # rasaelalnour Word dosyası -> İşârâtü'l-İ'câz'ın Arapça aslı
 │   │   ├── mesnevi_arabi.py  # Badıllı'nın Mesnevî Word dosyası (QCF âyetleri, Word dipnotları) -> el-Mesnevî el-Arabî
+│   │   ├── saykal.py         # Saykalü'l-İslâm (Kızıl İcaz, Ta'likat, Hutbe-i Şamiye Arapçası) ve Ta'likat'ın Türkçesi
+│   │   ├── pdf_text.py       # LibreOffice PDF'inden satırlar ve tablolar; Arapça glif kimliklerinden (rumuzat_glyphs.tsv)
+│   │   ├── rumuzat.py        # Rumuzat-ı Semaniye PDF'i -> eser modeli
 │   │   └── mecmua.py         # Mecmuaların (ve ikincil kaynaktaki eserlerin) ana ciltlere eşlenmesi
 │   ├── sources/
 │   │   ├── http.py           # Nazik HTTP istemcisi
@@ -132,6 +141,8 @@ risale-mcp/
 │   │   ├── yeniasya.py       # Yeni Asya basic-html sayfaları (artık kullanılmıyor)
 │   │   ├── kastamonur.py     # kastamonur.com yazısı (yalnızca ham kayıt + doğrulama)
 │   │   ├── rasaelalnour.py   # rasaelalnour RAR arşivleri (ham kayıt, doğrulama, .doc -> .docx)
+│   │   ├── kesif.py          # Keşif Yolculukları programının Word dosyası (Ta'likat'ın Türkçesi; ham kayıt + doğrulama)
+│   │   ├── kullanici.py      # kullanıcının PDF'leri (data/ altından ham arşive kopyalama + doğrulama)
 │   │   ├── qurancom.py       # api.quran.com: QCF sayfa yazı tiplerinin kelime kodları
 │   │   └── tanzil.py         # tanzil.net Kur'ân metni ve mealleri (yalnızca ham kayıt + doğrulama)
 │   ├── normalize.py    # Türkçe metin normalizasyonu, sıra sayıları, slug
@@ -141,14 +152,15 @@ risale-mcp/
 │   ├── build_db.py     # Aşama 5: JSON → SQLite CLI'ı (sûre/âyet çözümü, doğrulama)
 │   ├── search.py       # Aşama 5: sorgu dili → FTS5, cümle ve başlık araması
 │   ├── library.py      # Aşama 6: veritabanı üzerindeki okuma işleri (MCP'den bağımsız)
-│   ├── quran.py        # Aşama 13: Kur'ân katmanı (ham -> data/quran.json), harf iskeleti, âyet eşleme
-│   ├── ayah_links.py   # Aşama 14: âyet ilişkileri (kurallar, gözden geçirme raporu ve örneklem)
+│   ├── quran.py        # Aşama 9: Kur'ân katmanı (ham -> data/quran.json), harf iskeleti, âyet eşleme
+│   ├── ayah_links.py   # Aşama 10: âyet ilişkileri (kurallar, gözden geçirme raporu ve örneklem)
 │   ├── citations.py    # Atıf denetimi: metindeki "Eser › Bölüm › “ilk kelimeler”" atıfları (araç ve altın sorular)
 │   ├── env.py          # .env dosyasındaki API anahtarları
 │   ├── embeddings.py   # Aşama 8: vektör sağlayıcıları (Voyage, OpenAI), vektör deposu, vektör çıkarma CLI'ı
 │   ├── semantic.py     # Aşama 8: sunucunun anlamsal araması (en yakın cümleler, bölüm sıralaması)
 │   ├── search_eval.py  # Aşama 8: arama değerlendirmesi (hit@k, MRR) ve model karşılaştırması
 │   ├── server.py       # Aşama 6: MCP sunucusu (araçlar, kaynaklar, hazır komutlar)
+│   ├── auth.py         # Aşama 12: OAuth sağlayıcısı, giriş sayfası, hesaplar, oturumlar, kullanım kaydı (data/auth.db)
 │   └── golden.py       # Aşama 7: altın sorularla uçtan uca deneme (Claude Code istemci)
 └── tests/
     ├── test_catalog.py
@@ -174,10 +186,13 @@ risale-mcp/
     ├── test_ayah_links.py
     ├── test_rasaelalnour.py
     ├── test_mesnevi_arabi.py
+    ├── test_saykal.py
+    ├── test_rumuzat.py
+    ├── test_auth.py
     └── golden/
         ├── golden_questions.md   # kullanıcının yazdığı test soruları
         ├── questions.json        # aynı sorular, doğrulanmış beklenen bölümlerle (düzenek bunu okur)
-        ├── ayah_links_review.json  # kullanıcının âyet ilişkisi örneklem kararları (Aşama 14)
+        ├── ayah_links_review.json  # kullanıcının âyet ilişkisi örneklem kararları (Aşama 10)
         └── semantic_queries.json # anlamsal arama değerlendirme seti (50 soru, kullanıcı onayladı)
 ```
 
@@ -198,6 +213,7 @@ Her eser `data/books/<eser>.json` dosyasıdır (`uv run python -m risale_mcp.bui
   - isteğe bağlı: `center` (ortalı), `continued` (araya giren bloktan sonra süren paragraf)
   - mecmuada ana cilde eşlenmiş paragrafta `text` yoktur; `source` ana ciltteki paragraf kimlikleridir (baskılar paragrafları farklı bölebildiği için birden çok olabilir). Bu paragrafların cümlesi de ana ciltte durur.
   - hâşiyede: `parent_id` (paragraf, hâşiye ya da başlıktaysa düğüm), `offset` (işaretin metindeki konumu), `anchor` (bağlı olduğu cümle; başlıktaysa düğüm), kimlik `<paragraf>/h1`
+  - başkasının şerhi (Kızıl İcaz'da Abdülmecid Nursî'nin): hâşiye gibi bağlanır, `commentator` taşır, kimlik `<paragraf>/s1`; veritabanında `paragraphs.commentator`, araçlarda `commentary_by`
 - **`notes`**: kaynağın editör notları; metne girmez.
 - **`gaps`**: kaynakta bulunamayan bloklar `{node_id, missing_blocks, after, note?}` (`after` yoksa düğümün başı). Metin uydurulmaz. Makalat'ta Yeni Asya baskısında olup Âsâr-ı Bedîiyye'de olmayan 5 parça da burada (`books/kastamonur.py`, `EDITION_GAPS`).
 - **`sentences`**: atıf birimi, kitap sırasıyla. Alanlar:
@@ -229,7 +245,7 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve ikincil k
 
 ### Cümle kuralları
 - Numaralar her düğümün **kendi metninde** 1'den başlar; alt düğümler kendi sayımını yapar.
-- **Hâşiye cümleleri** kendi içinde numaralanır: `… › 32. cümle › Hâşiye › 2. cümle`. Bir cümlede birden çok hâşiye varsa `Hâşiye 1`, `Hâşiye 2`.
+- **Hâşiye cümleleri** kendi içinde numaralanır: `… › 32. cümle › Hâşiye › 2. cümle`. Bir cümlede birden çok hâşiye varsa `Hâşiye 1`, `Hâşiye 2`. Şerh ayrı sayılır: `…/c032/s1/c002`, `… › 32. cümle › Şerh › 2. cümle`.
 - **Bölme:**
   - Cümle şu işaretlerden (ve ardından gelebilecek kapanış tırnağından) sonra biter: `.` `!` `?` `…` `‥`. Şart: ardından büyük harf, açılış tırnağı ya da parantezi, Arapça bir parça ya da madde numarası ("2. Yâhut") gelmeli.
   - `;` ve `:` cümleyi bitirmez ("Hiç mümkün müdür ki;", "Elcevab:").
@@ -266,7 +282,7 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve ikincil k
 - **Âyetler:** İki biçim çözülür: "Bakara Sûresi, 2:255" ve Hayrat'ın "Sûre-i Bakara, 255" biçimi. Sûre adlarının numaraları, veride numarasıyla geçen yazılışlardan öğrenilir. Birden çok âyet sayılmışsa ilk aralık alınır. 4.000 âyetin hepsi çözüldü. `data/quran.json` varsa her biri Kur'ân metniyle denetlenir (`arabic.ayah_check`) ve işaretsiz alıntılar bulunur (bkz. Kur'ân katmanı).
 - **Anlamsal arama** veritabanında değil, ayrı vektör dosyasındadır (bkz. Anlamsal arama); veritabanı yeniden kurulsa da vektörler kaybolmaz.
 
-## Kur'ân katmanı (Aşama 13)
+## Kur'ân katmanı (Aşama 9)
 
 Kur'ân-ı Kerîm Risale eserlerinden ayrı bir katmandır; atıf birimi âyettir ("Bakara Sûresi, 2:255", `›` olmadan; `verify_citations` bu atıfları denetlemez, doğruluğu `get_ayah`'tan gelir). Ayrıntı `quran.py` başındaki açıklamadadır.
 
@@ -284,7 +300,7 @@ uv run python -m risale_mcp.build_db      # Kur'ân tabloları, âyet denetimi v
 - **İşaretsiz âyetler bulunur** (`ayah_quotes`): Hizb paragrafları numarayı mushaftaki gibi sonda verir ("…﴿٢﴾"); her numaradan önceki metin o numaralı âyetle biten yerde aranır. Kısa ve birden çok sûrede geçen âyet ("الٓمٓ﴿١﴾"), bölümde bulunan öbür âyetlerin en az %80'i aynı sûredense o sûrede aranır. el-Mesnevî el-Arabî'nin "﴿ … ﴾" alıntısı yalnızca Kur'ân'da tek yerde geçiyorsa (iskelette en az 6 harf) bağlanır. 2.373 alıntı bulundu (Hizbü'l-Kur'ân 1.848, Hizbü Envâr 266, el-Mesnevî el-Arabî 259); 161'i bağlanamadı (Hizbü Envâr'daki ﴿n﴾ sayaçları, dua içindeki iktibaslar, birden çok âyette geçen kısa ifadeler).
 - **Hizbü'l-Kur'ân'ın sûre sınırları** artık fihristten değil metindeki Arapça başlıklardan gelir (bkz. risaleoku satırı); 1.850 âyetin hepsi kendi sûresinin altındadır.
 
-## Âyet ilişkileri (Aşama 14)
+## Âyet ilişkileri (Aşama 10)
 
 Risale'nin bir yerinin bir âyetle kurduğu bağ (`ayah_links` tablosu). `build_db` Kur'ân katmanını kurduktan sonra kurallarla çıkarır; ayrıntı `ayah_links.py` başındadır. Bu bağlar **"tefsir" diye anılmaz** (kullanıcının kararı): bir yerin bir âyetin tefsiri olduğu bir hükümdür, kural ise yalnızca metnin âyetle kurduğu bağı bulur; yanlışlıkla tefsir sınıfına alınan bir yan cümle vebal olur.
 
@@ -301,7 +317,7 @@ uv run python -m risale_mcp.ayah_links    # data/interim/ayah_links/links.md (he
 - **Gözden geçirme:** güçlüler doğrudan kabul edilir; kullanıcı her turda 40'lık örneklemi (`sample-<tur>.md`) kontrol eder, bulduğu hatalar kurallara ve karar dosyasına döner. Zayıflar tek tek gözden geçirilmez.
 - **Araçlar:** `find_ayah` tek âyette `links` (güçlüler önce, kanıt cümlesiyle), `get_ayah` `linked_in_works`, `read_section` başlıkta `linked_verses`. Talimat: ilişkiyi türüyle ve kanıtıyla an, "tefsir" deme; ilişkili âyetleri her alıntının ardına ekleme, kullanıcı sorarsa ya da âyet soruyla ilgiliyse ver (kullanıcının isteği).
 
-## Aslı Arapça eserler (Aşama 15)
+## Aslı Arapça eserler (Aşama 11)
 
 Bediüzzaman'ın Arapça yazdığı eserlerin hem Arapça aslı hem Türkçesi tutulur; ikisi ayrı eserdir, bölüm kimlikleri paraleldir (`isaratul-icaz-arabi/sure-i-bakara/6` ↔ `isaratul-icaz/sure-i-bakara/6`). Anlamsal arama iki dili aynı bölümde buluşturur.
 
@@ -309,10 +325,10 @@ Bediüzzaman'ın Arapça yazdığı eserlerin hem Arapça aslı hem Türkçesi t
 |---|---|---|
 | el-Mesnevî el-Arabî | `el-mesnevi-el-arabi` (rasaelalnour, Badıllı'nın "el-Kâmil" baskısı) | `mesnevi-i-nuriye` (erisale) |
 | İşaratü'l-İ'caz | `isaratul-icaz-arabi` (rasaelalnour) | `isaratul-icaz` (erisale, Abdülmecid Nursî tercümesi) |
-| Kızıl İcaz | Saykalü'l-İslâm arşivinde (sırada) | ücretsiz kaynak yok; tam tercümeler basılı ve telifli (Akgündüz, Niyazi Beki) |
-| Ta'likat | Saykalü'l-İslâm arşivinde (sırada) | `data/raw/talikat/talikat.docx` (Arapçası yalnız resim) |
-| Hutbe-i Şamiye | Saykalü'l-İslâm'da İhsan Kasım'ın Türkçeden tercümesi (1911 aslı değil) | `hutbe-i-samiye` (erisale) |
-| Rumuzat-ı Semaniye | — | kullanıcının PDF'i (sırada; internette tam metin yok) |
+| Kızıl İcaz | `kizil-icaz-arabi` (Saykalü'l-İslâm) | ücretsiz kaynak yok; tam tercümeler basılı ve telifli (Akgündüz, Niyazi Beki); `kizil-icaz` bekliyor |
+| Ta'likat | `talikat-arabi` (Saykalü'l-İslâm) | `talikat` (Protranslate tercümesi, Keşif Yolculukları programı) |
+| Hutbe-i Şamiye | `hutbe-i-samiye-arabi`: İhsan Kasım'ın Türkçeden tercümesi (1911 aslı değil) | `hutbe-i-samiye` (erisale) |
+| Rumuzat-ı Semaniye | — | `rumuzat-i-semaniye` (kullanıcının PDF'i; aslı Türkçe, bkz. aşağıda) |
 
 **İşârâtü'l-İ'câz (Arapça)** (kurallar `books/rasaelalnour.py` başında, kullanıcının kararlarıyla):
 - Eser "مقدمة الترجمة التركية"den "باسمه سبحانه"ya (talebelerin sözü) kadardır; muhakkikin ön sözleri, takriz ve "قالوا عن القرآن" alınmaz. Müellifin Türkçe yazdığı ön kısım (Tenbih, üç Nükte) İhsan Kasım'ın tercümesidir; alınır, alt başlıkta işaretlidir.
@@ -325,11 +341,26 @@ Bediüzzaman'ın Arapça yazdığı eserlerin hem Arapça aslı hem Türkçesi t
 
 **el-Mesnevî el-Arabî** (kullanıcının kararıyla Abdülkadir Badıllı'nın "el-Kâmil" baskısı; kurallar `books/mesnevi_arabi.py` başında). Neden bu baskı: tamamen harekeli (harflerin %80'i; risaleoku ve İhsan Kasım Word'ü %5–10), müellifin hâşiyeleri işaretli, Lem'alar ve Reşhalar Türkçe eserin numaralarıyla bölünmüş. risaleoku metninde dipnotlar yoktu.
 - Badıllı'nın ön sözü ve sondaki fihrist alınmaz; eser "ترجمة المقدمة التركية"den başlar. Müellifin Türkçe yazdığı Mukaddime'nin Arapçası tercümedir; alt başlıkta işaretli.
-- Risaleler ve bölümler Türkçe eserin kimliklerini taşır, başlıklar basılı Arapçadır: `mukaddime/nokta-01..05`, `itizar`, `lemalar/lema-01..14`, `reshalar/resha-01..14` (Ondördüncü Reşha'nın Katre ve Noktaları içinde), `lasiyyemalar`, `katre` (`bab-01..04`, Birinci Bâb'ın hâtimesi `bab-01/hatime`, `hatime` ve Nükte/Nokta dizisi, `zeyl` ve 22 Remz), `hubab` (Meclis-i Mebusan hutbesi, `zeylul-hubab`), `habbe` (`zeylul-habbe`, `zeyl`), `zuhre`, `zerre`, `semme`, `onuncu-risale`, `sule`. Türkçe Mesnevî'de olmayan "نور من أنوار نجوم القرآن" `nur` kimliğiyle; Türkçedeki "Nokta" risalesi bu baskıda yok. Paragraf başındaki "اَللَّمْعَةُ الرَّابِعَةُ:", "اَلرَّشْحَةُ …", "النُّقْطَةُ …" etiketleri bölüm açar (11–14: "الحادية عشرة").
+- Risaleler ve bölümler Türkçe eserin kimliklerini taşır, başlıklar basılı Arapçadır: `mukaddime/nokta-01..05`, `itizar`, `lemalar/lema-01..14`, `reshalar/resha-01..14` (Ondördüncü Reşha'nın Katre ve Noktaları içinde), `lasiyyemalar`, `katre` (`bab-01..04`, Birinci Bâb'ın hâtimesi `bab-01/hatime`, `hatime` ve Nükte/Nokta dizisi, `zeyl` ve 22 Remz), `hubab` (Meclis-i Mebusan hutbesi, `zeylul-hubab`), `habbe` (`zeylul-habbe`, `zeyl`), `zuhre`, `zerre`, `semme`, `onuncu-risale`, `sule`. Türkçe Mesnevî'de olmayan "نور من أنوار نجوم القرآن" `nur` kimliğiyle. Türkçedeki "Nokta" risalesi bu baskıda yok; arşivdeki ayrı dosyadan (İhsan Kasım baskısı, harekesiz) `nokta` olarak eklenir: aslı Türkçedir, alt başlıkta "İhsan Kasım es-Sâlihî'nin tercümesi" diye işaretli; `ifade-i-meram` (dört bürhânı kısaca sayan `ifade-i-meram/burhan-01..04`) ve `burhan-01..04`, Türkçeyle aynı kimlikler. Paragraf başındaki "اَللَّمْعَةُ الرَّابِعَةُ:", "اَلرَّشْحَةُ …", "النُّقْطَةُ …" etiketleri bölüm açar (11–14: "الحادية عشرة").
 - Dipnotlar gerçek Word dipnotudur: "ـ المؤلف ـ" (harekeli de) müellifin hâşiyesi (9), "ـ الناشر ـ", nüsha farkları ("بتصحيح المؤلف", "في نسخة …") ve öbürleri naşirin notu (542).
 - **Âyetler:** 310 âyet QCF yazı tipiyle kodlu; glif kodları Quran.com verisiyle âyetin adresine ve Osmanî harekeli metnine çevrilir, kaynak glifin kendisidir (301'i Kur'ân metniyle birebir tutar). Tanınmayan glif aynı sayfada tanınan kelimelerin arasındaysa sayfa verisinden tamamlanır. "{اِعْلَمْ}" gibi süslü parantezler âyet değildir.
-- **Cümleler:** bu baskı cümleleri klasik baskılar gibi " * " ile ayırır; eserin JSON'u `stops: "*"` taşır ve cümle bölücü yalnızca bu eserde "*"ı da cümle sonu sayar (6.794 cümle).
+- **Cümleler:** bu baskı cümleleri klasik baskılar gibi " * " ile ayırır; eserin JSON'u `stops: "*"` taşır ve cümle bölücü yalnızca bu eserde "*"ı da cümle sonu sayar (Nokta ile 7.020 cümle).
 - Arapça Mesnevî'nin kimlikleri değişince ona eşlenen mecmualar (`build --all`) yeniden eşlendi.
+
+**Saykalü'l-İslâm eserleri** (kurallar `books/saykal.py` başında; sayfa ve dipnot işleri İşârâtü'l-İ'câz'la ortak). Muhakkikin ön sözleri alınmaz, kökte notla belirtilir. Bu üç eserde parantezli âyet alıntıları da Kur'ân'da tek yerde geçiyorsa bulunur (`build_db` artık bütün Arapça eserlerde arar).
+- **Kızıl İcaz (Arapça)** (`kizil-icaz-arabi`): Ahdarî'nin manzum Süllem'ine hâşiye. Kalın beyitler Süllem'indir, `quote` olarak durur (müellifin sözü değil); "[1] …" satırları ve "اعلم!" bahisleri müellifin metnidir, "[n]" numaraları beytin kelimesiyle eşleşir ve metinde kalır. Sayfa dipnotları Molla Abdülmecid'in şerhidir: kullanıcının isteğiyle okunur bir katmandır (228), hâşiye gibi cümlesine bağlıdır ama `commentator: "Abdülmecid Nursî"` taşır, atfı "› Şerh ›"; müellife mal edilmez. Abdülmecid'in mukaddimesi ve i'tizârı alınmaz. Bölümler Süllem'in fasılları (`fasl-01..08`; `fasl-02/delalet`, `fasl-07/muharrefat`); ilk fasıldan önceki beyitlerin düğümü `dibace`: "ديباجة" başlığı kaynakta yok, alt başlıkta "Bu başlık kaynakta yoktur…" diye işaretli (Türkçe Ta'likat'ın "Hadd Bâbı" ve "Dördüncü Bâb: Deliller" başlıkları da). Türkçesi yok (`kizil-icaz` bekliyor). 13 düğüm, 413 paragraf, 879 cümle.
+- **Ta'likat** Arapça (`talikat-arabi`, Saykal) ve Türkçe (`talikat`, Protranslate'in tam tercümesi; Keşif Yolculukları programının Word dosyası, telif bildirimi kaynak belirtmek şartıyla serbest kullanım tanır). Gelenbevî'nin Burhân'ına hâşiye; bölümler Burhân'ın müellifin alıntıladığı bölüm başlarıdır ("[فصل في الكليّ والجزئي]" / "﴾Mutlak olarak yüklem faslı…vs.﴿", ortalı Türkçe başlıklar), iki dilde aynı 11 kimlik (`saykal.TALIKAT_SECTIONS`; Türkçe başlıkların bir kısmı bizim: "Hadd Bâbı" gibi). Arapçada dipnotlar müellifin satır arası ve "(تقرير)" hâşiyeleridir (430), Badıllı'nın Burhân göndermeleri ("كلنبوي ص/…") ve "ع. ب" notları not. Türkçede Word dipnotları hâşiyelerin tercümesi (420), köşeli ayraçlı açıklamalar ve Badıllı/Gelenbevî notları not; "-A. B.-" (Badıllı'nın tercümesi) not olur, "[Sayfa: N]" satırları atılır. Arapça 2.933, Türkçe 3.989 cümle.
+- **Hutbe-i Şamiye (Arapça)** (`hutbe-i-samiye-arabi`): İhsan Kasım'ın Türkçe metinden tercümesi (1911'de okunan Arapça aslı değil); kökün alt başlığında işaretli. Bölümler Türkçe eserin kimliklerini Türkçe başlıktan alır (`saykal.HUTBE_SECTIONS`; Kelime ve Vehim numarayla); Türkçede ayrı bölüm olmayan "فقرة تركتها من فهرس المقاصد" `zeyl/fihristul-makasid-fikrasi`. Arapça baskıda Hakikat Çekirdekleri ve İkinci Zeyl yok. "المؤلف" dipnotu müellifin hâşiyesi (4), "المترجم" ve öbürleri not. 32 düğüm, 805 cümle.
+- Sunucu talimatına 14. kural eklendi: eserin her katmanı müellifin değildir (tercüme alt başlıkları, Süllem beyitleri, `commentary_by` taşıyan Abdülmecid şerhi: onun adıyla atfedilir).
+
+## Rumuzat-ı Semaniye (kullanıcının PDF'i)
+
+Kurallar `books/rumuzat.py` ve `books/pdf_text.py` başında. PDF Yirmi Dokuzuncu Mektub'un Üçüncü (Dokuz Mes'ele), Dördüncü (üç Nükte; lafz-ı Kur'ân ve lafz-ı Resul silsileleri) ve Sekizinci Kısmını (Remizler) taşır; kimlikler Mektubat'ınkiyle aynı (`kisim-03/mesele-01`). erisale'nin Mektubat'ında yalnızca Üçüncü Kısım'ın Birinci Mes'elesi ve Dördüncü Kısım'ın Üçüncü Nüktesi var: o paragraflar (ve Barla Lâhikası'ndaki birkaç parça) eşlenir; yalnız düz paragraflar eşlenir, âyet listesi maddeleri bu eserde kalır.
+- **Arapça:** PDF'in karakter eşlemesi Arapçada bozuktur (hareke ve noktalar harf diye gelir). Gömülü DejaVu Sans glifleri sistemdeki DejaVu ile birebir eşlendi, Arial'ın 38 glifi gözle okundu; tablo `rumuzat_glyphs.tsv`. Bazı harfler noktasız gövde + ayrı nokta glifidir; nokta sayısı ve yeri harfi verir (ب ت ث ن ي, ف ق). Harekeler akışta ardından geldiği harfe, akışta yalnızsa ("۪" Arial'dadır) konumla bağlanır; "۪" uzun "i"nin önündeki harfe. Glifler görsel sırada gelir; Arapça parçalar ters çevrilir, rakam dizileri ve ayraçlar düzeltilir. Sonuç sayfa görüntüsüyle karşılaştırıldı; çözülemeyen glif 0. Metin kaynağın imlâsıdır (Farsça ک, ھ; kelimeler bazen bitişik).
+- **Yapı:** kalın ≥14 punto (ya da kalın, köşeli ayraçlı) satırlar başlık; paragraf başındaki numaralı etiketler (Mes'ele, Nükte, Silsile, Remiz, Parça, Kısım, Letafet, Misal, Esas, Makam) bölüm açar. Sekizinci Kısım'ın "Birinci remiz altı remizdir" dediği alt remizler kaynakta başlığı olmayan `kisim-08/remiz-01`'de toplanır (alt başlıkta işaretli).
+- **Hâşiye:** metindeki küçük mavi "(Hâşiye)" işaretleri, metni sol kenarda aynı etiketle başlayan satırlar; her metin aynı etiketli en yakın önceki işarete bağlanır (20). İki hâşiyenin işareti PDF'te yok; önceki paragrafın sonuna bağlandı.
+- **Tablolar** (24; silsile sahife numaraları, cüz cüz lafzullah sayıları, sûrelerin harf/kelime/âyet sayıları) `table` paragrafıdır; sayfada bölünen tablo birleşir. Âyet ve hadis türü PDF'te işaretli değil: `arabi`.
+- Sayılar: 73 düğüm, 341 paragraf, 1.942 cümle, 572 Arapça parça.
 
 ## Anlamsal arama (Aşama 8)
 
@@ -376,7 +407,8 @@ xdg-open data/interim/review/index.html
 
 ```
 uv run risale-mcp                                       # stdio (Claude Desktop / Claude Code başlatır)
-uv run risale-mcp --transport streamable-http           # yerel HTTP 127.0.0.1:8000/mcp (kimlik doğrulamasız)
+uv run risale-mcp --transport streamable-http --no-auth # yerel HTTP 127.0.0.1:8000/mcp (kimlik doğrulamasız, yalnız bu bilgisayar)
+uv run risale-mcp --transport streamable-http --public-url https://<makine>.<ağ>.ts.net   # OAuth'lu (bkz. Uzaktan erişim)
 npx @modelcontextprotocol/inspector uv run risale-mcp   # MCP Inspector
 ```
 
@@ -404,6 +436,24 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 | `semantic_search(query, work?, group?, limit=10, offset=0)` | Anlamca en yakın cümleler (`similarity`) ve konunun yoğunlaştığı bölümler (`sections`); kavram ve günümüz Türkçesiyle sorular için. Kelime araması (`search`) ayrı kalır. |
 | `verify_citations(text)` | Taslak cevaptaki atıfları denetler: bölüm var mı, alıntı bir cümlenin başı mı, aralık 8 cümleyi ve bölümü aşıyor mu, yanındaki alıntı bloğu atfın cümlelerinde mi; sorunlu atfa tam atıf ya da alıntının asıl yeri önerilir |
 
+### Uzaktan erişim ve OAuth (Aşama 12)
+Ayrıntı `auth.py` başındadır. Sunucu internete yalnızca OAuth ile açılır; `--no-auth` yalnız `127.0.0.1`'de çalışır, stdio değişmedi.
+```
+uv run risale-mcp auth add-user <ad> [--generate]   # hesap (parola en az 10 karakter; --generate rastgele üretir)
+uv run risale-mcp auth passwd|remove-user <ad>      # parola değişince ve silinince oturumlar kapanır
+uv run risale-mcp auth users | sessions [--user]    # hesaplar, açık oturumlar
+uv run risale-mcp auth revoke --user <ad> | --session <id> | --all
+uv run risale-mcp auth usage [--user <ad>] [--limit 50]   # kullanım kaydı
+```
+- **Hesaplar** kişi başınadır (kullanıcının kararı); herkese bütün derlem açıktır. Parola scrypt özetiyle `data/auth.db`'de; 5 yanlış denemeden sonra hesap 60 sn (her yeni hatada iki katı) kilitlenir.
+- **Akış:** SDK'nın yerleşik yetkilendirme sunucusu (üst veri, dinamik kayıt, PKCE S256, jeton, iptal) ve bizim sağlayıcımız (`auth.Provider`). `/authorize` giriş sayfasına (`/login`) yönlendirir; sayfa hangi istemcinin hangi adrese döneceğini gösterir, yerel adreste uyarır. Erişim jetonu 1 saat, yenileme jetonu 30 gün; yenileme jetonu her kullanımda değişir, kullanılmışı `invalid_grant` alır. Jetonların yalnızca SHA-256 özetleri saklanır.
+- **Kayıt** yalnızca `https://claude.ai/api/mcp/auth_callback`, `https://claude.com/api/mcp/auth_callback` ve yerel adresleri kabul eder; yerel adreste port karşılaştırılmaz (Claude Code, MCP Inspector).
+- **Kullanım kaydı** (kullanıcının kararı): her MCP isteği kim, ne zaman, hangi araç, parametreler (en çok 2.000 karakter), süre ve hatayla `usage` tablosuna yazılır (`auth.usage_middleware`).
+- **Bu bilgisayarda çalıştırma (2026-10-28; Oracle'da makine açılamadı, uzak sunucu ertelendi):** Funnel `sudo tailscale funnel --bg 8000` ile kalıcı açık, adres `https://fatih-thinkbook-15-g2-itl.taile0138b.ts.net/mcp`. Sunucu systemd kullanıcı servisiyle açılıp kapanır: `docs/risale-mcp.service` (kurulum ve komutlar dosyanın başında; kullanıcı kendisi kurar).
+- **Dışarı açma:** önce kullanıcının bilgisayarında Tailscale Funnel (`https://<makine>.<ağ>.ts.net`, alan adı gerekmez); `--public-url` Host başlığı denetimine (DNS rebinding) de eklenir. Bilgisayar kapalıyken erişim için sonra bir sunucuya (Oracle Always Free ya da Hetzner) taşınacak; kod aynı kalır. claude.ai'de özel bağlayıcı adresi `https://<…>/mcp`.
+- **claude.ai'de ilk deneme (2026-10-28):** bağlantı ve giriş çalıştı; ama model yalnızca iki arama yaptı, hiçbir yeri okumadan ve atıfları denetlemeden cevap verdi (kısaltılmış yol, cümle numarası, alıntısız). Bunun üzerine: `search` ve `semantic_search` sonuçları artık her cümle için `cite_as` (tam yol + ilk kelimeler; `ref` ve cümle numarası yerine) ve okumadan atıf verilmemesini hatırlatan bir `note` taşır (`library.SEARCH_NOTE`); claude.ai'de bir Proje açılıp talimatına `docs/claude-proje-talimati.md` yapıştırılır (her kullanıcı kendi hesabında). Etki kullanım kaydından (okuma ve `verify_citations` çağrıları) ölçülür.
+- Testler (`tests/test_auth.py`) Claude'un gereksinimlerini süreç içinde dener: jetonsuz istek 401 ve `resource_metadata`, üst veri, kayıt kısıtı, PKCE, yanlış parola ve kilit, vazgeçme, yenileme ve döndürme, port farkı, kullanıcı başına oturum kapatma, kullanım kaydında kullanıcı adı.
+
 ### Atıf denetimi (`citations.py`)
 Ayrıntı modülün başındaki açıklamadadır. `verify_citations` aracı ve altın soru raporu aynı denetimi kullanır.
 - Satır `›` işaretlerinden bölünür; bir satırda birden çok atıf, atıftan önce ve sonra düz yazı olabilir. Atıf alıntıyla ya da "32. cümle" ile biter.
@@ -417,7 +467,7 @@ Ayrıntı modülün başındaki açıklamadadır. `verify_citations` aracı ve a
 - **Hazır komutlar** (İngilizce adlar): `topic_survey(topic, scope?)` konunun eserlerde geçtiği yerler (2. hedef), `text_and_commentary(question)` "metin ne diyor" ve "yorum" ayrı (3. hedef), `discuss(topic)` müzakere, `self_test(section)` bölümden soru sorup cevabı metinle denetler, `lesson_plan(subject)` atıflı ders planı.
 - **Sunucu talimatları:** atıfı araç sonucundan al ve uydurma; kullanıcıya cümleyi numarasıyla değil yol + incipit ile göster; yolu eserden başlayarak tam ve kısaltmadan yaz, önceki atfa göre göreli yazma, `›` işaretini yalnızca atıfta kullan; tırnağı yalnızca metnin kendi sözlerine koy; aynı bölümde birkaç cümle süren temsil, misal ya da düşünceyi tek blokta ve "… ile başlayan N cümle" atfıyla ver (en çok 8 cümle, hâşiye ayrı); her alıntıyı (kısa olanlar ve öncekini genişletenler de) düz yazının içinde değil, kendi satırında tırnak içinde alıntı bloğu (`> "…"`) olarak ver, düz yazıda en çok tek bir terim tırnağa alınır (kullanıcının isteği); cevaptan önce atıfları `verify_citations` ile denetle; âyetin Arapçasını yalnızca harekeli ve `get_ayah`'tan (ya da eserin alıntıladığı gibi) ver, ezberden yazma, atfı "Bakara Sûresi, 2:255" biçiminde `›` olmadan yaz, Diyanet mealini adıyla an, birlikte tercüme edilen âyetleri söyle, hiçbir mealin Kur'ân'ın yerini tutmadığını hatırla; âyet ilişkilerini asla "tefsir" diye anma, türüyle ve kanıt cümlesiyle ver, zayıf ilişkiyi bölümün konusu gibi sunma, ilişkili âyetleri her alıntının ardına ekleme (sorulursa ya da konuyla ilgiliyse ver); âyet ve hadis mealleri nâşirindir, müellife mal etme ve metin diye alıntılama, müellifin "Yani, …" izahı metindir; bulamazsan söyle; metni ve yorumu ayır; önce ara, sonra bağlamı oku.
 
-Sonraki aşamalar için bkz. "Aşamalar" (8–14).
+Sonraki aşamalar için bkz. "Aşamalar" (12–17).
 
 ## Uçtan uca deneme (Aşama 7)
 
@@ -456,13 +506,18 @@ Tamamlananlar (PDF dönemi): PDF inceleme, Sözler'in PDF'ten ayrıştırılmas�
 6. **MCP sunucusu:** `library.py` + `server.py`; araçlar, kaynaklar, hazır komutlar; süreç içi istemciyle testler. MCP Inspector ile elle deneme.
 7. **Uçtan uca test:** `golden.py` ile Claude Code'u istemci yaparak (Linux'ta Claude Desktop yok) `tests/golden/` sorularıyla dene, adreslerin doğruluğunu elle kontrol et.
 
-Sonraki aşamalar (sıra kullanıcıyla birlikte belirlenir):
+Ardından tamamlananlar (numaralar 2026-10-28'de yeniden düzenlendi; eski commit mesajlarındaki "Aşama 13, 14, 15" bugünkü 9, 10, 11'dir):
 
 8. **Anlamsal arama:** A: değerlendirme seti (50 soru, kullanıcı onayladı); B: yerel/API modellerin karşılaştırması (kullanıcı API'yi tercih etti; `voyage-context-4` seçildi); C: `semantic_search` aracı, bölüm sıralaması, 512 boyut int8 depo. Bkz. Anlamsal arama.
-9. **Konu fihristi (2. hedef):** Konu → cümle listeleri. Anlamsal aramanın üzerine kurulur; konu listesi ve her konunun cümleleri elle gözden geçirilebilir bir dosyada durur, sunucuya araç ya da kaynak olarak eklenir.
-10. **Kontrol işaretlerinin işlenmesi:** Arayüzden dışa aktarılan `risale-kontrol-notlari.json` dosyasındaki ✓/✗ ve notlar ayrıştırıcı düzeltmelerine dönüşür. Her ✗ için kök neden bulunur, kural düzeltilir, altın örnekler gerekirse yenilenir; düzeltilemeyenler açıkça listelenir.
-11. **Eksik eserler:** Fihrist Risalesi, Rumuzat-ı Semaniye, Kızıl İcaz, Ta'likat, Hizb-i Nurî. Kaynak bulunmasına bağlıdır (bkz. Kapsam ve kaynaklar).
-12. **Sunucu kimlik doğrulaması ve uzaktan erişim** (2026-10-27'de kullanıcı kararıyla ertelendi; kişisel kullanım için yerelde Claude Code yeterli, ortak derlemlerde yeniden gündeme gelir): Amaç sunucuyu claude.ai'den (tarayıcı ve telefon) özel bağlayıcı olarak kullanmak. Bugün `streamable-http` kimlik doğrulamasızdır ve yalnızca `127.0.0.1`'de dinler; bu hâliyle dışarı açılmaz, çünkü metinler herkese açılmış olur (kaynak sitelerin telif uyarısı, kullanım kişiseldir). Yapılacaklar: MCP'nin yetkilendirme yöntemi (OAuth 2.1) ile tek kullanıcılı erişim, sunucuyu dışarı açan bir tünel (Cloudflare Tunnel, Tailscale Funnel gibi), stdio kullanımının değişmemesi, yetkisiz isteğin reddedildiğini gösteren testler. claude.ai bağlayıcılarının ve SDK'nın güncel gereksinimleri aşamanın başında belgelerden doğrulanır; tahminle yazılmaz.
-13. **Kur'ân katmanı:** Tanzil'den metin ve iki Diyanet meali, `get_ayah` aracı, kaynağın âyetlerinin denetimi ve işaretsiz âyetlerin bulunması. Bkz. Kur'ân katmanı.
-14. **Âyet ilişkileri:** Risale'nin hangi yerinin hangi âyetle bağ kurduğu; kurallarla, kanıt cümlesiyle. "Tefsir" denmez (kullanıcının kararı: kuralla bulunan bağ bir hüküm değildir). Kullanıcı güçlü ilişkilerden 40'lık örneklemi gözden geçirir. Bkz. Âyet ilişkileri.
-15. **Aslı Arapça eserler:** Arapça aslı ve Türkçesi ayrı eser olarak tutulur, bölüm kimlikleri birbirine paralel. Bkz. Aslı Arapça eserler.
+9. **Kur'ân katmanı:** Tanzil'den metin ve iki Diyanet meali, `get_ayah` aracı, kaynağın âyetlerinin denetimi ve işaretsiz âyetlerin bulunması. Bkz. Kur'ân katmanı.
+10. **Âyet ilişkileri:** Risale'nin hangi yerinin hangi âyetle bağ kurduğu; kurallarla, kanıt cümlesiyle. "Tefsir" denmez (kullanıcının kararı: kuralla bulunan bağ bir hüküm değildir). Kullanıcı güçlü ilişkilerden 40'lık örneklemi gözden geçirir. Bkz. Âyet ilişkileri.
+11. **Aslı Arapça eserler:** Arapça aslı ve Türkçesi ayrı eser olarak tutulur, bölüm kimlikleri birbirine paralel; ayrıca Rumuzat-ı Semaniye (kullanıcının PDF'i). Bkz. Aslı Arapça eserler.
+
+Sonraki aşamalar (kullanıcının 2026-10-28 kararıyla bu sırayla):
+
+12. **Sunucu kimlik doğrulaması ve uzaktan erişim (OAuth):** (kod, testler ve Tailscale Funnel ile claude.ai'den gerçek deneme tamam; uzak sunucuya taşıma ertelendi, sunucu şimdilik kullanıcının bilgisayarında; bkz. Uzaktan erişim ve OAuth) Amaç sunucuyu claude.ai'den (tarayıcı, Desktop, telefon) ve uzaktaki Claude Code'dan özel bağlayıcı olarak kullanmak. Bugün `streamable-http` kimlik doğrulamasızdır ve yalnızca `127.0.0.1`'de dinler; bu hâliyle dışarı açılmaz, çünkü metinler herkese açılmış olur (kaynak sitelerin telif uyarısı, kullanım kişiseldir). Yapılacaklar: MCP'nin yetkilendirme yöntemi (OAuth 2.1, PKCE S256, korumalı kaynak üst verisi RFC 9728, yetkilendirme sunucusu üst verisi RFC 8414, dinamik istemci kaydı RFC 7591) ile tek kullanıcılı erişim; sunucuyu dışarı açan bir tünel; stdio kullanımının değişmemesi; yetkisiz isteğin reddedildiğini gösteren testler. Claude'un gereksinimleri (2026-10-28'de belgelerden doğrulandı, https://claude.com/docs/connectors/building/authentication): oturum açma `401` + `WWW-Authenticate: Bearer resource_metadata=…` ile başlar; üst verinin `resource` alanı sunucu adresiyle birebir aynı olmalı; geri dönüş adresi `https://claude.ai/api/mcp/auth_callback`, Claude Code için portu yok sayılan `http://localhost/callback` ve `http://127.0.0.1/callback`; jeton uç noktası form gövdesi kabul eder, geçersiz yenileme jetonunda `invalid_grant` döner, açık istemcilerde yenileme jetonu döndürülür (rotation); keşif, kayıt ve jeton uç noktaları 10 saniyede cevap verir; istekler Anthropic'in `160.79.104.0/21` aralığından gelir (sunucu internetten erişilebilir olmalı).
+13. **İç atıf ağı:** Risale'nin kendi göndermeleri ("Yirmi Beşinci Söz'de beyan edildiği gibi", "Onuncu Söz'ün İkinci Hakikati'nde") bölüm kimliklerine çözülür; kanıt cümlesiyle, kurallarla. Model bir konuyu Bediüzzaman'ın kendi bağlantılarıyla izler. Çözülemeyen göndermeler açıkça listelenir; adres tahmin edilmez.
+14. **Hadis katmanı:** Açık ve güvenilir bir hadis derleminin (aşamanın başında araştırılır, lisansı doğrulanır) eklenmesi; Risale'deki hadislerin (kaynağın işaretlediği 463 parça ve metne gömülü olanlar) Kur'ân katmanındaki gibi iskeletle eşlenmesi. Sıhhat derecesi kaynak verisinden gelir, biz hüküm vermeyiz; eşleme "tam alıntı / mânen / bulunamadı" diye ayrılır.
+15. **Konu fihristi (2. hedef):** Konu → cümle listeleri. Anlamsal aramanın üzerine kurulur; konu listesi (eserlerin fihrist bölümleri ve kullanıcının listesi) ve her konunun cümleleri elle gözden geçirilebilir bir dosyada durur, sunucuya araç ya da kaynak olarak eklenir. Asıl paragraflar değişmez; konu, ardışık cümle aralıklarından ("pasaj") oluşan ayrı bir katmandır.
+16. **Kontrol işaretlerinin işlenmesi:** Arayüzden dışa aktarılan `risale-kontrol-notlari.json` dosyasındaki ✓/✗ ve notlar ayrıştırıcı düzeltmelerine dönüşür. Her ✗ için kök neden bulunur, kural düzeltilir, altın örnekler gerekirse yenilenir; düzeltilemeyenler açıkça listelenir. Kullanıcının yükünü azaltmak için önce bir kontrol kuyruğu: şüpheli yerler (çok uzun cümleler, boş bölümler, düşük eşleme oranı, PDF kaynaklı eserler) otomatik listelenir.
+17. **Eksik eserler:** Fihrist Risalesi (ana ciltlerin fihrist bölümlerinden bir mecmua olarak), Kızıl İcaz'ın Türkçesi (kullanıcının PDF'i bekleniyor), Hizb-i Nurî (nurpedia'da bulundu, karar bekliyor). Bkz. Kapsam ve kaynaklar.

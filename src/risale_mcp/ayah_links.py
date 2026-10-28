@@ -1,4 +1,4 @@
-"""Aşama 14: âyet ilişkileri — Risale'nin hangi yerinin hangi âyetle bağ kurduğu.
+"""Aşama 10: âyet ilişkileri — Risale'nin hangi yerinin hangi âyetle bağ kurduğu.
 
 Kullanım:
     uv run python -m risale_mcp.ayah_links     # data/interim/ayah_links/{links.md, sample-<tur>.md}

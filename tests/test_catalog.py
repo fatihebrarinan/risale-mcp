@@ -14,8 +14,9 @@ def test_slugs_are_unique_and_url_safe():
 
 
 def test_every_listed_work_is_present():
-    # Kullanıcının listesindeki 42 madde; Mesnevî'nin ve İşaratü'l-İ'caz'ın Arapça aslı ve Türkçesi ayrı eser.
-    assert len(WORKS) == 44
+    # Kullanıcının listesindeki 42 madde; aslı Arapça eserlerin (Mesnevî, İşaratü'l-İ'caz, Kızıl İcaz, Ta'likat)
+    # Arapçası ve Türkçesi ayrı eser; Hutbe-i Şamiye'nin Arapçası da (İhsan Kasım tercümesi) ayrı eser.
+    assert len(WORKS) == 47
 
 
 def test_missing_works_have_no_source_and_others_do():

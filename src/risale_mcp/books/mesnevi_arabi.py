@@ -13,6 +13,10 @@ Word dosyasının özellikleri:
   glifi ("end") metne yazılmaz.
 - "******" ayıraçları atılır; sayfa satırı yoktur.
 
+Nokta Risalesi bu baskıda yoktur; arşivdeki ayrı dosyadan (İhsan Kasım baskısı, sayfa satırlı düz döküm)
+alınır. Aslı Türkçedir ("فترجمناه كاملاً"), İhsan Kasım'ın tercümesi olarak işaretlenir. Bölümleri Türkçe
+eserle paraleldir: "ايضاح" İfâde-i Merâm, "البرهان الاول: …" Birinci Bürhân.
+
 Yapı Türkçe eserle paraleldir: risaleler ve bölümler Türkçe eserin kimliklerini taşır (`lemalar/lema-04`,
 `katre/bab-01`), başlıklar Arapça basılı hâlleridir. Badıllı'nın ön sözü ve sondaki fihrist alınmaz.
 Müellifin Türkçe yazdığı Mukaddime'nin Arapçası tercümedir; alt başlıkta işaretlenir.
@@ -25,7 +29,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from risale_mcp.books.model import ArabicSpan, Book, Node, Text
-from risale_mcp.books.rasaelalnour import ORDINALS, _key
+from risale_mcp.books.rasaelalnour import ORDINALS, Report as FlatReport, Row, _key, join_pages, pages, read_rows
 from risale_mcp.catalog import Work
 from risale_mcp.quran import SURA_NAMES
 from risale_mcp.sources import qurancom
@@ -195,7 +199,7 @@ def _ordinal(words: list[str]) -> int | None:
     return unit + 10 if len(words) > 1 and words[1].startswith("عشر") else unit
 
 
-def parse(work: Work, docx_path: Path, glyph_root: Path) -> tuple[Book, Report]:
+def parse(work: Work, docx_path: Path, glyph_root: Path, nokta_path: Path | None = None) -> tuple[Book, Report]:
     report = Report()
     paras, notes = read(docx_path, glyph_root, report)
     book = Book(work.slug, work.title, {
@@ -208,7 +212,51 @@ def parse(work: Work, docx_path: Path, glyph_root: Path) -> tuple[Book, Report]:
     book.notes.append({"node_id": book.root.id, "after": None,
                        "text": "Naşirin (Abdülkadir Badıllı) ön sözü ve sondaki fihrist esere dahil edilmedi."})
     _Builder(book, notes, report).run(paras[start:end])
+    if nokta_path:
+        _nokta(book, read_rows(nokta_path))
     return book, report
+
+
+NOKTA_TRANSLATED = "İhsan Kasım es-Sâlihî'nin tercümesi (aslı Türkçe); İhsan Kasım baskısından"
+_BURHAN = re.compile(r"^البرهان\s+(\S+?)\s*:")
+
+
+def _nokta(book: Book, rows: list[Row]) -> None:
+    """Nokta Risalesi (İhsan Kasım baskısının ayrı dosyası): sayfa satırları, dipnotlar ve bölümler."""
+    report = FlatReport()
+    lines = join_pages(pages(rows, report), report)
+    title = next(i for i, line in enumerate(lines) if _key(line.text).strip() == "نقطة")
+    risale = book.add_node(book.root, "nokta", lines[title].text,
+                           subtitle=f"{_strip_marker(lines[title + 1].text)} — {NOKTA_TRANSLATED}")
+    for line in lines[title + 1:title + 2]:
+        _notes(book, risale, None, line)
+    node = meram = risale
+    seen: set[int] = set()
+    for line in lines[title + 2:]:
+        key = _key(line.text).strip()
+        if key in ("***", "*"):
+            continue
+        if key == "ايضاح":
+            node = meram = book.add_node(risale, "ifade-i-meram", line.text.strip())
+            continue
+        if (m := _BURHAN.match(key)) and (n := ORDINALS.get(m[1])):
+            # İfâde-i Merâm dört bürhânı önce kısaca sayar (onun altında), sonra her biri risalenin bölümüdür.
+            parent = risale if n in seen else meram
+            seen.add(n)
+            node = book.add_node(parent, f"burhan-{n:02d}", f"البرهان {m[1]}", type="Bürhân", number=n,
+                                 heading="inline")
+        kind = "signature" if line.align == "end" or key in ("سعيد النورسي", "سعيد النورسى") else "paragraph"
+        record = book.add_paragraph(node, kind, Text(line.text))
+        _notes(book, node, record, line)
+
+
+def _strip_marker(text: str) -> str:
+    return re.sub(r"\s+\d+$", "", text).strip()
+
+
+def _notes(book: Book, node: Node, record: dict | None, line) -> None:
+    for _, note in line.marks:                 # muhakkikin notları (âyet kaynağı, beytin sahibi, tercüme)
+        book.notes.append({"node_id": node.id, "after": record["id"] if record else None, "text": note})
 
 
 class _Builder:

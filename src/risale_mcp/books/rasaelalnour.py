@@ -273,14 +273,16 @@ def _anchor(body: list[Line], notes: list[list], report: Report) -> None:
         line_at, pos = i, m.start()
 
 
-def join_pages(page_list: list[list[Line]], report: Report) -> list[Line]:
-    """Sayfa sonunda bölünen paragrafı sonraki sayfanın ilk satırıyla birleştirir."""
+def join_pages(page_list: list[list[Line]], report: Report, weight: bool = False) -> list[Line]:
+    """Sayfa sonunda bölünen paragrafı sonraki sayfanın ilk satırıyla birleştirir.
+    `weight`: kalın satır (şerh edilen metin) düz satırla birleşmez."""
     lines: list[Line] = []
     for page in page_list:
         for k, line in enumerate(page):
             prev = lines[-1] if lines else None
             if (k == 0 and prev is not None and prev.align == "start" and line.align == "start"
-                    and not prev.text.rstrip().endswith(_TERMINAL) and not _is_heading(line.text)):
+                    and not prev.text.rstrip().endswith(_TERMINAL) and not _is_heading(line.text)
+                    and not _SECTION_BREAK.match(prev.text) and not (weight and prev.bold != line.bold)):
                 shift = len(prev.text) + 1
                 prev.text = f"{prev.text} {line.text}"
                 prev.marks += [(o + shift, t) for o, t in line.marks]

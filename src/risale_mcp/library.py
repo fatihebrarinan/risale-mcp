@@ -50,6 +50,9 @@ def _preview(text: str) -> str:
     return text if len(text) <= PREVIEW_CHARS else text[:PREVIEW_CHARS].rsplit(" ", 1)[0] + " …"
 
 
+REF_SEP = " › "
+
+
 def opening(incipit: str, text: str) -> str:
     """Kullanıcıya gösterilen ilk kelimeler; cümle daha uzunsa "…" ile."""
     return incipit if len(incipit) >= len(text.rstrip()) else incipit + "…"
@@ -59,6 +62,18 @@ def cite(section_ref: str, opening_words: str, count: int = 1) -> str:
     """Kullanıcıya gösterilen atıf: yol › “ilk kelimeler…”; ardışık cümlelerde “…” ile başlayan N cümle."""
     quoted = f"{section_ref} › “{opening_words}”"
     return quoted if count == 1 else f"{quoted} ile başlayan {count} cümle"
+
+
+# Arama sonuçlarına eklenen hatırlatma: claude.ai gibi genel istemcilerde model aramadan doğrudan cevaba geçiyordu
+# (2026-10-28, kullanım kaydı: iki arama, hiç okuma ve denetim yok).
+SEARCH_NOTE = ("These are candidates, not evidence. Before citing one, read it in context with get_passage(id, "
+               "context=2) or read_section. Show the user cite_as (full path from the work + opening words), never the "
+               "sentence number; quote the text itself in a > block; check the draft with verify_citations.")
+
+
+def hit_cite(sentence_ref: str, incipit: str, text: str) -> str:
+    """Arama sonucundaki cümlenin kullanıcıya gösterilecek atfı (yol › “ilk kelimeler”)."""
+    return cite(sentence_ref.rsplit(REF_SEP, 1)[0], opening(incipit, text))
 
 
 def _ayah_span(start: int, end: int) -> str:
@@ -266,6 +281,8 @@ class Library:
             record = {"id": p["id"], "kind": p["kind"]}
             if p["kind"] == "hasiye":
                 record["hasiye_of"] = p["anchor"] or p["parent_id"]
+                if p["commentator"]:
+                    record["commentary_by"] = p["commentator"]
             if p["id"] in canonical:
                 # Mecmuada eşlenmiş paragraf: metin ve atıf ana cilttedir.
                 group = canonical[p["id"]]
@@ -366,9 +383,10 @@ class Library:
         """Cümle -> ona bağlı hâşiyelerin cümleleri."""
         out = defaultdict(list)
         for s in self.conn.execute(
-                "SELECT p.anchor, s.id, s.ref, s.text FROM paragraphs p JOIN sentences s ON s.paragraph_id = p.id"
+                "SELECT p.anchor, p.commentator, s.id, s.ref, s.text FROM paragraphs p JOIN sentences s ON s.paragraph_id = p.id"
                 f" WHERE p.kind = 'hasiye' AND p.anchor IN ({_placeholders(sentence_ids)}) ORDER BY s.seq", sentence_ids):
-            out[s["anchor"]].append({"id": s["id"], "ref": s["ref"], "text": s["text"]})
+            out[s["anchor"]].append({"id": s["id"], "ref": s["ref"], "text": s["text"],
+                                     **({"commentary_by": s["commentator"]} if s["commentator"] else {})})
         return out
 
     def _arabic_of(self, sentence_ids: list[str]) -> dict[str, list[dict]]:
@@ -422,8 +440,9 @@ class Library:
         result = {
             "total": sum(by_work.values()),
             "by_work": by_work,
-            "results": [{"id": h.sentence_id, "ref": h.ref, "incipit": h.incipit, "text": _preview(h.text)}
+            "results": [{"id": h.sentence_id, "cite_as": hit_cite(h.ref, h.incipit, h.text), "text": _preview(h.text)}
                         for h in hits],
+            "note": SEARCH_NOTE,
         }
         if sections:
             result["matching_sections"] = [{"id": s.node_id, "ref": s.ref} for s in sections]
@@ -457,8 +476,11 @@ class Library:
             ids_ = [s.node_id for s in sections]
             refs = dict(self.conn.execute(f"SELECT id, ref FROM nodes WHERE id IN ({_placeholders(ids_)})", ids_).fetchall())
         result = {
-            "results": [{"id": h.sentence_id, "ref": rows[h.sentence_id]["ref"], "incipit": rows[h.sentence_id]["incipit"],
+            "results": [{"id": h.sentence_id,
+                         "cite_as": hit_cite(rows[h.sentence_id]["ref"], rows[h.sentence_id]["incipit"],
+                                             rows[h.sentence_id]["text"]),
                          "text": _preview(rows[h.sentence_id]["text"]), "similarity": round(h.score, 3)} for h in hits],
+            "note": SEARCH_NOTE,
         }
         if refs:
             result["sections"] = [{"id": s.node_id, "ref": refs[s.node_id], "matches": s.matches} for s in sections]

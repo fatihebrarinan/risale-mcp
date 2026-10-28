@@ -1,4 +1,4 @@
-"""Aşama 13: Kur'ân-ı Kerîm katmanı ve Risale'deki âyetlerin Kur'ân metniyle eşlenmesi.
+"""Aşama 9: Kur'ân-ı Kerîm katmanı ve Risale'deki âyetlerin Kur'ân metniyle eşlenmesi.
 
 Kullanım:
     uv run python -m risale_mcp.fetch quran    # tanzil.net'ten ham veri (bir kez)

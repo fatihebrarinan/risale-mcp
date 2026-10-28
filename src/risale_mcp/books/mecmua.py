@@ -136,15 +136,16 @@ def _fill_short_backwards(mains: list[dict], found: list[list[int]], index: Cano
             found[k] = [nxt[0] - 1]
 
 
-def map_to_canonical(book: dict, index: CanonicalIndex) -> MappingReport:
+def map_to_canonical(book: dict, index: CanonicalIndex, kinds: frozenset[str] | None = None) -> MappingReport:
     """Mecmua JSON'unu yerinde değiştirir: eşlenen paragrafların metni yerine `source`,
-    düğümlerde `sources` (karşılık gelen ana cilt düğümleri) yazılır."""
+    düğümlerde `sources` (karşılık gelen ana cilt düğümleri) yazılır. `kinds` verilirse yalnızca bu
+    türdeki paragraflar eşlenir."""
     report = MappingReport()
     mains = [p for p in book["paragraphs"] if p["kind"] != "hasiye"]
     found: list[list[int]] = []
     previous: int | None = None
     for p in mains:
-        found.append(index.match(p["text"], previous))
+        found.append(index.match(p["text"], previous) if kinds is None or p["kind"] in kinds else [])
         previous = found[-1][-1] if found[-1] else previous
     _fill_short_backwards(mains, found, index)
     found_by_id = {p["id"]: f for p, f in zip(mains, found)}

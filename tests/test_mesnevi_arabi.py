@@ -9,7 +9,9 @@ import zipfile
 
 import pytest
 
-from risale_mcp.books.mesnevi_arabi import _ordinal, parse
+from risale_mcp.books.mesnevi_arabi import _nokta, _ordinal, parse
+from risale_mcp.books.model import Book
+from risale_mcp.books.rasaelalnour import Row
 from risale_mcp.catalog import get_work
 from risale_mcp.paths import BOOKS_DIR
 from risale_mcp.sentences import split
@@ -93,6 +95,31 @@ def test_ordinals():
     assert (_ordinal(["الرابعة"]), _ordinal(["الحادية", "عشرة"]), _ordinal(["الرابع", "عشر"])) == (4, 11, 14)
 
 
+NOKTA = [
+    Row("المثنوي العربي النوري - ص: 419", "end"),
+    Row("نُقْطَةٌ", "center"), Row("من نور معرفة الله جل جلاله 1", "center"),
+    Row("ايضاح", "center"), Row("اذا ما دخلت بستانا."),
+    Row("البرهان الاول: هو محمد صلى الله عليه وسلم."), Row("البرهان الثاني: هذا الكون."),
+    Row("_____"), Row("1 طبعت هذه الرسالة باللغة التركية."),
+    Row("المثنوي العربي النوري - ص: 420", "end"),
+    Row("البرهان الاول: وهو حقيقة محمد"), Row("كلام."), Row("البرهان الثاني: وهو كتاب الكون"),
+    Row("***", "center"), Row("سعيد النورسي", "end"),
+]
+
+
+def test_nokta_is_a_marked_translation_parallel_to_the_turkish_risale():
+    book = Book("el-mesnevi-el-arabi", "x", {})
+    _nokta(book, NOKTA)
+    data = book.to_json()
+    ids = [n["id"].removeprefix("el-mesnevi-el-arabi/") for n in data["outline"][1:]]
+    assert ids == ["nokta", "nokta/ifade-i-meram", "nokta/ifade-i-meram/burhan-01", "nokta/ifade-i-meram/burhan-02",
+                   "nokta/burhan-01", "nokta/burhan-02"]
+    assert "İhsan Kasım" in data["outline"][1]["subtitle"]
+    assert [n["text"] for n in data["notes"]] == ["طبعت هذه الرسالة باللغة التركية."]
+    assert data["paragraphs"][-1]["kind"] == "signature"
+    assert not any("ص:" in p["text"] for p in data["paragraphs"])
+
+
 def test_real_mesnevi():
     path = BOOKS_DIR / "el-mesnevi-el-arabi.json"
     if not path.exists():
@@ -102,3 +129,4 @@ def test_real_mesnevi():
     assert {f"lemalar/lema-{n:02d}" for n in range(1, 15)} <= ids
     assert {f"reshalar/resha-{n:02d}" for n in range(1, 13)} <= ids
     assert {"katre/bab-01", "katre/hatime", "katre/zeyl", "habbe/zeylul-habbe", "sule/zeyl"} <= ids
+    assert {"nokta/ifade-i-meram/burhan-04"} | {f"nokta/burhan-{n:02d}" for n in range(1, 5)} <= ids

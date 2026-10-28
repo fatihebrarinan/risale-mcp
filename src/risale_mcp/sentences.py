@@ -18,7 +18,8 @@ olduğu cümlenin altında kendi içinde numaralanır:
     sozler/10/on-iki-hakikat/hakikat-09/c032            … › Dokuzuncu Hakikat › 32. cümle
     sozler/10/on-iki-hakikat/hakikat-09/c032/h1/c002    … › 32. cümle › Hâşiye › 2. cümle
 Bir cümlede birden çok hâşiye varsa "Hâşiye 1", "Hâşiye 2" olur. Başlıktaki hâşiye
-düğüme bağlanır: `<düğüm>/h1/c001`.
+düğüme bağlanır: `<düğüm>/h1/c001`. Başkasının şerhi (`commentator`) hâşiye gibi bağlanır, ama
+ayrı sayılır: `…/c032/s1/c002`, `… › 32. cümle › Şerh › 2. cümle`.
 """
 
 import argparse
@@ -142,8 +143,8 @@ def segment(book: dict) -> list[dict]:
     sentences: list[dict] = []
     spans_of: dict[str, list[tuple[int, int, str]]] = {}   # paragraf -> cümleleri
     count_in_node: dict[str, int] = defaultdict(int)
-    hasiye_count: dict[str, int] = defaultdict(int)          # bağlantı -> hâşiye sayısı
-    hasiye_prefix: dict[str, tuple[str, str, int]] = {}      # hâşiye paragrafı -> (önek, bağlantı, k)
+    hasiye_count: dict[tuple, int] = defaultdict(int)        # (bağlantı, h|s) -> hâşiye ya da şerh sayısı
+    hasiye_prefix: dict[str, tuple[str, tuple, int]] = {}    # hâşiye paragrafı -> (önek, (bağlantı, h|s), k)
 
     for p in book["paragraphs"]:
         if "text" not in p:                     # mecmuada ana cilde eşlenmiş: cümleleri orada
@@ -153,9 +154,10 @@ def segment(book: dict) -> list[dict]:
             parent = p["parent_id"]
             anchor = parent if parent in node_refs else (_containing(spans_of[parent], p["offset"]) or p["node_id"])
             p["anchor"] = anchor
-            hasiye_count[anchor] += 1
-            k = hasiye_count[anchor]
-            hasiye_prefix[p["id"]] = (f"{anchor}/h{k}", anchor, k)
+            letter = "s" if p.get("commentator") else "h"
+            hasiye_count[anchor, letter] += 1
+            k = hasiye_count[anchor, letter]
+            hasiye_prefix[p["id"]] = (f"{anchor}/{letter}{k}", (anchor, letter), k)
         spans = []
         for m, (start, end) in enumerate(split_paragraph(p, book.get("stops") == "*"), 1):
             if p["kind"] == "hasiye":
@@ -179,8 +181,9 @@ def segment(book: dict) -> list[dict]:
         if anchor is None:
             base = refs[s["node_id"]]
         else:
-            label = "Hâşiye" if hasiye_count[anchor] == 1 else f"Hâşiye {k}"
-            base = f"{refs[anchor]}{REF_SEPARATOR}{label}"
+            name = "Şerh" if anchor[1] == "s" else "Hâşiye"
+            label = name if hasiye_count[anchor] == 1 else f"{name} {k}"
+            base = f"{refs[anchor[0]]}{REF_SEPARATOR}{label}"
         s["ref"] = f"{base}{REF_SEPARATOR}{s['n']}. cümle"
         refs[s["id"]] = s["ref"]
 

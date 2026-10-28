@@ -33,10 +33,12 @@ class Site(StrEnum):
     YENIASYA = "yeniasya"            # yeniasya.com.tr/risaleinur: bozuk kodlu PDF metni, Arapçasız (artık kullanılmıyor)
     KASTAMONUR = "kastamonur"        # kastamonur.com: Âsâr-ı Bedîiyye'den Nutuklar ve Makaleler
     RASAELALNOUR = "rasaelalnour"    # rasaelalnour.com: İhsan Kasım'ın Arapça Külliyatı (Word, RAR arşivi)
+    KESIF = "kesif"                  # Keşif Yolculukları Risale-i Nur Eğitim Programı: Ta'likat'ın Türkçesi (Word)
+    KULLANICI = "kullanici"          # kullanıcının sağladığı dosya (PDF): internette serbest metni olmayan eserler
 
 
 # Bu kaynaklardaki eserler ana metin sayılmaz: ana ciltlerde de geçen parçaları oraya eşlenir.
-SECONDARY_SITES = frozenset({Site.YENIASYA, Site.KASTAMONUR})
+SECONDARY_SITES = frozenset({Site.YENIASYA, Site.KASTAMONUR, Site.KULLANICI})
 
 
 @dataclass(frozen=True)
@@ -71,13 +73,25 @@ def _ilk_donem(*sections: str) -> SourceRef:
     return _erisale("ilk-donem-eserleri", *sections)
 
 
+def _saykal(name: str) -> SourceRef:
+    return SourceRef(Site.RASAELALNOUR, "saykulislam", (name,))   # Saykalü'l-İslâm arşivindeki Word dosyası
+
+
 _E, _A, _M, _H = Group.ESKI_SAID, Group.ANA_CILT, Group.MECMUA, Group.HIZB
 _ASAR_I_BEDIIYYE = "nutuklar-ve-makaleler-asar-i-bediiyyeden"   # kastamonur.com'daki yazı
 
 WORKS: tuple[Work, ...] = (
     # --- Eski Said dönemi
-    Work("kizil-icaz", "Kızıl İcaz", _E, None, Status.MISSING, "Arapça mantık eseri.", language="ar"),
-    Work("talikat", "Ta'likat", _E, None, Status.MISSING, "Arapça mantık eseri.", language="ar"),
+    Work("kizil-icaz", "Kızıl İcaz", _E, None, Status.MISSING,
+         "Türkçesi: ücretsiz tam tercüme bulunamadı (basılı tercümeler telifli). Arapçası Kızıl İcaz (Arapça)."),
+    Work("kizil-icaz-arabi", "Kızıl İcaz (Arapça)", _E, _saykal("قزل ايجاز.doc"),
+         note="Arapça asıl: Ahdarî'nin Süllem'ine hâşiye; İhsan Kasım es-Sâlihî tahkiki (Saykalü'l-İslâm).",
+         language="ar"),
+    Work("talikat", "Ta'likat", _E, SourceRef(Site.KESIF, "talikat"),
+         note="Türkçe tam tercüme (Protranslate; Keşif Yolculukları Risale-i Nur Eğitim Programı).",),
+    Work("talikat-arabi", "Ta'likat (Arapça)", _E, _saykal("تـعـليـقـات.doc"),
+         note="Arapça asıl: Gelenbevî'nin Burhân'ına hâşiye; İhsan Kasım es-Sâlihî tahkiki (Saykalü'l-İslâm).",
+         language="ar"),
     Work("divan-i-harb-i-orfi", "Divan-ı Harb-i Örfî", _E, _ilk_donem("divan-i-harb-i-orfi")),
     Work("nutuk", "Nutuk", _E, SourceRef(Site.KASTAMONUR, _ASAR_I_BEDIIYYE, ("nutuklar",)),
          note="Âsâr-ı Bedîiyye baskısı. Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde."),
@@ -85,6 +99,8 @@ WORKS: tuple[Work, ...] = (
          note="Âsâr-ı Bedîiyye baskısı; sitede Makale – 13 yok."),
     Work("muhakemat", "Muhakemat", _E, _erisale("muhakemat")),
     Work("hutbe-i-samiye", "Hutbe-i Şamiye", _E, _ilk_donem("hutbe-i-samiye")),
+    Work("hutbe-i-samiye-arabi", "Hutbe-i Şamiye (Arapça)", _E, _saykal("الخطبة الشامية.doc"),
+         note="İhsan Kasım es-Sâlihî'nin Türkçeden tercümesi (1911'de okunan Arapça aslı değil).", language="ar"),
     Work("munazarat", "Münazarat", _E, _ilk_donem("munazarat")),
     Work("isaratul-icaz", "İşaratü'l-İ'caz", _E, _erisale("isaratul-icaz")),
     Work("isaratul-icaz-arabi", "İşârâtü'l-İ'câz (Arapça)", _E,
@@ -114,9 +130,9 @@ WORKS: tuple[Work, ...] = (
     Work("mektubat", "Mektubat", _A, _erisale("mektubat", exclude=("hakikat-cekirdekleri",))),
     Work("lemalar", "Lem'alar", _A, _erisale("lemalar")),
     Work("sualar", "Şualar", _A, _erisale("sualar")),
-    Work("rumuzat-i-semaniye", "Rumuzat-ı Semaniye", _A,
-         _erisale("mektubat", "yirmidokuzuncu-mektub-sekizinci-kisim-olan-rumuzat-i-semaniye"),
-         Status.DEFERRED, "Hususi bir risale; kullanıcı kararıyla şimdilik eklenmiyor. erisale'de metin yok."),
+    Work("rumuzat-i-semaniye", "Rumuzat-ı Semaniye", _A, SourceRef(Site.KULLANICI, "rumuzat-i-semaniye"),
+         note="Yirmi Dokuzuncu Mektub'un Üçüncü, Dördüncü ve Sekizinci Kısımları; kullanıcının PDF'i. "
+              "Mektubat'ta da bulunan paragraflar oraya eşlenir."),
     Work("barla-lahikasi", "Barla Lahikası", _A, _erisale("barla-lahikasi")),
     Work("kastamonu-lahikasi", "Kastamonu Lahikası", _A, _erisale("kastamonu-lahikasi")),
     Work("emirdag-lahikasi", "Emirdağ Lahikası", _A, _erisale("emirdag-lahikasi"), note="İki cilt."),

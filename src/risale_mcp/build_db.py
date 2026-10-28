@@ -198,9 +198,9 @@ def _insert_paragraphs(conn: sqlite3.Connection, work: str, paragraphs: list[dic
     for ord_, p in enumerate(paragraphs):
         conn.execute(
             "INSERT INTO paragraphs (id, work, node_id, ord, kind, text, parent_id, mark_offset, anchor,"
-            " center, continued) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            " commentator, center, continued) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (p["id"], work, p["node_id"], ord_, p["kind"], p.get("text"), p.get("parent_id"),
-             p.get("offset"), p.get("anchor"), int(p.get("center", False)), int(p.get("continued", False))))
+             p.get("offset"), p.get("anchor"), p.get("commentator"), int(p.get("center", False)), int(p.get("continued", False))))
         conn.executemany("INSERT INTO paragraph_sources VALUES (?, ?, ?)",
                          [(p["id"], i, source) for i, source in enumerate(p.get("source", []))])
 
@@ -255,8 +255,8 @@ def _insert_arabic(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran
                 (p["id"], i, sentence_at(p["id"], part["start"]), part["start"], part["end"], part["kind"],
                  part.get("meal"), source, ayah and ayah.sura, ayah and ayah.start, ayah and ayah.end, check))
             report.counts["arabic"] += 1
-    if quran and book.get("language") == "ar" and (context := verse_context(book["outline"])):
-        located += _parenthesized(book, context, quran)
+    if quran and book.get("language") == "ar":  # bölümün âyetlerinde (İşaratü'l-İ'caz) ya da Kur'ân'da tek yerde
+        located += _parenthesized(book, verse_context(book["outline"]), quran)
     if quran and book.get("stops") == "*":    # Badıllı'nın Mesnevî baskısı âyeti "{…}" içine yazar
         located += _parenthesized(book, {}, quran, _BRACED)
     if located:
@@ -268,8 +268,8 @@ _BRACED = re.compile(r"\{([^{}]{2,300})\}")
 
 
 def _parenthesized(book: dict, context: dict, quran: Quran, pattern: re.Pattern = _PARENTHESIZED) -> list:
-    """Âyet âyet ilerleyen Arapça eserde (İşaratü'l-İ'caz) işaretsiz parantezli alıntılar: kaynağın âyet diye
-    işaretlediği parçaların dışında kalanlar, bulunduğu bölümün âyetlerinde ya da Kur'ân'da tek yerde."""
+    """Arapça eserlerde işaretsiz parantezli alıntılar: kaynağın âyet diye işaretlediği parçaların dışında
+    kalanlar, bulunduğu bölümün âyetlerinde (âyet âyet ilerleyen İşaratü'l-İ'caz) ya da Kur'ân'da tek yerde."""
     out = []
     for p in book["paragraphs"]:
         if not p.get("text"):

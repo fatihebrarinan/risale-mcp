@@ -192,11 +192,17 @@ class Book:
         self.paragraphs.append(record)
         return record
 
-    def add_hasiye(self, parent_id: str, node: Node, offset: int, text: Text) -> dict:
-        """Hâşiye kaydı. `parent_id` bir paragraf, bir hâşiye ya da (başlıktaki hâşiyede) düğümdür."""
-        k = self._hasiye_counts[parent_id] = self._hasiye_counts.get(parent_id, 0) + 1
-        record = {"id": f"{parent_id}/h{k}", "node_id": node.id, "kind": "hasiye",
+    def add_hasiye(self, parent_id: str, node: Node, offset: int, text: Text, commentator: str | None = None) -> dict:
+        """Hâşiye kaydı. `parent_id` bir paragraf, bir hâşiye ya da (başlıktaki hâşiyede) düğümdür.
+        `commentator` verilirse kayıt müellifin hâşiyesi değil, başkasının şerhidir (Kızıl İcaz'da Abdülmecid
+        Nursî'nin): yapısı hâşiyeninkidir, kimliği `<bağlantı>/s1`, atfı "› Şerh ›"."""
+        prefix = "s" if commentator else "h"
+        key = f"{parent_id}/{prefix}"
+        k = self._hasiye_counts[key] = self._hasiye_counts.get(key, 0) + 1
+        record = {"id": f"{parent_id}/{prefix}{k}", "node_id": node.id, "kind": "hasiye",
                   "parent_id": parent_id, "offset": offset, "text": text.text}
+        if commentator:
+            record["commentator"] = commentator
         if text.arabic:
             record["arabic"] = [a.to_json() for a in text.arabic]
         self.paragraphs.append(record)

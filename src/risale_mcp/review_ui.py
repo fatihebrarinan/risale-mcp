@@ -61,7 +61,7 @@ def book_view(book: dict) -> dict:
     hasiyeler = defaultdict(list)
     for p in book["paragraphs"]:
         if p["kind"] == "hasiye":
-            hasiyeler[p["parent_id"]].append(p["id"])
+            hasiyeler[p["parent_id"], "commentator" in p].append(p["id"])
 
     passages = []
     for p in book["paragraphs"]:            # hâşiye, bağlı olduğu kayıttan sonra gelir
@@ -70,11 +70,13 @@ def book_view(book: dict) -> dict:
         if "source" in p:
             record["source"] = p["source"]
         if p["kind"] == "hasiye":
-            siblings = hasiyeler[p["parent_id"]]
+            siblings = hasiyeler[p["parent_id"], "commentator" in p]
             k = siblings.index(p["id"]) + 1
-            name = "Hâşiye" if len(siblings) == 1 else f"Hâşiye {k}"
+            word = "Şerh" if "commentator" in p else "Hâşiye"
+            name = word if len(siblings) == 1 else f"{word} {k}"
             refs[p["id"]] = f"{refs[p['parent_id']]}{REF_SEPARATOR}{name}"
-            record |= {"parent_id": p["parent_id"], "offset": p["offset"], "label": f"Haşiye-{k}"}
+            label = f"Şerh-{k} ({p['commentator']})" if "commentator" in p else f"Haşiye-{k}"
+            record |= {"parent_id": p["parent_id"], "offset": p["offset"], "label": label}
         else:
             refs[p["id"]] = f"{refs[p['node_id']]}{REF_SEPARATOR}¶{int(p['id'].rsplit('/p', 1)[1])}"
         passages.append(record | {"ref": refs[p["id"]]})

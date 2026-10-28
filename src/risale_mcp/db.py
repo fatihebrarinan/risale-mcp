@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 3
+SCHEMA_VERSION = 4
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -77,7 +77,8 @@ CREATE TABLE node_sources (
 CREATE INDEX node_sources_source ON node_sources(source_node_id);
 
 -- `text` NULL ise paragraf mecmuada ana cilde eşlenmiştir (`paragraph_sources`).
--- Hâşiyede `parent_id` bağlı olduğu paragraf (ya da başlıktaysa düğüm), `anchor` bağlı olduğu cümle.
+-- Hâşiyede `parent_id` bağlı olduğu paragraf (ya da başlıktaysa düğüm), `anchor` bağlı olduğu cümle;
+-- `commentator` doluysa kayıt müellifin hâşiyesi değil, o kişinin şerhidir (Kızıl İcaz'da Abdülmecid Nursî).
 CREATE TABLE paragraphs (
     id          TEXT PRIMARY KEY,
     work        TEXT NOT NULL REFERENCES works(slug),
@@ -88,6 +89,7 @@ CREATE TABLE paragraphs (
     parent_id   TEXT,
     mark_offset INTEGER,
     anchor      TEXT,
+    commentator TEXT,
     center      INTEGER NOT NULL DEFAULT 0,
     continued   INTEGER NOT NULL DEFAULT 0
 );
@@ -168,7 +170,7 @@ CREATE TABLE ayah_quotes (
 );
 CREATE INDEX ayah_quotes_ayah ON ayah_quotes(sura, ayah_start);
 
--- Âyet ilişkileri (Aşama 14, `ayah_links.py`): Risale'nin bir yerinin bir âyetle kurduğu bağ, kanıt cümlesiyle.
+-- Âyet ilişkileri (Aşama 10, `ayah_links.py`): Risale'nin bir yerinin bir âyetle kurduğu bağ, kanıt cümlesiyle.
 -- "Tefsir" diye anılmaz. `kind`: isaret, acilis, izah, dayanak, risale. `scope`: section (bölümün tamamı)
 -- ya da sentence (yalnız kanıt cümlesi). `strength`: strong (bölüm kapsamlı ve izah) ya da weak.
 CREATE TABLE ayah_links (

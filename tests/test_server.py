@@ -12,6 +12,7 @@ import pytest
 from mcp import Client
 
 from conftest import FIRST, IHLAS, KURSI
+from risale_mcp.catalog import get_work
 from risale_mcp.library import Library, LibraryError
 from risale_mcp.paths import DB_PATH
 from risale_mcp.quran import skeleton
@@ -37,8 +38,8 @@ def library(small_db):
 def test_works_lists_catalog_with_availability(library):
     works = {w["id"]: w for w in library.works()}
     assert works["sozler"]["sentences"] == 5 and works["sozler"]["sections"] == 4
-    assert works["kizil-icaz"] == {"id": "kizil-icaz", "title": "Kızıl İcaz", "group": "eski-said", "language": "ar",
-                                   "available": False, "status": "missing", "note": "Arapça mantık eseri."}
+    assert works["kizil-icaz"] == {"id": "kizil-icaz", "title": "Kızıl İcaz", "group": "eski-said", "language": "tr",
+                                   "available": False, "status": "missing", "note": get_work("kizil-icaz").note}
     assert [w["id"] for w in library.works("mecmua")][0] == "asa-yi-musa"
     with pytest.raises(LibraryError, match="Unknown group"):
         library.works("roman")
@@ -258,3 +259,13 @@ def test_real_quran_layer(real_library):
     # Hizbü'l-Kur'ân'daki işaretsiz âyetler de bulunur.
     vias = {r["via"] for r in real_library.find_ayah("Yâsîn", 1, limit=50)["results"]}
     assert vias == {"source", "text"}
+
+
+def test_real_kizil_icaz_commentary_is_a_separate_layer(real_library):
+    items = real_library.read_section("kizil-icaz-arabi/dibace", max_words=300)["items"]
+    assert items[0]["subtitle"].startswith("Bu başlık kaynakta yoktur")
+    sharh = next(i for i in items if i.get("commentary_by"))
+    assert sharh["kind"] == "hasiye" and sharh["commentary_by"] == "Abdülmecid Nursî"
+    assert sharh["sentences"][0]["id"].endswith("/s1/c001")
+    ref = real_library.conn.execute("SELECT ref FROM sentences WHERE id = ?", (sharh["sentences"][0]["id"],)).fetchone()[0]
+    assert " › Şerh › 1. cümle" in ref

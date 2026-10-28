@@ -1,4 +1,4 @@
-"""Aşama 13: Kur'ân katmanı ve Risale'deki âyetlerin Kur'ân metniyle eşlenmesi.
+"""Aşama 9: Kur'ân katmanı ve Risale'deki âyetlerin Kur'ân metniyle eşlenmesi.
 
 Eşleme `conftest.py`'deki küçük Kur'ân'la (ve buna eklenen, Bakara ile aynı başlayan bir sûreyle) sınanır.
 """

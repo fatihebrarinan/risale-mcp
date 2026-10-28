@@ -27,12 +27,15 @@ from risale_mcp.books import mesnevi_arabi as mesnevi_parser
 from risale_mcp.books import rasaelalnour as rasaelalnour_parser
 from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
+from risale_mcp.books import rumuzat, saykal
 from risale_mcp.books import yeniasya as yeniasya_parser
 from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
 from risale_mcp.books.model import Book
 from risale_mcp.catalog import SECONDARY_SITES, WORKS, Group, Site, Status, Work, get_work
 from risale_mcp.db import connect
 from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, RAW_DIR, ROOT
+from risale_mcp.sources import kesif as kesif_source
+from risale_mcp.sources import kullanici as kullanici_source
 from risale_mcp.sources import qurancom as qurancom_source
 from risale_mcp.sources import rasaelalnour as rasaelalnour_source
 from risale_mcp.sources import erisale
@@ -124,14 +127,34 @@ def parse(work: Work) -> tuple[Book, list[str]]:
         docx = rasaelalnour_source.docx(RAW_DIR / Site.RASAELALNOUR, work.source.book, name)
         if work.slug == "el-mesnevi-el-arabi":
             qurancom_source.fetch_pages(mesnevi_parser.qcf_pages(docx), RAW_DIR / "qurancom")
-            book, report = mesnevi_parser.parse(work, docx, RAW_DIR / "qurancom")
+            nokta = rasaelalnour_source.docx(RAW_DIR / Site.RASAELALNOUR, work.source.book, "نقطة من نور معرفة الله.doc")
+            book, report = mesnevi_parser.parse(work, docx, RAW_DIR / "qurancom", nokta)
             return book, [f"  QCF âyet               : {report.verses}, tanınmayan glif {report.unknown_glyphs}",
                           f"  dipnot               : {report.footnotes}, müellifin hâşiyesi {report.hasiye}"]
+        if work.source.book == "saykulislam":
+            book, report = saykal.parse(work, docx, BOOKS_DIR / "hutbe-i-samiye.json")
+            return book, _flat_report(report)
         book, report = rasaelalnour_parser.parse_work(work, docx, BOOKS_DIR / "isaratul-icaz.json")
         return book, [f"  sayfa                : {report.pages}, birleşen paragraf {report.joined}",
                       f"  dipnot               : {report.footnotes}, işareti bulunamayan {len(report.unanchored)}"
                       f" {report.unanchored[:3]}"]
+    if work.source.site is Site.KESIF:
+        book, report = saykal.parse(work, kesif_source.docx_path(RAW_DIR / Site.KESIF, work.source.book))
+        return book, [f"  dipnot               : {report.footnotes}, birleşen paragraf {report.joined}"]
+    if work.source.site is Site.KULLANICI:
+        book, report = rumuzat.parse(work, kullanici_source.pdf_path(RAW_DIR / Site.KULLANICI, work.source.book))
+        return book, [f"  tablo                : {report.tables}",
+                      f"  hâşiye               : {report.hasiye}, metni bulunamayan işaret {report.unmatched_marks[:3]},"
+                      f" işareti bulunamayan metin {report.unmatched_texts[:3]}",
+                      f"  Arapça               : harfe çevrilemeyen {len(report.pdf.unresolved)}"
+                      f" {report.pdf.unresolved[:5]}, bağlanamayan hareke {report.pdf.stray_marks}"]
     raise ValueError(f"{work.source.site} için ayrıştırıcı yok")
+
+
+def _flat_report(report) -> list[str]:
+    return [f"  sayfa                : {report.pages}, birleşen paragraf {report.joined}",
+            f"  dipnot               : {report.footnotes}, işareti bulunamayan {len(report.unanchored)}"
+            f" {report.unanchored[:3]}"]
 
 
 def needs_mapping(work: Work) -> bool:
@@ -145,7 +168,8 @@ def build_work(work: Work) -> None:
     OUTLINE_DIR.mkdir(parents=True, exist_ok=True)
     data = book.to_json()
     if needs_mapping(work):
-        extra += mapping_report(map_to_canonical(data, _canonical_index()))
+        kinds = rumuzat.MAPPED_KINDS if work.source.site is Site.KULLANICI else None
+        extra += mapping_report(map_to_canonical(data, _canonical_index(), kinds))
     data["sentences"] = sentences.segment(data)
     out = BOOKS_DIR / f"{work.slug}.json"
     out.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")

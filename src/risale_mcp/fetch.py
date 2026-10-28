@@ -20,7 +20,8 @@ from typing import Callable
 
 from risale_mcp.catalog import WORKS, Site, Status, Work, get_work, works_from
 from risale_mcp.paths import INTERIM_DIR, RAW_DIR, ROOT
-from risale_mcp.sources import erisale, kastamonur, rasaelalnour, risale_online, risaleoku, tanzil, yeniasya
+from risale_mcp.sources import (erisale, kastamonur, kesif, kullanici, rasaelalnour, risale_online, risaleoku, tanzil,
+                                yeniasya)
 from risale_mcp.sources.http import PoliteClient
 
 DEFAULT_DELAY = 5.0                                 # saniye; siteleri yormamak için
@@ -122,6 +123,8 @@ HANDLERS: dict[Site, Handler] = {
     Site.YENIASYA: _plain_handler(Site.YENIASYA, yeniasya),
     Site.KASTAMONUR: _plain_handler(Site.KASTAMONUR, kastamonur),
     Site.RASAELALNOUR: _plain_handler(Site.RASAELALNOUR, rasaelalnour),
+    Site.KESIF: _plain_handler(Site.KESIF, kesif),
+    Site.KULLANICI: _plain_handler(Site.KULLANICI, kullanici),
 }
 
 

@@ -1,0 +1,225 @@
+# Rumuzat-ı Semaniye PDF'inin gömülü yazı tiplerindeki Arapça glifler (bkz. books/rumuzat.py).
+# yazı tipi, glif no, tür+değer (L harf, S noktasız gövde, D nokta sayısı, M hareke), mürekkebin merkezi (em: x, y)
+DejaVuSans	1	Lم		
+DejaVuSans	2	Mِ	0.25	-0.078
+DejaVuSans	3	Lي		
+DejaVuSans	4	Sbeh		
+DejaVuSans	5	D2	0.098	0.037
+DejaVuSans	6	Lر		
+DejaVuSans	7	Mَّ	0.25	0.8
+DejaVuSans	8	Mَ	0.25	0.649
+DejaVuSans	9	Mّ	0.25	0.734
+DejaVuSans	10	Lل		
+DejaVuSans	11	Lا		
+DejaVuSans	13	Lن		
+DejaVuSans	14	Snoon		
+DejaVuSans	15	D1	0.037	0.037
+DejaVuSans	16	Lم		
+DejaVuSans	17	Mٰ	0.25	0.745
+DejaVuSans	18	Lح		
+DejaVuSans	19	Mْ	0.249	0.744
+DejaVuSans	20	Lه		
+DejaVuSans	21	Lل		
+DejaVuSans	22	Mّ	0.25	0.734
+DejaVuSans	23	Lس		
+DejaVuSans	24	Lب		
+DejaVuSans	25	Sbeh		
+DejaVuSans	26	Sbeh		
+DejaVuSans	27	Lن		
+DejaVuSans	28	Snoon		
+DejaVuSans	29	Lا		
+DejaVuSans	30	Lح		
+DejaVuSans	31	Lب		
+DejaVuSans	32	Sbeh		
+DejaVuSans	33	Lس		
+DejaVuSans	34	Lر		
+DejaVuSans	35	Lش		
+DejaVuSans	36	D3	0.098	0.098
+DejaVuSans	37	Lم		
+DejaVuSans	38	Lء		
+DejaVuSans	39	Lج		
+DejaVuSans	40	Lف		
+DejaVuSans	41	Sfeh		
+DejaVuSans	42	Mَ	0.25	0.649
+DejaVuSans	43	Lق		
+DejaVuSans	44	Sfeh		
+DejaVuSans	45	Sfeh		
+DejaVuSans	46	Mُ	0.25	0.732
+DejaVuSans	47	Lو		
+DejaVuSans	48	Syeh		
+DejaVuSans	49	Lق		
+DejaVuSans	50	Sfeh		
+DejaVuSans	51	Lذ		
+DejaVuSans	52	Lد		
+DejaVuSans	53	Lھ		
+DejaVuSans	54	Lـ		
+DejaVuSans	55	Lت		
+DejaVuSans	56	Sbeh		
+DejaVuSans	57	Lذ		
+DejaVuSans	58	Lد		
+DejaVuSans	59	Lف		
+DejaVuSans	60	Lع		
+DejaVuSans	61	Lت		
+DejaVuSans	62	Lد		
+DejaVuSans	63	Lو		
+DejaVuSans	64	Lت		
+DejaVuSans	65	Sbeh		
+DejaVuSans	66	Lن		
+DejaVuSans	67	Lك		
+DejaVuSans	68	Lن		
+DejaVuSans	69	Lع		
+DejaVuSans	70	Lلا		
+DejaVuSans	71	Lآ		
+DejaVuSans	72	Mٓ	0.25	0.655
+DejaVuSans	73	Mَّ	0.25	0.803
+DejaVuSans	74	Lل		
+DejaVuSans	75	Lص		
+DejaVuSans	76	Lھ		
+DejaVuSans	77	Lظ		
+DejaVuSans	78	Lط		
+DejaVuSans	79	Mٍ	0.146	-0.078
+DejaVuSans	80	Mٍ	0.25	-0.122
+DejaVuSans	81	Lم		
+DejaVuSans	82	Lک		
+DejaVuSans	83	Lج		
+DejaVuSans	84	Lق		
+DejaVuSans	85	Sqaf		
+DejaVuSans	86	Lغ		
+DejaVuSans	87	Lد		
+DejaVuSans	88	Mً	0.25	0.708
+DejaVuSans	89	Lش		
+DejaVuSans	90	Lث		
+DejaVuSans	91	Sbeh		
+DejaVuSans	92	Lس		
+DejaVuSans	93	Lق		
+DejaVuSans	94	Sqaf		
+DejaVuSans	95	Mٓ	0.25	0.655
+DejaVuSans	96	Lي		
+DejaVuSans	97	Lح		
+DejaVuSans	98	Mٌ	0.25	0.732
+DejaVuSans	99	Lظ		
+DejaVuSans	100	Lط		
+DejaVuSans	101	Lب		
+DejaVuSans	102	Lک		
+DejaVuSans	103	Lت		
+DejaVuSans	104	Lض		
+DejaVuSans	105	Lص		
+DejaVuSans	106	Lط		
+DejaVuSans	107	Lج		
+DejaVuSans	108	Sbeh		
+DejaVuSans	109	Lض		
+DejaVuSans	110	Lز		
+DejaVuSans	111	Lل		
+DejaVuSans	112	Lف		
+DejaVuSans	113	Sfeh		
+DejaVuSans	114	Lخ		
+DejaVuSans	115	Lه		
+DejaVuSans	116	Lص		
+DejaVuSans	117	Lة		
+DejaVuSans	118	Lخ		
+DejaVuSans	119	Lلا		
+DejaVuSans	120	Lض		
+DejaVuSans	121	Syeh		
+DejaVuSans	122	Lس		
+DejaVuSans	123	Lة		
+DejaVuSans	124	Mُّ	0.25	0.883
+DejaVuSans	125	Lز		
+DejaVuSans	126	Lآ		
+DejaVuSans	127	Lغ		
+DejaVuSans	128	Lط		
+DejaVuSans	129	Lئ		
+DejaVuSans	130	Mٔ	0.247	0.701
+DejaVuSans	131	Mٔ	0.143	0.757
+DejaVuSans	132	Lظ		
+DejaVuSans	133	Lض		
+DejaVuSans	134	Lص		
+DejaVuSans	135	Lئ		
+DejaVuSans	136	Lئ		
+DejaVuSans	137	Lص		
+DejaVuSans	138	Lص		
+DejaVuSans	139	Lك		
+DejaVuSans	140	L٢		
+DejaVuSans	141	L٨		
+DejaVuSans	142	L٥		
+DejaVuSans	143	L٠		
+DejaVuSans	144	L٤		
+DejaVuSans	145	L٩		
+DejaVuSans	146	L٦		
+DejaVuSans	147	L٧		
+DejaVuSans	148	L٣		
+DejaVuSans	149	L١		
+DejaVuSans	150	Lي		
+DejaVuSans	152	Lؤ		
+DejaVuSans	153	Lع		
+DejaVuSans	154	Lب		
+DejaVuSans	155	Lف		
+DejaVuSans	156	Sfeh		
+DejaVuSans	157	Lؤ		
+DejaVuSans	158	Lع		
+DejaVuSans	159	Lط		
+DejaVuSans	162	Lط		
+DejaVuSans	163	Mٌّ	0.25	0.883
+DejaVuSans	164	Lث		
+DejaVuSans	165	Lث		
+DejaVuSans	166	Lغ		
+DejaVuSans	167	Mًّ	0.25	0.859
+DejaVuSans	168	Mًّ	0.25	0.852
+DejaVuSans	169	Lخ		
+DejaVuSans	170	Lح		
+DejaVuSans	171	Lظ		
+DejaVuSans	172	Lح		
+DejaVuSans	173	Lج		
+DejaVuSans	174	Lغ		
+DejaVuSans	175	Lئ		
+DejaVuSans	177	Lلآ		
+DejaVuSans	178	L،		
+DejaVuSans	180	Lش		
+DejaVuSans-Bold	1	L١		
+DejaVuSans-Bold	2	L٢		
+DejaVuSans-Bold	3	L٣		
+DejaVuSans-Bold	4	L٤		
+DejaVuSans-Bold	5	L٥		
+DejaVuSans-Bold	6	L٦		
+DejaVuSans-Bold	7	L٧		
+DejaVuSans-Bold	8	L٨		
+DejaVuSans-Bold	9	L٩		
+DejaVuSans-Bold	10	L٠		
+DejaVuSans-Bold	19	Lا		
+ArialMT	1	Lح		
+ArialMT	2	M۪	0.0	-0.083
+ArialMT	3	M۫	0.0	0.601
+ArialMT	4	Lف		
+ArialMT	5	Lك		
+ArialMT	6	Lك		
+ArialMT	7	Lل		
+ArialMT	8	Lل		
+ArialMT	9	Lب		
+ArialMT	10	Lه		
+ArialMT	11	Lع		
+ArialMT	12	Lج		
+ArialMT	13	Lذ		
+ArialMT	15	Lظ		
+ArialMT	16	Lع		
+ArialMT	17	Lد		
+ArialMT	18	Lن		
+ArialMT	19	Lض		
+ArialMT	20	Lـ		
+ArialMT	21	Lر		
+ArialMT	22	Lز		
+ArialMT	23	Lت		
+ArialMT	24	Lه		
+ArialMT	25	Lغ		
+ArialMT	26	Mٓ	0.106	0.719
+ArialMT	27	Lئ		
+ArialMT	28	Lم		
+ArialMT	29	Lه		
+ArialMT	30	Lه		
+ArialMT	31	Lه		
+ArialMT	32	Lط		
+ArialMT	33	Lق		
+ArialMT	34	Lف		
+ArialMT	35	Lق		
+ArialMT	36	Mّ	0.123	0.684
+ArialMT	37	Lو		
+ArialMT	38	Lي		
+ArialMT	39	Lس		

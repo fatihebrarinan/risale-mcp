@@ -1,4 +1,4 @@
-"""Aşama 14: âyet ilişkileri (`ayah_links.py`).
+"""Aşama 10: âyet ilişkileri (`ayah_links.py`).
 
 Her tür için elle yazılmış küçük bir eser ve `conftest.py`'deki küçük Kur'ân'la kurulan veritabanı.
 """

@@ -16,3 +16,5 @@ data/quran.json
 data/interim/quran/
 data/interim/ayah_links/
 data/interim/rasaelalnour/
+data/*.pdf
+data/auth.db

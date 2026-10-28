@@ -1,5 +1,5 @@
 {
- "about": "Kullanıcının âyet ilişkisi örneklemlerindeki kararları (Aşama 14). strong: güçlü olmalı; weak: zayıf olmalı ya da hiç olmamalı. node: bölüm kimliğinin başı. Yeni örneklemler bu kayıtları dışarıda bırakır.",
+ "about": "Kullanıcının âyet ilişkisi örneklemlerindeki kararları (Aşama 10). strong: güçlü olmalı; weak: zayıf olmalı ya da hiç olmamalı. node: bölüm kimliğinin başı. Yeni örneklemler bu kayıtları dışarıda bırakır.",
  "reviews": [
   {"round": 1, "no": 1, "sura": 17, "ayah": 44, "node": "barla-lahikasi/kisim-03/237", "expect": "weak", "note": "Lâhikaların açılış ibaresi; mektup Ferdün Hayyün… ism-i a'zamı içindir"},
   {"round": 1, "no": 2, "sura": 26, "ayah": 90, "node": "nurun-ilk-kapisi", "expect": "strong", "note": "âyeti temsilleştirmiş"},
