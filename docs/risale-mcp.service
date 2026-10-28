@@ -15,7 +15,7 @@ Description=Risale-i Nur MCP sunucusu (OAuth'lu HTTP, Tailscale Funnel arkasınd
 After=network-online.target
 
 [Service]
-ExecStart=/home/fatih/.local/bin/uv --directory /home/fatih/Belgeler/Coding/Projects/risale-mcp run risale-mcp --transport streamable-http --public-url https://fatih-thinkbook-15-g2-itl.taile0138b.ts.net
+ExecStart=/home/fatih/.local/bin/uv --directory /home/fatih/Belgeler/Coding/Projects/risale-mcp run risale-mcp --transport streamable-http --public-url https://fatih-thinkbook-15-g2-itl.taile0138b.ts.net --anonymous
 Restart=on-failure
 RestartSec=5
 

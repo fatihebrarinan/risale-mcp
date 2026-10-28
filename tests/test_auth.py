@@ -12,7 +12,7 @@ from starlette.testclient import TestClient
 
 from risale_mcp.auth import MAX_FAILURES, AuthStore, check_password, hash_password
 from risale_mcp.library import Library
-from risale_mcp.server import create_server, http_security
+from risale_mcp.server import create_server, http_app, http_security
 
 PUBLIC = "https://mcp.example"
 CALLBACK = "https://claude.ai/api/mcp/auth_callback"
@@ -199,3 +199,80 @@ def test_revoking_a_user_closes_their_sessions_only(client, store):
 def test_stdio_server_has_no_auth(small_db):
     server = create_server(Library(small_db[0]))
     assert server.settings.auth is None
+
+
+# ---------------------------------------------------------------- hesapsız erişim (lazy authentication)
+
+@pytest.fixture
+def anon(small_db, store):
+    server = create_server(Library(small_db[0]), PUBLIC, store, anonymous=True, anonymous_semantic=0)
+    with TestClient(http_app(server, PUBLIC, anonymous=True), base_url=PUBLIC, follow_redirects=False) as client:
+        yield client
+
+
+def open_session(client, token: str | None = None) -> dict:
+    headers = {**MCP_HEADERS, **({"Authorization": f"Bearer {token}"} if token else {})}
+    response = client.post("/mcp", headers=headers, json={"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+        "protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "t", "version": "1"}}})
+    assert response.status_code == 200, response.text
+    if session := response.headers.get("mcp-session-id"):
+        headers["Mcp-Session-Id"] = session
+    client.post("/mcp", headers=headers, json={"jsonrpc": "2.0", "method": "notifications/initialized"})
+    return headers
+
+
+def call(client, headers: dict, tool: str, arguments: dict | None = None):
+    return client.post("/mcp", headers=headers, json={"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                                                      "params": {"name": tool, "arguments": arguments or {}}})
+
+
+def test_anonymous_can_search_and_is_logged_without_a_user(anon, store):
+    headers = open_session(anon)
+    response = call(anon, headers, "search", {"query": "kiyamet"})
+    assert response.status_code == 200 and "sozler/10/hakikat-01" in response.text
+    logged = [r for r in store.usage() if r["name"] == "search"]
+    assert logged and logged[0]["user"] is None
+
+
+def test_anonymous_sign_in_gets_a_401_challenge(anon):
+    headers = open_session(anon)
+    response = call(anon, headers, "sign_in")
+    assert response.status_code == 401
+    challenge = response.headers["www-authenticate"]
+    assert 'resource_metadata="https://mcp.example/.well-known/oauth-protected-resource/mcp"' in challenge
+    assert 'scope="risale:read"' in challenge
+
+
+def test_signed_in_user_is_named_and_semantic_search_is_not_limited(anon):
+    _, token = tokens(anon)
+    headers = open_session(anon, token["access_token"])
+    assert '\\"signed_in_as\\":\\"fatih\\"' in call(anon, headers, "sign_in").text
+    response = call(anon, headers, "semantic_search", {"query": "kıyamet"})
+    assert "daily limit" not in response.text                     # sınır hesapsızlar için
+
+
+def test_anonymous_semantic_search_has_a_daily_limit(anon):
+    headers = open_session(anon)
+    response = call(anon, headers, "semantic_search", {"query": "kıyamet"})
+    assert response.status_code == 200 and "daily limit" in response.text and "use search" in response.text.lower()
+
+
+def test_invalid_token_is_still_rejected(anon):
+    response = anon.post("/mcp", headers={**MCP_HEADERS, "Authorization": "Bearer yanlis"},
+                         json={"jsonrpc": "2.0", "id": 1, "method": "ping"})
+    assert response.status_code == 401                            # hesapsız yola düşmez: Claude jetonu yeniler
+
+
+def test_anonymous_requests_are_rate_limited(anon):
+    gate = next(r.app for r in anon.app.router.routes if getattr(r, "path", None) == "/mcp")
+    gate.per_minute = 3
+    codes = [anon.post("/mcp", headers=MCP_HEADERS, json={"jsonrpc": "2.0", "id": 1, "method": "ping"}).status_code
+             for _ in range(5)]
+    assert codes[-1] == 429
+
+
+def test_without_anonymous_mode_there_is_no_sign_in_tool(client):
+    _, token = tokens(client)
+    headers = open_session(client, token["access_token"])
+    assert "sign_in" not in client.post("/mcp", headers=headers, json={
+        "jsonrpc": "2.0", "id": 3, "method": "tools/list"}).text

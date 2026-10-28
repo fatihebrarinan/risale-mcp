@@ -19,6 +19,14 @@ Hesaplar (kullanıcının kararı: kişi başına hesap, herkese bütün derlem 
 - `usage`: her MCP isteği (kim, ne zaman, hangi araç, hangi parametreler, süre, hata) kaydedilir
   (kullanıcının kararı; gelişim için). Parametreler kısaltılarak saklanır.
 
+Hesapsız erişim (kullanıcının kararı, 2026-10-28; Claude'un "lazy authentication"ı,
+https://claude.com/docs/connectors/building/lazy-authentication.md): `--anonymous` ile `Authorization` başlığı
+taşımayan istekler de geçer (`AnonymousGate`). Jeton taşıyan istek eskisi gibi denetlenir (geçersizse 401, Claude
+jetonu yeniler). Giriş gerektiren araç (`sign_in`) hesapsız çağrılınca HTTP 401 + `WWW-Authenticate` döner; Claude
+sohbette "Bağlan" kartı gösterir, giriş sonrası aynı çağrıyı tekrarlar. Hesapsızlar için anlamsal aramanın günlük
+toplam sınırı vardır (`ANON_SEMANTIC_PER_DAY`), bütün hesapsız istekler dakikada `ANON_PER_MINUTE` ile sınırlıdır
+(claude.ai'nin istekleri hep aynı Anthropic adreslerinden geldiği için sınır adres başına değil, topludur).
+
 Veri `data/auth.db`'dedir (git'e eklenmez); `risale.db` her kurulumda sıfırdan yazıldığı için oraya konmaz.
 
 Yönetim: `risale-mcp auth add-user <ad>`, `passwd`, `remove-user`, `users`, `sessions`, `revoke`, `usage`.
@@ -251,6 +259,10 @@ class AuthStore:
         self._run("INSERT INTO usage VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
                   (time.time(), user, client_id, method, name, text, ms, error))
 
+    def anonymous_calls(self, tool: str, since: float) -> int:
+        return self._run("SELECT count(*) FROM usage WHERE user IS NULL AND method = 'tools/call' AND name = ?"
+                         " AND ts >= ?", (tool, since))[0][0]
+
     def usage(self, user: str | None = None, limit: int = 50) -> list[sqlite3.Row]:
         sql = "SELECT * FROM usage" + (" WHERE user = ?" if user else "") + " ORDER BY ts DESC LIMIT ?"
         return self._run(sql, (user, limit) if user else (limit,))
@@ -449,6 +461,79 @@ def usage_middleware(store: AuthStore):
                 store.log(token.subject if token else None, token.client_id if token else None, ctx.method,
                           name, args, int((time.perf_counter() - start) * 1000), error)
     return middleware
+
+
+# ---------------------------------------------------------------- hesapsız erişim
+
+ANON_PER_MINUTE = 120                  # bütün hesapsız MCP istekleri, toplam
+ANON_SEMANTIC_PER_DAY = 2000           # hesapsızların günlük anlamsal arama sınırı, toplam
+PROTECTED_TOOLS = frozenset({"sign_in"})
+
+
+def start_of_day(now: float | None = None) -> float:
+    t = time.localtime(now or time.time())
+    return time.mktime((t.tm_year, t.tm_mon, t.tm_mday, 0, 0, 0, 0, 0, -1))
+
+
+def _calls_protected_tool(body: bytes) -> bool:
+    try:
+        data = json.loads(body)
+    except ValueError:
+        return False
+    for message in data if isinstance(data, list) else [data]:
+        if isinstance(message, dict) and message.get("method") == "tools/call" \
+                and (message.get("params") or {}).get("name") in PROTECTED_TOOLS:
+            return True
+    return False
+
+
+class AnonymousGate:
+    """`/mcp` önündeki kapı: jetonlu istek SDK'nın denetimine (`protected`), jetonsuz istek doğrudan MCP'ye
+    (`inner`) gider; jetonsuz `sign_in` çağrısı 401 alır, hesapsız istekler dakika sınırını aşınca 429."""
+
+    def __init__(self, protected, inner, resource_metadata_url: str, per_minute: int = ANON_PER_MINUTE) -> None:
+        self.protected, self.inner = protected, inner
+        self.challenge = (f'Bearer error="invalid_token", error_description="Sign in to use this tool", '
+                          f'resource_metadata="{resource_metadata_url}", scope="{SCOPE}"')
+        self.per_minute = per_minute
+        self.recent: list[float] = []
+
+    async def __call__(self, scope, receive, send) -> None:
+        if any(name == b"authorization" for name, _ in scope.get("headers", [])):
+            return await self.protected(scope, receive, send)
+        body, more = b"", True
+        if scope.get("method") == "POST":
+            while more:
+                message = await receive()
+                body += message.get("body", b"")
+                more = message.get("more_body", False)
+            if _calls_protected_tool(body):
+                return await self._reply(send, 401, {"error": "invalid_token",
+                                                     "error_description": "Sign in to use this tool"},
+                                         [(b"www-authenticate", self.challenge.encode())])
+        now = time.monotonic()
+        self.recent = [t for t in self.recent if now - t < 60] + [now]
+        if len(self.recent) > self.per_minute:
+            return await self._reply(send, 429, {"error": "too_many_requests",
+                                                 "error_description": "Public access is busy; try again shortly."},
+                                     [(b"retry-after", b"30")])
+        replayed = False
+
+        async def replay():
+            nonlocal replayed
+            if scope.get("method") == "POST" and not replayed:
+                replayed = True
+                return {"type": "http.request", "body": body, "more_body": False}
+            return await receive()
+        await self.inner(scope, replay, send)
+
+    @staticmethod
+    async def _reply(send, status: int, payload: dict, headers: list[tuple[bytes, bytes]]) -> None:
+        data = json.dumps(payload).encode()
+        await send({"type": "http.response.start", "status": status,
+                    "headers": [(b"content-type", b"application/json"), (b"content-length", str(len(data)).encode()),
+                                *headers]})
+        await send({"type": "http.response.body", "body": data})
 
 
 # ---------------------------------------------------------------- komut satırı

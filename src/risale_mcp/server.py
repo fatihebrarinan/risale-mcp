@@ -23,13 +23,26 @@ from pathlib import Path
 from typing import Annotated
 from urllib.parse import urlparse
 
+import uvicorn
+from mcp.server.auth.middleware.auth_context import get_access_token
+from mcp.server.auth.middleware.bearer_auth import RequireAuthMiddleware
+from mcp.server.auth.routes import build_resource_metadata_url
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp_types import ToolAnnotations
 from pydantic import Field
+from starlette.applications import Starlette
 
-from risale_mcp.auth import AuthStore, Provider, login_endpoint, usage_middleware
+from risale_mcp.auth import (
+    ANON_SEMANTIC_PER_DAY,
+    AnonymousGate,
+    AuthStore,
+    Provider,
+    login_endpoint,
+    start_of_day,
+    usage_middleware,
+)
 from risale_mcp.auth import main as auth_main
 from risale_mcp.auth import settings as auth_settings
 from risale_mcp.citations import CitationChecker, summary
@@ -182,8 +195,11 @@ def _section_markdown(section: dict) -> str:
 
 # ---------------------------------------------------------------- sunucu
 
-def create_server(library: Library, public_url: str | None = None, store: AuthStore | None = None) -> MCPServer:
-    """`public_url` verilirse sunucu OAuth ile korunur (giriş sayfası `/login`) ve her istek kaydedilir."""
+def create_server(library: Library, public_url: str | None = None, store: AuthStore | None = None,
+                  anonymous: bool = False, anonymous_semantic: int = ANON_SEMANTIC_PER_DAY) -> MCPServer:
+    """`public_url` verilirse sunucu OAuth ile korunur (giriş sayfası `/login`) ve her istek kaydedilir.
+    `anonymous`: hesapsızlar da kullanır (`http_app` kapıyı kurar); anlamsal aramaları günde `anonymous_semantic`
+    ile sınırlıdır, hesabı olan `sign_in` aracıyla giriş yapar."""
     protected = {}
     if public_url:
         store = store or AuthStore()
@@ -274,7 +290,21 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         the text often says the same thing with other, older words. For exact words, phrases or terms use search.
         Read the context of a result with get_passage or read_section before relying on it."""
         with _tool_errors():
+            if anonymous and get_access_token() is None \
+                    and store.anonymous_calls("semantic_search", start_of_day()) >= anonymous_semantic:
+                raise ToolError("The daily limit of semantic searches for users without an account is reached. "
+                                "Use search with the text's own words instead. A user with an account can sign "
+                                "in with the sign_in tool for unlimited use.")
             return _json(library.semantic_search(query, work, group, limit, offset))
+
+    if anonymous:
+        @server.tool(annotations=READ_ONLY)
+        def sign_in() -> str:
+            """Sign in to this server with an account (only if the user asks to sign in or has an account): without
+            an account, semantic_search has a shared daily limit. Calling this without being signed in makes Claude
+            show the user a sign-in card; afterwards it reports who is signed in."""
+            token = get_access_token()
+            return _json({"signed_in_as": token.subject if token else None})
 
     @server.tool(annotations=READ_ONLY)
     def find_sentence(
@@ -421,6 +451,20 @@ def http_security(public_url: str) -> TransportSecuritySettings:
                          "http://127.0.0.1:*", "http://localhost:*"])
 
 
+def http_app(server: MCPServer, public_url: str, anonymous: bool = False) -> Starlette:
+    """OAuth'lu HTTP uygulaması; `anonymous` ise `/mcp` önüne hesapsız erişim kapısı (`auth.AnonymousGate`) konur."""
+    app = server.streamable_http_app(transport_security=http_security(public_url))
+    if anonymous:
+        for route in app.router.routes:
+            if getattr(route, "path", None) == "/mcp" and isinstance(route.app, RequireAuthMiddleware):
+                metadata = str(build_resource_metadata_url(server.settings.auth.resource_server_url))
+                route.app = AnonymousGate(route.app, route.app.app, metadata)
+                break
+        else:
+            raise RuntimeError("/mcp route not found")
+    return app
+
+
 def main() -> None:
     if sys.argv[1:2] == ["auth"]:
         auth_main(sys.argv[2:])
@@ -432,6 +476,10 @@ def main() -> None:
     parser.add_argument("--port", type=int, default=8000)
     parser.add_argument("--public-url", help="HTTP: sunucunun dışarıdan adresi (https://…); OAuth'u açar")
     parser.add_argument("--no-auth", action="store_true", help="HTTP: kimlik doğrulamasız, yalnızca 127.0.0.1")
+    parser.add_argument("--anonymous", action="store_true",
+                        help="HTTP + --public-url: hesapsızlar da kullanır (anlamsal arama sınırlı), hesaplılar sınırsız")
+    parser.add_argument("--anonymous-semantic", type=int, default=ANON_SEMANTIC_PER_DAY,
+                        help="hesapsızların günlük toplam anlamsal arama sınırı")
     args = parser.parse_args()
     load_env()                                    # VOYAGE_API_KEY: proje klasöründeki .env
     library = Library(args.db)
@@ -450,8 +498,14 @@ def main() -> None:
         if not AuthStore().users():
             sys.exit("Henüz hesap yok: önce `risale-mcp auth add-user <ad>`.")
         security = http_security(args.public_url)
-    server = create_server(library, args.public_url)
-    server.run("streamable-http", host=args.host, port=args.port, transport_security=security)
+    if args.no_auth:
+        create_server(library).run("streamable-http", host=args.host, port=args.port, transport_security=security)
+        return
+    if args.anonymous and not args.public_url:
+        sys.exit("--anonymous yalnızca --public-url ile kullanılır.")
+    server = create_server(library, args.public_url, anonymous=args.anonymous,
+                           anonymous_semantic=args.anonymous_semantic)
+    uvicorn.run(http_app(server, args.public_url, args.anonymous), host=args.host, port=args.port)
 
 
 if __name__ == "__main__":
