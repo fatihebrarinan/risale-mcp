@@ -1,0 +1,18 @@
+[Unit]
+Description=Risale-i Nur MCP sunucusu (OAuth + hesapsız erişim, Tailscale Funnel arkasında)
+After=network-online.target tailscaled.service
+Wants=network-online.target
+
+[Service]
+User=risale
+WorkingDirectory=/home/risale/risale-mcp
+ExecStart=/home/risale/risale-mcp/.venv/bin/risale-mcp --transport streamable-http --public-url https://risale.taile0138b.ts.net --anonymous
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/home/risale/risale-mcp/data
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
