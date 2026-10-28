@@ -14,7 +14,7 @@ veriyi okuyamaz, web'de arayamaz. Model varsayılan modeldir.
 Döküm (`stream-json`) `data/interim/golden/<zaman>/<soru>.jsonl` dosyasına yazılır; rapor aynı
 klasördeki `report.md`'dir. Otomatik kontroller:
 - Atıflar: cevaptaki "Yol › Yol › “ilk kelimeler…”" atıfları `citations.py` ile veritabanında aranır
-  (modelin `verify_citations` aracıyla aynı denetim). Bölümü ya da cümlesi bulunamayan atıf uydurma
+  (`citations.py`; kaynakçalı cevapta "[n]" işaretli alıntı blokları kaynakçadaki atfa bağlanır). Bölümü ya da cümlesi bulunamayan atıf uydurma
   olabilir; kısaltılmış yolla yazılan atıf geçerlidir ama ayrıca sayılır.
 - Beklenen bölüm: model beklenen bölümü (alt bölümleriyle) okudu mu, cevapta adı geçiyor mu.
 - Araç kullanımı: hangi araçlar, kaç kez, hatalı çağrılar.
@@ -115,6 +115,7 @@ class Transcript:
     cost_usd: float | None = None
     turns: int | None = None
     seconds: float | None = None
+    output_tokens: int | None = None                         # modelin ürettiği tokenlar (araç girdileri dahil)
     failure: str | None = None
 
 
@@ -149,6 +150,7 @@ def read_transcript(path: Path) -> Transcript:
             transcript.cost_usd = event.get("total_cost_usd")
             transcript.turns = event.get("num_turns")
             transcript.seconds = (event.get("duration_ms") or 0) / 1000
+            transcript.output_tokens = (event.get("usage") or {}).get("output_tokens")
             if event.get("is_error") or event.get("subtype") != "success":
                 transcript.failure = event.get("subtype") or "error"
     if not transcript.answer and transcript.failure is None:
@@ -203,6 +205,7 @@ def evaluate(question: dict, transcript: Transcript, checker: Checker) -> dict:
                 for s in question["sections"]]
     return {
         "tools": len(transcript.calls),
+        "verify_calls": sum(c.name in ("cite", "verify_citations") for c in transcript.calls),
         "tool_errors": sum(c.error for c in transcript.calls),
         "citations": citations,
         "problems": [c for c in citations if not c.verified],
@@ -224,7 +227,7 @@ def _call_line(call: ToolCall) -> str:
 def report(run_dir: Path) -> Path:
     questions = {q["id"]: q for q in load_questions()}
     checker = Checker(Library())
-    rows, sections = [], []
+    rows, sections, totals = [], [], []
     for path in sorted(run_dir.glob("*.jsonl"), key=lambda p: list(questions).index(p.stem)):
         q = questions[path.stem]
         t = read_transcript(path)
@@ -233,8 +236,10 @@ def report(run_dir: Path) -> Path:
         short = sum(c.verified and not c.exact for c in e["citations"])
         ranges = sum(c.verified and c.count > 1 for c in e["citations"])
         expected = " ".join(f"{_mark(s['read'])}{_mark(s['named'])}" for s in e["sections"]) or "—"
-        rows.append(f"| {q['id']} | {q['category']} | {e['tools']} ({e['tool_errors']} hata) | {ok}/{len(e['citations'])}{f' ({short} kısa)' if short else ''}{f' ({ranges} aralık)' if ranges else ''} "
-                    f"| {expected} | {t.seconds or 0:.0f} sn | {t.failure or ''} |")
+        totals.append((t.seconds or 0, t.output_tokens or 0, t.cost_usd or 0, e["verify_calls"]))
+        rows.append(f"| {q['id']} | {q['category']} | {e['tools']} ({e['tool_errors']} hata) | {e['verify_calls']} "
+                    f"| {ok}/{len(e['citations'])}{f' ({short} kısa)' if short else ''}{f' ({ranges} aralık)' if ranges else ''} "
+                    f"| {expected} | {t.seconds or 0:.0f} sn | {t.output_tokens or 0:,} | {t.cost_usd or 0:.2f} $ | {t.failure or ''} |")
         lines = [f"## {q['id']} · {q['category']}", "", f"**Soru:** {q['question']}", "",
                  f"**Beklenen:** {q['expected']}", ""]
         if q.get("absent"):
@@ -253,8 +258,14 @@ def report(run_dir: Path) -> Path:
         sections.append("\n".join(lines))
     header = ["# Altın sorular", "", f"Çalıştırma: `{run_dir.name}`", "",
               "Beklenen bölüm sütununda her bölüm için iki işaret: okundu mu, cevapta adı geçiyor mu.", "",
-              "| Soru | Tür | Araç | Doğrulanan atıf | Beklenen bölüm | Süre | Sorun |",
-              "|---|---|---|---|---|---|---|", *rows, "", ""]
+              "Üretilen token: modelin yazdığı her şey (araç girdileri, taslaklar ve cevap).", "",
+              "| Soru | Tür | Araç | Atıf aracı | Doğrulanan atıf | Beklenen bölüm | Süre | Üretilen token | Maliyet | Sorun |",
+              "|---|---|---|---|---|---|---|---|---|---|", *rows]
+    if totals:
+        n = len(totals)
+        header += [f"| **ortalama** | | | {sum(t[3] for t in totals) / n:.1f} | | | {sum(t[0] for t in totals) / n:.0f} sn "
+                   f"| {sum(t[1] for t in totals) / n:,.0f} | {sum(t[2] for t in totals) / n:.2f} $ | |"]
+    header += ["", ""]
     out = run_dir / "report.md"
     out.write_text("\n".join(header + sections), encoding="utf-8")
     print(f"rapor: {out.relative_to(ROOT)}")

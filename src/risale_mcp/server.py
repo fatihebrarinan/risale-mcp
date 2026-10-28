@@ -18,6 +18,7 @@ import argparse
 import base64
 import json
 import sys
+import threading
 from collections.abc import Iterator
 from contextlib import contextmanager
 from pathlib import Path
@@ -32,7 +33,7 @@ from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp_types import Icon, ToolAnnotations
-from pydantic import Field
+from pydantic import BaseModel, Field
 from starlette.applications import Starlette
 from starlette.responses import Response
 
@@ -47,7 +48,7 @@ from risale_mcp.auth import (
 )
 from risale_mcp.auth import main as auth_main
 from risale_mcp.auth import settings as auth_settings
-from risale_mcp.citations import CitationChecker, summary
+from risale_mcp.citations import CitationChecker
 from risale_mcp.db import DatabaseError
 from risale_mcp.env import load_env
 from risale_mcp.library import Library, LibraryError
@@ -57,89 +58,55 @@ NAME = "risale"
 RESOURCE_TEXT_WORDS = 20000      # kaynak olarak eklenen bölüm metninin üst sınırı
 
 INSTRUCTIONS = """\
-This server gives read access to the complete works of Bediüzzaman Said Nursî: the Risale-i Nur \
-volumes (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of the early \
-period (Muhâkemât, Münâzarât, Makalat, Nutuk, İşârâtü'l-İ'câz, el-Mesnevî el-Arabî…), the \
-compilations (mecmua: Asâ-yı Mûsâ, Zülfikâr…) and the Hizbs. Texts are split into sentences; every \
-sentence has a stable id and a reference (ref) such as \
-"Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › 1. cümle".
+Read access to the complete works of Bediüzzaman Said Nursî (the Risale-i Nur volumes, the early works, the \
+compilations (mecmua), the Hizbs, and the works he wrote in Arabic with their Turkish translations) and to the \
+Qur'an. Texts are split into sentences with stable ids.
 
-Rules:
-1. Back every statement about the works with tool results and cite the ref or id they return. Never \
-invent references, ids, quotations or section names.
-2. When you show a reference to the user, give the section path and the sentence's opening words in \
-quotes instead of its number, e.g. Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › \
-"Hiç mümkün müdür ki; ölmüş…". The opening words are the sentence's incipit.
-3. Write every reference in full, from the work down, exactly as the tools' ref gives it: printed \
-titles unshortened ("Yirminci Söz’ün İkinci Makamı", not "İkinci Makam"), no levels left out, and \
-never relative to an earlier reference ("…", "same place", a bare "Birinci Mebhas"). Use › only in \
-references, not for your own labels.
-4. Put quotation marks only around the text's own words, never around your paraphrase.
-5. Every quotation from the works stands on its own line as a block quote in quotation marks \
-(> "…"), with a blank line before and after it. This holds for every quotation of a sentence or part \
-of one, also a short one. Inside your own prose, quote at most a single term or name (e.g. "tefânî").
-6. When a parable, an example or one line of thought runs over several consecutive sentences of one \
-section, do not split it into separate quotations: quote the sentences together in one block and give \
-one reference for all of them, with the first sentence's opening words and the number of sentences, \
-always in this form: Sözler › Birinci Söz › "Bedevî Arab çöllerinde seyahat eden…" ile başlayan 4 \
-cümle. At most 8 sentences per reference; the sentences stay inside one section (a new heading starts \
-a new reference) and hâşiyes are cited separately. get_passage with a range (first..last) returns the \
-reference to use (cite_as). A single sentence is cited on its own as in rule 2.
-7. Before giving an answer that contains references, pass them to verify_citations and correct every \
-one it flags.
-8. If the tools do not return something, say that you could not find it in the works. Do not fill \
-the gap from memory.
-9. Keep what the text says apart from your own interpretation, under separate headings.
-10. Answer in the user's language (usually Turkish); quote the text as returned.
-11. The translations of quoted verses and hadiths (publisher_translation) were added by the \
-publishers, not by the author: Bediüzzaman quoted the Arabic and needed no translation, and editions \
-translate differently. Use them only to convey what the Arabic means, say they are the publisher's \
-translation, and never present them as the author's words or quote them as the text. The author's \
-own explanation of a verse is part of the text itself, often right after the Arabic ("Yani, …"); \
-quote and cite that as the text.
-12. Qur'anic verses: show a verse's Arabic only fully vowelled, copied exactly from get_ayah (or as \
-the works quote it); never write Qur'anic Arabic from memory and never drop its vowel marks. Cite a \
-verse by the ref get_ayah returns, e.g. "Bakara Sûresi, 2:255", without ›. When you give its meaning \
-from get_ayah, name the translation (Diyanet İşleri Başkanlığı meali, Türkiye Diyanet Vakfı meali) and \
-keep it apart from the publishers' translations in the works and from the author's own explanation. \
-A translation with covers_verses renders those verses together; say so instead of presenting it as \
-the meaning of the one verse. \
-No translation renders the Qur'an exactly or can replace its Arabic text; present translations as an \
-aid to the meaning.
-13. Links between the works and verses (links in find_ayah, linked_verses in read_section) were found \
-by rules in the text's own wording; they are not verdicts. Never call a passage the tafsir (exegesis) \
-of a verse on their basis; name the link by its kind and show its evidence sentence: isaret (the text \
-says it points to, alludes to or explains the verse), acilis (the section opens with the verse), izah \
-(the author's own "Yani…" explanation of it; in works the author wrote in Arabic, such as İşaratü'l-İ'caz \
-and Mesnevî-i Nuriye, the Turkish wording is the translator's), dayanak (the text relies on it: "… sırrınca"), risale \
-(the verse's allusion to the Risale-i Nur). A weak link is only a reference in one sentence; do not \
-present it as what the section is about. Do not append linked verses to every quotation by default: \
-bring them up when the user asks about verses or when a verse matters to the question.
-14. Some works are not all the author's words; check the subtitle and the paragraph kind. Works the \
-author wrote in Arabic exist in Arabic and in Turkish with parallel section ids (isaratul-icaz-arabi/… ↔ \
-isaratul-icaz/…); the Turkish is a translation. Sections marked as İhsan Kasım's translation (Hutbe-i \
-Şamiye (Arapça), the Nokta risale in el-Mesnevî el-Arabî, the Turkish-written prefaces) are translations of \
-Turkish originals: quote the original Turkish work when it exists. In Kızıl İcaz the "quote" paragraphs are \
-Ahdarî's Süllem verses that the author annotates, not his words; hâşiye records with commentary_by are his \
-brother Abdülmecid Nursî's commentary (şerh) on the author's text: cite them as his, never as the author's.
+Workflow:
+1. Find: semantic_search for concepts and questions in today's words (the text often uses older words); search \
+for the text's own words, names and terms. Results are candidates, not evidence.
+2. Read what you will rely on, in context: get_passage (a sentence or a range first..last, with context) or \
+read_section.
+3. Before writing the answer, call cite once with every sentence or range you quote or rely on, and the exact \
+words you quote. Use the cite_as it returns and fix what it flags.
 
-How to navigate:
-- semantic_search finds passages by meaning: use it for concepts and questions in today's words, \
-which the text often expresses with other, Ottoman words ("ümitsizlik" finds "ye's"). It also names \
-the sections where the topic concentrates. Its results are candidates: read them in context before \
-relying on them.
-- search finds sentences by the text's own words; marks and Turkish letters are optional ("hasir" \
-finds "haşir"). Use it for exact words, phrases, names and technical terms. Use quotes for phrases, \
-* for word beginnings, OR, -word to exclude, NEAR(a b, 5).
-- Then read the context with read_section (a section and its subsections, in book order, page by \
-page with next_cursor) or get_passage (a sentence or range with neighbours and hâşiyes).
-- get_outline shows the structure of a work or section; list_works lists the works and their ids.
-- find_sentence locates a sentence the user quotes by its first words; find_ayah lists where a \
-Qur'anic verse is quoted in the works; get_ayah gives a verse of the Qur'an itself, vowelled, with \
-two Diyanet translations and its neighbouring verses on request.
-- Compilations (mecmua) reuse text from the main volumes: such paragraphs come with the main \
-volume's sentences and refs; cite those. Hâşiye are the author's footnotes, attached to a sentence.
+Answering:
+1. Every statement about the works rests on text you read. Never invent references, ids, quotations or titles; \
+if the tools do not return something, say you could not find it in the works.
+2. Quote the works only in block quotes on their own line (> "…"), exactly as returned; in your prose put \
+quotation marks around at most a single term. A parable or one line of thought running over consecutive \
+sentences of one section is quoted as one block with one source (a range, at most 8 sentences).
+3. References are cite_as, written exactly: the full path from the work and the opening words, never shortened, \
+never a sentence number. With one or two references, put each on its own line right after its quotation. With \
+more, end each quotation (and each claim drawn from a source) with its number, e.g. [1], and finish the answer \
+with a "Kaynaklar" list: one line per source, the bibliography cite returns.
+4. Keep what the text says apart from your own interpretation, under separate headings. Answer in the user's \
+language.
+
+Layers that are not the author's words:
+- Translations of verses and hadiths in the works (publisher_translation) are the publishers'. Use them only to \
+convey the meaning, say whose they are, never quote them as the text. The author's own explanation ("Yani, …") \
+is text.
+- Qur'an: copy the vowelled Arabic from get_ayah (or as the works quote it), never from memory. Cite a verse as \
+get_ayah's ref ("Bakara Sûresi, 2:255", no ›), name the Diyanet translation you use and mention covers_verses. \
+A translation aids the meaning; it does not replace the Arabic.
+- Verse links (find_ayah links, read_section linked_verses) were found by rules, not verdicts: never call a \
+passage the tafsir of a verse; give the link's kind and evidence sentence; a weak link is one sentence's \
+reference, not the section's topic. Bring verses up only when they matter to the question.
+- The Turkish versions of works the author wrote in Arabic are translations (parallel ids: isaratul-icaz-arabi/… \
+↔ isaratul-icaz/…). Sections marked as İhsan Kasım's translation render Turkish originals: quote the original. \
+In Kızıl İcaz, "quote" paragraphs are Ahdarî's verses; commentary_by marks Abdülmecid Nursî's commentary, \
+cite it as his. Check subtitles and paragraph kinds.
+- Compilations reuse main-volume text: cite the main volume's sentences they return.
 """
+
+
+class Source(BaseModel):
+    id: str = Field(description="A sentence id, or a range 'first_id..last_id' (the last may be short: "
+                                "'sozler/10/c010..c015'), as the tools return them.")
+    quote: str | None = Field(default=None, description="The words you quote from it, exactly as you will show them "
+                                                         "(… for omitted parts); leave out if you only paraphrase.")
+
 
 READ_ONLY = ToolAnnotations(read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=False)
 
@@ -220,8 +187,18 @@ def _static(name: str, media: str):
     return endpoint
 
 
+def _warm(library: Library, citations: CitationChecker) -> None:
+    """Dizinleri ilk aramadan önce kurar: anlamsal aramanın eşlemesi (sunucuda ≈1,6 sn) ve başlık ağacı."""
+    citations.refresh()
+    try:
+        library._semantic_index()
+    except Exception:                    # vektör yoksa araç çağrılınca açıklamalı hata verir
+        pass
+
+
 def create_server(library: Library, public_url: str | None = None, store: AuthStore | None = None,
-                  anonymous: bool = False, anonymous_semantic: int = ANON_SEMANTIC_PER_DAY) -> MCPServer:
+                  anonymous: bool = False, anonymous_semantic: int = ANON_SEMANTIC_PER_DAY,
+                  warm: bool = False) -> MCPServer:
     """`public_url` verilirse sunucu OAuth ile korunur (giriş sayfası `/login`) ve her istek kaydedilir.
     `anonymous`: hesapsızlar da kullanır (`http_app` kapıyı kurar); anlamsal aramaları günde `anonymous_semantic`
     ile sınırlıdır, hesabı olan `sign_in` aracıyla giriş yapar."""
@@ -239,8 +216,10 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     if public_url:
         server.custom_route("/login", methods=["GET", "POST"], include_in_schema=False)(login_endpoint(provider))
     citations = CitationChecker(library)
+    if warm:
+        threading.Thread(target=_warm, args=(library, citations), daemon=True).start()
 
-    @server.tool(annotations=READ_ONLY)
+    @server.tool(annotations=READ_ONLY, structured_output=False)
     def list_works(
         group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua or hizb.")] = None,
     ) -> str:
@@ -249,7 +228,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.works(group))
 
-    @server.tool(annotations=READ_ONLY)
+    @server.tool(annotations=READ_ONLY, structured_output=False)
     def get_outline(
         section: Annotated[str, Field(description="A work id (e.g. 'sozler') or a section id (e.g. 'sozler/10').")],
         depth: Annotated[int, Field(description="How many levels of subsections to include.", ge=0, le=6)] = 2,
@@ -259,36 +238,32 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.outline(section, depth))
 
-    @server.tool(annotations=READ_ONLY)
+    @server.tool(annotations=READ_ONLY, structured_output=False)
     def read_section(
         section: Annotated[str, Field(description="A section id from get_outline or a search result's ref path.")],
         cursor: Annotated[str | None, Field(description="next_cursor from the previous call, to continue.")] = None,
         max_words: Annotated[int, Field(description="Approximate size of one page.", ge=200, le=8000)] = 1500,
     ) -> str:
-        """Read a section and its subsections in book order. Returns headings (with refs), paragraphs as lists of
-        sentences (id and text), verses a heading's section links to (linked_verses: kind and evidence sentence;
-        mention them only when verses matter to the question),
-        the author's hâşiyes (hasiye_of: the sentence they belong to; with commentary_by, another person's
-        commentary, not the author's), the publisher's
-        translations and sources of quoted verses and hadiths, and gaps where the source lacks text. Long sections
-        come in pages: pass next_cursor back to continue."""
+        """Read a section and its subsections in book order: headings (ref; linked_verses: verses the section
+        links to), paragraphs as sentences (id, text), the author's hâşiyes (hasiye_of: their sentence;
+        commentary_by: someone else's commentary), the publisher's translations of quoted verses and hadiths, and
+        gaps where the source lacks text. Long sections come in pages: pass next_cursor back to continue."""
         with _tool_errors():
             return _json(library.read_section(section, cursor, max_words))
 
-    @server.tool(annotations=READ_ONLY)
+    @server.tool(annotations=READ_ONLY, structured_output=False)
     def get_passage(
         id: Annotated[str, Field(description="A sentence id, or a range 'first_id..last_id' (the last may be short: "
                                              "'sozler/10/c010..c015').")],
         context: Annotated[int, Field(description="Neighbouring sentences to add on each side.", ge=0, le=20)] = 0,
     ) -> str:
-        """Get sentences with their ref, incipit and text, the hâşiyes attached to them, and the publisher's
-        translation of quoted verses. Use it to check a quotation or to fetch the exact citation of a sentence. For a
-        range of up to 8 sentences in one section it also returns cite_as, the reference to show for all of them. A
-        range that runs past the end of its section stops at the section's last sentence (see note)."""
+        """Get sentences (or a range) with their text, attached hâşiyes and the publisher's translations of quoted
+        verses, optionally with neighbouring sentences. A range of up to 8 sentences in one section also returns
+        cite_as, its reference. A range past the end of its section stops at its last sentence (see note)."""
         with _tool_errors():
             return _json(library.passage(id, context))
 
-    @server.tool(annotations=READ_ONLY)
+    @server.tool(annotations=READ_ONLY, structured_output=False)
     def search(
         query: Annotated[str, Field(description="Words (all must occur), \"exact phrase\", prefix*, OR, -exclude, "
                                                 "NEAR(a b, 5). Marks and Turkish letters are optional.")],
@@ -297,13 +272,13 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         limit: Annotated[int, Field(ge=1, le=50)] = 20,
         offset: Annotated[int, Field(ge=0)] = 0,
     ) -> str:
-        """Search all works sentence by sentence, best matches first. Returns the total, the number of matches per
-        work, matching section titles, and sentences with id, ref and incipit. Read the context of a result with
-        get_passage or read_section before relying on it."""
+        """Search all works sentence by sentence by the text's own words, best matches first: the total, matches
+        per work, matching section titles, and sentences (id, cite_as, text). Read a result in context before
+        relying on it."""
         with _tool_errors():
             return _json(library.search(query, work, group, limit, offset))
 
-    @server.tool(annotations=READ_ONLY)
+    @server.tool(annotations=READ_ONLY, structured_output=False)
     def semantic_search(
         query: Annotated[str, Field(description="A question or concept in your own (today's) words, e.g. "
                                                 "'Ölüm neden bir nimettir?' or 'ümitsizlik'.")],
@@ -312,10 +287,9 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         limit: Annotated[int, Field(ge=1, le=50)] = 10,
         offset: Annotated[int, Field(ge=0)] = 0,
     ) -> str:
-        """Find passages by meaning rather than by exact words: the sentences closest in meaning to the query (id,
-        ref, incipit, similarity) and the sections where the topic concentrates. Use it for concepts and questions;
-        the text often says the same thing with other, older words. For exact words, phrases or terms use search.
-        Read the context of a result with get_passage or read_section before relying on it."""
+        """Find passages by meaning: the sentences closest to the query (id, cite_as, text, similarity) and the
+        sections where the topic concentrates. For concepts and questions; the text often uses other, older words.
+        For exact words, phrases or terms use search. Read a result in context before relying on it."""
         with _tool_errors():
             if anonymous and get_access_token() is None \
                     and store.anonymous_calls("semantic_search", start_of_day()) >= anonymous_semantic:
@@ -325,7 +299,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             return _json(library.semantic_search(query, work, group, limit, offset))
 
     if anonymous:
-        @server.tool(annotations=READ_ONLY)
+        @server.tool(annotations=READ_ONLY, structured_output=False)
         def sign_in() -> str:
             """Sign in to this server with an account (only if the user asks to sign in or has an account): without
             an account, semantic_search has a shared daily limit. Calling this without being signed in makes Claude
@@ -333,7 +307,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             token = get_access_token()
             return _json({"signed_in_as": token.subject if token else None})
 
-    @server.tool(annotations=READ_ONLY)
+    @server.tool(annotations=READ_ONLY, structured_output=False)
     def find_sentence(
         incipit: Annotated[str, Field(description="The first words of the sentence, as the user quotes them.")],
         scope: Annotated[str | None, Field(description="Only inside this work or section id.")] = None,
@@ -343,49 +317,51 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.find_sentence(incipit, scope))
 
-    @server.tool(annotations=READ_ONLY)
+    @server.tool(annotations=READ_ONLY, structured_output=False)
     def find_ayah(
         sura: Annotated[str, Field(description="Sura number (1–114) or name, e.g. '2' or 'Bakara'.")],
         ayah: Annotated[int | None, Field(description="Verse number; without it, every quoted verse of the sura.")] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 30,
         offset: Annotated[int, Field(ge=0)] = 0,
     ) -> str:
-        """List where a Qur'anic verse (or any verse of a sura) is quoted in the works, with the sentence, the
-        Arabic as quoted, the publisher's translation and its source. via 'source': the edition marks it as a
-        verse; via 'text': an unmarked quotation found in the Qur'an's text (Hizbs, el-Mesnevî el-Arabî). check
-        warns when the quoted words differ from the named verse. For one verse it also returns the verse itself
-        (quran), as get_ayah does, and links: the places that tie themselves to the verse, by kind, strength
-        and evidence sentence (strong first; see the instructions on how to name them)."""
+        """List where a Qur'anic verse (or any verse of a sura) is quoted in the works: the sentence, the Arabic
+        as quoted, the publisher's translation and source. via 'source': marked as a verse by the edition; via
+        'text': an unmarked quotation found in the Qur'an's text. check warns when the words differ from the
+        named verse. For one verse it also returns the verse (quran) and links: places that tie themselves to it,
+        strong first, each with its evidence sentence. Link kinds: isaret (the text says it points to, alludes to
+        or explains the verse), acilis (the section opens with it), izah (the author's "Yani…" explanation; in
+        works he wrote in Arabic the Turkish wording is the translator's), dayanak (the text relies on it: "…
+        sırrınca"), risale (the verse's allusion to the Risale-i Nur)."""
         with _tool_errors():
             return _json(library.find_ayah(sura, ayah, limit, offset))
 
-    @server.tool(annotations=READ_ONLY)
+    @server.tool(annotations=READ_ONLY, structured_output=False)
     def get_ayah(
         sura: Annotated[str, Field(description="Sura number (1–114) or name, e.g. '2' or 'Bakara'.")],
         ayah: Annotated[int, Field(description="Verse number.", ge=1)],
         end: Annotated[int | None, Field(description="Last verse of a range (at most 30 verses).", ge=1)] = None,
         context: Annotated[int, Field(description="Neighbouring verses to add on each side.", ge=0, le=10)] = 0,
     ) -> str:
-        """Get a verse (or a range) of the Qur'an itself: the fully vowelled Arabic text (Medina Mushaf script),
-        the Diyanet İşleri Başkanlığı and Türkiye Diyanet Vakfı translations, the ref to cite ("Bakara Sûresi,
-        2:255"), how often each verse is quoted in the works and how many places link to it (linked_in_works;
-        find_ayah lists both). A translation that
-        renders several verses together says which (covers_verses); ask for that range to read it whole."""
+        """Get a verse (or a range) of the Qur'an itself: the vowelled Arabic (Medina Mushaf), the Diyanet İşleri
+        Başkanlığı and Türkiye Diyanet Vakfı translations, the ref to cite ("Bakara Sûresi, 2:255"), and how often
+        the works quote it and link to it (find_ayah lists them). A translation of several verses together says
+        which (covers_verses); ask for that range to read it whole."""
         with _tool_errors():
             return _json(library.ayahs(sura, ayah, end, context))
 
-    @server.tool(annotations=READ_ONLY)
-    def verify_citations(
-        text: Annotated[str, Field(description="Your draft answer, or the lines of it that contain references.")],
+    @server.tool(annotations=READ_ONLY, structured_output=False)
+    def cite(
+        sources: Annotated[list[Source], Field(description="The sentences you quote or rely on, in the order of "
+                                                           "their numbers in your answer ([1], [2]…).",
+                                               min_length=1, max_length=50)],
     ) -> str:
-        """Check the references in a draft answer against the works before you send it. Finds every
-        "Work › Section › “opening words”" reference (also "… ile başlayan N cümle" for consecutive sentences, or
-        "› 12. cümle") and reports, for each, whether the section exists, the quoted words start a sentence there,
-        a range stays within 8 sentences of its section, and the block quote next to it is in the cited sentences.
-        Flagged references come with a problem and, where possible, the full reference to use instead or where
-        the quoted words really occur. Pass the whole draft so that block quotes are checked too."""
+        """Get the references to show for the passages you use, checked against the works. Call it once before
+        writing the answer, with every sentence or range you quote or rely on and the words you quote. Returns,
+        for each source, cite_as (the full reference to show), a problem to fix if any (a range longer than 8
+        sentences or past its section, quoted words that are not in those sentences, with where they occur), and
+        the bibliography lines "[n] cite_as" for the answer's Kaynaklar list."""
         with _tool_errors():
-            return _json(summary(citations.check(text)))
+            return _json(citations.sources([source.model_dump() for source in sources]))
 
     # ------------------------------------------------------------ kaynaklar (kullanıcının eklediği bağlam)
 
@@ -512,7 +488,7 @@ def main() -> None:
     library = Library(args.db)
     library.conn                                  # veritabanı yoksa başlarken açık hata
     if args.transport == "stdio":
-        create_server(library).run("stdio")
+        create_server(library, warm=True).run("stdio")
         return
     if not (args.public_url or args.no_auth):
         sys.exit("HTTP için --public-url https://… (OAuth) ya da --no-auth (yalnızca bu bilgisayar) verin.")
@@ -526,12 +502,12 @@ def main() -> None:
             sys.exit("Henüz hesap yok: önce `risale-mcp auth add-user <ad>`.")
         security = http_security(args.public_url)
     if args.no_auth:
-        create_server(library).run("streamable-http", host=args.host, port=args.port, transport_security=security)
+        create_server(library, warm=True).run("streamable-http", host=args.host, port=args.port, transport_security=security)
         return
     if args.anonymous and not args.public_url:
         sys.exit("--anonymous yalnızca --public-url ile kullanılır.")
     server = create_server(library, args.public_url, anonymous=args.anonymous,
-                           anonymous_semantic=args.anonymous_semantic)
+                           anonymous_semantic=args.anonymous_semantic, warm=True)
     uvicorn.run(http_app(server, args.public_url, args.anonymous), host=args.host, port=args.port)
 
 

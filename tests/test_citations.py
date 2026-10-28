@@ -1,4 +1,4 @@
-"""Atıf denetimi (`citations.py`): `verify_citations` aracı ve altın soru raporu bunu kullanır.
+"""Atıf denetimi (`citations.py`): `cite` aracı ve altın soru raporu bunu kullanır.
 
 Kurallar `conftest.py`'deki küçük veritabanıyla sınanır. Son testler gerçek veritabanında, altın
 soru cevaplarında görülen yazılışlarla denenir; veritabanı yoksa atlanır.
@@ -117,6 +117,49 @@ def test_block_between_two_references_belongs_to_the_one_it_matches(checker):
     first, second = checker.check("Sözler › Onuncu Söz › “Elbette haşr-i…”\n\n> \"Elbette haşr-i cismânî olacak.\"\n\n"
                                   "Sözler › Onuncu Söz › Birinci Hakikat › “Kıyâmet…”\n\n> \"Kıyâmet ve mîzan günü gelecek.\"")
     assert (first.block_ok, second.block_ok) == (True, True)
+
+
+def test_bibliography_entries_check_the_blocks_that_point_to_them(checker):
+    """Kaynakçalı cevap: "[n]" ile biten alıntı bloğu kaynakçadaki n numaralı atfın cümlelerinde aranır."""
+    found = checker.check("Haşir olacaktır.\n\n> \"Elbette haşr-i cismânî olacak.\" [2]\n\nAyrıca:\n\n"
+                          "> \"Kıyâmet ve mîzan günü\" [1]\n\n> \"Uydurma söz.\" [1, 2]\n\n**Kaynaklar**\n"
+                          "[1] Sözler › Onuncu Söz › Birinci Hakikat › “Kıyâmet ve mîzan”\n"
+                          "[2] Sözler › Onuncu Söz › “Elbette haşr-i”\n")
+    assert [(c.node, c.status, c.exact) for c in found] == [("sozler/10/hakikat-01", "ok", True), ("sozler/10", "ok", True)]
+    assert [c.block_ok for c in found] == [False, False]           # son blok ikisinde de yok
+    found = checker.check("> \"Kıyâmet ve mîzan günü\" [1]\n\n[1] Sözler › Onuncu Söz › Birinci Hakikat › “Kıyâmet”")
+    assert found[0].block_ok is True
+
+
+def test_real_bibliography_lines(real_checker):
+    """Kaynakça numarası başlığa karışmaz ("[1] Lem'alar" Mesnevî'nin "1‑ Lem'alar" fihrist başlığı değildir);
+    iç içe tırnaklı ilk kelimeler aralıkla birlikte okunur; aynı kelimelerle başlayan iki cümleden blok
+    hangisindeyse atıf odur."""
+    found = real_checker.check(
+        "> \"İşte, “kadere ve kazâya îmân” rüknü dahi, geniş bir vecihte sırr‑ı hayatla anlaşılıyor\" [1]\n\n"
+        "> \"Şimdi hiç mümkün müdür ki; böyle en küçük bir mahlûkun\" [2]\n\n"
+        "[1] Lem'alar › Otuzuncu Lem'a › Otuzuncu Lem'anın Beşinci Nüktesi › Dördüncü Remiz › "
+        "\"İşte, \"kadere ve kazâya…\" ile başlayan 2 cümle\n"
+        "[2] Sözler › Onuncu Söz › On iki Hakikat › Üçüncü Hakikat › “Şimdi hiç mümkün müdür…”\n")
+    assert [(c.status, c.exact, c.count, c.block_ok) for c in found] == [("ok", True, 2, True), ("ok", True, 1, True)]
+
+
+def test_cite_returns_references_and_flags_problems(checker):
+    result = checker.sources([
+        {"id": "sozler/10/c001..c002", "quote": "Elbette haşr-i … olacak."},
+        {"id": "sozler/10/c001/h1/c001"},
+        {"id": "sozler/10/c002", "quote": "Kıyâmet ve mîzan"},
+        {"id": "sozler/10/c001..sozler/10/hakikat-01/c001"},
+        {"id": "sozler/10/c009"},
+    ])
+    ok, hasiye, misplaced, past, unknown = result["sources"]
+    assert ok["status"] == "ok" and ok["cite_as"].endswith("ile başlayan 2 cümle")
+    assert hasiye["status"] == "ok"
+    assert "occur at: Sözler › Onuncu Söz › Birinci Hakikat" in misplaced["problem"]
+    assert "stays inside one section" in past["problem"] and past["cite_as"].endswith("ile başlayan 2 cümle")
+    assert unknown["status"] == "unknown_id"
+    assert result["problems"] == 3
+    assert result["bibliography"].splitlines()[1].startswith("[2] ")
 
 
 # ---------------------------------------------------------------- gerçek veritabanı

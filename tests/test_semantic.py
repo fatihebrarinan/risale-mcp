@@ -60,7 +60,7 @@ def test_closest_sentences_and_their_sections(library):
     first = result["results"][0]
     assert first["id"] == "sozler/10/hakikat-01/c001" and first["similarity"] > 0.9
     assert first["cite_as"].endswith("› “Kıyâmet ve mîzan gün…”")
-    assert "verify_citations" in result["note"]
+    assert "cite" in result["note"]
     assert [s["id"] for s in result["sections"]][:2] == ["sozler/10/hakikat-01", "sozler/10"]
     assert "unindexed_sentences" not in result
 

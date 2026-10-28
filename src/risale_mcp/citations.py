@@ -1,7 +1,16 @@
 """Atıf denetimi: metindeki "Eser › Bölüm › “ilk kelimeler…”" atıflarını veritabanında bulur.
 
-`verify_citations` aracı (model cevabını vermeden önce atıflarını denetletir) ve altın soru raporu
-(`golden.py`) bunu kullanır.
+İki iş vardır:
+- `CitationChecker.sources`: `cite` aracı. Model cevabı yazmadan önce dayandığı cümlelerin kimliklerini
+  (ve alıntıladığı sözleri) verir; her biri için kullanıcıya gösterilecek tam atıf (`cite_as`) ve
+  kaynakça satırı döner, alıntı o cümlelerde yoksa asıl yeri gösterilir. Önceden model cevabın
+  tamamını `verify_citations`'a gönderiyordu: cevabı taslak olarak ve sonra yeniden yazmak (2026-10-28
+  kullanım kaydında çoğu kez üç denetimle) asıl gecikmeydi. Kimlik listesi kısadır, cevap bir kez yazılır.
+- `CitationChecker.check`: yazılmış bir cevaptaki atıfları bulur ve denetler (altın soru raporu,
+  `golden.py`). Aşağıdaki kurallar bunundur.
+
+Cevaplar kaynakçalı yazılabilir: alıntı bloğunun sonundaki "[1]" işareti, cevabın sonundaki
+"[1] Eser › … › “ilk kelimeler”" satırına bağlanır.
 
 Bir satırda birden çok atıf, atıflardan önce ve sonra düz yazı olabilir. Satır `›` işaretlerinden
 parçalara bölünür ve soldan sağa yürünür:
@@ -16,7 +25,8 @@ parçalara bölünür ve soldan sağa yürünür:
   Aralık en çok `MAX_CITED` cümledir ve bölümün içinde kalır.
 
 Atfın hemen önünde ya da ardında (aradaki boş satırlar sayılmaz) bir alıntı bloğu (`> "…"`) varsa,
-bloğun atfın kapsadığı cümlelerde geçtiği de denetlenir; "…" ile atlanan yerler serbesttir.
+bloğun atfın kapsadığı cümlelerde geçtiği de denetlenir; "…" ile atlanan yerler serbesttir. Blok
+"[n]" işaretiyle bitiyorsa komşu atfa değil, kaynakçadaki n numaralı atfa bağlanır.
 
 Başlıklar basılı adla, içindekiler adıyla ya da tür ve numarayla eşleşir ("İkinci Makam" =
 "Yirminci Söz’ün İkinci Makamı"); ekli yazılış da olur ("Dördüncü Söz'de"). Ara başlıklar atlanmış
@@ -35,7 +45,7 @@ from dataclasses import dataclass, field
 
 from risale_mcp.catalog import Group
 from risale_mcp.headings import parse_heading
-from risale_mcp.library import MAX_CITED, Library, cite, opening
+from risale_mcp.library import MAX_CITED, REF_SEP, Library, LibraryError, cite, opening
 from risale_mcp.normalize import parse_ordinal, search_words
 
 MAX_TITLE_WORDS = 12        # bir başlık en çok bu kadar kelime sayılır
@@ -49,6 +59,8 @@ GROUP_RANK = {Group.ANA_CILT: 0, Group.ESKI_SAID: 1, Group.MECMUA: 2, Group.HIZB
 _QUOTED = (re.compile(r'^"\s*(.+?)\s*(?:…|\.\.\.)?\s*"'), re.compile(r"^[“«]\s*(.+?)\s*(?:…|\.\.\.)?\s*[”»]"))
 _SENTENCE_NO = re.compile(r"^(\d+)\.(?:\s*[–-]\s*(\d+)\.)?\s*cümle\b", re.IGNORECASE)   # "32. cümle", "4.–7. cümle"
 _RANGE = re.compile(r"^[\s…]*ile\s+başlayan\s+(\d+)\s+cümle", re.IGNORECASE)
+# İç içe tırnaklı ilk kelimeler (“İşte, “kadere ve kazâya…” ile başlayan 2 cümle): alıntı aralığın önündeki tırnakta biter.
+_LATER_CLOSE = re.compile(r"\s*(?:…|\.\.\.)?\s*[”\"»](?=[\s…]*ile\s+başlayan\s+\d+\s+cümle)", re.IGNORECASE)
 _HASIYE = re.compile(r"^(?:Hâşiye|Şerh)(?:\s+(\d+))?$", re.IGNORECASE)
 _SUFFIX = re.compile(r"['’][^\W\d_]+$")                 # "Söz'de" -> "Söz"
 _MARKUP = re.compile(r"[*_`#>]+")
@@ -56,6 +68,8 @@ _EDGE = " \t-–—:;,.…()[]"
 _ELLIPSIS = ("…", "...")
 _SAME_PLACE = ("aynı yer", "aynı bölüm")                # ve boş baş ("(› …", "… › …"): bir önceki atfın bölümü
 _PARENTHETICAL = re.compile(r"\s*\([^)]*\)$")            # "Mu'cizât‑ı Ahmediye (asm)"
+_ENTRY = re.compile(r"^\s*(?:[-*]\s*)?\[(\d+)\]")          # kaynakça satırı: "[1] Sözler › …"
+_MARKERS = re.compile(r"((?:\s*\[\d+(?:\s*[,–-]\s*\d+)*\])+)\s*$")   # bloğun sonundaki "[1]", "[1][2]", "[1, 2]"
 
 
 def _key(text: str) -> str:
@@ -75,7 +89,10 @@ def _quote(segment: str) -> tuple[str, str] | None:
     text = _MARKUP.sub("", segment).strip(" :–—(")
     for pattern in _QUOTED:
         if m := pattern.match(text):
-            return m[1], text[m.end():]
+            rest = text[m.end():]
+            if not _RANGE.match(rest) and (later := _LATER_CLOSE.search(rest)):
+                return text[1:m.end() + later.start()].strip(), rest[later.end():]
+            return m[1], rest
     return None
 
 
@@ -154,6 +171,7 @@ class Citation:
     count: int = 1                       # atfın kapsadığı ardışık cümle sayısı
     covered: list[str] = field(default_factory=list)      # atfın kapsadığı cümleler
     block_ok: bool | None = None         # yanındaki alıntı bloğu bu cümlelerde geçiyor mu
+    alternatives: list[str] = field(default_factory=list) # bölümde aynı kelimelerle başlayan öbür cümleler
 
     @property
     def cite_as(self) -> str | None:
@@ -260,22 +278,26 @@ class CitationChecker:
         self.refresh()
         lines = text.splitlines()
         by_line: list[list[Citation]] = []
+        numbered: dict[int, Citation] = {}
         context: _Node | None = None
         for line in lines:
-            found, segments, i = [], line.split("›"), 0
+            entry = _ENTRY.match(line)                   # "[1] Lem'alar": numara başlığın parçası değil
+            found, segments, i = [], line[entry.end() if entry else 0:].split("›"), 0
             while i < len(segments) - 1:
                 citation, i = self._chain(segments, i, context)
                 if citation:
                     found.append(citation)
                     context = self.nodes.get(citation.node) if citation.node else context
+            if found and entry:
+                numbered[int(entry[1])] = found[0]
             by_line.append(found)
-        self._check_blocks(lines, by_line)
+        self._check_blocks(lines, by_line, numbered)
         return [c for found in by_line for c in found]
 
-    def _check_blocks(self, lines: list[str], by_line: list[list[Citation]]) -> None:
+    def _check_blocks(self, lines: list[str], by_line: list[list[Citation]], numbered: dict[int, Citation]) -> None:
         """Alıntı bloğunu (atıf içermeyen `>` satırları) önündeki ya da ardındaki atıfla karşılaştırır.
         İki atıf arasındaki blok uyduğu atfa bağlanır; hiçbirine uymazsa henüz bloğu olmayanlar işaretlenir
-        (sonraki blok uyarsa düzelir)."""
+        (sonraki blok uyarsa düzelir). "[n]" ile biten blok kaynakçadaki n numaralı atıflarla karşılaştırılır."""
         def is_block(i: int) -> bool:
             return lines[i].lstrip().startswith(">") and not by_line[i]
 
@@ -293,15 +315,36 @@ class CitationChecker:
             while i < len(lines) and is_block(i):
                 i += 1
             block = " ".join(lines[k].lstrip().lstrip(">").strip() for k in range(start, i))
-            candidates = [c for c in neighbour(start - 1, -1)[-1:] + neighbour(i, 1)[:1] if c.covered]
+            if markers := _MARKERS.search(block):
+                block = block[:markers.start()]
+                candidates = [numbered[n] for n in _marker_numbers(markers[1]) if n in numbered]
+            else:
+                candidates = neighbour(start - 1, -1)[-1:] + neighbour(i, 1)[:1]
+            candidates = [c for c in candidates if c.covered]
             if not candidates or not (parts := _block_parts(block)):
                 continue
             matching = next((c for c in candidates if all(p in self._covered_text(c) for p in parts)), None)
+            # Bölümde aynı kelimelerle başlayan birden çok cümle varsa ("Şimdi, hiç mümkün müdür" ve
+            # "Şimdi hiç mümkün müdür") blok hangisindeyse atıf odur.
+            matching = matching or next((c for c in candidates if self._retarget(c, parts)), None)
             if matching:
-                matching.block_ok = True
+                matching.block_ok = True if matching.block_ok is None or not markers else matching.block_ok
             else:
-                for c in candidates:
-                    c.block_ok = False if c.block_ok is None else c.block_ok
+                for c in candidates:                # işaretli blok atfını kesin gösterir
+                    c.block_ok = False if c.block_ok is None or markers else c.block_ok
+
+    def _retarget(self, citation: Citation, parts: list[str]) -> bool:
+        """Atfı, bloğu kapsayan öbür cümleye (`alternatives`) taşır; bulunamazsa atıf değişmez."""
+        saved = citation.sentence, citation.opening, citation.covered, citation.status
+        for alternative in citation.alternatives:
+            row = self.conn.execute("SELECT * FROM sentences WHERE id = ?", (alternative,)).fetchone()
+            citation.sentence, citation.opening, citation.covered = row["id"], _opening(row), [row["id"]]
+            if citation.count > 1:
+                self._cover_range(citation, citation.count)
+            if citation.status == saved[3] and all(p in self._covered_text(citation) for p in parts):
+                return True
+            citation.sentence, citation.opening, citation.covered, citation.status = saved
+        return False
 
     def _covered_text(self, citation: Citation) -> str:
         rows = self.conn.execute(f"SELECT text FROM sentences WHERE id IN ({','.join('?' * len(citation.covered))})"
@@ -423,7 +466,11 @@ class CitationChecker:
             for node in nodes:
                 status, sentence = self._find_quote(quote, node)
                 if status == "ok":
-                    return self._citation(written, path, node, status, quote=quote, sentence=sentence)
+                    citation = self._citation(written, path, node, status, quote=quote, sentence=sentence)
+                    first = next((p for p in re.split(r"…|\.\.\.", quote) if _key(p)), quote)
+                    citation.alternatives = [r["id"] for st, r in self._quote_sentences(first, node, limit=5)
+                                             if st == "ok" and r["id"] != sentence["id"]]
+                    return citation
                 if status == "mid_sentence" and inside is None:
                     inside = node, sentence
             if inside:
@@ -520,6 +567,56 @@ class CitationChecker:
         return Citation(written, "unknown_section", parent.id, parent.ref, quote=quote, missing=missing,
                         elsewhere=self._elsewhere(quote) if quote else [])
 
+    # ------------------------------------------------------------ cite aracı
+
+    def sources(self, items: list[dict]) -> dict:
+        """`cite` aracı: her kaynak (`id`: cümle ya da "ilk..son" aralığı, isteğe bağlı `quote`) için
+        kullanıcıya gösterilecek atıf ve kaynakça. Kaynakların sırası kaynakça numaralarıdır."""
+        self.refresh()
+        out = [{"n": n, **self._source(item.get("id", ""), item.get("quote"))} for n, item in enumerate(items, 1)]
+        return {"problems": sum("problem" in o for o in out),
+                "sources": out,
+                "bibliography": "\n".join(f"[{o['n']}] {o['cite_as']}" for o in out if "cite_as" in o)}
+
+    def _source(self, source_id: str, quote: str | None) -> dict:
+        first_id, _, last_id = source_id.strip().partition("..")
+        try:
+            first = self.library._sentence(first_id.strip())
+            last, _ = self.library._range_end(_full_id(first["id"], last_id.strip())) if last_id else (first, None)
+        except LibraryError as error:
+            record = {"id": source_id, "status": "unknown_id", "problem": str(error)}
+            if quote and (where := self._elsewhere(quote)):
+                record["problem"] += " The quoted words occur at: " + "; ".join(f"{e['cite_as']} ({e['id']})" for e in where)
+            return record
+        # Aralık aynı bölümün ana metninde (hâşiyede aynı hâşiyede) kalır.
+        scope = ("paragraph_id = ?", first["paragraph_id"]) if first["hasiye"] else ("node_id = ? AND hasiye = 0", first["node_id"])
+        rows = self.conn.execute(f"SELECT * FROM sentences WHERE {scope[0]} AND seq BETWEEN ? AND ? ORDER BY seq",
+                                 (scope[1], first["seq"], max(first["seq"], last["seq"]))).fetchall()
+        record: dict = {"id": source_id}
+        problems = []
+        if last["seq"] < first["seq"]:
+            problems.append("A range runs forward: first..last.")
+        elif rows[-1]["id"] != last["id"]:
+            problems.append(f"A reference stays inside one section (hâşiyes apart); the section's part of this range ends "
+                            f"at {rows[-1]['id']}. Cite the rest as a separate source.")
+        if len(rows) > MAX_CITED:
+            problems.append(f"A reference covers at most {MAX_CITED} consecutive sentences (this one {len(rows)}); "
+                            "cite the key sentences or split the passage.")
+            rows = rows[:MAX_CITED]
+        section = first["ref"].rsplit(REF_SEP, 1)[0] if first["hasiye"] else self.nodes[first["node_id"]].ref
+        record["cite_as"] = cite(section, _opening(rows[0]), len(rows))
+        if quote and (parts := _block_parts(quote)):
+            covered = _key(" ".join(r["text"] for r in rows))
+            if not all(p in covered for p in parts):
+                where = self._elsewhere(quote)
+                problems.append("The quoted words are not in these sentences; quote them exactly as the tools return "
+                                "them" + (". They occur at: " + "; ".join(f"{e['cite_as']} ({e['id']})" for e in where)
+                                         if where else ", or quote only text the tools returned."))
+        record["status"] = "ok" if not problems else "problem"
+        if problems:
+            record["problem"] = " ".join(problems)
+        return record
+
     # ------------------------------------------------------------ alıntılar
 
     def _find_quote(self, quote: str, node: _Node) -> tuple[str, sqlite3.Row | None]:
@@ -582,6 +679,21 @@ class CitationChecker:
             ref = self.nodes[row["node_id"]].ref
             out.append({"id": row["id"], "cite_as": f"{ref} › “{_opening(row)}”"})
         return out
+
+
+def _full_id(first_id: str, last_id: str) -> str:
+    """Aralığın kısa yazılmış son kimliği ("c015") ilk cümlenin bölümündedir."""
+    return last_id if "/" in last_id else f"{first_id.rsplit('/', 1)[0]}/{last_id}"
+
+
+def _marker_numbers(markers: str) -> list[int]:
+    """"[1][3]", "[1, 2]", "[2–4]" -> [1, 3], [1, 2], [2, 3, 4]."""
+    numbers = []
+    for group in re.findall(r"\[([^\]]+)\]", markers):
+        for part in group.split(","):
+            if m := re.fullmatch(r"\s*(\d+)\s*(?:[–-]\s*(\d+))?\s*", part):
+                numbers += range(int(m[1]), int(m[2] or m[1]) + 1)
+    return numbers
 
 
 def _block_parts(block: str) -> list[str]:

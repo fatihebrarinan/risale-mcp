@@ -180,14 +180,21 @@ def test_instructions_ask_for_quotations_as_block_quotes():
     assert '(> "…")' in INSTRUCTIONS
 
 
+def test_instructions_ask_for_a_bibliography_in_longer_answers():
+    """Kullanıcının kararı (2026-10-28): birkaç atıflı cevapta [1] işareti ve sonda "Kaynaklar";
+    bir iki atıflı kısa cevapta atıf alıntının ardında kalır."""
+    assert "[1]" in INSTRUCTIONS and '"Kaynaklar"' in INSTRUCTIONS and "one or two references" in INSTRUCTIONS
+
+
 # ---------------------------------------------------------------- MCP protokolü
 
 async def test_server_lists_tools_prompts_and_resources(library):
     async with Client(create_server(library)) as client:
         tools = {t.name: t for t in (await client.list_tools()).tools}
         assert set(tools) == {"list_works", "get_outline", "read_section", "get_passage", "search",
-                              "find_sentence", "find_ayah", "get_ayah", "verify_citations", "semantic_search"}
+                              "find_sentence", "find_ayah", "get_ayah", "cite", "semantic_search"}
         assert all(t.annotations.read_only_hint for t in tools.values())
+        assert all(t.output_schema is None for t in tools.values())      # sonuç bir kez, düz metin olarak gider
         prompts = {p.name for p in (await client.list_prompts()).prompts}
         assert prompts == {"topic_survey", "text_and_commentary", "discuss", "self_test", "lesson_plan"}
         templates = {t.uri_template for t in (await client.list_resource_templates()).resource_templates}
@@ -204,12 +211,14 @@ async def test_server_tool_returns_compact_json_and_readable_errors(library):
         assert error.is_error and "get_outline to see section ids" in error.content[0].text
 
 
-async def test_server_verifies_citations(library):
+async def test_server_cites_sources(library):
     async with Client(create_server(library)) as client:
-        result = await client.call_tool("verify_citations", {"text": "Sözler › Onuncu Söz › “Böyle bir cümle yok”"})
+        result = await client.call_tool("cite", {"sources": [{"id": "sozler/10/c002", "quote": "Elbette haşr-i"},
+                                                             {"id": "sozler/10/c001", "quote": "Böyle bir cümle yok"}]})
+        assert result.structured_content is None
         report = json.loads(result.content[0].text)
-        assert (report["checked"], report["problems"]) == (1, 1)
-        assert report["citations"][0]["status"] == "quote_not_found"
+        assert report["problems"] == 1 and report["sources"][1]["status"] == "problem"
+        assert report["bibliography"].startswith("[1] Sözler › Onuncu Söz › “Elbette haşr-i")
 
 
 async def test_server_resources_and_prompts(library):

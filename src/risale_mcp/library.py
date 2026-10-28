@@ -68,7 +68,7 @@ def cite(section_ref: str, opening_words: str, count: int = 1) -> str:
 # (2026-10-28, kullanım kaydı: iki arama, hiç okuma ve denetim yok).
 SEARCH_NOTE = ("These are candidates, not evidence. Before citing one, read it in context with get_passage(id, "
                "context=2) or read_section. Show the user cite_as (full path from the work + opening words), never the "
-               "sentence number; quote the text itself in a > block; check the draft with verify_citations.")
+               "sentence number; quote the text itself in a > block; get the references with cite before answering.")
 
 
 def hit_cite(sentence_ref: str, incipit: str, text: str) -> str:
