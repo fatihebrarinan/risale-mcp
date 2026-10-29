@@ -3,8 +3,8 @@
 > Bu dosya `uv run python -m risale_mcp.checklist` ile üretilir; elle düzenlemeyin.
 > Eserlerin listesi ve kaynakları: `src/risale_mcp/catalog.py`.
 
-- **Ham veri:** 44/47 eser indirildi.
-- **Ayrıştırma:** 44/47 eser.
+- **Ham veri:** 44/46 eser indirildi.
+- **Ayrıştırma:** 44/46 eser.
 - **Kaynağı bulunamayan:** Kızıl İcaz, Hizbü'l-Ekber-i Nurî (Hizb-i Nurî).
 
 İşaretler: ✅ tamam · ⚠️ kısmen · ⬜ yapılmadı · ❌ kaynak yok · ⏸️ ertelendi
@@ -60,18 +60,17 @@
 | 35 | Asâ-yı Mûsâ | `erisale/asa-yi-musa` | ✅ indirildi | ✅ 176 düğüm, 1270 paragraf, 51 cümle; %97 ana cilde eşlendi |  |
 | 36 | Zülfikâr | `risale_online/zulfikar` | ✅ indirildi | ✅ 254 düğüm, 2078 paragraf, 755 cümle; %79 ana cilde eşlendi |  |
 | 37 | Tılsımlar Mecmuası | `risale_online/tilsimlar` | ✅ indirildi | ✅ 134 düğüm, 939 paragraf, 263 cümle; %79 ana cilde eşlendi |  |
-| 38 | Sikke-i Tasdik-i Gaybî | `erisale/sikke-i-tasdik-i-gaybi` | ⚠️ 15 blok sitede yok | ✅ 253 düğüm, 1586 paragraf, 1610 cümle; %64 ana cilde eşlendi |  |
+| 38 | Sikke-i Tasdik-i Gaybî | `erisale/sikke-i-tasdik-i-gaybi` | ⚠️ 15 blok sitede yok | ✅ 255 düğüm, 1597 paragraf, 1646 cümle; %63 ana cilde eşlendi |  |
 | 39 | İman ve Küfür Muvazeneleri | `erisale/iman-ve-kufur-muvazeneleri` | ✅ indirildi | ✅ 146 düğüm, 1011 paragraf, 69 cümle; %98 ana cilde eşlendi |  |
 | 40 | Siracü'n-Nur | `risale_online/siracun-nur` | ✅ indirildi | ✅ 250 düğüm, 1320 paragraf, 1634 cümle; %54 ana cilde eşlendi |  |
 | 41 | Küçük Sözler | `risaleoku/ksozler` | ✅ indirildi | ✅ 26 düğüm, 266 paragraf, 66 cümle; %75 ana cilde eşlendi |  |
-| 42 | Fihrist Risalesi | `risaleoku/osfihrist` | ⏸️ ertelendi | ⬜ | Yalnızca Osmanlıca bulundu. |
-| 43 | Gençlik Rehberi | `risale_online/genclik-rehberi` | ✅ indirildi | ✅ 47 düğüm, 176 paragraf, 163 cümle; %69 ana cilde eşlendi |  |
-| 44 | Hanımlar Rehberi | `risale_online/hanimlar-rehberi` | ✅ indirildi | ✅ 83 düğüm, 400 paragraf, 516 cümle; %50 ana cilde eşlendi |  |
+| 42 | Gençlik Rehberi | `risale_online/genclik-rehberi` | ✅ indirildi | ✅ 47 düğüm, 176 paragraf, 163 cümle; %69 ana cilde eşlendi |  |
+| 43 | Hanımlar Rehberi | `risale_online/hanimlar-rehberi` | ✅ indirildi | ✅ 83 düğüm, 400 paragraf, 516 cümle; %50 ana cilde eşlendi |  |
 
 ## Hizbler
 
 | # | Eser | Kaynak | Ham veri | Ayrıştırma | Not |
 |---:|---|---|---|---|---|
-| 45 | Hizbü'l-Kur'ani'l-Muazzam | `risaleoku/hizbkuran` | ✅ indirildi | ✅ 99 düğüm, 1937 paragraf, 1937 cümle |  |
-| 46 | Hizbü'l-Ekber-i Nurî (Hizb-i Nurî) | `—` | ❌ kaynak bulunamadı | ⬜ | Kısmen Lem'alar'da. |
-| 47 | Hizbü Envari'l-Hakaiki'n-Nuriye (Büyük Cevşen) | `risaleoku/hizbulhakaik` | ✅ indirildi | ✅ 19 düğüm, 966 paragraf, 966 cümle | Cevşenü'l-Kebîr bu cildin içindedir. |
+| 44 | Hizbü'l-Kur'ani'l-Muazzam | `risaleoku/hizbkuran` | ✅ indirildi | ✅ 99 düğüm, 1937 paragraf, 1937 cümle |  |
+| 45 | Hizbü'l-Ekber-i Nurî (Hizb-i Nurî) | `—` | ❌ kaynak bulunamadı | ⬜ | Kısmen Lem'alar'da. |
+| 46 | Hizbü Envari'l-Hakaiki'n-Nuriye (Büyük Cevşen) | `risaleoku/hizbulhakaik` | ✅ indirildi | ✅ 19 düğüm, 966 paragraf, 966 cümle | Cevşenü'l-Kebîr bu cildin içindedir. |

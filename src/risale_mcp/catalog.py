@@ -145,8 +145,6 @@ WORKS: tuple[Work, ...] = (
     Work("iman-ve-kufur-muvazeneleri", "İman ve Küfür Muvazeneleri", _M, _erisale("iman-ve-kufur-muvazeneleri")),
     Work("siracun-nur", "Siracü'n-Nur", _M, SourceRef(Site.RISALE_ONLINE, "siracun-nur")),
     Work("kucuk-sozler", "Küçük Sözler", _M, SourceRef(Site.RISALEOKU, "ksozler")),
-    Work("fihrist-risalesi", "Fihrist Risalesi", _M, SourceRef(Site.RISALEOKU, "osfihrist"),
-         Status.DEFERRED, "Yalnızca Osmanlıca bulundu."),
     Work("genclik-rehberi", "Gençlik Rehberi", _M, SourceRef(Site.RISALE_ONLINE, "genclik-rehberi")),
     Work("hanimlar-rehberi", "Hanımlar Rehberi", _M, SourceRef(Site.RISALE_ONLINE, "hanimlar-rehberi")),
     # --- Hizbler

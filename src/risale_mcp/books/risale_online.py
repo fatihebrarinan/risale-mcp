@@ -155,29 +155,61 @@ def parse_work(work: Work, root: Path) -> Book:
             stack.append((entry.depth, node))
             heading_titles.append(match_words(entry.title))
 
-        parsed = _ParagraphHTML()
-        parsed.feed(raw["latince_html"])
-        text = Text.from_builder(parsed.main)
-        if not text.text or match_words(text.text) in heading_titles:
-            continue                                # başlığın kendisi: düğüm başlığında duruyor
-        if _STANZA_NUMBER.fullmatch(text.text):
-            continue                                # kıta numarası
-        node = stack[-1][1]
-        extra = {}
-        kind = "paragraph"
-        if text.is_arabic():
-            kind = "arabic"
-        elif parsed.align == "sag" and len(text.text.split()) <= 8:
-            kind = "signature"
-        elif parsed.align == "ortali":
-            extra["center"] = True
-        record = book.add_paragraph(node, kind, text, **extra)
-        hasiye_texts = {no: Text.from_builder(b) for no, b in parsed.hasiyeler.items()}
-        for mark in text.footnotes:
-            body = hasiye_texts.pop(str(mark.content), None)
-            if body and body.text:
-                book.add_hasiye(record["id"], node, mark.offset, body)
-        for body in hasiye_texts.values():          # işareti bulunamayan hâşiye: paragrafın sonuna
-            if body.text:
-                book.add_hasiye(record["id"], node, len(text.text), body)
+        converted = convert_paragraph(raw)
+        if converted is None or match_words(converted.text.text) in heading_titles:
+            continue                                # boş ya da başlığın kendisi: düğüm başlığında duruyor
+        add_converted(book, stack[-1][1], converted)
     return book
+
+
+@dataclass
+class Converted:
+    """Bir Hayrat paragrafının eser modelindeki karşılığı: tür, metin ve hâşiyeleri."""
+    kind: str
+    text: Text
+    extra: dict
+    hasiyeler: list[tuple[int, Text]]   # (metindeki konum, hâşiye metni)
+
+
+def convert_paragraph(raw: dict) -> Converted | None:
+    """Boş paragraf ve kıta numarası için None."""
+    parsed = _ParagraphHTML()
+    parsed.feed(raw["latince_html"])
+    text = Text.from_builder(parsed.main)
+    if not text.text or _STANZA_NUMBER.fullmatch(text.text):
+        return None
+    extra = {}
+    kind = "paragraph"
+    if text.is_arabic():
+        kind = "arabic"
+    elif parsed.align == "sag" and len(text.text.split()) <= 8:
+        kind = "signature"
+    elif parsed.align == "ortali":
+        extra["center"] = True
+    hasiye_texts = {no: Text.from_builder(b) for no, b in parsed.hasiyeler.items()}
+    hasiyeler = []
+    for mark in text.footnotes:
+        body = hasiye_texts.pop(str(mark.content), None)
+        if body and body.text:
+            hasiyeler.append((mark.offset, body))
+    hasiyeler += [(len(text.text), body) for body in hasiye_texts.values() if body.text]   # işareti bulunamayan: sona
+    return Converted(kind, text, extra, hasiyeler)
+
+
+def add_converted(book: Book, node: Node, converted: Converted) -> dict:
+    record = book.add_paragraph(node, converted.kind, converted.text, **converted.extra)
+    for offset, body in converted.hasiyeler:
+        book.add_hasiye(record["id"], node, offset, body)
+    return record
+
+
+def passage(book: str, root: Path, page: int, first: str, stop: str) -> list[Converted]:
+    """Hayrat baskısında `page` sayfasındaki `first` paragrafından sonra başlayıp `stop`
+    paragrafından önce biten paragraflar (ikisi de dahil değil); başka baskıdaki bir eksiği
+    tamamlamak için."""
+    paragraphs = sorted(source.load_paragraphs(book, root), key=lambda p: (int(p["sayfa"]), _sira(p)))
+    texts = [match_words(re.sub(r"<[^>]+>", " ", p["latince_html"])) for p in paragraphs]
+    start = next(i for i, (p, t) in enumerate(zip(paragraphs, texts))
+                 if int(p["sayfa"]) == page and t == match_words(first))
+    end = texts.index(match_words(stop), start)
+    return [c for raw in paragraphs[start + 1:end] if (c := convert_paragraph(raw))]

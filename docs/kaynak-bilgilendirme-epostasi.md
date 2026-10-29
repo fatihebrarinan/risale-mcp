@@ -16,7 +16,9 @@ ve nezaket içindir. Adresler sitelerin iletişim sayfalarından alınır (burad
 | 8 | Tanzil Project (tanzil.net) | Kur'ân metni ve iki Diyanet meali | Lisansa uyuluyor (değiştirmeden, kaynak belirterek); İngilizce, isteğe bağlı |
 | 9 | Diyanet İşleri Başkanlığı | İki meal (Tanzil üzerinden) | Ticari olmayan kullanım serbest; ortak derlemlere girerse izin gerekir; isteğe bağlı |
 
-Henüz kullanılmayanlar (kullanılırsa o zaman yazılır): nurpedia.org (Hizb-i Nurî), Yeni Asya (artık kullanılmıyor).
+| 10 | nurpedia.org | Henüz bir şey alınmadı: önce izin isteniyor (Hizb-i Nurî ve sitedeki öbür eserler) | Kullanıcı 2026-10-29'da gönderdi (metni aşağıda); cevap bekleniyor |
+
+Henüz kullanılmayan: Yeni Asya (artık kullanılmıyor).
 Rumuzat-ı Semaniye'nin PDF'i kullanıcının kendi dosyasıdır.
 
 ## Türkçe taslak
@@ -89,3 +91,32 @@ fatihebrarinan@protonmail.com
 
 Türkçe taslağın Arapçasını kullanıcı isterse ayrıca hazırlanır; İhsan Kasım es-Sâlihî'nin külliyatından alınanlar:
 إشارات الإعجاز، المثنوي العربي النوري (طبعة بديلي)، صيقل الإسلام (قزل إيجاز، تعليقات، الخطبة الشامية).
+
+## nurpedia.org: gönderilen e-posta (2026-10-29)
+
+Öbür kaynaklardan farkı: metin henüz alınmadı, kullanım izinden sonra olacak. Sitenin robots.txt'i `/api.php`'yi
+herkese, sitenin tamamını ClaudeBot, GPTBot ve benzeri yapay zekâ botlarına kapatıyor; izin gelmeden hiçbir sayfa
+indirilmez. Kullanıcı kendi metnini gönderdi (telefon numarası burada yazılmadı):
+
+> Selamün aleyküm,
+> Ben Fatih Ebrar İnan. Kişisel olarak, Risale-i Nur'u yapay zekâ modellerinin kaynağa sadık kalarak kullanabilmesi
+> için bir araç geliştiriyorum ve bu çalışmada sitenizdeki metinlerinden istifade etmek istiyorum. Durumu size
+> bildirmek ve görüşünüzü almak istedim.
+>
+> Araç bir "MCP sunucusu"dur. Claude gibi bir yapay zekâ modeli, Risale-i Nur hakkında bir soruya cevap verirken
+> metni bu sunucudan okur ve dayandığı her yeri cümle düzeyinde, eser › bölüm › cümlenin ilk kelimeleri şeklinde
+> tam adresiyle gösterir. Amaç, modelin Risale-i Nur'a dair uydurma ya da kaynaksız söz söylemesini önlemek,
+> yorumunu metindeki cümlelere bağlamaktır.
+>
+> Birkaç hususu belirtmek isterim:
+> - Metinler hiçbir yerde yayımlanmayacak ve sitenizin yerine geçecek bir okuma imkânı sunulmayacak. Metne yalnızca
+>   yapay zekâ modeli, sorulan soruya cevap verirken erişiyor; kullanıcı her atıfta asıl metne yönlendiriliyor.
+> - Hiçbir ticari amacı ve geliri yok; sunucu masrafını kendim karşılıyorum.
+> - Metinler değiştirilmeyecek, siteniz kaynak olarak kayıtlı olacak.
+>
+> Bu kullanım hakkında bir çekinceniz, bir şartınız ya da tavsiyeniz varsa memnuniyetle dikkate alırım. Yapay zeka
+> eklentisinin kurulumu için link: https://risalemcp.com/
+>
+> Hizmetinizden dolayı Allah razı olsun.
+> Saygılarımla,
+> Fatih Ebrar İnan

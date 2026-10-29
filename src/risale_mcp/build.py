@@ -104,6 +104,10 @@ def erisale_report(book: Book, parse: erisale_parser.ParseReport) -> list[str]:
         f"  editör notu          : {len(book.notes)}",
         f"  kaynakta eksik       : {sum(g['missing_blocks'] for g in book.gaps)} blok {book.gaps[:3]}",
     ]
+    if parse.restored_headings:
+        lines.append(f"  yol bilgisinden başlık: {parse.restored_headings}")
+    if parse.supplemented:
+        lines.append(f"  Hayrat'tan tamamlanan: {parse.supplemented}")
     if parse.unknown_blocks:
         lines.append(f"  BİLİNMEYEN BLOK      : {dict(parse.unknown_blocks)}")
     return lines
@@ -112,7 +116,9 @@ def erisale_report(book: Book, parse: erisale_parser.ParseReport) -> list[str]:
 def parse(work: Work) -> tuple[Book, list[str]]:
     """Eserin kaynağına göre ayrıştırıcıyı seçer: (eser, ayrıştırıcıya özgü rapor satırları)."""
     if work.source.site is Site.ERISALE:
-        book, parse_report = erisale_parser.parse_work(work, _erisale_book(work.source.book))
+        supplements = {s: risale_online_parser.passage(s.book, RAW_DIR / Site.RISALE_ONLINE, s.page, s.first, s.stop)
+                       for s in erisale_parser.SUPPLEMENTS.get(work.slug, ())}
+        book, parse_report = erisale_parser.parse_work(work, _erisale_book(work.source.book), supplements)
         return book, erisale_report(book, parse_report)
     if work.source.site is Site.RISALE_ONLINE:
         return risale_online_parser.parse_work(work, RAW_DIR / Site.RISALE_ONLINE), []

@@ -221,6 +221,48 @@ def test_missing_blocks_and_editor_notes_are_recorded_not_invented():
     assert book.gaps == [{"node_id": "kitap/1", "missing_blocks": 2, "after": "kitap/1/p001"}]
 
 
+def _two_pages(first_page: list, second_page: list, breadcrumb: list[str], missing: tuple[int, ...]) -> BookBlocks:
+    """İki sayfa: arada `missing` bloklar; ikinci sayfanın yol bilgisi `breadcrumb`."""
+    blocks = [{"index": i, "section": 0, "page": "a", "content": {"type": k, "children": c}}
+              for i, (k, c) in enumerate(first_page, 1)]
+    start = len(first_page) + len(missing) + 1
+    blocks += [{"index": i, "section": 0, "page": "b", "content": {"type": k, "children": c}}
+               for i, (k, c) in enumerate(second_page, start)]
+    pages = [PageSummary("a", "https://x/a", ["Mektublar", "Birinci"], 1, len(first_page)),
+             PageSummary("b", "https://x/b", breadcrumb, start, blocks[-1]["index"])]
+    return BookBlocks("kitap", pages=pages, blocks=blocks, first_index=1, missing=list(missing))
+
+
+def test_missing_heading_is_restored_from_breadcrumb():
+    # Aynı adlı ikinci "Mektublar" indirilemedi: ardından gelen bölüm "Lem'a"nın altına girmemeli.
+    source = _two_pages([("H1", [regular("Giriş")]), ("H1", [regular("Mektub‑lar")]), ("H2", [regular("Birinci")]),
+                         ("Paragraph", [regular("Bir.")]), ("H1", [regular("Lem'a")]), ("Paragraph", [regular("Lem.")])],
+                        [("H2", [regular("İkinci")]), ("Paragraph", [regular("İki.")])],
+                        ["Mektub-lar", "İkinci"], missing=(7, 8))
+    book, report = parse_work(WORK, source)
+    nodes = outline(book)
+    assert nodes["kitap/mektub-lar-2/ikinci"]["parent_id"] == "kitap/mektub-lar-2"
+    assert nodes["kitap/mektub-lar-2"]["title"] == "Mektub‑lar"     # önceki basılı yazılış
+    assert book.gaps == [] and report.restored_headings == ["9: Mektub‑lar"]
+
+
+def test_supplement_fills_a_missing_section_from_another_edition():
+    from risale_mcp.books.erisale import SUPPLEMENT_NOTE, Supplement
+    from risale_mcp.books.risale_online import Converted
+    source = _two_pages([("H1", [regular("Giriş")]), ("H1", [regular("Mektublar")]), ("H2", [regular("Birinci")]), ("Paragraph", [regular("Bir.")])],
+                        [("H2", [regular("Üçüncü")]), ("Paragraph", [regular("Üç.")])],
+                        ["Mektublar", "Üçüncü"], missing=(5, 6, 7))
+    supplement = Supplement(4, 2, "İkinci", "kitap", 1, "", "")
+    body = [Converted("paragraph", Text("İki.", []), {}, [(4, Text("Hâşiye.", []))])]
+    book, report = parse_work(WORK, source, {supplement: body})
+    nodes = outline(book)
+    assert [n["title"] for n in nodes.values() if n["parent_id"] == "kitap/mektublar"] == ["Birinci", "İkinci", "Üçüncü"]
+    assert nodes["kitap/mektublar/ikinci"]["subtitle"] == SUPPLEMENT_NOTE
+    assert [(p["id"], p["text"]) for p in book.paragraphs if p["node_id"] == "kitap/mektublar/ikinci"] == [
+        ("kitap/mektublar/ikinci/p001", "İki."), ("kitap/mektublar/ikinci/p001/h1", "Hâşiye.")]
+    assert book.gaps == [] and report.supplemented == ["5: İkinci"]
+
+
 # ---------------------------------------------------------------- üretilmiş Sözler
 
 @pytest.fixture(scope="module")

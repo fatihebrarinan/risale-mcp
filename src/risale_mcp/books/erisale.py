@@ -22,7 +22,13 @@ Kurallar:
   bir bloktan sonra süren paragraftır (`continued: true`).
 - Editör notları (`Comment`) metne girmez, `notes` alanına yazılır. Bölüm ayıraçları
   (`ThematicBreak`, `GroupStart`, `GroupEnd`) atılır.
-- Kaynakta bulunmayan bloklar `gaps` alanında işaretlenir; metin uydurulmaz.
+- Kaynakta bulunmayan bloklar `gaps` alanında işaretlenir; metin uydurulmaz. İki istisna, ikisi
+  de aynı adı taşıyan iki bölümün sitede aynı adresi paylaşmasından (yalnızca ilki indirilebilir):
+  - Eksikten sonraki sayfanın yol bilgisi (breadcrumb) açık başlıklarda olmayan bir üst başlık
+    adlandırıyorsa eksik o başlıktır: düğüm yol bilgisinden açılır, metin kaybı yoktur
+    (Sikke-i Tasdik-i Gaybî'de ikinci "Risale-i Nur'dan Parlak Fıkralar…").
+  - `SUPPLEMENTS`'teki eksik bölüm başka baskıdan tamamlanır; düğümün alt başlığı bunu söyler
+    (Sikke'de ikinci "Husrev'in Bir Fıkrasıdır", Hayrat baskısından).
 """
 
 import re
@@ -30,9 +36,10 @@ from collections import Counter
 from dataclasses import dataclass, field
 
 from risale_mcp.books.model import ArabicSpan, Book, Node, Text, TextBuilder
+from risale_mcp.books.risale_online import Converted, add_converted
 from risale_mcp.catalog import Group, Work
 from risale_mcp.headings import HeadingInfo, clean_label, local_id, parse_heading, parse_inline_label
-from risale_mcp.normalize import fold, slugify
+from risale_mcp.normalize import fold, match_words, slugify
 from risale_mcp.sources.erisale import BookBlocks
 
 _HEADING = re.compile(r"H([1-6])")
@@ -53,6 +60,29 @@ SKIPPED = {"ThematicBreak", "GroupStart", "GroupEnd"}
 # Paragraf başındaki numaralı etiket bunlardan biriyle işaretlenir: "Birinci Esas:" (Heading),
 # "Birinci Kâr:" (Mark), "İkinci temsîl:" (Bold), "Birinci Kelime:" (BoldItalic).
 LABEL_TYPES = {"Heading", "Mark", "Bold", "BoldItalic"}
+
+
+@dataclass(frozen=True)
+class Supplement:
+    """erisale'de indirilemeyen bir bölüm, Hayrat baskısındaki (risale.online) karşılığından."""
+    after: int      # eksikten önceki son erisale bloğu
+    level: int      # bölüm başlığının seviyesi
+    title: str      # erisale'nin içindekilerindeki adı
+    book: str       # risale.online kitabı; metin `page` sayfasındaki `first` paragrafından sonra
+    page: int       # başlar, `stop` paragrafından önce biter
+    first: str
+    stop: str
+
+
+SUPPLEMENTS = {
+    # İçindekilerde #338; ilk "Husrev'in Bir Fıkrasıdır" (#319) ile aynı adres.
+    "sikke-i-tasdik-i-gaybi": (
+        Supplement(337, 2, "Husrev’in Bir Fıkrasıdır", "sikke-i-tasdik-i-gaybi", 36,
+                   "[Husrev’in bir fıkrasıdır.]", "[Risâle-i Nûr’un beş talebesinin bir fıkrasıdır.]"),
+    ),
+}
+SUPPLEMENT_NOTE = ("Bu bölüm erisale'de indirilemediği için (aynı başlıklı başka bir bölümle aynı adresi "
+                   "paylaşıyor) Hayrat baskısından (risale.online) alınmıştır.")
 
 
 # ---------------------------------------------------------------- satır içi metin
@@ -134,10 +164,12 @@ class ParseReport:
     unmatched_book_only: list[str] = field(default_factory=list)   # eşi bulunmayan BookOnly başlıklar
     stray_descriptions: int = 0                                    # başlıktan uzak HeadingDescription
     inline_nodes: int = 0
+    restored_headings: list[str] = field(default_factory=list)     # yol bilgisinden açılan başlıklar
+    supplemented: list[str] = field(default_factory=list)          # başka baskıdan tamamlanan bölümler
 
 
 class _Parser:
-    def __init__(self, work: Work, source: BookBlocks):
+    def __init__(self, work: Work, source: BookBlocks, supplements: dict[Supplement, list[Converted]]):
         self.book = Book(work.slug, work.title, {
             "group": str(work.group),
             "source": {"site": str(work.source.site), "book": work.source.book,
@@ -147,6 +179,8 @@ class _Parser:
         # Mecmuada Söz ile Mektub yan yana durabilir: kimlik numarayla değil türle başlar (soz-10).
         self.is_mecmua = work.group is Group.MECMUA
         self.urls = {p.slug: p.url for p in source.pages}
+        self.breadcrumbs = {p.slug: p.breadcrumb for p in source.pages}
+        self.supplements = supplements
         self.missing = set(source.missing)
         self.blocks = [b for b in source.blocks if work.source.includes(b["page"])]
         self.stack: list[tuple[int, Node]] = [(0, self.book.root)]   # (başlık seviyesi, düğüm)
@@ -167,7 +201,7 @@ class _Parser:
         previous = None
         for self.position, block in enumerate(self.blocks):
             if previous is not None:
-                self._mark_gap(previous, block["index"])
+                self._fill_gap(previous, block)
             previous = block["index"]
             content = block["content"]
             kind = content["type"]
@@ -231,14 +265,15 @@ class _Parser:
                 return
             if node is None:
                 self.report.unmatched_book_only.append(f"{block['index']}: {title}")
-                node = self._open_node(block, level, raw_title, title, subtitle)
+                node = self._open_node(level, raw_title, title, subtitle, page=block["page"])
             else:
                 if node.title != title and node is not self.book.root:   # kök, katalogdaki adıyla anılır
                     node.toc_title = node.toc_title or node.title
                     node.title = title
                 node.subtitle = " ".join(filter(None, [node.subtitle, subtitle]))
         else:
-            node = self._open_node(block, level, raw_title, title, subtitle)
+            node = self._open_node(level, raw_title, title, subtitle,
+                                   toc_title=_directive(content, "TocTitle") or None, page=block["page"])
             if _directive(content, "TocOnly") is not None:
                 self.toc_only[level] = node
 
@@ -256,13 +291,13 @@ class _Parser:
             return open_node
         return None
 
-    def _open_node(self, block: dict, level: int, raw_title: str, title: str, subtitle: str) -> Node:
+    def _open_node(self, level: int, raw_title: str, title: str, subtitle: str, *,
+                   toc_title: str | None = None, page: str | None = None) -> Node:
         while len(self.stack) > 1 and self.stack[-1][0] >= level:
             self.stack.pop()
         for pending_level in [lvl for lvl in self.toc_only if lvl >= level]:
             del self.toc_only[pending_level]
         parent = self.stack[-1][1]
-        toc_title = _directive(block["content"], "TocTitle") or None
         info = parse_heading(raw_title)
         if info == HeadingInfo() and toc_title:      # Arapça başlık: "Birinci Bâb (اَلْبَابُ الْأَوَّلُ)"
             info = parse_heading(toc_title)
@@ -270,7 +305,7 @@ class _Parser:
         node = self.book.add_node(
             parent, local_id(info, slug_source, top_level=parent is self.book.root and not self.is_mecmua), title,
             type=info.type, number=info.number, heading=f"H{level}", subtitle=subtitle,
-            toc_title=toc_title, url=self.urls.get(block["page"]))
+            toc_title=toc_title, url=self.urls.get(page))
         self.stack.append((level, node))
         return node
 
@@ -358,15 +393,46 @@ class _Parser:
             record = self.book.add_hasiye(parent_id, node, mark.offset, body)
             self._hasiyeler(record["id"], node, body)    # hâşiyenin hâşiyesi
 
-    def _mark_gap(self, previous: int, index: int) -> None:
-        lost = self.missing.intersection(range(previous + 1, index))
-        if lost:
+    def _fill_gap(self, previous: int, block: dict) -> None:
+        lost = self.missing.intersection(range(previous + 1, block["index"]))
+        if not lost:
+            return
+        supplement = next((s for s in self.supplements if previous <= s.after < block["index"]), None)
+        if supplement is not None:
+            self._supplement(supplement)
+        elif not self._restore_headings(block):
             self.book.gaps.append({
                 "node_id": self.current.id, "missing_blocks": len(lost),
                 "after": self.last_paragraph["id"] if self.last_paragraph else None,
             })
 
+    def _restore_headings(self, block: dict) -> bool:
+        """Eksikten sonraki sayfanın yol bilgisindeki, açık olmayan üst başlıkları açar."""
+        if self.stack[0][0] != 0:            # kök bir başlıksa yol bilgisinin seviyeleri kaymıştır
+            return False
+        restored = False
+        for level, crumb in enumerate(self.breadcrumbs.get(block["page"], [])[:-1], 1):
+            open_node = next((n for lvl, n in self.stack if lvl == level), None)
+            if open_node is not None and match_words(open_node.title) == match_words(crumb):
+                continue
+            # Aynı adlı önceki bölümün basılı yazılışı yol bilgisindekinden (düz tire) daha doğrudur.
+            title = next((n.title for n in self.book.nodes() if match_words(n.title) == match_words(crumb)), crumb)
+            self.inline.clear()
+            self._open_node(level, title, title, "")
+            self.report.restored_headings.append(f"{block['index']}: {title}")
+            restored = True
+        return restored
 
-def parse_work(work: Work, source: BookBlocks) -> tuple[Book, ParseReport]:
-    parser = _Parser(work, source)
+    def _supplement(self, supplement: Supplement) -> None:
+        self.inline.clear()
+        node = self._open_node(supplement.level, supplement.title, supplement.title, SUPPLEMENT_NOTE)
+        for converted in self.supplements[supplement]:
+            self.last_paragraph = add_converted(self.book, node, converted)
+        self.report.supplemented.append(f"{supplement.after + 1}: {supplement.title}")
+
+
+def parse_work(work: Work, source: BookBlocks,
+               supplements: dict[Supplement, list[Converted]] | None = None) -> tuple[Book, ParseReport]:
+    """`supplements`: eserin `SUPPLEMENTS` kayıtları ve Hayrat baskısındaki paragrafları."""
+    parser = _Parser(work, source, supplements or {})
     return parser.run(), parser.report
