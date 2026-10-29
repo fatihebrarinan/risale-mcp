@@ -24,14 +24,16 @@ düzenlenir, paket yeniden üretilip yüklenir.
    (2026-10-29'da yayında; avukat uygun buldu).
 2. **Paketi yükle.** Doğrulanmış kimliği seç. Bulgular çıkarsa düzelt, yeniden yükle.
 3. **MCP kurulumu.**
-   - Kimlik doğrulama: **No authentication** (hesapsız). `sign_in` aracı ChatGPT'ye gösterilmez
-     (`auth.hide_sign_in_middleware`; istemci adı "openai" içeriyorsa). Hakem hesabı gerekmez.
+   - Kimlik doğrulama: **No authentication**. Sunucu OAuth bilgisi yayımladığı sürece portal OAuth'ta ısrar etti
+     (eklentiyi silip yeniden yüklemek de değiştirmedi); bu yüzden genel sunucu 2026-10-29'dan beri açık kipte
+     (`--open`): OAuth uç noktaları ve `sign_in` yok. Hakem hesabı gerekmez.
    - Alan adı doğrulaması: portalın verdiği jeton `scripts/sunucu.sh openai-challenge <jeton>` ile
      `https://mcp.risalemcp.com/.well-known/openai-apps-challenge` adresine yazılır (Caddy düz metin verir).
    - Araç taraması: 10 araç, hepsinde `readOnlyHint: true`, `destructiveHint: false`, `openWorldHint: false`.
 4. **İnceleme ayrıntıları.**
-   - Test senaryolarının her biri başvurudan önce ChatGPT'de çalıştırılır (ayrıntılı kayıt açık hesapla:
-     `scripts/sunucu.sh auth usage --user fatih --params`).
+   - Test senaryolarının her biri başvurudan önce ChatGPT'de çalıştırılır. Araç zinciri gizli hata ayıklama adresiyle
+     eklenmiş eklentiden izlenir (`scripts/sunucu.sh auth debug-url --new`, kayıt
+     `scripts/sunucu.sh auth usage --user '(debug)' --params`).
    - **Tanıtım videosu** (zorunlu): beş olumlu senaryonun ChatGPT'de çalışması, hakemlerin açabileceği bir bağlantıyla
      (`review.demo_recording_url` pakete eklenir ya da portala yazılır).
    - Masaüstü ve mobilde deneme.

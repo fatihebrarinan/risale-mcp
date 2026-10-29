@@ -39,21 +39,20 @@
 <p>To keep the service running and to limit abuse, the following is logged for each request:</p>
 <ul>
   <li>the time,</li>
-  <li>if you are signed in, your account name and the id of the connecting application (e.g. claude.ai),</li>
   <li>the tool or request type,</li>
   <li>how long the request took and, if it failed, the type of error.</li>
 </ul>
 <p>Search phrases, quotations and conversation content are <strong>not</strong> logged. Log entries are deleted after <strong>90 days</strong>.</p>
-<p>The one exception is debugging: if the owner of an account explicitly asks for it, to see how the connector is used in another app, the tool inputs, result sizes and error messages of that account only are kept for <strong>7 days</strong>. This is never turned on for an account without its owner's request, and cannot be turned on for use without an account.</p>
+<p>The one exception is debugging: the people who run the service use a secret address of their own to see how the connector is used in chat applications. Only for requests to that address are the tool inputs, result sizes and error messages kept, for <strong>7 days</strong>. Your requests go to the public address and never enter this record.</p>
 
 <h3>IP addresses and cookies</h3>
-<p>The server keeps no access log; your IP address is not recorded. Limits for use without an account apply to all such use together, not per person. Neither this website nor the connector's sign-in page uses cookies, analytics or advertising tools. If you choose the light or dark theme with the button, that choice is stored only in your own browser and never sent to the server.</p>
+<p>The server keeps no access log; your IP address is not recorded. Usage limits apply to all use together, not per person. Neither this website nor the connector uses cookies, analytics or advertising tools. If you choose the light or dark theme with the button, that choice is stored only in your own browser and never sent to the server.</p>
 
 <h3>Search by meaning</h3>
-<p>For search by meaning (<code>semantic_search</code>), the search phrase is sent to <a href="https://www.voyageai.com">Voyage AI</a>, which turns its meaning into numbers. Only the phrase is sent, not your account or conversation. The server keeps the result in memory while it runs and never writes it to disk. How Voyage AI handles data is described in <a href="https://www.voyageai.com/privacy">its privacy policy</a>.</p>
+<p>For search by meaning (<code>semantic_search</code>), the search phrase is sent to <a href="https://www.voyageai.com">Voyage AI</a>, which turns its meaning into numbers. Only the phrase is sent, not your conversation. The server keeps the result in memory while it runs and never writes it to disk. How Voyage AI handles data is described in <a href="https://www.voyageai.com/privacy">its privacy policy</a>.</p>
 
 <h3>Accounts</h3>
-<p>The connector can be used without an account. Accounts are created by the administrator and hold: a user name, a one-way hash of the password (scrypt; the password itself is not stored), hashes of session tokens, and the count of consecutive wrong passwords. An access token is valid for 1 hour, a session for 30 days. Your account and its log entries are deleted on request.</p>
+<p>The connector needs no account and has no sign-in page; no user name or password is collected from anyone.</p>
 
 <h2>Sharing</h2>
 <p>Data is not sold and not used for advertising or profiling. It is shared with no one other than Voyage AI as described above. The chat application you use (e.g. Claude, ChatGPT) processes your conversation under its own policy: for Claude, <a href="https://www.anthropic.com/legal/privacy">Anthropic's privacy policy</a> applies, for ChatGPT, <a href="https://openai.com/policies/privacy-policy/">OpenAI's</a>.</p>
@@ -62,7 +61,7 @@
 <p>The server runs in Hetzner Online's Helsinki data center (Finland, EU) (<a href="https://www.hetzner.com/legal/privacy-policy/">Hetzner privacy policy</a>). The domain's DNS records are at Cloudflare; traffic does not pass through Cloudflare.</p>
 
 <h2>Your rights</h2>
-<p>To learn what data is held about you, or to have it corrected or deleted, write to <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>. Use without an account leaves no record that can be linked to a person.</p>
+<p>To learn what data is held about you, or to have it corrected or deleted, write to <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>. The record cannot be linked to a person, so there is no personal data to give.</p>
 
 <h2>Changes</h2>
 <p>If this policy changes, the new version is published on this page with its date.</p>

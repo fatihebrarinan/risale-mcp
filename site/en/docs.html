@@ -50,8 +50,8 @@
 <h3>Claude Code</h3>
 <pre><code>claude mcp add --transport http risale https://mcp.risalemcp.com/mcp</code></pre>
 
-<h3>Accounts</h3>
-<p>Every tool works without an account. Without an account, search by meaning has a shared daily limit and all requests a shared per-minute limit. Account holders have no limits: ask Claude in the conversation to sign in to Risale-i Nur; it shows a <strong>Connect</strong> card that opens the sign-in page. Accounts are currently created by the administrator; write to <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>.</p>
+<h3>Accounts and limits</h3>
+<p>The connector needs no account; everyone can use every tool. To protect the service, search by meaning has a shared daily limit and all requests a shared per-minute limit.</p>
 
 <h2>Using it</h2>
 <p>Ask as you normally would, in Turkish or another language. Examples:</p>
@@ -94,7 +94,6 @@
   <tr><td><code>find_ayah</code></td><td>Where a Qur'anic verse is quoted in the works and which sections tie themselves to it.</td></tr>
   <tr><td><code>get_ayah</code></td><td>A verse of the Qur'an: vowelled text and two Diyanet translations.</td></tr>
   <tr><td><code>cite</code></td><td>Checks the answer's quotations and builds its list of sources.</td></tr>
-  <tr><td><code>sign_in</code></td><td>Sign in with an account.</td></tr>
 </table>
 </div>
 
@@ -114,7 +113,7 @@
 <ul>
   <li><strong>The assistant does not use the connector:</strong> check that it is enabled in the conversation, and mention "Risale-i Nur" in your question.</li>
   <li><strong>Tools look outdated or a tool fails:</strong> Claude caches the tool list. Disconnect and reconnect the connector, or start a new conversation.</li>
-  <li><strong>"Daily limit" or "too many requests":</strong> the shared limit for use without an account is reached. Try again later or sign in.</li>
+  <li><strong>"Daily limit" or "too many requests":</strong> the shared usage limit is reached. Try again later; the limit for search by meaning resets the next day.</li>
   <li><strong>A reference or quotation looks wrong:</strong> please send the question and the answer to <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>.</li>
 </ul>
 

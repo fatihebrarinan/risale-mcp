@@ -349,3 +349,73 @@ def test_usage_older_than_the_retention_period_is_deleted(store):
     store._pruned = 0.0
     store.log("fatih", None, "tools/call", "cite", 3, None)
     assert [row["name"] for row in store.usage()] == ["cite"]
+
+
+# ---------------------------------------------------------------- açık kip (OAuth askıda)
+
+@pytest.fixture
+def opened(small_db, store):
+    server = create_server(Library(small_db[0]), PUBLIC, store, anonymous_semantic=0, open_access=True)
+    with TestClient(http_app(server, PUBLIC, open_store=store), base_url=PUBLIC, follow_redirects=False) as client:
+        yield client
+
+
+def open_path_session(client, path: str = "/mcp", extra: dict | None = None) -> tuple[str, dict]:
+    headers = {**MCP_HEADERS, **(extra or {})}
+    response = client.post(path, headers=headers, json={"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
+        "protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "openai-mcp", "version": "1"}}})
+    assert response.status_code == 200, response.text
+    if session := response.headers.get("mcp-session-id"):
+        headers["Mcp-Session-Id"] = session
+    client.post(path, headers=headers, json={"jsonrpc": "2.0", "method": "notifications/initialized"})
+    return path, headers
+
+
+def open_call(client, session, tool: str, arguments: dict | None = None):
+    path, headers = session
+    return client.post(path, headers=headers, json={"jsonrpc": "2.0", "id": 2, "method": "tools/call",
+                                                    "params": {"name": tool, "arguments": arguments or {}}})
+
+
+def test_open_mode_publishes_no_oauth(opened):
+    for path in ("/.well-known/oauth-protected-resource/mcp", "/.well-known/oauth-authorization-server", "/login"):
+        assert opened.get(path).status_code == 404, path
+    session = open_path_session(opened)
+    listed = opened.post("/mcp", headers=session[1], json={"jsonrpc": "2.0", "id": 3, "method": "tools/list"}).text
+    assert "sign_in" not in listed and "semantic_search" in listed
+
+
+def test_open_mode_is_logged_without_parameters_and_limited(opened, store):
+    session = open_path_session(opened)
+    assert "sozler/10/hakikat-01" in open_call(opened, session, "search", {"query": "kiyamet"}).text
+    assert "daily limit" in open_call(opened, session, "semantic_search", {"query": "kıyamet"}).text
+    logged = [r for r in store.usage() if r["name"] == "search"]
+    assert logged and logged[0]["user"] is None and logged[0]["params"] is None
+
+
+def test_debug_address_logs_parameters_and_is_not_limited(opened, store):
+    key = store.new_debug_key()
+    session = open_path_session(opened, f"/mcp/{key}")
+    assert "sozler/10/hakikat-01" in open_call(opened, session, "search", {"query": "kiyamet"}).text
+    assert "daily limit" not in open_call(opened, session, "semantic_search", {"query": "kıyamet"}).text
+    logged = [r for r in store.usage() if r["name"] == "search"]
+    assert logged[0]["user"] == "(debug)" and json.loads(logged[0]["params"])["params"]["arguments"] == {"query": "kiyamet"}
+    AuthStore(store.path)                                  # açılışta silinmez (7 gün)
+    assert any(r["params"] for r in store.usage())
+    store.revoke_debug_key()
+    assert all(r["params"] is None for r in store.usage())
+    assert opened.post(f"/mcp/{key}", headers=MCP_HEADERS, json={"jsonrpc": "2.0", "id": 1, "method": "ping"}).status_code == 404
+
+
+def test_debug_header_from_outside_is_ignored(opened, store):
+    session = open_path_session(opened, extra={"X-Risale-Debug": "1"})
+    open_call(opened, session, "search", {"query": "kiyamet"})
+    logged = [r for r in store.usage() if r["name"] == "search"]
+    assert logged[0]["user"] is None and logged[0]["params"] is None
+
+
+def test_open_mode_has_a_per_minute_limit(opened):
+    opened.app.per_minute = 2
+    statuses = [opened.post("/mcp", headers=MCP_HEADERS, json={"jsonrpc": "2.0", "id": i, "method": "ping"}).status_code
+                for i in range(4)]
+    assert statuses[-1] == 429

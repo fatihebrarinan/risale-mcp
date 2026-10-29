@@ -3,7 +3,9 @@
 #
 #   scripts/sunucu.sh auth add-user <ad> --generate   # hesap aç (parolayı gösterir)
 #   scripts/sunucu.sh auth users | sessions | usage [--user <ad>] [--params] | revoke --user <ad> | passwd <ad> | remove-user <ad>
-#   scripts/sunucu.sh auth debug <ad> on|off              # hesabın ayrıntılı kaydı (araç girdileri, 7 gün)
+#   scripts/sunucu.sh auth debug-url --new | --revoke    # gizli hata ayıklama adresi (açık kip; araç girdileri, 7 gün)
+#   scripts/sunucu.sh auth usage --user '(debug)' --params  # o adresten gelen isteklerin kaydı
+#   scripts/sunucu.sh auth debug <ad> on|off              # hesabın ayrıntılı kaydı (OAuth kipi; askıda)
 #   scripts/sunucu.sh openai-challenge <jeton>         # OpenAI dizininin alan adı doğrulama jetonu
 #   scripts/sunucu.sh status | restart | stop | start  # servis
 #   scripts/sunucu.sh logs                             # canlı günlük (Ctrl+C ile çık)
@@ -31,5 +33,5 @@ case "${1:-}" in
     ssh)
         "${SSH[@]}" "$HOST" ;;
     *)
-        sed -n '2,11p' "$0"; exit 1 ;;
+        sed -n '2,13p' "$0"; exit 1 ;;
 esac

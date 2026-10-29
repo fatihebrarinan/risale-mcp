@@ -26,6 +26,13 @@ rsync -az -e "${SSH[*]}" docs/Caddyfile "$HOST:/etc/caddy/Caddyfile.new"
     || { caddy validate --config /etc/caddy/Caddyfile.new --adapter caddyfile >/dev/null 2>&1 \
          && mv /etc/caddy/Caddyfile.new /etc/caddy/Caddyfile && systemctl reload caddy && echo 'Caddy yeniden yüklendi'; }"
 
+# Servis birimi (docs/risale-mcp.server.service) değiştiyse kurulur; yeniden başlatma aşağıda
+rsync -az -e "${SSH[*]}" docs/risale-mcp.server.service "$HOST:/etc/systemd/system/risale-mcp.service.new"
+"${SSH[@]}" "$HOST" "cmp -s /etc/systemd/system/risale-mcp.service.new /etc/systemd/system/risale-mcp.service \
+    && rm /etc/systemd/system/risale-mcp.service.new \
+    || { mv /etc/systemd/system/risale-mcp.service.new /etc/systemd/system/risale-mcp.service \
+         && systemctl daemon-reload && echo 'servis birimi güncellendi'; }"
+
 if [[ "${1:-}" != "--code" ]]; then
     echo "veri gönderiliyor…"
     "${SSH[@]}" "$HOST" "mkdir -p $DEST/data/vectors"

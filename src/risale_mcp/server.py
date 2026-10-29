@@ -3,9 +3,11 @@
 Kullanım:
     uv run risale-mcp                                # stdio: Claude Desktop ve Claude Code başlatır
     uv run risale-mcp --db yol/risale.db
-    uv run risale-mcp --transport streamable-http --public-url https://<adres>   # OAuth'lu HTTP (Aşama 12)
+    uv run risale-mcp --transport streamable-http --public-url https://<adres> --open   # açık HTTP (OAuth askıda)
+    uv run risale-mcp --transport streamable-http --public-url https://<adres>   # OAuth'lu HTTP (Aşama 12; askıda)
     uv run risale-mcp --transport streamable-http --no-auth   # yerel HTTP (127.0.0.1:8000/mcp), kimlik doğrulamasız
-    uv run risale-mcp auth add-user <ad>             # hesaplar, oturumlar, kullanım kaydı (bkz. auth.py)
+    uv run risale-mcp auth debug-url --new           # açık kipin gizli hata ayıklama adresi
+    uv run risale-mcp auth usage                     # kullanım kaydı; hesaplar ve oturumlar (OAuth kipi) (bkz. auth.py)
     npx @modelcontextprotocol/inspector uv run risale-mcp   # MCP Inspector ile elle deneme
 
 Araçlar `library.Library` üzerinden veritabanını salt okunur kullanır; veritabanı yeniden
@@ -40,6 +42,8 @@ from starlette.responses import Response
 from risale_mcp.auth import (
     ANON_SEMANTIC_PER_DAY,
     AnonymousGate,
+    OpenGate,
+    is_debug_request,
     AuthStore,
     Provider,
     login_endpoint,
@@ -205,12 +209,15 @@ def _warm(library: Library, citations: CitationChecker) -> None:
 
 def create_server(library: Library, public_url: str | None = None, store: AuthStore | None = None,
                   anonymous: bool = False, anonymous_semantic: int = ANON_SEMANTIC_PER_DAY,
-                  warm: bool = False) -> MCPServer:
+                  warm: bool = False, open_access: bool = False) -> MCPServer:
     """`public_url` verilirse sunucu OAuth ile korunur (giriş sayfası `/login`) ve her istek kaydedilir.
     `anonymous`: hesapsızlar da kullanır (`http_app` kapıyı kurar); anlamsal aramaları günde `anonymous_semantic`
     ile sınırlıdır, hesabı olan `sign_in` aracıyla giriş yapar."""
     protected = {}
-    if public_url:
+    if public_url and open_access:                 # açık kip: OAuth yok, kayıt ve sınırlar sürer (http_app kapıyı kurar)
+        store = store or AuthStore()
+        protected = {"middleware": [usage_middleware(store)]}
+    elif public_url:
         store = store or AuthStore()
         provider = Provider(store, public_url)
         protected = {"auth": auth_settings(public_url), "auth_server_provider": provider,
@@ -220,7 +227,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                        icons=_icons(public_url), **protected)
     for path, (name, media) in STATIC.items():               # ikon: istemciler sunucu adresinden de alabilir
         server.custom_route(path, methods=["GET"], include_in_schema=False)(_static(name, media))
-    if public_url:
+    if public_url and not open_access:
         server.custom_route("/login", methods=["GET", "POST"], include_in_schema=False)(login_endpoint(provider))
     citations = CitationChecker(library)
     if warm:
@@ -298,7 +305,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         sections where the topic concentrates. For concepts and questions; the text often uses other, older words.
         For exact words, phrases or terms use search. Read a result in context before relying on it."""
         with _tool_errors():
-            if anonymous and get_access_token() is None \
+            limited = open_access or (anonymous and get_access_token() is None)
+            if limited and not is_debug_request() \
                     and store.anonymous_calls("semantic_search", start_of_day()) >= anonymous_semantic:
                 raise ToolError("The daily limit of semantic searches for users without an account is reached. "
                                 "Use search with the text's own words instead. A user with an account can sign "
@@ -463,9 +471,12 @@ def http_security(public_url: str) -> TransportSecuritySettings:
                          "http://127.0.0.1:*", "http://localhost:*"])
 
 
-def http_app(server: MCPServer, public_url: str, anonymous: bool = False) -> Starlette:
-    """OAuth'lu HTTP uygulaması; `anonymous` ise `/mcp` önüne hesapsız erişim kapısı (`auth.AnonymousGate`) konur."""
+def http_app(server: MCPServer, public_url: str, anonymous: bool = False, open_store: AuthStore | None = None):
+    """OAuth'lu HTTP uygulaması; `anonymous` ise `/mcp` önüne hesapsız erişim kapısı (`auth.AnonymousGate`) konur.
+    `open_store` verilirse açık kip: OAuth'suz uygulamanın önüne `auth.OpenGate` (dakika sınırı, hata ayıklama adresi)."""
     app = server.streamable_http_app(transport_security=http_security(public_url))
+    if open_store is not None:
+        return OpenGate(app, open_store)
     if anonymous:
         for route in app.router.routes:
             if getattr(route, "path", None) == "/mcp" and isinstance(route.app, RequireAuthMiddleware):
@@ -490,6 +501,8 @@ def main() -> None:
     parser.add_argument("--no-auth", action="store_true", help="HTTP: kimlik doğrulamasız, yalnızca 127.0.0.1")
     parser.add_argument("--anonymous", action="store_true",
                         help="HTTP + --public-url: hesapsızlar da kullanır (anlamsal arama sınırlı), hesaplılar sınırsız")
+    parser.add_argument("--open", action="store_true",
+                        help="HTTP + --public-url: OAuth'suz, herkes hesapsız (sınırlı); gizli hata ayıklama adresi")
     parser.add_argument("--anonymous-semantic", type=int, default=ANON_SEMANTIC_PER_DAY,
                         help="hesapsızların günlük toplam anlamsal arama sınırı")
     args = parser.parse_args()
@@ -507,14 +520,21 @@ def main() -> None:
     if args.public_url:
         if not args.public_url.startswith("https://"):
             sys.exit("--public-url https:// ile başlamalı.")
-        if not AuthStore().users():
+        if not args.open and not AuthStore().users():
             sys.exit("Henüz hesap yok: önce `risale-mcp auth add-user <ad>`.")
         security = http_security(args.public_url)
     if args.no_auth:
         create_server(library, warm=True).run("streamable-http", host=args.host, port=args.port, transport_security=security)
         return
-    if args.anonymous and not args.public_url:
-        sys.exit("--anonymous yalnızca --public-url ile kullanılır.")
+    if (args.anonymous or args.open) and not args.public_url:
+        sys.exit("--anonymous ve --open yalnızca --public-url ile kullanılır.")
+    if args.open:
+        store = AuthStore()
+        server = create_server(library, args.public_url, store, anonymous_semantic=args.anonymous_semantic,
+                               warm=True, open_access=True)
+        uvicorn.run(http_app(server, args.public_url, open_store=store), host=args.host, port=args.port,
+                    access_log=False)
+        return
     server = create_server(library, args.public_url, anonymous=args.anonymous,
                            anonymous_semantic=args.anonymous_semantic, warm=True)
     # Erişim günlüğü kapalı: istemcinin IP adresini sistem günlüğüne yazıyordu; kullanım kaydı (auth.py) yeter

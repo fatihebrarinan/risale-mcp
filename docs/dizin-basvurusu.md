@@ -1,8 +1,12 @@
 # Anthropic bağlayıcı dizini başvurusu
 
 Portal: https://claude.ai/directory/manage › **Submit new** › **MCP connector**. Adımlar portalın sırasıyladır.
-Metinler İngilizcedir (dizin uluslararası; hakemler İngilizce okur). Hakem hesabının parolası burada yazılmaz:
-sunucudadır, `scripts/sunucu.sh auth passwd admin` ile değiştirilir.
+Metinler İngilizcedir (dizin uluslararası; hakemler İngilizce okur).
+
+**Güncelleme (2026-10-29): OAuth askıya alındı.** Başvuru hesapsız erişim + isteğe bağlı OAuth (`sign_in`, hakem hesabı
+`admin`) ile gönderilmişti. OpenAI dizininin portalı sunucunun OAuth bilgisini görünce OAuth'ta ısrar ettiği için
+genel sunucu açık kipe geçti (`--open`): OAuth uç noktaları ve `sign_in` yok, herkes hesapsız (sınırlı). Aşağıdaki
+metinler buna göre güncellendi; portalda başvuru düzenlenip §6 ve §8 değiştirilir, hakeme §11'deki not yazılır.
 
 Belgeler: https://claude.com/docs/connectors/building/submission.md, ölçütler:
 https://claude.com/docs/connectors/building/review-criteria.md, politika:
@@ -15,7 +19,7 @@ https://support.claude.com/en/articles/13145358-anthropic-software-directory-pol
 
 ## 2. Tools
 
-Sunucudan kendiliğinden gelir. 11 aracın hepsinde `title` ve `readOnlyHint: true` var; uyarı çıkmamalı.
+Sunucudan kendiliğinden gelir. 10 aracın hepsinde `title` ve `readOnlyHint: true` var; uyarı çıkmamalı.
 
 ## 3. Listing
 
@@ -65,7 +69,7 @@ Sunucudan kendiliğinden gelir. 11 aracın hepsinde `title` ve `readOnlyHint: tr
 
 **What users need before they can connect:**
 
-> Nothing. Every tool works without an account. Users with an account (created by the administrator) have no usage limits; without one, search by meaning has a shared daily limit and requests a shared per-minute limit.
+> Nothing. There are no accounts and no sign-in: every tool works for everyone. To protect the service, search by meaning has a shared daily limit and requests a shared per-minute limit.
 
 **Reads / writes:** reads data only.
 
@@ -77,8 +81,7 @@ Sunucudan kendiliğinden gelir. 11 aracın hepsinde `title` ve `readOnlyHint: tr
 
 ## 6. Authentication
 
-- Authentication requirement: **Required when the server asks** (sunucu hesapsız açılır; yalnızca `sign_in` aracı girişi ister: lazy authentication).
-- Authentication method: **OAuth**, Dynamic Client Registration ile. Anthropic'e istemci kimliği ve sırrı verilmez (alanlar boş).
+- Authentication requirement: **None** (kimlik doğrulama yok; 2026-10-29'a kadar "Required when the server asks" + OAuth idi).
 
 ## 7. Data handling
 
@@ -87,19 +90,18 @@ Sunucudan kendiliğinden gelir. 11 aracın hepsinde `title` ve `readOnlyHint: tr
 
 ## 8. Test & launch
 
-**Test account:** kullanıcı adı `admin`, parola sunucuda (portala elle yazılır).
+**Test account:** yok (gerekmez). Portalda daha önce girilen `admin` bilgileri silinir.
 
 **Instructions for reviewers:**
 
 > 1. Add a custom connector in Claude with the URL https://mcp.risalemcp.com/mcp. No sign-in is needed: every tool works without an account.
-> 2. To test sign-in, ask Claude: "Sign in to Risale-i Nur." Claude shows a Connect card; sign in with the test account (user name: admin, password: below). The sign_in tool then reports the signed-in user.
-> 3. Prompts that exercise every tool (the texts are in Turkish; questions can be asked in English):
+> 2. Prompts that exercise every tool (the texts are in Turkish; questions can be asked in English):
 >    - "List the works in the Risale-i Nur connector and show the outline of Sözler." (list_works, get_outline)
 >    - "Why is the time of the Last Day kept hidden, according to the Risale-i Nur? Quote the text and give sources." (semantic_search, read_section or get_passage, cite)
 >    - "Search the works for the phrase 'halk-ı şer şer değil' and explain the passage." (search, get_passage, cite)
 >    - "Find the sentence that begins 'Hiç mümkün müdür ki; ölmüş'." (find_sentence)
 >    - "Where is Âyetü'l-Kürsî (Bakara 2:255) quoted in the works? Show the verse with its translation." (find_ayah, get_ayah)
-> 4. Expected: answers quote the text in block quotes, mark each quotation with [1], [2]… and end with a "Kaynaklar" (sources) list; asking about something that is not in the works (e.g. "Summarise the Fifteenth Truth of the Tenth Word") gets the answer that it does not exist.
+> 3. Expected: answers quote the text in block quotes, mark each quotation with [1], [2]… and end with a "Kaynaklar" (sources) list; asking about something that is not in the works (e.g. "Summarise the Fifteenth Truth of the Tenth Word") gets the answer that it does not exist.
 
 Portalda "her aracı kendim çalıştırdım" onayı istenir: göndermeden önce yukarıdaki istemleri claude.ai'de bir kez deneyin.
 
@@ -110,3 +112,7 @@ Yedi onayı okuyup işaretleyin. Bizimle ilgili olanlar: konuşma verisi toplama
 ## 10. Review and submit
 
 Uyarıları okuyun, gönderin. Durum portalda; sorun olursa `mcp-review@anthropic.com`.
+
+## 11. Hakeme güncelleme notu (portalda başvuruyu düzenlerken)
+
+> Update since submission: the connector no longer has accounts or OAuth. Every tool works without authentication for everyone (shared usage limits protect the service); the sign_in tool and the OAuth endpoints were removed, and the test account is no longer needed. The tools, their behaviour and the listing are otherwise unchanged.

@@ -1,5 +1,12 @@
 """Aşama 12: sunucunun kimlik doğrulaması (OAuth 2.1) ve kullanım kaydı.
 
+Askıda (kullanıcının kararı, 2026-10-29): OpenAI'ın eklenti portalı sunucunun OAuth bilgisini görünce OAuth'ta
+ısrar etti. Genel sunucu açık kipte çalışır (`risale-mcp … --open`): OAuth uç noktaları, giriş sayfası ve `sign_in`
+yoktur; herkes hesapsız ve sınırlıdır (`OpenGate`: dakika sınırı; anlamsal aramanın günlük sınırı araçta). Kullanım
+kaydı sürer (kullanıcısız). Hata ayıklama için gizli adres `/mcp/<anahtar>` (`auth debug-url --new`): o adrese gelen
+istekler `DEBUG_USER` adıyla, girdileriyle `DEBUG_DAYS` gün kaydedilir ve sınırlara takılmaz. Aşağıdaki OAuth kodu ve
+testleri yerinde durur; ortak derlemler gibi erişimi kısıtlı bir sunucu gerekirse yeniden açılır.
+
 Sunucu internete açıldığında (claude.ai özel bağlayıcısı, uzaktaki Claude Code) yalnızca hesabı olan kişiler
 erişir. MCP SDK'sının yerleşik yetkilendirme sunucusu kullanılır: üst veri (RFC 8414, RFC 9728), dinamik istemci
 kaydı (RFC 7591), PKCE S256 ve jeton uç noktası SDK'dadır. Bu modül SDK'nın "sağlayıcı"sıdır: istemcileri,
@@ -45,6 +52,7 @@ Yönetim: `risale-mcp auth add-user <ad>`, `passwd`, `remove-user`, `users`, `se
 
 import argparse
 import base64
+import contextvars
 import getpass
 import hashlib
 import hmac
@@ -93,6 +101,8 @@ CHATGPT_CALLBACK_PREFIX = "https://chatgpt.com/connector/oauth/"
 
 USAGE_DAYS = 90                        # kullanım kaydının saklama süresi (gizlilik politikasında yazılı)
 DEBUG_DAYS = 7                         # ayrıntılı kayıttaki parametrelerin saklama süresi (gizlilik politikasında yazılı)
+DEBUG_USER = "(debug)"                 # açık kipte hata ayıklama adresinden gelen isteklerin kayıttaki kullanıcısı
+DEBUG_HEADER = b"x-risale-debug"       # OpenGate'in hata ayıklama isteğine eklediği başlık (dışarıdan geleni siler)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
@@ -144,6 +154,11 @@ CREATE TABLE IF NOT EXISTS usage (
     error     TEXT
 );
 CREATE INDEX IF NOT EXISTS usage_ts ON usage(ts);
+-- açık kipin gizli hata ayıklama adresi (/mcp/<anahtar>); anahtarın yalnızca SHA-256 özeti
+CREATE TABLE IF NOT EXISTS debug_keys (
+    hash      TEXT PRIMARY KEY,
+    created   REAL NOT NULL
+);
 """
 
 
@@ -207,7 +222,8 @@ class AuthStore:
     def _clear_params(self, now: float) -> None:
         """Ayrıntılı kaydı açık olmayan hesapların ve `DEBUG_DAYS`'i geçmiş kayıtların parametreleri silinir."""
         self.conn.execute("UPDATE usage SET params = NULL WHERE params IS NOT NULL AND (ts < ? OR user IS NULL"
-                          " OR user NOT IN (SELECT name FROM users WHERE debug = 1))", (now - DEBUG_DAYS * 86400,))
+                          " OR (user != ? AND user NOT IN (SELECT name FROM users WHERE debug = 1)))",
+                          (now - DEBUG_DAYS * 86400, DEBUG_USER))
 
     def _run(self, sql: str, params: tuple = ()) -> list[sqlite3.Row]:
         with self._lock:
@@ -245,7 +261,25 @@ class AuthStore:
             self._run("UPDATE usage SET params = NULL WHERE user = ?", (name,))
 
     def debugged(self, name: str | None) -> bool:
-        return bool(name) and bool(self._run("SELECT 1 FROM users WHERE name = ? AND debug = 1", (name,)))
+        return name == DEBUG_USER or (bool(name) and bool(self._run("SELECT 1 FROM users WHERE name = ? AND debug = 1",
+                                                                     (name,))))
+
+    # ------------------------------------------------------------ açık kipin hata ayıklama adresi
+
+    def new_debug_key(self) -> str:
+        """Yeni anahtar; eskileri geçersiz olur. Anahtarın kendisi yalnızca bir kez gösterilir."""
+        key = secrets.token_urlsafe(24)
+        self._run("DELETE FROM debug_keys")
+        self._run("INSERT INTO debug_keys VALUES (?, ?)", (_digest(key), time.time()))
+        return key
+
+    def revoke_debug_key(self) -> None:
+        """Adresi kapatır, o adresten kaydedilmiş parametreleri siler."""
+        self._run("DELETE FROM debug_keys")
+        self._run("UPDATE usage SET params = NULL WHERE user = ?", (DEBUG_USER,))
+
+    def is_debug_key(self, key: str) -> bool:
+        return bool(key) and bool(self._run("SELECT 1 FROM debug_keys WHERE hash = ?", (_digest(key),)))
 
     def login(self, name: str, password: str, now: float | None = None) -> tuple[bool, str | None]:
         """(başarılı mı, hata iletisi). Yanlış denemeler sayılır, sınırı aşan hesap kilitlenir."""
@@ -482,10 +516,27 @@ def login_endpoint(provider: Provider) -> Callable[[Request], Awaitable[Response
 
 # ---------------------------------------------------------------- kullanım kaydı (MCP ara katmanı)
 
+_DEBUG_REQUEST: contextvars.ContextVar[bool] = contextvars.ContextVar("risale_debug_request", default=False)
+
+
+def is_debug_request() -> bool:
+    """İstek açık kipin hata ayıklama adresinden mi geldi (araçlar sınırı bunda uygulamaz)."""
+    return _DEBUG_REQUEST.get()
+
+
+def _debug_header(ctx) -> bool:
+    request = getattr(ctx, "request", None)
+    headers = getattr(request, "headers", None)
+    return bool(headers) and headers.get(DEBUG_HEADER.decode()) == "1"
+
+
 def usage_middleware(store: AuthStore):
     """Her MCP isteğini (bildirimler hariç) kaydeder: kim, hangi yöntem ve araç, süre, hata. Parametreler ve
-    sonuç (`_detail`) yalnızca ayrıntılı kaydı açık hesapta yazılır (`AuthStore.log`)."""
+    sonuç (`_detail`) yalnızca ayrıntılı kaydı açık hesapta ya da hata ayıklama adresinden gelen istekte yazılır
+    (`AuthStore.log`)."""
     async def middleware(ctx, call_next):
+        debug = _debug_header(ctx)
+        _DEBUG_REQUEST.set(debug)
         if ctx.request_id is None:                      # bildirim
             return await call_next(ctx)
         start = time.perf_counter()
@@ -502,7 +553,8 @@ def usage_middleware(store: AuthStore):
             params = ctx.params if isinstance(ctx.params, dict) else None
             name = params.get("name") or params.get("uri") if params else None
             if ctx.method not in ("ping",):
-                store.log(token.subject if token else None, token.client_id if token else None, ctx.method,
+                user = DEBUG_USER if debug else token.subject if token else None
+                store.log(user, token.client_id if token else None, ctx.method,
                           name, int((time.perf_counter() - start) * 1000), error,
                           _detail(params, result, message, client_name(ctx)))
     return middleware
@@ -577,6 +629,37 @@ def _calls_protected_tool(body: bytes) -> bool:
                 and (message.get("params") or {}).get("name") in PROTECTED_TOOLS:
             return True
     return False
+
+
+class OpenGate:
+    """Açık kip (OAuth askıda; kullanıcının kararı, 2026-10-29): bütün uygulamanın önündeki kapı. `/mcp`'ye gelen
+    istekler dakikada toplam `per_minute` ile sınırlıdır (429). Gizli hata ayıklama adresi `/mcp/<anahtar>`
+    `/mcp`'ye çevrilir, isteğe `DEBUG_HEADER` eklenir (kayıtta parametreleriyle, sınırsız); dışarıdan gelen aynı
+    başlık her istekte silinir. Yanlış anahtar 404 alır."""
+
+    def __init__(self, app, store: AuthStore, per_minute: int = ANON_PER_MINUTE) -> None:
+        self.app, self.store, self.per_minute = app, store, per_minute
+        self.recent: list[float] = []
+
+    async def __call__(self, scope, receive, send) -> None:
+        if scope.get("type") != "http":
+            return await self.app(scope, receive, send)
+        headers = [(k, v) for k, v in scope.get("headers", []) if k != DEBUG_HEADER]
+        path = scope.get("path", "")
+        if path.startswith("/mcp/"):
+            if not self.store.is_debug_key(path[len("/mcp/"):].strip("/")):
+                return await AnonymousGate._reply(send, 404, {"error": "not_found"}, [])
+            scope = {**scope, "path": "/mcp", "raw_path": b"/mcp", "headers": [*headers, (DEBUG_HEADER, b"1")]}
+            return await self.app(scope, receive, send)
+        scope = {**scope, "headers": headers}
+        if path == "/mcp":
+            now = time.monotonic()
+            self.recent = [t for t in self.recent if now - t < 60] + [now]
+            if len(self.recent) > self.per_minute:
+                return await AnonymousGate._reply(send, 429, {
+                    "error": "too_many_requests", "error_description": "Public access is busy; try again shortly."},
+                    [(b"retry-after", b"30")])
+        await self.app(scope, receive, send)
 
 
 class AnonymousGate:
@@ -664,6 +747,11 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--user")
     p.add_argument("--limit", type=int, default=50)
     p.add_argument("--params", action="store_true", help="ayrıntılı kayıttaki parametreleri de göster")
+    p = sub.add_parser("debug-url", help="açık kipin gizli hata ayıklama adresi: yeni anahtar ya da kapatma")
+    group = p.add_mutually_exclusive_group(required=True)
+    group.add_argument("--new", action="store_true")
+    group.add_argument("--revoke", action="store_true")
+    p.add_argument("--base", default="https://mcp.risalemcp.com")
     p = sub.add_parser("debug", help="hesabın ayrıntılı kaydını aç ya da kapat")
     p.add_argument("user")
     p.add_argument("state", choices=["on", "off"])
@@ -698,6 +786,13 @@ def main(argv: list[str] | None = None) -> None:
                 print(f"{_when(u['ts'])} {u['user'] or '-':12} {u['method']:16} {u['name'] or '':18} {status}")
                 if args.params and u["params"]:
                     print(f"    {u['params']}")
+        elif args.command == "debug-url":
+            if args.revoke:
+                store.revoke_debug_key()
+                print("Hata ayıklama adresi kapatıldı, kayıtlı parametreleri silindi.")
+            else:
+                print(f"{args.base.rstrip('/')}/mcp/{store.new_debug_key()}\n"
+                      f"(eski adres geçersiz; bu adrese gelen istekler girdileriyle {DEBUG_DAYS} gün saklanır)")
         elif args.command == "debug":
             store.set_debug(args.user, args.state == "on")
             print(f"{args.user}: ayrıntılı kayıt " + ("açık; parametreler {} gün saklanır.".format(DEBUG_DAYS)

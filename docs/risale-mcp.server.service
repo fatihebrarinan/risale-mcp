@@ -1,12 +1,12 @@
 [Unit]
-Description=Risale-i Nur MCP sunucusu (OAuth + hesapsız erişim, Caddy arkasında: mcp.risalemcp.com)
+Description=Risale-i Nur MCP sunucusu (açık kip: OAuth askıda, hesapsız erişim; Caddy arkasında: mcp.risalemcp.com)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 User=risale
 WorkingDirectory=/home/risale/risale-mcp
-ExecStart=/home/risale/risale-mcp/.venv/bin/risale-mcp --transport streamable-http --public-url https://mcp.risalemcp.com --anonymous
+ExecStart=/home/risale/risale-mcp/.venv/bin/risale-mcp --transport streamable-http --public-url https://mcp.risalemcp.com --open
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true
