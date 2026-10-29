@@ -235,8 +235,9 @@ class Citation:
 CITE_NOTE = ("Finish the answer with a Kaynaklar list made of these bibliography lines, copied unchanged and in this "
              "order: do not reword, shorten or renumber them, their opening words are each sentence's address. End "
              "every quotation with its source's number, e.g. [1]. Sources outside the works (web pages, other books) "
-             "go in a separate list after Kaynaklar, never in it. If a source has a problem, fix it and call cite "
-             "again.")
+             "go in a separate list after Kaynaklar, never in it. Quote only words checked here: a quotation from a "
+             "sentence outside these sources, or one you add after this call, needs cite again. If a source has a "
+             "problem, fix it and call cite again.")
 
 
 class CitationChecker:
