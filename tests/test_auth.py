@@ -3,7 +3,6 @@
 
 import base64
 import hashlib
-import json
 import secrets
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -131,7 +130,7 @@ def test_full_flow_and_tool_call_is_logged(client, store):
     assert response.status_code == 200 and "sozler/10/hakikat-01" in response.text
     logged = [row for row in store.usage() if row["method"] == "tools/call"]
     assert logged and logged[0]["user"] == "fatih" and logged[0]["name"] == "search"
-    assert json.loads(logged[0]["params"]) == {"query": "kiyamet"}
+    assert logged[0]["params"] is None                     # konuşma içeriği kaydedilmez (dizin politikası 1E)
 
 
 def test_wrong_password_and_lockout(client, store):

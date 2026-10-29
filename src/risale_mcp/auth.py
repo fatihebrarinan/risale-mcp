@@ -16,8 +16,10 @@ Hesaplar (kullanıcının kararı: kişi başına hesap, herkese bütün derlem 
 - `users`: kullanıcı adı ve parolanın scrypt özeti. Arka arkaya yanlış parolada hesap bir süre kilitlenir.
 - Jetonlar ve kodlar rastgele üretilir, veritabanında yalnızca SHA-256 özetleri durur. Erişim jetonu 1 saat,
   yenileme jetonu 30 gün geçerlidir; kullanıcı silinince ya da oturumu kapatılınca jetonları silinir.
-- `usage`: her MCP isteği (kim, ne zaman, hangi araç, hangi parametreler, süre, hata) kaydedilir
-  (kullanıcının kararı; gelişim için). Parametreler kısaltılarak saklanır.
+- `usage`: her MCP isteği (kim, ne zaman, hangi yöntem ve araç, süre, hata) kaydedilir. Parametreler (arama
+  sorguları, alıntılar) konuşma içeriğidir ve kaydedilmez: Anthropic'in dizin politikası (Software Directory
+  Policy 1E, 1G) gereksiz konuşma verisinin kayıt için bile toplanmasını yasaklar (kullanıcının kararı,
+  2026-10-29). `params` sütunu eski kayıtlarla uyum için durur, her açılışta boşaltılır.
 
 Hesapsız erişim (kullanıcının kararı, 2026-10-28; Claude'un "lazy authentication"ı,
 https://claude.com/docs/connectors/building/lazy-authentication.md): `--anonymous` ile `Authorization` başlığı
@@ -46,7 +48,6 @@ import threading
 import time
 from collections.abc import Awaitable, Callable
 from pathlib import Path
-from typing import Any
 from urllib.parse import urlparse
 
 from mcp.server.auth.middleware.auth_context import get_access_token
@@ -75,7 +76,6 @@ CODE_TTL = 300
 REQUEST_TTL = 600                      # giriş sayfasında bekleyen yetkilendirme isteği
 MAX_FAILURES = 5                       # bundan sonra hesap kilitlenir; her yeni hatada süre ikiye katlanır
 LOCK_SECONDS = 60
-ARG_LIMIT = 2000                       # kullanım kaydında parametrelerin en çok uzunluğu
 LOOPBACK = {"localhost", "127.0.0.1", "[::1]", "::1"}
 HOSTED_CALLBACKS = {"https://claude.ai/api/mcp/auth_callback", "https://claude.com/api/mcp/auth_callback"}
 
@@ -182,6 +182,7 @@ class AuthStore:
         self.conn = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
+        self.conn.execute("UPDATE usage SET params = NULL WHERE params IS NOT NULL")   # eski kayıtların içeriği
 
     def _run(self, sql: str, params: tuple = ()) -> list[sqlite3.Row]:
         with self._lock:
@@ -251,13 +252,10 @@ class AuthStore:
 
     # ------------------------------------------------------------ kullanım kaydı
 
-    def log(self, user: str | None, client_id: str | None, method: str, name: str | None, params: Any,
+    def log(self, user: str | None, client_id: str | None, method: str, name: str | None,
             ms: int, error: str | None) -> None:
-        text = json.dumps(params, ensure_ascii=False) if params is not None else None
-        if text and len(text) > ARG_LIMIT:
-            text = text[:ARG_LIMIT] + "…"
-        self._run("INSERT INTO usage VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  (time.time(), user, client_id, method, name, text, ms, error))
+        self._run("INSERT INTO usage VALUES (?, ?, ?, ?, ?, NULL, ?, ?)",
+                  (time.time(), user, client_id, method, name, ms, error))
 
     def anonymous_calls(self, tool: str, since: float) -> int:
         return self._run("SELECT count(*) FROM usage WHERE user IS NULL AND method = 'tools/call' AND name = ?"
@@ -441,7 +439,7 @@ def login_endpoint(provider: Provider) -> Callable[[Request], Awaitable[Response
 # ---------------------------------------------------------------- kullanım kaydı (MCP ara katmanı)
 
 def usage_middleware(store: AuthStore):
-    """Her MCP isteğini (bildirimler hariç) kaydeder: kim, hangi yöntem ve araç, parametreler, süre, hata."""
+    """Her MCP isteğini (bildirimler hariç) kaydeder: kim, hangi yöntem ve araç, süre, hata; parametreler değil."""
     async def middleware(ctx, call_next):
         if ctx.request_id is None:                      # bildirim
             return await call_next(ctx)
@@ -456,10 +454,9 @@ def usage_middleware(store: AuthStore):
             token = get_access_token()
             params = ctx.params if isinstance(ctx.params, dict) else None
             name = params.get("name") or params.get("uri") if params else None
-            args = params.get("arguments") if params and "arguments" in params else None
             if ctx.method not in ("ping",):
                 store.log(token.subject if token else None, token.client_id if token else None, ctx.method,
-                          name, args, int((time.perf_counter() - start) * 1000), error)
+                          name, int((time.perf_counter() - start) * 1000), error)
     return middleware
 
 
@@ -598,8 +595,7 @@ def main(argv: list[str] | None = None) -> None:
         elif args.command == "usage":
             for u in reversed(store.usage(args.user, args.limit)):
                 status = f"HATA {u['error']}" if u["error"] else f"{u['ms']} ms"
-                print(f"{_when(u['ts'])} {u['user'] or '-':12} {u['method']:16} {u['name'] or '':18} "
-                      f"{status:10} {u['params'] or ''}")
+                print(f"{_when(u['ts'])} {u['user'] or '-':12} {u['method']:16} {u['name'] or '':18} {status}")
     except ValueError as error:
         sys.exit(str(error))
 
