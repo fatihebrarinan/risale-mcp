@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Documentation · Risale-i Nur MCP</title>
+<meta name="description" content="Setting up and using the Risale-i Nur MCP connector: tools, coverage, sources and troubleshooting.">
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" hreflang="tr" href="/belgeler.html">
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/en/docs.html" aria-current="page">Documentation</a>
+  <a href="/en/privacy.html">Privacy</a>
+  <a href="/belgeler.html" lang="tr">Türkçe</a>
+</nav>
+
+<h1>Documentation</h1>
+<p class="lead">Risale-i Nur MCP is a connector that gives AI assistants such as Claude access to the works of Bediüzzaman Said Nursî. When the assistant discusses a topic, it reads the text here, quotes the text itself and shows the exact place of every passage it relies on, down to the sentence.</p>
+
+<h2>Connecting</h2>
+<div class="card">
+  <strong>Connector URL</strong><br>
+  <code>https://mcp.risalemcp.com/mcp</code>
+</div>
+
+<h3>claude.ai, Claude desktop and mobile</h3>
+<ol>
+  <li><a href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">Open this link</a>: claude.ai opens the add-connector dialog with the name and URL filled in. Or by hand: <em>Settings › Connectors › Add custom connector</em>, name "Risale-i Nur", URL as above.</li>
+  <li>Select <strong>Add</strong>. No account is needed; the connector works right away.</li>
+  <li>Make sure the connector is enabled in the conversation (tools menu in the message box) and ask your question.</li>
+</ol>
+<p>Once added, the connector also appears in the desktop and mobile apps.</p>
+
+<h3>Claude Code</h3>
+<pre><code>claude mcp add --transport http risale https://mcp.risalemcp.com/mcp</code></pre>
+
+<h3>Accounts</h3>
+<p>Every tool works without an account. Without an account, search by meaning has a shared daily limit and all requests a shared per-minute limit. Account holders have no limits: ask Claude in the conversation to sign in to Risale-i Nur; it shows a <strong>Connect</strong> card that opens the sign-in page. Accounts are currently created by the administrator; write to <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>.</p>
+
+<h2>Using it</h2>
+<p>Ask as you normally would, in Turkish or another language. Examples:</p>
+<ul>
+  <li>Kıyametin vakti neden gizli tutulmuştur? (Why is the time of the Last Day kept hidden?)</li>
+  <li>Bismillah'ın önemi hangi temsille anlatılır? (Which parable explains the importance of Bismillah?)</li>
+  <li>How might a physician read the arguments for resurrection in the Tenth Word?</li>
+</ul>
+<p>The assistant first searches the works, reads the relevant passages, then answers. In the answer:</p>
+<ul>
+  <li>every quotation from the works stands on its own line in quotation marks and ends with a number such as <code>[1]</code>;</li>
+  <li>the <strong>Kaynaklar</strong> (sources) list at the end gives the full place of each number: work, section and the sentence's opening words, e.g. <code>Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › “Hiç mümkün müdür ki; ölmüş…”</code>;</li>
+  <li>what the text says and the assistant's own interpretation stand under separate headings.</li>
+</ul>
+<p>When the assistant cannot find something in the works, it says so; it does not invent references or quotations. References come from the server's data and are checked before the answer is sent.</p>
+
+<h2>Coverage</h2>
+<p>44 works, about 126,000 sentences, in Turkish and Arabic:</p>
+<ul>
+  <li><strong>The Risale-i Nur Collection:</strong> Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat and others.</li>
+  <li><strong>Works of the early period:</strong> Muhâkemât, Münâzarât, Divan-ı Harb-i Örfî, Makalat, Nutuk, İşârâtü'l-İ'câz, el-Mesnevî el-Arabî and others; works written in Arabic in both Arabic and Turkish.</li>
+  <li><strong>Compilations:</strong> Asâ-yı Mûsâ, Zülfikâr, Sirâcü'n-Nûr and others, matched to the main volumes so no sentence is counted twice.</li>
+  <li><strong>Hizbs:</strong> Hizbü'l-Kur'ân, Hizbü Envâri'l-Hakāik.</li>
+  <li><strong>The Qur'an:</strong> the vowelled Arabic text and two Turkish translations by Diyanet; verses quoted in the works are matched to the Qur'an's text.</li>
+</ul>
+<p>Not yet included: the Turkish Kızıl İcaz, Fihrist Risalesi and Hizb-i Nurî.</p>
+
+<h2>Tools</h2>
+<p>All tools are read-only; none changes anything.</p>
+<div class="table-wrap">
+<table>
+  <tr><th>Tool</th><th>What it does</th></tr>
+  <tr><td><code>search</code></td><td>Search by the text's own words: exact phrases, word beginnings, AND / OR / NOT, proximity.</td></tr>
+  <tr><td><code>semantic_search</code></td><td>Search by meaning: finds a concept asked in today's words in the text's older vocabulary.</td></tr>
+  <tr><td><code>read_section</code></td><td>Reads a section with its subsections and the author's footnotes (hâşiye).</td></tr>
+  <tr><td><code>get_passage</code></td><td>Gets a sentence or a range of sentences with its neighbours.</td></tr>
+  <tr><td><code>get_outline</code></td><td>The heading tree of a work or section.</td></tr>
+  <tr><td><code>list_works</code></td><td>The list of works.</td></tr>
+  <tr><td><code>find_sentence</code></td><td>Finds a sentence from its opening words.</td></tr>
+  <tr><td><code>find_ayah</code></td><td>Where a Qur'anic verse is quoted in the works and which sections tie themselves to it.</td></tr>
+  <tr><td><code>get_ayah</code></td><td>A verse of the Qur'an: vowelled text and two Diyanet translations.</td></tr>
+  <tr><td><code>cite</code></td><td>Checks the answer's quotations and builds its list of sources.</td></tr>
+  <tr><td><code>sign_in</code></td><td>Sign in with an account.</td></tr>
+</table>
+</div>
+
+<h2>Things to keep in mind</h2>
+<ul>
+  <li><strong>Translations of verses and hadiths in the works are the publishers'</strong>, added later, not the author's words. The author's own explanation ("Yani, …") is part of the text.</li>
+  <li><strong>Translations:</strong> the Turkish of works written in Arabic is a translation; the commentary in Kızıl İcaz is by Abdülmecid Nursî. The assistant takes care not to attribute these to the author.</li>
+  <li><strong>Links to verses</strong> are found by rules in the text's own wording; they are not a judgement that a passage is the exegesis (tafsir) of a verse.</li>
+  <li>There are no page numbers; places are given as work › section › sentence.</li>
+</ul>
+
+<h2>Sources and permissions</h2>
+<p>The texts are taken unchanged from the sources below. The text sources have given permission for this use; we thank them for their service.</p>
+<ul>
+  <li><a href="https://www.erisale.com">e-Risale (erisale.com)</a>: most of the Risale-i Nur Collection and the early works.</li>
+  <li><a href="https://kastamonur.com">kastamonur.com</a>: the speeches and articles from Âsâr-ı Bedîiyye.</li>
+  <li><a href="https://risale.online">risale.online</a>: Zülfikâr, Tılsımlar, Sirâcü'n-Nûr, Gençlik ve Hanımlar Rehberi.</li>
+  <li><a href="https://www.risaleoku.com">risaleoku.com</a>: Hizbü'l-Kur'ân, Hizbü Envâri'l-Hakāik, Küçük Sözler.</li>
+  <li><a href="https://rasaelalnour.com">rasaelalnour.com</a> (İhsan Kasım es-Sâlihî): the Arabic works.</li>
+  <li>Keşif Yolculukları Risale-i Nur education programme (Ediz Sözüer): the Turkish translation of Ta'likat.</li>
+  <li><a href="https://tanzil.net">Tanzil Project</a>: the Qur'an's text and the translations of the Presidency of Religious Affairs (Diyanet İşleri Başkanlığı) and the Turkish Diyanet Foundation (non-commercial use).</li>
+  <li><a href="https://quran.com">Quran.com</a>: mushaf page data used to decode the verses in el-Mesnevî el-Arabî.</li>
+</ul>
+
+<h2>Troubleshooting</h2>
+<ul>
+  <li><strong>The assistant does not use the connector:</strong> check that it is enabled in the conversation, and mention "Risale-i Nur" in your question.</li>
+  <li><strong>Tools look outdated or a tool fails:</strong> Claude caches the tool list. Disconnect and reconnect the connector, or start a new conversation.</li>
+  <li><strong>"Daily limit" or "too many requests":</strong> the shared limit for use without an account is reached. Try again later or sign in.</li>
+  <li><strong>A reference or quotation looks wrong:</strong> please send the question and the answer to <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>.</li>
+</ul>
+
+<h2>Contact</h2>
+<p>Nur Hadimleri is a volunteer, independent project, not the official service of any publisher or community. For questions, suggestions and error reports: <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>.</p>
+
+<footer>Risale-i Nur MCP · Nur Hadimleri · <a href="/en/privacy.html">Privacy</a> · <a href="/belgeler.html" lang="tr">Türkçe</a></footer>
+</main>
+</body>
+</html>

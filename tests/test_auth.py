@@ -10,7 +10,7 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 from starlette.testclient import TestClient
 
-from risale_mcp.auth import MAX_FAILURES, AuthStore, check_password, hash_password
+from risale_mcp.auth import MAX_FAILURES, USAGE_DAYS, AuthStore, check_password, hash_password
 from risale_mcp.library import Library
 from risale_mcp.server import create_server, http_app, http_security
 
@@ -290,3 +290,11 @@ def test_server_info_carries_icons(small_db):
     assert remote._lowlevel_server.icons[0].src == f"{PUBLIC}/icon.png"
     local = create_server(Library(small_db[0]))
     assert local._lowlevel_server.icons[0].src.startswith("data:image/png;base64,")
+
+
+def test_usage_older_than_the_retention_period_is_deleted(store):
+    store.log("fatih", None, "tools/call", "search", 5, None)
+    store._run("UPDATE usage SET ts = ts - ?", ((USAGE_DAYS + 1) * 86400,))
+    store._pruned = 0.0
+    store.log("fatih", None, "tools/call", "cite", 3, None)
+    assert [row["name"] for row in store.usage()] == ["cite"]

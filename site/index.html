@@ -4,39 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Risale-i Nur MCP</title>
-<meta name="description" content="Bediüzzaman Said Nursî'nin eserlerini yapay zekâ modellerine cümle düzeyinde atıfla açan bağlayıcı.">
+<meta name="description" content="Bediüzzaman Said Nursî'nin eserlerini yapay zekâ asistanlarına cümle düzeyinde atıfla açan bağlayıcı.">
 <link rel="icon" href="/favicon.ico">
-<style>
-  :root { --bg: #fbfaf7; --fg: #1f2a24; --muted: #5b6660; --accent: #1f5c3f; --card: #ffffff; --line: #e3e0d8; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #141917; --fg: #e8ece9; --muted: #a3ada7; --accent: #7cc59d; --card: #1c2320; --line: #2c3530; }
-  }
-  * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif; }
-  main { max-width: 640px; margin: 0 auto; padding: 48px 16px; }
-  header { display: flex; align-items: center; gap: 14px; margin-bottom: 24px; }
-  header img { width: 56px; height: 56px; border-radius: 12px; }
-  h1 { font-size: 1.6rem; margin: 0; }
-  p { color: var(--muted); }
-  .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin: 24px 0; }
-  code { font: 0.95rem ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--accent); word-break: break-all; }
-  a { color: var(--accent); }
-</style>
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" hreflang="en" href="/en/docs.html">
 </head>
 <body>
 <main>
-  <header>
-    <img src="/icon.png" alt="">
-    <h1>Risale-i Nur MCP</h1>
-  </header>
-  <p>Bediüzzaman Said Nursî'nin bütün eserlerini Claude gibi yapay zekâ modellerine açan bir bağlayıcı. Model bir konuda konuşurken dayandığı yeri cümle düzeyinde, eser ve bölüm yoluyla gösterir; alıntılar metnin kendisinden gelir.</p>
-  <div class="card">
-    <strong>Bağlayıcı adresi</strong><br>
-    <code>https://mcp.risalemcp.com/mcp</code>
-    <p>claude.ai'de: Ayarlar › Bağlayıcılar › Özel bağlayıcı ekle.</p>
-  </div>
-  <p>Kurulum rehberi, örnekler, belgeler ve gizlilik politikası yakında bu sayfada.</p>
-  <p>Gönüllü ve bağımsız bir projedir (Nur Hadimleri); herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir.</p>
+<nav>
+  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/belgeler.html">Belgeler</a>
+  <a href="/gizlilik.html">Gizlilik</a>
+  <a href="/en/docs.html" lang="en">English</a>
+</nav>
+
+<h1>Risale-i Nur'u yapay zekâ ile, kaynağına bağlı olarak okuyun</h1>
+<p class="lead">Bediüzzaman Said Nursî'nin bütün eserlerini Claude gibi yapay zekâ asistanlarına açan bir bağlayıcı. Asistan bir konuda konuşurken metni buradan okur, alıntısını metnin kendisinden yapar ve dayandığı yeri cümle düzeyinde, eser ve bölüm yoluyla gösterir.</p>
+
+<div class="card">
+  <strong>Bağlayıcı adresi</strong><br>
+  <code>https://mcp.risalemcp.com/mcp</code>
+  <p class="muted">claude.ai'de: <a href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">bağlayıcıyı ekle</a>. Ayrıntılar <a href="/belgeler.html">belgelerde</a>.</p>
+</div>
+
+<p class="muted">Kurulum rehberi ve örnek sohbetler yakında bu sayfada.</p>
+
+<footer>Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir. · <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
 </main>
 </body>
 </html>

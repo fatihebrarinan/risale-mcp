@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Belgeler · Risale-i Nur MCP</title>
+<meta name="description" content="Risale-i Nur MCP bağlayıcısının kurulumu, kullanımı, araçları, kaynakları ve sorun giderme.">
+<link rel="icon" href="/favicon.ico">
+<link rel="stylesheet" href="/style.css">
+<link rel="alternate" hreflang="en" href="/en/docs.html">
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/belgeler.html" aria-current="page">Belgeler</a>
+  <a href="/gizlilik.html">Gizlilik</a>
+  <a href="/en/docs.html" lang="en">English</a>
+</nav>
+
+<h1>Belgeler</h1>
+<p class="lead">Risale-i Nur MCP, Bediüzzaman Said Nursî'nin eserlerini Claude gibi yapay zekâ asistanlarına açan bir bağlayıcıdır. Asistan bir konuda konuşurken metni buradan okur, alıntılarını metnin kendisinden yapar ve dayandığı her yeri cümle düzeyinde, tam adresiyle gösterir.</p>
+
+<h2>Bağlanma</h2>
+<div class="card">
+  <strong>Bağlayıcı adresi</strong><br>
+  <code>https://mcp.risalemcp.com/mcp</code>
+</div>
+
+<h3>claude.ai, Claude masaüstü ve mobil</h3>
+<ol>
+  <li><a href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">Bu bağlantıyı açın</a>: claude.ai'de bağlayıcı ekleme penceresi ad ve adres dolu olarak açılır. Ya da elle: <em>Settings › Connectors › Add custom connector</em>, ad olarak "Risale-i Nur", adres olarak yukarıdaki adres.</li>
+  <li><strong>Add</strong> ile ekleyin. Hesap gerekmez; bağlayıcı hemen kullanılabilir.</li>
+  <li>Bir sohbette bağlayıcının açık olduğundan emin olun (mesaj kutusundaki araçlar menüsü) ve sorunuzu sorun.</li>
+</ol>
+<p>Bağlayıcı bir kez eklenince masaüstü ve mobil uygulamada da görünür.</p>
+
+<h3>Claude Code</h3>
+<pre><code>claude mcp add --transport http risale https://mcp.risalemcp.com/mcp</code></pre>
+
+<h3>Hesap</h3>
+<p>Bağlayıcının her aracı hesapsız kullanılabilir. Hesapsız kullanımda anlama göre arama günlük toplam bir sınırla, bütün istekler de dakikalık toplam bir sınırla korunur. Hesabı olanlar sınırsız kullanır: sohbette "Risale-i Nur'a giriş yap" demeniz yeter; Claude bir <strong>Bağlan</strong> kartı gösterir ve giriş sayfası açılır. Hesaplar şimdilik yönetici tarafından açılıyor; istek için <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>.</p>
+
+<h2>Kullanım</h2>
+<p>Sorunuzu her zamanki gibi sorun; günümüz Türkçesiyle sorabilirsiniz. Örnekler:</p>
+<ul>
+  <li>Kıyametin vakti neden gizli tutulmuştur?</li>
+  <li>Bismillah'ın önemi hangi temsille anlatılır? Temsili özetle.</li>
+  <li>Onuncu Söz'deki haşir delillerini bir hekim nasıl okuyabilir?</li>
+</ul>
+<p>Asistan önce eserlerde arar, ilgili yerleri okur, sonra cevap verir. Cevapta:</p>
+<ul>
+  <li>eserlerden her alıntı ayrı satırda, tırnak içinde durur ve sonunda bir numara taşır, örneğin <code>[1]</code>;</li>
+  <li>cevabın sonundaki <strong>Kaynaklar</strong> listesi her numaranın tam adresini verir: eser, bölüm ve cümlenin ilk kelimeleri, örneğin <code>Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › “Hiç mümkün müdür ki; ölmüş…”</code>;</li>
+  <li>metnin söyledikleri ile asistanın yorumu ayrı başlıklarda durur.</li>
+</ul>
+<p>Asistan eserlerde bulamadığı bir şeyi bulamadığını söyler; adres ya da alıntı uydurmaz. Adresler sunucunun verisinden gelir ve cevap gitmeden önce denetlenir.</p>
+
+<h2>Kapsam</h2>
+<p>44 eser, yaklaşık 126 bin cümle:</p>
+<ul>
+  <li><strong>Risale-i Nur Külliyatı:</strong> Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar, Tarihçe-i Hayat ve diğerleri.</li>
+  <li><strong>Eski Said dönemi eserleri:</strong> Muhâkemât, Münâzarât, Divan-ı Harb-i Örfî, Makalat, Nutuk, İşârâtü'l-İ'câz, el-Mesnevî el-Arabî ve diğerleri. Aslı Arapça eserlerin hem Arapçası hem Türkçesi.</li>
+  <li><strong>Mecmualar:</strong> Asâ-yı Mûsâ, Zülfikâr, Sirâcü'n-Nûr ve diğerleri. Metinleri ana ciltlerle eşlenmiştir; aynı cümle iki kez sayılmaz.</li>
+  <li><strong>Hizbler:</strong> Hizbü'l-Kur'ân, Hizbü Envâri'l-Hakāik.</li>
+  <li><strong>Kur'ân-ı Kerîm:</strong> harekeli Arapça metin ve Diyanet'in iki meali; eserlerde geçen âyetler Kur'ân metniyle eşlenmiştir.</li>
+</ul>
+<p>Henüz bulunmayanlar: Kızıl İcaz'ın Türkçesi, Fihrist Risalesi ve Hizb-i Nurî.</p>
+
+<h2>Araçlar</h2>
+<p>Hepsi yalnızca okur; hiçbir şeyi değiştirmez.</p>
+<div class="table-wrap">
+<table>
+  <tr><th>Araç</th><th>İşi</th></tr>
+  <tr><td><code>search</code></td><td>Metnin kendi kelimeleriyle arama: tam ifade, kelime başı, VE / VEYA / DEĞİL, yakınlık.</td></tr>
+  <tr><td><code>semantic_search</code></td><td>Anlama göre arama: günümüz kelimeleriyle sorulan bir kavramı metnin eski kelimelerinde bulur ("ümitsizlik" → "ye's").</td></tr>
+  <tr><td><code>read_section</code></td><td>Bir bölümü alt bölümleri ve hâşiyeleriyle okur.</td></tr>
+  <tr><td><code>get_passage</code></td><td>Bir cümleyi ya da cümle aralığını komşularıyla getirir.</td></tr>
+  <tr><td><code>get_outline</code></td><td>Bir eserin ya da bölümün başlık ağacı.</td></tr>
+  <tr><td><code>list_works</code></td><td>Eserlerin listesi.</td></tr>
+  <tr><td><code>find_sentence</code></td><td>İlk kelimelerinden bir cümleyi bulur.</td></tr>
+  <tr><td><code>find_ayah</code></td><td>Bir âyetin eserlerde geçtiği yerler ve onunla bağ kuran bölümler.</td></tr>
+  <tr><td><code>get_ayah</code></td><td>Kur'ân'dan âyet: harekeli metin ve iki Diyanet meali.</td></tr>
+  <tr><td><code>cite</code></td><td>Cevaptaki alıntıları denetler ve Kaynaklar listesini hazırlar.</td></tr>
+  <tr><td><code>sign_in</code></td><td>Hesapla giriş.</td></tr>
+</table>
+</div>
+
+<h2>Okurken dikkat</h2>
+<ul>
+  <li><strong>Mealler nâşirindir.</strong> Eserlerdeki âyet ve hadis mealleri müellifin değil, sonradan eklenmiş tercümelerdir. Müellifin kendi izahı ("Yani, …") metnin parçasıdır.</li>
+  <li><strong>Tercümeler:</strong> aslı Arapça eserlerin Türkçesi tercümedir; Kızıl İcaz'daki şerh Abdülmecid Nursî'nindir. Asistan bunları müellife mal etmemeye dikkat eder.</li>
+  <li><strong>Âyet ilişkileri:</strong> bir bölümün bir âyetle kurduğu bağ metnin kendi ifadesinden kurallarla bulunur; "tefsir" hükmü değildir.</li>
+  <li>Sayfa numarası yoktur; adresler eser › bölüm › cümle düzeyindedir.</li>
+</ul>
+
+<h2>Kaynaklar ve izinler</h2>
+<p>Metinler aşağıdaki kaynaklardan, değiştirilmeden alınmıştır. Metin kaynakları bu kullanıma izin vermiştir; hizmetlerinden dolayı teşekkür ederiz.</p>
+<ul>
+  <li><a href="https://www.erisale.com">e-Risale (erisale.com)</a>: Risale-i Nur Külliyatı ve Eski Said eserlerinin çoğu.</li>
+  <li><a href="https://kastamonur.com">kastamonur.com</a>: Âsâr-ı Bedîiyye'den Nutuklar ve Makaleler.</li>
+  <li><a href="https://risale.online">risale.online</a>: Zülfikâr, Tılsımlar, Sirâcü'n-Nûr, Gençlik ve Hanımlar Rehberi.</li>
+  <li><a href="https://www.risaleoku.com">risaleoku.com</a>: Hizbü'l-Kur'ân, Hizbü Envâri'l-Hakāik, Küçük Sözler.</li>
+  <li><a href="https://rasaelalnour.com">rasaelalnour.com</a> (İhsan Kasım es-Sâlihî): Arapça eserler.</li>
+  <li>Keşif Yolculukları Risale-i Nur Eğitim Programı (Ediz Sözüer): Ta'likat'ın Türkçe tercümesi.</li>
+  <li><a href="https://tanzil.net">Tanzil Project</a>: Kur'ân metni ve Diyanet İşleri Başkanlığı ile Türkiye Diyanet Vakfı mealleri (ticari olmayan kullanım).</li>
+  <li><a href="https://quran.com">Quran.com</a>: el-Mesnevî el-Arabî'deki âyetleri çözmek için mushaf sayfa verisi.</li>
+</ul>
+
+<h2>Sorun giderme</h2>
+<ul>
+  <li><strong>Asistan bağlayıcıyı kullanmıyor:</strong> sohbette bağlayıcının açık olduğunu kontrol edin, sorunuzda "Risale-i Nur'dan" diye belirtin.</li>
+  <li><strong>Araçlar eski görünüyor ya da bir araç hata veriyor:</strong> Claude araç listesini önbellekte tutar. Bağlayıcının bağlantısını kesip yeniden bağlayın ya da yeni bir sohbet açın.</li>
+  <li><strong>"Daily limit" ya da "too many requests" hatası:</strong> hesapsız kullanımın toplam sınırı doldu. Biraz sonra yeniden deneyin ya da hesapla giriş yapın.</li>
+  <li><strong>Bir adres ya da alıntı yanlış görünüyor:</strong> lütfen soruyu ve cevabı <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a> adresine gönderin.</li>
+</ul>
+
+<h2>İletişim</h2>
+<p>Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir. Soru, öneri ve hata bildirimi için <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>.</p>
+
+<footer>Risale-i Nur MCP · Nur Hadimleri · <a href="/gizlilik.html">Gizlilik</a> · <a href="/en/docs.html" lang="en">English</a></footer>
+</main>
+</body>
+</html>

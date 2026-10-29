@@ -19,7 +19,8 @@ Hesaplar (kullanıcının kararı: kişi başına hesap, herkese bütün derlem 
 - `usage`: her MCP isteği (kim, ne zaman, hangi yöntem ve araç, süre, hata) kaydedilir. Parametreler (arama
   sorguları, alıntılar) konuşma içeriğidir ve kaydedilmez: Anthropic'in dizin politikası (Software Directory
   Policy 1E, 1G) gereksiz konuşma verisinin kayıt için bile toplanmasını yasaklar (kullanıcının kararı,
-  2026-10-29). `params` sütunu eski kayıtlarla uyum için durur, her açılışta boşaltılır.
+  2026-10-29). `params` sütunu eski kayıtlarla uyum için durur, her açılışta boşaltılır. Kayıtlar
+  `USAGE_DAYS` gün tutulur (gizlilik politikası: site/gizlilik.html); daha eskileri günde bir silinir.
 
 Hesapsız erişim (kullanıcının kararı, 2026-10-28; Claude'un "lazy authentication"ı,
 https://claude.com/docs/connectors/building/lazy-authentication.md): `--anonymous` ile `Authorization` başlığı
@@ -78,6 +79,8 @@ MAX_FAILURES = 5                       # bundan sonra hesap kilitlenir; her yeni
 LOCK_SECONDS = 60
 LOOPBACK = {"localhost", "127.0.0.1", "[::1]", "::1"}
 HOSTED_CALLBACKS = {"https://claude.ai/api/mcp/auth_callback", "https://claude.com/api/mcp/auth_callback"}
+
+USAGE_DAYS = 90                        # kullanım kaydının saklama süresi (gizlilik politikasında yazılı)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
@@ -183,6 +186,7 @@ class AuthStore:
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
         self.conn.execute("UPDATE usage SET params = NULL WHERE params IS NOT NULL")   # eski kayıtların içeriği
+        self._pruned = 0.0
 
     def _run(self, sql: str, params: tuple = ()) -> list[sqlite3.Row]:
         with self._lock:
@@ -254,8 +258,12 @@ class AuthStore:
 
     def log(self, user: str | None, client_id: str | None, method: str, name: str | None,
             ms: int, error: str | None) -> None:
+        now = time.time()
+        if now - self._pruned > 86400:                   # saklama süresini aşanlar günde bir silinir
+            self._pruned = now
+            self._run("DELETE FROM usage WHERE ts < ?", (now - USAGE_DAYS * 86400,))
         self._run("INSERT INTO usage VALUES (?, ?, ?, ?, ?, NULL, ?, ?)",
-                  (time.time(), user, client_id, method, name, ms, error))
+                  (now, user, client_id, method, name, ms, error))
 
     def anonymous_calls(self, tool: str, since: float) -> int:
         return self._run("SELECT count(*) FROM usage WHERE user IS NULL AND method = 'tools/call' AND name = ?"
@@ -448,7 +456,7 @@ def usage_middleware(store: AuthStore):
         try:
             return await call_next(ctx)
         except Exception as exc:
-            error = f"{type(exc).__name__}: {exc}"[:500]
+            error = type(exc).__name__                   # ileti sorgudan parça taşıyabilir; yalnızca tür
             raise
         finally:
             token = get_access_token()

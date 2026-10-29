@@ -507,7 +507,9 @@ def main() -> None:
         sys.exit("--anonymous yalnızca --public-url ile kullanılır.")
     server = create_server(library, args.public_url, anonymous=args.anonymous,
                            anonymous_semantic=args.anonymous_semantic, warm=True)
-    uvicorn.run(http_app(server, args.public_url, args.anonymous), host=args.host, port=args.port)
+    # Erişim günlüğü kapalı: istemcinin IP adresini sistem günlüğüne yazıyordu; kullanım kaydı (auth.py) yeter
+    # (gizlilik politikası: IP adresi kaydedilmez).
+    uvicorn.run(http_app(server, args.public_url, args.anonymous), host=args.host, port=args.port, access_log=False)
 
 
 if __name__ == "__main__":
