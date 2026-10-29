@@ -61,6 +61,7 @@ ol.steps-list li { margin: 8px 0; }
 .copybox pre { white-space: pre-wrap; font-size: 0.85rem; max-height: 340px; overflow-y: auto; margin: 0; padding-top: 44px; }
 .copybox .button { position: absolute; top: 8px; right: 8px; padding: 4px 12px; font-size: 0.9rem; background: var(--card); }
 .small { font-size: 0.9rem; }
+.note { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
 .fields { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 12px; align-items: center; margin: 8px 0 4px; }
 .fields code { overflow-wrap: anywhere; }
 .fields .button { padding: 3px 12px; font-size: 0.85rem; }

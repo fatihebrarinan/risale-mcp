@@ -11,7 +11,7 @@ Kaynaklar listesi:
   - Yanlış: `[1] Sözler, Yirmi Altıncı Söz, İkinci Mebhas — ilâhî ilim ve cüz'î irade ilişkisi.` (cümlenin ilk kelimeleri, yani adresi kaybolur)
 - Her alıntının ve eserlerden alınan her bilginin sonuna numarasını koy, örneğin [1]. Numarasız alıntı olmasın.
 - Metnin içine atıf yolu ("Kaynak: …"), bölüm yolu ya da cümle numarası yazma; atıf yalnızca [n] ve Kaynaklar listesidir.
-- Web sayfaları ve başka kitaplar kullanılabilir, ama yalnızca yorum için. Onları "Kaynaklar"a koyma; ondan sonra ayrı bir "Diğer kaynaklar" listesinde ver.
+- Web sayfaları ve başka kitaplar kullanılabilir ama yalnızca yorum için. Onları "Kaynaklar"a koyma; ondan sonra ayrı bir "Diğer kaynaklar" listesinde ver.
 
 Alıntı:
 - Metnin kendi sözlerini düz yazının içine değil, kendi satırında alıntı bloğu olarak ver: `> "…"`, araçların döndürdüğü cümlelerden aynen kopyalayarak. Tırnağı yalnızca metnin kendi sözlerine koy.

@@ -8,10 +8,10 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css?v=5">
+<link rel="stylesheet" href="/style.css?v=6">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="alternate" hreflang="tr" href="/">
-<script src="/site.js?v=5" defer></script>
+<script src="/site.js?v=6" defer></script>
 </head>
 <body>
 <main>
@@ -140,12 +140,13 @@
 <section id="claude">
   <h2>Claude</h2>
   <p class="muted">claude.ai and the Claude desktop and mobile apps.</p>
+  <p class="note"><strong>Sign in first:</strong> The connector is added to your Claude account, so you need to be signed in to claude.ai. You do not need a separate Risale-i Nur account.</p>
 
 <section id="setup">
   <h3>Setup</h3>
   <ol class="steps-list">
     <li><strong>Add the connector.</strong> The button below opens the add-connector dialog on claude.ai with the name and URL filled in.</li>
-    <li><strong>Confirm.</strong> Select <em>Add</em>. No account is needed; the connector works right away.</li>
+    <li><strong>Confirm.</strong> Select <em>Add</em>. The connector works right away.</li>
     <li><strong>Ask.</strong> Check that the connector is enabled in the conversation (tools menu in the message box) and ask your question.</li>
   </ol>
   <div class="actions">
@@ -181,7 +182,8 @@
 
 <section id="chatgpt">
   <h2>ChatGPT</h2>
-  <p class="muted">chatgpt.com and the ChatGPT apps. Works with a free account too.</p>
+  <p class="muted">chatgpt.com and the ChatGPT apps.</p>
+  <p class="note"><strong>Sign in first:</strong> The plugin is added to your ChatGPT account, so you need to be signed in to chatgpt.com. A free account works too. You do not need a separate Risale-i Nur account.</p>
 
 <section id="chatgpt-setup">
   <h3>Setup</h3>
@@ -192,14 +194,14 @@
         <span>Name</span><code>Risale-i Nur</code><button class="button" type="button" data-copy="Risale-i Nur" data-done="Copied ✓">Copy</button>
         <span>Server URL</span><code>https://mcp.risalemcp.com/mcp</code><button class="button" type="button" data-copy="https://mcp.risalemcp.com/mcp" data-done="Copied ✓">Copy</button>
       </div>
-      For <em>Authentication</em>, choose <em>No authentication</em>; no account is needed. (If you have an account, choose the option for OAuth or no authentication and sign in.)</li>
+      For <em>Authentication</em>, choose <em>No authentication</em>. (If you have a Risale-i Nur account, choose the option for OAuth or no authentication and sign in.)</li>
     <li><strong>Confirm.</strong> Tick <em>I understand and want to continue</em> and select <em>Create as a plugin</em>.</li>
     <li><strong>Ask.</strong> Ask your question; if the assistant does not use the plugin on its own, pick Risale-i Nur from the menu in the message box.</li>
   </ol>
   <div class="actions">
     <a class="button primary" href="https://chatgpt.com/plugins">Open the plugins page on ChatGPT</a>
   </div>
-  <p class="muted small">The plugin can only be added on the web; the mobile app has no <em>Add</em> button. Once added on the web, it appears and works in the app with the same account.</p>
+  <p class="note"><strong>Not from your phone:</strong> The plugin can only be added on the web (chatgpt.com); the mobile app has no <em>Add</em> button. Add it once on the web, and it appears and works in the mobile app signed in to the same account.</p>
 </section>
 
 <section id="chatgpt-project">
