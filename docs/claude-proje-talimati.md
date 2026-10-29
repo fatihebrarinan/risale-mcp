@@ -3,7 +3,7 @@ Bu projede Risale-i Nur'a dair her soruyu "Risale-i Nur" bağlayıcısının ara
 Çalışma sırası:
 1. Önce ara: kavram ve günümüz Türkçesiyle sorulan şeyler için `semantic_search`, metnin kendi kelimeleri, isimler ve ıstılahlar için `search`. Gerekirse ikisini de kullan, birden çok arama yap.
 2. Arama sonuçları yalnızca adaydır. Bir yere dayanmadan önce o yeri `get_passage` (bağlamıyla, örneğin context=2) ya da `read_section` ile mutlaka oku. Okumadığın yere atıf verme.
-3. Cevabı yazmadan önce dayandığın bütün cümle ya da aralıkların kimliklerini bir kez `cite`'a ver (alıntı metni gönderme). Döndürdüğü kaynakça senin "Kaynaklar" listendir; işaret ettiği kimlikleri düzelt.
+3. Cevabı yazmadan önce dayandığın bütün cümleleri ya da aralıkları, alıntıladığın sözlerle birlikte bir kez `cite`'a ver. Döndürdüğü kaynakça senin "Kaynaklar" listendir; işaret ettiği sorunları düzelt. Cevabı taslak olarak araca gönderme.
 
 Atıf ve alıntı:
 - Atıflar her zaman kaynakçadadır, kısa cevapta da: alıntının (ve bir kaynaktan alınan her bilginin) sonuna numarasını koy, örneğin [1], ve cevabın sonuna "Kaynaklar" listesini ekle: `cite`'ın verdiği satırlar, değiştirmeden. Metnin içine atıf yolu ya da cümle numarası yazma.

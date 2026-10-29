@@ -145,15 +145,22 @@ def test_real_bibliography_lines(real_checker):
     assert [(c.status, c.exact, c.count, c.block_ok) for c in found] == [("ok", True, 2, True), ("ok", True, 1, True)]
 
 
-def test_cite_returns_bibliography_and_flags_problems(checker):
-    result = checker.sources(["sozler/10/c001..c002", "sozler/10/c001/h1/c001",
-                              "sozler/10/c001..sozler/10/hakikat-01/c001", "sozler/10/c009"])
-    one, hasiye, past = result["bibliography"].splitlines()
-    assert one.startswith("[1] Sözler › Onuncu Söz › “") and one.endswith("ile başlayan 2 cümle")
-    assert hasiye.startswith("[2] ") and past.startswith("[3] ") and past.endswith("ile başlayan 2 cümle")
-    assert [p["n"] for p in result["problems"]] == [3, 4]          # bilinmeyen kimlik kaynakçada yok
-    assert "stays inside one section" in result["problems"][0]["problem"]
-    assert "problems" not in checker.sources(["sozler/10/c002"])
+def test_cite_returns_references_and_flags_problems(checker):
+    result = checker.sources([
+        {"id": "sozler/10/c001..c002", "quote": "Elbette haşr-i … olacak."},
+        {"id": "sozler/10/c001/h1/c001"},
+        {"id": "sozler/10/c002", "quote": "Kıyâmet ve mîzan"},
+        {"id": "sozler/10/c001..sozler/10/hakikat-01/c001"},
+        {"id": "sozler/10/c009"},
+    ])
+    ok, hasiye, misplaced, past, unknown = result["sources"]
+    assert ok["status"] == "ok" and ok["cite_as"].endswith("ile başlayan 2 cümle")
+    assert hasiye["status"] == "ok"
+    assert "occur at: Sözler › Onuncu Söz › Birinci Hakikat" in misplaced["problem"]
+    assert "stays inside one section" in past["problem"] and past["cite_as"].endswith("ile başlayan 2 cümle")
+    assert unknown["status"] == "unknown_id"
+    assert result["problems"] == 3
+    assert result["bibliography"].splitlines()[1].startswith("[2] ")
 
 
 # ---------------------------------------------------------------- gerçek veritabanı

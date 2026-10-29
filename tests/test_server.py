@@ -212,11 +212,12 @@ async def test_server_tool_returns_compact_json_and_readable_errors(library):
 
 async def test_server_cites_sources(library):
     async with Client(create_server(library)) as client:
-        result = await client.call_tool("cite", {"ids": ["sozler/10/c002", "sozler/10/c099"]})
+        result = await client.call_tool("cite", {"sources": [{"id": "sozler/10/c002", "quote": "Elbette haşr-i"},
+                                                             {"id": "sozler/10/c001", "quote": "Böyle bir cümle yok"}]})
         assert result.structured_content is None
         report = json.loads(result.content[0].text)
+        assert report["problems"] == 1 and report["sources"][1]["status"] == "problem"
         assert report["bibliography"].startswith("[1] Sözler › Onuncu Söz › “Elbette haşr-i")
-        assert [p["n"] for p in report["problems"]] == [2]
 
 
 async def test_server_resources_and_prompts(library):
