@@ -2,7 +2,7 @@
 # Aşama 12: kodu ve hazır veriyi uzak sunucuya gönderir, bağımlılıkları kurar, servisi yeniden başlatır.
 #
 #   scripts/deploy.sh            # kod + risale.db + vektörler + quran.json
-#   scripts/deploy.sh --code     # yalnızca kod (veri değişmediyse)
+#   scripts/deploy.sh --code     # yalnızca kod ve site/ (veri değişmediyse)
 #
 # Ayrıştırma ve veritabanı kurulumu bu bilgisayarda yapılır; ham veri sunucuya gitmez. Sunucudaki `data/auth.db`
 # (hesaplar, oturumlar, kullanım kaydı) asıl kopyadır, bu betik onu ezmez. `.env`'den yalnızca VOYAGE_API_KEY gider.
@@ -17,6 +17,9 @@ cd "$(dirname "$0")/.."
 
 echo "kod gönderiliyor…"
 git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DEST/"
+# Tanıtım sitesi (risalemcp.com; Caddy /var/www/risalemcp'den sunar, bkz. docs/Caddyfile)
+"${SSH[@]}" "$HOST" "mkdir -p /var/www/risalemcp"
+rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
 
 if [[ "${1:-}" != "--code" ]]; then
     echo "veri gönderiliyor…"

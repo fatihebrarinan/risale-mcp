@@ -218,7 +218,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     if warm:
         threading.Thread(target=_warm, args=(library, citations), daemon=True).start()
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="List works", annotations=READ_ONLY, structured_output=False)
     def list_works(
         group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua or hizb.")] = None,
     ) -> str:
@@ -227,7 +227,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.works(group))
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="Show outline", annotations=READ_ONLY, structured_output=False)
     def get_outline(
         section: Annotated[str, Field(description="A work id (e.g. 'sozler') or a section id (e.g. 'sozler/10').")],
         depth: Annotated[int, Field(description="How many levels of subsections to include.", ge=0, le=6)] = 2,
@@ -237,7 +237,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.outline(section, depth))
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="Read section", annotations=READ_ONLY, structured_output=False)
     def read_section(
         section: Annotated[str, Field(description="A section id from get_outline or a search result's ref path.")],
         cursor: Annotated[str | None, Field(description="next_cursor from the previous call, to continue.")] = None,
@@ -250,7 +250,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.read_section(section, cursor, max_words))
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="Get passage", annotations=READ_ONLY, structured_output=False)
     def get_passage(
         id: Annotated[str, Field(description="A sentence id, or a range 'first_id..last_id' (the last may be short: "
                                              "'sozler/10/c010..c015').")],
@@ -262,7 +262,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.passage(id, context))
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="Search the text", annotations=READ_ONLY, structured_output=False)
     def search(
         query: Annotated[str, Field(description="Words (all must occur), \"exact phrase\", prefix*, OR, -exclude, "
                                                 "NEAR(a b, 5). Marks and Turkish letters are optional.")],
@@ -277,7 +277,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.search(query, work, group, limit, offset))
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="Search by meaning", annotations=READ_ONLY, structured_output=False)
     def semantic_search(
         query: Annotated[str, Field(description="A question or concept in your own (today's) words, e.g. "
                                                 "'Ölüm neden bir nimettir?' or 'ümitsizlik'.")],
@@ -298,7 +298,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             return _json(library.semantic_search(query, work, group, limit, offset))
 
     if anonymous:
-        @server.tool(annotations=READ_ONLY, structured_output=False)
+        @server.tool(title="Sign in", annotations=READ_ONLY, structured_output=False)
         def sign_in() -> str:
             """Sign in to this server with an account (only if the user asks to sign in or has an account): without
             an account, semantic_search has a shared daily limit. Calling this without being signed in makes Claude
@@ -306,7 +306,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             token = get_access_token()
             return _json({"signed_in_as": token.subject if token else None})
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="Find sentence", annotations=READ_ONLY, structured_output=False)
     def find_sentence(
         incipit: Annotated[str, Field(description="The first words of the sentence, as the user quotes them.")],
         scope: Annotated[str | None, Field(description="Only inside this work or section id.")] = None,
@@ -316,7 +316,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.find_sentence(incipit, scope))
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="Find verse in the works", annotations=READ_ONLY, structured_output=False)
     def find_ayah(
         sura: Annotated[str, Field(description="Sura number (1–114) or name, e.g. '2' or 'Bakara'.")],
         ayah: Annotated[int | None, Field(description="Verse number; without it, every quoted verse of the sura.")] = None,
@@ -334,7 +334,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.find_ayah(sura, ayah, limit, offset))
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="Get Qur'an verse", annotations=READ_ONLY, structured_output=False)
     def get_ayah(
         sura: Annotated[str, Field(description="Sura number (1–114) or name, e.g. '2' or 'Bakara'.")],
         ayah: Annotated[int, Field(description="Verse number.", ge=1)],
@@ -348,7 +348,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.ayahs(sura, ayah, end, context))
 
-    @server.tool(annotations=READ_ONLY, structured_output=False)
+    @server.tool(title="Build references", annotations=READ_ONLY, structured_output=False)
     def cite(
         sources: Annotated[list[Source], Field(description="The sentences you quote or rely on, in the order of "
                                                            "their numbers in your answer ([1], [2]…).",

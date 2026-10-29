@@ -1,0 +1,16 @@
+# Uzak sunucunun /etc/caddy/Caddyfile'ı (kopyası; asıl sunucuda). scripts/gecis.sh yazar.
+# Sertifikaları Caddy Let's Encrypt'ten kendisi alır ve yeniler; Cloudflare'de kayıtlar "DNS only" (gri bulut):
+# proxy uzun MCP bağlantılarını 100 sn'de keser ve Anthropic'in isteklerine bot doğrulaması gösterebilir.
+
+# Bağlayıcı: MCP sunucusu, giriş sayfası ve OAuth uç noktaları (uygulama yalnızca 127.0.0.1:8000'de dinler).
+mcp.risalemcp.com {
+	reverse_proxy 127.0.0.1:8000
+}
+
+# Tanıtım sitesi, belgeler ve gizlilik politikası: depodaki site/ klasörü (scripts/deploy.sh gönderir).
+risalemcp.com {
+	root * /var/www/risalemcp
+	encode gzip
+	file_server
+}
+
