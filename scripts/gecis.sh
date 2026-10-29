@@ -22,10 +22,11 @@ rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
 rsync -az -e "${SSH[*]}" docs/risale-mcp.server.service "$HOST:/etc/systemd/system/risale-mcp.service"
 
 echo "güvenlik duvarı, servis, Caddy…"
+# Funnel 443'ü tuttuğu için önce o kapanır, sonra Caddy 443'te başlar (2026-10-29: ters sırada Caddy açılamadı).
 "${SSH[@]}" "$HOST" "ufw allow 80/tcp >/dev/null && ufw allow 443/tcp >/dev/null \
     && systemctl daemon-reload && systemctl restart risale-mcp \
-    && caddy validate --config /etc/caddy/Caddyfile >/dev/null && systemctl reload caddy \
-    && tailscale funnel reset"
+    && tailscale funnel reset \
+    && caddy validate --config /etc/caddy/Caddyfile >/dev/null && systemctl restart caddy"
 
 echo "deneniyor (sertifika ilk seferde birkaç saniye sürebilir)…"
 for i in 1 2 3 4 5 6; do
