@@ -10,7 +10,7 @@ Yayıncı kimliği: kişisel doğrulama (2026-10-29, onaylandı; kurum doğrulam
 
 - `plugin.json` (Agent Plugins 1.0.0 şeması): ad `risale-i-nur`, görünen ad "Risale-i Nur", kısa açıklama
   "Cite the Risale-i Nur exactly" (≤30), uzun açıklama (Claude dizinindekinin ChatGPT'ye uyarlanmışı; kullanıcılar ve
-  sınırlar eklendi), Türkçe çeviri (`tr-TR`), 3 hazır istem, kategori `Education` (portaldaki listeden
+  sınırlar eklendi), Türkçe çeviri (`tr-TR`), 3 hazır istem, kategori `Education & Research` (portaldaki listeden
   doğrulanacak), dört adres (site, destek, gizlilik, kullanım şartları), 5 olumlu ve 3 olumsuz test senaryosu, sürüm notu.
 - `mcp.json`: yalnızca `https://mcp.risalemcp.com/mcp`. Kimlik doğrulama türü pakette değil, portalda seçilir.
 - `assets/logo.png`: `src/risale_mcp/static/icon.png` (256×256).
