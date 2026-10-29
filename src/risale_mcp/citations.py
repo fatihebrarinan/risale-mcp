@@ -229,6 +229,16 @@ class Citation:
         return record
 
 
+# `cite` sonucu kaynakçanın nasıl kullanılacağını da söyler: ChatGPT talimattaki kuralı izlemeyip satırları kendisi
+# yazıyordu ("Sözler, Yirmi Altıncı Söz, İkinci Mebhas — …"), cümlenin ilk kelimeleri kayboluyordu (2026-10-29).
+# Web kaynakları serbesttir ama ayrı listede durur (kullanıcının kararı).
+CITE_NOTE = ("Finish the answer with a Kaynaklar list made of these bibliography lines, copied unchanged and in this "
+             "order: do not reword, shorten or renumber them, their opening words are each sentence's address. End "
+             "every quotation with its source's number, e.g. [1]. Sources outside the works (web pages, other books) "
+             "go in a separate list after Kaynaklar, never in it. If a source has a problem, fix it and call cite "
+             "again.")
+
+
 class CitationChecker:
     """Başlık ağacının dizini; veritabanı yeniden kurulunca (yeni bağlantı) dizin de yenilenir."""
 
@@ -587,7 +597,8 @@ class CitationChecker:
         out = [{"n": n, **self._source(item.get("id", ""), item.get("quote"))} for n, item in enumerate(items, 1)]
         return {"problems": sum("problem" in o for o in out),
                 "sources": out,
-                "bibliography": "\n".join(f"[{o['n']}] {o['cite_as']}" for o in out if "cite_as" in o)}
+                "bibliography": "\n".join(f"[{o['n']}] {o['cite_as']}" for o in out if "cite_as" in o),
+                "note": CITE_NOTE}
 
     def _source(self, source_id: str, quote: str | None) -> dict:
         first_id, _, last_id = source_id.strip().partition("..")

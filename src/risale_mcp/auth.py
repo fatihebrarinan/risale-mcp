@@ -5,6 +5,9 @@ erişir. MCP SDK'sının yerleşik yetkilendirme sunucusu kullanılır: üst ver
 kaydı (RFC 7591), PKCE S256 ve jeton uç noktası SDK'dadır. Bu modül SDK'nın "sağlayıcı"sıdır: istemcileri,
 yetkilendirme kodlarını ve jetonları saklar, giriş sayfasını sunar, kullanıcıları ve kullanım kaydını tutar.
 
+ChatGPT de aynı akışla bağlanır; geri dönüş adresi belgelenmemiştir (sitelerde `…/connector_platform_oauth_redirect`,
+sonda `/` ile ya da onsuz, ve `https://chatgpt.com/connector/oauth/…` geçer): üçü de kabul edilir (`CHATGPT_CALLBACKS`).
+
 Claude'un gereksinimleri (https://claude.com/docs/connectors/building/authentication, 2026-10-28'de okundu):
 - Geri dönüş adresi `https://claude.ai/api/mcp/auth_callback` (ileride `claude.com`); Claude Code yerel adrese
   (`http://localhost:<port>/callback`, `http://127.0.0.1:<port>/callback`) döner ve port her oturumda değişir:
@@ -19,8 +22,13 @@ Hesaplar (kullanıcının kararı: kişi başına hesap, herkese bütün derlem 
 - `usage`: her MCP isteği (kim, ne zaman, hangi yöntem ve araç, süre, hata) kaydedilir. Parametreler (arama
   sorguları, alıntılar) konuşma içeriğidir ve kaydedilmez: Anthropic'in dizin politikası (Software Directory
   Policy 1E, 1G) gereksiz konuşma verisinin kayıt için bile toplanmasını yasaklar (kullanıcının kararı,
-  2026-10-29). `params` sütunu eski kayıtlarla uyum için durur, her açılışta boşaltılır. Kayıtlar
-  `USAGE_DAYS` gün tutulur (gizlilik politikası: site/gizlilik.html); daha eskileri günde bir silinir.
+  2026-10-29). Kayıtlar `USAGE_DAYS` gün tutulur (gizlilik politikası: site/gizlilik.html); daha eskileri günde
+  bir silinir.
+- Ayrıntılı kayıt (kullanıcının kararı, 2026-10-29: kendi hesabından başka istemcilerde, ör. ChatGPT'de, araç
+  kullanımını incelemek için): `users.debug` açık hesabın isteklerinde `params` sütunu araç girdilerini, sonucun
+  boyunu ve hata iletisini taşır (JSON). Bayrak yalnızca komutla açılır (`auth debug <ad> on`), varsayılan kapalıdır;
+  parametreler `DEBUG_DAYS` gün sonra, bayrak kapanınca hemen boşaltılır. Bayrağı kapalı hesapların ve hesapsızların
+  `params`'ı hiç yazılmaz, eski kayıtlardan kalanlar her açılışta boşaltılır. Gizlilik politikası bunu söyler.
 
 Hesapsız erişim (kullanıcının kararı, 2026-10-28; Claude'un "lazy authentication"ı,
 https://claude.com/docs/connectors/building/lazy-authentication.md): `--anonymous` ile `Authorization` başlığı
@@ -32,7 +40,7 @@ toplam sınırı vardır (`ANON_SEMANTIC_PER_DAY`), bütün hesapsız istekler d
 
 Veri `data/auth.db`'dedir (git'e eklenmez); `risale.db` her kurulumda sıfırdan yazıldığı için oraya konmaz.
 
-Yönetim: `risale-mcp auth add-user <ad>`, `passwd`, `remove-user`, `users`, `sessions`, `revoke`, `usage`.
+Yönetim: `risale-mcp auth add-user <ad>`, `passwd`, `remove-user`, `users`, `sessions`, `revoke`, `usage`, `debug`.
 """
 
 import argparse
@@ -78,9 +86,13 @@ REQUEST_TTL = 600                      # giriş sayfasında bekleyen yetkilendir
 MAX_FAILURES = 5                       # bundan sonra hesap kilitlenir; her yeni hatada süre ikiye katlanır
 LOCK_SECONDS = 60
 LOOPBACK = {"localhost", "127.0.0.1", "[::1]", "::1"}
-HOSTED_CALLBACKS = {"https://claude.ai/api/mcp/auth_callback", "https://claude.com/api/mcp/auth_callback"}
+HOSTED_CALLBACKS = {"https://claude.ai/api/mcp/auth_callback", "https://claude.com/api/mcp/auth_callback",
+                    "https://chatgpt.com/connector_platform_oauth_redirect",
+                    "https://chatgpt.com/connector_platform_oauth_redirect/"}
+CHATGPT_CALLBACK_PREFIX = "https://chatgpt.com/connector/oauth/"
 
 USAGE_DAYS = 90                        # kullanım kaydının saklama süresi (gizlilik politikasında yazılı)
+DEBUG_DAYS = 7                         # ayrıntılı kayıttaki parametrelerin saklama süresi (gizlilik politikasında yazılı)
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
@@ -88,7 +100,8 @@ CREATE TABLE IF NOT EXISTS users (
     password      TEXT NOT NULL,
     created       REAL NOT NULL,
     failures      INTEGER NOT NULL DEFAULT 0,
-    locked_until  REAL NOT NULL DEFAULT 0
+    locked_until  REAL NOT NULL DEFAULT 0,
+    debug         INTEGER NOT NULL DEFAULT 0      -- ayrıntılı kayıt (parametreler); yalnızca komutla açılır
 );
 CREATE TABLE IF NOT EXISTS clients (
     client_id TEXT PRIMARY KEY,
@@ -157,8 +170,9 @@ def _is_loopback(url: str) -> bool:
 
 
 def allowed_redirect(url: str) -> bool:
-    """Claude'un barındırılan uygulamaları ya da yerel adres (Claude Code, MCP Inspector)."""
-    return url in HOSTED_CALLBACKS or _is_loopback(url)
+    """Claude'un ve ChatGPT'nin barındırılan uygulamaları ya da yerel adres (Claude Code, MCP Inspector)."""
+    return (url in HOSTED_CALLBACKS or _is_loopback(url)
+            or (url.startswith(CHATGPT_CALLBACK_PREFIX) and ".." not in url and "?" not in url and "#" not in url))
 
 
 class Client(OAuthClientInformationFull):
@@ -185,8 +199,15 @@ class AuthStore:
         self.conn = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
-        self.conn.execute("UPDATE usage SET params = NULL WHERE params IS NOT NULL")   # eski kayıtların içeriği
+        if "debug" not in {row["name"] for row in self.conn.execute("PRAGMA table_info(users)")}:
+            self.conn.execute("ALTER TABLE users ADD COLUMN debug INTEGER NOT NULL DEFAULT 0")
+        self._clear_params(time.time())
         self._pruned = 0.0
+
+    def _clear_params(self, now: float) -> None:
+        """Ayrıntılı kaydı açık olmayan hesapların ve `DEBUG_DAYS`'i geçmiş kayıtların parametreleri silinir."""
+        self.conn.execute("UPDATE usage SET params = NULL WHERE params IS NOT NULL AND (ts < ? OR user IS NULL"
+                          " OR user NOT IN (SELECT name FROM users WHERE debug = 1))", (now - DEBUG_DAYS * 86400,))
 
     def _run(self, sql: str, params: tuple = ()) -> list[sqlite3.Row]:
         with self._lock:
@@ -213,7 +234,18 @@ class AuthStore:
         self._run("DELETE FROM users WHERE name = ?", (name,))
 
     def users(self) -> list[sqlite3.Row]:
-        return self._run("SELECT name, created, failures, locked_until FROM users ORDER BY name")
+        return self._run("SELECT name, created, failures, locked_until, debug FROM users ORDER BY name")
+
+    def set_debug(self, name: str, on: bool) -> None:
+        """Ayrıntılı kaydı açar ya da kapatır; kapanınca hesabın kayıtlı parametreleri hemen silinir."""
+        if not self._run("SELECT 1 FROM users WHERE name = ?", (name,)):
+            raise ValueError(f"{name!r} diye bir kullanıcı yok")
+        self._run("UPDATE users SET debug = ? WHERE name = ?", (int(on), name))
+        if not on:
+            self._run("UPDATE usage SET params = NULL WHERE user = ?", (name,))
+
+    def debugged(self, name: str | None) -> bool:
+        return bool(name) and bool(self._run("SELECT 1 FROM users WHERE name = ? AND debug = 1", (name,)))
 
     def login(self, name: str, password: str, now: float | None = None) -> tuple[bool, str | None]:
         """(başarılı mı, hata iletisi). Yanlış denemeler sayılır, sınırı aşan hesap kilitlenir."""
@@ -257,13 +289,17 @@ class AuthStore:
     # ------------------------------------------------------------ kullanım kaydı
 
     def log(self, user: str | None, client_id: str | None, method: str, name: str | None,
-            ms: int, error: str | None) -> None:
+            ms: int, error: str | None, detail: dict | None = None) -> None:
+        """`detail` (araç girdileri, sonuç) yalnızca ayrıntılı kaydı açık hesapta yazılır."""
         now = time.time()
         if now - self._pruned > 86400:                   # saklama süresini aşanlar günde bir silinir
             self._pruned = now
             self._run("DELETE FROM usage WHERE ts < ?", (now - USAGE_DAYS * 86400,))
-        self._run("INSERT INTO usage VALUES (?, ?, ?, ?, ?, NULL, ?, ?)",
-                  (now, user, client_id, method, name, ms, error))
+            with self._lock:
+                self._clear_params(now)
+        params = json.dumps(detail, ensure_ascii=False) if detail is not None and self.debugged(user) else None
+        self._run("INSERT INTO usage VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                  (now, user, client_id, method, name, params, ms, error))
 
     def anonymous_calls(self, tool: str, since: float) -> int:
         return self._run("SELECT count(*) FROM usage WHERE user IS NULL AND method = 'tools/call' AND name = ?"
@@ -291,7 +327,7 @@ class Provider:
         bad = [str(u) for u in client_info.redirect_uris or [] if not allowed_redirect(str(u))]
         if bad or not client_info.redirect_uris:
             raise RegistrationError("invalid_redirect_uri",
-                                    f"only Claude's callback or a loopback address is allowed, not {bad}")
+                                    f"only Claude's or ChatGPT's callback or a loopback address is allowed, not {bad}")
         self.store._run("INSERT INTO clients VALUES (?, ?, ?)",
                         (client_info.client_id, client_info.model_dump_json(), time.time()))
 
@@ -447,16 +483,19 @@ def login_endpoint(provider: Provider) -> Callable[[Request], Awaitable[Response
 # ---------------------------------------------------------------- kullanım kaydı (MCP ara katmanı)
 
 def usage_middleware(store: AuthStore):
-    """Her MCP isteğini (bildirimler hariç) kaydeder: kim, hangi yöntem ve araç, süre, hata; parametreler değil."""
+    """Her MCP isteğini (bildirimler hariç) kaydeder: kim, hangi yöntem ve araç, süre, hata. Parametreler ve
+    sonuç (`_detail`) yalnızca ayrıntılı kaydı açık hesapta yazılır (`AuthStore.log`)."""
     async def middleware(ctx, call_next):
         if ctx.request_id is None:                      # bildirim
             return await call_next(ctx)
         start = time.perf_counter()
-        error = None
+        error = result = message = None
         try:
-            return await call_next(ctx)
+            result = await call_next(ctx)
+            return result
         except Exception as exc:
             error = type(exc).__name__                   # ileti sorgudan parça taşıyabilir; yalnızca tür
+            message = str(exc)
             raise
         finally:
             token = get_access_token()
@@ -464,8 +503,24 @@ def usage_middleware(store: AuthStore):
             name = params.get("name") or params.get("uri") if params else None
             if ctx.method not in ("ping",):
                 store.log(token.subject if token else None, token.client_id if token else None, ctx.method,
-                          name, int((time.perf_counter() - start) * 1000), error)
+                          name, int((time.perf_counter() - start) * 1000), error, _detail(params, result, message))
     return middleware
+
+
+def _detail(params: dict | None, result, message: str | None) -> dict:
+    """Ayrıntılı kayıt: isteğin parametreleri (`_meta` hariç), sonucun boyu; araç hatasında iletinin kendisi."""
+    detail: dict = {"params": {k: v for k, v in (params or {}).items() if k != "_meta"}}
+    if message is not None:
+        detail["error"] = message
+    if result is not None:
+        data = result.model_dump(mode="json", by_alias=True, exclude_none=True) if hasattr(result, "model_dump") \
+            else result
+        texts = [c.get("text", "") for c in data.get("content", []) if isinstance(c, dict)] \
+            if isinstance(data, dict) else []
+        detail["result_chars"] = sum(map(len, texts)) if texts else len(json.dumps(data, ensure_ascii=False))
+        if isinstance(data, dict) and data.get("isError"):
+            detail["error"] = " ".join(texts)
+    return detail
 
 
 # ---------------------------------------------------------------- hesapsız erişim
@@ -576,6 +631,10 @@ def main(argv: list[str] | None = None) -> None:
     p = sub.add_parser("usage")
     p.add_argument("--user")
     p.add_argument("--limit", type=int, default=50)
+    p.add_argument("--params", action="store_true", help="ayrıntılı kayıttaki parametreleri de göster")
+    p = sub.add_parser("debug", help="hesabın ayrıntılı kaydını aç ya da kapat")
+    p.add_argument("user")
+    p.add_argument("state", choices=["on", "off"])
     args = parser.parse_args(argv)
     store = AuthStore(args.db)
     try:
@@ -592,7 +651,8 @@ def main(argv: list[str] | None = None) -> None:
         elif args.command == "users":
             for u in store.users():
                 lock = f", kilitli {_when(u['locked_until'])}'e kadar" if u["locked_until"] > time.time() else ""
-                print(f"{u['name']:20} {_when(u['created'])}{lock}")
+                debug = ", ayrıntılı kayıt açık" if u["debug"] else ""
+                print(f"{u['name']:20} {_when(u['created'])}{lock}{debug}")
         elif args.command == "sessions":
             for s in store.sessions(args.user):
                 print(f"{s['session']}  {s['user']:16} {store.client_name(s['client_id']):24} "
@@ -604,6 +664,12 @@ def main(argv: list[str] | None = None) -> None:
             for u in reversed(store.usage(args.user, args.limit)):
                 status = f"HATA {u['error']}" if u["error"] else f"{u['ms']} ms"
                 print(f"{_when(u['ts'])} {u['user'] or '-':12} {u['method']:16} {u['name'] or '':18} {status}")
+                if args.params and u["params"]:
+                    print(f"    {u['params']}")
+        elif args.command == "debug":
+            store.set_debug(args.user, args.state == "on")
+            print(f"{args.user}: ayrıntılı kayıt " + ("açık; parametreler {} gün saklanır.".format(DEBUG_DAYS)
+                                                     if args.state == "on" else "kapalı; kayıtlı parametreler silindi."))
     except ValueError as error:
         sys.exit(str(error))
 

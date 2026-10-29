@@ -3,6 +3,7 @@
 
 import base64
 import hashlib
+import json
 import secrets
 from pathlib import Path
 from urllib.parse import parse_qs, urlparse
@@ -10,7 +11,7 @@ from urllib.parse import parse_qs, urlparse
 import pytest
 from starlette.testclient import TestClient
 
-from risale_mcp.auth import MAX_FAILURES, USAGE_DAYS, AuthStore, check_password, hash_password
+from risale_mcp.auth import DEBUG_DAYS, MAX_FAILURES, USAGE_DAYS, AuthStore, check_password, hash_password
 from risale_mcp.library import Library
 from risale_mcp.server import create_server, http_app, http_security
 
@@ -113,6 +114,49 @@ def test_registration_accepts_only_claude_and_loopback(client):
     response = client.post("/register", json={"redirect_uris": ["https://evil.example/cb"],
                                               "token_endpoint_auth_method": "none"})
     assert response.status_code == 400 and response.json()["error"] == "invalid_redirect_uri"
+
+
+def test_registration_accepts_chatgpt(client):
+    register(client, "https://chatgpt.com/connector_platform_oauth_redirect")
+    register(client, "https://chatgpt.com/connector/oauth/abc123")
+    for bad in ("https://chatgpt.com/other", "https://chatgpt.com.evil.example/connector/oauth/x"):
+        response = client.post("/register", json={"redirect_uris": [bad], "token_endpoint_auth_method": "none"})
+        assert response.status_code == 400, bad
+
+
+def logged_session(client):
+    _, token = tokens(client)
+    response = mcp_call(client, token["access_token"], "initialize", {
+        "protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "test", "version": "1"}})
+    session = response.headers.get("mcp-session-id")
+    client.post("/mcp", headers={**MCP_HEADERS, "Authorization": f"Bearer {token['access_token']}",
+                                 **({"Mcp-Session-Id": session} if session else {})},
+                json={"jsonrpc": "2.0", "method": "notifications/initialized"})
+    return token["access_token"], session
+
+
+def test_debug_account_logs_arguments_and_tool_errors(client, store):
+    store.set_debug("fatih", True)
+    access, session = logged_session(client)
+    mcp_call(client, access, "tools/call", {"name": "search", "arguments": {"query": "kiyamet"}}, session)
+    mcp_call(client, access, "tools/call", {"name": "get_passage", "arguments": {"id": "yok/c001"}}, session)
+    rows = {r["name"]: json.loads(r["params"]) for r in store.usage() if r["method"] == "tools/call"}
+    assert rows["search"]["params"]["arguments"] == {"query": "kiyamet"} and rows["search"]["result_chars"] > 0
+    assert "error" not in rows["search"] and "yok/c001" in rows["get_passage"]["error"]
+
+
+def test_debug_params_are_cleared_when_turned_off_or_expired(tmp_path, store):
+    store.set_debug("fatih", True)
+    store.log("fatih", None, "tools/call", "search", 5, None, {"params": {"query": "x"}})
+    store.log("abi", None, "tools/call", "search", 5, None, {"params": {"query": "y"}})
+    store.log(None, None, "tools/call", "search", 5, None, {"params": {"query": "z"}})
+    assert [r["user"] for r in store.usage() if r["params"]] == ["fatih"]
+    store._run("UPDATE usage SET ts = ts - ?", ((DEBUG_DAYS + 1) * 86400,))
+    AuthStore(store.path)                                 # açılışta süresi geçen parametreler silinir
+    assert all(r["params"] is None for r in store.usage())
+    store.log("fatih", None, "tools/call", "cite", 5, None, {"params": {}})
+    store.set_debug("fatih", False)
+    assert all(r["params"] is None for r in store.usage())
 
 
 def test_full_flow_and_tool_call_is_logged(client, store):

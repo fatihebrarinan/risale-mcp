@@ -33,7 +33,7 @@
 
 <h2>Data the connector processes</h2>
 <h3>Tool calls</h3>
-<p>When the assistant uses one of the connector's tools in your conversation, the server receives only that tool's input: a search phrase, a section or sentence id, or the words quoted for a citation. The rest of your conversation never reaches the server. These inputs are processed to produce the result and are <strong>not stored</strong>.</p>
+<p>When the assistant uses one of the connector's tools in your conversation, the server receives only that tool's input: a search phrase, a section or sentence id, or the words quoted for a citation. The rest of your conversation never reaches the server. These inputs are processed to produce the result and (except for the debugging exception below) are <strong>not stored</strong>.</p>
 
 <h3>Usage log</h3>
 <p>To keep the service running and to limit abuse, the following is logged for each request:</p>
@@ -44,6 +44,7 @@
   <li>how long the request took and, if it failed, the type of error.</li>
 </ul>
 <p>Search phrases, quotations and conversation content are <strong>not</strong> logged. Log entries are deleted after <strong>90 days</strong>.</p>
+<p>The one exception is debugging: if the owner of an account explicitly asks for it, to see how the connector is used in another app, the tool inputs, result sizes and error messages of that account only are kept for <strong>7 days</strong>. This is never turned on for an account without its owner's request, and cannot be turned on for use without an account.</p>
 
 <h3>IP addresses and cookies</h3>
 <p>The server keeps no access log; your IP address is not recorded. Limits for use without an account apply to all such use together, not per person. Neither this website nor the connector's sign-in page uses cookies, analytics or advertising tools. If you choose the light or dark theme with the button, that choice is stored only in your own browser and never sent to the server.</p>

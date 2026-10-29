@@ -78,7 +78,8 @@ quotation marks around at most a single term. A parable or one line of thought r
 sentences of one section is quoted as one block with one source (a range, at most 8 sentences).
 3. Always cite through a bibliography, in short answers too: end each quotation (and each claim drawn from a \
 source) with its number, e.g. [1], and finish the answer with a "Kaynaklar" list, the bibliography lines cite \
-returns, unchanged. Never write references in the body or give sentence numbers.
+returns, unchanged; sources outside the works go in a separate list after it. Never write references in the body \
+or give sentence numbers.
 4. Keep what the text says apart from your own interpretation, under separate headings. Answer in the user's \
 language.
 

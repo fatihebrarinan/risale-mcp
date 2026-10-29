@@ -161,6 +161,7 @@ def test_cite_returns_references_and_flags_problems(checker):
     assert unknown["status"] == "unknown_id"
     assert result["problems"] == 3
     assert result["bibliography"].splitlines()[1].startswith("[2] ")
+    assert "copied unchanged" in result["note"]            # biçim sonucun kendisinde de yazılı (ChatGPT için)
 
 
 # ---------------------------------------------------------------- gerçek veritabanı
