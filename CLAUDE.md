@@ -92,6 +92,7 @@ risale-mcp/
 ├── docs/Caddyfile                 # uzak sunucudaki Caddy yapılandırması (kopyası)
 ├── site/                          # risalemcp.com: ana sayfa, belgeler.html, gizlilik.html, en/ (docs, privacy); deploy.sh gönderir
 ├── docs/kaynak-bilgilendirme-epostasi.md  # kaynak sitelere bilgilendirme e-postası: liste ve taslaklar (Aşama 12)
+├── docs/dizin-basvurusu.md       # Anthropic bağlayıcı dizini başvurusu: portalın adımlarıyla metinler (hakem hesabı `admin`)
 ├── data/
 │   ├── vectors/                   # Anlamsal arama vektörleri <model>.<seçenek>.npy + .keys.json (git'e eklenmez)
 │   ├── raw/                       # Ham kaynak yanıtları (git'e eklenmez)
