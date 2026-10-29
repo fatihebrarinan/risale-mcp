@@ -175,6 +175,11 @@ def test_rebuilt_database_is_reopened(small_db, tmp_path):
     lib.close()
 
 
+def test_instructions_keep_the_works_off_the_web_and_every_quotation_in_cite():
+    assert "never come from a web search" in INSTRUCTIONS
+    assert "every quotation you will show" in INSTRUCTIONS
+
+
 def test_instructions_ask_for_quotations_as_block_quotes():
     """Kullanıcının isteği: eserlerden her alıntı kendi satırında, tırnak içinde alıntı bloğu."""
     assert '(> "…")' in INSTRUCTIONS

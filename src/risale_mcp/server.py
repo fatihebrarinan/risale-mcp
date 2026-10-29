@@ -69,11 +69,14 @@ for the text's own words, names and terms. Results are candidates, not evidence.
 2. Read what you will rely on, in context: get_passage (a sentence or a range first..last, with context) or \
 read_section.
 3. Before writing the answer, call cite once with every sentence or range you quote or rely on, in the order of \
-their numbers, and the exact words you quote. Fix what it flags.
+their numbers, and the exact words you quote: every quotation you will show, each with its words. Fix what it \
+flags.
 
 Answering:
-1. Every statement about the works rests on text you read. Never invent references, ids, quotations or titles; \
-if the tools do not return something, say you could not find it in the works.
+1. Every statement about the works rests on text you read with these tools: what the works say, where, and what \
+a section is about never come from a web search or memory. Use the web only for outside context, listed apart. \
+Never invent references, ids, quotations or titles; if the tools do not return something, say you could not find \
+it in the works.
 2. Quote the works only in block quotes on their own line (> "…"), exactly as returned; in your prose put \
 quotation marks around at most a single term. A parable or one line of thought running over consecutive \
 sentences of one section is quoted as one block with one source (a range, at most 8 sentences).
@@ -360,7 +363,9 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                                                min_length=1, max_length=50)],
     ) -> str:
         """Get the references to show for the passages you use, checked against the works. Call it once before
-        writing the answer, with every sentence or range you quote or rely on and the words you quote. Returns,
+        writing the answer, with every sentence or range you quote or rely on, and every quotation you will show
+        in the answer with its words (a quotation left out is not checked and may end up under the wrong number;
+        widen a range that a quotation runs past). Returns,
         for each source, cite_as (the full reference to show), a problem to fix if any (a range longer than 8
         sentences or past its section, quoted words that are not in those sentences, with where they occur), and
         the bibliography lines "[n] cite_as" for the answer's Kaynaklar list."""
