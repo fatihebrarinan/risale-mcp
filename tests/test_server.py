@@ -193,7 +193,7 @@ async def test_server_lists_tools_prompts_and_resources(library):
         assert set(tools) == {"list_works", "get_outline", "read_section", "get_passage", "search",
                               "find_sentence", "find_ayah", "get_ayah", "cite", "semantic_search"}
         assert all(t.annotations.read_only_hint for t in tools.values())
-        assert all(t.title for t in tools.values())                       # dizin her araçta başlık ister
+        assert all(t.title and t.annotations.title == t.title for t in tools.values())   # dizin başlığı annotations'ta okur
         assert all(t.output_schema is None for t in tools.values())      # sonuç bir kez, düz metin olarak gider
         prompts = {p.name for p in (await client.list_prompts()).prompts}
         assert prompts == {"topic_survey", "text_and_commentary", "discuss", "self_test", "lesson_plan"}
