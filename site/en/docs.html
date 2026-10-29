@@ -8,16 +8,19 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=4">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="alternate" hreflang="tr" href="/belgeler.html">
+<script src="/site.js?v=4" defer></script>
 </head>
 <body>
 <main>
 <nav>
-  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
   <a href="/en/docs.html" aria-current="page">Documentation</a>
   <a href="/en/privacy.html">Privacy</a>
   <a href="/belgeler.html" lang="tr">Türkçe</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
 </nav>
 
 <h1>Documentation</h1>
@@ -31,11 +34,11 @@
 
 <h3>claude.ai, Claude desktop and mobile</h3>
 <ol>
-  <li><a href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">Open this link</a>: claude.ai opens the add-connector dialog with the name and URL filled in. Or by hand: <em>Settings › Connectors › Add custom connector</em>, name "Risale-i Nur", URL as above.</li>
+  <li><a href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">Open this link</a>: claude.ai opens the add-connector dialog with the name and URL filled in. Or by hand: <em>Customize › Connectors › Add › Add custom connector</em> (on mobile: profile › <em>Connectors › Add custom connector</em>), name "Risale-i Nur", URL as above.</li>
   <li>Select <strong>Add</strong>. No account is needed; the connector works right away.</li>
   <li>Make sure the connector is enabled in the conversation (tools menu in the message box) and ask your question.</li>
 </ol>
-<p>Once added, the connector also appears in the desktop and mobile apps.</p>
+<p>Once added, the connector also appears in the desktop and mobile apps. For the text to be read, quotations checked and a bibliography added in every answer, we recommend a project with instructions: the steps and the instructions are on the <a href="/en/#project">home page</a>.</p>
 
 <h3>Claude Code</h3>
 <pre><code>claude mcp add --transport http risale https://mcp.risalemcp.com/mcp</code></pre>

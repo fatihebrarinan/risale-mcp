@@ -8,16 +8,19 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=4">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="alternate" hreflang="tr" href="/gizlilik.html">
+<script src="/site.js?v=4" defer></script>
 </head>
 <body>
 <main>
 <nav>
-  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
   <a href="/en/docs.html">Documentation</a>
   <a href="/en/privacy.html" aria-current="page">Privacy</a>
   <a href="/gizlilik.html" lang="tr">Türkçe</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
 </nav>
 
 <h1>Privacy Policy</h1>
@@ -43,7 +46,7 @@
 <p>Search phrases, quotations and conversation content are <strong>not</strong> logged. Log entries are deleted after <strong>90 days</strong>.</p>
 
 <h3>IP addresses and cookies</h3>
-<p>The server keeps no access log; your IP address is not recorded. Limits for use without an account apply to all such use together, not per person. Neither this website nor the connector's sign-in page uses cookies, analytics or advertising tools.</p>
+<p>The server keeps no access log; your IP address is not recorded. Limits for use without an account apply to all such use together, not per person. Neither this website nor the connector's sign-in page uses cookies, analytics or advertising tools. If you choose the light or dark theme with the button, that choice is stored only in your own browser and never sent to the server.</p>
 
 <h3>Search by meaning</h3>
 <p>For search by meaning (<code>semantic_search</code>), the search phrase is sent to <a href="https://www.voyageai.com">Voyage AI</a>, which turns its meaning into numbers. Only the phrase is sent, not your account or conversation. The server keeps the result in memory while it runs and never writes it to disk. How Voyage AI handles data is described in <a href="https://www.voyageai.com/privacy">its privacy policy</a>.</p>

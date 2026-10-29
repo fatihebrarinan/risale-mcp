@@ -4,12 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Gizlilik Politikası · Risale-i Nur MCP</title>
-<meta name="description" content="Risale-i Nur MCP bağlayıcısının hangi verileri işlediği, ne kadar sakladığı ve kimlerle paylaştığı.">
+<meta name="description" content="Risale-i Nur MCP bağdaştırıcısının hangi verileri işlediği, ne kadar sakladığı ve kimlerle paylaştığı.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=4">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="alternate" hreflang="en" href="/en/privacy.html">
+<script src="/site.js?v=4" defer></script>
 </head>
 <body>
 <main>
@@ -18,19 +20,20 @@
   <a href="/belgeler.html">Belgeler</a>
   <a href="/gizlilik.html" aria-current="page">Gizlilik</a>
   <a href="/en/privacy.html" lang="en">English</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Açık ve koyu görünüm arasında geç" title="Açık ve koyu görünüm arasında geç"></button>
 </nav>
 
 <h1>Gizlilik Politikası</h1>
 <p class="lead">Son güncelleme: 29 Ekim 2026</p>
 
-<p>Risale-i Nur MCP, Bediüzzaman Said Nursî'nin eserlerini Claude gibi yapay zekâ asistanlarına açan bir bağlayıcıdır (MCP sunucusu). Bu sayfa, bağlayıcının (<code>mcp.risalemcp.com</code>) ve bu sitenin (<code>risalemcp.com</code>) hangi verileri işlediğini anlatır. İlkemiz: işimiz için gerekmeyen hiçbir şeyi toplamamak.</p>
+<p>Risale-i Nur MCP, Bediüzzaman Said Nursî'nin eserlerini Claude gibi yapay zekâ asistanlarına açan bir bağdaştırıcıdır (MCP sunucusu). Bu sayfa, bağdaştırıcının (<code>mcp.risalemcp.com</code>) ve bu sitenin (<code>risalemcp.com</code>) hangi verileri işlediğini anlatır. İlkemiz: işimiz için gerekmeyen hiçbir şeyi toplamamak.</p>
 
 <h2>Sorumlu</h2>
 <p>Nur Hadimleri: gönüllü ve bağımsız bir proje. İletişim: <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></p>
 
-<h2>Bağlayıcının işlediği veriler</h2>
+<h2>Bağdaştırıcının işlediği veriler</h2>
 <h3>Araç çağrıları</h3>
-<p>Sohbetinizde asistan bağlayıcının bir aracını kullandığında, sunucuya yalnızca o aracın girdisi gelir: bir arama ifadesi, bir bölüm ya da cümle kimliği, atıf için alıntılanan sözler gibi. Sohbetinizin geri kalanı sunucuya gelmez. Bu girdiler cevabı hazırlamak için işlenir ve <strong>kaydedilmez</strong>.</p>
+<p>Sohbetinizde asistan bağdaştırıcının bir aracını kullandığında, sunucuya yalnızca o aracın girdisi gelir: bir arama ifadesi, bir bölüm ya da cümle kimliği, atıf için alıntılanan sözler gibi. Sohbetinizin geri kalanı sunucuya gelmez. Bu girdiler cevabı hazırlamak için işlenir ve <strong>kaydedilmez</strong>.</p>
 
 <h3>Kullanım kaydı</h3>
 <p>Hizmetin çalıştığını izlemek ve kötüye kullanımı sınırlamak için her istek için şunlar kaydedilir:</p>
@@ -43,13 +46,13 @@
 <p>Arama ifadeleri, alıntılar ve sohbet içeriği bu kayda <strong>girmez</strong>. Kayıtlar <strong>90 gün</strong> sonra silinir.</p>
 
 <h3>IP adresleri ve çerezler</h3>
-<p>Sunucu erişim günlüğü tutmaz; IP adresiniz kaydedilmez. Hesapsız kullanımın sınırları kişi başına değil, bütün hesapsız kullanım için topludur. Ne bu site ne de bağlayıcının giriş sayfası çerez, ziyaretçi sayacı ya da reklam aracı kullanır.</p>
+<p>Sunucu erişim günlüğü tutmaz; IP adresiniz kaydedilmez. Hesapsız kullanımın sınırları kişi başına değil, bütün hesapsız kullanım için topludur. Ne bu site ne de bağdaştırıcının giriş sayfası çerez, ziyaretçi sayacı ya da reklam aracı kullanır. Açık ya da koyu görünümü düğmeyle seçerseniz bu tercih yalnızca kendi tarayıcınızda saklanır, sunucuya gönderilmez.</p>
 
 <h3>Anlamsal arama</h3>
 <p>Anlama göre arama (<code>semantic_search</code>) için arama ifadesi, anlamını sayıya çeviren <a href="https://www.voyageai.com">Voyage AI</a> hizmetine gönderilir. Gönderilen yalnızca o ifadedir; hesap bilginiz ve sohbetiniz gönderilmez. Sunucu bu sonucu yalnızca çalışırken bellekte tutar, diske yazmaz. Voyage AI'nın veriyi nasıl işlediği <a href="https://www.voyageai.com/privacy">kendi gizlilik politikasındadır</a>.</p>
 
 <h3>Hesaplar</h3>
-<p>Bağlayıcı hesapsız da kullanılabilir. Hesap yönetici tarafından açılır ve şunları içerir: kullanıcı adı, parolanın geri çevrilemez özeti (scrypt; parolanın kendisi saklanmaz), oturum anahtarlarının özetleri ve art arda yanlış parola sayısı. Erişim anahtarı 1 saat, oturum 30 gün geçerlidir. Hesabınızın ve kayıtlarınızın silinmesini istediğinizde silinir.</p>
+<p>Bağdaştırıcı hesapsız da kullanılabilir. Hesap yönetici tarafından açılır ve şunları içerir: kullanıcı adı, parolanın geri çevrilemez özeti (scrypt; parolanın kendisi saklanmaz), oturum anahtarlarının özetleri ve art arda yanlış parola sayısı. Erişim anahtarı 1 saat, oturum 30 gün geçerlidir. Hesabınızın ve kayıtlarınızın silinmesini istediğinizde silinir.</p>
 
 <h2>Paylaşım</h2>
 <p>Veriler satılmaz, reklam ya da profil çıkarmak için kullanılmaz. Yukarıda anılan Voyage AI dışında kimseyle paylaşılmaz. Hizmeti kullandığınız sohbet uygulaması (ör. Claude) konuşmanızı kendi politikasına göre işler; Claude için <a href="https://www.anthropic.com/legal/privacy">Anthropic'in gizlilik politikası</a> geçerlidir.</p>

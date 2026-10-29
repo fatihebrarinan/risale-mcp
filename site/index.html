@@ -4,12 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Risale-i Nur MCP</title>
-<meta name="description" content="Bediüzzaman Said Nursî'nin eserlerini yapay zekâ asistanlarına cümle düzeyinde atıfla açan bağlayıcı.">
+<meta name="description" content="Risale-i Nur'u yapay zekâya metinden ayrılmadan bağlayan bağdaştırıcı: her alıntı eserlerin kendisinden, her adres cümle düzeyinde.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css">
-<link rel="alternate" hreflang="en" href="/en/docs.html">
+<link rel="stylesheet" href="/style.css?v=4">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="en" href="/en/">
+<script src="/site.js?v=4" defer></script>
 </head>
 <body>
 <main>
@@ -17,19 +19,179 @@
   <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
   <a href="/belgeler.html">Belgeler</a>
   <a href="/gizlilik.html">Gizlilik</a>
-  <a href="/en/docs.html" lang="en">English</a>
+  <a href="/en/" lang="en">English</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Açık ve koyu görünüm arasında geç" title="Açık ve koyu görünüm arasında geç"></button>
 </nav>
 
-<h1>Risale-i Nur'u yapay zekâ ile, kaynağına bağlı olarak okuyun</h1>
-<p class="lead">Bediüzzaman Said Nursî'nin bütün eserlerini Claude gibi yapay zekâ asistanlarına açan bir bağlayıcı. Asistan bir konuda konuşurken metni buradan okur, alıntısını metnin kendisinden yapar ve dayandığı yeri cümle düzeyinde, eser ve bölüm yoluyla gösterir.</p>
+<section class="hero">
+  <h1>Risale-i Nur'u yapay zekâ ile, metinden ayrılmadan okuyun</h1>
+  <p class="lead">Yapay zekâ asistanları Risale-i Nur hakkında akıcı konuşur, ama çoğu zaman ezberinden: alıntılar yanlış hatırlanır, adresler uydurulur, metin ile yorum birbirine karışır. Risale-i Nur MCP, asistanı Bediüzzaman Said Nursî'nin eserlerinin kendisine bağlar. Asistan konuşmadan önce metni okur; söylediği her şey bir cümleye dayanır ve okuyan o cümleyi bulabilir. Metnin söylediğini kendi yorumundan ayırır; bulamadığını söyler, uydurmaz.</p>
+  <div class="actions">
+    <a class="button primary" href="#kurulum">Bağdaştırıcıyı ekle</a>
+    <a class="button" href="#proje">Proje talimatı</a>
+  </div>
+</section>
 
-<div class="card">
-  <strong>Bağlayıcı adresi</strong><br>
-  <code>https://mcp.risalemcp.com/mcp</code>
-  <p class="muted">claude.ai'de: <a href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">bağlayıcıyı ekle</a>. Ayrıntılar <a href="/belgeler.html">belgelerde</a>.</p>
-</div>
 
-<p class="muted">Kurulum rehberi ve örnek sohbetler yakında bu sayfada.</p>
+<section id="karsilastirma">
+  <h2>Aynı soru, iki cevap</h2>
+  <p>Aynı model, aynı soru. Solda Claude bağdaştırıcısız cevap veriyor. Sağda Risale-i Nur bağdaştırıcısıyla ve proje talimatıyla: önce eserlerde arıyor, ilgili yeri okuyor, alıntılarını denetliyor, sonra cevap veriyor.</p>
+  <div class="cmp" data-cmp lang="tr">
+    <div class="cmp-tabs" role="tablist">
+      <button role="tab" data-side="off">Bağdaştırıcısız</button>
+      <button role="tab" data-side="on">Risale-i Nur ile</button>
+    </div>
+    <div class="cmp-panels">
+      <article class="cmp-panel" data-side="off">
+        <header><span class="dot"></span>Bağdaştırıcısız</header>
+        <div class="cmp-body">
+          <div class="msg user">Risale-i Nur'da namazın kıymetini anlatan, yirmi dört altın verilen kişi temsili nerede geçer ve ne anlatır?</div>
+          <div class="answer">
+<p>Bu temsil <strong>Sözler</strong> kitabındaki <strong>Dördüncü Söz</strong>'ün başında geçer. Dördüncü Söz, "namaza davet risalesi" olarak da bilinir ve temsil, <span class="flag bad" data-note="Metinde yok">Nisâ Sûresi'nin 103. âyetindeki namaz emrinin sırrını açıklamak için kullanılır</span>. Söz, <span class="flag bad" data-note="Metnin sözü değil">"Namaz ne kadar kıymetli ve mühim, hem ne kadar ucuz ve az bir masrafla kazanılır…"</span> diye başlar.</p>
+<p><strong>Hikâye şöyledir:</strong></p>
+<ul>
+<li>Büyük bir hâkim, iki hizmetkârının her birine yirmi dört altın verir. Onları iki ay uzaklıktaki has ve güzel çiftliğine yerleşmeleri için gönderir. Yol ve bilet masrafını bu altından yapmalarını, çiftlikte lazım olacak şeyleri de almalarını emreder.</li>
+<li>Bir günlük mesafede bir istasyon vardır. Orada araba, gemi, tren ve uçak bulunur. Herkes sermayesine göre bir araca biner.</li>
+<li>Hizmetkârlardan biri akıllıdır. <span class="flag bad" data-note="Metinde yok">Yirmi dört altından yalnızca birini bilete verir ve uçağa binerek o iki aylık yolu kısa sürede alır. Böylece çiftliğine rahatça ulaşır.</span></li>
+<li>Diğeri ise sersem ve savurgandır. İstasyona kadar yirmi üç altınını kumarda, eğlencede harcayıp bitirir. Elinde yalnızca bir altın kalır. Bu parayla ya araba gibi yavaş bir araca binecek ya da aç ve yaya olarak yola düşecektir.</li>
+</ul>
+<p><strong>Temsilin açılımı:</strong></p>
+<ul>
+<li>Hâkim, Rabbimiz ve Hâlıkımızdır.</li>
+<li>İki hizmetkâr; biri namazını şevkle kılan mütedeyyin, diğeri namaz kılmayan gafil insanlardır.</li>
+<li>Yirmi dört altın, her günkü yirmi dört saatlik ömürdür.</li>
+<li>Has çiftlik Cennet, istasyon ise kabirdir.</li>
+<li>Yolculuk, kabirden haşre ve ebedî Cennet'e uzanan insanlık yolculuğudur.</li>
+<li>Bilet namazdır. Abdestle birlikte beş vakit namaza günde yaklaşık bir saat yeter.</li>
+</ul>
+<p><strong>Ders:</strong> Yirmi dört saatin yirmi üçünü kısacık dünya hayatına harcayıp, ebedî hayat için bir saatini ayırmayan kişi çok büyük bir zarara uğrar, nefsine zulmeder ve akla aykırı davranmış olur. Üstad, namazın ruha ve akla rahatlık verdiğini, bedene de ağır bir yük olmadığını ekler. Namaz kılanın diğer mübah işlerinin de güzel niyetle ibadet hükmüne geçebileceğini, böylece bütün ömrünü âhirete yatırabileceğini söyler.</p>
+<p>Sources:</p>
+<ul>
+<li>Dördüncü Söz – Sorularla Risale</li>
+<li>Dördüncü Söz'de tefsir edilen iki âyet – saidnursi.de</li>
+<li>Bediüzzaman'dan: Bir namaza davet risalesi; Dördüncü Söz</li>
+<li>Namazın Kıymeti (4. Söz) – İlmedavet</li>
+</ul>
+          </div>
+        </div>
+      </article>
+      <article class="cmp-panel" data-side="on">
+        <header><span class="dot"></span>Risale-i Nur ile</header>
+        <div class="cmp-body">
+          <div class="msg user">Risale-i Nur'da namazın kıymetini anlatan, yirmi dört altın verilen kişi temsili nerede geçer ve ne anlatır?</div>
+          <ul class="tool-steps">
+            <li class="narr">Önce Risale-i Nur bağlayıcısının araçlarını yükleyip temsili metinde arayacağım.</li>
+            <li>Anlama göre arıyor: “namazın kıymeti; yirmi dört altın verilen adam temsili”</li>
+            <li>Kelimeyle arıyor: "yirmi dört altın" (3 sonuç)</li>
+            <li>Kelimeyle arıyor: NEAR(altın namaz, 10) yirmi (sonuç yok)</li>
+            <li class="narr">Asıl yer Dördüncü Söz görünüyor. Bağlamıyla okuyorum.</li>
+            <li>Okuyor: Sözler › Dördüncü Söz, 3–10. cümleler</li>
+            <li>Okuyor: Sözler › Dördüncü Söz, 11–18. cümleler</li>
+            <li>Okuyor: Sözler › Dördüncü Söz, 26–33. cümleler</li>
+            <li>Okuyor: Sözler › Dördüncü Söz, 19–25. cümleler</li>
+            <li>Okuyor: Sözler › Dördüncü Söz, 34–41. cümleler</li>
+            <li>Okuyor: Nur'un İlk Kapısı › Beşinci Ders</li>
+            <li>Alıntıları denetliyor: 8 kaynak, sorun yok</li>
+          </ul>
+          <div class="answer">
+<h3>Metin ne diyor</h3>
+<p>Temsil <strong>Sözler'in Dördüncü Söz'ünde</strong> geçer. Müellif temsile, namazın hem çok kıymetli hem de çok ucuza kazanılan bir şey olduğunu göstermek için başlar. [1]</p>
+<p><strong>Hikâye:</strong> Bir hâkim, iki hizmetkârına yirmi dört altın verip kendi güzel çiftliğine gönderir:</p>
+<blockquote><p><span class="flag ok" data-note="Doğrulandı">"Bir zaman bir büyük hâkim, iki hizmetkârını – herbirisine yirmi dört altın verip – iki ay uzaklıkta hàs ve güzel bir çiftliğine ikamet etmek için gönderiyor."</span> [2]</p></blockquote>
+<p>Hâkim yol ve bilet masrafı yapmalarını, meskenleri için gerekli şeyleri almalarını emreder. Bir günlük mesafede bir istasyon vardır; orada araba, gemi, şimendifer ve tayyare bulunur ve herkes sermayesine göre biner.</p>
+<p><strong>İki hizmetkârın hâli:</strong></p>
+<blockquote><p><span class="flag ok" data-note="Doğrulandı">"Birisi bahtiyar idi ki, istasyona kadar bir parça para masraf eder. Fakat o masraf içinde, efendisinin hoşuna gidecek öyle güzel bir ticâret elde eder ki, sermâyesi birden bine çıkar."</span> [3]</p></blockquote>
+<p>Öteki ise şöyledir:</p>
+<blockquote><p><span class="flag ok" data-note="Doğrulandı">"Öteki hizmetkâr; bedbaht, serseri olduğundan istasyona kadar yirmi üç altınını sarfeder. Kumara‑mumara verip zâyi' eder. Bir tek altını kalır."</span> [4]</p></blockquote>
+<p>Arkadaşı ona, kalan tek lirayı bilete vermesini söyler. Yoksa tayyareye binemeyecek ve:</p>
+<blockquote><p><span class="flag ok" data-note="Doğrulandı">"Yoksa, iki aylık bir çölde aç, yayan, yalnız gitmeye mecbur olursun."</span> [5]</p></blockquote>
+<p>Müellif sonra, o tek lirayı "bir define anahtarı hükmünde olan" bilete vermeyip geçici bir lezzete harcayan adamın akılsızlığını "en akılsız adam dahi" anlar diye sorar. Ardından "ey namazsız adam" ve "ey namazdan hoşlanmayan nefsim" diye seslenir. [5]</p>
+<p><strong>Temsilin çözümü</strong> metnin kendisinde açıkça yapılır: hâkim Rabbimiz ve Hâlık'ımızdır; iki hizmetkâr biri namazını şevkle kılan mütedeyyin, diğeri gâfil ve namazsız insanlardır. Rakamların karşılığı şöyledir:</p>
+<blockquote><p><span class="flag ok" data-note="Doğrulandı">"O yirmi dört altın ise; yirmi dört saat, her gündeki ömürdür. O hàs çiftlik ise; Cennet'tir. O istasyon ise; kabirdir."</span> [6]</p></blockquote>
+<p>Müellif seyahati, kabre, haşre ve ebede giden insan yolculuğu olarak açıklar. Biletin karşılığını da verir:</p>
+<blockquote><p><span class="flag ok" data-note="Doğrulandı">"O bilet ise; namazdır. Bir tek saat, beş vakit namaza abdestle kâfî gelir."</span> [7]</p></blockquote>
+<p>Hemen arkasında şu hesap gelir: yirmi üç saatini kısacık dünya hayatına harcayıp uzun ebedî hayata bir saatini ayırmayan büyük zarar eder (38. cümle). Bu kısım [7]'nin kapsadığı aralığın devamıdır.</p>
+<p><strong>Başka bir yer:</strong> <em>Nur'un İlk Kapısı</em>'nın Beşinci Ders'inde aynı temsil kısaltılmış biçimde geçer. Orada seyyid-i kerîm hizmetçi kuluna yirmi dört altın verir ve yolculuk Burdur–Antalya–Şam–Yemen güzergâhıyla anlatılır. [8]</p>
+<h3>Yorum</h3>
+<p>Temsilin mantığı bir yatırım hesabıdır: günün yirmi dörtte biri, sonsuz bir hayatın "bileti" için ayrılıyor. Aynı bölümde müellif bunu kumar örneğiyle de pekiştirir. Bu kısmı okudum ama burada ayrıca alıntılamadım. Bunun dışında söylediklerim, soruna yetecek kadar metne dayanıyor.</p>
+<p>İstersen Dördüncü Söz'ün bu temsili çevreleyen kısmını (âyetlere işaret ettiği yeri ve namazın rahatlığıyla ilgili bölümü) birlikte okuyabiliriz.</p>
+<p><strong>Kaynaklar</strong></p>
+<ol class="sources">
+<li>Sözler › Dördüncü Söz › "Namaz, ne kadar kıymetdâr…"</li>
+<li>Sözler › Dördüncü Söz › "Bir zaman bir büyük…"</li>
+<li>Sözler › Dördüncü Söz › "Birisi bahtiyar idi ki,…" ile başlayan 2 cümle</li>
+<li>Sözler › Dördüncü Söz › "Öteki hizmetkâr; bedbaht, serseri…" ile başlayan 3 cümle</li>
+<li>Sözler › Dördüncü Söz › "Arkadaşı ona der: "Yâhû,…" ile başlayan 6 cümle</li>
+<li>Sözler › Dördüncü Söz › "O hâkim ise; Rabbimiz,…" ile başlayan 7 cümle</li>
+<li>Sözler › Dördüncü Söz › "O bilet ise; namazdır." ile başlayan 3 cümle</li>
+<li>Nur'un İlk Kapısı › Beşinci Ders › "Meselâ: Şu bir hizmetçi…"</li>
+</ol>
+          </div>
+        </div>
+      </article>
+    </div>
+    <div class="cmp-controls"><button class="button" data-replay>Yeniden oynat</button></div>
+  </div>
+  <p>Soldaki cevap akıcı, ama Dördüncü Söz'le karşılaştırınca:</p><ul><li>Alıntı diye verilen açılış cümlesi metnin kendi sözü değil.</li><li>Söz bir âyetle değil, “<span class="ar" lang="ar">اَلصَّلَاةُ عِمَادُ الدّ۪ينِ</span>” hadisiyle açılır.</li><li>Talihli hizmetkâr bir altını bilete verip uçağa binmez; metinde öyle bir ticaret yapar ki “sermâyesi birden bine çıkar”.</li></ul><p>Sağdaki cevabın her alıntısı metinde aynen var ve kaynakçadaki adresle bulunabilir.</p>
+  <p class="muted small">İki cevap da 29 Ekim 2026'da claude.ai'den, Claude Sonnet 5.5 ile alındı: soldaki proje dışında ve bağdaştırıcı kapalıyken (model web'de aradı), sağdaki talimatlı projede ve bağdaştırıcı açıkken. Cevaplar kısaltılmadı ve düzeltilmedi; sağdaki adımlar o sohbetin araç çağrılarıdır. İşaretler bizim: iki cevap da Dördüncü Söz'ün metniyle karşılaştırıldı.</p>
+</section>
+
+<section id="claude">
+  <h2>Claude</h2>
+  <p class="muted">claude.ai, Claude masaüstü ve mobil uygulamaları.</p>
+
+<section id="kurulum">
+  <h3>Kurulum</h3>
+  <ol class="steps-list">
+    <li><strong>Bağdaştırıcıyı ekleyin.</strong> Aşağıdaki düğme claude.ai'de bağdaştırıcı ekleme penceresini ad ve adres dolu olarak açar.</li>
+    <li><strong>Onaylayın.</strong> <em>Ekle</em> düğmesine basın. Hesap gerekmez; bağdaştırıcı hemen çalışır.</li>
+    <li><strong>Sorun.</strong> Sohbette bağdaştırıcının açık olduğunu mesaj kutusundaki araçlar menüsünden kontrol edin ve sorunuzu sorun.</li>
+  </ol>
+  <div class="actions">
+    <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">claude.ai'de bağdaştırıcıyı ekle</a>
+  </div>
+  <h4>Elle eklemek</h4>
+  <p>Ad olarak "Risale-i Nur", adres olarak <code>https://mcp.risalemcp.com/mcp</code> yazın.</p>
+  <ul>
+    <li><strong>Web ve masaüstü:</strong> <em>Özelleştirme › Bağdaştırıcılar › Ekle › Özel bağdaştırıcı ekle</em>. Aynı yere sol alttaki profilden de ulaşılır: <em>Ayarlar › Bağdaştırıcılar</em>.</li>
+    <li><strong>Mobil:</strong> sol menüde profil › <em>Bağdaştırıcılar › Özel bağdaştırıcı ekle</em>.</li>
+  </ul>
+  <!-- Anthropic dizine kabul edince:
+       Web: Özelleştirme › Bağdaştırıcılar › "Risale-i Nur" diye ara › artı düğmesi.
+       Mobil: profil › Bağdaştırıcılar › Bağdaştırıcılara göz at › "Risale-i Nur" diye ara › Bağlan. -->
+  <p class="muted small">Bağdaştırıcı bir kez eklenince aynı hesapla web'de, masaüstünde ve mobilde görünür. Claude Code ve diğer ayrıntılar <a href="/belgeler.html">belgelerde</a>.</p>
+</section>
+
+<section id="proje">
+  <h3>Proje ve talimat</h3>
+  <p>Bağdaştırıcı tek başına da çalışır. Asistanın her cevapta metni okuması, alıntılarını denetlemesi ve kaynakçayı eklemesi için talimatlı bir proje açmanızı öneririz: projedeki her sohbet bu talimatla başlar.</p>
+  <ol class="steps-list">
+    <li>claude.ai'de sol menüden <strong>Projeler</strong>'i açın ve <strong>Yeni proje</strong> ile bir proje oluşturun, örneğin "Risale-i Nur".</li>
+    <li>Projenin sayfasında <strong>Talimatlar</strong> kısmını açın.</li>
+    <li>Aşağıdaki talimatı <strong>Kopyala</strong> ile kopyalayın, yapıştırın ve kaydedin.</li>
+    <li>Risale-i Nur sorularınızı bu projede yeni bir sohbet açarak sorun.</li>
+  </ol>
+  <div class="copybox" data-src="/talimat.md">
+    <button class="button" type="button" data-done="Kopyalandı ✓" hidden>Kopyala</button>
+    <pre><a href="/talimat.md">Talimatın metni</a></pre>
+  </div>
+</section>
+</section>
+
+<section id="chatgpt">
+  <h2>ChatGPT</h2>
+  <p class="muted">Yakında eklenecek.</p>
+</section>
+
+<section id="gemini">
+  <h2>Gemini</h2>
+  <p class="muted">Yakında eklenecek.</p>
+</section>
+
+<section>
+  <h2>Kapsam</h2>
+  <p>44 eser, yaklaşık 126 bin cümle: Risale-i Nur Külliyatı, Eski Said dönemi eserleri (aslı Arapça olanların Arapçası ve Türkçesi), mecmualar, Hizbler ve Kur'ân-ı Kerîm (harekeli metin ve Diyanet'in iki meali). Metinler kaynaklarından değiştirilmeden alınmıştır; kaynaklar, araçlar ve sorun giderme <a href="/belgeler.html">belgelerde</a>.</p>
+</section>
 
 <footer>Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir. · <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
 </main>

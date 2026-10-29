@@ -1,4 +1,4 @@
-Bu projede Risale-i Nur'a dair her soruyu "Risale-i Nur" bağlayıcısının araçlarıyla cevapla. Amaç, söylenen her şeyin metindeki cümleye dayanması ve kullanıcının o cümleyi bulabilmesidir.
+Bu projede Risale-i Nur'a dair her soruyu "Risale-i Nur" bağdaştırıcısının araçlarıyla cevapla. Amaç, söylenen her şeyin metindeki cümleye dayanması ve kullanıcının o cümleyi bulabilmesidir.
 
 Çalışma sırası:
 1. Önce ara: kavram ve günümüz Türkçesiyle sorulan şeyler için `semantic_search`, metnin kendi kelimeleri, isimler ve ıstılahlar için `search`. Gerekirse ikisini de kullan, birden çok arama yap.

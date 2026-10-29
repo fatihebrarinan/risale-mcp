@@ -4,12 +4,14 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Belgeler · Risale-i Nur MCP</title>
-<meta name="description" content="Risale-i Nur MCP bağlayıcısının kurulumu, kullanımı, araçları, kaynakları ve sorun giderme.">
+<meta name="description" content="Risale-i Nur MCP bağdaştırıcısının kurulumu, kullanımı, araçları, kaynakları ve sorun giderme.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css">
+<link rel="stylesheet" href="/style.css?v=4">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="alternate" hreflang="en" href="/en/docs.html">
+<script src="/site.js?v=4" defer></script>
 </head>
 <body>
 <main>
@@ -18,30 +20,31 @@
   <a href="/belgeler.html" aria-current="page">Belgeler</a>
   <a href="/gizlilik.html">Gizlilik</a>
   <a href="/en/docs.html" lang="en">English</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Açık ve koyu görünüm arasında geç" title="Açık ve koyu görünüm arasında geç"></button>
 </nav>
 
 <h1>Belgeler</h1>
-<p class="lead">Risale-i Nur MCP, Bediüzzaman Said Nursî'nin eserlerini Claude gibi yapay zekâ asistanlarına açan bir bağlayıcıdır. Asistan bir konuda konuşurken metni buradan okur, alıntılarını metnin kendisinden yapar ve dayandığı her yeri cümle düzeyinde, tam adresiyle gösterir.</p>
+<p class="lead">Risale-i Nur MCP, Bediüzzaman Said Nursî'nin eserlerini Claude gibi yapay zekâ asistanlarına açan bir bağdaştırıcıdır. Asistan bir konuda konuşurken metni buradan okur, alıntılarını metnin kendisinden yapar ve dayandığı her yeri cümle düzeyinde, tam adresiyle gösterir.</p>
 
 <h2>Bağlanma</h2>
 <div class="card">
-  <strong>Bağlayıcı adresi</strong><br>
+  <strong>Bağdaştırıcı adresi</strong><br>
   <code>https://mcp.risalemcp.com/mcp</code>
 </div>
 
 <h3>claude.ai, Claude masaüstü ve mobil</h3>
 <ol>
-  <li><a href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">Bu bağlantıyı açın</a>: claude.ai'de bağlayıcı ekleme penceresi ad ve adres dolu olarak açılır. Ya da elle: <em>Settings › Connectors › Add custom connector</em>, ad olarak "Risale-i Nur", adres olarak yukarıdaki adres.</li>
-  <li><strong>Add</strong> ile ekleyin. Hesap gerekmez; bağlayıcı hemen kullanılabilir.</li>
-  <li>Bir sohbette bağlayıcının açık olduğundan emin olun (mesaj kutusundaki araçlar menüsü) ve sorunuzu sorun.</li>
+  <li><a href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">Bu bağlantıyı açın</a>: claude.ai'de bağdaştırıcı ekleme penceresi ad ve adres dolu olarak açılır. Ya da elle: <em>Özelleştirme › Bağdaştırıcılar › Ekle › Özel bağdaştırıcı ekle</em> (mobilde: profil › <em>Bağdaştırıcılar › Özel bağdaştırıcı ekle</em>), ad olarak "Risale-i Nur", adres olarak yukarıdaki adres.</li>
+  <li><strong>Ekle</strong> ile ekleyin. Hesap gerekmez; bağdaştırıcı hemen kullanılabilir.</li>
+  <li>Bir sohbette bağdaştırıcının açık olduğundan emin olun (mesaj kutusundaki araçlar menüsü) ve sorunuzu sorun.</li>
 </ol>
-<p>Bağlayıcı bir kez eklenince masaüstü ve mobil uygulamada da görünür.</p>
+<p>Bağdaştırıcı bir kez eklenince masaüstü ve mobil uygulamada da görünür. Her cevapta metnin okunması, alıntıların denetlenmesi ve kaynakça için talimatlı bir proje açmanızı öneririz: adımlar ve talimat <a href="/#proje">ana sayfada</a>.</p>
 
 <h3>Claude Code</h3>
 <pre><code>claude mcp add --transport http risale https://mcp.risalemcp.com/mcp</code></pre>
 
 <h3>Hesap</h3>
-<p>Bağlayıcının her aracı hesapsız kullanılabilir. Hesapsız kullanımda anlama göre arama günlük toplam bir sınırla, bütün istekler de dakikalık toplam bir sınırla korunur. Hesabı olanlar sınırsız kullanır: sohbette "Risale-i Nur'a giriş yap" demeniz yeter; Claude bir <strong>Bağlan</strong> kartı gösterir ve giriş sayfası açılır. Hesaplar şimdilik yönetici tarafından açılıyor; istek için <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>.</p>
+<p>Bağdaştırıcının her aracı hesapsız kullanılabilir. Hesapsız kullanımda anlama göre arama günlük toplam bir sınırla, bütün istekler de dakikalık toplam bir sınırla korunur. Hesabı olanlar sınırsız kullanır: sohbette "Risale-i Nur'a giriş yap" demeniz yeter; Claude bir <strong>Bağlan</strong> kartı gösterir ve giriş sayfası açılır. Hesaplar şimdilik yönetici tarafından açılıyor; istek için <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>.</p>
 
 <h2>Kullanım</h2>
 <p>Sorunuzu her zamanki gibi sorun; günümüz Türkçesiyle sorabilirsiniz. Örnekler:</p>
@@ -111,8 +114,8 @@
 
 <h2>Sorun giderme</h2>
 <ul>
-  <li><strong>Asistan bağlayıcıyı kullanmıyor:</strong> sohbette bağlayıcının açık olduğunu kontrol edin, sorunuzda "Risale-i Nur'dan" diye belirtin.</li>
-  <li><strong>Araçlar eski görünüyor ya da bir araç hata veriyor:</strong> Claude araç listesini önbellekte tutar. Bağlayıcının bağlantısını kesip yeniden bağlayın ya da yeni bir sohbet açın.</li>
+  <li><strong>Asistan bağdaştırıcıyı kullanmıyor:</strong> sohbette bağdaştırıcının açık olduğunu kontrol edin, sorunuzda "Risale-i Nur'dan" diye belirtin.</li>
+  <li><strong>Araçlar eski görünüyor ya da bir araç hata veriyor:</strong> Claude araç listesini önbellekte tutar. Bağdaştırıcının bağlantısını kesip yeniden bağlayın ya da yeni bir sohbet açın.</li>
   <li><strong>"Daily limit" ya da "too many requests" hatası:</strong> hesapsız kullanımın toplam sınırı doldu. Biraz sonra yeniden deneyin ya da hesapla giriş yapın.</li>
   <li><strong>Bir adres ya da alıntı yanlış görünüyor:</strong> lütfen soruyu ve cevabı <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a> adresine gönderin.</li>
 </ul>
