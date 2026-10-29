@@ -2,10 +2,10 @@
 
 İki iş vardır:
 - `CitationChecker.sources`: `cite` aracı. Model cevabı yazmadan önce dayandığı cümlelerin kimliklerini
-  (ve alıntıladığı sözleri) verir; her biri için kullanıcıya gösterilecek tam atıf (`cite_as`) ve
-  kaynakça satırı döner, alıntı o cümlelerde yoksa asıl yeri gösterilir. Önceden model cevabın
-  tamamını `verify_citations`'a gönderiyordu: cevabı taslak olarak ve sonra yeniden yazmak (2026-10-28
-  kullanım kaydında çoğu kez üç denetimle) asıl gecikmeydi. Kimlik listesi kısadır, cevap bir kez yazılır.
+  verir; her biri için kaynakça satırı ("[n] tam atıf") döner. Önceden model cevabın tamamını
+  `verify_citations`'a gönderiyordu: cevabı taslak olarak ve sonra yeniden yazmak (2026-10-28 kullanım
+  kaydında çoğu kez üç denetimle) asıl gecikmeydi. Alıntıları da `cite`'a yazdırmak (ilk sürüm) aracı
+  yine 5 sn sürdürüyordu; artık yalnız kimlikler gider, alıntılar altın soru raporunda denetlenir.
 - `CitationChecker.check`: yazılmış bir cevaptaki atıfları bulur ve denetler (altın soru raporu,
   `golden.py`). Aşağıdaki kurallar bunundur.
 
@@ -358,6 +358,7 @@ class CitationChecker:
             return self._unknown_head(segments, i)
         path, j = [head], i + 1
         quote = number = None
+        hasiye_of = ""
         count = 1
         while j < len(segments):
             segment = segments[j]
@@ -365,6 +366,15 @@ class CitationChecker:
                 quote, rest = found_quote
                 if m := _RANGE.match(rest):
                     count = int(m[1])
+                break
+            if (m := _SENTENCE_NO.match(_clean(segment))) and j + 2 < len(segments) \
+                    and _HASIYE.match(_clean(segments[j + 1])) and (hasiye := _quote(segments[j + 2])):
+                # "› 1. cümle › Hâşiye › “ilk kelimeler”": alıntı o bölümün hâşiyesinde aranır
+                hasiye_of = f"{m[0]} › {_clean(segments[j + 1])} › "
+                quote, rest = hasiye
+                if r := _RANGE.match(rest):
+                    count = int(r[1])
+                j += 2
                 break
             if m := _SENTENCE_NO.match(_clean(segment)):
                 number = int(m[1])
@@ -389,7 +399,7 @@ class CitationChecker:
             j += 1
         ending = []
         if quote:
-            ending.append(f"“{quote}”" + (f" ile başlayan {count} cümle" if count > 1 else ""))
+            ending.append(f"{hasiye_of}“{quote}”" + (f" ile başlayan {count} cümle" if count > 1 else ""))
         elif number:
             ending.append(f"{number}.–{number + count - 1}. cümle" if count > 1 else f"{number}. cümle")
         citation = self._resolve(" › ".join(path + ending), path, starts, context, quote, number)
@@ -569,30 +579,32 @@ class CitationChecker:
 
     # ------------------------------------------------------------ cite aracı
 
-    def sources(self, items: list[dict]) -> dict:
-        """`cite` aracı: her kaynak (`id`: cümle ya da "ilk..son" aralığı, isteğe bağlı `quote`) için
-        kullanıcıya gösterilecek atıf ve kaynakça. Kaynakların sırası kaynakça numaralarıdır."""
+    def sources(self, ids: list[str]) -> dict:
+        """`cite` aracı: her kimlik (cümle ya da "ilk..son" aralığı) için kaynakça satırı "[n] cite_as";
+        sıra kaynakça numarasıdır. Sorunlu kaynaklar `problems`'ta (kaynakçada kırpılmış hâliyle durur,
+        bilinmeyen kimlik durmaz)."""
         self.refresh()
-        out = [{"n": n, **self._source(item.get("id", ""), item.get("quote"))} for n, item in enumerate(items, 1)]
-        return {"problems": sum("problem" in o for o in out),
-                "sources": out,
-                "bibliography": "\n".join(f"[{o['n']}] {o['cite_as']}" for o in out if "cite_as" in o)}
+        lines, problems = [], []
+        for n, source_id in enumerate(ids, 1):
+            cite_as, problem = self._source(source_id)
+            if cite_as:
+                lines.append(f"[{n}] {cite_as}")
+            if problem:
+                problems.append({"n": n, "id": source_id, "problem": problem})
+        return {"bibliography": "\n".join(lines), **({"problems": problems} if problems else {})}
 
-    def _source(self, source_id: str, quote: str | None) -> dict:
+    def _source(self, source_id: str) -> tuple[str | None, str | None]:
+        """(kullanıcıya gösterilecek atıf, sorun)."""
         first_id, _, last_id = source_id.strip().partition("..")
         try:
             first = self.library._sentence(first_id.strip())
             last, _ = self.library._range_end(_full_id(first["id"], last_id.strip())) if last_id else (first, None)
         except LibraryError as error:
-            record = {"id": source_id, "status": "unknown_id", "problem": str(error)}
-            if quote and (where := self._elsewhere(quote)):
-                record["problem"] += " The quoted words occur at: " + "; ".join(f"{e['cite_as']} ({e['id']})" for e in where)
-            return record
+            return None, str(error)
         # Aralık aynı bölümün ana metninde (hâşiyede aynı hâşiyede) kalır.
         scope = ("paragraph_id = ?", first["paragraph_id"]) if first["hasiye"] else ("node_id = ? AND hasiye = 0", first["node_id"])
         rows = self.conn.execute(f"SELECT * FROM sentences WHERE {scope[0]} AND seq BETWEEN ? AND ? ORDER BY seq",
                                  (scope[1], first["seq"], max(first["seq"], last["seq"]))).fetchall()
-        record: dict = {"id": source_id}
         problems = []
         if last["seq"] < first["seq"]:
             problems.append("A range runs forward: first..last.")
@@ -604,18 +616,7 @@ class CitationChecker:
                             "cite the key sentences or split the passage.")
             rows = rows[:MAX_CITED]
         section = first["ref"].rsplit(REF_SEP, 1)[0] if first["hasiye"] else self.nodes[first["node_id"]].ref
-        record["cite_as"] = cite(section, _opening(rows[0]), len(rows))
-        if quote and (parts := _block_parts(quote)):
-            covered = _key(" ".join(r["text"] for r in rows))
-            if not all(p in covered for p in parts):
-                where = self._elsewhere(quote)
-                problems.append("The quoted words are not in these sentences; quote them exactly as the tools return "
-                                "them" + (". They occur at: " + "; ".join(f"{e['cite_as']} ({e['id']})" for e in where)
-                                         if where else ", or quote only text the tools returned."))
-        record["status"] = "ok" if not problems else "problem"
-        if problems:
-            record["problem"] = " ".join(problems)
-        return record
+        return cite(section, _opening(rows[0]), len(rows)), " ".join(problems) or None
 
     # ------------------------------------------------------------ alıntılar
 

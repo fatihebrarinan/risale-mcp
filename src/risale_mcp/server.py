@@ -33,7 +33,7 @@ from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 from mcp.server.transport_security import TransportSecuritySettings
 from mcp_types import Icon, ToolAnnotations
-from pydantic import BaseModel, Field
+from pydantic import Field
 from starlette.applications import Starlette
 from starlette.responses import Response
 
@@ -67,19 +67,18 @@ Workflow:
 for the text's own words, names and terms. Results are candidates, not evidence.
 2. Read what you will rely on, in context: get_passage (a sentence or a range first..last, with context) or \
 read_section.
-3. Before writing the answer, call cite once with every sentence or range you quote or rely on, and the exact \
-words you quote. Use the cite_as it returns and fix what it flags.
+3. Before writing the answer, call cite once with the ids of every sentence or range you quote or rely on. Its \
+bibliography is your Kaynaklar list; fix the ids it flags.
 
 Answering:
 1. Every statement about the works rests on text you read. Never invent references, ids, quotations or titles; \
 if the tools do not return something, say you could not find it in the works.
-2. Quote the works only in block quotes on their own line (> "…"), exactly as returned; in your prose put \
-quotation marks around at most a single term. A parable or one line of thought running over consecutive \
-sentences of one section is quoted as one block with one source (a range, at most 8 sentences).
-3. References are cite_as, written exactly: the full path from the work and the opening words, never shortened, \
-never a sentence number. With one or two references, put each on its own line right after its quotation. With \
-more, end each quotation (and each claim drawn from a source) with its number, e.g. [1], and finish the answer \
-with a "Kaynaklar" list: one line per source, the bibliography cite returns.
+2. Quote the works only in block quotes on their own line (> "…"), copied exactly from the cited sentences; in \
+your prose put quotation marks around at most a single term. A parable or one line of thought running over \
+consecutive sentences of one section is quoted as one block with one source (a range, at most 8 sentences).
+3. Always cite through a bibliography, in short answers too: end each quotation (and each claim drawn from a \
+source) with its number, e.g. [1], and finish the answer with a "Kaynaklar" list, the lines cite returns, \
+unchanged. Never write references in the body or give sentence numbers.
 4. Keep what the text says apart from your own interpretation, under separate headings. Answer in the user's \
 language.
 
@@ -99,13 +98,6 @@ In Kızıl İcaz, "quote" paragraphs are Ahdarî's verses; commentary_by marks A
 cite it as his. Check subtitles and paragraph kinds.
 - Compilations reuse main-volume text: cite the main volume's sentences they return.
 """
-
-
-class Source(BaseModel):
-    id: str = Field(description="A sentence id, or a range 'first_id..last_id' (the last may be short: "
-                                "'sozler/10/c010..c015'), as the tools return them.")
-    quote: str | None = Field(default=None, description="The words you quote from it, exactly as you will show them "
-                                                         "(… for omitted parts); leave out if you only paraphrase.")
 
 
 READ_ONLY = ToolAnnotations(read_only_hint=True, destructive_hint=False, idempotent_hint=True, open_world_hint=False)
@@ -351,17 +343,16 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
 
     @server.tool(annotations=READ_ONLY, structured_output=False)
     def cite(
-        sources: Annotated[list[Source], Field(description="The sentences you quote or rely on, in the order of "
-                                                           "their numbers in your answer ([1], [2]…).",
-                                               min_length=1, max_length=50)],
+        ids: Annotated[list[str], Field(description="The sentence ids or ranges ('first_id..last_id'; the last may be "
+                                                    "short: 'sozler/10/c010..c015') you quote or rely on, in the "
+                                                    "order of their numbers [1], [2]… in your answer.",
+                                        min_length=1, max_length=50)],
     ) -> str:
-        """Get the references to show for the passages you use, checked against the works. Call it once before
-        writing the answer, with every sentence or range you quote or rely on and the words you quote. Returns,
-        for each source, cite_as (the full reference to show), a problem to fix if any (a range longer than 8
-        sentences or past its section, quoted words that are not in those sentences, with where they occur), and
-        the bibliography lines "[n] cite_as" for the answer's Kaynaklar list."""
+        """Get the answer's Kaynaklar list: one line "[n] reference" per id, with the full path and opening words.
+        Call it once before writing the answer. problems lists ids to fix (unknown id; a range longer than 8
+        sentences or past its section, shown cut short)."""
         with _tool_errors():
-            return _json(citations.sources([source.model_dump() for source in sources]))
+            return _json(citations.sources(ids))
 
     # ------------------------------------------------------------ kaynaklar (kullanıcının eklediği bağlam)
 

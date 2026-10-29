@@ -66,9 +66,9 @@ def cite(section_ref: str, opening_words: str, count: int = 1) -> str:
 
 # Arama sonuçlarına eklenen hatırlatma: claude.ai gibi genel istemcilerde model aramadan doğrudan cevaba geçiyordu
 # (2026-10-28, kullanım kaydı: iki arama, hiç okuma ve denetim yok).
-SEARCH_NOTE = ("These are candidates, not evidence. Before citing one, read it in context with get_passage(id, "
-               "context=2) or read_section. Show the user cite_as (full path from the work + opening words), never the "
-               "sentence number; quote the text itself in a > block; get the references with cite before answering.")
+SEARCH_NOTE = ("These are candidates, not evidence. Before relying on one, read it in context with get_passage(id, "
+               "context=2) or read_section. Quote the text itself in a > block and cite it by id with cite, whose "
+               "lines form the answer's Kaynaklar list; never give sentence numbers.")
 
 
 def hit_cite(sentence_ref: str, incipit: str, text: str) -> str:
