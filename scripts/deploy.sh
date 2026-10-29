@@ -20,6 +20,11 @@ git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DES
 # Tanıtım sitesi (risalemcp.com; Caddy /var/www/risalemcp'den sunar, bkz. docs/Caddyfile)
 "${SSH[@]}" "$HOST" "mkdir -p /var/www/risalemcp"
 rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
+# Caddy yapılandırması (docs/Caddyfile) değiştiyse yeniden yüklenir
+rsync -az -e "${SSH[*]}" docs/Caddyfile "$HOST:/etc/caddy/Caddyfile.new"
+"${SSH[@]}" "$HOST" "cmp -s /etc/caddy/Caddyfile.new /etc/caddy/Caddyfile && rm /etc/caddy/Caddyfile.new \
+    || { caddy validate --config /etc/caddy/Caddyfile.new --adapter caddyfile >/dev/null 2>&1 \
+         && mv /etc/caddy/Caddyfile.new /etc/caddy/Caddyfile && systemctl reload caddy && echo 'Caddy yeniden yüklendi'; }"
 
 if [[ "${1:-}" != "--code" ]]; then
     echo "veri gönderiliyor…"

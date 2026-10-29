@@ -4,6 +4,8 @@
 
 # Bağlayıcı: MCP sunucusu, giriş sayfası ve OAuth uç noktaları (uygulama yalnızca 127.0.0.1:8000'de dinler).
 mcp.risalemcp.com {
+	# Ana adres tanıtım sitesine gider: simge servisleri (Claude, dizin) ana sayfada simge bağlantısını arar.
+	redir / https://risalemcp.com/ 302
 	reverse_proxy 127.0.0.1:8000
 }
 
