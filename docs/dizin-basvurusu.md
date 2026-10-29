@@ -52,12 +52,16 @@ Sunucudan kendiliğinden gelir. 11 aracın hepsinde `title` ve `readOnlyHint: tr
 
 ## 4. Use cases
 
-**Primary use cases:**
+**Use cases** (portalda iki sütun: kullanım alanı ve örnek istem; her satır ayrı girilir):
 
-> - Answer questions about the Risale-i Nur with quotations and exact sources (work › section › sentence).
-> - Survey where a topic is treated across the works.
-> - Study a section: read it in order with its footnotes, prepare a lesson, check one's understanding against the text.
-> - Find where a Qur'anic verse is quoted in the works and how the text relates to it.
+| Use case | Example prompt |
+|---|---|
+| Answer questions about the Risale-i Nur with exact quotations and sources | Why is the time of the Last Day kept hidden, according to the Risale-i Nur? Quote the text and give the sources. |
+| Survey where a topic is treated across the works | Where does Bediüzzaman write about patience in illness? List the main passages by work. |
+| Study a section in order, with the author's footnotes | Read the Tenth Word's Ninth Truth with me and explain its argument step by step. |
+| Prepare a lesson or study circle (ders) on a topic | Prepare a lesson on the parable of the two soldiers in the Third Word, with the passages to read aloud and questions for discussion. |
+| Find a sentence someone quotes and see its context | Where is the sentence that begins "Hiç mümkün müdür ki; ölmüş" and what comes before and after it? |
+| Find where a Qur'anic verse is quoted in the works and read the verse | Where is Âyetü'l-Kürsî (Bakara 2:255) quoted in the Risale-i Nur? Show the verse with a translation. |
 
 **What users need before they can connect:**
 
