@@ -41,6 +41,20 @@ for (const box of document.querySelectorAll(".copybox[data-src]")) {
   });
 }
 
+// Kısa değerler: <button data-copy="…"> değeri panoya kopyalar (ChatGPT'de ad ve adres elle yazılır).
+for (const button of document.querySelectorAll("button[data-copy]")) {
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(button.dataset.copy);
+    } catch {
+      return;
+    }
+    const label = button.textContent;
+    button.textContent = button.dataset.done;
+    setTimeout(() => (button.textContent = label), 1800);
+  });
+}
+
 // Karşılaştırma: iki cevap aynı anda yazılır; sağda önce araç adımları sırayla tamamlanır.
 const WORDS_PER_SECOND = 40;
 const STEP_MS = 650;

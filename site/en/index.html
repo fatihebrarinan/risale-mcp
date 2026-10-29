@@ -8,10 +8,10 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css?v=4">
+<link rel="stylesheet" href="/style.css?v=5">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="alternate" hreflang="tr" href="/">
-<script src="/site.js?v=4" defer></script>
+<script src="/site.js?v=5" defer></script>
 </head>
 <body>
 <main>
@@ -27,9 +27,10 @@
   <h1>Read the Risale-i Nur with AI, without leaving the text</h1>
   <p class="lead">AI assistants talk fluently about the Risale-i Nur, but often from memory: quotations are misremembered, references are invented, and the text gets mixed up with interpretation. Risale-i Nur MCP connects the assistant to the works of Bediüzzaman Said Nursî themselves. The assistant reads the text before it speaks; everything it says rests on a sentence, and the reader can find that sentence. It keeps what the text says apart from its own interpretation, and it says what it could not find instead of inventing it.</p>
   <div class="actions">
-    <a class="button primary" href="#setup">Add the connector</a>
-    <a class="button" href="#project">Project instructions</a>
+    <a class="button primary" href="#claude">Add to Claude</a>
+    <a class="button primary" href="#chatgpt">Add to ChatGPT</a>
   </div>
+  <p class="muted small">Each platform's section has the setup steps and project instructions written for that platform.</p>
 </section>
 
 
@@ -180,7 +181,40 @@
 
 <section id="chatgpt">
   <h2>ChatGPT</h2>
-  <p class="muted">Coming soon.</p>
+  <p class="muted">chatgpt.com and the ChatGPT apps. Works with a free account too.</p>
+
+<section id="chatgpt-setup">
+  <h3>Setup</h3>
+  <ol class="steps-list">
+    <li><strong>Open the plugins page.</strong> The button below opens the plugins page on chatgpt.com (or choose <em>Plugins</em> in the sidebar). Select <em>Add</em> at the top right and choose <em>Add custom MCP server</em>.</li>
+    <li><strong>Enter the details.</strong> ChatGPT has no link that opens this dialog filled in; copy the values with the buttons next to them and paste them:
+      <div class="fields">
+        <span>Name</span><code>Risale-i Nur</code><button class="button" type="button" data-copy="Risale-i Nur" data-done="Copied ✓">Copy</button>
+        <span>Server URL</span><code>https://mcp.risalemcp.com/mcp</code><button class="button" type="button" data-copy="https://mcp.risalemcp.com/mcp" data-done="Copied ✓">Copy</button>
+      </div>
+      For <em>Authentication</em>, choose <em>No authentication</em>; no account is needed. (If you have an account, choose the option for OAuth or no authentication and sign in.)</li>
+    <li><strong>Confirm.</strong> Tick <em>I understand and want to continue</em> and select <em>Create as a plugin</em>.</li>
+    <li><strong>Ask.</strong> Ask your question; if the assistant does not use the plugin on its own, pick Risale-i Nur from the menu in the message box.</li>
+  </ol>
+  <div class="actions">
+    <a class="button primary" href="https://chatgpt.com/plugins">Open the plugins page on ChatGPT</a>
+  </div>
+  <p class="muted small">The plugin can only be added on the web; the mobile app has no <em>Add</em> button. Once added on the web, it appears and works in the app with the same account.</p>
+</section>
+
+<section id="chatgpt-project">
+  <h3>Project and instructions</h3>
+  <p>The plugin cites its sources on its own too, but in a project with instructions ChatGPT keeps the text and interpretation apart more neatly and gives the bibliography more faithfully. These instructions are written for ChatGPT and differ slightly from Claude's.</p>
+  <ol class="steps-list">
+    <li>Create a new project, for example "Risale-i Nur": on the web, the small plus button right next to <em>Projects</em> in the sidebar; in the app, the plus button at the top right of the <em>Projects</em> tab.</li>
+    <li>Once the project is created, copy the instructions below with <strong>Copy</strong>, paste them into its instructions field and save.</li>
+    <li>Ask your Risale-i Nur questions in a new conversation inside this project.</li>
+  </ol>
+  <div class="copybox" data-src="/en/chatgpt-instructions.md">
+    <button class="button" type="button" data-done="Copied ✓" hidden>Copy</button>
+    <pre><a href="/en/chatgpt-instructions.md">The instructions</a></pre>
+  </div>
+</section>
 </section>
 
 <section id="gemini">
