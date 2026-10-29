@@ -254,10 +254,10 @@ def anon(small_db, store):
         yield client
 
 
-def open_session(client, token: str | None = None) -> dict:
+def open_session(client, token: str | None = None, name: str = "t") -> dict:
     headers = {**MCP_HEADERS, **({"Authorization": f"Bearer {token}"} if token else {})}
     response = client.post("/mcp", headers=headers, json={"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {
-        "protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": "t", "version": "1"}}})
+        "protocolVersion": "2025-06-18", "capabilities": {}, "clientInfo": {"name": name, "version": "1"}}})
     assert response.status_code == 200, response.text
     if session := response.headers.get("mcp-session-id"):
         headers["Mcp-Session-Id"] = session
@@ -313,6 +313,13 @@ def test_anonymous_requests_are_rate_limited(anon):
     codes = [anon.post("/mcp", headers=MCP_HEADERS, json={"jsonrpc": "2.0", "id": 1, "method": "ping"}).status_code
              for _ in range(5)]
     assert codes[-1] == 429
+
+
+def test_sign_in_is_hidden_from_chatgpt(anon):
+    tools = lambda headers: anon.post("/mcp", headers=headers, json={"jsonrpc": "2.0", "id": 3, "method": "tools/list"}).text
+    assert "sign_in" in tools(open_session(anon, name="claude-ai"))
+    listed = tools(open_session(anon, name="openai-mcp"))     # ChatGPT giriş kartı göstermez
+    assert "sign_in" not in listed and "semantic_search" in listed
 
 
 def test_without_anonymous_mode_there_is_no_sign_in_tool(client):

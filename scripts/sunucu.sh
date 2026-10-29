@@ -4,6 +4,7 @@
 #   scripts/sunucu.sh auth add-user <ad> --generate   # hesap aç (parolayı gösterir)
 #   scripts/sunucu.sh auth users | sessions | usage [--user <ad>] [--params] | revoke --user <ad> | passwd <ad> | remove-user <ad>
 #   scripts/sunucu.sh auth debug <ad> on|off              # hesabın ayrıntılı kaydı (araç girdileri, 7 gün)
+#   scripts/sunucu.sh openai-challenge <jeton>         # OpenAI dizininin alan adı doğrulama jetonu
 #   scripts/sunucu.sh status | restart | stop | start  # servis
 #   scripts/sunucu.sh logs                             # canlı günlük (Ctrl+C ile çık)
 #   scripts/sunucu.sh ssh                              # sunucuya bağlan
@@ -18,6 +19,11 @@ case "${1:-}" in
         shift
         args=$(printf ' %q' "$@")
         "${SSH[@]}" -t "$HOST" "su - risale -c 'cd risale-mcp && .venv/bin/risale-mcp auth$args'" ;;
+    openai-challenge)
+        [[ -n "${2:-}" ]] || { echo "jeton gerekli"; exit 1; }
+        printf '%s' "$2" | "${SSH[@]}" "$HOST" "mkdir -p /var/www/mcp-challenge/.well-known \
+            && cat > /var/www/mcp-challenge/.well-known/openai-apps-challenge"
+        curl -s https://mcp.risalemcp.com/.well-known/openai-apps-challenge; echo ;;
     status|restart|stop|start)
         "${SSH[@]}" "$HOST" "systemctl $1 risale-mcp; systemctl --no-pager status risale-mcp | head -5" ;;
     logs)
@@ -25,5 +31,5 @@ case "${1:-}" in
     ssh)
         "${SSH[@]}" "$HOST" ;;
     *)
-        sed -n '2,10p' "$0"; exit 1 ;;
+        sed -n '2,11p' "$0"; exit 1 ;;
 esac

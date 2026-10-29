@@ -1,0 +1,100 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "risale-i-nur",
+  "version": "1.0.0",
+  "description": "Risale-i Nur gives ChatGPT the complete works of Bediüzzaman Said Nursî (1878–1960): the Risale-i Nur Collection (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 126,000 sentences across 44 works, together with the Qur'an's vowelled Arabic text and two Turkish translations by Diyanet.\n\nEvery sentence has a stable address, so answers can rest on the text itself:\n\n- Search by the text's own words, or by meaning in today's language (a question about \"despair\" finds passages that speak of \"ye's\").\n- Read any section in book order, with the author's footnotes (hâşiye) and the sources of the verses and hadiths he quotes.\n- Quote the text exactly and end the answer with a list of sources giving work › section › the sentence's opening words. Quotations are checked against the cited sentences before the answer is written.\n- Find where a Qur'anic verse is quoted in the works, and read the verse itself.\n\nThe plugin keeps apart layers that are easy to confuse: the publishers' translations of verses are not the author's words, the Turkish of his Arabic works is a translation, and a commentary by his brother is marked as his. When something is not in the works, the assistant is told to say so instead of filling the gap.\n\nIntended for readers, students and teachers of the Risale-i Nur. Limitations: the texts are in Turkish and Arabic (answers follow the user's language, quotations stay in the original); there are no page numbers, references go down to the sentence; translations of the Qur'an are aids to its meaning, not the Qur'an.\n\nAll tools are read-only and work without an account. The texts come, unchanged and with permission, from e-Risale, kastamonur.com, risale.online, risaleoku.com and rasaelalnour.com; the Qur'an's text from the Tanzil Project. A volunteer, non-commercial project by Nur Hadimleri.",
+  "author": {
+    "name": "Nur Hadimleri",
+    "email": "destek@risalemcp.com",
+    "url": "https://risalemcp.com/en/"
+  },
+  "homepage": "https://risalemcp.com/en/",
+  "keywords": [
+    "Risale-i Nur",
+    "Said Nursi",
+    "Qur'an",
+    "Islam",
+    "citations"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Risale-i Nur",
+        "shortDescription": "Cite the Risale-i Nur exactly",
+        "longDescription": "Risale-i Nur gives ChatGPT the complete works of Bediüzzaman Said Nursî (1878–1960): the Risale-i Nur Collection (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 126,000 sentences across 44 works, together with the Qur'an's vowelled Arabic text and two Turkish translations by Diyanet.\n\nEvery sentence has a stable address, so answers can rest on the text itself:\n\n- Search by the text's own words, or by meaning in today's language (a question about \"despair\" finds passages that speak of \"ye's\").\n- Read any section in book order, with the author's footnotes (hâşiye) and the sources of the verses and hadiths he quotes.\n- Quote the text exactly and end the answer with a list of sources giving work › section › the sentence's opening words. Quotations are checked against the cited sentences before the answer is written.\n- Find where a Qur'anic verse is quoted in the works, and read the verse itself.\n\nThe plugin keeps apart layers that are easy to confuse: the publishers' translations of verses are not the author's words, the Turkish of his Arabic works is a translation, and a commentary by his brother is marked as his. When something is not in the works, the assistant is told to say so instead of filling the gap.\n\nIntended for readers, students and teachers of the Risale-i Nur. Limitations: the texts are in Turkish and Arabic (answers follow the user's language, quotations stay in the original); there are no page numbers, references go down to the sentence; translations of the Qur'an are aids to its meaning, not the Qur'an.\n\nAll tools are read-only and work without an account. The texts come, unchanged and with permission, from e-Risale, kastamonur.com, risale.online, risaleoku.com and rasaelalnour.com; the Qur'an's text from the Tanzil Project. A volunteer, non-commercial project by Nur Hadimleri.",
+        "developerName": "Nur Hadimleri",
+        "category": "Education",
+        "websiteURL": "https://risalemcp.com/en/",
+        "supportURL": "https://risalemcp.com/en/docs.html#contact",
+        "privacyPolicyURL": "https://risalemcp.com/en/privacy.html",
+        "termsOfServiceURL": "https://risalemcp.com/en/terms.html",
+        "defaultPrompt": [
+          "Kader her şeyi yazmışsa cüz'î irade neden var? Risale-i Nur'dan alıntılarla anlat.",
+          "Which parable explains the importance of Bismillah in the Risale-i Nur?",
+          "Where does Bediüzzaman write about patience in illness?"
+        ],
+        "logo": "./assets/logo.png"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Answers a doctrinal question with exact quotations from the works and a bibliography that gives each sentence's opening words.",
+              "prompt": "If everything is written in destiny (kader), why do we have free will (cüz'î irade)? Answer from the Risale-i Nur with quotations.",
+              "tools_triggered": "semantic_search, get_passage, cite",
+              "expected_behavior": "Searches by meaning, reads the passages in context and calls cite before answering. Quotes the text as block quotes from Sözler › Yirmialtıncı Söz (Kader Risalesi), marks each quotation [n] and ends with a Sources list of cite's lines (work › section › opening words). Keeps its own interpretation under a separate heading."
+            },
+            {
+              "description": "Finds a parable and summarizes it from the text, citing the consecutive sentences as one range.",
+              "prompt": "Which parable does the Risale-i Nur use to explain the importance of Bismillah? Summarize it.",
+              "tools_triggered": "search or semantic_search, read_section, cite",
+              "expected_behavior": "Finds Sözler › Birinci Söz (the man travelling in the desert under a tribal chief's name), reads the section and summarizes the parable from the text, quoting key sentences; the bibliography cites ranges such as “Bedevî Arab çöllerinde seyahat…” ile başlayan N cümle."
+            },
+            {
+              "description": "Surveys where a topic is treated across the works.",
+              "prompt": "Where does Bediüzzaman write about patience in illness? List the main passages by work.",
+              "tools_triggered": "semantic_search, get_outline or read_section, cite",
+              "expected_behavior": "Points to Lem'alar › Yirmibeşinci Lem'a (the Treatise for the Sick, with its remedies, Devâ) and other passages it finds, each with a short quotation and a numbered source; does not list places it did not read."
+            },
+            {
+              "description": "Looks up a Qur'anic verse in the works and shows the verse itself.",
+              "prompt": "Where is Ayat al-Kursi (Bakara 2:255) quoted in the Risale-i Nur? Show the verse too.",
+              "tools_triggered": "find_ayah, get_ayah",
+              "expected_behavior": "Reports how many places in the works quote Bakara 2:255 and names several of them; gives the vowelled Arabic from get_ayah (not from memory), cites the verse as “Bakara Sûresi, 2:255” and names the Diyanet translation it uses as a translation, not as the Qur'an."
+            },
+            {
+              "description": "Locates a sentence the user quotes from memory.",
+              "prompt": "Where is the sentence that begins “Hiç mümkün müdür ki; ölmüş” in the Risale-i Nur? Show its context.",
+              "tools_triggered": "find_sentence, get_passage",
+              "expected_behavior": "Finds it in Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat, shows the sentence with its context as a block quote and gives the source with its opening words."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unrelated request: the plugin serves only the works of Said Nursî and the Qur'an, so it should not be called; the assistant answers with its other tools or says it cannot.",
+              "prompt": "What will the weather be like in Istanbul tomorrow?"
+            },
+            {
+              "description": "The user asks to change the collection. All tools are read-only and the works are not to be altered; the assistant should explain that it cannot add text to the works and must not present newly written text as the author's.",
+              "prompt": "Write a new chapter in the style of the Risale-i Nur and add it to Sözler as the Thirty-Fourth Word."
+            },
+            {
+              "description": "A general writing task with no connection to the works; the plugin should not be triggered.",
+              "prompt": "Translate this paragraph into Turkish: The meeting has been moved to Thursday at 3 pm."
+            }
+          ]
+        },
+        "commerce": false
+      },
+      "publication": {
+        "release_notes": "First public release: search, reading, verse lookup and citation checking over the complete works of Bediüzzaman Said Nursî and the Qur'an's text; read-only, no account needed.",
+        "translations": {
+          "tr-TR": {
+            "subtitle": "Risale-i Nur'dan tam alıntı",
+            "description": "Risale-i Nur, ChatGPT'ye Bediüzzaman Said Nursî'nin (1878–1960) bütün eserlerini verir: Risale-i Nur Külliyatı (Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar, Tarihçe-i Hayat), Eski Said dönemi eserleri, mecmualar ve Hizbler; aslı Arapça olan eserlerin hem Arapçası hem Türkçesi. 44 eserde yaklaşık 126 bin cümle, ayrıca Kur'ân-ı Kerîm'in harekeli metni ve Diyanet'in iki meali.\n\nHer cümlenin kalıcı bir adresi vardır, böylece cevaplar metnin kendisine dayanır:\n\n- Metnin kendi kelimeleriyle ya da günümüz Türkçesiyle anlama göre arama (\"ümitsizlik\" diye sorulunca \"ye's\" geçen yerler bulunur).\n- Her bölümü kitap sırasıyla, müellifin hâşiyeleriyle ve alıntıladığı âyet ve hadislerin kaynaklarıyla okuma.\n- Metni aynen alıntılama ve cevabın sonunda eser › bölüm › cümlenin ilk kelimeleriyle kaynakça. Alıntılar cevap yazılmadan önce atıf verilen cümlelerle karşılaştırılır.\n- Bir âyetin eserlerde nerede geçtiğini bulma ve âyetin kendisini okuma.\n\nEklenti kolayca karışan katmanları ayrı tutar: âyet mealleri nâşirindir, müellifin sözü değildir; Arapça eserlerin Türkçesi tercümedir; kardeşinin şerhi onun adıyla işaretlidir. Eserlerde bulunmayan bir şey için asistan boşluğu doldurmak yerine bulamadığını söyler.\n\nAraçların hepsi salt okunurdur ve hesapsız çalışır. Metinler e-Risale, kastamonur.com, risale.online, risaleoku.com ve rasaelalnour.com'dan, değiştirilmeden ve izinle alınmıştır; Kur'ân metni Tanzil Project'tendir. Nur Hadimleri'nin gönüllü ve ticari olmayan projesidir."
+          }
+        }
+      }
+    }
+  }
+}

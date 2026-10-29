@@ -6,6 +6,13 @@
 mcp.risalemcp.com {
 	# Ana adres tanıtım sitesine gider: simge servisleri (Claude, dizin) ana sayfada simge bağlantısını arar.
 	redir / https://risalemcp.com/ 302
+	# OpenAI eklenti dizininin alan adı doğrulaması: portalın verdiği jeton düz metin olarak
+	# (scripts/sunucu.sh openai-challenge <jeton> yazar). Dosya yoksa 404; MCP'ye gitmez.
+	handle /.well-known/openai-apps-challenge {
+		root * /var/www/mcp-challenge
+		header Content-Type "text/plain; charset=utf-8"
+		file_server
+	}
 	reverse_proxy 127.0.0.1:8000
 }
 

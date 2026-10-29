@@ -45,6 +45,7 @@ from risale_mcp.auth import (
     login_endpoint,
     start_of_day,
     usage_middleware,
+    hide_sign_in_middleware,
 )
 from risale_mcp.auth import main as auth_main
 from risale_mcp.auth import settings as auth_settings
@@ -210,7 +211,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         store = store or AuthStore()
         provider = Provider(store, public_url)
         protected = {"auth": auth_settings(public_url), "auth_server_provider": provider,
-                     "middleware": [usage_middleware(store)]}
+                     "middleware": [usage_middleware(store), *([hide_sign_in_middleware()] if anonymous else [])]}
     server = MCPServer(NAME, title="Risale-i Nur", instructions=INSTRUCTIONS,
                        description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
                        icons=_icons(public_url), **protected)
@@ -298,7 +299,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                     and store.anonymous_calls("semantic_search", start_of_day()) >= anonymous_semantic:
                 raise ToolError("The daily limit of semantic searches for users without an account is reached. "
                                 "Use search with the text's own words instead. A user with an account can sign "
-                                "in with the sign_in tool for unlimited use.")
+                                "in for unlimited use.")
             return _json(library.semantic_search(query, work, group, limit, offset))
 
     if anonymous:

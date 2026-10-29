@@ -503,13 +503,15 @@ def usage_middleware(store: AuthStore):
             name = params.get("name") or params.get("uri") if params else None
             if ctx.method not in ("ping",):
                 store.log(token.subject if token else None, token.client_id if token else None, ctx.method,
-                          name, int((time.perf_counter() - start) * 1000), error, _detail(params, result, message))
+                          name, int((time.perf_counter() - start) * 1000), error,
+                          _detail(params, result, message, client_name(ctx)))
     return middleware
 
 
-def _detail(params: dict | None, result, message: str | None) -> dict:
-    """Ayrıntılı kayıt: isteğin parametreleri (`_meta` hariç), sonucun boyu; araç hatasında iletinin kendisi."""
-    detail: dict = {"params": {k: v for k, v in (params or {}).items() if k != "_meta"}}
+def _detail(params: dict | None, result, message: str | None, client: str | None = None) -> dict:
+    """Ayrıntılı kayıt: istemcinin adı, isteğin parametreleri (`_meta` hariç), sonucun boyu; araç hatasında
+    iletinin kendisi."""
+    detail: dict = {"client": client, "params": {k: v for k, v in (params or {}).items() if k != "_meta"}}
     if message is not None:
         detail["error"] = message
     if result is not None:
@@ -521,6 +523,36 @@ def _detail(params: dict | None, result, message: str | None) -> dict:
         if isinstance(data, dict) and data.get("isError"):
             detail["error"] = " ".join(texts)
     return detail
+
+
+def client_name(ctx) -> str | None:
+    """İstemcinin kendini tanıttığı ad (`clientInfo.name`; ChatGPT "openai-mcp"), verilmediyse None."""
+    try:
+        params = ctx.session.client_params
+    except Exception:
+        return None
+    return params.client_info.name if params is not None and params.client_info is not None else None
+
+
+# Claude'un "lazy authentication"ını bilmeyen istemciler: `sign_in` aracı onlara gösterilmez. ChatGPT eklentiyi
+# "kimlik doğrulama yok" ile eklenince jeton hiç göndermez; araç 401 alır, taramada çalışmayan araç görünür.
+NO_LAZY_AUTH_CLIENTS = ("openai",)
+
+
+def is_no_lazy_auth_client(name: str | None) -> bool:
+    return bool(name) and any(part in name.lower() for part in NO_LAZY_AUTH_CLIENTS)
+
+
+def hide_sign_in_middleware():
+    """`tools/list` sonucundan `sign_in`'i, giriş kartı gösteremeyen istemciler için çıkarır."""
+    async def middleware(ctx, call_next):
+        result = await call_next(ctx)
+        if ctx.method != "tools/list" or not is_no_lazy_auth_client(client_name(ctx)):
+            return result
+        if isinstance(result, dict):
+            return {**result, "tools": [t for t in result.get("tools", []) if t.get("name") not in PROTECTED_TOOLS]}
+        return result.model_copy(update={"tools": [t for t in result.tools if t.name not in PROTECTED_TOOLS]})
+    return middleware
 
 
 # ---------------------------------------------------------------- hesapsız erişim
