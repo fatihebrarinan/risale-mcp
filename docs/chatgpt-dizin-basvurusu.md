@@ -2,6 +2,7 @@
 
 Portal: https://platform.openai.com/plugins › **Upload new or existing plugin**. Belgeler:
 https://developers.openai.com/plugins/deploy/submission, kurallar: https://developers.openai.com/plugins/plugin-guidelines.
+**Durum (2026-10-29): gönderildi, karar bekleniyor.** Kimlik doğrulama yok (OAuth askıda), hakem hesabı yok.
 Yayıncı kimliği: kişisel doğrulama (2026-10-29, onaylandı; kurum doğrulaması "Nur Hadimleri" için yapılamadı).
 
 ## Paket
