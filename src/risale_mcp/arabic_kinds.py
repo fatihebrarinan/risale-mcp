@@ -49,6 +49,12 @@ AYAH_FIXES = {
     ("sualar/7/ayetul-kubra/bab-02/menzil-03/hakikat-01/p001", 1): (3, 5, 6),
     ("sualar/15/makam-01/kisim-02/p003", 0): (1, 1, 2),
 }
+# Dizgi hatası olabilecek âyetler (kullanıcının kararı: potansiyel hatalı işaretlenir, metin değişmez).
+AYAH_SUSPECTS = {
+    ("muhakemat/makale-01/mukaddeme-08/p015", 0),
+    ("lemalar/28/nukte-26/p003", 0),
+    ("sozler/fihrist/soz-33/pencere-20/p002", 2),
+}
 _FORMULA_TEXTS = (
     "بسم الله الرحمن الرحيم", "الحمد لله", "الحمد لله رب العالمين", "سبحان الله", "لا اله الا الله", "الله اكبر",
     "ان شاء الله", "ما شاء الله", "لا قوة الا بالله", "والله اعلم", "حسبنا الله", "حسبي الله", "استغفر الله",

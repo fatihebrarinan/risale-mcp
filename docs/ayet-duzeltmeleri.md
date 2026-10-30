@@ -9,9 +9,10 @@ Kullanıcının kararı (2026-10-30): Kur'ân esastır, ama müellifin sözü de
   Metin aynen kalır, `ayah_check = iktibas`; araç âyetin tam metnini ayrıca verir. Liste: `data/interim/quran/ayah_check.md`.
 - **İmlâ ve hat farkı:** Türk mushafı ile Medine hattı farkına dokunulmaz, harf iskeleti tutuyorsa tam eşleşmedir.
 
-## Dizgi hatası olabilecekler (kullanıcının kararı bekleniyor, uygulanmadı)
+## Potansiyel hatalılar
 
-Üçü de iktibas olarak işaretli. Metin değişmedi; karşılaştırılan öbür baskılarda da aynı yazılıdır.
+Kullanıcının kararı (2026-10-30): `ayah_check = dizgi_suphesi` (`arabic_kinds.AYAH_SUSPECTS`), metin değişmez, araç modele
+uyarı verir. Karşılaştırılan öbür baskılarda da aynı yazılıdır.
 
 | Yer | Metindeki | Kur'ân | Not |
 |---|---|---|---|

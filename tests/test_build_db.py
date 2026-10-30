@@ -171,3 +171,9 @@ def test_real_database():
     # Mecmuada ana cilde eşlenen paragrafın cümlesi yoktur: aynı cümle iki kez aranmaz.
     assert conn.execute("SELECT count(*) FROM sentences s JOIN paragraphs p ON p.id = s.paragraph_id"
                         " WHERE p.text IS NULL").fetchone()[0] == 0
+
+
+def test_suspected_misprints_are_listed_with_a_warning():
+    from risale_mcp.arabic_kinds import AYAH_SUSPECTS
+    from risale_mcp.library import AYAH_CHECK_NOTES
+    assert len(AYAH_SUSPECTS) == 3 and "misprint" in AYAH_CHECK_NOTES["dizgi_suphesi"]
