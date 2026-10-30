@@ -44,7 +44,7 @@ Sunucudan kendiliğinden gelir. 10 aracın hepsinde `title` ve `readOnlyHint: tr
 >
 > The connector keeps layers apart that are easy to confuse: the publishers' translations of verses are not the author's words, the Turkish of his Arabic works is a translation, and a commentary by his brother is marked as his. When something is not in the works, Claude is told to say so instead of filling the gap.
 >
-> All tools are read-only and work without an account. The texts come, unchanged and with permission, from e-Risale, kastamonur.com, risale.online, risaleoku.com and rasaelalnour.com; the Qur'an's text from the Tanzil Project. A volunteer, non-commercial project by Nur Hadimleri.
+> All tools are read-only and work without an account. The texts come, unchanged and with permission, from e-Risale, risaleoku.com and risale.online; the Qur'an's text from the Tanzil Project. A volunteer, non-commercial project by Nur Hadimleri.
 
 **Categories** (1–5): portalın listesinden en yakınları: Education, Research / Reference, Religion / Culture (hangisi varsa).
 

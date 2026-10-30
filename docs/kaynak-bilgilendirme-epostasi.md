@@ -21,6 +21,8 @@ ve nezaket içindir. Adresler sitelerin iletişim sayfalarından alınır (burad
 Henüz kullanılmayan: Yeni Asya (artık kullanılmıyor).
 Rumuzat-ı Semaniye'nin PDF'i kullanıcının kendi dosyasıdır.
 
+**Güncel durum (2026-10-30):** Hizmet Vakfı izin vermedi; rasaelalnour.com ve kastamonur.com genel sunucuda artık kullanılmıyor, bu eserler izin veren risaleoku.com'dan gelir. nurpedia'ya gerek kalmadı (Hizb-i Nurî Zülfikâr'dan alındı). Genel kaynaklar: e-Risale, risaleoku.com, risale.online (Sikke'nin 13 bloğu), Keşif Yolculukları, Tanzil.
+
 ## Türkçe taslak
 Bu taslak yeni siteler içindir: metin alınmadan önce izin ister (2026-10-30, Hizmet Vakfı reddinden sonra). Telefon
 numarası depoya yazılmaz.
