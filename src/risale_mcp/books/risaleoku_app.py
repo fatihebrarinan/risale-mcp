@@ -32,6 +32,7 @@ from risale_mcp.headings import parse_heading, parse_inline_label
 from risale_mcp.normalize import match_words, slugify
 from risale_mcp.sources import risaleoku_app as source
 
+SOURCE_FIXES = (("âÚ§îkat", "Hakîkat"),)     # kaynaktaki bozuk kodlama (Âsâr-ı Bediiyye, Nutuk 7); metnin tek istisnası
 _PAGE = re.compile(r"^#(\d+)\s*$")
 _PRESENTATION = re.compile(r"[ﭐ-﷯ﹰ-ﻼ]+")   # Arapça harf biçimleri (Zülfikâr'ın Hizb'i): standart harfe çevrilir
 _STRAY = str.maketrans("", "", "∫\\")
@@ -114,6 +115,8 @@ def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: b
     def last() -> Block | None:
         return next((b for b in reversed(blocks) if not getattr(b, "marker", "")), None)
 
+    for wrong, right in SOURCE_FIXES:
+        body = body.replace(wrong, right)
     body = _PRESENTATION.sub(lambda m: unicodedata.normalize("NFKC", m[0]), body)
     lines = body.split("\n")
     while lines:
