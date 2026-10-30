@@ -15,6 +15,7 @@ data/interim/search_eval/
 data/vectors/
 data/quran.json
 data/interim/quran/
+data/interim/arabic_kinds/
 data/interim/ayah_links/
 data/interim/rasaelalnour/
 data/interim/chatgpt/
