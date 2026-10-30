@@ -6,7 +6,8 @@ Metin dosyası satır satırdır; işaret satırın başındadır, başlık ve i
     ` …>              iç başlık ("` Birinci Esas:>")
     ,…>               ortalı küçük satır; yalnızca süs olanlar ("* * *", "- - -") atılır
     ÷…>  §…>          imza
-    {…}               hâşiye (birkaç satır sürebilir); eski baskılarda metnin içinde, işareti "(*)", "(Haşiye)"
+    {…}               hâşiye (birkaç satır sürebilir); eski baskılarda metnin içinde, işareti "(*)", "(Haşiye)";
+                      satır başında ya da cümlenin ortasında gelebilir
     ~…|n@             Arapça satır; `n` meal kaydının numarası (boş olabilir) ya da mealin kendisi (Gençlik Rehberi)
     "   metin"        yeni paragraf (üç boşlukla ya da "  \\" ile başlar); bu baskılarda cümle ortasındaki satır da
                       girintili, kalın, küçük satır ya da boş satırdan sonra gelebilir (bkz. `_continues`)
@@ -15,7 +16,8 @@ Metin dosyası satır satırdır; işaret satırın başındadır, başlık ve i
     ∫                 kapanışı yoksa paragrafın ilk harfi süsü; atılır
     ﹛…|﹜             metnin içinde alıntı (âyet); işaretler atılır
 
-`footnotes` dosyası `sayfa|işaret|metin`: işaret o sayfadaki blokta aranır, metinden silinir, hâşiye oraya bağlanır.
+`footnotes` dosyası `sayfa|işaret|metin`: işaret o sayfadaki blokta aranır (sayfanın son notunun işareti sonraki
+sayfanın başında olabilir), metinden silinir, hâşiye oraya bağlanır.
 Fihrist sekmeyle girintili `başlık[@ikinci ad]|sayfa`; sayfası olmayan girdi grup başlığıdır. Kökü kitabın adıdır.
 Arapça türü (âyet/hadis) kaynakta işaretli değildir: `arabi`; âyetler `build_db`'de Kur'ân metninde bulunur.
 """
@@ -27,6 +29,7 @@ import unicodedata
 from dataclasses import dataclass
 from pathlib import Path
 
+from risale_mcp.books.kastamonur import EDITION_GAPS as ASAR_GAPS
 from risale_mcp.books.model import ARABIC_SCRIPT, ArabicSpan, Book, FootnoteMark, Text
 from risale_mcp.books.risaleoku import Block, TocEntry, _Heading, assemble
 from risale_mcp.catalog import Group, Work
@@ -34,6 +37,7 @@ from risale_mcp.headings import parse_heading, parse_inline_label
 from risale_mcp.normalize import match_words, slugify
 from risale_mcp.sources import risaleoku_app as source
 
+EDITION_GAPS = {"makalat": ASAR_GAPS["makalat"][2:]}  # ilk ikisi (Makale 11 Hâtimesi, 12/8) bu kaynakta var
 SOURCE_FIXES = (("âÚ§îkat", "Hakîkat"),)     # kaynaktaki bozuk kodlama (Âsâr-ı Bediiyye, Nutuk 7); metnin tek istisnası
 WRONG_MEALS = {"فَلْيَشْهَدِ الثَّقَلَانِ اَنّ۪ى مُرْتَجِعٌ"}     # kaynakta başka bir mealin numarası yazılı (6509: "Gerçek hile…"); meal verilmez
 _PAGE = re.compile(r"^#(\d+)\s*$")
@@ -49,8 +53,9 @@ _ARABIC_RUN = re.compile(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF
 _TERMINAL = tuple(".!?؟…:»”\"")
 _FULL_STOP = tuple(".!?؟…")
 _LOWER_START = re.compile(r"\s*[a-zçğıöşüâîû]")
+_INLINE_MARK = "\ue000"   # cümle ortasındaki {…} hâşiyesinin yeri: bağlanınca metinden silinir
 HASIYE_REACH = 5        # hâşiye metni, işaretini taşıyan paragraftan en çok bu kadar sonra gelir (sayfa sonu)
-_HASIYE_MARK = re.compile(r"^\s*(?:﴿\s*)?(\(\*+\)|\(H[âa]ş[iy]+e\)|\(حاشيه\))\s*:?\s*")
+_HASIYE_MARK = re.compile(r"^\s*(?:﴿\s*)?(\(\*+\)|\(٭+\)|[(\[]H[âa]ş[iîy]+e[ \-\d]*[:)\]]+|\(حاشيه\))\s*:?\s*")
 _ARTICLE = re.compile(r"^(NUTUK|MAKALE)\s*-\s*(\d+)$")
 _PERIODICAL = re.compile(r"^(VOLKAN|İKDAM|SEBİL-ÜR REŞAD|MİZAN|SERBESTÎ)$")
 _FRONT = re.compile(r"^(Risale-i Nur|Müellifi|Bed[iî]üzzaman Said|\(?Ve\)?$|Yahud$)")
@@ -103,14 +108,14 @@ def _attach(block: Block, mark: str, content: Text) -> bool:
     return True
 
 
-def _hasiye(blocks: list[Block], raw: str) -> None:
+def _hasiye(blocks: list[Block], raw: str, inline: bool = False) -> None:
     """Hâşiye metni işaretin yerine bağlanır; sayfa sonunda geldiği için işaret birkaç paragraf önce olabilir."""
     body, _ = _plain(raw.strip("{} \n"))
     recent = [b for b in reversed(blocks) if not getattr(b, "marker", "")][:HASIYE_REACH]
     if not recent:
         return
     m = _HASIYE_MARK.match(body)
-    mark = m[1] if m else ""
+    mark = _INLINE_MARK if inline else m[1] if m else ""
     text = Text(body[m.end():].strip(" ﴾") if m else body)
     if not any(_attach(b, mark, text) for b in recent):
         recent[0].text.footnotes.append(FootnoteMark(len(recent[0].text.text), text))
@@ -137,6 +142,7 @@ def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: b
     blocks: list[Block] = []
     page, open_paragraph, after_page = 0, False, False
     hasiye: str | None = None
+    hasiye_inline = False
 
     for wrong, right in SOURCE_FIXES:
         body = body.replace(wrong, right)
@@ -147,8 +153,8 @@ def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: b
         if hasiye is not None:
             hasiye += " " + line.strip()
             if line.endswith("}"):
-                _hasiye(blocks, hasiye)
-                hasiye = None
+                _hasiye(blocks, hasiye, hasiye_inline)
+                hasiye, hasiye_inline = None, False
             continue
         if not line.strip():
             open_paragraph = False             # boş satır paragrafı kapatır (Zülfikâr'ın Hizb'i)
@@ -156,7 +162,19 @@ def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: b
         if m := _PAGE.match(line):
             page, after_page = int(m[1]), True
             continue
-        if line.startswith("{"):
+        if line.startswith("\ue001"):
+            _hasiye(blocks, line[1:], True)
+            continue
+        if (at := line.find("{")) > 0 and line[:at].strip():      # cümlenin ortasındaki hâşiye
+            close = line.find("}", at)
+            if close < 0:
+                hasiye, hasiye_inline, line = line[at:], True, line[:at].rstrip() + _INLINE_MARK
+            else:
+                pending = line[at:close + 1]
+                lines.insert(0, f"\ue001{pending}")
+                line = line[:at].rstrip() + _INLINE_MARK + line[close + 1:]
+        if line.lstrip().startswith("{"):
+            line = line.lstrip()
             if line.endswith("}"):
                 _hasiye(blocks, line)
             else:
@@ -229,12 +247,19 @@ def add_footnotes(blocks: list[Block], lines: str, classify=None) -> list[str]:
         for page in range(block.page, max(block.page, getattr(block, "last_page", 0)) + 1):
             by_page.setdefault(page, []).append(block)
     lost = []
+    notes: list[str] = []
     for line in lines.splitlines():
+        if re.match(r"\d+\|", line) or not notes:
+            notes.append(line)
+        elif line.strip():                              # çok satırlı notun devamı
+            notes[-1] += " " + line.strip()
+    for line in notes:
         page, mark, text = (line.split("|", 2) + ["", ""])[:3]
         if not page.isdigit() or not text:
             continue
         note = Text(_plain(text)[0])
-        if not any(_attach(b, mark, note) for b in by_page.get(int(page), [])):
+        near = by_page.get(int(page), []) + by_page.get(int(page) + 1, [])
+        if not any(_attach(b, mark, note) for b in near):
             lost.append(line[:60])
             if on_page := by_page.get(int(page)):
                 on_page[-1].text.footnotes.append(FootnoteMark(len(on_page[-1].text.text), note))
@@ -509,6 +534,20 @@ def parse_with_outline(work: Work, root: Path, classify=_classify_author, verses
                   f"  çapası bulunamayan bölüm : {len(lost)} {lost[:6]}"]
 
 
+def _edition_gaps(book: Book) -> None:
+    """Âsâr-ı Bedîiyye'de olmayan parçalar `gaps`'e yazılır; yeri önceki paragrafın ilk kelimeleridir."""
+    for gap in EDITION_GAPS.get(book.slug, ()):
+        node_id = f"{book.slug}/{gap.node}"
+        own = [p for p in book.paragraphs if p["node_id"] == node_id and p["kind"] != "hasiye"]
+        start = match_words(gap.after or "")
+        after = next((p["id"] for p in own if match_words(p["text"])[:len(start)] == start), None) if start else None
+        if not start and not gap.at_start and own:
+            after = own[-1]["id"]
+        if start and after is None:
+            raise ValueError(f"{node_id}: eksik parçanın yeri bulunamadı ({gap.after!r})")
+        book.gaps.append({"node_id": node_id, "missing_blocks": gap.paragraphs, "after": after, "note": gap.note})
+
+
 def _read(root: Path, key: str, name: str) -> str:
     path = root / key / f"{name}.txt.gz"
     return gzip.open(path, "rt", encoding="utf-8").read() if path.exists() else ""
@@ -531,7 +570,9 @@ def parse_work(work: Work, root: Path) -> Book:
         first, stop = work.source.sections
         blocks = _slice(blocks, first, stop or None)
         blocks, articles = article_starts(blocks)
-        return assemble(book, blocks, [], lambda starts, b: (starts.clear(), starts.update(articles), inline_starts(starts, b)))
+        book = assemble(book, blocks, [], lambda starts, b: (starts.clear(), starts.update(articles), inline_starts(starts, b)))
+        _edition_gaps(book)
+        return book
     if not entries or len(entries) == 1:
         heads = title_entries(blocks)
         return assemble(book, blocks, [], lambda starts, b: (starts.clear(), starts.update(heads), inline_starts(starts, b)))

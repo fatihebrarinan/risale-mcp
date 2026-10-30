@@ -163,3 +163,27 @@ def test_start_words_place_a_section_inside_a_paragraph_run():
                {"id": "e/a", "title": "Yok olan başlık", "anchors": [["yok"]], "start": "Beş altı yedi"}]
     starts, lost = _anchored(blocks, outline)
     assert not lost and [n["id"] for n in starts[1]] == ["e/a"]
+
+
+def test_hasiye_in_the_middle_of_a_sentence_leaves_the_text():
+    block = read_blocks("   Bismark diye {(Hâşiye): Bu fıkra.} imzasını atmış.\n", {}, "tr")[0]
+    assert block.text.text == "Bismark diye imzasını atmış."
+    assert block.text.footnotes[0].content.text == "Bu fıkra."
+    assert block.text.text[:block.text.footnotes[0].offset] == "Bismark diye"
+
+
+def test_hasiye_opening_in_a_sentence_may_close_on_a_later_line():
+    block = read_blocks("   Metin {(*) Uzun\nhâşiye.}\n", {}, "tr")[0]
+    assert block.text.text == "Metin" and block.text.footnotes[0].content.text == "Uzun hâşiye."
+
+
+def test_last_note_of_a_page_finds_its_mark_on_the_next_page():
+    blocks = read_blocks("#1\n   Birinci.\n#2\n   İkinci (78) devam.\n", {}, "ar")
+    assert add_footnotes(blocks, "1|(78)|Not") == []
+    assert blocks[1].text.footnotes[0].content.text == "Not"
+
+
+def test_footnote_running_over_several_lines_is_read_whole():
+    blocks = read_blocks("#1\n   Metin (1) sonu.\n", {}, "ar")
+    add_footnotes(blocks, "1|(1)|Birinci satır\n    ikinci satır\n")
+    assert blocks[0].text.footnotes[0].content.text == "Birinci satır ikinci satır"
