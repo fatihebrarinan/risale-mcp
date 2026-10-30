@@ -162,6 +162,8 @@ WORKS: tuple[Work, ...] = (
     Work("sikke-i-tasdik-i-gaybi", "Sikke-i Tasdik-i Gaybî", _M, _erisale("sikke-i-tasdik-i-gaybi")),
     Work("iman-ve-kufur-muvazeneleri", "İman ve Küfür Muvazeneleri", _M, _erisale("iman-ve-kufur-muvazeneleri")),
     Work("siracun-nur", "Siracü'n-Nur", _M, _app("ihls_siracunnur")),
+    Work("siracun-nur-hayrat", "Siracü'n-Nur (Hayrat)", _M, SourceRef(Site.RISALE_ONLINE, "siracun-nur"), private=True,
+         note="Hayrat baskısı; Onikinci Şuâ'ya bağlı belgeler (raporlar, müdafaalar) yalnız burada. Yalnızca kullanıcıda."),
     Work("kucuk-sozler", "Küçük Sözler", _M, SourceRef(Site.RISALEOKU_APP, "rnk_ksozler")),
     Work("genclik-rehberi", "Gençlik Rehberi", _M, _app("rnk_gencreh")),
     Work("hanimlar-rehberi", "Hanımlar Rehberi", _M, _app("rnk_hanimreh")),
