@@ -32,6 +32,23 @@ MIN_QURAN = 12            # kendi başına âyet sayılan en kısa iskelet (harf
 MIN_UNIQUE = 8            # Kur'ân'da tek yerde geçiyorsa yeten iskelet
 MIN_CONTEXT = 4           # bağlamı "âyet" diyorsa yeten iskelet
 MIN_EVIDENCE = 8          # meal ya da erisale kaydının kanıt sayıldığı en kısa iskelet
+# Kaynağın âyet numarası metne oturmuyor, metin başka âyete tam oturuyor (bkz. `docs/ayet-duzeltmeleri.md`):
+# (paragraf, parça sırası) -> (sûre, ilk, son). Metin değişmez, yalnız adres. Aralıklarda kaynak birkaç âyet sayar.
+AYAH_FIXES = {
+    ("sozler/33/pencere-19/p008", 0): (59, 1, 1),
+    ("sozler/fihrist/soz-33/pencere-19/p002", 0): (59, 1, 1),
+    ("sualar/1/sual-02/ayet-05/sabrinin-sadakatinin-bir-kerametidir/p002", 3): (61, 8, 8),
+    ("isaratul-icaz/sure-i-bakara/26-27-ayetlerin-tefsiri/p009", 0): (2, 17, 17),
+    ("mektubat/26/mebhas-03/mesele-04/p003", 0): (5, 54, 54),
+    ("el-mesnevi-el-arabi-harekeli/habbe/zeylul-habbe/p012", 0): (39, 67, 67),
+    ("el-mesnevi-el-arabi-harekeli/hubab/meclis-i-mebusana-hitaben-yazdigim-bir/p042", 1): (31, 28, 28),
+    ("el-mesnevi-el-arabi-harekeli/sule/p116", 0): (72, 28, 28),
+    ("el-mesnevi-el-arabi-harekeli/hubab/p080", 0): (17, 88, 88),
+    ("isaratul-icaz/sure-i-bakara/17-20-ayetlerin-tefsiri/p068", 0): (2, 19, 20),
+    ("isaratul-icaz/sure-i-bakara/31-33-ayetlerin-tefsiri/p001", 0): (2, 31, 33),
+    ("sualar/7/ayetul-kubra/bab-02/menzil-03/hakikat-01/p001", 1): (3, 5, 6),
+    ("sualar/15/makam-01/kisim-02/p003", 0): (1, 1, 2),
+}
 _FORMULA_TEXTS = (
     "بسم الله الرحمن الرحيم", "الحمد لله", "الحمد لله رب العالمين", "سبحان الله", "لا اله الا الله", "الله اكبر",
     "ان شاء الله", "ما شاء الله", "لا قوة الا بالله", "والله اعلم", "حسبنا الله", "حسبي الله", "استغفر الله",

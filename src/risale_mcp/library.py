@@ -45,8 +45,8 @@ QURAN_ATTRIBUTION = ("Arabic text: Tanzil Project (tanzil.net), Medina Mushaf sc
 # Kaynağın âyet numarası Kur'ân metniyle tutmuyorsa modele giden uyarı (build_db, `ayah_check`).
 AYAH_CHECK_NOTES = {
     "near": "the quoted text is in a neighbouring verse, not exactly the one the source names",
-    "differs": "the quoted text does not match the named verse word for word (adapted quotation, abridgement "
-               "or a wrong number in the source)",
+    "iktibas": "the quoted text does not match the named verse word for word: the author's adapted quotation or "
+               "abridgement. Quote the work as it stands; take the verse's own text from get_ayah",
 }
 
 

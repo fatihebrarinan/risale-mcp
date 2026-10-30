@@ -155,7 +155,7 @@ class Quran:
 
     def check(self, text: str, sura: int, start: int, end: int) -> str:
         """Kaynağın verdiği numarayı metinle denetler: exact, near (komşu âyetlerde), differs, empty."""
-        parts = pieces(text)
+        parts = pieces(text) or pieces(text, shortest=1)      # "يٰسٓ", "اِيَّاكَ" tek harfe iner
         if not parts:
             return "empty"
         if self.contains(parts, sura, start, end):

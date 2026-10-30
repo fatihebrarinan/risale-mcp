@@ -68,7 +68,7 @@ def test_arabic_linked_to_sentence_and_ayah_resolved(db):
     ]
     # Kaynağın numarası Kur'ân metniyle denetlenir: 2:255 tutuyor; "قل هو الله احد" 2:1 değil.
     checks = [r[0] for r in conn.execute("SELECT ayah_check FROM arabic ORDER BY paragraph_id, ord")]
-    assert checks == ["exact", "differs", None]
+    assert checks == ["exact", "iktibas", None]
 
 
 def test_quran_layer(db):

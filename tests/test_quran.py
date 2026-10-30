@@ -95,7 +95,7 @@ def test_build_links_unmarked_verses_and_uses_the_section_sura(tmp_path, quran):
         " ORDER BY paragraph_id").fetchall()
     assert rows == [("hizbul-kuranil-muazzam/2-bakara/c001", 2, 255, 255),
                     ("hizbul-kuranil-muazzam/2-bakara/c002", 2, 1, 1)]
-    assert report.located["bulundu"] == 2
+    assert report.located["bulundu"] == 1          # ilkini tür sınıflandırıcısı bulur
 
 
 def test_verse_context_and_quotes_in_their_section(quran):

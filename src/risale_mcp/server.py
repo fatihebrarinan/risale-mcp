@@ -92,6 +92,7 @@ or give sentence numbers.
 language.
 
 Layers that are not the author's words:
+- A part with kind_unverified was called a hadith only by the words around it: say it is presented as a hadith in the text, do not vouch for it.
 - Translations of verses and hadiths in the works (publisher_translation) are the publishers'. Use them only to \
 convey the meaning, say whose they are, never quote them as the text. The author's own explanation ("Yani, …") \
 is text.

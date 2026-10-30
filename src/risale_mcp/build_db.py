@@ -34,7 +34,7 @@ from risale_mcp.catalog import Site, WORKS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, RAW_DIR, ROOT
-from risale_mcp.arabic_kinds import Classifier, read_meal_evidence, write_report
+from risale_mcp.arabic_kinds import AYAH_FIXES, Classifier, read_meal_evidence, write_report
 from risale_mcp.quran import QURAN_PATH, SURA_NAMES, Match, Quote, Quran, pieces, sura_ref, verse_context
 
 # "Bakara Sûresi, 2:255", "Âyet: Sûre-i Âl-i İmrân, 18", "Kalem Sûresi: 1", "Sûre-i Nasr, 1’den"
@@ -246,6 +246,8 @@ def _insert_arabic(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran
                 kind, kind_source = decision.kind, decision.kind_source
                 if decision.source != part.get("source"):
                     source = decision.source
+            if (fix := AYAH_FIXES.get((p["id"], i))) and kind == "ayet":
+                source = sura_ref(*fix)
             ayah = check = None
             if kind == "ayet" and source:
                 report.counts["ayah"] += 1
@@ -258,6 +260,8 @@ def _insert_arabic(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran
                         report.ayah_checks[check] += 1
                         if check in ("near", "differs"):
                             report.ayah_problems.append((check, p["id"], source, text))
+                        if check == "differs":          # numara doğru; metni müellifin uyarlaması, metne dokunulmaz
+                            check = "iktibas"
                 else:
                     report.unresolved_ayah[source] += 1
             elif quran and kind != "ayet" and "﴿" in text:
