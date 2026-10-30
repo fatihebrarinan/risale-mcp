@@ -7,11 +7,13 @@ Metin dosyası satır satırdır; işaret satırın başındadır, başlık ve i
     ,…>               ortalı küçük satır; yalnızca süs olanlar ("* * *", "- - -") atılır
     ÷…>  §…>          imza
     {…}               hâşiye (birkaç satır sürebilir); eski baskılarda metnin içinde, işareti "(*)", "(Haşiye)"
-    ~…|n@             Arapça satır; `n` meal kaydının numarası (boş olabilir)
-    "   metin"        yeni paragraf (üç boşlukla ya da "  \\" ile başlar)
+    ~…|n@             Arapça satır; `n` meal kaydının numarası (boş olabilir) ya da mealin kendisi (Gençlik Rehberi)
+    "   metin"        yeni paragraf (üç boşlukla ya da "  \\" ile başlar); bu baskılarda cümle ortasındaki satır da
+                      girintili, kalın, küçük satır ya da boş satırdan sonra gelebilir (bkz. `_continues`)
     düz satır         önceki paragrafın devamı (sayfa sonundan ya da araya giren Arapçadan sonra)
-    \\…>               satır içi kalın yazı: paragraf başındaysa etikettir ("\\Birinci Esas:>")
-    ∫                 paragrafın ilk harfi süsü; atılır
+    \\…>  ∫…>  £…>     satır içi kalın yazı: paragraf başındaysa etikettir ("\\Birinci Esas:>")
+    ∫                 kapanışı yoksa paragrafın ilk harfi süsü; atılır
+    ﹛…|﹜             metnin içinde alıntı (âyet); işaretler atılır
 
 `footnotes` dosyası `sayfa|işaret|metin`: işaret o sayfadaki blokta aranır, metinden silinir, hâşiye oraya bağlanır.
 Fihrist sekmeyle girintili `başlık[@ikinci ad]|sayfa`; sayfası olmayan girdi grup başlığıdır. Kökü kitabın adıdır.
@@ -33,16 +35,21 @@ from risale_mcp.normalize import match_words, slugify
 from risale_mcp.sources import risaleoku_app as source
 
 SOURCE_FIXES = (("âÚ§îkat", "Hakîkat"),)     # kaynaktaki bozuk kodlama (Âsâr-ı Bediiyye, Nutuk 7); metnin tek istisnası
+WRONG_MEALS = {"فَلْيَشْهَدِ الثَّقَلَانِ اَنّ۪ى مُرْتَجِعٌ"}     # kaynakta başka bir mealin numarası yazılı (6509: "Gerçek hile…"); meal verilmez
 _PAGE = re.compile(r"^#(\d+)\s*$")
 _PRESENTATION = re.compile(r"[ﭐ-﷯ﹰ-ﻼ]+")   # Arapça harf biçimleri (Zülfikâr'ın Hizb'i): standart harfe çevrilir
-_STRAY = str.maketrans("", "", "∫\\")
-_ARABIC_LINE = re.compile(r"^~(.*)\|(\d*)@\s*$", re.S)
-_BOLD = re.compile(r"\\([^>\n]*)>")
+_STRAY = str.maketrans("", "", "∫£~\\")
+_ARABIC_LINE = re.compile(r"^~(.*)\|([^|]*)@\s*$", re.S)
+_BOLD = re.compile(r"[\\∫£]([^>\n]*)>")
+_INLINE_QUOTE = re.compile(r"﹛|\|?﹜")
 _ORNAMENT = re.compile(r"^[\s*∗٭❋.\-–—_]*$")
 _ARABIC_RUN = re.compile(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFC]"
                          r"(?:[\s\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFC]*"
                          r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFC])?")
 _TERMINAL = tuple(".!?؟…:»”\"")
+_FULL_STOP = tuple(".!?؟…")
+_LOWER_START = re.compile(r"\s*[a-zçğıöşüâîû]")
+HASIYE_REACH = 5        # hâşiye metni, işaretini taşıyan paragraftan en çok bu kadar sonra gelir (sayfa sonu)
 _HASIYE_MARK = re.compile(r"^\s*(?:﴿\s*)?(\(\*+\)|\(H[âa]ş[iy]+e\)|\(حاشيه\))\s*:?\s*")
 _ARTICLE = re.compile(r"^(NUTUK|MAKALE)\s*-\s*(\d+)$")
 _PERIODICAL = re.compile(r"^(VOLKAN|İKDAM|SEBİL-ÜR REŞAD|MİZAN|SERBESTÎ)$")
@@ -62,7 +69,7 @@ class AppBlock(Block):
 def _plain(line: str) -> tuple[str, str]:
     """Satır içi işaretleri atar: (metin, paragraf başındaki kalın etiket)."""
     label = m[1].strip() if (m := _BOLD.match(line.strip())) else ""
-    return re.sub(r"\s+", " ", _BOLD.sub(r" \1 ", line).translate(_STRAY)).strip(), label
+    return re.sub(r"\s+", " ", _BOLD.sub(r" \1 ", line).translate(_STRAY).replace(">", " ")).strip(), label
 
 
 def _text(line: str, language: str) -> Text:
@@ -96,53 +103,73 @@ def _attach(block: Block, mark: str, content: Text) -> bool:
     return True
 
 
-def _hasiye(block: Block | None, raw: str) -> None:
+def _hasiye(blocks: list[Block], raw: str) -> None:
+    """Hâşiye metni işaretin yerine bağlanır; sayfa sonunda geldiği için işaret birkaç paragraf önce olabilir."""
     body, _ = _plain(raw.strip("{} \n"))
-    if block is None:
+    recent = [b for b in reversed(blocks) if not getattr(b, "marker", "")][:HASIYE_REACH]
+    if not recent:
         return
     m = _HASIYE_MARK.match(body)
     mark = m[1] if m else ""
     text = Text(body[m.end():].strip(" ﴾") if m else body)
-    if not _attach(block, mark, text):
-        block.text.footnotes.append(FootnoteMark(len(block.text.text), text))
+    if not any(_attach(b, mark, text) for b in recent):
+        recent[0].text.footnotes.append(FootnoteMark(len(recent[0].text.text), text))
+
+
+def _continues(tail: Block | None, text: str, line: str, language: str, after_page: bool) -> bool:
+    """Yeni paragraf gibi yazılmış satır önceki cümleyi mi sürdürüyor? Türkçede küçük harf yeter (etiketin devamı
+    da olur: "İkinci Bürhan'ın / beş noktası var:"); sayfa başında "," ya da ";" sonrası büyük harf de.
+    Arapça ve Osmanlıcada harf büyüklüğü yok: sayfa başında, önceki satır bitmemişse."""
+    if tail is None:
+        return False
+    marker, end = getattr(tail, "marker", ""), tail.text.text.rstrip()
+    if end.endswith(_FULL_STOP) or end[-1:].isdigit():
+        return False
+    if language == "tr":
+        if _LOWER_START.match(text):
+            return not marker or marker == "label" and not end.endswith(":")
+        return not marker and after_page and end.endswith((",", ";"))
+    return (not marker and after_page and line.lstrip()[:1] not in ("[", "\\")
+            and not end.endswith(_TERMINAL) and not end.endswith(")") and not tail.text.is_arabic())
 
 
 def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: bool = False) -> list[Block]:
     blocks: list[Block] = []
-    page, open_paragraph = 0, False
+    page, open_paragraph, after_page = 0, False, False
     hasiye: str | None = None
-
-    def last() -> Block | None:
-        return next((b for b in reversed(blocks) if not getattr(b, "marker", "")), None)
 
     for wrong, right in SOURCE_FIXES:
         body = body.replace(wrong, right)
     body = _PRESENTATION.sub(lambda m: unicodedata.normalize("NFKC", m[0]), body)
-    lines = body.split("\n")
+    lines = _INLINE_QUOTE.sub("", body).split("\n")
     while lines:
         line = lines.pop(0).rstrip()
         if hasiye is not None:
             hasiye += " " + line.strip()
             if line.endswith("}"):
-                _hasiye(last(), hasiye)
+                _hasiye(blocks, hasiye)
                 hasiye = None
             continue
         if not line.strip():
             open_paragraph = False             # boş satır paragrafı kapatır (Zülfikâr'ın Hizb'i)
             continue
         if m := _PAGE.match(line):
-            page = int(m[1])
+            page, after_page = int(m[1]), True
             continue
         if line.startswith("{"):
             if line.endswith("}"):
-                _hasiye(last(), line)
+                _hasiye(blocks, line)
             else:
                 hasiye = line
             continue
+        if line.startswith("~") and lines and lines[0].strip() == "|@":       # kapanışı alt satıra düşmüş
+            line += lines.pop(0).strip()
         if m := _ARABIC_LINE.match(line):
             arabic = re.sub(r"\s+", " ", m[1]).strip()
-            span = ArabicSpan(0, len(arabic), "arabi", meals.get(m[2]))
+            meal = meals.get(m[2]) if m[2].isdigit() else _plain(m[2])[0] or None
+            span = ArabicSpan(0, len(arabic), "arabi", None if arabic in WRONG_MEALS else meal)
             tail = blocks[-1] if blocks else None
+            after_page = False
             if open_paragraph and tail and not tail.text.is_arabic() and not tail.text.text.endswith(_TERMINAL):
                 tail.text = Text.join([tail.text, Text(arabic, [span])], " ")
             elif split_verses:
@@ -153,7 +180,7 @@ def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: b
                 blocks.append(AppBlock(Text(arabic, [span]), page))
                 open_paragraph = True
             continue
-        if line.lstrip()[0] == "," and ">" in line:   # girintili süs satırı
+        if line.lstrip()[0] in _MARKERS and ">" in line:   # girintili başlık ya da süs satırı
             line = line.lstrip()
         marker = _MARKERS.get(line[0])
         if marker and ">" in line:
@@ -161,19 +188,37 @@ def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: b
             if tail.strip():                   # kapanıştan sonra metin süren satır
                 lines.insert(0, "   " + tail.strip())
             plain, _ = _plain(head[1:])
-            open_paragraph = False
+            if marker == "small" and language == "tr" and blocks and _LOWER_START.match(plain) \
+                    and _continues(blocks[-1], plain, line, language, after_page):
+                _append(blocks[-1], plain, language)
+                blocks[-1].last_page = page
+                open_paragraph, after_page = True, False
+                continue
+            open_paragraph = after_page = False
             if not _ORNAMENT.match(plain):
                 blocks.append(AppBlock(_text(plain, language), page, centered=marker != "sign",
                                        signature=marker == "sign", marker=marker, head=line[0]))
             continue
         if line.startswith((" ", "  \\")) or not open_paragraph:
             plain, label = _plain(line)
-            if plain:
+            if not plain:
+                continue
+            lower = language == "tr" and bool(_LOWER_START.match(plain))
+            if _HASIYE_MARK.match(plain):                 # ayraçsız hâşiye: paragraf gibi yazılmış
+                _hasiye(blocks, plain)
+            elif (open_paragraph or lower) and blocks and (lower or not label) \
+                    and _continues(blocks[-1], plain, line, language, after_page):
+                _append(blocks[-1], plain, language)
+                blocks[-1].last_page = page
+                open_paragraph = True
+            else:
                 blocks.append(AppBlock(_text(plain, language), page, label=label))
                 open_paragraph = True
+            after_page = False
             continue
         _append(blocks[-1], _plain(line)[0], language)
         blocks[-1].last_page = page
+        after_page = False
     return blocks
 
 
@@ -217,29 +262,50 @@ def read_toc(body: str) -> list[TocEntry]:
 
 def inline_starts(starts: dict[int, list[_Heading]], blocks: list[Block]) -> None:
     """Fihristin altındaki numaralı iç başlıklar ("` Birinci Nükte:>", "\\Birinci Esas:>" etiketi) düğüm açar.
-    Yeni tür açık serinin içine girer; aynı tür yeniden gelince kardeş olur."""
-    base, types = 1, []
-    for i, block in enumerate(blocks):
-        if i in starts:
-            base, types = max(h.depth for h in starts[i]) + 1, []
-            continue
+    Aynı tür yeniden gelince kardeş olur. Yeni tür, açık seri aynı bölümde sürüyorsa onun içine, sürmüyorsa
+    yanına girer (erisale'deki kural): "Birinci Hakikat"in "Esas"ları içeride, beş "Kâr"dan sonra "Hasaret" yanda."""
+    def label_of(block: Block):
         marker = getattr(block, "marker", "")
         if marker == "label":
-            title, info = block.text.text, parse_inline_label(block.text.text)
-        elif marker == "title":
-            title, info = block.text.text, parse_heading(block.text.text)
-            info = info if info.number else None
-        elif getattr(block, "label", ""):
-            title, info = block.label, parse_inline_label(block.label)
-        else:
+            return block.text.text, parse_inline_label(block.text.text)
+        if marker == "title":
+            info = parse_heading(block.text.text)
+            return block.text.text, info if info.number else None
+        return (block.label, parse_inline_label(block.label)) if getattr(block, "label", "") else (None, None)
+
+    fixed = set(starts)
+    labels = {}
+    for i, block in enumerate(blocks):
+        title, info = label_of(block)
+        if i not in fixed and info and info.type:
+            labels[i] = (title, info)
+
+    def series_continues(at: int, info) -> bool:
+        for k in range(at + 1, len(blocks)):
+            if k in fixed:
+                return False
+            if k in labels and labels[k][1].type == info.type and info.number and (labels[k][1].number or 0) > info.number:
+                return True
+        return False
+
+    base, section, opened = 1, None, []
+    for i in range(len(blocks)):
+        if i in fixed:
+            base, section, opened = max(h.depth for h in starts[i]) + 1, parse_heading(starts[i][-1].title), []
             continue
-        if not info or not info.type:
+        if i not in labels:
             continue
-        if info.type in types:
-            types = types[:types.index(info.type) + 1]
+        title, info = labels[i]
+        if section and (section.type, section.number) == (info.type, info.number):
+            continue                                       # bölümün kendi başlığını tekrarlıyor
+        same = next((k for k in range(len(opened) - 1, -1, -1) if opened[k].type == info.type), None)
+        if same is not None:
+            del opened[same:]
         else:
-            types.append(info.type)
-        starts[i] = [_Heading(base + len(types) - 1, title.rstrip(":").strip())]
+            while opened and not series_continues(i, opened[-1]):
+                opened.pop()
+        opened.append(info)
+        starts[i] = [_Heading(base + len(opened) - 1, title.rstrip(":").strip())]
 
 
 def title_entries(blocks: list[Block]) -> dict[int, list[_Heading]]:
@@ -299,8 +365,8 @@ def article_starts(blocks: list[Block]) -> tuple[list[Block], dict[int, list[_He
 
 SHARH_BY = "Abdülmecid Nursî"
 OUTLINES = Path(__file__).parent / "outlines"
-_INLINE_VERSE = str.maketrans("", "", "﹛﹜")
 MAX_CANDIDATES = 12
+MAX_ALONE = 3
 _AUTHOR_NOTE = re.compile(r"\s*(?:[(（]\s*المؤلف\s*[)）]|[-–ـ]\s*المؤلف\s*[-–ـ]?)\s*\.?\s*$")
 
 
@@ -317,7 +383,7 @@ def _clean(words: list[str]) -> list[str]:
 
 
 def _anchor_words(text: str) -> list[str]:
-    return _clean(match_words(text))
+    return _clean(match_words(text.replace("ـ", "")))
 
 
 def _classify_author(note: str) -> tuple[str, str]:
@@ -341,6 +407,11 @@ def _anchored(blocks: list[Block], outline: list[dict]) -> tuple[dict[int, list[
 
     def candidates(node: dict) -> list[int]:
         title = _anchor_words(node["title"])
+        if start := _anchor_words(node.get("start", "")):        # şablonda bu baskının ilk kelimeleri verilmişse
+            return finds(start)[:MAX_CANDIDATES]
+        if printed := _anchor_words(node.get("printed", "")):    # şablonda bu baskının başlık satırı verilmişse
+            return [at for at in finds(printed) if blocks[owner[at]].marker
+                    and _anchor_words(blocks[owner[at]].text.text) == printed]
         headed = [at for at in finds(title) if len(title) >= 2 and blocks[owner[at]].marker
                   and _anchor_words(blocks[owner[at]].text.text)[:len(title)] == title]
         if headed:                              # başlık satırı en güvenilir yerdir
@@ -351,6 +422,10 @@ def _anchored(blocks: list[Block], outline: list[dict]) -> tuple[dict[int, list[
             found = [at for a in tries for k in range(len(a) - 3) for at in finds(a[k:k + 4])]
         if not found and len(title) >= 2:
             found = finds(title)
+        if not found and len(title) == 1:       # tek kelimelik risale adı ("حباب"); çok geçiyorsa alt başlıktır ("نكتة")
+            alone = [at for at in finds(title) if blocks[owner[at]].marker
+                     and _anchor_words(blocks[owner[at]].text.text) == title]
+            found = alone if len(alone) <= MAX_ALONE else []
         return sorted(set(found))[:MAX_CANDIDATES]
 
     # Yanlış bir ileri eşleşme sonrakileri kaybettirmesin: en çok düğümü sıralı yerleştiren zincir seçilir.
@@ -393,8 +468,7 @@ def parse_with_outline(work: Work, root: Path, classify=_classify_author, verses
     })
     book.notes += template["notes"]
     book.root.subtitle = template["outline"][0].get("subtitle", "")
-    blocks = read_blocks(_read(root, key, "text").translate(_INLINE_VERSE).replace("|\n", "\n"),
-                         source.load_meals(root), work.language)
+    blocks = read_blocks(_read(root, key, "text").replace("|\n", "\n"), source.load_meals(root), work.language)
     report = add_footnotes(blocks, _read(root, key, "footnotes"))
     if work.source.sections:
         first, stop = work.source.sections

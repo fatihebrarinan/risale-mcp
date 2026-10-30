@@ -14,8 +14,10 @@ Eşleme baskıdan bağımsızdır: metinler `match_words` ile işaretsiz kelimel
   farklıdır ("Çünki"); 5 kelimelik dizilerin rastlantıyla aynı yerde örtüşmesi ise çok nadirdir.
 - Aynı metin ana ciltlerde birden çok yerde geçiyorsa bir önceki eşlemenin hemen ardından
   gelen yer seçilir.
-- Kısa paragraflar ("Bak!") ancak bir önceki eşlemenin devamıysa ya da ana ciltlerde tek
-  bir yerde geçiyorsa eşlenir.
+- Kısa paragraflar ("Bak!") ancak bir önceki eşlemenin devamıysa ya da (en az iki kelimeyse)
+  ana ciltlerde tek bir yerde geçiyorsa eşlenir. "Elhâsıl:" gibi tek kelime kanıt değildir.
+- Aslı Arapça eserler ve Hizb-i Nurî metni ana ciltlerden de alıntılar: aynı metin ana ciltte
+  de varsa ana cilt seçilir, Hizb-i Nurî yalnızca devam ettirilirken ya da son çare olarak.
 - Mecmua bir ana cilt paragrafını birkaç paragrafa bölmüşse (Hayrat baskısı şiirin her
   satırını ayrı paragraf yapar), aynı düğümde art arda gelen ve ana ciltte örtüşen eşlemeler
   tek kayıtta birleşir; ana cilt paragrafı okunurken bir kez görünür. Kimlikler yeniden
@@ -36,6 +38,7 @@ MIN_HITS = 3             # …ve en az bu kadar dizi (5 kelimelik dizilerin rast
 GROW_UNTIL = 0.9         # komşu paragraf eklemeyi bu kapsamda bırak
 GAP = 4                  # komşu sayılan en uzak sıra farkı (arada hâşiye ya da Arapça kayıt olabilir)
 CANONICAL_GROUPS = {Group.ESKI_SAID, Group.ANA_CILT}
+LAST_RESORT = "hizb-i-nuri"
 
 
 def _shingles(words: list[str]) -> list[int]:
@@ -48,6 +51,8 @@ class CanonicalIndex:
     paragraphs: list[tuple[str, str, str]] = field(default_factory=list)  # (eser, paragraf, düğüm)
     shingles: dict[int, list[int]] = field(default_factory=lambda: defaultdict(list))
     short: dict[str, list[int]] = field(default_factory=lambda: defaultdict(list))
+    last_resort: set[int] = field(default_factory=set)    # Hizb-i Nurî: ana ciltte karşılığı yoksa
+    arabic: set[int] = field(default_factory=set)         # aslı Arapça eserler: beraberlikte ana cilt önce
 
     @classmethod
     def load(cls, books_dir: Path) -> "CanonicalIndex":
@@ -65,6 +70,10 @@ class CanonicalIndex:
                 continue
             i = len(self.paragraphs)
             self.paragraphs.append((work, p["id"], p["node_id"]))
+            if work == LAST_RESORT:
+                self.last_resort.add(i)
+            if book.get("language") == "ar":
+                self.arabic.add(i)
             words = match_words(p["text"])
             if len(words) < SHINGLE:
                 self.short[" ".join(words)].append(i)
@@ -77,7 +86,7 @@ class CanonicalIndex:
         follows = lambda i: previous is not None and 0 < i - previous <= 3   # noqa: E731
         if len(words) < SHINGLE:
             candidates = self.short.get(" ".join(words), [])
-            chosen = [i for i in candidates if follows(i)] or (candidates if len(candidates) == 1 else [])
+            chosen = [i for i in candidates if follows(i)] or (candidates if len(candidates) == 1 and len(words) > 1 else [])
             return chosen[:1]
 
         own = set(_shingles(words))
@@ -87,10 +96,20 @@ class CanonicalIndex:
             return []
         best = max(votes.values())
         tied = sorted(i for i, v in votes.items() if v >= best * 0.9)
-        start = next((i for i in tied if follows(i)), tied[0])
-        run = self._grow(start, votes, hits, len(own))
+        following = next((i for i in tied if follows(i)), None)
+        ordinary = {i: v for i, v in votes.items() if i not in self.last_resort}
+        if following is None and ordinary:
+            top = max(ordinary.values())
+            tied = sorted((i for i, v in ordinary.items() if v >= top * 0.9), key=lambda i: (i in self.arabic, i))
+            if run := self._accepted(tied[0], ordinary, hits, len(own)):
+                return run
+            tied = sorted(i for i, v in votes.items() if v >= best * 0.9)
+        return self._accepted(following if following is not None else tied[0], votes, hits, len(own))
+
+    def _accepted(self, start: int, votes: Counter, hits: dict[int, list[int]], total: int) -> list[int]:
+        run = self._grow(start, votes, hits, total)
         covered = self._coverage(run, hits)
-        return sorted(run) if covered >= min(MIN_HITS, len(own)) and covered / len(own) >= MIN_SCORE else []
+        return sorted(run) if covered >= min(MIN_HITS, total) and covered / total >= MIN_SCORE else []
 
     @staticmethod
     def _coverage(run: set[int], hits: dict[int, list[int]]) -> int:

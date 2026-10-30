@@ -60,3 +60,20 @@ def test_split_canonical_paragraph_maps_once():
     assert [(p["id"], p["source"]) for p in book["paragraphs"]] == [
         ("m/p001", ["sozler/10/p003"]), ("m/p003", ["sozler/10/p004"])]
     assert report.merged == 1
+
+
+def test_one_word_found_once_is_not_evidence():
+    index = canonical()
+    index.add("baska", {"paragraphs": [{"id": "b/p001", "node_id": "b", "kind": "paragraph", "text": "Elhâsıl:"}]})
+    assert index.match("Elhâsıl:", None) == []
+
+
+def test_main_volume_wins_over_the_hizb_unless_the_hizb_is_being_continued():
+    index = CanonicalIndex()
+    index.add("sozler", {"paragraphs": [{"id": "s/p001", "node_id": "s", "kind": "paragraph", "text": ONUNCU}]})
+    index.add("hizb-i-nuri", {"paragraphs": [
+        {"id": "h/p001", "node_id": "h", "kind": "paragraph", "text": DOKUZUNCU},
+        {"id": "h/p002", "node_id": "h", "kind": "paragraph", "text": ONUNCU + " " + DOKUZUNCU},
+    ]})
+    assert index.match(ONUNCU, None) == [0]
+    assert index.match(ONUNCU, 1) == [2]
