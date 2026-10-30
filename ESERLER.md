@@ -38,7 +38,7 @@
 | 23 | Hakikat Çekirdekleri | `erisale/mektubat` | ✅ indirildi | ✅ 3 düğüm, 145 paragraf, 293 cümle | Standart baskıda Mektubat'ın sonunda. |
 | 24 | Şuaat-ı Marifetü'n-Nebi | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 28 düğüm, 254 paragraf, 545 cümle |  |
 | 25 | Nokta | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 65 düğüm, 241 paragraf, 750 cümle |  |
-| 26 | el-Mesnevî el-Arabî en-Nurî | `risaleoku_app/ar_mesnevi` | ✅ indirildi | ✅ 123 düğüm, 2425 paragraf, 6094 cümle | Arapça asıl; İhsan Kasım es-Sâlihî tahkiki. Türkçesi Mesnevî-i Nuriye. |
+| 26 | el-Mesnevî el-Arabî en-Nurî | `risaleoku_app/ar_mesnevi` | ✅ indirildi | ✅ 123 düğüm, 2425 paragraf, 6096 cümle | Arapça asıl; İhsan Kasım es-Sâlihî tahkiki. Türkçesi Mesnevî-i Nuriye. |
 | 27 | el-Mesnevî el-Arabî en-Nurî (harekeli) | `rasaelalnour/mesnevi` | ✅ indirildi | ✅ 130 düğüm, 2014 paragraf, 7020 cümle | Abdülkadir Badıllı'nın "el-Kâmil" baskısı (harekeli); yalnızca kullanıcıda, genel sunucuya çıkmaz. |
 | 28 | Mesnevî-i Nuriye | `erisale/mesnevi-i-nuriye` | ✅ indirildi | ✅ 212 düğüm, 1990 paragraf, 5448 cümle | el-Mesnevî el-Arabî'nin Türkçesi. |
 | 29 | Nur'un İlk Kapısı | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 92 düğüm, 696 paragraf, 2236 cümle |  |
@@ -49,8 +49,8 @@
 |---:|---|---|---|---|---|
 | 30 | Sözler | `erisale/sozler` | ✅ indirildi | ✅ 690 düğüm, 4305 paragraf, 13183 cümle |  |
 | 31 | Mektubat | `erisale/mektubat` | ✅ indirildi | ✅ 678 düğüm, 3565 paragraf, 9371 cümle |  |
-| 32 | Lem'alar | `erisale/lemalar` | ✅ indirildi | ✅ 741 düğüm, 3273 paragraf, 8954 cümle |  |
-| 33 | Şualar | `erisale/sualar` | ✅ indirildi | ✅ 850 düğüm, 4414 paragraf, 9827 cümle |  |
+| 32 | Lem'alar | `erisale/lemalar` | ✅ indirildi | ✅ 741 düğüm, 3273 paragraf, 9298 cümle |  |
+| 33 | Şualar | `erisale/sualar` | ✅ indirildi | ✅ 850 düğüm, 4414 paragraf, 9878 cümle |  |
 | 34 | Rumuzat-ı Semaniye | `kullanici/rumuzat-i-semaniye` | ✅ indirildi | ✅ 73 düğüm, 340 paragraf, 1963 cümle; %2 ana cilde eşlendi | Yirmi Dokuzuncu Mektub'un Üçüncü, Dördüncü ve Sekizinci Kısımları; kullanıcının PDF'i. Mektubat'ta da bulunan paragraflar oraya eşlenir. |
 | 35 | Barla Lahikası | `erisale/barla-lahikasi` | ✅ indirildi | ✅ 405 düğüm, 2382 paragraf, 6618 cümle |  |
 | 36 | Kastamonu Lahikası | `erisale/kastamonu-lahikasi` | ✅ indirildi | ✅ 213 düğüm, 1520 paragraf, 4030 cümle |  |

@@ -37,6 +37,7 @@ _STAR_END = re.compile(r"[.!?؟…‥]+[”’\"»)\]']*(?=\s)|(?<=\s)[*٭](?=\s
 _ARABIC_LETTER = re.compile(r"[\u0600-\u06FF]")
 _OPENERS = "“\"‘'«("
 _LIST_MARKER = re.compile(r"\d{1,2}\.\s+\S")
+_NUMBER_MARK = re.compile(r"\[\d+\]")             # Arapça aslı ile tercümesini eşleştiren numara: "[44]Kezâ…"
 _INITIALS = re.compile(r"(?:[A-ZÇĞİÖŞÜÂÎÛ]\.)*[A-ZÇĞİÖŞÜÂÎÛ]")
 ABBREVIATIONS = {"Hz", "Hzr", "Dr", "Prof", "No", "vs", "vb", "Sh", "Av"}
 MIN_INCIPIT_WORDS = 4
@@ -72,7 +73,7 @@ def _no_break_before(text: str, dot: int) -> bool:
 def _starts_sentence(text: str, i: int, arabic: list[bool]) -> bool:
     ch = text[i]
     return (ch.isupper() or ch in _OPENERS or arabic[i] or bool(_ARABIC_LETTER.match(ch))
-            or bool(_LIST_MARKER.match(text, i)))
+            or bool(_LIST_MARKER.match(text, i)) or bool(_NUMBER_MARK.match(text, i)))
 
 
 def split(text: str, arabic: list[dict] | None = None, star: bool = False) -> list[tuple[int, int]]:

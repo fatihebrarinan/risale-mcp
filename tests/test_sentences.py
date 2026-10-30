@@ -95,3 +95,8 @@ def test_every_sentence_is_an_exact_slice_of_its_paragraph(sozler):
     for s in sozler["sentences"]:
         assert paragraphs[s["paragraph_id"]]["text"][s["start"]:s["end"]] == s["text"]
     assert len({s["id"] for s in sozler["sentences"]}) == len(sozler["sentences"])
+
+
+def test_numbered_translation_line_starts_a_sentence():
+    text = "Devam eder.\n[6]O Sâni' ki, Fâtır-ı Bâkî'dir."
+    assert [text[s:e] for s, e in split(text)] == ["Devam eder.", "[6]O Sâni' ki, Fâtır-ı Bâkî'dir."]
