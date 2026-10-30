@@ -225,8 +225,8 @@ def main() -> None:
         build_work(work)
     checklist.main()
     if not args.no_db:
-        print("\nveritabanı:\n" + "\n".join(build_db.build(quran_path=QURAN_PATH).lines()))
-        build_db.build(out=PUBLIC_DB_PATH, quran_path=QURAN_PATH, public=True)
+        print("\nveritabanı:\n" + "\n".join(build_db.build(quran_path=QURAN_PATH, meals_from=RAW_DIR / Site.RISALEOKU_APP).lines()))
+        build_db.build(out=PUBLIC_DB_PATH, quran_path=QURAN_PATH, public=True, meals_from=RAW_DIR / Site.RISALEOKU_APP)
         if count := embeddings.missing(connect(DB_PATH)):
             print(f"\nanlamsal arama: {count} cümlenin vektörü yok; tamamlamak için "
                   f"`uv run python -m risale_mcp.embeddings build {embeddings.SEARCH_MODEL}`")

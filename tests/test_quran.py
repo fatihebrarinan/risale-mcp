@@ -91,7 +91,8 @@ def test_build_links_unmarked_verses_and_uses_the_section_sura(tmp_path, quran):
     quran_path.write_text(json.dumps(quran.data, ensure_ascii=False), "utf-8")
     report = build(books, out, quran_path)
     rows = sqlite3.connect(out).execute(
-        "SELECT sentence_id, sura, ayah_start, ayah_end FROM ayah_quotes ORDER BY paragraph_id").fetchall()
+        "SELECT sentence_id, sura, ayah_start, ayah_end FROM arabic WHERE kind = 'ayet' AND kind_source = 'kuran'"
+        " ORDER BY paragraph_id").fetchall()
     assert rows == [("hizbul-kuranil-muazzam/2-bakara/c001", 2, 255, 255),
                     ("hizbul-kuranil-muazzam/2-bakara/c002", 2, 1, 1)]
     assert report.located["bulundu"] == 2

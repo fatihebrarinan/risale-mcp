@@ -30,6 +30,14 @@ MAX_CITED = 8            # tek atıfla verilebilecek en çok ardışık cümle (
 MAX_RESULTS = 50
 PREVIEW_CHARS = 400      # arama sonucunda gösterilen en uzun cümle metni
 ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen Arapça türleri
+
+
+def _arabic_record(row) -> dict:
+    """Bağlamdan çıkarılan hadis adaydır, doğrulanmamıştır: model bunu bilmeli."""
+    record = {k: row[k] for k in ("text", "kind", "publisher_translation", "source") if row[k]}
+    if row["kind_source"] == "baglam":
+        record["kind_unverified"] = True
+    return record
 MAX_LINKS = 30           # find_ayah'ın bir âyet için döndürdüğü en çok ilişki
 MAX_AYAHS = 30           # get_ayah'ın bir seferde döndürdüğü en çok âyet (bağlam hariç)
 QURAN_ATTRIBUTION = ("Arabic text: Tanzil Project (tanzil.net), Medina Mushaf script. Translations: Diyanet İşleri "
@@ -266,10 +274,11 @@ class Library:
         arabic = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.paragraph_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
-                " a.kind, a.meal AS publisher_translation, a.source FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id"
+                " a.kind, a.kind_source, a.meal AS publisher_translation, a.source FROM arabic a"
+                " JOIN paragraphs p ON p.id = a.paragraph_id"
                 f" WHERE a.paragraph_id IN ({_placeholders(wanted)}) AND a.kind IN ({_placeholders(ANNOTATED_ARABIC)})"
                 " ORDER BY a.paragraph_id, a.ord", [*wanted, *ANNOTATED_ARABIC]):
-            arabic[a["paragraph_id"]].append({k: a[k] for k in ("text", "kind", "publisher_translation", "source") if a[k]})
+            arabic[a["paragraph_id"]].append(_arabic_record(a))
         source_refs = {}
         if sources:
             source_refs = dict(self.conn.execute(
@@ -393,10 +402,11 @@ class Library:
         out = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.sentence_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
-                " a.kind, a.meal AS publisher_translation, a.source FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id"
+                " a.kind, a.kind_source, a.meal AS publisher_translation, a.source FROM arabic a"
+                " JOIN paragraphs p ON p.id = a.paragraph_id"
                 f" WHERE a.sentence_id IN ({_placeholders(sentence_ids)}) ORDER BY a.paragraph_id, a.ord", sentence_ids):
             if a["publisher_translation"] or a["source"]:
-                out[a["sentence_id"]].append({k: a[k] for k in ("text", "kind", "publisher_translation", "source") if a[k]})
+                out[a["sentence_id"]].append(_arabic_record(a))
         return out
 
     def find_sentence(self, incipit: str, scope: str | None = None, limit: int = 10) -> dict:
@@ -508,7 +518,7 @@ class Library:
             where += " AND ? BETWEEN q.ayah_start AND q.ayah_end"
             params.append(ayah)
         quotes = (
-            "SELECT 'source' AS via, a.sentence_id, a.paragraph_id, a.span_start, a.span_end, a.meal, a.source,"
+            "SELECT CASE a.kind_source WHEN 'kaynak' THEN 'source' ELSE 'text' END AS via, a.sentence_id, a.paragraph_id, a.span_start, a.span_end, a.meal, a.source,"
             " a.ayah_check, a.sura, a.ayah_start, a.ayah_end FROM arabic a WHERE a.sura IS NOT NULL"
             " UNION ALL SELECT 'text', q.sentence_id, q.paragraph_id, q.span_start, q.span_end, NULL, NULL, NULL,"
             " q.sura, q.ayah_start, q.ayah_end FROM ayah_quotes q")

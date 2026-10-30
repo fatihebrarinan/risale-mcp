@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 4
+SCHEMA_VERSION = 5
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -134,6 +134,7 @@ CREATE TABLE arabic (
     span_start   INTEGER NOT NULL,
     span_end     INTEGER NOT NULL,
     kind         TEXT NOT NULL,
+    kind_source  TEXT NOT NULL DEFAULT 'kaynak',   -- türün dayanağı: kaynak, kuran, meal, erisale, baglam (arabic_kinds.py)
     meal         TEXT,
     source       TEXT,
     sura         INTEGER,
