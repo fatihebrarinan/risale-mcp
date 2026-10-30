@@ -77,3 +77,28 @@ def test_main_volume_wins_over_the_hizb_unless_the_hizb_is_being_continued():
     ]})
     assert index.match(ONUNCU, None) == [0]
     assert index.match(ONUNCU, 1) == [2]
+
+
+def test_second_pass_aligns_a_line_between_two_mappings_despite_edition_change():
+    index = CanonicalIndex()
+    index.add("sozler", {"paragraphs": [
+        {"id": "s/p001", "node_id": "s", "kind": "paragraph", "text": ONUNCU},
+        {"id": "s/p002", "node_id": "s", "kind": "paragraph", "text": "Ey şu'le-i rahmet-i âlem Risalet-ün Nur der"},
+        {"id": "s/p003", "node_id": "s", "kind": "paragraph", "text": DOKUZUNCU},
+    ]})
+    book = {"outline": [{"id": "m", "parent_id": None}], "paragraphs": [
+        {"id": "m/p001", "node_id": "m", "kind": "paragraph", "text": ONUNCU},
+        {"id": "m/p002", "node_id": "m", "kind": "paragraph", "text": "Ey şu'le-i rahmet-i âlem"},
+        {"id": "m/p003", "node_id": "m", "kind": "paragraph", "text": DOKUZUNCU},
+    ]}
+    map_to_canonical(book, index)
+    assert book["paragraphs"][1]["source"] == ["s/p002"]
+
+
+def test_paragraph_with_many_words_of_its_own_keeps_its_text():
+    index = canonical()
+    own = ONUNCU + " bu cümlenin geri kalanı yalnızca bu mecmuada vardır ve hiçbir ana ciltte geçmez ki kaybolmasın"
+    book = {"outline": [{"id": "m", "parent_id": None}], "paragraphs": [
+        {"id": "m/p001", "node_id": "m", "kind": "paragraph", "text": own}]}
+    assert map_to_canonical(book, index, keep_unique=True).kept_unique == 1
+    assert book["paragraphs"][0]["text"] == own

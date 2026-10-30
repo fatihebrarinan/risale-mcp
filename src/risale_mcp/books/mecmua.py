@@ -18,6 +18,10 @@ Eşleme baskıdan bağımsızdır: metinler `match_words` ile işaretsiz kelimel
   ana ciltlerde tek bir yerde geçiyorsa eşlenir. "Elhâsıl:" gibi tek kelime kanıt değildir.
 - Aslı Arapça eserler ve Hizb-i Nurî metni ana ciltlerden de alıntılar: aynı metin ana ciltte
   de varsa ana cilt seçilir, Hizb-i Nurî yalnızca devam ettirilirken ya da son çare olarak.
+- İkinci geçiş: iki eşlemenin arasında kalan paragraflar, o iki yerin arasındaki ana cilt paragraflarıyla
+  kelime kelime hizalanır (`_fill_between`): baskı farkı olan kısa satırlar ve şiir mısraları böyle bulunur.
+- Eşlenen paragrafın metni mecmuadan silinir. Bu yüzden `keep_unique` ile mecmuaya özgü kelimesi çok olan
+  (en az 8 kelime ve %15) paragraf metniyle kalır; erisale mecmualarında kimlikler kaymasın diye kapalıdır.
 - Mecmua bir ana cilt paragrafını birkaç paragrafa bölmüşse (Hayrat baskısı şiirin her
   satırını ayrı paragraf yapar), aynı düğümde art arda gelen ve ana ciltte örtüşen eşlemeler
   tek kayıtta birleşir; ana cilt paragrafı okunurken bir kez görünür. Kimlikler yeniden
@@ -27,6 +31,7 @@ Eşleme baskıdan bağımsızdır: metinler `match_words` ile işaretsiz kelimel
 import json
 from collections import Counter, defaultdict
 from dataclasses import dataclass, field
+from difflib import SequenceMatcher
 from pathlib import Path
 
 from risale_mcp.catalog import WORKS, Group
@@ -39,6 +44,11 @@ GROW_UNTIL = 0.9         # komşu paragraf eklemeyi bu kapsamda bırak
 GAP = 4                  # komşu sayılan en uzak sıra farkı (arada hâşiye ya da Arapça kayıt olabilir)
 CANONICAL_GROUPS = {Group.ESKI_SAID, Group.ANA_CILT}
 LAST_RESORT = "hizb-i-nuri"
+FILL_COVER = 0.85        # ikinci geçişte kelimelerin en az bu kadarı aynı sırayla bulunmalı
+FILL_WINDOW = 60         # iki eşlemenin arası bundan uzunsa aranmaz
+FILL_REACH = 8           # tek komşusu olan paragraf için aranacak uzaklık
+UNIQUE_WORDS = 8         # `keep_unique`: bu kadar kelime…
+UNIQUE_SHARE = 0.15      # …ve bu oran ana cilt paragraflarında yoksa metin mecmuada kalır
 
 
 def _shingles(words: list[str]) -> list[int]:
@@ -51,6 +61,7 @@ class CanonicalIndex:
     paragraphs: list[tuple[str, str, str]] = field(default_factory=list)  # (eser, paragraf, düğüm)
     shingles: dict[int, list[int]] = field(default_factory=lambda: defaultdict(list))
     short: dict[str, list[int]] = field(default_factory=lambda: defaultdict(list))
+    words: list[list[str]] = field(default_factory=list)
     last_resort: set[int] = field(default_factory=set)    # Hizb-i Nurî: ana ciltte karşılığı yoksa
     arabic: set[int] = field(default_factory=set)         # aslı Arapça eserler: beraberlikte ana cilt önce
 
@@ -75,6 +86,7 @@ class CanonicalIndex:
             if book.get("language") == "ar":
                 self.arabic.add(i)
             words = match_words(p["text"])
+            self.words.append(words)
             if len(words) < SHINGLE:
                 self.short[" ".join(words)].append(i)
             for h in set(_shingles(words)):
@@ -141,6 +153,8 @@ class MappingReport:
     sources: Counter = field(default_factory=Counter)        # ana cilt -> eşlenen paragraf sayısı
     unique_samples: list[str] = field(default_factory=list)
     merged: int = 0                                          # öncekiyle birleşen eşlenmiş paragraf
+    filled: int = 0                                          # ikinci geçişte bulunan
+    kept_unique: int = 0                                     # özgü kelimesi çok olduğu için metniyle kalan
 
 
 def _fill_short_backwards(mains: list[dict], found: list[list[int]], index: CanonicalIndex) -> None:
@@ -155,7 +169,63 @@ def _fill_short_backwards(mains: list[dict], found: list[list[int]], index: Cano
             found[k] = [nxt[0] - 1]
 
 
-def map_to_canonical(book: dict, index: CanonicalIndex, kinds: frozenset[str] | None = None) -> MappingReport:
+def _aligned(words: list[str], target: list[str]) -> float:
+    """`words`'ün ne kadarı `target`'ta aynı sırayla (en az iki kelimelik parçalar hâlinde) geçiyor?"""
+    if not words or len(set(words) & set(target)) < 0.7 * len(set(words)):
+        return 0.0
+    if len(words) < 3:
+        return 1.0 if any(target[i:i + len(words)] == words for i in range(len(target))) else 0.0
+    blocks = SequenceMatcher(None, target, words, autojunk=False).get_matching_blocks()
+    return sum(b.size for b in blocks if b.size >= 2) / len(words)
+
+
+def _fill_between(mains: list[dict], found: list[list[int]], index: CanonicalIndex) -> int:
+    """Eşlenmemiş paragraflar, iki yanındaki eşlemenin arasındaki ana cilt paragraflarında aranır."""
+    filled, k = 0, 0
+    while k < len(mains):
+        if found[k]:
+            k += 1
+            continue
+        end = k
+        while end < len(mains) and not found[end]:
+            end += 1
+        before = found[k - 1][-1] if k else None
+        after = found[end][0] if end < len(mains) else None
+        if before is None and after is None:
+            break
+        low = after - FILL_REACH if before is None else before
+        high = before + FILL_REACH if after is None else after
+        same_work = before is None or after is None or index.paragraphs[before][0] == index.paragraphs[after][0]
+        if same_work and 0 <= high - low <= FILL_WINDOW:
+            cursor = max(low, 0)
+            for i in range(k, end):
+                if mains[i]["kind"] == "signature":
+                    continue
+                words = match_words(mains[i]["text"])
+                scored = [(_aligned(words, index.words[j]), -j) for j in range(cursor, min(high + 1, len(index.words)))
+                          if _plausible(words, j, index, cursor, after)]
+                score, at = max(scored, default=(0.0, 0))
+                if score >= FILL_COVER:
+                    found[i], cursor = [-at], -at
+                    filled += 1
+        k = end
+    return filled
+
+
+def _plausible(words: list[str], j: int, index: CanonicalIndex, cursor: int, after: int | None) -> bool:
+    """Metnin büyük kısmı değilse (başlık, "Elcevab:") yalnızca komşu paragrafta aranır: uzak bir paragrafa düşmesin."""
+    return (2 * len(words) >= len(index.words[j]) or j - cursor <= 1
+            or (after is not None and 0 <= after - j <= 1))
+
+
+def _unique_words(words: list[str], sources: list[int], index: CanonicalIndex) -> bool:
+    known = {w for i in sources for w in index.words[i]}
+    missing = sum(w not in known for w in words)
+    return missing >= UNIQUE_WORDS and missing / max(len(words), 1) >= UNIQUE_SHARE
+
+
+def map_to_canonical(book: dict, index: CanonicalIndex, kinds: frozenset[str] | None = None,
+                     keep_unique: bool = False, fill: bool = True) -> MappingReport:
     """Mecmua JSON'unu yerinde değiştirir: eşlenen paragrafların metni yerine `source`,
     düğümlerde `sources` (karşılık gelen ana cilt düğümleri) yazılır. `kinds` verilirse yalnızca bu
     türdeki paragraflar eşlenir."""
@@ -167,6 +237,13 @@ def map_to_canonical(book: dict, index: CanonicalIndex, kinds: frozenset[str] | 
         found.append(index.match(p["text"], previous) if kinds is None or p["kind"] in kinds else [])
         previous = found[-1][-1] if found[-1] else previous
     _fill_short_backwards(mains, found, index)
+    if kinds is None and fill:
+        report.filled = _fill_between(mains, found, index)
+    if keep_unique:
+        for k, p in enumerate(mains):
+            if found[k] and _unique_words(match_words(p["text"]), found[k], index):
+                found[k] = []
+                report.kept_unique += 1
     found_by_id = {p["id"]: f for p, f in zip(mains, found)}
 
     mapped_ids: set[str] = set()

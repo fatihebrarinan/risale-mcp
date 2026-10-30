@@ -4,6 +4,7 @@ Satırlar elle yazılmıştır; Word dosyası gerekmez. Son testler gerçek eser
 """
 
 import json
+import re
 
 import pytest
 
@@ -106,7 +107,7 @@ def test_real_talikat_is_parallel(slug):
         pytest.skip(f"{slug}.json yok")
     data = json.loads(path.read_text(encoding="utf-8"))
     assert [n["id"].removeprefix(f"{slug}/") for n in data["outline"][1:]] == [s.local for s in TALIKAT_SECTIONS]
-    assert not any("[Sayfa:" in p["text"] or "ص:" in p["text"] for p in data["paragraphs"])
+    assert not any("[Sayfa:" in p["text"] or re.search(r"(?:^|\s)ص:\s*\d", p["text"]) for p in data["paragraphs"])
 
 
 def test_real_hutbe_sections_exist_in_turkish():

@@ -151,10 +151,13 @@ def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: b
     while lines:
         line = lines.pop(0).rstrip()
         if hasiye is not None:
-            hasiye += " " + line.strip()
-            if line.endswith("}"):
+            head, close, tail = line.partition("}")
+            hasiye += " " + head.strip() + close
+            if close:
                 _hasiye(blocks, hasiye, hasiye_inline)
                 hasiye, hasiye_inline = None, False
+                if tail.strip():
+                    lines.insert(0, "   " + tail.strip())
             continue
         if not line.strip():
             open_paragraph = False             # boş satır paragrafı kapatır (Zülfikâr'ın Hizb'i)
@@ -165,7 +168,7 @@ def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: b
         if line.startswith("\ue001"):
             _hasiye(blocks, line[1:], True)
             continue
-        if (at := line.find("{")) > 0 and line[:at].strip():      # cümlenin ortasındaki hâşiye
+        if (at := line.find("{")) > 0 and line[:at].strip() and line[0] != "~":   # cümlenin ortasındaki hâşiye
             close = line.find("}", at)
             if close < 0:
                 hasiye, hasiye_inline, line = line[at:], True, line[:at].rstrip() + _INLINE_MARK
@@ -174,9 +177,11 @@ def read_blocks(body: str, meals: dict[str, str], language: str, split_verses: b
                 lines.insert(0, f"\ue001{pending}")
                 line = line[:at].rstrip() + _INLINE_MARK + line[close + 1:]
         if line.lstrip().startswith("{"):
-            line = line.lstrip()
-            if line.endswith("}"):
-                _hasiye(blocks, line)
+            head, close, tail = line.lstrip().partition("}")
+            if close:
+                _hasiye(blocks, head + close)
+                if tail.strip():
+                    lines.insert(0, "   " + tail.strip())
             else:
                 hasiye = line
             continue

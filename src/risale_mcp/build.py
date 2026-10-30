@@ -63,6 +63,7 @@ def _canonical_index() -> CanonicalIndex:
 def mapping_report(report: MappingReport) -> list[str]:
     total = report.mapped + report.unique
     return [
+        f"  ikinci geçiş        : {report.filled} bulundu, {report.kept_unique} özgü kelimesi yüzünden metniyle kaldı",
         f"  ana cilde eşlenen   : {report.mapped}/{total} paragraf ({report.mapped / max(total, 1):.0%}) "
         f"{dict(report.sources.most_common(6))}",
         f"  mecmuaya özgü       : {report.unique} paragraf, {report.unique_hasiye} hâşiye",
@@ -189,7 +190,9 @@ def build_work(work: Work) -> None:
     data = book.to_json()
     if needs_mapping(work):
         kinds = rumuzat.MAPPED_KINDS if work.source.site is Site.KULLANICI else None
-        extra += mapping_report(map_to_canonical(data, _canonical_index(), kinds))
+        extra += mapping_report(map_to_canonical(data, _canonical_index(), kinds,
+                                                 keep_unique=work.source.site is not Site.ERISALE,
+                                                 fill=not work.private))     # sonradan derlemelerde dizin ve başlık çok
     data["sentences"] = sentences.segment(data)
     out = BOOKS_DIR / f"{work.slug}.json"
     out.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
