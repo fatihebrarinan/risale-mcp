@@ -16,7 +16,11 @@ def test_slugs_are_unique_and_url_safe():
 def test_every_listed_work_is_present():
     # Kullanıcının listesindeki 42 madde; aslı Arapça eserlerin (Mesnevî, İşaratü'l-İ'caz, Kızıl İcaz, Ta'likat)
     # Arapçası ve Türkçesi ayrı eser; Hutbe-i Şamiye'nin Arapçası da (İhsan Kasım tercümesi) ayrı eser.
-    assert len(WORKS) == 46
+    # 2026-10-30'da risaleoku.com'dan 11 eser, 16 Osmanlıca cilt ve harekeli Mesnevî eklendi.
+    assert len(WORKS) == 73
+    assert sum(w.group == "osmanlica" for w in WORKS) == 16
+    assert {w.slug for w in WORKS if w.private} == {"el-mesnevi-el-arabi-harekeli", "esasat-i-nuriye",
+                                                    "hizmet-rehberi-ve-dusturlari"}
 
 
 def test_missing_works_have_no_source_and_others_do():

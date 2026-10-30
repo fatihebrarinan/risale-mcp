@@ -1,0 +1,3394 @@
+{
+"outline": [
+{
+"id": "el-mesnevi-el-arabi",
+"parent_id": null,
+"title": "el-Mesnevî el-Arabî en-Nurî",
+"anchors": []
+},
+{
+"id": "el-mesnevi-el-arabi/mukaddime",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "تَرْجَمَةُ المُقَدِّمَةِ التُّرْكِيَّةِ بِالْعَرَبِيَّةِ",
+"subtitle": "Türkçe aslından Arapça tercüme",
+"anchors": [
+[
+"هذه",
+"المقدمة",
+"للمجموعة",
+"العربية",
+"لفظا",
+"والمثنوي",
+"حكما"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/mukaddime/nokta-01",
+"parent_id": "el-mesnevi-el-arabi/mukaddime",
+"title": "النُّقْطَةُ الْأُولَى",
+"type": "Nokta",
+"number": 1,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الاولي",
+"ان",
+"السعيد",
+"الاول",
+"كان",
+"في"
+],
+[
+"ثم",
+"اراد",
+"ـ",
+"بعد",
+"ازالة",
+"تلك",
+"السقامة"
+],
+[
+"فانجر",
+"الحال",
+"في",
+"تلك",
+"الشكوك",
+"الي",
+"ان"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/mukaddime/nokta-02",
+"parent_id": "el-mesnevi-el-arabi/mukaddime",
+"title": "النُّقْطَةُ الثَّانِيَةُ",
+"type": "Nokta",
+"number": 2,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الثانية",
+"ان",
+"السعيد",
+"في",
+"سياحته",
+"بذلك"
+],
+[
+"لكل",
+"عصر",
+"مرشد",
+"يسمو",
+"به"
+],
+[
+"وهو",
+"لباقي",
+"العصر",
+"ذاك",
+"المرشد"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/mukaddime/nokta-03",
+"parent_id": "el-mesnevi-el-arabi/mukaddime",
+"title": "النُّقْطَةُ الثَّالِثَةُ",
+"type": "Nokta",
+"number": 3,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الثالثة",
+"ان",
+"المناظرة",
+"الجارية",
+"بين",
+"ذينك"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/mukaddime/nokta-04",
+"parent_id": "el-mesnevi-el-arabi/mukaddime",
+"title": "النُّقْطَةُ الرَّابِعَةُ",
+"type": "Nokta",
+"number": 4,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الرابعة",
+"ان",
+"السعيد",
+"القديم",
+"لما",
+"كان"
+],
+[
+"عباراتنا",
+"شتي",
+"وحسنك",
+"واحد"
+],
+[
+"وكل",
+"الي",
+"ذاك",
+"الجمال",
+"يشير"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/mukaddime/nokta-05",
+"parent_id": "el-mesnevi-el-arabi/mukaddime",
+"title": "النُّقْطَةُ الْخَامِسَةُ",
+"type": "Nokta",
+"number": 5,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الخامسة",
+"ان",
+"السعيد",
+"القديم",
+"حينما",
+"انقلب"
+],
+[
+"قد",
+"ترجم",
+"المترجم",
+"مقدمة",
+"هذا",
+"المثنوي",
+"الثاني"
+],
+[
+"الملا",
+"عبد",
+"المجيد",
+"اخو",
+"المولف"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/itizar",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "تَنْبيهٌ * إِخْطَارٌ * إعْتِذَارٌ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"هذه",
+"الرسالة",
+"نوع",
+"تفسير",
+"شهودي"
+],
+[
+"ايها",
+"القاري",
+"لا",
+"تحسبن",
+"براهين",
+"التوحيد",
+"ومظاهره"
+],
+[
+"اللهم",
+"اجعل",
+"القران",
+"نورا",
+"لعقولنا",
+"وقلوبنا",
+"وارواحنا"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "لَـمَـعَــاتٌ",
+"subtitle": "مِنْ شَمْسِ التَّوْحِيدِ لَمَعَاتٌ مِنْ شَمْسِ التَّوْحِيدِ",
+"anchors": [
+[
+"وهو",
+"النص",
+"العربي",
+"للكلمة",
+"الثانية",
+"والعشرين"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"سبحانك",
+"يا",
+"من",
+"تسبح",
+"بحمدك",
+"هذه",
+"الكاينات"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/ders-14",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَلدَّرْسُ الرَّابِعَ عَشَرَ",
+"type": "Ders",
+"number": 14,
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"في",
+"بيان",
+"جواهر",
+"من",
+"خزاين",
+"هذه",
+"الايات"
+],
+[
+"الله",
+"خـلق",
+"كل",
+"شيء",
+"وهو",
+"علي",
+"كل"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-01",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الْأُولَى",
+"type": "Lem'a",
+"number": 1,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الاولي",
+"ان",
+"للصانع",
+"جل",
+"جلاله",
+"علي"
+],
+[
+"نعم",
+"يصير",
+"الماء",
+"المشروب",
+"باذن",
+"الله",
+"ما"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-02",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الثَّانِيَةُ",
+"type": "Lem'a",
+"number": 2,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الثانية",
+"انظر",
+"الي",
+"خاتم",
+"واحد",
+"من"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-03",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "الَلَّمْعَةُ الثَّالِثَةُ",
+"type": "Lem'a",
+"number": 3,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الثالثة",
+"انظر",
+"الي",
+"نقش",
+"طغرايه",
+"المضروب"
+],
+[
+"الحاصل",
+"كما",
+"انـه",
+"لو",
+"لم",
+"تسند",
+"الشميسات"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-04",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الرَّابِعَةُ",
+"type": "Lem'a",
+"number": 4,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الرابعة",
+"فكما",
+"ان",
+"الكتاب",
+"لو",
+"كان"
+],
+[
+"كذلك",
+"هذه",
+"الكاينات",
+"اذا",
+"قلت",
+"انها",
+"مكتوبة"
+],
+[
+"فافرض",
+"قصعة",
+"تراب",
+"ثم",
+"افرض",
+"دخول",
+"كل"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-05",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الْخَامِسَةُ",
+"type": "Lem'a",
+"number": 5,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الخامسة",
+"انظر",
+"كما",
+"ان",
+"كل",
+"حرف"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-06",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ السَّادِسَةُ",
+"type": "Lem'a",
+"number": 6,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"السادسة",
+"انظر",
+"كما",
+"ان",
+"الصانع",
+"سبحانه"
+],
+[
+"فيا",
+"من",
+"يستبعد",
+"الحشر",
+"مستنكرا",
+"له",
+"انظر"
+],
+[
+"ومن",
+"يقول",
+"لمن",
+"يرفع",
+"الجبال",
+"بالاشارة",
+"لاظهار"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-07",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ السَّابِعَةُ",
+"type": "Lem'a",
+"number": 7,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"السابعة",
+"انظر",
+"فكما",
+"يشاهد",
+"علي",
+"صحيفة"
+],
+[
+"فانظر",
+"الي",
+"دستور",
+"التعاون",
+"كيف",
+"يجري",
+"من"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-08",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الثَّامِنَةُ",
+"type": "Lem'a",
+"number": 8,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الثامنة",
+"انظر",
+"ان",
+"ما",
+"يشاهد",
+"من"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-09",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ التَّاسِعَةُ",
+"type": "Lem'a",
+"number": 9,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"التاسعة",
+"فكما",
+"رايت",
+"خاتم",
+"الاحدية",
+"علي"
+],
+[
+"ايها",
+"المتفرعن",
+"جرب",
+"نفسك",
+"هل",
+"تقدر",
+"ان"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-10",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الْعَاشِرَةُ",
+"type": "Lem'a",
+"number": 10,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"العاشرة",
+"فاذا",
+"رايت",
+"ما",
+"اشرنا",
+"اليه"
+],
+[
+"الحاصل",
+"اذا",
+"تركت",
+"اسناد",
+"الكثرة",
+"الغير",
+"المحدودة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-11",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الْحَادِيَةُ عَشَرَ",
+"type": "Lem'a",
+"number": 11,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الحادية",
+"عشر",
+"كما",
+"ان",
+"توافق",
+"كل"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-12",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الثَّانِيَةُ عَشَرَ",
+"type": "Lem'a",
+"number": 12,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الثانية",
+"عشر",
+"انظر",
+"كما",
+"ان",
+"الحياة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-13",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الثَّالِثَةُ عَشَرَ",
+"type": "Lem'a",
+"number": 13,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الثالثة",
+"عشر",
+"انظر",
+"ان",
+"كل",
+"شيء"
+],
+[
+"ولقد",
+"فهمت",
+"من",
+"فيض",
+"القران",
+"الحكيم",
+"ان"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lemalar/lema-14",
+"parent_id": "el-mesnevi-el-arabi/lemalar",
+"title": "اَللَّمْعَةُ الرَّابِعَةُ عَشَرَ",
+"type": "Lem'a",
+"number": 14,
+"heading": "inline",
+"anchors": [
+[
+"اللمعة",
+"الرابعة",
+"عشر",
+"اعلم",
+"ان",
+"هذه",
+"الموجودات"
+],
+[
+"كذلك",
+"ان",
+"مكملية",
+"هذه",
+"الاثار",
+"المشهودة",
+"في"
+],
+[
+"التي",
+"هي",
+"مبادي",
+"الصفات",
+"القدسية",
+"وكمال",
+"الشوون"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "رَشَــحَــاتٌ",
+"subtitle": "مِنْ بَحْرِ مَعْرِفَةِ النَّبِيِّ صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ [تَنْبِيهٌ]",
+"anchors": [
+[
+"ان",
+"ما",
+"يعرف",
+"لنا",
+"ربنا",
+"لا",
+"يعد"
+],
+[
+"احداها",
+"هذه",
+"الكاينات",
+"وقد",
+"سمعت",
+"بعض",
+"ايات"
+],
+[
+"وثانيتها",
+"الاية",
+"الكبري",
+"من",
+"هذا",
+"الكتاب",
+"وهي"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-01",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الْأُولَى",
+"type": "Reşha",
+"number": 1,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الاولي",
+"اعلم",
+"ان",
+"ذلك",
+"البرهان",
+"الناطق"
+],
+[
+"فان",
+"قلت",
+"ما",
+"هو",
+"وما",
+"ماهيته"
+],
+[
+"قيل",
+"لك",
+"هو",
+"الذي",
+"لعظمته",
+"المعنوية",
+"صار"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-02",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الثَّانِيَةُ",
+"type": "Reşha",
+"number": 2,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الثانية",
+"اعلم",
+"ان",
+"هذا",
+"البرهان",
+"النوراني"
+],
+[
+"وقد",
+"سمعت",
+"ورايت",
+"في",
+"الدروس",
+"السابقة",
+"شعاعات"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-03",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الثَّالِثَةُ",
+"type": "Reşha",
+"number": 3,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الثالثة",
+"اعلم",
+"انه",
+"كما",
+"تصدقه",
+"الدلايل"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-04",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الرَّابِعَةُ",
+"type": "Reşha",
+"number": 4,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الرابعة",
+"اعلم",
+"ان",
+"للمحيط",
+"الزماني",
+"والمكاني"
+],
+[
+"فافتح",
+"عينك",
+"وانظر",
+"فان",
+"اول",
+"ما",
+"يتظاهر"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-05",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الْخَامِسَةُ",
+"type": "Reşha",
+"number": 5,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الخامسة",
+"انظر",
+"الي",
+"هذا",
+"الشخص",
+"النوراني"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-06",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ السَّادِسَةُ",
+"type": "Reşha",
+"number": 6,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"السادسة",
+"فان",
+"قلت",
+"من",
+"هذا",
+"الشخص"
+],
+[
+"قيل",
+"لك",
+"انظر",
+"واستمع",
+"ما",
+"يقول",
+"ها"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-07",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ السَّابِعَةُ",
+"type": "Reşha",
+"number": 7,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"السابعة",
+"فان",
+"شيت",
+"ان",
+"تعرف",
+"ان"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-08",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الثَّامِنَةُ",
+"type": "Reşha",
+"number": 8,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الثامنة",
+"من",
+"المعلوم",
+"ان",
+"رفع",
+"عادة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-09",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ التَّاسِعَةُ",
+"type": "Reşha",
+"number": 9,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"التاسعة",
+"اعلم",
+"ان",
+"كنت",
+"عارفا",
+"بسجية"
+],
+[
+"نعم",
+"ان",
+"الحق",
+"اغني",
+"من",
+"ان",
+"يدلس"
+],
+[
+"نعم",
+"ان",
+"مسلكه",
+"الحق",
+"مستغن",
+"عن",
+"التدليس"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-10",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الْعَاشِرَةُ",
+"type": "Reşha",
+"number": 10,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"العاشرة",
+"انظر",
+"واستمع",
+"ما",
+"يقول",
+"ها"
+],
+[
+"نعم",
+"تحت",
+"حجاب",
+"هذه",
+"الكاينات",
+"ذات",
+"العجايب"
+],
+[
+"نعم",
+"نشاهد",
+"من",
+"شوونه",
+"واطواره",
+"انه",
+"يشاهد"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-11",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الْحَادِيَةُ عَشَرَةُ",
+"type": "Reşha",
+"number": 11,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الحادية",
+"عشرة",
+"اعلم",
+"ان",
+"هذا",
+"الشخص"
+],
+[
+"بل",
+"كما",
+"انه",
+"بدعوته",
+"وبهدايته",
+"سبب",
+"حصول"
+],
+[
+"فان",
+"شيت",
+"فانظر",
+"اليه",
+"وهو",
+"في",
+"الصلاة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-12",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الثَّانِيَةُ عَشَرَةُ",
+"type": "Reşha",
+"number": 12,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الثانية",
+"عشرة",
+"فيا",
+"للعجب",
+"ما",
+"يطلب"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-13",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الثَّالِثَةُ عَشَرَةُ",
+"type": "Reşha",
+"number": 13,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الثالثة",
+"عشرة",
+"يا",
+"رفيقي",
+"في",
+"هذه"
+],
+[
+"نعم",
+"نري",
+"كل",
+"عصر",
+"نمر",
+"عليه",
+"قد"
+],
+[
+"فلنوخر",
+"تفصيلات",
+"مشهوداتنا",
+"في",
+"رجوعنا",
+"اليها",
+"في"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"parent_id": "el-mesnevi-el-arabi/reshalar",
+"title": "اَلرَّشْحَةُ الرَّابِعَةُ عَشَرَةُ",
+"type": "Reşha",
+"number": 14,
+"heading": "inline",
+"anchors": [
+[
+"الرشحة",
+"الرابعة",
+"عشرة",
+"اعلم",
+"ان",
+"دلايل",
+"النبوة"
+],
+[
+"فيا",
+"ايها",
+"الناس",
+"هل",
+"يمكن",
+"عندكم",
+"ان"
+],
+[
+"فيا",
+"من",
+"له",
+"بصر",
+"بلا",
+"رمد",
+"وبصيرة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/katre-01",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "اَلْقَطْرَةُ الْأُولَى",
+"type": "Katre",
+"number": 1,
+"heading": "inline",
+"anchors": [
+[
+"القطرة",
+"الاولي",
+"اعلم",
+"ان",
+"دلايل",
+"النبوة",
+"الاحمدية"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/katre-02",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "اَلْقَطْرَةُ الثَّانِيَةُ",
+"type": "Katre",
+"number": 2,
+"heading": "inline",
+"anchors": [
+[
+"القطرة",
+"الثانية",
+"اعلم",
+"انك",
+"قد",
+"تفهمت",
+"من"
+],
+[
+"فان",
+"قلت",
+"القران",
+"ما",
+"هو"
+],
+[
+"قيل",
+"لك",
+"هو",
+"الترجمة",
+"الازلية",
+"لهذه",
+"الكاينات"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/mebhas",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "مَبْحَثٌ عَظِيمٌ",
+"anchors": [
+[
+"فان",
+"قلت",
+"ما",
+"وجه",
+"تفوق",
+"قيمة",
+"القران"
+],
+[
+"قيل",
+"لك",
+"ان",
+"القران",
+"كلام",
+"الله",
+"باعتبار"
+],
+[
+"واما",
+"ساير",
+"الكلمات",
+"الالهية",
+"فمنها",
+"ما",
+"هو"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/katre-03",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "اَلْقَطْرَةُ الثَّالِثَةُ",
+"type": "Katre",
+"number": 3,
+"heading": "inline",
+"anchors": [
+[
+"في",
+"بيان",
+"لمعة",
+"الاعجاز",
+"في",
+"تكرارات",
+"القران"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/nokta-01",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "اَلنُّقْطَةُ الْأُولَى",
+"type": "Nokta",
+"number": 1,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الاولي",
+"اعلم",
+"ان",
+"القران",
+"لانه",
+"كتاب"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/nokta-02",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "النُّقْطَةُ الثَّانِيَةُ",
+"type": "Nokta",
+"number": 2,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الثانية",
+"اعلم",
+"ان",
+"القران",
+"خطاب",
+"ودواء"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/nokta-03",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "اَلنُّقْطَةُ الثَّالِثَةُ",
+"type": "Nokta",
+"number": 3,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الثالثة",
+"اعلم",
+"انه",
+"كما",
+"ان",
+"الحاجات"
+],
+[
+"فتكرار",
+"الايات",
+"والكلمات",
+"للدلالة",
+"علي",
+"تكرر",
+"الاحتياج"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/nokta-04",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "اَلنُّقْطَةُ الرَّابِعَةُ",
+"type": "Nokta",
+"number": 4,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الرابعة",
+"اعلم",
+"ان",
+"القران",
+"موسس",
+"لهذا"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/nokta-05",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "اَلنُّقْطَةُ الْخَامِسَةُ",
+"type": "Nokta",
+"number": 5,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"الخامسة",
+"اعلم",
+"ان",
+"القران",
+"يبحث",
+"عن"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/nokta-06",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "اَلنُّقْطَةُ السَّادِسَةُ",
+"type": "Nokta",
+"number": 6,
+"heading": "inline",
+"anchors": [
+[
+"النقطة",
+"السادسة",
+"اعلم",
+"ان",
+"لكل",
+"اية",
+"ظهرا"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/katre-04",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "اَلْقَطْرَةُ الرَّابِعَةُ",
+"type": "Katre",
+"number": 4,
+"anchors": [
+[
+"في",
+"بيان",
+"لمعة",
+"الاعجاز",
+"في",
+"اهمال",
+"القران"
+],
+[
+"النكتة",
+"الاولي",
+"فان",
+"قلت",
+"لاي",
+"شيء",
+"لا"
+],
+[
+"قيل",
+"لك",
+"لان",
+"الفلسفة",
+"عدلت",
+"عن",
+"طريق"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/katre-05",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "الْقَطْرَةُ الْخَامِسَةُ",
+"type": "Katre",
+"number": 5,
+"anchors": [
+[
+"اعلم",
+"ان",
+"من",
+"لمعات",
+"اعجاز",
+"القران",
+"ـ"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/reshalar/resha-14/katre-06",
+"parent_id": "el-mesnevi-el-arabi/reshalar/resha-14",
+"title": "الْقَطْرَةُ السَّادِسَةُ",
+"type": "Katre",
+"number": 6,
+"anchors": [
+[
+"في",
+"بيان",
+"انه",
+"لا",
+"يقاس",
+"القران",
+"علي"
+],
+[
+"اعلم",
+"ان",
+"منابع",
+"علو",
+"طبقة",
+"الكلام",
+"وقوته"
+],
+[
+"نعم",
+"اين",
+"صورة",
+"امر",
+"فضولي",
+"ناشي",
+"امره"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/lasiyyemalar",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "ـ لاَ سِيَّمَاتٌ ـ",
+"subtitle": "(مِنْ بَرَاهِينِ الْحَشْرِ وَالآخِرَةِ) (وهي المقام الثاني العربي >للكلمة الثامنة والعشرون< وأساس >الكلمة العاشرة<)",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم",
+"وبه",
+"نستعين"
+],
+[
+"الحمد",
+"لله",
+"الذي",
+"شهدت",
+"علي",
+"وجوب",
+"وجوده"
+],
+[
+"يا",
+"من",
+"سدت",
+"عليه",
+"الطبيعة",
+"والاسباب",
+"باب"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "قَطْرَةٌ",
+"subtitle": "مِنْ بَحْرِ التَّوْحِيدِ (اِقْرَأْ بِدِقَّةٍ تَقِرُّ عَيْنُكَ بِإِذْنِ اللهِ)",
+"anchors": [
+[
+"مفتاح",
+"حل",
+"هذه",
+"الرسالة",
+"المستفادة",
+"من",
+"فيض"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/ifade-i-meram",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "إِفَادَةُ الْمَرَامِ",
+"anchors": [
+[
+"اعلم",
+"ايها",
+"الناظرون",
+"اني",
+"قد",
+"ساقني",
+"القدر"
+],
+[
+"فاولا",
+"ابتدا",
+"المشاجرة",
+"بيننا",
+"في",
+"هذه",
+"الكلمات"
+],
+[
+"اظن",
+"ان",
+"جريان",
+"هذا",
+"الزمان",
+"يلقي",
+"العقول"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/mukaddime",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "اَلْمُقَدِّمَةُ",
+"anchors": [
+[
+"اعلم",
+"اني",
+"حصلت",
+"في",
+"اربعين",
+"سنة",
+"في"
+],
+[
+"اما",
+"الكلمة",
+"هي",
+"المعني",
+"الحرفي",
+"والمعني",
+"الاسمي"
+],
+[
+"وكذا",
+"ان",
+"النظر",
+"والنية",
+"يغيران",
+"ماهيات",
+"الاشياء"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/bab-01",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "اَلْبَابُ الْأَوَّلُ",
+"type": "Bâb",
+"number": 1,
+"anchors": [
+[
+"لا",
+"اله",
+"الا",
+"الله"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الحمد",
+"لله",
+"رب",
+"العالمين",
+"والصلاة",
+"والسلام",
+"علي"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/bab-01/hatime",
+"parent_id": "el-mesnevi-el-arabi/katre/bab-01",
+"title": "خَاتِمَةُ هَذَا الْمَبْحَثِ",
+"anchors": [
+[
+"الاول",
+"الياس",
+"اعلم",
+"انك",
+"اذا",
+"تدهشت",
+"من"
+],
+[
+"والثاني",
+"العجب",
+"نعم",
+"يا",
+"نفس",
+"ايست",
+"ثم"
+],
+[
+"والثالث",
+"الغرور",
+"وكذا",
+"من",
+"مرضك",
+"غرورك",
+"فبحكمه"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/takriz",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "تَقْرِيظٌ لِلْفَاضِلِ الْمُحْتَرَمِ, رَئِيسِ مَجْلِسِ الْمَصَاحِفِ وَالْمُؤَلَّفَاتِ الشَّرْعِيَّةِ",
+"anchors": [
+[
+"حضرة",
+"الشيخ",
+"صفوت",
+"افندي"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم",
+"وبه",
+"ثقتي"
+],
+[
+"احمد",
+"الله",
+"سبحانه",
+"واصلي",
+"واسلم",
+"علي",
+"نبيه"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/bab-02",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "اَلْبَابُ الثَّانِي",
+"type": "Bâb",
+"number": 2,
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"سبحان",
+"الله",
+"القادر",
+"المطلق",
+"بالقدرة",
+"الذاتية",
+"والغني"
+],
+[
+"سبحان",
+"الله",
+"الكامل",
+"المطلق",
+"في",
+"ذاته",
+"وصفاته"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/bab-03",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "الْبَابُ الثَّالِثُ",
+"type": "Bâb",
+"number": 3,
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الحمد",
+"لله",
+"الذي",
+"تحمد",
+"له",
+"وتثني",
+"عليه"
+],
+[
+"ثم",
+"الحمد",
+"لله",
+"الذي",
+"تحمده",
+"وتسبح",
+"له"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/bab-04",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "الْبَابُ الرَّابِعُ",
+"type": "Bâb",
+"number": 4,
+"anchors": [
+[
+"هذا",
+"الباب",
+"قسمان",
+"هذا",
+"القسم",
+"الاول",
+"بغاية"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الله",
+"اكبر",
+"من",
+"كل",
+"شيء",
+"اذ",
+"هو"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/bab-04/kisim-02",
+"parent_id": "el-mesnevi-el-arabi/katre/bab-04",
+"title": "اَلْقِسْمُ الثَّانِي مِنَ الْبَابِ الرَّابِعِ",
+"type": "Kısım",
+"number": 2,
+"anchors": [
+[
+"في",
+"مراتب",
+"الله",
+"اكبر"
+],
+[
+"الله",
+"اكبره",
+"داير",
+"اوتوزاوچ",
+"مرتبه",
+"دن",
+"يدي"
+],
+[
+"المرتبة",
+"الاولي",
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم",
+"وقل"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/hatime",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "خَاتِمَةٌ",
+"anchors": [
+[
+"في",
+"مسايل",
+"مشهودة",
+"متفرقة"
+],
+[
+"المسالة",
+"الاولي",
+"اعلم",
+"اني",
+"اقول",
+"ما",
+"دمت"
+],
+[
+"من",
+"بندهء",
+"قرانم",
+"اكرجان",
+"دارم",
+"من",
+"خاك"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nukte",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نكتة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"ما",
+"يري",
+"علي",
+"كل",
+"شيء"
+],
+[
+"فان",
+"شيت",
+"تقريب",
+"هذه",
+"الحقيقة",
+"الي",
+"الفهم"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nukte-2",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نكتة",
+"anchors": [
+[
+"ولان",
+"الايمان",
+"يوسس",
+"الاخوة",
+"بين",
+"كل",
+"شيء"
+],
+[
+"واعلم",
+"ان",
+"اكسير",
+"الايمان",
+"اذا",
+"دخل",
+"في"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nokta",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نقطة",
+"anchors": [
+[
+"قد",
+"شاهدت",
+"ازدياد",
+"العلم",
+"الفلسفي",
+"في",
+"ازدياد"
+],
+[
+"وكذا",
+"شاهدت",
+"ان",
+"ما",
+"في",
+"الممكن",
+"من"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nukte-3",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نكتة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"النية",
+"احد",
+"الكلمات",
+"الاربعة",
+"التي"
+],
+[
+"ان",
+"ما",
+"في",
+"الدنيا",
+"من",
+"اللذايذ",
+"والنعم"
+],
+[
+"والوجه",
+"الثاني",
+"يتحري",
+"اللذة",
+"بتهوس",
+"النفس",
+"فلا"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nokta-2",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نقطة",
+"anchors": [
+[
+"اعلم",
+"دقت",
+"ان",
+"التعلق",
+"بالاسباب",
+"سبب",
+"الذلة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nukte-4",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نكتة",
+"anchors": [
+[
+"ولقد",
+"شاهدت",
+"انه",
+"لو",
+"لم",
+"يسند",
+"كل"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nokta-3",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نقطة",
+"anchors": [
+[
+"ما",
+"اعجب",
+"شان",
+"الضلالة",
+"بسبب",
+"الغفلة",
+"كيف"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nukte-5",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نكتة",
+"anchors": [
+[
+"وما",
+"في",
+"ن",
+"نون",
+"نعبد",
+"من",
+"سر"
+],
+[
+"في",
+"يمين",
+"الماضي",
+"الانبياء",
+"قاعدون",
+"وفي",
+"يسار"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nokta-4",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نقطة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"محبة",
+"ما",
+"سواه",
+"تعالي",
+"علي"
+],
+[
+"والوجه",
+"الثاني",
+"يعرج",
+"من",
+"سفل",
+"اي",
+"يحب"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nukte-6",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نكتة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الرزاق",
+"جل",
+"شانه",
+"تعهد",
+"باية"
+],
+[
+"الا",
+"ان",
+"الرزق",
+"قسمان",
+"حقيقي",
+"ومجازي",
+"فالمتكفل"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/nukte-7",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "نكتة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"المصايب",
+"التي",
+"تصيب",
+"المعصوم",
+"من"
+],
+[
+"مثلا",
+"ان",
+"النمرة",
+"تحس",
+"في",
+"نفسها",
+"علي"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl",
+"parent_id": "el-mesnevi-el-arabi/katre",
+"title": "ذَيْــــلٌ لِلْقَـطْـــرَةِ",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الحمد",
+"لله",
+"رب",
+"العالمين",
+"والصلاة",
+"والسلام",
+"علي"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الصلاة",
+"في",
+"اول",
+"الوقت",
+"والنظر"
+],
+[
+"مثلا",
+"اذا",
+"قال",
+"المصلي",
+"الحمد",
+"لله",
+"كانه"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-2",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"اني",
+"شاهدت",
+"في",
+"سيري",
+"في",
+"الظلمات"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-3",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"في",
+"النفس",
+"عقدة",
+"مغلقة",
+"مدهشة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-4",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"من",
+"يزين",
+"راسك",
+"ويحسنه",
+"ويعلق"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-5",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الدعاء",
+"ـ",
+"لا",
+"سيما",
+"من"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-6",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"من",
+"اهم",
+"مرض",
+"ضلالة",
+"النفس"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-7",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الذهاب",
+"في",
+"طريق",
+"الكفر",
+"كالذهاب"
+],
+[
+"فان",
+"قلت",
+"فكيف",
+"يقبل",
+"الكفر",
+"مع",
+"هذا"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-8",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"انه",
+"كما",
+"ان",
+"الكلمة",
+"الفردة",
+"مسموعة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-9",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"جامعية",
+"القران",
+"ووسعته",
+"ومراعته",
+"لحسيات"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-10",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"كيف",
+"السكون",
+"الي",
+"الدنيا",
+"بالوجه",
+"الثالث"
+],
+[
+"انا",
+"ركبت",
+"نقطة",
+"ميتة",
+"وتركبني",
+"جيفة",
+"ميتة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-11",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"وجودك",
+"كالبندقة",
+"الميرية",
+"او",
+"الفرس"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-12",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"من",
+"المزالق",
+"للاقدام",
+"خلط",
+"احكام"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-13",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الاسلامية",
+"رحمة",
+"عامة",
+"حتي",
+"ان"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-14",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"النفس",
+"لا",
+"تريد",
+"ان",
+"تعترف"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-15",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"واعلم",
+"ان",
+"النفس",
+"بسبب",
+"تكاسلها",
+"في",
+"وظيفتها"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-16",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الاشياء",
+"تتفاوت",
+"بتفاوت",
+"مدار",
+"الاستناد"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-17",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الفرق",
+"بين",
+"طريقي",
+"في",
+"قطرة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-18",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اي",
+"واه",
+"وا",
+"اسفا",
+"ان",
+"وجود",
+"النفس"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-19",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"يا",
+"انا",
+"قد",
+"علمت",
+"انه",
+"ما"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-20",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الصانع",
+"جل",
+"جلاله",
+"صنع",
+"الانسان"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-21",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الباب",
+"الموصل",
+"الي",
+"المقصود",
+"من"
+],
+[
+"والباب",
+"الثاني",
+"مفتوح",
+"دايما",
+"وهو",
+"من",
+"طرف"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/katre/zeyl/remz-22",
+"parent_id": "el-mesnevi-el-arabi/katre/zeyl",
+"title": "رمز",
+"anchors": [
+[
+"يا",
+"من",
+"يطلب",
+"الشهرة",
+"المسماة",
+"في",
+"العرف"
+],
+[
+"من",
+"المثنوي",
+"العربي",
+"النوري"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/hubab",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "حَبَابٌ",
+"subtitle": "مِنْ عُمَّانِ القُرْآنِ الْحَكِيمِ خُدَاي پُـرْكَرَمْ خُوْد مِلْكِ خُوْدْرَامِي خِرَدْاَزْتُو",
+"anchors": [
+[
+"براي",
+"تونكه",
+"دارد",
+"بهاي",
+"بي",
+"كران",
+"داده"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الحمد",
+"لله",
+"رب",
+"العالمين",
+"والصلاة",
+"والسلام",
+"علي"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/hubab/meclis-i-mebusana-hitaben-yazdigim-bir",
+"parent_id": "el-mesnevi-el-arabi/hubab",
+"title": "هَذِهِ الْخِطَابَةُ الْإِرْشادِيَّةُ لِلْمَجْلِسِ الْمِلِّيِّ الْإِسْلامِيِّ",
+"anchors": [
+[
+"صدرت",
+"هكذا",
+"تركية",
+"فلتنتشر",
+"كذلك"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"ان",
+"الصلوة",
+"كانت",
+"علي",
+"المومنين",
+"كتـبا",
+"موقوتا"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/hubab/zeylul-hubab",
+"parent_id": "el-mesnevi-el-arabi/hubab",
+"title": "ذَيْــلُ الْحَـبَـابِ",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"من",
+"كان",
+"لله",
+"كان",
+"له",
+"كل",
+"شيء"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/hubab/zeylul-hubab/ifade-i-meram",
+"parent_id": "el-mesnevi-el-arabi/hubab/zeylul-hubab",
+"title": "إِفَادَةُ الْمَرَامِ",
+"anchors": [
+[
+"يا",
+"ايها",
+"الناظر",
+"في",
+"رسايلي",
+"العربية",
+"الثمان"
+],
+[
+"كيف",
+"لا",
+"وكل",
+"ما",
+"في",
+"رسايلي",
+"من"
+],
+[
+"بديع",
+"الزمان",
+"ـ",
+"سعيد",
+"النورسي",
+"رض"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/habbe",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "حَــــبَّــــةٌ",
+"subtitle": "مِن نَوَاتَاتِ ثَمَرَةٍ مِن ثَمَرَاتِ جِنَانِ القُرآنِ * حبّه مي كويد:",
+"anchors": [
+[
+"من",
+"شاخ",
+"درختم",
+"پراز",
+"ميوهء",
+"توحيد"
+],
+[
+"يك",
+"شبنمم",
+"ازيم",
+"پراز",
+"لولو",
+"تمجيد"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/habbe/ifade-i-meram",
+"parent_id": "el-mesnevi-el-arabi/habbe",
+"title": "إِفَادَةُ الْمَرَامِ",
+"anchors": [
+[
+"انه",
+"قيل",
+"لي",
+"ان",
+"الناس",
+"يقولون",
+"لا"
+],
+[
+"اللهم",
+"ارنا",
+"الحق",
+"حقا",
+"وارزقنا",
+"اتباعه",
+"وارنا"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/habbe/tazarru-ve-niyaz",
+"parent_id": "el-mesnevi-el-arabi/habbe",
+"title": "تَضَرُّعٌ وَنِيَازٌ",
+"anchors": [
+[
+"الهي",
+"لازم",
+"علي",
+"ان",
+"لا",
+"ابالي",
+"ولو"
+],
+[
+"يا",
+"خالقي",
+"يا",
+"ربي",
+"يا",
+"رازقي",
+"يا"
+],
+[
+"الهي",
+"اتمني",
+"ان",
+"يكون",
+"لي",
+"لسان",
+"ابدي"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/habbe/zeylul-habbe",
+"parent_id": "el-mesnevi-el-arabi/habbe",
+"title": "ذَيْلٌ لِلْحَبَّةِ",
+"anchors": [
+[
+"يا",
+"ناظر",
+"اظنني",
+"احفر",
+"باثاري",
+"المشوشة",
+"عن"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الحمد",
+"لله",
+"علي",
+"نعمة",
+"الايمان",
+"والاسلام",
+"بعدد"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/habbe/zeyl",
+"parent_id": "el-mesnevi-el-arabi/habbe",
+"title": "ذَيْلُ الذَّيْلِ",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الحمد",
+"لله",
+"الرحمن",
+"الذي",
+"من",
+"لطايف",
+"عظايم"
+],
+[
+"فالواقعات",
+"الماضية",
+"معجزات",
+"قدرته",
+"تدل",
+"علي",
+"انه"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/zuhre",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "زَهْــــرَةٌ",
+"subtitle": "مِنْ رِيَاضِ الْقُرْآنِ الْحَكِيمِ",
+"anchors": [
+[
+"كل",
+"حي",
+"في",
+"الدنيا",
+"كعسكر",
+"موظف",
+"انما"
+],
+[
+"ــ",
+"بديع",
+"الزمان",
+"ــ"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/zuhre/tezyil",
+"parent_id": "el-mesnevi-el-arabi/zuhre",
+"title": "تَذْيِيلٌ لِلزَّهْرَةِ",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمـن",
+"الرحيم"
+],
+[
+"الحمد",
+"لله",
+"علي",
+"نعمته",
+"بانزال",
+"القران",
+"وعلي"
+],
+[
+"ان",
+"الفاطر",
+"الحكيم",
+"جل",
+"جلاله",
+"جعل",
+"النباتات"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/zerre",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "ذَرَّةٌ",
+"subtitle": "مِنْ شُعَاعِ هِدَايَةِ الْقُرْآنِ",
+"anchors": [
+[
+"ان",
+"هذه",
+"الرسالة",
+"محادثات",
+"مع",
+"نفسي",
+"الامارة"
+],
+[
+"بسم",
+"الله",
+"الرحمـن",
+"الرحيم"
+],
+[
+"يا",
+"من",
+"له",
+"الملك",
+"وله",
+"الحمد",
+"صل"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/zerre/hatime",
+"parent_id": "el-mesnevi-el-arabi/zerre",
+"title": "{خَاتِمَةٌ}",
+"anchors": [
+[
+"لله",
+"در",
+"العلة",
+"والمصيبة",
+"والذلة",
+"ما",
+"احلاها"
+],
+[
+"اني",
+"علي",
+"جناح",
+"السفر",
+"الي",
+"الاخرة",
+"فلكثرة"
+],
+[
+"والقلب",
+"المريض",
+"متقرب",
+"الي",
+"باب",
+"القبر",
+"للفراق"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/semme",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "شَمَّةٌ",
+"subtitle": "مِنْ نَسِيمِ هِدَايَةِ الْقُرْآنِ",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمـن",
+"الرحيم"
+],
+[
+"الحمد",
+"لله",
+"رب",
+"العالمين",
+"علي",
+"رحمته",
+"علي"
+],
+[
+"ان",
+"العالم",
+"بجميع",
+"انواعه",
+"من",
+"طبقات",
+"الغيب"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/semme/ifade-i-meram",
+"parent_id": "el-mesnevi-el-arabi/semme",
+"title": "إِفَادَةُ الْمَرَامِ",
+"anchors": [
+[
+"اعلم",
+"ايها",
+"الناظر",
+"اني",
+"اسمع",
+"من",
+"الناس"
+],
+[
+"من",
+"نسيم",
+"هداية",
+"القران"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/semme/takriz",
+"parent_id": "el-mesnevi-el-arabi/semme",
+"title": "هَذَا تَقْرِيظُ أَخِي فِي اللَّهِ الْحَسِيبِ النَّسِيبِ",
+"anchors": [
+[
+"السيد",
+"محمد",
+"شفيق",
+"الارواسي"
+],
+[
+"وان",
+"من",
+"شيء",
+"الا",
+"يسبح",
+"بحمدهۦ"
+],
+[
+"والصلاة",
+"والسلام",
+"علي",
+"خير",
+"خلقه"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/onuncu-risale",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "اَلرِّسَالَةُ الْعَاشِرَةُ",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمـن",
+"الرحيم"
+],
+[
+"ومن",
+"الله",
+"التوفيق",
+"لاقوم",
+"الطريق"
+],
+[
+"سبحانك",
+"يا",
+"من",
+"انطق",
+"السماء",
+"بحمده",
+"وتسبيحه"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/onuncu-risale/ders-05",
+"parent_id": "el-mesnevi-el-arabi/onuncu-risale",
+"title": "الْدَّرْسُ الْخَامِسُ",
+"type": "Ders",
+"number": 5,
+"anchors": [
+[
+"اونبرنجي",
+"سوزك",
+"برچكركي",
+"بر",
+"خلاصه",
+"سي",
+"اسكي"
+],
+[
+"هي",
+"نوة",
+"للكلمة",
+"الحادية",
+"عشرة",
+"وخلاصة",
+"لها"
+],
+[
+"في",
+"بيان",
+"جوهرة",
+"من",
+"كنوز",
+"اية",
+"وما"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/sule",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "شُعْلَةٌ",
+"subtitle": "مِنْ أَنْوَارِ شَمْسِ الْقُرْآنِ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الفاطر",
+"الحكيم",
+"انما",
+"ركب",
+"في"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الحمد",
+"ــ",
+"من",
+"الله",
+"وبالله",
+"وعلي",
+"الله"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/sule/zeyl",
+"parent_id": "el-mesnevi-el-arabi/sule",
+"title": "ذَيْلٌ لِلشُّعْلَةِ",
+"anchors": [
+[
+"لبديع",
+"الزمان",
+"سعيد",
+"النورسي"
+],
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الحمد",
+"لله",
+"والصلاة",
+"علي",
+"نبيه"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nur",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "نُورٌ",
+"subtitle": "مِنْ أَنْوَارِ نُجُومِ الْقُرْآنِ وَمِيزَانٌ",
+"anchors": [
+[
+"للموازنة",
+"بين",
+"اهل",
+"الطغيان",
+"واهل",
+"الايمان"
+],
+[
+"لبديع",
+"الزمان",
+"سعيد",
+"النورسي"
+],
+[
+"لقد",
+"وجدت",
+"هذه",
+"الرسالة",
+"القيمة",
+"جدا",
+"بعد"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nur/tetimme",
+"parent_id": "el-mesnevi-el-arabi/nur",
+"title": "تَتِمَّةٌ لِمَبْحَثِ العَنْدَلِيبِ",
+"anchors": [
+[
+"ولا",
+"تحسبن",
+"ان",
+"هذه",
+"الوظيفة",
+"الربانية",
+"في"
+],
+[
+"فمنها",
+"ما",
+"له",
+"عندليب",
+"وبلابل",
+"كثيرة",
+"تنشد"
+],
+[
+"فمنها",
+"ليلية",
+"ذات",
+"سرود",
+"في",
+"مسامرة",
+"لصغار"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nokta",
+"parent_id": "el-mesnevi-el-arabi",
+"title": "نُقْطَةٌ",
+"subtitle": "من نور عرفة الله جل جلاله — İhsan Kasım es-Sâlihî'nin tercümesi (aslı Türkçe); İhsan Kasım baskısından",
+"anchors": []
+},
+{
+"id": "el-mesnevi-el-arabi/nokta/ifade-i-meram",
+"parent_id": "el-mesnevi-el-arabi/nokta",
+"title": "ايضاح",
+"anchors": [
+[
+"اذا",
+"ما",
+"دخلت",
+"بستانا",
+"فلا",
+"اجني",
+"الا"
+],
+[
+"يقال",
+"ان",
+"كلامك",
+"لايفهم",
+"بوضوح"
+],
+[
+"نعم",
+"ماحيلتي",
+"هكذا",
+"ترد",
+"السانحات",
+"الي",
+"القلب"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nokta/ifade-i-meram/burhan-01",
+"parent_id": "el-mesnevi-el-arabi/nokta/ifade-i-meram",
+"title": "البرهان الاول",
+"type": "Bürhân",
+"number": 1,
+"heading": "inline",
+"anchors": [
+[
+"البرهان",
+"الاول",
+"هو",
+"محمد",
+"صلي",
+"الله",
+"عليه"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nokta/ifade-i-meram/burhan-02",
+"parent_id": "el-mesnevi-el-arabi/nokta/ifade-i-meram",
+"title": "البرهان الثاني",
+"type": "Bürhân",
+"number": 2,
+"heading": "inline",
+"anchors": [
+[
+"البرهان",
+"الثاني",
+"هذا",
+"الكون",
+"وهذا",
+"الانسان",
+"الاكبر"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nokta/ifade-i-meram/burhan-03",
+"parent_id": "el-mesnevi-el-arabi/nokta/ifade-i-meram",
+"title": "البرهان الثالث",
+"type": "Bürhân",
+"number": 3,
+"heading": "inline",
+"anchors": [
+[
+"البرهان",
+"الثالث",
+"هو",
+"القران",
+"الكريم",
+"ذلك",
+"الكتاب"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nokta/ifade-i-meram/burhan-04",
+"parent_id": "el-mesnevi-el-arabi/nokta/ifade-i-meram",
+"title": "البرهان الرابع",
+"type": "Bürhân",
+"number": 4,
+"heading": "inline",
+"anchors": [
+[
+"البرهان",
+"الرابع",
+"الوجدان",
+"الحي",
+"او",
+"الفطرة",
+"الشاعرة"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nokta/burhan-01",
+"parent_id": "el-mesnevi-el-arabi/nokta",
+"title": "البرهان الاول",
+"type": "Bürhân",
+"number": 1,
+"heading": "inline",
+"anchors": [
+[
+"البرهان",
+"الاول",
+"وهو",
+"حقيقة",
+"محمد",
+"صلي",
+"الله"
+],
+[
+"تلك",
+"المجهزة",
+"بالرسالة",
+"والاسلام",
+"فمن",
+"حيث",
+"الرسالة"
+],
+[
+"فالرسول",
+"الكريم",
+"صلي",
+"الله",
+"عليه",
+"وسلم",
+"يبين"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nokta/burhan-02",
+"parent_id": "el-mesnevi-el-arabi/nokta",
+"title": "البرهان الثاني",
+"type": "Bürhân",
+"number": 2,
+"heading": "inline",
+"anchors": [
+[
+"البرهان",
+"الثاني",
+"وهو",
+"كتاب",
+"الكون"
+],
+[
+"نعم",
+"ان",
+"حروف",
+"هذا",
+"الكتاب",
+"ونقاطه",
+"فردا"
+],
+[
+"سوال",
+"لماذا",
+"لايري",
+"الجميع",
+"بعقولهم",
+"الخالق",
+"العظيم"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nokta/burhan-03",
+"parent_id": "el-mesnevi-el-arabi/nokta",
+"title": "البرهان الثالث",
+"type": "Bürhân",
+"number": 3,
+"heading": "inline",
+"anchors": [
+[
+"البرهان",
+"الثالث",
+"هو",
+"القران",
+"الحكيم"
+],
+[
+"اذا",
+"ما",
+"الصقت",
+"اذنك",
+"الي",
+"صدر",
+"هذا"
+],
+[
+"اما",
+"غصن",
+"هذه",
+"الشجرة",
+"الوارفة",
+"الممتد",
+"الي"
+]
+]
+},
+{
+"id": "el-mesnevi-el-arabi/nokta/burhan-04",
+"parent_id": "el-mesnevi-el-arabi/nokta",
+"title": "البرهان الرابع",
+"type": "Bürhân",
+"number": 4,
+"heading": "inline",
+"anchors": [
+[
+"البرهان",
+"الرابع",
+"هو",
+"وجدان",
+"الانسان",
+"المسمي",
+"بالفطرة"
+],
+[
+"اولاها",
+"ان",
+"الفطرة",
+"لا",
+"تكذب",
+"ففي",
+"البذرة"
+],
+[
+"النكتة",
+"الثانية",
+"لا",
+"تقتصر",
+"حواس",
+"الانسان",
+"الظاهرة"
+]
+]
+}
+],
+"notes": [
+{
+"node_id": "el-mesnevi-el-arabi",
+"after": null,
+"text": "Naşirin (Abdülkadir Badıllı) ön sözü ve sondaki fihrist esere dahil edilmedi."
+}
+]
+}

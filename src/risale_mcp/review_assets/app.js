@@ -585,7 +585,7 @@ function showNode(id) {
       : el("p", { class: "empty" }, "Bu başlığın kendine ait paragrafı yok; metin alt bölümlerinde."),
     renderChildren(id),
     renderPager(id));
-  document.body.classList.toggle("lang-ar", work.language === "ar");
+  document.body.classList.toggle("lang-ar", work.language !== "tr");
   contentEl.replaceChildren(inner);
   contentEl.scrollTop = 0;
   revealInTree(id);

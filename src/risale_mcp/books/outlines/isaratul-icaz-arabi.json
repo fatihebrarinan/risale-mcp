@@ -1,0 +1,2506 @@
+{
+"outline": [
+{
+"id": "isaratul-icaz-arabi",
+"parent_id": null,
+"title": "İşârâtü'l-İ'câz (Arapça)",
+"anchors": []
+},
+{
+"id": "isaratul-icaz-arabi/mukaddime-tercume",
+"parent_id": "isaratul-icaz-arabi",
+"title": "مقدمة الترجمة التركية",
+"subtitle": "İhsan Kasım es-Sâlihî'nin tercümesi (aslı Türkçe)",
+"anchors": []
+},
+{
+"id": "isaratul-icaz-arabi/mukaddime-tercume/tenbih",
+"parent_id": "isaratul-icaz-arabi/mukaddime-tercume",
+"title": "تنبيه",
+"anchors": [
+[
+"لقد",
+"تم",
+"تاليف",
+"تفسير",
+"اشارات",
+"الاعجاز",
+"في"
+],
+[
+"وقد",
+"بقيت",
+"الفاتحة",
+"والنصف",
+"الاول",
+"من",
+"التفسير"
+],
+[
+"اولا",
+"لان",
+"ذلك",
+"الزمان",
+"لم",
+"يكن",
+"يسمح"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/mukaddime-tercume/tenbih/nukte-01",
+"parent_id": "isaratul-icaz-arabi/mukaddime-tercume/tenbih",
+"title": "النكتة الاولى:",
+"type": "Nükte",
+"number": 1,
+"anchors": [
+[
+"لقد",
+"احس",
+"سعيد",
+"القديم",
+"بفيض",
+"من",
+"القران"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/mukaddime-tercume/tenbih/nukte-02",
+"parent_id": "isaratul-icaz-arabi/mukaddime-tercume/tenbih",
+"title": "النكتة الثانية:",
+"type": "Nükte",
+"number": 2,
+"anchors": [
+[
+"لما",
+"كانت",
+"قراءة",
+"كل",
+"حرف",
+"من",
+"القران"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/mukaddime-tercume/tenbih/nukte-03",
+"parent_id": "isaratul-icaz-arabi/mukaddime-tercume/tenbih",
+"title": "النكتة الثالثة:",
+"type": "Nükte",
+"number": 3,
+"anchors": [
+[
+"ان",
+"الترجمة",
+"التركية",
+"لهذا",
+"التفسير",
+"لم",
+"توف"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/ifadetul-meram",
+"parent_id": "isaratul-icaz-arabi",
+"title": "افادة المرام",
+"anchors": [
+[
+"اقول",
+"لما",
+"كان",
+"القران",
+"جامعا",
+"لاشتات",
+"العلوم"
+],
+[
+"فكما",
+"لابد",
+"لتنظيم",
+"الاحكام",
+"واطرادها",
+"ورفع",
+"الفوضي"
+],
+[
+"انه",
+"لابد",
+"ان",
+"يكون",
+"مفسر",
+"القران",
+"ذا"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/kuran-nedir-tarifi-nasildir",
+"parent_id": "isaratul-icaz-arabi",
+"title": "لمعة من تعريف القرآن",
+"anchors": [
+[
+"فان",
+"قلت",
+"القران",
+"ما",
+"هو"
+],
+[
+"قيل",
+"لك",
+"هو",
+"الترجمة",
+"الازلية",
+"لهذه",
+"الكاينات"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha",
+"parent_id": "isaratul-icaz-arabi",
+"title": "Sûre‑i Fâtiha",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"الرحمن",
+"علم",
+"القران",
+"خلق",
+"الانسان",
+"علمه",
+"البيان"
+],
+[
+"فنحمده",
+"مصلين",
+"علي",
+"نبيه",
+"محمد",
+"الذي",
+"ارسله"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/bismillahi",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "بِسْمِ الله",
+"anchors": [
+[
+"بسم",
+"الله",
+"كالشمس",
+"يضي",
+"نفسه",
+"كغيره",
+"فاستغني"
+],
+[
+"اما",
+"الاسم",
+"فاعلم",
+"ان",
+"لله",
+"اسماء",
+"ذاتية"
+],
+[
+"الله",
+"لفظة",
+"الجلال",
+"نسخة",
+"جامعة",
+"لجميع",
+"الصفات"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/er-rahmanir-rahim",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "الرَّحْمنِ الرَّحِيمِ",
+"anchors": [
+[
+"وجه",
+"النظم",
+"ان",
+"لفظ",
+"الجلال",
+"كما",
+"يتجلي"
+],
+[
+"وايضا",
+"كما",
+"ان",
+"لفظ",
+"الجلال",
+"اشارة",
+"الي"
+],
+[
+"ان",
+"قلت",
+"تذييل",
+"الرحمن",
+"الدال",
+"علي",
+"النعم"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/el-hamdu",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "الحَمْدُ",
+"anchors": [
+[
+"وجه",
+"النظم",
+"مع",
+"ما",
+"قبله",
+"ان",
+"الرحمن"
+],
+[
+"ثم",
+"وجه",
+"نظمه",
+"في",
+"هذا",
+"المقام",
+"اي"
+],
+[
+"ثم",
+"ان",
+"المشهور",
+"من",
+"معاني",
+"الحمد",
+"اظهار"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/lillahi",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "لله",
+"anchors": [
+[
+"لله",
+"اي",
+"الحمد",
+"مختص",
+"ومستحق",
+"للذات",
+"الاقدس"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/rabbi",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "رَبِّ",
+"anchors": [
+[
+"رب",
+"اي",
+"الذي",
+"يربي",
+"العالم",
+"بجميع",
+"اجزايه"
+],
+[
+"واعلم",
+"ان",
+"الله",
+"عز",
+"وجل",
+"عين",
+"لكل"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/el-alemin",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "الْعَالَمِينَ",
+"anchors": [
+[
+"العالمين",
+"الياء",
+"والنون",
+"اما",
+"علامة",
+"للاعراب",
+"فقط"
+],
+[
+"الحمد",
+"لله",
+"كم",
+"لله",
+"من",
+"فلك",
+"تجري"
+],
+[
+"واثر",
+"جمع",
+"العقلاء",
+"مثل",
+"رايتهم",
+"لي",
+"ساجدين"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/er-rahmanir-rahim-2",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "الْرَّحْمن الْرَّحِيمِ",
+"anchors": [
+[
+"وجه",
+"النظم",
+"انهما",
+"اشارتان",
+"الي",
+"اساسي",
+"التربية"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/maliki-yevmid-din",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "مَالِكِ يَوْمِ الدِّينِ",
+"anchors": [
+[
+"مالك",
+"يوم",
+"الدين",
+"اي",
+"يوم",
+"الحشر",
+"والجزاء"
+],
+[
+"وجه",
+"النظم",
+"انه",
+"كالنتيجة",
+"لسابقه",
+"اذ",
+"الرحمة"
+],
+[
+"ان",
+"قلت",
+"ان",
+"الله",
+"تعالي",
+"مالك",
+"لكل"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/iyyake-nabudu",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "اِيَّاكَ نَعْبُدُ",
+"anchors": [
+[
+"اياك",
+"نعبد",
+"في",
+"الكاف",
+"نكتتان"
+],
+[
+"احداهما",
+"تضمن",
+"الخطاب",
+"بسر",
+"الالتفات",
+"للاوصاف",
+"الكمالية"
+],
+[
+"والاخري",
+"ان",
+"الخطاب",
+"يشير",
+"الي",
+"وجوب",
+"ملاحظة"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/ve-iyyake-nestein",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "وَاِيَّاكَ نَسْتَعِينُ",
+"anchors": [
+[
+"واياك",
+"نستعين",
+"هذه",
+"كـ",
+"اياك",
+"نعبد",
+"باعتبار"
+],
+[
+"اي",
+"نحن",
+"معاشر",
+"الاعضاء",
+"ومعاشر",
+"الموحدين",
+"ومعاشر"
+],
+[
+"كرر",
+"اياك",
+"لتزييد",
+"لذة",
+"الخطاب",
+"والحضور",
+"ولان"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/ihdina",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "اِهْدِنَا",
+"anchors": [
+[
+"وجه",
+"النظم",
+"انه",
+"جواب",
+"العبد",
+"عن",
+"سواله"
+],
+[
+"واعلم",
+"ان",
+"اهدنا",
+"بسبب",
+"تعدد",
+"مراتب",
+"معانيه"
+],
+[
+"اللهم",
+"ارنا",
+"الحق",
+"حقا",
+"وارزقنا",
+"اتباعه",
+"وارنا"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/es-siratal-mustekim",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "الصِّرَاطَ الْمُسْتَقِيمَ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الصراط",
+"المستقيم",
+"هو",
+"العدل",
+"الذي"
+],
+[
+"ان",
+"الله",
+"عز",
+"وجل",
+"لما",
+"اسكن",
+"الروح"
+],
+[
+"احداها",
+"القوة",
+"الشهوية",
+"البهيمية",
+"الجاذبة",
+"للمنافع"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/siratallezine-enamte-aleyhim",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "صِرَاطَ الَّذِينَ اَنْعَمْتَ عَلَيْهِمْ",
+"anchors": [
+[
+"صراط",
+"الذين",
+"انعمت",
+"عليهم"
+],
+[
+"اعلم",
+"ان",
+"نظم",
+"درر",
+"القران",
+"ليس",
+"بخيط"
+],
+[
+"الحمد",
+"لله",
+"لان",
+"النعمة",
+"قرينة",
+"الحمد"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/gayril-magdubi-aleyhim",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "غَيْرِ الْمَغْضُوبِ عَلَيْهِمَْ",
+"anchors": [
+[
+"وجه",
+"النظم",
+"اعلم",
+"ان",
+"هذا",
+"المقام",
+"لكونه"
+],
+[
+"ان",
+"قلت",
+"ان",
+"الله",
+"عز",
+"وجل",
+"حكيم"
+],
+[
+"قيل",
+"لك",
+"اعلم",
+"ان",
+"الكمال",
+"والخير",
+"والحسن"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-fatiha/ve-led-dallin",
+"parent_id": "isaratul-icaz-arabi/sure-i-fatiha",
+"title": "ولا الضَّالين",
+"anchors": [
+[
+"اما",
+"ولا",
+"الضالين",
+"فالمراد",
+"منه",
+"الذين",
+"ضلوا"
+],
+[
+"واعلم",
+"ان",
+"كل",
+"الالم",
+"في",
+"الضلالة",
+"وكل"
+],
+[
+"فان",
+"شيت",
+"تامل",
+"في",
+"حال",
+"شخص",
+"بينما"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara",
+"parent_id": "isaratul-icaz-arabi",
+"title": "Sûre‑i Bakara",
+"subtitle": "السورة الاولى من الزَّهْرَاوَيْنِ",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"ان",
+"قلت",
+"ان",
+"في",
+"القرا",
+"ن",
+"الموجز"
+],
+[
+"قيل",
+"لك",
+"ما",
+"كل",
+"ما",
+"يتلالا",
+"يحرق"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/1",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "1. Âyetin Tefsiri",
+"subtitle": "الم",
+"anchors": [
+[
+"اعلم",
+"ان",
+"ههنا",
+"مباحث",
+"اربعة"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/1/mebhas-01",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/1",
+"title": "المبحث الاول:",
+"type": "Mebhas",
+"number": 1,
+"anchors": [
+[
+"ان",
+"الاعجاز",
+"قد",
+"تنفس",
+"من",
+"افق",
+"الم"
+],
+[
+"منها",
+"ان",
+"الم",
+"مع",
+"ساير",
+"اخواتها",
+"في"
+],
+[
+"ومنها",
+"ان",
+"النصف",
+"الماخوذ",
+"اكثر",
+"استعمالا",
+"من"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/1/mebhas-02",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/1",
+"title": "المبحث الثاني:",
+"type": "Mebhas",
+"number": 2,
+"anchors": [
+[
+"اعلم",
+"ان",
+"الــم",
+"كقرع",
+"العصا",
+"يوقظ",
+"السامع"
+],
+[
+"وفي",
+"هذا",
+"المبحث",
+"ايضا",
+"لطايف"
+],
+[
+"منها",
+"ان",
+"التهجي",
+"وتقطيع",
+"الحروف",
+"في",
+"الاسم"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/1/mebhas-03",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/1",
+"title": "المبحث الثالث:",
+"type": "Mebhas",
+"number": 3,
+"anchors": [
+[
+"ان",
+"الــم",
+"اشارة",
+"الي",
+"نهاية",
+"الايجاز",
+"الذي"
+],
+[
+"منها",
+"ان",
+"الــم",
+"يرمز",
+"ويشير",
+"ويومي",
+"ويلوح"
+],
+[
+"فبالاستناد",
+"الي",
+"هذا",
+"القياس",
+"التمثيلي",
+"المتسلسل",
+"وباشارة"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/1/mebhas-04",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/1",
+"title": "المبحث الرابع:",
+"type": "Mebhas",
+"number": 4,
+"anchors": [
+[
+"ان",
+"الــم",
+"مع",
+"اخواتها",
+"لما",
+"برزت",
+"بتلك"
+],
+[
+"منها",
+"ان",
+"من",
+"ديدن",
+"الخطباء",
+"والفصحاء",
+"التاسي"
+],
+[
+"ومنها",
+"ان",
+"القران",
+"بفواتحه",
+"ومقاطعه",
+"بقي",
+"بعد"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/2",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "2. Âyetin Tefsiri",
+"subtitle": "ذلِكَ الْكِتَابُ لا رَيْبَ فِيهِ هُدًى لِلْمُتَّقِينَ",
+"anchors": []
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/2/mukaddime",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/2",
+"title": "مقدمة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"من",
+"اساس",
+"البلاغة",
+"الذي",
+"به"
+],
+[
+"عباراتنا",
+"شتي",
+"وحسنك",
+"واحد",
+"وكل",
+"الي",
+"ذاك"
+],
+[
+"مثلا",
+"تامل",
+"في",
+"اية",
+"ولين",
+"مستهم",
+"نفحة"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/3",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "3. Âyetin Tefsiri",
+"subtitle": "الَّذِينَ يُؤْمِنُونَ بِالْغِيْبِ ويُقِيمُونَ الصَّلوةَ ومِمَّا رَزَقْنَاهُمْ يُنْفِقُونَ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"وجه",
+"نظم",
+"المحصل",
+"مع",
+"المحصل"
+],
+[
+"اما",
+"وجه",
+"الذين",
+"مع",
+"المتقين",
+"فتشييع",
+"التخلية"
+],
+[
+"اعلم",
+"ان",
+"الذين",
+"يومنون",
+"بالغيب",
+"مع",
+"انه"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/4",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "4. Âyetin Tefsiri",
+"subtitle": "وَالَّذِينَ يُؤْمِنُونَ بِما أُنْزِلَ اِلَيْكَ وَما أُنْزِلَ مِنْ قَبْلِكَ وَبِالآخِرَةِ هُمْ يُوقِنُونَ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"القران",
+"ارسل",
+"النظم",
+"اي",
+"لم"
+],
+[
+"ان",
+"البلاغة",
+"هي",
+"مطابقة",
+"مقتضي",
+"الحال",
+"والحال"
+],
+[
+"ثم",
+"ان",
+"وجه",
+"نظم",
+"هذه",
+"الاية",
+"بسابقتها"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/5",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "5. Âyetin Tefsiri",
+"subtitle": "اُولئِكَ عَلَى هُدىً مِنْ رَبِّهِمْ وَاُولئِكَ هُم المُفْلِحُونَ",
+"anchors": [
+[
+"اوليك",
+"علي",
+"هدي",
+"من",
+"ربهم"
+],
+[
+"اعلم",
+"ان",
+"المظان",
+"التي",
+"تتلمع",
+"فيها",
+"النكت"
+],
+[
+"اما",
+"النظم",
+"فاعلم",
+"ان",
+"هذه",
+"مرتبطة",
+"بسابقتها"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/6",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "6. Âyetin Tefsiri",
+"subtitle": "اِنًّ الَّذِينَ كَفَرُوا سَوَاءٌ عَلَيْهِمْ ءَاَنْذَرْتَهُمْ اَمْ لَمْ تُنْذِرْهُمْ لايُؤْمِنُونَ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"للذات",
+"الاحدي",
+"في",
+"عالم",
+"صفاته"
+],
+[
+"p",
+"ان",
+"قلت",
+"فلم",
+"لم",
+"يعطف",
+"هنا"
+],
+[
+"قيل",
+"لك",
+"ان",
+"حسن",
+"العطف",
+"ينظر",
+"الي"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/7",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "7. Âyetin Tefsiri",
+"subtitle": "خَتَمَ الله عَلَى قُلُوبِهِمْ وَعَلَى سَمْعِهِمْ وَعَلَى اَبْصَارِهِمْ غِشَاوَةٌ وَلَهُمْ عَذابٌ عَظِيمٌ",
+"anchors": []
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/7/mukaddime",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/7",
+"title": "مقدمة",
+"anchors": [
+[
+"اعلم",
+"انه",
+"لزمنا",
+"ان",
+"نقف",
+"هنا",
+"حتي"
+],
+[
+"ان",
+"مذهب",
+"اهل",
+"السنة",
+"والجماعة",
+"هو",
+"الصراط"
+],
+[
+"منها",
+"انه",
+"قد",
+"تحقق",
+"ان",
+"لا",
+"موثر"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/7/mukaddime-2",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/7",
+"title": "مقدمة اخرى",
+"anchors": [
+[
+"اعلم",
+"ان",
+"الطبيعيين",
+"يقولون",
+"ان",
+"للاسباب",
+"تاثيرا"
+],
+[
+"منها",
+"انه",
+"كما",
+"ان",
+"استماع",
+"الانسان",
+"وتكلمه"
+],
+[
+"ومنها",
+"ان",
+"قيمة",
+"الانسان",
+"بنسبة",
+"ماهيته",
+"وماهيته"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/8",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "8. Âyetin Tefsiri",
+"subtitle": "وَمِنَ النّاسِ مَنْ يَقُولُ امَنَّا بِالله وَبِالْيَوْمِ الآخِرِ وَما هُمْ بِمُؤمِنِينَ",
+"anchors": [
+[
+"انه",
+"كما",
+"يعطف",
+"المفرد",
+"علي",
+"المفرد",
+"للاشتراك"
+],
+[
+"ان",
+"قلت",
+"لم",
+"اوجز",
+"في",
+"حق",
+"الكافرين"
+],
+[
+"منها",
+"ان",
+"العدو",
+"اذا",
+"لم",
+"يعرف",
+"كان"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/9-10-ayetlerin-tefsiri",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "9‑10. Âyetlerin Tefsiri",
+"subtitle": "يُخادِعُونَ الله وَالَّذِينَ آمَنُوا وَمَا يَخْدَعُونَ اِلاَّ اَنْفُسَهُمْ وَمَا يَشْعُرُونَ في قُلُوبِهِمْ مَرَضٌ فَزَادَهُمُ الله مَرَضًا وَلَهُمْ عَذَابٌ اَلِيمٌ بِمَا كانُوا يَكْذِبُونَ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"وجه",
+"النظم",
+"اشارات",
+"جملها",
+"الي"
+],
+[
+"اما",
+"نظم",
+"جمل",
+"الجناية",
+"الاولي",
+"من",
+"يخادعون"
+],
+[
+"واما",
+"اتساق",
+"وانتظام",
+"تلك",
+"الجمل",
+"السبع",
+"وانصباب"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/11-12-ayetlerin-tefsiri",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "11‑12. Âyetlerin Tefsiri",
+"subtitle": "وَاِذَا قِيلَ لَهُمْ لا تُفْسِدُوا فِي الارْض قالُوا انّمَا نَحْنُ مُصْلِحُونَ أَلا اِنَّهُمْ هُمُ الْمُفْسِدُونَ وَلــكِنْ لا يَشْعُرُون",
+"anchors": [
+[
+"اعلم",
+"ان",
+"وجه",
+"نظم",
+"هذه",
+"الاية",
+"بما"
+],
+[
+"ان",
+"الله",
+"تعالي",
+"لما",
+"ذكر",
+"الاولي",
+"من"
+],
+[
+"ثم",
+"ان",
+"اذا",
+"قيل",
+"كما",
+"انه",
+"مربوط"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/13",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "13. Âyetin Tefsiri",
+"subtitle": "وَاِذَا قِيلَ لَهُمْ آمِنُوا كَما آمَنَ النّاسُ قالُوا أَنُؤْمِنُ كَما آمَنَ السُّفَهاءُ أَلا اِنَّهُمْ هُمُ السُّفَهاءُ وَلكِنْ لايَعْلَمُونَ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"وجه",
+"نظم",
+"هذا",
+"النوع",
+"بالنوع"
+],
+[
+"من",
+"حيث",
+"انهما",
+"نصيحة",
+"وارشاد",
+"عطف",
+"الامر"
+],
+[
+"ومن",
+"حيث",
+"انهما",
+"من",
+"الجناية",
+"عطف",
+"تسفيههم"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/14-15-ayetlerin-tefsiri",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "14‑15. Âyetlerin Tefsiri",
+"subtitle": "واِذَا لَقُوا الَّذِينَ آمَنُوا قالُوا امَنَّا وَاِذَا خَلَوْا اِلَى شَياطِينِهِمْ قَالُوا اِنَّا مَعكُمْْ اِنَّمَا نحْنُ مُسْتَهْزِؤُنَ اَلله يَسْتَهْزِئُ بِهِمْ وَيَمُدُّهُمْ فِي طُغْيانِهِمْ يَعْمَهُون",
+"anchors": [
+[
+"اعلم",
+"ان",
+"وجه",
+"نظم",
+"مال",
+"هذه",
+"الاية"
+],
+[
+"وان",
+"وجه",
+"النظم",
+"بين",
+"جملها",
+"هو",
+"انه"
+],
+[
+"احداها",
+"عزة",
+"النفس",
+"الناشية",
+"من",
+"نقطة",
+"الاستناد"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/16",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "16. Âyetin Tefsiri",
+"subtitle": "اُولَئِكَ الَّذِينَ اشْتَرَوُا الضَّلاَلَةَ بِالْهُدَى فَما رَبِحَتْ تِجارَتُهُمْ وَما كانُوا مُهْتَدِينَ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"وجه",
+"نظمها",
+"بسابقتها",
+"هو"
+],
+[
+"ان",
+"هذه",
+"الاية",
+"فذلكة",
+"واجمال",
+"للتفاصيل",
+"السابقة"
+],
+[
+"ووجه",
+"المناسبة",
+"هو",
+"ان",
+"نوع",
+"البشر",
+"ارسل"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "17‑20. Âyetlerin Tefsiri",
+"subtitle": "مَثَلُهُمْ كَمَثَلِ الَّذِي اسْتَوْقَدَ نَاراً فَلَمَّا اَضَاءَتْ مَا حَوْلَهُ ذَهَبَ الله بِنُورِهِمْ وَتَرَكَهُمْ فِي ظُلُماتٍ لايُبْصِروُن صُمٌّ بُكْمٌ عُمْيٌ فَهُمْ لا يَرْجِعُونَ اَوْ كَصَيِّبٍ مِنَ السَّماءِ فِيهِ ظُلُماتٌ وَرَعْدٌ وَبَرْقٌ يَجْعَلُونَ اَصَابِعَهُمْ فِي اذَانِهِمْ مِنَ الصَّوَاعِقِ حَذَرَ الْمَوتِ وَالله مُحِيطٌ بِالْكَافِرِينَ يَكَادُ الْبَرْقُ يَخْطَفُ اَبْصَارَهُمْ كُلَّما اَضَاءَ لَهُمْ مَشَوْا فِيهِ وَاِذَا اَظْلَمَ عَلَيْهِمْ قَامُوا وَلَوْ شَاءَ الله لَذَهَبَ بِسَمْعِهِمْ وَاَبْصَارِهِمْ اِنَّ الله عَلى كُلِّ شيْءٍ قَديرٌ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"اساس",
+"اعجاز",
+"القران",
+"الكريم",
+"في"
+],
+[
+"قسم",
+"كالحلية",
+"وقسم",
+"كالحلة"
+],
+[
+"فالاول",
+"كاللالي",
+"المنثورة",
+"والزينة",
+"المنشورة",
+"والنقش",
+"المرصع"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/fasil",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "فصل في مواقع التمثيل وتأثيره",
+"anchors": [
+[
+"اعلم",
+"ان",
+"مما",
+"اتفق",
+"العقلاء",
+"عليه",
+"ان"
+],
+[
+"فان",
+"كان",
+"مدحا",
+"كان",
+"ابهي",
+"وافخم",
+"وانبل"
+],
+[
+"وان",
+"كان",
+"ذما",
+"كان",
+"مسه",
+"اوجع",
+"وميسمه"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/fasil-2",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "فصل ومقدمة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"المتكلم",
+"كما",
+"يفيد",
+"المعني",
+"ثم"
+],
+[
+"ثم",
+"ان",
+"اساس",
+"التمثيل",
+"هو",
+"التشبيه",
+"ومن"
+],
+[
+"ثم",
+"ان",
+"مما",
+"يحوج",
+"الي",
+"التمثيل",
+"عمق"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-01",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة الأولى:",
+"type": "Mes'ele",
+"number": 1,
+"anchors": [
+[
+"ان",
+"منشا",
+"نقوش",
+"البلاغة",
+"انما",
+"هو",
+"نظم"
+],
+[
+"ونظم",
+"المعاني",
+"عبارة",
+"عن",
+"توخي",
+"المعاني",
+"النحوية"
+],
+[
+"والحاصل",
+"ان",
+"الكاينات",
+"في",
+"غاية",
+"البلاغة",
+"قد"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-02",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة الثانية:",
+"type": "Mes'ele",
+"number": 2,
+"anchors": [
+[
+"ان",
+"السحر",
+"البياني",
+"اذا",
+"تجلي",
+"في",
+"الكلام"
+],
+[
+"يناجيني",
+"الاخلاف",
+"من",
+"تحت",
+"مطله",
+"فتختصم",
+"الامال"
+],
+[
+"او",
+"استمع",
+"معاشقة",
+"الارض",
+"مع",
+"المطر",
+"في"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-03",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة الثالثة:",
+"type": "Mes'ele",
+"number": 3,
+"anchors": [
+[
+"اعلم",
+"ان",
+"كمال",
+"الكلام",
+"وجماله",
+"وحلته",
+"البيانية"
+],
+[
+"ثم",
+"ان",
+"فايدة",
+"اسلوب",
+"التمثيل",
+"كما",
+"في"
+],
+[
+"ثم",
+"ان",
+"الحكمة",
+"في",
+"تشكل",
+"الاسلوب",
+"هي"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-04",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة الرابعة:",
+"type": "Mes'ele",
+"number": 4,
+"anchors": [
+[
+"اعلم",
+"ان",
+"الكلام",
+"انما",
+"يكون",
+"ذا",
+"قوة"
+],
+[
+"عباراتنا",
+"شتي",
+"وحسنك",
+"واحد",
+"وكل",
+"الي",
+"ذاك"
+],
+[
+"بان",
+"تتجاوب",
+"قيودات",
+"الكلام",
+"ونظمه",
+"وهييته",
+"وياخذ"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-05",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة الخامسة:",
+"type": "Mes'ele",
+"number": 5,
+"anchors": [
+[
+"اعلم",
+"ان",
+"غناء",
+"الكلام",
+"وثروته",
+"ووسعته",
+"هو"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-06",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة السادسة:",
+"type": "Mes'ele",
+"number": 6,
+"anchors": [
+[
+"اعلم",
+"ان",
+"المعاني",
+"المجتناة",
+"من",
+"خريطة",
+"الكلام"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-07",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة السابعة:",
+"type": "Mes'ele",
+"number": 7,
+"anchors": [
+[
+"اعلم",
+"ان",
+"الخيال",
+"المندمج",
+"في",
+"اسلوب",
+"لابد"
+],
+[
+"وفلسفة",
+"النحو",
+"التي",
+"هي",
+"المناسبات",
+"المذكورة",
+"في"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-08",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة الثامنة:",
+"type": "Mes'ele",
+"number": 8,
+"anchors": [
+[
+"اعلم",
+"ان",
+"سيبويه",
+"نص",
+"علي",
+"ان",
+"الحروف"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-09",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة التاسعة:",
+"type": "Mes'ele",
+"number": 9,
+"anchors": [
+[
+"اعلم",
+"ان",
+"اعلي",
+"مراتب",
+"البلاغة",
+"الذي",
+"يعجز"
+],
+[
+"وايضا",
+"من",
+"اسباب",
+"علو",
+"الكلام",
+"ان",
+"يكون"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-10",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+"title": "المسألة العاشرة:",
+"type": "Mes'ele",
+"number": 10,
+"anchors": [
+[
+"اعلم",
+"ان",
+"سلاسة",
+"الكلام",
+"المنتجة",
+"للطافته",
+"وحلوه"
+],
+[
+"اعلم",
+"ان",
+"سلامة",
+"الكلام",
+"التي",
+"هي",
+"سبب"
+],
+[
+"اعلم",
+"ان",
+"الاساليب",
+"علي",
+"ثلاثة",
+"انواع"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/21-22-ayetlerin-tefsiri",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "21‑22. Âyetlerin Tefsiri",
+"subtitle": "يَا اَيُّهَا النّاسُ اعْبُدُوا رَبَّكُمُ الَّذِي خَلَقَكُمْ وَاَلَّذِينَ مِنْ قَبْلِكُمْ لَعَلَّكُمْ تَتَّقُونَ الَّذِي جَعَلَ لَكُمْ الأَرْضَ فِرَاشاً وَالسَّمَاءَ بِنَاءً وَاَنْزَلَ مِنَ السَّماءِ مَاءً فَاَخْرَجَ بِهِ مِنَ الثَّمَرَاتِ رِزْقاً لَكُمْ فَلا تَجْعَلُوا ِلله اَنْدَاداً وَاَنْتُمْ تَعْلَمُونَ",
+"anchors": []
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/21-22-ayetlerin-tefsiri/mukaddime",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/21-22-ayetlerin-tefsiri",
+"title": "مقدمة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"العبادة",
+"هي",
+"التي",
+"ترسخ",
+"العقايد"
+],
+[
+"واعلم",
+"ايضا",
+"ان",
+"العبادة",
+"سبب",
+"لسعادة",
+"الدارين"
+],
+[
+"اما",
+"وجه",
+"سببيتها",
+"لسعادة",
+"الدنيا",
+"التي",
+"هي"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "23‑24. Âyetlerin Tefsiri",
+"subtitle": "وَإنْ كُنْتُمْ فِي رَيْبٍ مِمَّا نَزَّلْنَا عَلَى عَبْدِنَا فَأْتُوا بِسُورَةٍ مِنْ مِثْلِهِ وَادْعُوا شُهَداءَكُمْ مِنْ دُونِ الله اِنْ كُنْتُمْ صَادِقِينَ فَاِن لَمْ تَفْعَلُوا وَلَنْ تَفْعَلُوا فَاتَّقُوا النَّارَ الَّتي وَقُودُهَا النّاسُ والحِجَارَةُ اُعِدَّتْ لِلْكافِرِينَ",
+"anchors": []
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mukaddime",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda",
+"title": "مقدمة في تحقيق النبوة",
+"anchors": [
+[
+"اعلم",
+"انه",
+"كما",
+"اثبتت",
+"الاية",
+"السابقة",
+"اول"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-01",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda",
+"title": "المسألة الأولى:",
+"type": "Mes'ele",
+"number": 1,
+"anchors": [
+[
+"اعلم",
+"ان",
+"الاستقراء",
+"التام",
+"في",
+"احوال",
+"الانبياء"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-02",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda",
+"title": "المسألة الثانية:",
+"type": "Mes'ele",
+"number": 2,
+"anchors": [
+[
+"اعلم",
+"ان",
+"كل",
+"حال",
+"من",
+"احواله",
+"وكل"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-03",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda",
+"title": "المسألة الثالثة:",
+"type": "Mes'ele",
+"number": 3,
+"anchors": [
+[
+"اعلم",
+"ان",
+"الزمان",
+"الماضي",
+"والحال",
+"اي",
+"عصر"
+],
+[
+"فاولا",
+"نتبرك",
+"بمطالعة",
+"ذاته",
+"عليه",
+"السلام",
+"ولابد"
+],
+[
+"احداها",
+"انه",
+"ليس",
+"الكحل",
+"كالتكحل",
+"اي",
+"لايصل"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-04",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda",
+"title": "المسألة الرابعة:",
+"type": "Mes'ele",
+"number": 4,
+"anchors": [
+[
+"اعلم",
+"ان",
+"صحيفة",
+"الماضي",
+"المشتملة",
+"علي",
+"قصص"
+],
+[
+"احداها",
+"ان",
+"من",
+"ياخذ",
+"اساسات",
+"فن",
+"ويعرف"
+],
+[
+"النكتة",
+"الثانية",
+"هي",
+"انك",
+"ان",
+"كنت",
+"عارفا"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-05",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda",
+"title": "المسألة الخامسة:",
+"type": "Mes'ele",
+"number": 5,
+"anchors": [
+[
+"في",
+"بيان",
+"صحيفة",
+"عصر",
+"السعادة",
+"لا",
+"سيما"
+],
+[
+"احداها",
+"انك",
+"اذا",
+"تاملت",
+"في",
+"العالم",
+"تري"
+],
+[
+"النكتة",
+"الثانية",
+"هي",
+"ان",
+"الدولة",
+"شخص",
+"معنوي"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-06",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda",
+"title": "المسألة السادسة:",
+"type": "Mes'ele",
+"number": 6,
+"anchors": [
+[
+"في",
+"صحيفة",
+"المستقبل",
+"لاسيما",
+"مسالة",
+"الشريعة",
+"ولابد"
+],
+[
+"احداها",
+"ان",
+"شخصا",
+"ولو",
+"خارقا",
+"انما",
+"يتخصص"
+],
+[
+"النكتة",
+"الثانية",
+"ان",
+"كلاما",
+"واحدا",
+"قد",
+"يتفاوت"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-07",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda",
+"title": "المسألة السابعة:",
+"type": "Mes'ele",
+"number": 7,
+"anchors": [
+[
+"اعلم",
+"ان",
+"كتب",
+"السير",
+"والتاريخ",
+"قد",
+"ذكرت"
+],
+[
+"فاعلم",
+"ان",
+"الخوارق",
+"الظاهرة",
+"وان",
+"كان",
+"كل"
+],
+[
+"الاول",
+"الارهاصات",
+"المتنوعة",
+"كانطفاء",
+"نار",
+"المجوس",
+"ويبوسة"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/25",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "25. Âyetin Tefsiri",
+"subtitle": "وَبَشِّر الَّذِينَ آمَنُوا وَعَمِلُوا الصّالِحاتِ اَنَّ لَهُمْ جَنّاتٍ تَجْرِي مِنْ تَحْتِهَا الانْهَارُ كُلَّما رُزِقُوا مِنْهَا مِنْ ثَمَرَةٍ رِزْقاً قَالُوا هَذاَ الَّذِي رُزِقْنا مِنْ قَبْلُ وَاُتُوا بِهِ مُتَشابِهاً وَلَهُمْ فِيها اَزْوَاجٌ مُطَهَّرَةٌ وَهُمْ فِيها خالِدُونَ",
+"anchors": [
+[
+"فاعلم",
+"ان",
+"نظم",
+"هذه",
+"الاية",
+"كاخواتها",
+"بثلاثة"
+],
+[
+"اما",
+"الاول",
+"فاعلم",
+"ان",
+"لمالها",
+"ارتباطات",
+"متفاوتة"
+],
+[
+"ثم",
+"اعلم",
+"ان",
+"الجنة",
+"وجهنم",
+"ثمرتان",
+"تدلتا"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/25/mukaddime",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/25",
+"title": "مقدمة",
+"anchors": [
+[
+"هذه",
+"الاية",
+"مع",
+"ما",
+"قبلها",
+"اشارة",
+"الي"
+],
+[
+"احداها",
+"امكان",
+"خراب",
+"العالم",
+"وموته"
+],
+[
+"اما",
+"امكان",
+"موت",
+"الكاينات"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/26-27-ayetlerin-tefsiri",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "26‑27. Âyetlerin Tefsiri",
+"subtitle": "اِنَّ اللهَ لا يَسْتَحْيي اَنْ يَضْرِبَ مَثَلاً ما بَعُوضَةً فَما فَوْقَها فَاَمَّا الَّذِينَ آمَنُوا فَيَعْلَمُونَ اَنَّهُ الْحَقُّ مِنْ رَبِّهمْ وَاَمَّا الَّذِينَ كَفَرُوا فَيَقُولُونَ ماذَا اَرَادَ الله بِهذَا مَثَلاً يُضِلُّ بِهِ كَثِيراً وَيَهْدِي بِهِ كَثِيراً وَمَا يُضِلُّ بِهِ اِلاَّ الْفَاسِقِينَ الَّذِينَ يَنْقُضُونَ عَهْدَ الله مِنْ بَعْدِ مِيثاقِهِ وَيَقْطَعُونَ ما اَمَرَ الله بِهِ اَنْ يُوصَلَ وَيُفْسِدُونَ فِي الاْرْضِ اُولئِك هُمُ الْخاسِرُونَ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"في",
+"هذه",
+"الاية",
+"ايضا",
+"الوجوه"
+],
+[
+"واما",
+"نظمها",
+"بالنظر",
+"اليلواحقها",
+"فاعلم",
+"ان",
+"القران"
+],
+[
+"واما",
+"نظمها",
+"بالقياس",
+"الي",
+"سوابقها",
+"فاعلم",
+"ان"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/28",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "28. Âyetin Tefsiri",
+"subtitle": "كَيْفَ تَكْفُرُونَ بِالله وَكُنْتُمْ اَمْوَاتاً فَاَحْياكُمْ ثُمَّ يُمِيتُكُمْ ثُمَّ يُحْيِيكُمْ ثُمَّ اِلَيْهِ تُرْجَعُونَ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"لهذه",
+"الاية",
+"ايضا",
+"الوجوه",
+"الثلاثة"
+],
+[
+"اما",
+"نظم",
+"مالها",
+"بسابقها",
+"فاعلم",
+"ان",
+"الله"
+],
+[
+"واما",
+"نظم",
+"الجمل",
+"فاعلم",
+"ان",
+"هنا",
+"التفاتا"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/28/mesele-01",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/28",
+"title": "المسألة الأولى",
+"type": "Mes'ele",
+"number": 1,
+"heading": "inline",
+"anchors": [
+[
+"المسالة",
+"الاولي",
+"في",
+"وكنتم",
+"امواتا"
+],
+[
+"اعلم",
+"ان",
+"الانسان",
+"باعتبار",
+"جسده",
+"بينما",
+"كان"
+],
+[
+"p",
+"فان",
+"قلت",
+"الموت",
+"عدم",
+"الحياة",
+"وزوالها"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/28/mesele-02",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/28",
+"title": "المسألة الثانية",
+"type": "Mes'ele",
+"number": 2,
+"heading": "inline",
+"anchors": [
+[
+"المسالة",
+"الثانية",
+"في",
+"فاحياكم"
+],
+[
+"اعلم",
+"ان",
+"اعجب",
+"معجزات",
+"القدرة",
+"وادقها",
+"الحياة"
+],
+[
+"اما",
+"وجه",
+"ادقيتها",
+"وغموضها",
+"فهو"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/28/mesele-03",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/28",
+"title": "المسألة الثالثة",
+"type": "Mes'ele",
+"number": 3,
+"heading": "inline",
+"anchors": [
+[
+"المسالة",
+"الثالثة",
+"في",
+"ثم",
+"يميتكم"
+],
+[
+"اعلم",
+"ان",
+"اية",
+"خلق",
+"الموت",
+"والحياة",
+"تدل"
+],
+[
+"فان",
+"قلت",
+"كيف",
+"يكون",
+"الموت",
+"نعمة",
+"حتي"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/28/mesele-04",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/28",
+"title": "المسألة الرابعة",
+"type": "Mes'ele",
+"number": 4,
+"heading": "inline",
+"anchors": [
+[
+"المسالة",
+"الرابعة",
+"في",
+"ثم",
+"يحييكم"
+],
+[
+"اعلم",
+"ان",
+"باشارة",
+"اية",
+"امتنا",
+"اثنتين",
+"واحييتنا"
+],
+[
+"p",
+"فان",
+"قلت",
+"اذا",
+"احرق",
+"انسان",
+"واعطي"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/28/mesele-05",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/28",
+"title": "المسألة الخامسة",
+"type": "Mes'ele",
+"number": 5,
+"heading": "inline",
+"anchors": [
+[
+"المسالة",
+"الخامسة",
+"في",
+"ثم",
+"اليه",
+"ترجعون",
+"اخر"
+],
+[
+"اعلم",
+"ان",
+"الخالق",
+"جلت",
+"قدرته",
+"مزج",
+"الاضداد"
+],
+[
+"تذييل",
+"لخلاصة",
+"نظم",
+"الجمل",
+"اعلم",
+"انه",
+"تعالي"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/29",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "29. Âyetin Tefsiri",
+"subtitle": "هُوَ الَّذِي خَلَقَ لَكُمْ ما فِي الأرْضِ جَمِيعاً ثُمَّ اسْتَوى اِلَى السَّماءِ فَسَوّيــهُنَّ سَبْعَ سَموَاتٍ وهُوَ بِكُلِّ شَيْءٍ عَلِيمٌ",
+"anchors": [
+[
+"اعلم",
+"ان",
+"لهذه",
+"الاية",
+"ايضا",
+"الوجوه",
+"الثلاثة"
+],
+[
+"اما",
+"نظم",
+"المجموع",
+"بالسابق",
+"فهو",
+"ان",
+"في"
+],
+[
+"واما",
+"نظم",
+"جملة",
+"جملة",
+"فاعلم",
+"ان",
+"لفظ"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/29/mesele-01",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/29",
+"title": "المسألة الأولى:",
+"type": "Mes'ele",
+"number": 1,
+"anchors": [
+[
+"ان",
+"قلت",
+"ان",
+"هذه",
+"الاية",
+"تدل",
+"علي"
+],
+[
+"قيل",
+"لك",
+"تامل",
+"في",
+"ست",
+"نقاط",
+"يتطاير"
+],
+[
+"الاولي",
+"ان",
+"خاصية",
+"الحياة",
+"كما",
+"مر",
+"تصير"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/29/mesele-02",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/29",
+"title": "المسألة الثانية",
+"type": "Mes'ele",
+"number": 2,
+"heading": "inline",
+"anchors": [
+[
+"المسالة",
+"الثانية",
+"في",
+"ثم"
+],
+[
+"اعلم",
+"ان",
+"هذه",
+"الاية",
+"تدل",
+"علي",
+"ان"
+],
+[
+"واعلم",
+"ثانيا",
+"ان",
+"نقليات",
+"الشرع",
+"تدل",
+"علي"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/29/mesele-03",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/29",
+"title": "المسألة الثالثة",
+"type": "Mes'ele",
+"number": 3,
+"heading": "inline",
+"anchors": [
+[
+"المسالة",
+"الثالثة",
+"في",
+"سبع"
+],
+[
+"اعلم",
+"ان",
+"الحكمة",
+"العتيقة",
+"قايلة",
+"بان",
+"السموات"
+],
+[
+"الاولي",
+"انه",
+"قد",
+"ثبت",
+"فنا",
+"وحكمة",
+"ان"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/30",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "30. Âyetin Tefsiri",
+"subtitle": "وَاذْ قَالَ رَبُّكَ لِلْمَلئِكَةِ اِنِّي جَاعِلٌ فِي الأَرْضِ خَلِيفَةً قالُوا اَتَجْعَلُ فِيها مَنْ يُفْسِدُ فِيها وَيَسْفِكُ الدِّمَاءَ وَنَحْنُ نُسَبِّحُ بِحَمْدِكَ وَنُقَدِّسُ لَكَ قَالَ اِنِّي اَعْلَمُ ما لاتَعْلَمُونَ",
+"anchors": []
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/30/mukaddime",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/30",
+"title": "مقدمة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"التصديق",
+"بوجود",
+"الملايكة",
+"احد",
+"اركان"
+],
+[
+"ان",
+"من",
+"نظر",
+"الي",
+"الارض",
+"وقد",
+"امتليت"
+],
+[
+"اعلم",
+"كما",
+"مر",
+"ان",
+"الحياة",
+"هي",
+"الكشافة"
+]
+]
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/31-33-ayetlerin-tefsiri",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara",
+"title": "31‑33. Âyetlerin Tefsiri",
+"subtitle": "وَعَلَّمَ ادَمَ الاْسْماءَ كُلَّها ثُمَّ عَرَضَهُمْ عَلَى الْمَلئِكَةِ فَقالَ اََنْبِؤُنِي بِأَسْماءِ هَؤُلاءِ اِنْ كُنْتُمْ صَادِقينَ قالُوا سُبْحانَكَ لا عِلْمَ لَنا اِلاَّ مَا عَلَّمْتَنا اِنَّكَ اَنْتََ الْعَلِيمُ الْحَكِيمُ قَالَ يا ادَمُ اَنْبِئْهُمْ بِاَسْمائِهِمْ فَلَمَّا اَنْبَاَهُمْ بِاَسْمائِهِمْ قَالَ اَلَمْ اَقُلْ لَكُمْ اِنِّي اَعْلَمُ غَيْبَ السَّموَاتِ وَالاْرْضِ وَاَعْلَمُ مَا تَبْدُونَ وَما كُنْتُمْ تَكْتُمُونَ",
+"anchors": []
+},
+{
+"id": "isaratul-icaz-arabi/sure-i-bakara/31-33-ayetlerin-tefsiri/mukaddime",
+"parent_id": "isaratul-icaz-arabi/sure-i-bakara/31-33-ayetlerin-tefsiri",
+"title": "مقدمة",
+"anchors": [
+[
+"اعلم",
+"ان",
+"هذه",
+"معجزة",
+"ادم",
+"تحديت",
+"بها"
+],
+[
+"وكذا",
+"انظر",
+"الي",
+"قوله",
+"تعالي",
+"يا",
+"نار"
+],
+[
+"وكذا",
+"تامل",
+"في",
+"خاصية",
+"المعجزة",
+"الكبري",
+"التي"
+]
+]
+}
+],
+"notes": [
+{
+"node_id": "isaratul-icaz-arabi",
+"after": null,
+"text": "Muhakkikin ön sözleri ve sondaki eklemeler (talebelerin sözü, takriz, \"قالوا عن القرآن\") esere dahil edilmedi."
+}
+]
+}

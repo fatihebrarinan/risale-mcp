@@ -22,37 +22,41 @@ Henüz kullanılmayan: Yeni Asya (artık kullanılmıyor).
 Rumuzat-ı Semaniye'nin PDF'i kullanıcının kendi dosyasıdır.
 
 ## Türkçe taslak
+Bu taslak yeni siteler içindir: metin alınmadan önce izin ister (2026-10-30, Hizmet Vakfı reddinden sonra). Telefon
+numarası depoya yazılmaz.
 
-**Konu:** Risale-i Nur metinlerinin yapay zekâ ile kaynağa bağlı kullanımı hakkında bilgilendirme
+
+**Konu:** Risale-i Nur metinlerinin yapay zekâ ile kaynağa bağlı kullanımı hakkında izin talebi
 
 Selamün aleyküm,
 
-Ben Fatih Ebrar İnan. Kişisel olarak, Risale-i Nur'u yapay zekâ modellerinin kaynağa sadık kalarak kullanabilmesi
-için bir araç geliştiriyorum ve bu çalışmada sitenizdeki [ESER ADLARI] metinlerinden istifade ettim. Durumu size
-açıkça bildirmek ve görüşünüzü almak istedim.
+Ben Fatih Ebrar İnan. Risale-i Nur'u yapay zekâ modellerinin kaynağa sadık kalarak kullanabilmesi için gönüllü olarak
+bir araç geliştiriyorum. Bu çalışmada sitenizdeki [ESER ADLARI] metinlerinden istifade etmek istiyorum ve bunun için
+izninizi almak istedim. İzniniz olmadan sitenizden hiçbir metin almayacağım.
 
-Araç bir "MCP sunucusu"dur: Claude gibi bir yapay zekâ modeli, Risale-i Nur hakkında bir soruya cevap verirken
-metni bu sunucudan okur ve dayandığı her yeri cümle düzeyinde, eser › bölüm › cümlenin ilk kelimeleri şeklinde tam
-adresiyle gösterir. Amaç, modelin Risale-i Nur'a dair uydurma ya da kaynaksız söz söylemesini önlemek, yorumunu
-metindeki cümlelere bağlamaktır.
+Araç bir "MCP sunucusu"dur. Claude ve ChatGPT gibi yapay zekâ modelleri, Risale-i Nur hakkında bir soruya cevap
+verirken metni bu sunucudan okur ve dayandığı her yeri cümle düzeyinde, eser › bölüm › cümlenin ilk kelimeleri
+şeklinde tam adresiyle gösterir. Amaç, modelin Risale-i Nur'a dair uydurma ya da kaynaksız söz söylemesini önlemek,
+yorumunu metindeki cümlelere bağlamaktır.
 
-Birkaç hususu belirtmek isterim:
-- Metinler hiçbir yerde yayımlanmıyor ve sitenizin yerine geçecek bir okuma imkânı sunulmuyor. Metne yalnızca
-  yapay zekâ modeli, sorulan soruya cevap verirken erişiyor; kullanıcı her atıfta asıl metne yönlendiriliyor.
-- Sunucu şifreyle korunuyor; şu an yalnızca ben ve Risale-i Nur'u iyi bilen bir ağabeyim, çalışmayı geliştirmek
-  için kullanıyoruz.
-- Hiçbir ticari amacı ve geliri yok; sunucu masrafını kendim karşılıyorum.
-- Metinler değiştirilmiyor; [SİTE] kaynak olarak kayıtlı.
+Birkaç hususu açıkça belirtmek isterim:
+- Araç herkese açıktır; hesap gerekmez. Metinler bir okuma sitesinde yayımlanmaz, sunucuya bağlanan yapay zekâ
+  modelleri tarafından okunur. Bu sırada model, cevabında metinden alıntı yapar.
+- Hiçbir ticari amacı ve geliri yok; reklam yok, sunucu masrafını kendim karşılıyorum.
+- Metinler değiştirilmez, siteniz kaynak olarak belirtilir.
+- Uygun görmezseniz sitenizin metinleri araca eklenmez; sonradan vazgeçerseniz çıkarılır.
 
-İleride bu altyapıyı daha geniş bir kullanıma açmayı düşünürsem, sizden ayrıca izin isteyeceğim. Bu kullanım
-hakkında bir çekinceniz, bir şartınız ya da tavsiyeniz varsa memnuniyetle dikkate alırım. İsterseniz çalışmayı
-size gösterebilirim.
+Aracın tanıtımı ve kurulumu: https://risalemcp.com
+
+Bu kullanım hakkında bir çekinceniz, bir şartınız ya da tavsiyeniz varsa memnuniyetle dikkate alırım. İsterseniz
+çalışmayı size gösterebilirim.
 
 Hizmetinizden dolayı Allah razı olsun.
 
 Saygılarımla,
 Fatih Ebrar İnan
 fatihebrarinan@protonmail.com
+[TELEFON]
 
 ### Kaynağa göre eklenecekler
 - **erisale.com:** "e-Risale ekibinde de bulunduğumu belirteyim; bu çalışmayı e-Risale ile ilerletmek de isterim."

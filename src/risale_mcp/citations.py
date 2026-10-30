@@ -55,7 +55,7 @@ NUMBERED_WORDS = 5          # tür ve numarayla eşleşen başlığın üst sın
 SKIPPED_LEVELS = 3          # yolda atlanabilecek ara başlık sayısı
 PHRASE_WORDS = 6            # alıntının aramada kullanılan ilk kelimeleri
 ELSEWHERE = 3               # bölümde bulunamayan alıntının başka yerde gösterilen en çok geçişi
-GROUP_RANK = {Group.ANA_CILT: 0, Group.ESKI_SAID: 1, Group.MECMUA: 2, Group.HIZB: 3}
+GROUP_RANK = {Group.ANA_CILT: 0, Group.ESKI_SAID: 1, Group.MECMUA: 2, Group.HIZB: 3, Group.OSMANLICA: 4}
 
 _QUOTED = (re.compile(r'^"\s*(.+?)\s*(?:…|\.\.\.)?\s*"'), re.compile(r"^[“«]\s*(.+?)\s*(?:…|\.\.\.)?\s*[”»]"))
 _SENTENCE_NO = re.compile(r"^(\d+)\.(?:\s*[–-]\s*(\d+)\.)?\s*cümle\b", re.IGNORECASE)   # "32. cümle", "4.–7. cümle"

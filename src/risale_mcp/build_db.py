@@ -388,11 +388,16 @@ def _verify(conn: sqlite3.Connection, report: BuildReport) -> None:
         raise RuntimeError("Veritabanı JSON'larla tutmuyor:\n  " + "\n  ".join(wrong))
 
 
-def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH, quran_path: Path | None = None) -> BuildReport:
-    """`quran_path` verilirse (ve dosya varsa) Kur'ân katmanı kurulur, Risale'deki âyetler onunla eşlenir."""
+def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH, quran_path: Path | None = None,
+          public: bool = False) -> BuildReport:
+    """`quran_path` verilirse (ve dosya varsa) Kur'ân katmanı kurulur, Risale'deki âyetler onunla eşlenir.
+    `public`: genel sunucunun veritabanı; `private` eserler girmez."""
     books = _load_books(books_dir)
+    catalog = [w for w in WORKS if not (public and w.private)]
+    if public:
+        books = {slug: book for slug, book in books.items() if slug in {w.slug for w in catalog}}
     quran = Quran.load(quran_path) if quran_path else None
-    unknown = set(books) - {w.slug for w in WORKS}
+    unknown = set(books) - {w.slug for w in catalog}
     if unknown:
         raise ValueError(f"Katalogda olmayan eser JSON'u: {sorted(unknown)}")
 
@@ -412,7 +417,7 @@ def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH, quran_path: Path | N
         conn.execute("PRAGMA synchronous = OFF")
         conn.executescript(SCHEMA)
         with conn:
-            for ord_, work in enumerate(WORKS):
+            for ord_, work in enumerate(catalog):
                 data, sha1 = books.get(work.slug, (None, None))
                 language = data.get("language", work.language) if data else work.language
                 source = work.source

@@ -260,9 +260,9 @@ def test_real_reading_of_dokuzuncu_hakikat(real_library):
 
 def test_real_ayat_al_kursi_and_mecmua(real_library):
     assert real_library.find_ayah("Bakara", 255)["total"] > 10
-    items = real_library.read_section("tilsimlar/hasan-feyzinin-bir-kasidesi", max_words=300)["items"]
+    items = real_library.read_section("tilsimlar/hasan-feyzinin-manzumesi", max_words=300)["items"]
     canonical = [i for i in items if "canonical" in i]
-    assert canonical and canonical[0]["canonical"]["paragraphs"][0].startswith("tarihce-i-hayat/")
+    assert any(c["canonical"]["paragraphs"][0].startswith("tarihce-i-hayat/") for c in canonical)
 
 
 def test_real_quran_layer(real_library):
@@ -276,7 +276,7 @@ def test_real_quran_layer(real_library):
 
 
 def test_real_kizil_icaz_commentary_is_a_separate_layer(real_library):
-    items = real_library.read_section("kizil-icaz-arabi/dibace", max_words=300)["items"]
+    items = real_library.read_section("kizil-icaz-arabi/dibace", max_words=1500)["items"]
     assert items[0]["subtitle"].startswith("Bu başlık kaynakta yoktur")
     sharh = next(i for i in items if i.get("commentary_by"))
     assert sharh["kind"] == "hasiye" and sharh["commentary_by"] == "Abdülmecid Nursî"

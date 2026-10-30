@@ -460,7 +460,7 @@ class Library:
         elif group:
             works = {r[0] for r in self.conn.execute("SELECT slug FROM works WHERE group_name = ?", (group,))}
             if not works:
-                raise LibraryError(f"Unknown group {group!r}; groups are: eski-said, ana-cilt, mecmua, hizb.")
+                raise LibraryError(f"Unknown group {group!r}; groups are: eski-said, ana-cilt, mecmua, hizb, osmanlica.")
         try:
             hits, sections = self._semantic_index().search(query, works, min(max(limit, 1), MAX_RESULTS), max(offset, 0))
         except SemanticUnavailable:

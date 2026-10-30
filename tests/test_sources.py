@@ -93,3 +93,31 @@ def test_polite_client_retries_read_timeouts(monkeypatch):
     monkeypatch.setattr(http.time, "sleep", lambda seconds: None)
     assert http.PoliteClient(delay=0).get("https://example.org/") == b"ok"
     assert len(calls) == 2
+
+
+def test_risaleoku_app_pages_catalog_and_verifies_files(tmp_path):
+    import hashlib
+    import json
+
+    from risale_mcp.sources import risaleoku_app
+
+    text = "#3 \n<Başlık> \n".encode()
+    book = {"key": "abed", "shelf_id": 25, "sort": 1, "title": "Âsâr", "version": 4,
+            "files": {"text": {"url": "https://risaleoku.com/f/a.txt.gz", "sha256": hashlib.sha256(text).hexdigest()},
+                      "footnotes": None}}
+    pages = [{"records": [{"kind": "book", "id": 1, "seq": 1, "data": book}], "has_more": True, "next_cursor": 1},
+             {"records": [{"kind": "book", "id": 2, "seq": 2, "data": None}], "has_more": False}]
+    calls = []
+
+    class Client:
+        def get(self, url):
+            calls.append(url)
+            return json.dumps(pages.pop(0)).encode() if "changes" in url else text
+
+    risaleoku_app.fetch_book("abed", tmp_path, Client(), log=lambda _: None)
+    assert "after=1" in calls[1]
+    assert risaleoku_app.check_book("abed", tmp_path)[1]
+    assert risaleoku_app.shelf_books(json.loads((tmp_path / "catalog.json").read_text()), 25) == ["abed"]
+
+    (tmp_path / "abed" / "text.txt.gz").unlink()
+    assert not risaleoku_app.check_book("abed", tmp_path)[1]

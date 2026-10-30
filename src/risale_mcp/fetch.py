@@ -6,6 +6,7 @@ Kullanım:
     uv run python -m risale_mcp.fetch get --all         # bütün eserler; --site ile tek site
     uv run python -m risale_mcp.fetch check sozler      # yalnızca diskteki ham veriyi doğrula
     uv run python -m risale_mcp.fetch quran             # Kur'ân metni ve mealleri (tanzil.net)
+    uv run python -m risale_mcp.fetch risaleoku         # risaleoku.com uygulamasının kitapları (RISALEOKU_BOOKS)
 
 Ham sayfalar `data/raw/<site>/<kitap>/`, doğrulanmış blok listesi
 `data/interim/<site>/<kitap>.blocks.json` altına yazılır.
@@ -20,12 +21,19 @@ from typing import Callable
 
 from risale_mcp.catalog import WORKS, Site, Status, Work, get_work, works_from
 from risale_mcp.paths import INTERIM_DIR, RAW_DIR, ROOT
-from risale_mcp.sources import (erisale, kastamonur, kesif, kullanici, rasaelalnour, risale_online, risaleoku, tanzil,
-                                yeniasya)
+from risale_mcp.sources import (erisale, kastamonur, kesif, kullanici, rasaelalnour, risale_online, risaleoku,
+                                risaleoku_app, tanzil, yeniasya)
 from risale_mcp.sources.http import PoliteClient
 
 DEFAULT_DELAY = 5.0                                 # saniye; siteleri yormamak için
 MIN_DELAY = {Site.RISALEOKU: risaleoku.CRAWL_DELAY}  # robots.txt Crawl-delay
+
+
+# Geçiş için gereken raflar (Arapça, Osmanlıca, Evrad) ve kitaplar; bkz. docs/risaleoku-gecis-plani.md
+RISALEOKU_SHELVES = (55, 27, 28)
+RISALEOKU_BOOKS = ("abed", "esasat", "ihlas_zulfikar", "ihlas_tilsimlar", "ihls_siracunnur", "env_siracunnur",
+                   "rnk_gencreh", "rnk_hanimreh", "rnk_ksozler", "badmesnevi", "badisarat")
+RISALEOKU_SKIP = ("kuran", "kuranmeal", "hizbkuranmeal")  # Kur'ân katmanı Tanzil'den gelir
 
 
 def count_node_types(node, counter: Counter | None = None) -> Counter:
@@ -120,6 +128,7 @@ HANDLERS: dict[Site, Handler] = {
     Site.ERISALE: Handler(_fetch_erisale, check_erisale),
     Site.RISALE_ONLINE: _plain_handler(Site.RISALE_ONLINE, risale_online),
     Site.RISALEOKU: _plain_handler(Site.RISALEOKU, risaleoku),
+    Site.RISALEOKU_APP: _plain_handler(Site.RISALEOKU_APP, risaleoku_app),
     Site.YENIASYA: _plain_handler(Site.YENIASYA, yeniasya),
     Site.KASTAMONUR: _plain_handler(Site.KASTAMONUR, kastamonur),
     Site.RASAELALNOUR: _plain_handler(Site.RASAELALNOUR, rasaelalnour),
@@ -172,6 +181,25 @@ def cmd_quran(args: argparse.Namespace) -> None:
         sys.exit(1)
 
 
+def cmd_risaleoku(args: argparse.Namespace) -> None:
+    root = RAW_DIR / "risaleoku_app"
+    client = PoliteClient(args.delay)
+    records = risaleoku_app.fetch_catalog(root, client, refresh=args.refresh)
+    risaleoku_app.fetch_meals(root, client, refresh=args.refresh)
+    keys = args.books or [k for shelf in RISALEOKU_SHELVES for k in risaleoku_app.shelf_books(records, shelf)
+                          if k not in RISALEOKU_SKIP] + list(RISALEOKU_BOOKS)
+    failed = []
+    for key in keys:
+        risaleoku_app.fetch_book(key, root, client, refresh=args.refresh)
+        lines, ok = risaleoku_app.check_book(key, root)
+        print("\n".join(lines), flush=True)
+        if not ok:
+            failed.append(key)
+    print(f"\nBitti. Sorunlu kitaplar: {failed or 'yok'}")
+    if failed:
+        sys.exit(1)
+
+
 def _add_selection(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("works", nargs="*", help="katalogdaki eser slug'ları, ör. sozler lemeat")
     parser.add_argument("--all", action="store_true", help="katalogdaki bütün eserler")
@@ -194,6 +222,11 @@ def main() -> None:
     quran.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
     quran.add_argument("--delay", type=float, default=DEFAULT_DELAY, help="istekler arası saniye")
     quran.set_defaults(func=cmd_quran)
+    app = sub.add_parser("risaleoku", help="risaleoku.com uygulamasının kitapları")
+    app.add_argument("books", nargs="*", help="kitap anahtarları (verilmezse geçiş için gerekenler)")
+    app.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
+    app.add_argument("--delay", type=float, default=DEFAULT_DELAY, help="istekler arası saniye")
+    app.set_defaults(func=cmd_risaleoku)
     args = parser.parse_args()
     args.func(args)
 

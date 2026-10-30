@@ -1,0 +1,1023 @@
+{
+"outline": [
+{
+"id": "hutbe-i-samiye-arabi",
+"parent_id": null,
+"title": "Hutbe-i Şamiye (Arapça)",
+"subtitle": "İhsan Kasım es-Sâlihî'nin tercümesi (Türkçe metinden; 1911'de okunan Arapça aslı değil)",
+"anchors": []
+},
+{
+"id": "hutbe-i-samiye-arabi/mukaddime",
+"parent_id": "hutbe-i-samiye-arabi",
+"title": "مقدّمة",
+"subtitle": "الخطبة الشامية للمؤلف",
+"anchors": [
+[
+"وان",
+"من",
+"شي",
+"الا",
+"يسبح",
+"بحمده"
+],
+[
+"السلام",
+"عليكم",
+"ورحمة",
+"الله",
+"وبركاته",
+"ابدا",
+"دايما"
+],
+[
+"هذه",
+"الرسالة",
+"العربية",
+"قد",
+"القيت",
+"درسا",
+"في"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/gayet-muhim-bir-suale-verilen",
+"parent_id": "hutbe-i-samiye-arabi",
+"title": "نهج رسائل النور",
+"subtitle": "في التبليغ",
+"anchors": [
+[
+"يسجل",
+"هنا",
+"جواب",
+"مهم",
+"عن",
+"سوال",
+"في"
+],
+[
+"لقد",
+"سالني",
+"الكثيرون",
+"وسالوا",
+"بعض",
+"اخواني",
+"النوريين"
+],
+[
+"فجوابا",
+"عن",
+"اسيلة",
+"كثيرة",
+"ترد",
+"بهذا",
+"المعني"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/gayet-muhim-bir-suale-verilen/birincisi",
+"parent_id": "hutbe-i-samiye-arabi/gayet-muhim-bir-suale-verilen",
+"title": "اولاها:",
+"anchors": [
+[
+"ان",
+"نوازع",
+"الانسان",
+"واحاسيسه",
+"المادية",
+"لا",
+"تري"
+],
+[
+"والسبيل",
+"الوحيد",
+"لانقاذه",
+"من",
+"خطر",
+"الانسياق",
+"هذا"
+],
+[
+"وهذا",
+"هو",
+"النهج",
+"الذي",
+"تسير",
+"عليه",
+"رسايل"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/gayet-muhim-bir-suale-verilen/bu-asirda-ikinci-dehsetli-hal",
+"parent_id": "hutbe-i-samiye-arabi/gayet-muhim-bir-suale-verilen",
+"title": "الحالة الرهيبة الثانية لعصرنا الحالي:",
+"anchors": [
+[
+"ان",
+"انواع",
+"الضلالة",
+"الناشية",
+"من",
+"الالحاد",
+"والعلوم"
+],
+[
+"اما",
+"اليوم",
+"فقد",
+"تغير",
+"الحال",
+"اذ",
+"بينما"
+],
+[
+"فنحن",
+"نحمد",
+"الله",
+"اجزل",
+"الحمد",
+"ونشكره",
+"شكرا"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi",
+"parent_id": "hutbe-i-samiye-arabi",
+"title": "الخطبة الشامية",
+"anchors": [
+[
+"بسم",
+"الله",
+"الرحمن",
+"الرحيم"
+],
+[
+"نقدم",
+"اولا",
+"ما",
+"يقدمه",
+"كل",
+"ذي",
+"روح"
+],
+[
+"فيا",
+"اخواني",
+"العرب",
+"الذين",
+"يستمعون",
+"الي",
+"هذا"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-01",
+"parent_id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi",
+"title": "الكلمة الاولى",
+"subtitle": "\"الأمــل\"",
+"type": "Kelime",
+"number": 1,
+"anchors": [
+[
+"اي",
+"شدة",
+"الاعتماد",
+"علي",
+"الرحمة",
+"الالهية",
+"والثقة"
+],
+[
+"نعم",
+"انه",
+"بناء",
+"علي",
+"ما",
+"تعلمته",
+"من"
+],
+[
+"ان",
+"المستقبل",
+"سيكون",
+"للاسلام",
+"وللاسلام",
+"وحده",
+"وان"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-01/birinci-cihet-olan-manen-terakki",
+"parent_id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-01",
+"title": "أما أنه مستعد للرقي المعنوي:",
+"anchors": [
+[
+"فاعلموا",
+"ان",
+"التاريخ",
+"الذي",
+"يسجل",
+"الوقايع",
+"الحقيقية"
+],
+[
+"هذا",
+"هو",
+"حكم",
+"التاريخ",
+"وهكذا",
+"مر",
+"الزمان"
+],
+[
+"وما",
+"ارانا",
+"التاريخ",
+"قط",
+"منذ",
+"خير",
+"القرون"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-01/cihet-02",
+"parent_id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-01",
+"title": "الجهة الثانية: ان الاسلام مستعد للرقي المادي:",
+"anchors": [
+[
+"ان",
+"الاسباب",
+"القوية",
+"التي",
+"تدفع",
+"الاسلام",
+"الي"
+],
+[
+"فكما",
+"اثبتنا",
+"في",
+"الجهة",
+"الاولي",
+"استعداد",
+"الاسلام"
+],
+[
+"الحقيقة",
+"الاسلامية",
+"التي",
+"هي",
+"استاذ",
+"جميع",
+"الكمالات"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-02",
+"parent_id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi",
+"title": "الكلمة الثانية",
+"subtitle": "\"اليأس داء قاتل\"",
+"type": "Kelime",
+"number": 2,
+"anchors": [
+[
+"ان",
+"مما",
+"املت",
+"علي",
+"تجاربي",
+"في",
+"الحياة"
+],
+[
+"بل",
+"قد",
+"اصبح",
+"الواحد",
+"بسبب",
+"هذا",
+"الياس"
+],
+[
+"فما",
+"دام",
+"هذا",
+"الداء",
+"قد",
+"فتك",
+"فينا"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-03",
+"parent_id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi",
+"title": "الكلمة الثالثة",
+"subtitle": "\"الصدق اساس الاسلام\"",
+"type": "Kelime",
+"number": 3,
+"anchors": [
+[
+"لقد",
+"علمتني",
+"زبدة",
+"تتبعاتي",
+"وتحقيقاتي",
+"في",
+"الحياة"
+],
+[
+"الصدق",
+"هو",
+"اس",
+"اساس",
+"الاسلام",
+"وواسطة",
+"العقد"
+],
+[
+"اجل",
+"ان",
+"الصدق",
+"هو",
+"عقدة",
+"الحياة",
+"في"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-04",
+"parent_id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi",
+"title": "الكلمة الرابعة",
+"subtitle": "\"المـحـبــة\"",
+"type": "Kelime",
+"number": 4,
+"anchors": [
+[
+"ان",
+"مما",
+"تعلمته",
+"من",
+"الحياة",
+"الاجتماعية",
+"البشرية"
+],
+[
+"ان",
+"اجدر",
+"شي",
+"بالمحبة",
+"هو",
+"المحبة",
+"نفسها"
+],
+[
+"لقد",
+"انتهي",
+"عهد",
+"العداوة",
+"والخصام",
+"ولقد",
+"اظهرت"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-05",
+"parent_id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi",
+"title": "الكلمة الخامسة",
+"subtitle": "\"تضاعف السيئات والحسنات\"",
+"type": "Kelime",
+"number": 5,
+"anchors": [
+[
+"ان",
+"الدرس",
+"الذي",
+"تعلمته",
+"من",
+"الشوري",
+"الشرعية"
+],
+[
+"وهكذا",
+"فبفضل",
+"هذه",
+"الرابطة",
+"المقدسة",
+"التي",
+"تشد"
+],
+[
+"فلاجل",
+"هذه",
+"الحقيقة",
+"فان",
+"في",
+"زماننا",
+"هذا"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-06",
+"parent_id": "hutbe-i-samiye-arabi/arabi-hutbe-i-samiye-eserinin-tercumesi",
+"title": "الكلمة السادسة",
+"subtitle": "\"الشــورى\"",
+"type": "Kelime",
+"number": 6,
+"anchors": [
+[
+"ان",
+"مفتاح",
+"سعادة",
+"المسلمين",
+"في",
+"حياتهم",
+"الاجتماعية"
+],
+[
+"اجل",
+"فكما",
+"ان",
+"تلاحق",
+"الافكار",
+"بين",
+"ابناء"
+],
+[
+"ان",
+"مفتاح",
+"قارة",
+"اسيا",
+"وكشاف",
+"مستقبلها",
+"انما"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl-01",
+"parent_id": "hutbe-i-samiye-arabi",
+"title": "الذيل الاول",
+"subtitle": "تشخيص العلّة",
+"anchors": [
+[
+"هذا",
+"الذيل",
+"يبين",
+"بطولة",
+"معنوية",
+"لاتثلم",
+"نابعة"
+],
+[
+"لقد",
+"رافقت",
+"ايضا",
+"السلطان",
+"رشاد",
+"في",
+"سياحته"
+],
+[
+"كان",
+"في",
+"قطارنا",
+"معلمان",
+"اثنان",
+"قد",
+"تلقيا"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl",
+"parent_id": "hutbe-i-samiye-arabi",
+"title": "ذيل الذيل",
+"anchors": []
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/yasasin-seriat-i-garra",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "لتحيا الشريعة الغراء",
+"anchors": [
+[
+"ساقول",
+"جملة",
+"واحدة",
+"موجزة",
+"مع",
+"انها",
+"طويلة"
+],
+[
+"ان",
+"المشروطية",
+"والقانون",
+"الاساس",
+"هما",
+"العدالة",
+"والشوري"
+],
+[
+"ان",
+"الاسلام",
+"وشريعته",
+"الغراء",
+"هو"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/hakikat",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "حـقيـقـة",
+"anchors": [
+[
+"نحن",
+"منذ",
+"الازل",
+"داخلون",
+"في",
+"الجمعية",
+"المحمدية"
+],
+[
+"فما",
+"دمنا",
+"موحدين",
+"متحدين",
+"فكل",
+"مومن",
+"مكلف"
+],
+[
+"اذ",
+"الاجانب",
+"يسحقوننا",
+"تحت",
+"تحكمهم",
+"المعنوي",
+"بسلاح"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/sada-yi-hakikat",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "صدى الحقيقة",
+"anchors": [
+[
+"ان",
+"السبيل",
+"المحمدي",
+"مستغن",
+"عن",
+"كل",
+"ما"
+],
+[
+"ثم",
+"ان",
+"حقيقة",
+"واسعة",
+"عظيمة",
+"محيطة",
+"الي"
+],
+[
+"وهل",
+"يخفي",
+"البحر",
+"العظيم",
+"في",
+"كاس"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/fihristul-makasid-fikrasi",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "\"فقرة تركتُها من \"فهرس المقاصد\" المنشور\"",
+"anchors": [
+[
+"ان",
+"نهر",
+"العلوم",
+"الحديثة",
+"والثقافة",
+"الجديدة",
+"الجاري"
+],
+[
+"فلابد",
+"اذن",
+"من",
+"تصفيته",
+"بمصفاة",
+"الشريعة",
+"وهذا"
+],
+[
+"والسلام",
+"علي",
+"من",
+"اتبع",
+"الهدي"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/yasasin-seriat-i-ahmedi-asm",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "لتحيا الشريعة الاحمدية",
+"anchors": [
+[
+"علي",
+"صاحبها",
+"الصلاة",
+"والسلام"
+],
+[
+"5",
+"مارت",
+"1325",
+"رومي"
+],
+[
+"ان",
+"الشريعة",
+"الغراء",
+"باقية",
+"الي",
+"الابد",
+"لانها"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/reddul-evham",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "رد الاوهام",
+"anchors": [
+[
+"18",
+"مارت",
+"1325",
+"رومي"
+],
+[
+"31",
+"مارت",
+"1909",
+"ميلادي"
+],
+[
+"سارد",
+"هنا",
+"الاوهام",
+"الفاسدة",
+"التسعة",
+"التي",
+"اسندت"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/reddul-evham/vehim-01",
+"parent_id": "hutbe-i-samiye-arabi/zeyl/reddul-evham",
+"title": "الوهم الاول",
+"type": "Vehim",
+"number": 1,
+"anchors": [
+[
+"ان",
+"طرح",
+"المسالة",
+"الدينية",
+"في",
+"الاوساط",
+"لا"
+],
+[
+"الجواب",
+"نحن",
+"نحب",
+"الدين",
+"ونحب",
+"الدنيا",
+"ايضا"
+],
+[
+"ثانيا",
+"ما",
+"دامت",
+"الحاكمية",
+"للشعب",
+"في",
+"المشروطية"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/reddul-evham/vehim-02",
+"parent_id": "hutbe-i-samiye-arabi/zeyl/reddul-evham",
+"title": "الوهم الثاني",
+"type": "Vehim",
+"number": 2,
+"anchors": [
+[
+"ان",
+"تخصيص",
+"هذا",
+"العنوان",
+"اي",
+"الاتحاد",
+"المحمدي"
+],
+[
+"وقد",
+"قلت",
+"سابقا",
+"فاما",
+"لم",
+"يقرا",
+"او"
+],
+[
+"ان",
+"اساس",
+"هذا",
+"الاتحاد",
+"يمتد",
+"من",
+"الشرق"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/reddul-evham/vehim-05",
+"parent_id": "hutbe-i-samiye-arabi/zeyl/reddul-evham",
+"title": "الوهم الخامس",
+"type": "Vehim",
+"number": 5,
+"anchors": [
+[
+"ربما",
+"ينفر",
+"الاجانب",
+"من",
+"هذا",
+"الاتحاد"
+],
+[
+"ان",
+"من",
+"يجد",
+"في",
+"نفسه",
+"هذا",
+"الاحتمال"
+],
+[
+"ثم",
+"ان",
+"اعداءنا",
+"ليسوا",
+"الاجانب",
+"وانما",
+"الذي"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/reddul-evham/vehim-06",
+"parent_id": "hutbe-i-samiye-arabi/zeyl/reddul-evham",
+"title": "الوهم السادس",
+"type": "Vehim",
+"number": 6,
+"anchors": [
+[
+"ان",
+"البعض",
+"يقول",
+"ان",
+"اتخاذ",
+"اتحاد",
+"الاسلام"
+],
+[
+"المومن",
+"حر",
+"في",
+"ذاته",
+"فالذي",
+"هو",
+"عبد"
+],
+[
+"اما",
+"الحرية",
+"المطلقة",
+"فما",
+"هي",
+"الا",
+"الوحشية"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/reddul-evham/vehim-07",
+"parent_id": "hutbe-i-samiye-arabi/zeyl/reddul-evham",
+"title": "الوهم السابع",
+"type": "Vehim",
+"number": 7,
+"anchors": [
+[
+"ان",
+"جمعية",
+"اتحاد",
+"الاسلام",
+"انما",
+"هي",
+"لشق"
+],
+[
+"اولا",
+"ان",
+"الامور",
+"الاخروية",
+"لا",
+"حسد",
+"فيها"
+],
+[
+"ثانيا",
+"اننا",
+"نتحد",
+"مع",
+"الجماعات",
+"المتشكلة",
+"بدافع"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/reddul-evham/vehim-08",
+"parent_id": "hutbe-i-samiye-arabi/zeyl/reddul-evham",
+"title": "الوهم الثامن",
+"type": "Vehim",
+"number": 8,
+"anchors": [
+[
+"ان",
+"المنتسبين",
+"الي",
+"الاتحاد",
+"معني",
+"وصورة",
+"اكثرهم"
+],
+[
+"انما",
+"ذلك",
+"لعدم",
+"السماح",
+"في",
+"هذا",
+"الاتحاد"
+],
+[
+"فتشويه",
+"هذا",
+"العنوان",
+"المقدس",
+"بحجج",
+"واهية",
+"امثال"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/biraderim-basmuharrir-beye",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "أخي رئيس التحرير!",
+"anchors": [
+[
+"علي",
+"الادباء",
+"ان",
+"يتادبوا",
+"ويتحلوا",
+"بالاداب",
+"الاسلامية"
+],
+[
+"ان",
+"المهيمن",
+"في",
+"الوجدان",
+"انما",
+"هو",
+"الحمية"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/hutbe-i-samiyenin-birinci-zeylinin-zeylinden",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "القطعة الاخيرة",
+"subtitle": "من ذيل الذيل",
+"anchors": [
+[
+"هذه",
+"القطعة",
+"عبارة",
+"عن",
+"درسين",
+"القيا",
+"علي"
+],
+[
+"نشر",
+"هذان",
+"الدرسان",
+"في",
+"الجرايد",
+"الدينية",
+"سنة"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/kahraman-askerlerimize",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "الى جنودنا الاشاوس",
+"anchors": [
+[
+"4",
+"نيسان",
+"1325",
+"رومي"
+],
+[
+"الجريدة",
+"الدينية",
+"عدد",
+"107"
+],
+[
+"ايها",
+"الجنود",
+"الموحدون",
+"الابطال"
+]
+]
+},
+{
+"id": "hutbe-i-samiye-arabi/zeyl/asakire-hitab",
+"parent_id": "hutbe-i-samiye-arabi/zeyl",
+"title": "خطاب الى الجنود",
+"anchors": [
+[
+"7",
+"نيسان",
+"1325",
+"رومي"
+],
+[
+"الجريدة",
+"الدينية",
+"عدد",
+"10"
+],
+[
+"يا",
+"عساكر",
+"الموحدين",
+"اني",
+"ابلغكم",
+"اوامر",
+"سيد"
+]
+]
+}
+],
+"notes": [
+{
+"node_id": "hutbe-i-samiye-arabi",
+"after": null,
+"text": "Muhakkikin (İhsan Kasım) \"بين يدي هذه الرسالة\" ön sözü esere dahil edilmedi."
+}
+]
+}

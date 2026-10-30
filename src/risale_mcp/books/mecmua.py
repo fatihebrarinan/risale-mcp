@@ -27,7 +27,7 @@ from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from risale_mcp.catalog import SECONDARY_SITES, WORKS, Group
+from risale_mcp.catalog import WORKS, Group
 from risale_mcp.normalize import match_words
 
 SHINGLE = 5
@@ -55,7 +55,7 @@ class CanonicalIndex:
         for work in WORKS:
             path = books_dir / f"{work.slug}.json"
             # İkincil kaynaktaki (Âsâr-ı Bedîiyye) eserler ana metin sayılmaz; onlar da ana ciltlere eşlenir.
-            if work.source and work.group in CANONICAL_GROUPS and work.source.site not in SECONDARY_SITES and path.exists():
+            if work.source and (work.group in CANONICAL_GROUPS or work.slug == "hizb-i-nuri") and not work.is_secondary and not work.private and path.exists():
                 index.add(work.slug, json.loads(path.read_text(encoding="utf-8")))
         return index
 

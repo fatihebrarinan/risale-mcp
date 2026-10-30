@@ -64,7 +64,7 @@ RESOURCE_TEXT_WORDS = 20000      # kaynak olarak eklenen bölüm metninin üst s
 
 INSTRUCTIONS = """\
 Read access to the complete works of Bediüzzaman Said Nursî (the Risale-i Nur volumes, the early works, the \
-compilations (mecmua), the Hizbs, and the works he wrote in Arabic with their Turkish translations) and to the \
+compilations (mecmua), the Hizbs, the works he wrote in Arabic with their Turkish translations, and Ottoman volumes) and to the \
 Qur'an. Texts are split into sentences with stable ids.
 
 Workflow:
@@ -235,7 +235,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
 
     @server.tool(title="List works", annotations=read_only("List works"), structured_output=False)
     def list_works(
-        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua or hizb.")] = None,
+        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
     ) -> str:
         """List the works with their ids, groups and sizes. Works whose text could not be found are listed as
         not available."""
@@ -282,7 +282,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         query: Annotated[str, Field(description="Words (all must occur), \"exact phrase\", prefix*, OR, -exclude, "
                                                 "NEAR(a b, 5). Marks and Turkish letters are optional.")],
         work: Annotated[str | None, Field(description="Only this work id.")] = None,
-        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua or hizb.")] = None,
+        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 20,
         offset: Annotated[int, Field(ge=0)] = 0,
     ) -> str:
@@ -297,7 +297,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         query: Annotated[str, Field(description="A question or concept in your own (today's) words, e.g. "
                                                 "'Ölüm neden bir nimettir?' or 'ümitsizlik'.")],
         work: Annotated[str | None, Field(description="Only this work id.")] = None,
-        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua or hizb.")] = None,
+        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 10,
         offset: Annotated[int, Field(ge=0)] = 0,
     ) -> str:

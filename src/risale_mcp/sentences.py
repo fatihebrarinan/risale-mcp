@@ -33,7 +33,7 @@ from risale_mcp.normalize import fold
 from risale_mcp.paths import BOOKS_DIR, ROOT
 
 _END = re.compile(r"[.!?؟…‥]+[”’\"»)\]']*(?=\s)")
-_STAR_END = re.compile(r"[.!?؟…‥]+[”’\"»)\]']*(?=\s)|(?<=\s)\*(?=\s|$)")
+_STAR_END = re.compile(r"[.!?؟…‥]+[”’\"»)\]']*(?=\s)|(?<=\s)[*٭](?=\s|$)")
 _ARABIC_LETTER = re.compile(r"[\u0600-\u06FF]")
 _OPENERS = "“\"‘'«("
 _LIST_MARKER = re.compile(r"\d{1,2}\.\s+\S")

@@ -27,13 +27,14 @@ from risale_mcp.books import mesnevi_arabi as mesnevi_parser
 from risale_mcp.books import rasaelalnour as rasaelalnour_parser
 from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
+from risale_mcp.books import risaleoku_app as risaleoku_app_parser
 from risale_mcp.books import rumuzat, saykal
 from risale_mcp.books import yeniasya as yeniasya_parser
 from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
 from risale_mcp.books.model import Book
-from risale_mcp.catalog import SECONDARY_SITES, WORKS, Group, Site, Status, Work, get_work
+from risale_mcp.catalog import WORKS, Group, Site, Status, Work, get_work
 from risale_mcp.db import connect
-from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, RAW_DIR, ROOT
+from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, PUBLIC_DB_PATH, RAW_DIR, ROOT
 from risale_mcp.sources import kesif as kesif_source
 from risale_mcp.sources import kullanici as kullanici_source
 from risale_mcp.sources import qurancom as qurancom_source
@@ -41,6 +42,14 @@ from risale_mcp.sources import rasaelalnour as rasaelalnour_source
 from risale_mcp.sources import erisale
 
 OUTLINE_DIR = INTERIM_DIR / "outline"
+# Aslı Arapça eserler: (dipnot sınıflayıcısı, `<…>` satırları manzum metin mi)
+ARABIC_OUTLINES = {
+    "isaratul-icaz-arabi": (),
+    "el-mesnevi-el-arabi": (),
+    "kizil-icaz-arabi": (lambda note: ("serh", note), True),
+    "talikat-arabi": (saykal._talikat_note,),
+    "hutbe-i-samiye-arabi": (),
+}
 HASIYE_ID = re.compile(r"/h\d+/")
 PARSEABLE_SITES = set(Site)
 
@@ -124,6 +133,11 @@ def parse(work: Work) -> tuple[Book, list[str]]:
         return risale_online_parser.parse_work(work, RAW_DIR / Site.RISALE_ONLINE), []
     if work.source.site is Site.RISALEOKU:
         return risaleoku_parser.parse_work(work, RAW_DIR / Site.RISALEOKU), []
+    if work.source.site is Site.RISALEOKU_APP:
+        root = RAW_DIR / Site.RISALEOKU_APP
+        if work.slug in ARABIC_OUTLINES:
+            return risaleoku_app_parser.parse_with_outline(work, root, *ARABIC_OUTLINES[work.slug])
+        return risaleoku_app_parser.parse_work(work, root), []
     if work.source.site is Site.YENIASYA:
         return yeniasya_parser.parse_work(work, RAW_DIR / Site.YENIASYA), []
     if work.source.site is Site.KASTAMONUR:
@@ -131,7 +145,7 @@ def parse(work: Work) -> tuple[Book, list[str]]:
     if work.source.site is Site.RASAELALNOUR:
         (name,) = work.source.sections                     # arşivdeki Word dosyası
         docx = rasaelalnour_source.docx(RAW_DIR / Site.RASAELALNOUR, work.source.book, name)
-        if work.slug == "el-mesnevi-el-arabi":
+        if work.slug == "el-mesnevi-el-arabi-harekeli":
             qurancom_source.fetch_pages(mesnevi_parser.qcf_pages(docx), RAW_DIR / "qurancom")
             nokta = rasaelalnour_source.docx(RAW_DIR / Site.RASAELALNOUR, work.source.book, "نقطة من نور معرفة الله.doc")
             book, report = mesnevi_parser.parse(work, docx, RAW_DIR / "qurancom", nokta)
@@ -165,7 +179,7 @@ def _flat_report(report) -> list[str]:
 
 def needs_mapping(work: Work) -> bool:
     """Mecmualar ve son çare kaynaktaki eserler: metni ana ciltlerde olan paragraflar oraya işaret eder."""
-    return work.group is Group.MECMUA or work.source.site in SECONDARY_SITES
+    return work.group is Group.MECMUA or work.is_secondary
 
 
 def build_work(work: Work) -> None:
@@ -209,6 +223,7 @@ def main() -> None:
     checklist.main()
     if not args.no_db:
         print("\nveritabanı:\n" + "\n".join(build_db.build(quran_path=QURAN_PATH).lines()))
+        build_db.build(out=PUBLIC_DB_PATH, quran_path=QURAN_PATH, public=True)
         if count := embeddings.missing(connect(DB_PATH)):
             print(f"\nanlamsal arama: {count} cümlenin vektörü yok; tamamlamak için "
                   f"`uv run python -m risale_mcp.embeddings build {embeddings.SEARCH_MODEL}`")

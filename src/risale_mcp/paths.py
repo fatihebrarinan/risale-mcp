@@ -8,3 +8,4 @@ RAW_DIR = DATA_DIR / "raw"          # ham kaynak yanıtları
 INTERIM_DIR = DATA_DIR / "interim"  # ara çıktılar
 BOOKS_DIR = DATA_DIR / "books"      # her eserin nihai JSON'u
 DB_PATH = DATA_DIR / "risale.db"    # JSON'lardan kurulan SQLite veritabanı
+PUBLIC_DB_PATH = DATA_DIR / "risale-public.db"  # genel sunucuya giden kopya: `private` eserler yok

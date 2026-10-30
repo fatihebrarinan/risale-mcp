@@ -20,7 +20,8 @@ GROUP_TITLES = {
     Group.ESKI_SAID: "Eski Said dönemi eserleri",
     Group.ANA_CILT: "Risale-i Nur ana ciltleri",
     Group.MECMUA: "Mecmualar",
-    Group.HIZB: "Hizbler",
+    Group.HIZB: "Hizbler ve dualar",
+    Group.OSMANLICA: "Osmanlıca eserler",
 }
 
 DONE, PARTIAL, TODO, NONE, PAUSED = "✅", "⚠️", "⬜", "❌", "⏸️"

@@ -16,7 +16,7 @@ from risale_mcp.catalog import get_work
 from risale_mcp.paths import BOOKS_DIR
 from risale_mcp.sentences import split
 
-WORK = get_work("el-mesnevi-el-arabi")
+WORK = get_work("el-mesnevi-el-arabi-harekeli")
 
 
 def p(text: str = "", align: str = "both", runs: str = "") -> str:
@@ -69,7 +69,7 @@ def book(tmp_path_factory):
 
 def test_structure_parallel_to_the_turkish_work(book):
     data, _ = book
-    ids = [n["id"].removeprefix("el-mesnevi-el-arabi/") for n in data["outline"][1:]]
+    ids = [n["id"].removeprefix("el-mesnevi-el-arabi-harekeli/") for n in data["outline"][1:]]
     assert ids == ["mukaddime", "mukaddime/nokta-01", "lemalar", "lemalar/lema-01", "lemalar/lema-11"]
     lemalar = next(n for n in data["outline"] if n["id"].endswith("/lemalar"))
     assert lemalar["subtitle"] == "مِنْ شَمْسِ التَّوْحِيدِ"
@@ -108,10 +108,10 @@ NOKTA = [
 
 
 def test_nokta_is_a_marked_translation_parallel_to_the_turkish_risale():
-    book = Book("el-mesnevi-el-arabi", "x", {})
+    book = Book("el-mesnevi-el-arabi-harekeli", "x", {})
     _nokta(book, NOKTA)
     data = book.to_json()
-    ids = [n["id"].removeprefix("el-mesnevi-el-arabi/") for n in data["outline"][1:]]
+    ids = [n["id"].removeprefix("el-mesnevi-el-arabi-harekeli/") for n in data["outline"][1:]]
     assert ids == ["nokta", "nokta/ifade-i-meram", "nokta/ifade-i-meram/burhan-01", "nokta/ifade-i-meram/burhan-02",
                    "nokta/burhan-01", "nokta/burhan-02"]
     assert "İhsan Kasım" in data["outline"][1]["subtitle"]
@@ -121,11 +121,11 @@ def test_nokta_is_a_marked_translation_parallel_to_the_turkish_risale():
 
 
 def test_real_mesnevi():
-    path = BOOKS_DIR / "el-mesnevi-el-arabi.json"
+    path = BOOKS_DIR / "el-mesnevi-el-arabi-harekeli.json"
     if not path.exists():
-        pytest.skip("el-mesnevi-el-arabi.json yok")
+        pytest.skip("el-mesnevi-el-arabi-harekeli.json yok")
     data = json.loads(path.read_text(encoding="utf-8"))
-    ids = {n["id"].removeprefix("el-mesnevi-el-arabi/") for n in data["outline"]}
+    ids = {n["id"].removeprefix("el-mesnevi-el-arabi-harekeli/") for n in data["outline"]}
     assert {f"lemalar/lema-{n:02d}" for n in range(1, 15)} <= ids
     assert {f"reshalar/resha-{n:02d}" for n in range(1, 13)} <= ids
     assert {"katre/bab-01", "katre/hatime", "katre/zeyl", "habbe/zeylul-habbe", "sule/zeyl"} <= ids

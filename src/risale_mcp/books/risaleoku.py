@@ -51,6 +51,7 @@ SURA_ENTRY = re.compile(r"^\d+-|Sures", re.IGNORECASE)   # Hizb fihristinde sûr
 NUMBERED_SURA = re.compile(r"^(\d+)-")                    # Hizbü'l-Kur'ân: "3-Âl-i İmran"
 SURA_HEADING = "سورة"                                     # sayfadaki sûre başlığının ilk kelimesi
 SURA_HEADING_WORDS = 5
+TOC_SLIP = 3
 MISSING_SURA_START = "The start of this sura (its heading and first verses) is missing at the source; text not invented."
 
 
@@ -182,6 +183,7 @@ class _Heading:
     subtitle: str = ""
     arabic_title: str = ""
     missing_start: bool = False      # başlığı ve ilk metni kaynakta yok
+    local: str = ""                  # düğüm kimliğindeki yerel ad, başlıktan türetilmeyecekse
 
 
 def load_blocks(book: str, root: Path, first_page: int, strip_footnote_marks: bool) -> list[Block | str]:
@@ -218,7 +220,7 @@ def _sura_headings(blocks: list[Block | str]) -> dict[int, tuple[int, str]]:
     return out
 
 
-def _toc_starts(entries: list[TocEntry], blocks: list[Block | str]) -> dict[int, list[_Heading]]:
+def _toc_starts(entries: list[TocEntry], blocks: list[Block | str], drift: bool = False) -> dict[int, list[_Heading]]:
     starts: dict[int, list[_Heading]] = {}
     numbered = [e for e in entries if NUMBERED_SURA.match(e.title)]
     if numbered and (headings := _sura_headings(blocks)):
@@ -230,7 +232,9 @@ def _toc_starts(entries: list[TocEntry], blocks: list[Block | str]) -> dict[int,
             continue
         candidates = [i for i in on_page if blocks[i].page == entry.page] or on_page[:1]
         heads = [match_words(t)[:3] for t in (entry.title, entry.arabic_title) if t]
-        titled = [i for i in candidates if any(h and match_words(blocks[i].text.text)[:len(h)] == h for h in heads)]
+        # Yeni uygulamanın fihristi birkaç sayfa geride kalabilir: başlık yakın sayfalarda da aranır.
+        nearby = [i for i in on_page if blocks[i].page <= entry.page + TOC_SLIP] if drift else candidates
+        titled = [i for i in nearby if any(h and match_words(blocks[i].text.text)[:len(h)] == h for h in heads)]
         if not titled and SURA_ENTRY.search(entry.title):
             titled = [i for i in candidates if i not in starts and match_words(blocks[i].text.text)[:1] == [SURA_HEADING]]
         start = titled[0] if titled else candidates[0]
@@ -296,14 +300,19 @@ def parse_work(work: Work, root: Path) -> Book:
     })
     index_html = gzip.decompress((root / work.source.book / "index.html.gz").read_bytes()).decode("utf-8")
     first = int(m[1]) if (m := re.search(r'id="baslangic" value="(\d+)"', index_html)) else 1
-    arabic_prose = work.language == "ar"
-    blocks = load_blocks(work.source.book, root, first, strip_footnote_marks=arabic_prose)
+    blocks = load_blocks(work.source.book, root, first, strip_footnote_marks=work.language == "ar")
+    return assemble(book, blocks, read_toc(index_html))
 
-    entries = read_toc(index_html)
+
+def assemble(book: Book, blocks: list[Block | str], entries: list[TocEntry], inline=None) -> Book:
+    """Bloklardan ağaç: fihrist varsa ondan, yoksa ortalı Arapça başlıklardan.
+    `inline(starts, blocks)` fihristin altına metindeki numaralı başlıkları ekler."""
     if entries:
-        starts, consumed = _toc_starts(entries, blocks), set()
+        starts, consumed = _toc_starts(entries, blocks, drift=inline is not None), set()
     else:
         starts, consumed = _arabic_heading_starts(blocks)
+    if inline:
+        inline(starts, blocks)
 
     stack: list[tuple[int, Node]] = [(0, book.root)]
     last: dict | None = None
@@ -323,7 +332,7 @@ def parse_work(work: Work, root: Path) -> Book:
                 stack.pop()
             info = parse_heading(head.title)
             slug_source = head.title if re.search(r"[A-Za-z]", head.title) else f"{len(stack[-1][1].children) + 1:03d}"
-            node = book.add_node(stack[-1][1], local_id(info, slug_source, top_level=False), head.title,
+            node = book.add_node(stack[-1][1], head.local or local_id(info, slug_source, top_level=False), head.title,
                                  type=info.type, number=info.number, subtitle=head.subtitle)
             stack.append((head.depth, node))
             if head.missing_start:
@@ -338,4 +347,6 @@ def parse_work(work: Work, root: Path) -> Book:
         kind = "arabic" if block.text.is_arabic() else "signature" if block.signature else "paragraph"
         extra = {"center": True} if block.centered and kind == "paragraph" else {}
         last = book.add_paragraph(stack[-1][1], kind, block.text, **extra)
+        for mark in block.text.footnotes:                        # yeni uygulama: hâşiye işaretin yerinde
+            book.add_hasiye(last["id"], stack[-1][1], mark.offset, mark.content)
     return book

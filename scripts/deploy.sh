@@ -36,7 +36,9 @@ rsync -az -e "${SSH[*]}" docs/risale-mcp.server.service "$HOST:/etc/systemd/syst
 if [[ "${1:-}" != "--code" ]]; then
     echo "veri gönderiliyor…"
     "${SSH[@]}" "$HOST" "mkdir -p $DEST/data/vectors"
-    rsync -az --info=progress2 -e "${SSH[*]}" data/risale.db data/quran.json "$HOST:$DEST/data/"
+    # `private` eserler (Esasat, harekeli Mesnevî…) yalnızca yereldedir: sunucuya risale-public.db gider.
+    rsync -az --info=progress2 -e "${SSH[*]}" data/risale-public.db "$HOST:$DEST/data/risale.db"
+    rsync -az --info=progress2 -e "${SSH[*]}" data/quran.json "$HOST:$DEST/data/"
     rsync -az --delete -e "${SSH[*]}" data/vectors/ "$HOST:$DEST/data/vectors/"
     grep '^VOYAGE_API_KEY=' .env | "${SSH[@]}" "$HOST" "cat > $DEST/.env && chmod 600 $DEST/.env"
 fi

@@ -178,7 +178,8 @@ def _sha(text: str) -> str:
 def units(conn: sqlite3.Connection, variant: str) -> list[Unit]:
     """Vektörü çıkarılacak birimler, kitap sırasıyla. `context`te bir belgenin birimleri art arda gelir."""
     rows = conn.execute("SELECT s.id, s.node_id, s.hash, s.text, n.ref FROM sentences s"
-                        " JOIN nodes n ON n.id = s.node_id ORDER BY s.seq").fetchall()
+                        " JOIN nodes n ON n.id = s.node_id JOIN works w ON w.slug = n.work"
+                        " WHERE w.group_name != 'osmanlica' ORDER BY s.seq").fetchall()
     if variant == "context":
         return [u for document in documents(rows) for u in document]
     out: dict[str, Unit] = {}
