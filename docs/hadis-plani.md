@@ -23,8 +23,8 @@ Her adımın sonunda `hadis_eval` raporu ve önceki ölçümle fark gösterilir;
 | 0 | Kod hataları, kanıt modeli, `found` ayrımı, dondurulmuş ölçüm | Yapıldı |
 | 1 | Künye ayrıştırma ve kitap kaydı | Yapıldı |
 | 2 | Kısa parçalar için künyeli arama, geçiş başına | Yapıldı |
-| 3 | Lafız farkı ve mânen nakil adayları | Yapıldı, onay bekliyor |
-| 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | |
+| 3 | Lafız farkı ve mânen nakil adayları | Yapıldı |
+| 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | Yapıldı, onay bekliyor |
 | 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | |
 | 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | |
 | 7 | Bağımsız model okuması: künyeyi ve önceki kararı görmez | |
@@ -61,6 +61,20 @@ Kalan sınırlar:
 - Bazı bulgular uzun bir duanın küçük parçasıdır ("لَهُ الْمُلْكُ"): rivayet doğru olsa da parça hadisin kendisi değildir.
 - 12 örnekle bakıldı, tam doğrulama değildir.
 - Sunucu Adım 0 sürümündedir (şema 9). Yerel şema 11: sonraki deploy veriyle yapılır, `--code` yetmez.
+
+## Adım 4 sonucu
+
+`hadis_turkce.py`, liste `data/interim/hadis/turkce.{md,json}`. Veritabanı ve `arabic` değişmedi. Kural 101 cümle buldu: `quoted_hadith` 61, `quoted_prophet` 23, `reported` 17 (17'si Arapçası yanında olduğu için elendi). Kapsam ana cilt ve Eski Said; mecmualar ve tercümeler dışarıda.
+
+40 cümlelik örneklemi (son süzgeçten önceki 103 cümleden) model okudu, kullanıcı ya da hadisçi değil: 4'ü açıkça yanlış (Ermeni fedâileri, İmam Şâfiî'den nakil, "hiç hadis yoktur" diyen iddia, genel cümle), 1'i şüpheli (müellifin hadisten çıkardığı anlam). Kaçırma oranı ölçülmedi.
+
+Deneme (14 söz, Arapçayı model ezberden yazdı, API yok): 13'ünde yakın bir rivayet çıktı, 1'inde (ukke) çıkmadı. Bu oran doğruluk değildir, 14 söz elle seçildi:
+
+- Model hadisi tanıyıp Arapçasını yazınca arama onun tanıdığını bulur: öneri kanıt değildir (olası hata 5).
+- "Cehennem ateşi … iki yüz defa" için bulunan rivayet "yetmiş"tir: yakın görünen ama sayısı farklı söz. Otomatik bağ yanlış olurdu.
+- "Cebrâil ders" adayı başka bir olay olabilir. "Dünya Âhiret mezraası" yalnız mevzu kitabında çıktı.
+
+Parçalı cümleler var: tırnak içi "‥" bölünmesi ("“Bir zaman gelecek, Allah‥") sözü yarım bırakır.
 
 ## Adım 3 sonucu
 
