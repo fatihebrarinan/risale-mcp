@@ -133,7 +133,7 @@ class Corpus:
         return found
 
     def locate(self, text: str, citations: list[Citation]) -> tuple[str | None, list[int]]:
-        """Parçayı yalnız künyedeki kitaplarda arar: (chapter | book | boş, rivayetler; bölümü tutanlar önce)."""
+        """Parçayı yalnız künyedeki kitaplarda arar: (chapter | book | boş, o düzeyin rivayetleri)."""
         needle = f" {' '.join(words(text))} "
         chapter, book = [], []
         for c in citations:
@@ -144,7 +144,7 @@ class Corpus:
                     if needle in self._spaced(r):
                         (chapter if self.reports[r].section in sections else book).append(r)
         if chapter:
-            return "chapter", self.select(dict.fromkeys(chapter + book))
+            return "chapter", self.select(dict.fromkeys(chapter))
         return ("book", self.select(dict.fromkeys(book))) if book else (None, [])
 
     def _spaced(self, report: int) -> str:

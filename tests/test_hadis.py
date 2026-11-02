@@ -76,6 +76,12 @@ def test_a_book_level_hit_is_not_stored():
     assert set(hadis._located(corpus, "المرء مع من احب", "short", parsed)) == {"Buhari, Edeb: 96"}
 
 
+def test_a_chapter_hit_lists_only_chapter_reports():
+    corpus = Corpus([Report("bukhari:1", "Sahîh-i Buhârî", "1", "المرء مع من احب", "hadith_api", (), 78),
+                     Report("bukhari:2", "Sahîh-i Buhârî", "2", "المرء مع من احب", "hadith_api", (), 2)])
+    assert corpus.locate("المرء مع من احب", parse_citation("Buhari, Edeb: 96").citations) == ("chapter", [0])
+
+
 def test_cited_books_are_chosen_first():
     corpus = Corpus([report(f"sanadset:{i}", f"k{i}", "x") for i in range(9)] + [report("sanadset:9", "aranan", "x")])
     assert corpus.select(set(range(10)), {"aranan"})[0] == 9
