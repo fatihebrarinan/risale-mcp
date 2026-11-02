@@ -1,0 +1,16 @@
+{
+  "about": "Eserlerin metin içindeki eski adları: numarası ana ciltte boş ya da yer tutucu bir düğüme düşen risalelerin metninin asıl yeri. Elle düzenlenir, her kayıt kanıtını (cümle kimliği ya da alt başlığı söyleyen düğüm) taşır. `library.py` okur; bkz. tests/test_old_names.py.",
+  "sections": {
+    "mektubat/27": {"name": "Yirmi Yedinci Mektub", "elsewhere": ["barla-lahikasi", "kastamonu-lahikasi", "emirdag-lahikasi"], "evidence": "mektubat/27/c002"},
+    "mektubat/30": {"name": "Otuzuncu Mektub", "elsewhere": ["isaratul-icaz", "isaratul-icaz-arabi"], "evidence": "mektubat/30"},
+    "mektubat/31": {"name": "Otuz Birinci Mektub", "elsewhere": ["lemalar"], "rule": "its Nth Lem'a is lemalar/N", "evidence": "lemalar/fihrist/lema-23/c001"},
+    "mektubat/32": {"name": "Otuz İkinci Mektub", "elsewhere": ["lemeat"], "evidence": "mektubat/32"},
+    "mektubat/33": {"name": "Otuz Üçüncü Mektub", "elsewhere": ["sozler/33"], "evidence": "mektubat/33"},
+    "lemalar/8": {"name": "Sekizinci Lem'a", "elsewhere": ["sikke-i-tasdik-i-gaybi/lema-08"], "evidence": "lemalar/8"},
+    "lemalar/18": {"name": "On Sekizinci Lem'a", "elsewhere": ["sikke-i-tasdik-i-gaybi/lema-18"], "evidence": "lemalar/18/c001"},
+    "lemalar/27": {"name": "Yirmi Yedinci Lem'a", "elsewhere": ["tarihce-i-hayat/ucuncu-kisim-eskisehir-hayati/bediuzzaman-said-nursinin-eskisehir-mahkemesi"], "rule": "only part of it: the Eskişehir court defence", "evidence": "lemalar/27"},
+    "lemalar/31": {"name": "Otuz Birinci Lem'a", "elsewhere": ["sualar"], "rule": "its Nth Şuâ is sualar/N", "evidence": "sualar/5/c003"},
+    "lemalar/32": {"name": "Otuz İkinci Lem'a", "elsewhere": ["lemeat"], "evidence": "lemalar/32/c001"},
+    "lemalar/33": {"name": "Otuz Üçüncü Lem'a", "elsewhere": ["mesnevi-i-nuriye", "el-mesnevi-el-arabi"], "evidence": "lemalar/33/c002"}
+  }
+}

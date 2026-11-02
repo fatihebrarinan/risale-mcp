@@ -100,7 +100,7 @@ risale-mcp/
 │   ├── library.py, server.py, citations.py, auth.py, golden.py, local_only.py
 │   ├── review_ui.py, review_assets/, static/
 │   ├── sources/           # site başına indirici (ham kayıt + doğrulama)
-│   └── books/             # model.py, mecmua.py, telif.py, telif.json, kaynak başına ayrıştırıcı, outlines/, pdf_text.py, rumuzat.py
+│   └── books/             # model.py, mecmua.py, telif.py, telif.json, old_names.json, kaynak başına ayrıştırıcı, outlines/, pdf_text.py, rumuzat.py
 └── tests/                 # pytest; golden/ altında altın sorular, âyet kararları, arama seti, cümle örnekleri
 ```
 
@@ -322,7 +322,7 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 |---|---|
 | `list_works(group?)` | Eserler, kimlikleri, grupları, boyutları, telif bilgisi (`written`); metni bulunamayanlar `available: false` |
 | `get_outline(section, depth=2)` | Başlık ağacı; her düğümde alt ağacın ana metin cümle sayısı, telif bilgisi (`written`), derinlik sınırında `subsections` |
-| `read_section(section, cursor?, max_words=1500)` | Bölümü alt bölümleriyle kitap sırasıyla okur: telif bilgisi (`written`; üst risaleden geliyorsa `section` ile), başlıklar (`ref`; bölümün bağ kurduğu âyetler `linked_verses`), paragraflar (cümle `id` + metin), hâşiyeler (`hasiye_of`), âyet/hadis meal ve kaynağı, eksikler (`gap`). Paragraf sınırında sayfalar, `next_cursor` ile sürer. Mecmuada eşlenmiş paragraf ana cildin cümleleriyle (`canonical`) gelir. |
+| `read_section(section, cursor?, max_words=1500)` | Bölümü alt bölümleriyle kitap sırasıyla okur: telif bilgisi (`written`; üst risaleden geliyorsa `section` ile), başlıklar (`ref`; bölümün bağ kurduğu âyetler `linked_verses`), paragraflar (cümle `id` + metin), hâşiyeler (`hasiye_of`), âyet/hadis meal ve kaynağı, eksikler (`gap`). Paragraf sınırında sayfalar, `next_cursor` ile sürer. Mecmuada eşlenmiş paragraf ana cildin cümleleriyle (`canonical`) gelir. Metni başka yerde duran eski adlı bölümde (Otuz Birinci Mektub) `text_elsewhere`. |
 | `get_passage(id, context=0)` | Cümle ya da aralık (`…/c010..c015`), `ref` ve `incipit` ile; bağlı hâşiyeler ve âyet mealleri. Bir bölümde en çok 8 cümlelik aralıkta kullanıcıya gösterilecek atıf (`cite_as`: "… ile başlayan N cümle"). Bölümün sonunu aşan aralık son cümlede kesilir (`note`). |
 | `search(query, work?, group?, limit=20, offset=0)` | Cümle araması (`search.py` sorgu dili); toplam, eser başına sayı, eşleşen başlıklar |
 | `find_sentence(incipit, scope?)` | İlk kelimelerden cümle (işaretsiz; son kelime eksik olabilir) |
@@ -387,11 +387,11 @@ Metin–yorum ayrımı, özetin doğruluğu ve tuzak sorulardaki davranış elle
 
 ## Aşamalar
 
-Tamamlananlar: 1–12 ve 13.2 (indirici, ayrıştırıcı, cümleler, diğer eserler, veritabanı, MCP sunucusu, uçtan uca test, anlamsal arama, Kur'ân katmanı, âyet ilişkileri, aslı Arapça eserler, uzaktan erişim). Geçiş kalitesi 2026-10-30'da bitti (`docs/risaleoku-gecis-plani.md`).
+Tamamlananlar: 1–12, 13 (küçültülmüş) ve 13.2 (indirici, ayrıştırıcı, cümleler, diğer eserler, veritabanı, MCP sunucusu, uçtan uca test, anlamsal arama, Kur'ân katmanı, âyet ilişkileri, aslı Arapça eserler, uzaktan erişim). Geçiş kalitesi 2026-10-30'da bitti (`docs/risaleoku-gecis-plani.md`).
 
 Sıradakiler (kullanıcının sırası):
 
-13. **İç atıf ağı:** Risale'nin kendi göndermeleri ("Yirmi Beşinci Söz'de beyan edildiği gibi") bölüm kimliklerine çözülür; kanıt cümlesiyle, kurallarla. Model bir konuyu Bediüzzaman'ın kendi bağlantılarıyla izler. Çözülemeyen göndermeler açıkça listelenir; adres tahmin edilmez.
+13. **İç atıf ağı (küçültüldü, 2026-11-02):** Ölçüm: anlamsal aramanın kaçırdığı 8 soruda (15'in her ikincisi) gönderme beklenen bölüme 2'sinde götürdü, 1'inde zayıf bağ, 5'inde yol yok; ikisi de düz numaralı, metinde görünen göndermeydi. Bu yüzden yalnız iki iş yapıldı: sunucu talimatında "metin başka yere gönderiyorsa orayı da oku" kuralı ve eski adlar sözlüğü (`books/old_names.json`; her kayıt kanıtlı; `read_section`, `get_outline` `text_elsewhere` verir, talimatta liste). Gönderme tablosu ve ters yön aracı ("buraya kim gönderiyor") ertelendi; Aşama 15 isterse başında yapılır (≈1.700 numaralı gönderme; Fihrist ve derlemeler dışarıda; talebe mektupları ayırt edilemediği için "metnin göndermesi" denir, müellife mal edilmez; `Şuâ` alt başlık da olabilir).
 13.3. **Kaynak seçimi:** Hangi eser için hangi kaynağın kullanılacağını kullanıcının istediği zaman belirleyebileceği bir sistem; arayüzü de olabilir. Bugün seçim `catalog.py`'de koddadır. Kaynak değişince kimlikler ve cümle numaraları kayabilir: seçim, eski atıfların etkisini göstermelidir. `docs/izinler.md`'de izni olmayan kaynak genel sunucu için seçilemez.
 14. **Hadis katmanı:** Açık ve güvenilir bir hadis derleminin (aşamanın başında araştırılır, lisansı doğrulanır) eklenmesi; Risale'deki hadislerin iskeletle eşlenmesi. Sıhhat derecesi kaynak verisinden gelir, biz hüküm vermeyiz; eşleme "tam alıntı / mânen / bulunamadı" diye ayrılır. Temeli `arabic_kinds.py`'nin işaretleridir (1.075 parça; `kind_source` dayanağı). **Aşamanın başında kullanıcı örneklemleri gözden geçirir** (`data/interim/arabic_kinds/sample-*.md`, önce `hadis-meal`, `hadis-erisale`, `hadis-baglam`, sonra `ayet-meal`): her kayıtta "bu tür doğru mu"; yanlışlar kurala döner, kararlar âyet ilişkilerindeki gibi kilitlenir. Örneklem önce yalnız Türkçe ciltlerden yeniden üretilir. Üç dizgi şüphesine de o sırada bakılabilir.
 15. **Konu fihristi (2. hedef):** Konu → cümle listeleri. Anlamsal aramanın üzerine kurulur; konu listesi ve her konunun cümleleri elle gözden geçirilebilir bir dosyada durur, sunucuya araç ya da kaynak olarak eklenir. Konu, ardışık cümle aralıklarından ("pasaj") oluşan ayrı bir katmandır.

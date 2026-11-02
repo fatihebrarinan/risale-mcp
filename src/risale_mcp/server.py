@@ -56,7 +56,7 @@ from risale_mcp.auth import settings as auth_settings
 from risale_mcp.citations import CitationChecker
 from risale_mcp.db import DatabaseError
 from risale_mcp.env import load_env
-from risale_mcp.library import Library, LibraryError
+from risale_mcp.library import Library, LibraryError, old_names_note
 from risale_mcp.paths import DB_PATH
 
 NAME = "risale"
@@ -71,7 +71,9 @@ Workflow:
 1. Find: semantic_search for concepts and questions in today's words (the text often uses older words); search \
 for the text's own words, names and terms. Results are candidates, not evidence.
 2. Read what you will rely on, in context: get_passage (a sentence or a range first..last, with context) or \
-read_section.
+read_section. When the text you read sends the reader to another place for this topic ("tafsilen", "müracaat et", \
+"… izah edilmiştir"), read that place too before answering; a passing mention or a list of treatises is not such a \
+pointer. Old names in the text: {old_names}. text_elsewhere on a section gives the same.
 3. Before writing the answer, call cite once with every sentence or range you quote or rely on, in the order of \
 their numbers, and the exact words you quote: every quotation you will show, each with its words. Fix what it \
 flags.
@@ -111,7 +113,7 @@ reference, not the section's topic. Bring verses up only when they matter to the
 In Kızıl İcaz, "quote" paragraphs are Ahdarî's verses; commentary_by marks Abdülmecid Nursî's commentary, \
 cite it as his. Check subtitles and paragraph kinds.
 - Compilations reuse main-volume text: cite the main volume's sentences they return.
-"""
+""".replace("{old_names}", old_names_note())
 
 
 class Source(BaseModel):

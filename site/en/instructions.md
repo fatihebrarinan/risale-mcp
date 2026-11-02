@@ -2,7 +2,7 @@ In this project, answer every question about the Risale-i Nur with the tools of 
 
 Workflow:
 1. Search first: `semantic_search` for concepts and questions asked in today's words, `search` for the text's own words, names and terms. Use both if needed and search more than once.
-2. Search results are only candidates. Before relying on a place, always read it with `get_passage` (with context, for example context=2) or `read_section`. Never cite a place you have not read.
+2. Search results are only candidates. Before relying on a place, always read it with `get_passage` (with context, for example context=2) or `read_section`. Never cite a place you have not read. When the text you read sends the reader to another place for this topic ("tafsilen", "müracaat et", "… izah edilmiştir"), read that place too; a passing mention or a list of treatises is not such a pointer.
 3. Before writing the answer, call `cite` once with every sentence or range you rely on, together with the words you quote. The bibliography it returns is your "Sources" list; fix the problems it flags. Do not send your draft answer to the tool.
 
 Citations and quotations:

@@ -31,6 +31,8 @@ MAX_CITED = 8            # tek atıfla verilebilecek en çok ardışık cümle (
 MAX_RESULTS = 50
 PREVIEW_CHARS = 400      # arama sonucunda gösterilen en uzun cümle metni
 ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen Arapça türleri
+# Eski adla anılan, metni başka yerde duran bölümler: bölüm kimliği -> {name, elsewhere, rule?, evidence}
+OLD_NAMES = json.loads((Path(__file__).parent / "books" / "old_names.json").read_text(encoding="utf-8"))["sections"]
 
 
 def _arabic_record(row) -> dict:
@@ -51,6 +53,20 @@ AYAH_CHECK_NOTES = {
     "iktibas": "the quoted text does not match the named verse word for word: the author's adapted quotation or "
                "abridgement. Quote the work as it stands; take the verse's own text from get_ayah",
 }
+
+
+def old_names_note() -> str:
+    """Sunucu talimatı için eski adlar listesi: "Otuz Birinci Mektub = lemalar (its Nth Lem'a is lemalar/N)"."""
+    return "; ".join(f"{e['name']} = {', '.join(e['elsewhere'])}" + (f" ({e['rule']})" if "rule" in e else "")
+                     for e in OLD_NAMES.values())
+
+
+def _elsewhere(node_id: str) -> dict:
+    """Bölümün metni başka yerdeyse sonuca eklenecek alan; değilse boş."""
+    entry = OLD_NAMES.get(node_id)
+    if entry is None:
+        return {}
+    return {"text_elsewhere": {k: entry[k] for k in ("elsewhere", "rule", "evidence") if k in entry}}
 
 
 class LibraryError(ValueError):
@@ -198,7 +214,7 @@ class Library:
         for node_id_, record in records.items():
             if "children" not in record and child_count[node_id_]:
                 record["subsections"] = child_count[node_id_]
-        return {"work": root["work"], "ref": root["ref"], **records[root["id"]]}
+        return {"work": root["work"], "ref": root["ref"], **records[root["id"]], **_elsewhere(root["id"])}
 
     # ------------------------------------------------------------ okuma
 
@@ -274,7 +290,7 @@ class Library:
         result = {"section": root["id"], "ref": root["ref"], "items": items, "next_cursor": next_cursor}
         if written := self._written(root):
             result["written"] = written
-        return result
+        return result | _elsewhere(root["id"])
 
     def _paragraph_texts(self, paragraphs: list[sqlite3.Row]) -> dict[str, dict]:
         """Paragraf -> {id, kind, sentences, arabic?, hasiye_of?, canonical?}."""

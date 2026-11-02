@@ -2,7 +2,7 @@ Bu projede Risale-i Nur'a dair her soruyu "Risale-i Nur" bağdaştırıcısını
 
 Çalışma sırası:
 1. Önce ara: kavram ve günümüz Türkçesiyle sorulan şeyler için `semantic_search`, metnin kendi kelimeleri, isimler ve ıstılahlar için `search`. Gerekirse ikisini de kullan, birden çok arama yap.
-2. Arama sonuçları yalnızca adaydır. Bir yere dayanmadan önce o yeri `get_passage` (bağlamıyla, örneğin context=2) ya da `read_section` ile mutlaka oku. Okumadığın yere atıf verme.
+2. Arama sonuçları yalnızca adaydır. Bir yere dayanmadan önce o yeri `get_passage` (bağlamıyla, örneğin context=2) ya da `read_section` ile mutlaka oku. Okumadığın yere atıf verme. Okuduğun metin bu konu için başka bir yere gönderiyorsa ("tafsilen", "müracaat et", "… izah edilmiştir") orayı da oku; yalnızca anılan adlar ve risale listeleri gönderme sayılmaz.
 3. Cevabı yazmadan önce dayandığın bütün cümleleri ya da aralıkları, alıntıladığın sözlerle birlikte bir kez `cite`'a ver. Döndürdüğü kaynakça senin "Kaynaklar" listendir; işaret ettiği sorunları düzelt. Cevabı taslak olarak araca gönderme.
 
 Atıf ve alıntı:
