@@ -24,8 +24,8 @@ Her adımın sonunda `hadis_eval` raporu ve önceki ölçümle fark gösterilir;
 | 1 | Künye ayrıştırma ve kitap kaydı | Yapıldı |
 | 2 | Kısa parçalar için künyeli arama, geçiş başına | Yapıldı |
 | 3 | Lafız farkı ve mânen nakil adayları | Yapıldı |
-| 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | Yapıldı, onay bekliyor |
-| 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | |
+| 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | Yapıldı |
+| 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | Yapıldı, onay bekliyor |
 | 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | |
 | 7 | Bağımsız model okuması: künyeyi ve önceki kararı görmez | |
 | 8 | Hadisçi örneklemi; kararlar `tests/golden/`'a kilitlenir | |
@@ -61,6 +61,31 @@ Kalan sınırlar:
 - Bazı bulgular uzun bir duanın küçük parçasıdır ("لَهُ الْمُلْكُ"): rivayet doğru olsa da parça hadisin kendisi değildir.
 - 12 örnekle bakıldı, tam doğrulama değildir.
 - Sunucu Adım 0 sürümündedir (şema 9). Yerel şema 11: sonraki deploy veriyle yapılır, `--code` yetmez.
+
+## Adım 5 sonucu
+
+`hadis_rivayet.py`, liste `data/interim/hadis/rivayet.{md,json}`, ölçüm `adim-5.md`. Hüküm verilmez: hiçbir eşleşme silinmedi, `hadith_support`, veritabanı ve araçlar değişmedi. Denetim 101 eşleşmeli parçaya (`found`, `partly_found`) ve Adım 3'ün 51 adayına uygulandı.
+
+| Kuyruk | found (83) | partly_found (18) | aday chapter (24) | aday close (27) |
+|---|---|---|---|---|
+| Sözün yanında reddeden ifade | 6 | 0 | 0 | 1 |
+| Başkasının sözü denilmiş | 1 | 0 | 0 | 0 |
+| Yalnız mevzu ve zayıf kitaplarında | 3 | 2 | 0 | 3 |
+| Peygamber'e bağlı görünmüyor | 6 | 3 | 5 | 7 |
+| Senet yok | 7 | 2 | 0 | 4 |
+| Zayıflatan ifade | 2 | 0 | 0 | 0 |
+| Kuyruk yok | 73 | 13 | 19 | 20 |
+
+`denied` taşıyan 7 parçanın hepsi model tarafından okundu; kelime tutması çıkmadı, ifadeler gerçek tenkit ifadesidir (ör. "علماء امتي كأنبياء بني إسرائيل" için "لا اصل له"). Buhârî ve Müslim'den 71 kayıtta `denied` ve `weakened` 0. Bu, sözün çürük olduğunu göstermez: "حب الدنيا رأس كل خطيئة" aynı satırda Hasan Basrî'ye hasen isnadla bağlanır, "انا مدينة العلم"daki ifade tek bir rivayet yolu hakkındadır, âlimler arasında ihtilaf vardır.
+
+Kalan sınırlar:
+
+- Bir tenkit ifadesi birden çok âlimin görüşünden yalnız biridir; kaynak metnin içeriğini tek yönlü özetlemek yanıltır, ifade âlimin adıyla verilmelidir.
+- Yalnız eşleşmeden sonraki 30 kelimeye bakılır: önceki ya da başka kitaptaki tenkit görülmez. Tenkit yoksa söz sağlam demek değildir, seçilmiş en çok 8 rivayete bakılıyor.
+- `speaker` zayıftır: `none` çoğu kez örtük "قال"dır, tek rivayet için hüküm olmaz, yalnız parça kuyruğu verir. Peygamber anılan rivayette söz başkasının olabilir (`prophet` doğrulanmış değildir); 532 `prophet` kaydının küçük örneği okundu.
+- `no_prophet` kuyruğu yanlış sınıflandırmayı da gösterebilir: "يا آل الذبيح" (Buhârî'de kâhin sözü) ve "تسمع بالمعيدي" (atasözü) hadis parçası sayılmış, kaynağın ya da `arabic_kinds`'ın işareti ayrıca bakılmalı.
+- Hadith API'de senet uzunluğu yok; senedin sıhhati hiçbir kayıtta denetlenmedi, yalnız varlığı.
+- Kitap türü adından çıkar; 63 kayıt `diger`. Kurallar ayar örneğiyle düzeltildi; kuyruklar okunurken sınama parçaları da görüldü, kurallar sonrasında değişmedi.
 
 ## Adım 4 sonucu
 

@@ -159,10 +159,13 @@ def close(query_length: int, value: float) -> bool:
     return any(query_length >= n and value >= t for n, t in CLOSE)
 
 
+def kept_words(text: str) -> list[str]:
+    """Metnin kendi yazılışıyla, `stems` ile aynı sırada aynı kelimeler."""
+    return [w for w in text.split() if (k := skeleton(w)) and k != _ETC]
+
+
 def excerpt(text: str, start: int, end: int) -> str:
-    """Pencerenin rivayetteki kendi yazılışı; `stems` ile aynı kelimeleri sayar."""
-    kept = [w for w in text.split() if (k := skeleton(w)) and k != _ETC]
-    return " ".join(kept[start:end + 1])
+    return " ".join(kept_words(text)[start:end + 1])
 
 
 def cited_places(citations: list) -> tuple[set[tuple[str, int]], set[str]]:
