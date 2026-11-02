@@ -10,7 +10,7 @@ from risale_mcp.books.pdf_text import Glyph, Report, _letter, _logical
 from risale_mcp.books.rumuzat import label_info
 from risale_mcp.catalog import get_work
 from risale_mcp.headings import HeadingInfo
-from risale_mcp.paths import BOOKS_DIR, RAW_DIR
+from risale_mcp.paths import KULLIYAT_DIR, RAW_DIR
 from risale_mcp.sources.kullanici import pdf_path
 
 PDF = pdf_path(RAW_DIR / "kullanici", "rumuzat-i-semaniye")
@@ -79,13 +79,13 @@ def test_label_info(label, strict, info):
     assert label_info(label, strict) == info
 
 
-needs_pdf = pytest.mark.skipif(not (PDF.exists() and (BOOKS_DIR / "rumuzat-i-semaniye.json").exists()),
+needs_pdf = pytest.mark.skipif(not (PDF.exists() and (KULLIYAT_DIR / "rumuzat-i-semaniye.json").exists()),
                                reason="kullanıcının PDF'i ya da eser JSON'u yok")
 
 
 @needs_pdf
 def test_real_book():
-    book = json.loads((BOOKS_DIR / "rumuzat-i-semaniye.json").read_text(encoding="utf-8"))
+    book = json.loads((KULLIYAT_DIR / "rumuzat-i-semaniye.json").read_text(encoding="utf-8"))
     ids = {n["id"].removeprefix("rumuzat-i-semaniye/") for n in book["outline"]}
     assert {"kisim-03/mesele-09", "kisim-04/nukte-02/silsile-08", "kisim-04/nukte-03/nukte-04",
             "kisim-08/remiz-01/remiz-05", "kisim-08/remiz-07/parca-03", "kisim-08/remiz-08"} <= ids

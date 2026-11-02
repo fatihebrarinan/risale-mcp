@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 User=risale
 WorkingDirectory=/home/risale/risale-mcp
-ExecStart=/home/risale/risale-mcp/.venv/bin/risale-mcp --transport streamable-http --public-url https://mcp.risalemcp.com --open
+ExecStart=/home/risale/risale-mcp/.venv/bin/risale-mcp --transport streamable-http --public-url https://mcp.risalemcp.com --open --profile genel
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true

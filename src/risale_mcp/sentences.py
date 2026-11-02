@@ -30,7 +30,7 @@ from collections import defaultdict
 
 from risale_mcp.books.model import REF_SEPARATOR
 from risale_mcp.normalize import fold
-from risale_mcp.paths import BOOKS_DIR, ROOT
+from risale_mcp.paths import KULLIYAT_DIR, ROOT
 
 _END = re.compile(r"[.!?؟…‥]+[”’\"»)\]']*(?=\s)")
 _STAR_END = re.compile(r"[.!?؟…‥]+[”’\"»)\]']*(?=\s)|(?<=\s)[*٭](?=\s|$)")
@@ -205,10 +205,10 @@ def golden_snapshot(book: dict) -> dict[str, list[list[str]]]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Cümle bölücü yardımcıları.")
-    parser.add_argument("--golden", action="store_true", help="altın örnekleri data/books/sozler.json'dan yenile")
+    parser.add_argument("--golden", action="store_true", help="altın örnekleri külliyattaki sozler.json'dan yenile")
     args = parser.parse_args()
     if args.golden:
-        book = json.loads((BOOKS_DIR / "sozler.json").read_text(encoding="utf-8"))
+        book = json.loads((KULLIYAT_DIR / "sozler.json").read_text(encoding="utf-8"))
         GOLDEN_PATH.parent.mkdir(parents=True, exist_ok=True)
         GOLDEN_PATH.write_text(json.dumps(golden_snapshot(book), ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
         print(f"yazıldı: {GOLDEN_PATH.relative_to(ROOT)}")

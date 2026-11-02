@@ -25,7 +25,7 @@ Hesap gerekmez; kullanım toplam sınırlarla korunur. Belgeler: [risalemcp.com/
 
 ## Kapsam
 
-53 eser ve ≈131.000 cümle: Risale-i Nur Külliyatı (Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar, Tarihçe-i Hayat…), Eski Said dönemi eserleri, aslı Arapça eserlerin hem Arapçası hem Türkçesi (İşârâtü'l-İ'câz, el-Mesnevî el-Arabî, Kızıl İcaz, Ta'likat…), mecmualar ve Hizbler. Ayrıca 16 Osmanlıca cilt ve Kur'ân-ı Kerîm: harekeli metin ve Diyanet'in iki meali; eserlerde geçen âyetler Kur'ân metniyle eşlenmiştir. Hangi eserin hangi kaynaktan geldiği ve hangi aşamada olduğu [`ESERLER.md`](ESERLER.md)'de, yalnız yerelde tutulanlar [`HUSUSI-VERILER.md`](HUSUSI-VERILER.md)'de yazar.
+53 eser ve ≈131.000 cümle: Risale-i Nur Külliyatı (Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar, Tarihçe-i Hayat…), Eski Said dönemi eserleri, aslı Arapça eserlerin hem Arapçası hem Türkçesi (İşârâtü'l-İ'câz, el-Mesnevî el-Arabî, Kızıl İcaz, Ta'likat…), mecmualar ve Hizbler. Ayrıca 16 Osmanlıca cilt ve Kur'ân-ı Kerîm: harekeli metin ve Diyanet'in iki meali; eserlerde geçen âyetler Kur'ân metniyle eşlenmiştir. Hangi eserin hangi kaynaktan geldiği ve hangi aşamada olduğunun listesi [`docs/eserler/`](ESERLER.md) altındadır, yalnız yerelde tutulanlar [`HUSUSI-VERILER.md`](HUSUSI-VERILER.md)'de yazar.
 
 Mecmualardaki (Asâ-yı Mûsâ, Zülfikâr…) metinler ana ciltlere eşlenmiştir; aynı metin tek yerde durur ve atıf ana cilde yapılır. Âyet ve hadis mealleri nâşirlerindir, müellife mal edilmez.
 
@@ -58,7 +58,7 @@ uv run python -m risale_mcp.fetch get --all --site erisale   # her site ayrı: k
 uv run python -m risale_mcp.fetch risaleoku                  # risaleoku.com'daki kitaplar
 uv run python -m risale_mcp.fetch quran                      # Kur'ân metni ve mealleri (tanzil.net)
 uv run python -m risale_mcp.quran                            # Kur'ân katmanı
-uv run python -m risale_mcp.build --all                      # data/books/*.json ve data/risale.db
+uv run python -m risale_mcp.build --all                      # data/library/ ve data/dist/<profil>/risale.db
 uv run python -m risale_mcp.embeddings build voyage-context-4   # anlamsal arama vektörleri (.env'de VOYAGE_API_KEY)
 ```
 

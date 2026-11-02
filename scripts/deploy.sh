@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Aşama 12: kodu ve hazır veriyi uzak sunucuya gönderir, bağımlılıkları kurar, servisi yeniden başlatır.
 #
-#   scripts/deploy.sh            # kod + risale-public.db + süzülmüş vektörler + quran.json
+#   scripts/deploy.sh            # kod + genel profilin veritabanı ve vektörleri + quran.json
 #   scripts/deploy.sh --code     # yalnızca kod ve site/ (veri değişmediyse)
 #
 # Ayrıştırma ve veritabanı kurulumu bu bilgisayarda yapılır; ham veri sunucuya gitmez. Sunucudaki `data/auth.db`
@@ -35,13 +35,16 @@ rsync -az -e "${SSH[*]}" docs/risale-mcp.server.service "$HOST:/etc/systemd/syst
 
 if [[ "${1:-}" != "--code" ]]; then
     echo "veri gönderiliyor…"
-    "${SSH[@]}" "$HOST" "mkdir -p $DEST/data/vectors"
-    # `private` eserler (Esasat, harekeli Mesnevî…) yalnızca yereldedir: sunucuya risale-public.db gider.
-    rsync -az --info=progress2 -e "${SSH[*]}" data/risale-public.db "$HOST:$DEST/data/risale.db"
-    rsync -az --info=progress2 -e "${SSH[*]}" data/quran.json "$HOST:$DEST/data/"
-    # `private` eserlerin vektörleri de yerelde kalır: sunucuya süzülmüş kopya gider.
+    # Eski düzenden taşıma (bir kez çalışır, sonra boşa geçer): aktarım yalnız farkı gönderir.
+    "${SSH[@]}" "$HOST" "cd $DEST/data && mkdir -p dist/genel/vectors library/kuran \
+        && { [ ! -f risale.db ] || mv risale.db dist/genel/risale.db; } \
+        && { [ ! -d vectors ] || { rmdir dist/genel/vectors && mv vectors dist/genel/vectors; }; } \
+        && { [ ! -f quran.json ] || mv quran.json library/kuran/quran.json; }"
+    # `private` eserler (Esasat, harekeli Mesnevî…) ve vektörleri yalnızca yereldedir: sunucuya `genel` profili gider.
+    rsync -az --info=progress2 -e "${SSH[*]}" data/dist/genel/risale.db "$HOST:$DEST/data/dist/genel/risale.db"
+    rsync -az --info=progress2 -e "${SSH[*]}" data/library/kuran/quran.json "$HOST:$DEST/data/library/kuran/"
     uv run python -m risale_mcp.embeddings export-public
-    rsync -az --delete -e "${SSH[*]}" data/interim/vectors-public/ "$HOST:$DEST/data/vectors/"
+    rsync -az --delete -e "${SSH[*]}" data/dist/genel/vectors/ "$HOST:$DEST/data/dist/genel/vectors/"
     grep '^VOYAGE_API_KEY=' .env | "${SSH[@]}" "$HOST" "cat > $DEST/.env && chmod 600 $DEST/.env"
 fi
 

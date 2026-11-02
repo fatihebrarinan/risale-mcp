@@ -1,6 +1,6 @@
 """SQLite veritabanının şeması ve bağlantısı.
 
-Veritabanı `data/books/*.json` dosyalarından `build_db` ile her seferinde sıfırdan kurulur;
+Veritabanı `data/library/` altındaki eser JSON'larından `build_db` ile her seferinde sıfırdan kurulur;
 asıl kaynak JSON'lardır, veritabanı elle düzenlenmez.
 
 Kimlikler ve sıralar:
@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 6
+SCHEMA_VERSION = 7
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -38,6 +38,9 @@ CREATE TABLE works (
     ord         INTEGER NOT NULL,
     title       TEXT NOT NULL,
     group_name  TEXT NOT NULL,
+    collection  TEXT NOT NULL,      -- `catalog.Collection`
+    authority   TEXT NOT NULL,      -- `catalog.Authority`: metin kime ait
+    translation INTEGER NOT NULL,   -- eser tercüme mi
     language    TEXT NOT NULL,
     status      TEXT NOT NULL,
     note        TEXT,
@@ -154,7 +157,7 @@ CREATE TABLE sura_names (
     name   TEXT NOT NULL
 );
 
--- Kur'ân katmanı (data/quran.json, Tanzil): atıf birimi âyettir. `text` Medine Mushafı hattı, harekeli
+-- Kur'ân katmanı (data/library/kuran/quran.json, Tanzil): atıf birimi âyettir. `text` Medine Mushafı hattı, harekeli
 -- (kullanıcıya gösterilen); `text_simple` imlâî yazım, harekeli. Mealler mütercimleriyle ayrı tabloda.
 -- Kaynağın âyet olarak işaretlemediği Kur'ân alıntıları (Hizbler, el-Mesnevî el-Arabî); Arapça parçanın
 -- içinde Tanzil metniyle bulundu. `n` parçadaki sırası; `span_*` paragraf metnindeki konumu.

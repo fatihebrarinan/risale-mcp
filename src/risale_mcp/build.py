@@ -5,9 +5,9 @@ Kullanım:
     uv run python -m risale_mcp.build --all           # ayrıştırıcısı olan bütün eserler (şimdilik erisale)
 
 Çıktılar:
-    data/books/<eser>.json            eserin başlık ağacı, paragrafları, hâşiyeleri, cümleleri
+    data/library/<koleksiyon>/<eser>.json  eserin başlık ağacı, paragrafları, hâşiyeleri, cümleleri
     data/interim/outline/<eser>.txt   elle kontrol için girintili başlık ağacı
-Sonunda `ESERLER.md` kontrol listesi yenilenir ve veritabanı (`data/risale.db`) bütün
+Sonunda `ESERLER.md` kontrol listesi yenilenir ve profillerin veritabanları (`data/dist/<profil>/risale.db`) bütün
 JSON'lardan yeniden kurulur (`--no-db` ile atlanır). Metni değişen cümlelerin anlamsal arama
 vektörü yoksa bildirilir; `python -m risale_mcp.embeddings build voyage-context-4` tamamlar.
 """
@@ -20,7 +20,6 @@ from collections import Counter
 from functools import cache
 
 from risale_mcp import build_db, checklist, embeddings, local_only, sentences
-from risale_mcp.quran import QURAN_PATH
 from risale_mcp.books import erisale as erisale_parser
 from risale_mcp.books import kastamonur as kastamonur_parser
 from risale_mcp.books import mesnevi_arabi as mesnevi_parser
@@ -34,7 +33,8 @@ from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canoni
 from risale_mcp.books.model import Book
 from risale_mcp.catalog import WORKS, Group, Site, Status, Work, get_work
 from risale_mcp.db import connect
-from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, PUBLIC_DB_PATH, RAW_DIR, ROOT
+from risale_mcp.paths import DB_PATH, INTERIM_DIR, KULLIYAT_DIR, RAW_DIR, ROOT
+from risale_mcp.profiles import PROFILES
 from risale_mcp.sources import kesif as kesif_source
 from risale_mcp.sources import kullanici as kullanici_source
 from risale_mcp.sources import qurancom as qurancom_source
@@ -57,7 +57,7 @@ PARSEABLE_SITES = set(Site)
 @cache
 def _canonical_index() -> CanonicalIndex:
     """Ana ciltlerin eşleme dizini; ana ciltler mecmualardan önce üretildiği için diskten okunur."""
-    return CanonicalIndex.load(BOOKS_DIR)
+    return CanonicalIndex.load(KULLIYAT_DIR)
 
 
 def mapping_report(report: MappingReport) -> list[str]:
@@ -153,9 +153,9 @@ def parse(work: Work) -> tuple[Book, list[str]]:
             return book, [f"  QCF âyet               : {report.verses}, tanınmayan glif {report.unknown_glyphs}",
                           f"  dipnot               : {report.footnotes}, müellifin hâşiyesi {report.hasiye}"]
         if work.source.book == "saykulislam":
-            book, report = saykal.parse(work, docx, BOOKS_DIR / "hutbe-i-samiye.json")
+            book, report = saykal.parse(work, docx, KULLIYAT_DIR / "hutbe-i-samiye.json")
             return book, _flat_report(report)
-        book, report = rasaelalnour_parser.parse_work(work, docx, BOOKS_DIR / "isaratul-icaz.json")
+        book, report = rasaelalnour_parser.parse_work(work, docx, KULLIYAT_DIR / "isaratul-icaz.json")
         return book, [f"  sayfa                : {report.pages}, birleşen paragraf {report.joined}",
                       f"  dipnot               : {report.footnotes}, işareti bulunamayan {len(report.unanchored)}"
                       f" {report.unanchored[:3]}"]
@@ -185,7 +185,7 @@ def needs_mapping(work: Work) -> bool:
 
 def build_work(work: Work) -> None:
     book, extra = parse(work)
-    BOOKS_DIR.mkdir(parents=True, exist_ok=True)
+    work.book_path.parent.mkdir(parents=True, exist_ok=True)
     OUTLINE_DIR.mkdir(parents=True, exist_ok=True)
     data = book.to_json()
     if needs_mapping(work):
@@ -195,7 +195,7 @@ def build_work(work: Work) -> None:
                                                  fill=not work.private))     # sonradan derlemelerde dizin ve başlık çok
     data["sentences"] = sentences.segment(data)
     extra.append(f"  telif bilgisi        : {telif.apply(data)} bölüm")
-    out = BOOKS_DIR / f"{work.slug}.json"
+    out = work.book_path
     out.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     (OUTLINE_DIR / f"{work.slug}.txt").write_text(outline_text(book), encoding="utf-8")
     print("\n" + "\n".join(report(book, data["sentences"]) + extra))
@@ -226,8 +226,9 @@ def main() -> None:
         build_work(work)
     checklist.main()
     if not args.no_db:
-        print("\nveritabanı:\n" + "\n".join(build_db.build(quran_path=QURAN_PATH, meals_from=RAW_DIR / Site.RISALEOKU_APP).lines()))
-        build_db.build(out=PUBLIC_DB_PATH, quran_path=QURAN_PATH, public=True, meals_from=RAW_DIR / Site.RISALEOKU_APP)
+        for profile in PROFILES.values():
+            lines = build_db.build_profile(profile).lines()
+            print(f"\nveritabanı ({profile.name}):\n" + "\n".join(lines))
         local_only.main()
         if count := embeddings.missing(connect(DB_PATH)):
             print(f"\nanlamsal arama: {count} cümlenin vektörü yok; tamamlamak için "

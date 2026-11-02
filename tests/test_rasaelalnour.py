@@ -9,7 +9,7 @@ import pytest
 
 from risale_mcp.books.rasaelalnour import Row, parse_rows
 from risale_mcp.catalog import get_work
-from risale_mcp.paths import BOOKS_DIR
+from risale_mcp.paths import KULLIYAT_DIR
 
 WORK = get_work("isaratul-icaz-arabi")
 
@@ -93,12 +93,12 @@ def test_footnotes_by_author_translator_and_editor(book):
 
 
 def test_real_isarat():
-    path = BOOKS_DIR / "isaratul-icaz-arabi.json"
+    path = KULLIYAT_DIR / "isaratul-icaz-arabi.json"
     if not path.exists():
         pytest.skip("isaratul-icaz-arabi.json yok; önce `uv run python -m risale_mcp.build isaratul-icaz-arabi`")
     data = json.loads(path.read_text(encoding="utf-8"))
     ids = {n["id"].removeprefix("isaratul-icaz-arabi/") for n in data["outline"]}
-    turkish = json.loads((BOOKS_DIR / "isaratul-icaz.json").read_text(encoding="utf-8"))
+    turkish = json.loads((KULLIYAT_DIR / "isaratul-icaz.json").read_text(encoding="utf-8"))
     sections = {n["id"].removeprefix("isaratul-icaz/") for n in turkish["outline"]
                 if n["parent_id"] in ("isaratul-icaz/sure-i-bakara", "isaratul-icaz/sure-i-fatiha")}
     # Arapça baskı 21 ve 22. âyetleri tek bölümde işler; Türkçede "Birinci kısım" basılı bir başlıktır.

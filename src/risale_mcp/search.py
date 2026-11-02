@@ -121,7 +121,7 @@ def to_fts(query: str) -> str:
     return expr
 
 
-def _filters(work: str | None, group: str | None) -> tuple[str, list]:
+def _filters(work: str | None, group: str | None, collection: str | None = None) -> tuple[str, list]:
     sql, params = "", []
     if work:
         sql += " AND s.work = ?"
@@ -129,13 +129,16 @@ def _filters(work: str | None, group: str | None) -> tuple[str, list]:
     if group:
         sql += " AND s.work IN (SELECT slug FROM works WHERE group_name = ?)"
         params.append(group)
+    if collection:
+        sql += " AND s.work IN (SELECT slug FROM works WHERE collection = ?)"
+        params.append(collection)
     return sql, params
 
 
 def search(conn: sqlite3.Connection, query: str, work: str | None = None, group: str | None = None,
-           limit: int = 20, offset: int = 0) -> list[Hit]:
+           limit: int = 20, offset: int = 0, collection: str | None = None) -> list[Hit]:
     """Cümle araması, en uygun önce."""
-    where, params = _filters(work, group)
+    where, params = _filters(work, group, collection)
     rows = conn.execute(
         "SELECT s.id, s.work, s.node_id, s.ref, s.incipit, s.text, -bm25(sentences_fts) AS score"
         " FROM sentences_fts JOIN sentences s ON s.seq = sentences_fts.rowid"
@@ -144,9 +147,10 @@ def search(conn: sqlite3.Connection, query: str, work: str | None = None, group:
     return [Hit(*row) for row in rows]
 
 
-def count_by_work(conn: sqlite3.Connection, query: str, group: str | None = None) -> dict[str, int]:
+def count_by_work(conn: sqlite3.Connection, query: str, group: str | None = None,
+                  collection: str | None = None) -> dict[str, int]:
     """Sorguya uyan cümle sayısı, eser başına (katalog sırasıyla)."""
-    where, params = _filters(None, group)
+    where, params = _filters(None, group, collection)
     rows = conn.execute(
         "SELECT s.work, count(*) FROM sentences_fts JOIN sentences s ON s.seq = sentences_fts.rowid"
         " JOIN works w ON w.slug = s.work"
@@ -155,9 +159,13 @@ def count_by_work(conn: sqlite3.Connection, query: str, group: str | None = None
     return dict(rows.fetchall())
 
 
-def search_nodes(conn: sqlite3.Connection, query: str, work: str | None = None, limit: int = 20) -> list[NodeHit]:
+def search_nodes(conn: sqlite3.Connection, query: str, work: str | None = None, limit: int = 20,
+                 collection: str | None = None) -> list[NodeHit]:
     """Başlık araması (basılı başlık, alt başlık, içindekiler adı)."""
     where, params = (" AND n.work = ?", [work]) if work else ("", [])
+    if collection:
+        where += " AND n.work IN (SELECT slug FROM works WHERE collection = ?)"
+        params.append(collection)
     rows = conn.execute(
         "SELECT n.id, n.work, n.ref, n.title, n.subtitle, -bm25(nodes_fts) AS score"
         " FROM nodes_fts JOIN nodes n ON n.seq = nodes_fts.rowid"

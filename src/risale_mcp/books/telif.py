@@ -3,7 +3,7 @@
 Kullanım:
     uv run python -m risale_mcp.books.telif     # docs/telif-tablosu.md inceleme tablosunu üretir
 
-Asıl liste `telif.json`'dur ve elle düzenlenir: `data/books` her `build`'de yeniden üretildiği için orada duramaz.
+Asıl liste `telif.json`'dur ve elle düzenlenir: eser JSON'ları her `build`'de yeniden üretildiği için orada duramaz.
 `sources` kaynak anahtarını adına ve adresine bağlar; `written` bölüm kimliğini kayda:
     date, place, language   tarih serbest metindir ("1936", "1943–1944", "1938 veya 1942")
     estimated               kaynak "tahminen" diyor

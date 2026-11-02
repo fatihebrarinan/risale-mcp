@@ -10,7 +10,7 @@ import json
 
 import pytest
 
-from risale_mcp.paths import BOOKS_DIR
+from risale_mcp.paths import KULLIYAT_DIR
 from risale_mcp.sentences import GOLDEN_PATH, golden_snapshot, incipits, segment, split
 
 
@@ -79,7 +79,7 @@ def test_segment_numbers_per_node_and_anchors_hasiye():
 
 @pytest.fixture(scope="module")
 def sozler():
-    path = BOOKS_DIR / "sozler.json"
+    path = KULLIYAT_DIR / "sozler.json"
     if not path.exists():
         pytest.skip("sozler.json yok; önce `uv run python -m risale_mcp.build sozler` çalıştırın")
     return json.loads(path.read_text(encoding="utf-8"))

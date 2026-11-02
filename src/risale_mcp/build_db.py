@@ -1,7 +1,7 @@
 """Aşama 5: eser JSON'larından SQLite veritabanı.
 
 Kullanım:
-    uv run python -m risale_mcp.build_db     # data/books/*.json -> data/risale.db
+    uv run python -m risale_mcp.build_db [--profile genel]   # data/library -> data/dist/<profil>/risale.db
 
 Veritabanı her seferinde sıfırdan, geçici bir dosyaya kurulur ve doğrulandıktan sonra eskisinin
 yerine konur; açık bir sunucu kurulum sırasında eski dosyayı okumaya devam eder. Şema `db.py`'dedir.
@@ -25,6 +25,7 @@ import re
 import sqlite3
 import sys
 from collections import Counter, defaultdict
+from collections.abc import Iterable
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -33,9 +34,10 @@ from risale_mcp.ayah_links import find_links
 from risale_mcp.catalog import Site, WORKS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
 from risale_mcp.normalize import search_words
-from risale_mcp.paths import BOOKS_DIR, DB_PATH, INTERIM_DIR, RAW_DIR, ROOT
+from risale_mcp.paths import INTERIM_DIR, QURAN_PATH, RAW_DIR, ROOT
+from risale_mcp.profiles import KISISEL, PROFILES, Profile
 from risale_mcp.arabic_kinds import AYAH_FIXES, AYAH_SUSPECTS, Classifier, read_meal_evidence, write_report
-from risale_mcp.quran import QURAN_PATH, SURA_NAMES, Match, Quote, Quran, pieces, sura_ref, verse_context
+from risale_mcp.quran import SURA_NAMES, Match, Quote, Quran, pieces, sura_ref, verse_context
 
 # "Bakara Sûresi, 2:255", "Âyet: Sûre-i Âl-i İmrân, 18", "Kalem Sûresi: 1", "Sûre-i Nasr, 1’den"
 _SURA_NAME = re.compile(r"^(?:Âyet:\s*)?(?:Sûre-i\s+(?P<pre>[^,:\d]+?)|(?P<post>[^,:\d]+?)\s+S[ûu]resi)\s*[,:]?\s*(?=\d)")
@@ -155,12 +157,15 @@ class BuildReport:
         return lines
 
 
-def _load_books(books_dir: Path) -> dict[str, tuple[dict, str]]:
+def _load_books(book_dirs: Iterable[Path]) -> dict[str, tuple[dict, str]]:
     books = {}
-    for path in sorted(books_dir.glob("*.json")):
-        raw = path.read_bytes()
-        data = json.loads(raw)
-        books[data["work"]] = (data, hashlib.sha1(raw).hexdigest())
+    for books_dir in book_dirs:
+        for path in sorted(books_dir.glob("*.json")):
+            raw = path.read_bytes()
+            data = json.loads(raw)
+            if data["work"] in books:
+                raise ValueError(f"İki koleksiyonda aynı eser: {data['work']}")
+            books[data["work"]] = (data, hashlib.sha1(raw).hexdigest())
     return books
 
 
@@ -432,19 +437,24 @@ def _verify(conn: sqlite3.Connection, report: BuildReport) -> None:
         raise RuntimeError("Veritabanı JSON'larla tutmuyor:\n  " + "\n  ".join(wrong))
 
 
-def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH, quran_path: Path | None = None,
-          public: bool = False, meals_from: Path | None = None) -> BuildReport:
+def build_profile(profile: Profile) -> BuildReport:
+    """Profilin veritabanını kaynak klasörlerinden kurar."""
+    profile.db.parent.mkdir(parents=True, exist_ok=True)
+    return build(profile.book_dirs, profile.db, QURAN_PATH, profile, RAW_DIR / Site.RISALEOKU_APP)
+
+
+def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None = None,
+          profile: Profile = KISISEL, meals_from: Path | None = None) -> BuildReport:
     """`quran_path` verilirse (ve dosya varsa) Kur'ân katmanı kurulur, Risale'deki âyetler onunla eşlenir.
-    `public`: genel sunucunun veritabanı; `private` eserler girmez. `meals_from`: risaleoku ham verisi; Arapça
-    parçaların türünde aynı metnin meal kaydı da kanıt olur (bkz. `arabic_kinds`)."""
-    books = _load_books(books_dir)
-    catalog = [w for w in WORKS if not (public and w.private)]
-    if public:
-        books = {slug: book for slug, book in books.items() if slug in {w.slug for w in catalog}}
-    quran = Quran.load(quran_path) if quran_path else None
-    unknown = set(books) - {w.slug for w in catalog}
-    if unknown:
+    `profile`: hangi eserlerin gireceği; profil dışındaki JSON'lar atlanır. `meals_from`: risaleoku ham verisi;
+    Arapça parçaların türünde aynı metnin meal kaydı da kanıt olur (bkz. `arabic_kinds`)."""
+    books = _load_books([books_dir] if isinstance(books_dir, Path) else books_dir)
+    catalog = [w for w in WORKS if profile.includes(w)]
+    known = {w.slug for w in WORKS}
+    if unknown := set(books) - known:
         raise ValueError(f"Katalogda olmayan eser JSON'u: {sorted(unknown)}")
+    books = {slug: book for slug, book in books.items() if slug in {w.slug for w in catalog}}
+    quran = Quran.load(quran_path) if quran_path else None
 
     kinds = None
     if quran:
@@ -471,9 +481,9 @@ def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH, quran_path: Path | N
                 language = data.get("language", work.language) if data else work.language
                 source = work.source
                 conn.execute(
-                    "INSERT INTO works VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                    (work.slug, ord_, work.title, work.group, language, work.status, work.note or None,
-                     source and source.site, source and source.book, int(data is not None), sha1))
+                    "INSERT INTO works VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    (work.slug, ord_, work.title, work.group, work.collection, work.authority, int(work.translation), language,
+                     work.status, work.note or None, source and source.site, source and source.book, int(data is not None), sha1))
                 if data:
                     _insert_book(conn, data, suras, quran, report, kinds)
                     report.works += 1
@@ -503,26 +513,24 @@ def build(books_dir: Path = BOOKS_DIR, out: Path = DB_PATH, quran_path: Path | N
         raise
     conn.close()
     tmp.replace(out)
-    if kinds and meals_from and not public:
+    if kinds and meals_from and profile is KISISEL:
         write_report(kinds.report, INTERIM_DIR / "arabic_kinds")
     return report
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--books", type=Path, default=BOOKS_DIR, help="eser JSON'larının klasörü")
-    parser.add_argument("--out", type=Path, default=DB_PATH, help="yazılacak veritabanı")
-    parser.add_argument("--quran", type=Path, default=QURAN_PATH, help="Kur'ân katmanı (yoksa atlanır)")
-    args = parser.parse_args()
-    if not any(args.books.glob("*.json")):
-        sys.exit(f"{args.books} içinde eser JSON'u yok; önce `uv run python -m risale_mcp.build --all`.")
-    report = build(args.books, args.out, args.quran, meals_from=RAW_DIR / Site.RISALEOKU_APP)
+    parser.add_argument("--profile", choices=PROFILES, default=KISISEL.name, help="kurulacak profil")
+    profile = PROFILES[parser.parse_args().profile]
+    if not any(path for books_dir in profile.book_dirs for path in books_dir.glob("*.json")):
+        sys.exit("Eser JSON'u yok; önce `uv run python -m risale_mcp.build --all`.")
+    report = build_profile(profile)
     print("\n".join(report.lines()))
     if report.counts["quran_ayahs"]:
         AYAH_REPORT.parent.mkdir(parents=True, exist_ok=True)
         AYAH_REPORT.write_text(report.ayah_report(), encoding="utf-8")
         print(f"  âyet denetimi: {AYAH_REPORT.relative_to(ROOT)}")
-    out = args.out.resolve()
+    out = profile.db
     shown = out.relative_to(ROOT) if out.is_relative_to(ROOT) else out
     print(f"  yazıldı: {shown} ({out.stat().st_size / 1e6:.0f} MB)")
 

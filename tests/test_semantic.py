@@ -5,6 +5,8 @@ elle öngörülebilir.
 """
 
 import json
+import shutil
+import sqlite3
 
 import numpy as np
 import pytest
@@ -92,3 +94,19 @@ async def test_server_tool(library):
     async with Client(create_server(library)) as client:
         result = await client.call_tool("semantic_search", {"query": "mecmûa haşir", "limit": 2})
         assert json.loads(result.content[0].text)["results"][0]["id"] == "asa-yi-musa/haşir/c001"
+
+
+def test_related_sources_stay_out_of_semantic_search_by_default(small_db, vectors, tmp_path):
+    path = tmp_path / "related.db"
+    shutil.copy(small_db[0], path)
+    conn = sqlite3.connect(path)
+    with conn:
+        conn.execute("UPDATE works SET collection = 'risale/ilgili', authority = 'modern' WHERE slug = 'asa-yi-musa'")
+    conn.close()
+    library = Library(path, vectors_dir=vectors)
+    works = lambda **kw: {r["id"].split("/")[0] for r in library.semantic_search("mecmûa haşir", **kw)["results"]}
+    assert works() == {"sozler"}
+    assert works(include_related=True) == {"sozler", "asa-yi-musa"}
+    hit = next(r for r in library.semantic_search("mecmûa", include_related=True)["results"] if r["id"].startswith("asa"))
+    assert hit["authority"] == "modern"
+    library.close()

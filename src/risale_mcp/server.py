@@ -57,9 +57,11 @@ from risale_mcp.citations import CitationChecker
 from risale_mcp.db import DatabaseError
 from risale_mcp.env import load_env
 from risale_mcp.library import Library, LibraryError, old_names_note
-from risale_mcp.paths import DB_PATH
+from risale_mcp.profiles import KISISEL, PROFILES
 
 NAME = "risale"
+RELATED_HELP = "Also search sources about the works that are not by the author. Off by default; ask for them only " \
+               "when the question calls for them, and keep them apart from the text."
 RESOURCE_TEXT_WORDS = 20000      # kaynak olarak eklenen bölüm metninin üst sınırı
 
 INSTRUCTIONS = """\
@@ -113,6 +115,10 @@ reference, not the section's topic. Bring verses up only when they matter to the
 In Kızıl İcaz, "quote" paragraphs are Ahdarî's verses; commentary_by marks Abdülmecid Nursî's commentary, \
 cite it as his. Check subtitles and paragraph kinds.
 - Compilations reuse main-volume text: cite the main volume's sentences they return.
+- A result or work with an authority field is not the author's own text (derleme: a later compilation; baskasi: \
+another author's text; nakil: a memoir or report; serh: a commentary; modern: a modern explanation). Say whose it is, \
+never present it as his words; reported sayings stay reports. translation: true marks a work that is a translation \
+of the original (the work's note names the translator where known): say so when it matters.
 """.replace("{old_names}", old_names_note())
 
 
@@ -292,12 +298,13 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 20,
         offset: Annotated[int, Field(ge=0)] = 0,
+        include_related: Annotated[bool, Field(description=RELATED_HELP)] = False,
     ) -> str:
-        """Search all works sentence by sentence by the text's own words, best matches first: the total, matches
+        """Search the works sentence by sentence by the text's own words, best matches first: the total, matches
         per work, matching section titles, and sentences (id, cite_as, text). Read a result in context before
         relying on it."""
         with _tool_errors():
-            return _json(library.search(query, work, group, limit, offset))
+            return _json(library.search(query, work, group, limit, offset, include_related))
 
     @server.tool(title="Search by meaning", annotations=read_only("Search by meaning"), structured_output=False)
     def semantic_search(
@@ -307,6 +314,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 10,
         offset: Annotated[int, Field(ge=0)] = 0,
+        include_related: Annotated[bool, Field(description=RELATED_HELP)] = False,
     ) -> str:
         """Find passages by meaning: the sentences closest to the query (id, cite_as, text, similarity) and the
         sections where the topic concentrates. For concepts and questions; the text often uses other, older words.
@@ -318,7 +326,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                 raise ToolError("The daily limit of semantic searches for users without an account is reached. "
                                 "Use search with the text's own words instead. A user with an account can sign "
                                 "in for unlimited use.")
-            return _json(library.semantic_search(query, work, group, limit, offset))
+            return _json(library.semantic_search(query, work, group, limit, offset, include_related))
 
     if anonymous:
         @server.tool(title="Sign in", annotations=read_only("Sign in"), structured_output=False)
@@ -500,7 +508,8 @@ def main() -> None:
         auth_main(sys.argv[2:])
         return
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--db", type=Path, default=DB_PATH, help="veritabanı dosyası")
+    parser.add_argument("--profile", choices=PROFILES, default=KISISEL.name, help="sunulacak veri (`profiles.py`)")
+    parser.add_argument("--db", type=Path, help="profilin veritabanı yerine bu dosya")
     parser.add_argument("--transport", choices=("stdio", "streamable-http"), default="stdio")
     parser.add_argument("--host", default="127.0.0.1", help="HTTP için dinlenen adres (tünel aynı makinede)")
     parser.add_argument("--port", type=int, default=8000)
@@ -514,7 +523,8 @@ def main() -> None:
                         help="hesapsızların günlük toplam anlamsal arama sınırı")
     args = parser.parse_args()
     load_env()                                    # VOYAGE_API_KEY: proje klasöründeki .env
-    library = Library(args.db)
+    profile = PROFILES[args.profile]
+    library = Library(args.db or profile.db, profile.vectors)
     library.conn                                  # veritabanı yoksa başlarken açık hata
     if args.transport == "stdio":
         create_server(library, warm=True).run("stdio")

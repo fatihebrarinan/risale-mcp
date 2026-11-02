@@ -2,9 +2,9 @@
 
 Kullanım:
     uv run python -m risale_mcp.fetch quran    # tanzil.net'ten ham veri (bir kez)
-    uv run python -m risale_mcp.quran          # data/raw/tanzil -> data/quran.json
+    uv run python -m risale_mcp.quran          # data/raw/tanzil -> data/library/kuran/quran.json
 
-`data/quran.json` Risale eserlerinden ayrı bir katmandır; atıf birimi âyettir ("Bakara Sûresi, 2:255"),
+`data/library/kuran/quran.json` Risale eserlerinden ayrı bir katmandır; atıf birimi âyettir ("Bakara Sûresi, 2:255"),
 cümle değil. `build_db` onu kendi tablolarına yazar ve Risale'deki Arapça parçaları onunla karşılaştırır.
 
 Metin ve mealler:
@@ -31,10 +31,9 @@ from dataclasses import dataclass
 from functools import cache, cached_property
 from pathlib import Path
 
-from risale_mcp.paths import DATA_DIR, RAW_DIR, ROOT
+from risale_mcp.paths import QURAN_PATH, RAW_DIR, ROOT
 from risale_mcp.sources import tanzil
 
-QURAN_PATH = DATA_DIR / "quran.json"
 TANZIL_DIR = RAW_DIR / "tanzil"
 TRANSLATIONS = {  # veritabanındaki kimlik -> (Tanzil kimliği, ad)
     "diyanet-isleri": ("tr.diyanet", "Diyanet İşleri Başkanlığı meali"),
@@ -103,7 +102,7 @@ class Match:
 
 
 class Quran:
-    """`data/quran.json` ile âyet arama: âyet metni, iskelet ve bir parçanın geçtiği âyetler."""
+    """`quran.json` ile âyet arama: âyet metni, iskelet ve bir parçanın geçtiği âyetler."""
 
     def __init__(self, data: dict) -> None:
         self.data = data
@@ -279,7 +278,7 @@ def arabic_sura_numbers(raw: Path = TANZIL_DIR) -> dict[str, frozenset[int]]:
     return {key: frozenset(numbers) for key, numbers in keys.items()}
 
 
-# ---------------------------------------------------------------- ham veri -> data/quran.json
+# ---------------------------------------------------------------- ham veri -> quran.json
 
 def build_json(raw: Path = TANZIL_DIR) -> dict:
     texts = {t: tanzil.ayahs(tanzil.read_xml(tanzil.text_path(raw, t))) for t in tanzil.TEXT_TYPES}
@@ -326,6 +325,7 @@ def main() -> None:
     if not ok:
         raise SystemExit("\n".join(lines) + "\nÖnce `uv run python -m risale_mcp.fetch quran`.")
     data = build_json()
+    QURAN_PATH.parent.mkdir(parents=True, exist_ok=True)
     QURAN_PATH.write_text(json.dumps(data, ensure_ascii=False), encoding="utf-8")
     ayahs = sum(len(s["ayahs"]) for s in data["suras"])
     print(f"{len(data['suras'])} sûre, {ayahs} âyet, {len(data['translations'])} meal")

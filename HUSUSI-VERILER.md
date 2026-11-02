@@ -1,12 +1,12 @@
 # Yerelde olup sunucuda olmayan veriler
 
 > Bu dosya `uv run python -m risale_mcp.local_only` ile üretilir (`build` sonunda da); elle düzenlemeyin.
-> Bir eseri yerelde tutan `Work.private` işaretidir: `src/risale_mcp/catalog.py`. İzinler: `docs/izinler.md`.
+> Bir eseri yerelde tutan `Work.private` işaretidir: `src/risale_mcp/catalog/`. İzinler: `docs/izinler.md`.
 
 | Veritabanı | Eser | Bölüm | Paragraf | Cümle | Arapça parça |
 |---|---:|---:|---:|---:|---:|
-| Yerel (`data/risale.db`) | 73 | 9.552 | 119.543 | 258.956 | 25.468 |
-| Sunucu (`data/risale-public.db`) | 69 | 8.950 | 106.024 | 242.087 | 24.877 |
+| Yerel (`data/dist/kisisel/`) | 73 | 9.552 | 119.543 | 258.956 | 25.468 |
+| Sunucu (`data/dist/genel/`) | 69 | 8.950 | 106.024 | 242.087 | 24.877 |
 | **Fark** | **4** | **602** | **13.519** | **16.869** | **591** |
 
 Ortak eserlerde metin aynıdır (JSON özetleri tutuyor).

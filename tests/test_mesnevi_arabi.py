@@ -13,7 +13,7 @@ from risale_mcp.books.mesnevi_arabi import _nokta, _ordinal, parse
 from risale_mcp.books.model import Book
 from risale_mcp.books.rasaelalnour import Row
 from risale_mcp.catalog import get_work
-from risale_mcp.paths import BOOKS_DIR
+from risale_mcp.paths import KULLIYAT_DIR
 from risale_mcp.sentences import split
 
 WORK = get_work("el-mesnevi-el-arabi-harekeli")
@@ -121,7 +121,7 @@ def test_nokta_is_a_marked_translation_parallel_to_the_turkish_risale():
 
 
 def test_real_mesnevi():
-    path = BOOKS_DIR / "el-mesnevi-el-arabi-harekeli.json"
+    path = KULLIYAT_DIR / "el-mesnevi-el-arabi-harekeli.json"
     if not path.exists():
         pytest.skip("el-mesnevi-el-arabi-harekeli.json yok")
     data = json.loads(path.read_text(encoding="utf-8"))

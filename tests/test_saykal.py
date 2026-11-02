@@ -11,7 +11,7 @@ import pytest
 from risale_mcp.books.rasaelalnour import Row
 from risale_mcp.books.saykal import (OUR_TITLE, TALIKAT_SECTIONS, parse_hutbe, parse_kizil_icaz, parse_talikat_arabic)
 from risale_mcp.catalog import get_work
-from risale_mcp.paths import BOOKS_DIR
+from risale_mcp.paths import KULLIYAT_DIR
 from risale_mcp.sentences import segment
 
 
@@ -102,7 +102,7 @@ def test_hutbe_ids_follow_the_turkish_work(tmp_path):
 
 @pytest.mark.parametrize("slug", ["talikat", "talikat-arabi"])
 def test_real_talikat_is_parallel(slug):
-    path = BOOKS_DIR / f"{slug}.json"
+    path = KULLIYAT_DIR / f"{slug}.json"
     if not path.exists():
         pytest.skip(f"{slug}.json yok")
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -111,7 +111,7 @@ def test_real_talikat_is_parallel(slug):
 
 
 def test_real_hutbe_sections_exist_in_turkish():
-    arabic, turkish = BOOKS_DIR / "hutbe-i-samiye-arabi.json", BOOKS_DIR / "hutbe-i-samiye.json"
+    arabic, turkish = KULLIYAT_DIR / "hutbe-i-samiye-arabi.json", KULLIYAT_DIR / "hutbe-i-samiye.json"
     if not (arabic.exists() and turkish.exists()):
         pytest.skip("Hutbe-i Şamiye JSON'ları yok")
     tr = {n["id"].removeprefix("hutbe-i-samiye/") for n in json.loads(turkish.read_text())["outline"]}

@@ -3,9 +3,9 @@
 Kullanım:
     uv run python -m risale_mcp.local_only
 
-İki veritabanını karşılaştırır: `data/risale.db` (hepsi) ve `data/risale-public.db` (sunucuya giden kopya).
-Durum veriden okunur, elle tutulmaz; `build` sonunda yeniden üretilir. Sunucuda `risale-public.db`, `quran.json`
-ve `data/vectors/` durur (bkz. `scripts/deploy.sh`); ham veri, kitap JSON'ları ve ara çıktılar sunucuya gitmez.
+İki veritabanını karşılaştırır: `kisisel` profili (hepsi) ve `genel` profili (sunucuya giden kopya).
+Durum veriden okunur, elle tutulmaz; `build` sonunda yeniden üretilir. Sunucuda `genel` profilinin veritabanı ve
+vektörleri ile `quran.json` durur (bkz. `scripts/deploy.sh`); ham veri, kitap JSON'ları ve ara çıktılar sunucuya gitmez.
 """
 
 import json
@@ -15,8 +15,8 @@ from pathlib import Path
 
 from risale_mcp.catalog import WORKS
 from risale_mcp.db import connect
-from risale_mcp.embeddings import SEARCH_MODEL, VECTORS_DIR, units
-from risale_mcp.paths import DB_PATH, PUBLIC_DB_PATH, RAW_DIR, ROOT
+from risale_mcp.embeddings import SEARCH_MODEL, units
+from risale_mcp.paths import DB_PATH, PUBLIC_DB_PATH, RAW_DIR, ROOT, VECTORS_DIR
 
 OUT_PATH = ROOT / "HUSUSI-VERILER.md"
 
@@ -95,13 +95,13 @@ def render(full: sqlite3.Connection, public: sqlite3.Connection, vectors: int) -
         "# Yerelde olup sunucuda olmayan veriler",
         "",
         "> Bu dosya `uv run python -m risale_mcp.local_only` ile üretilir (`build` sonunda da); elle düzenlemeyin.",
-        "> Bir eseri yerelde tutan `Work.private` işaretidir: `src/risale_mcp/catalog.py`. İzinler: `docs/izinler.md`.",
+        "> Bir eseri yerelde tutan `Work.private` işaretidir: `src/risale_mcp/catalog/`. İzinler: `docs/izinler.md`.",
         "",
         "| Veritabanı | Eser | Bölüm | Paragraf | Cümle | Arapça parça |",
         "|---|---:|---:|---:|---:|---:|",
-        f"| Yerel (`data/risale.db`) | {_scalar(full, 'SELECT count(*) FROM works WHERE built = 1')} | "
+        f"| Yerel (`data/dist/kisisel/`) | {_scalar(full, 'SELECT count(*) FROM works WHERE built = 1')} | "
         f"{_n(a.nodes)} | {_n(a.paragraphs)} | {_n(a.sentences)} | {_n(a.arabic)} |",
-        f"| Sunucu (`data/risale-public.db`) | {_scalar(public, 'SELECT count(*) FROM works WHERE built = 1')} | "
+        f"| Sunucu (`data/dist/genel/`) | {_scalar(public, 'SELECT count(*) FROM works WHERE built = 1')} | "
         f"{_n(b.nodes)} | {_n(b.paragraphs)} | {_n(b.sentences)} | {_n(b.arabic)} |",
         f"| **Fark** | **{len(only_local)}** | **{_n(d.nodes)}** | **{_n(d.paragraphs)}** | "
         f"**{_n(d.sentences)}** | **{_n(d.arabic)}** |",

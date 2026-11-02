@@ -1,7 +1,7 @@
 """Aşama 2: eser modeli ve erisale ayrıştırıcısı.
 
 Ayrıştırıcı testleri elle kurulmuş küçük blok listeleriyle çalışır. En sondaki yapı
-testleri `data/books/sozler.json` dosyasını kullanır; dosya yoksa atlanır
+testleri külliyattaki `sozler.json` dosyasını kullanır; dosya yoksa atlanır
 (önce `uv run python -m risale_mcp.build sozler` çalıştırın).
 """
 
@@ -13,7 +13,7 @@ from risale_mcp.books import telif
 from risale_mcp.books.erisale import parse_work
 from risale_mcp.books.model import ArabicSpan, Text, TextBuilder
 from risale_mcp.catalog import Group, Site, SourceRef, Work
-from risale_mcp.paths import BOOKS_DIR
+from risale_mcp.paths import KULLIYAT_DIR
 from risale_mcp.sources.erisale import BookBlocks, PageSummary
 
 WORK = Work("kitap", "Kitap", Group.ANA_CILT, SourceRef(Site.ERISALE, "kitap"))
@@ -268,7 +268,7 @@ def test_supplement_fills_a_missing_section_from_another_edition():
 
 @pytest.fixture(scope="module")
 def sozler():
-    path = BOOKS_DIR / "sozler.json"
+    path = KULLIYAT_DIR / "sozler.json"
     if not path.exists():
         pytest.skip("sozler.json yok; önce `uv run python -m risale_mcp.build sozler` çalıştırın")
     return json.loads(path.read_text(encoding="utf-8"))

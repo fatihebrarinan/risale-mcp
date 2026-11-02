@@ -1,6 +1,6 @@
 """Bediüzzaman Said Nursî'nin eserleri ve her birinin metin kaynağı.
 
-Her eser, `data/books/<slug>.json` dosyasına dönüşecek bir birimdir. Bir kaynak kitabı
+Her eser, `data/library/risale/kulliyat/<slug>.json` dosyasına dönüşecek bir birimdir. Bir kaynak kitabı
 birden fazla esere bölünebilir (ör. erisale'deki "İlk Dönem Eserleri"), bir eser de
 başka bir kaynak kitabının yalnızca bazı bölümlerinden oluşabilir (ör. Lemeat).
 
@@ -8,69 +8,7 @@ Bölüm seçicileri (`sections`, `exclude`) kaynağa özgüdür. erisale için b
 slug'larının önekleridir: `"lemeat"` hem `lemeat` hem `lemeat-tenbih` bölümünü kapsar.
 """
 
-from dataclasses import dataclass
-from enum import StrEnum
-
-
-class Group(StrEnum):
-    ESKI_SAID = "eski-said"
-    ANA_CILT = "ana-cilt"
-    MECMUA = "mecmua"
-    HIZB = "hizb"
-    OSMANLICA = "osmanlica"
-
-
-class Status(StrEnum):
-    READY = "ready"          # kaynak belli, indirilebilir
-    VERIFY = "verify"        # kaynak belli ama içeriğin tam/doğru olduğu doğrulanmalı
-    DEFERRED = "deferred"    # kullanıcı kararıyla ertelendi
-    MISSING = "missing"      # henüz kaynak bulunamadı
-
-
-class Site(StrEnum):
-    ERISALE = "erisale"              # erisale.com: standart baskı, birincil kaynak
-    RISALE_ONLINE = "risale_online"  # risale.online: Hayrat baskısı
-    RISALEOKU = "risaleoku"          # risaleoku.com'un eski sitesi (kapandı; ham veri karşılaştırma için durur)
-    RISALEOKU_APP = "risaleoku_app"  # risaleoku.com uygulaması: katalog ve kitap dosyaları
-    YENIASYA = "yeniasya"            # yeniasya.com.tr/risaleinur: bozuk kodlu PDF metni, Arapçasız (artık kullanılmıyor)
-    KASTAMONUR = "kastamonur"        # kastamonur.com: Âsâr-ı Bedîiyye'den Nutuklar ve Makaleler
-    RASAELALNOUR = "rasaelalnour"    # rasaelalnour.com: İhsan Kasım'ın Arapça Külliyatı (Word, RAR arşivi)
-    KESIF = "kesif"                  # Keşif Yolculukları Risale-i Nur Eğitim Programı: Ta'likat'ın Türkçesi (Word)
-    KULLANICI = "kullanici"          # kullanıcının sağladığı dosya (PDF): internette serbest metni olmayan eserler
-
-
-# Bu kaynaklardaki eserler ana metin sayılmaz: ana ciltlerde de geçen parçaları oraya eşlenir.
-SECONDARY_SITES = frozenset({Site.YENIASYA, Site.KASTAMONUR, Site.KULLANICI})
-
-
-@dataclass(frozen=True)
-class SourceRef:
-    site: Site
-    book: str                          # sitenin kitap kimliği
-    sections: tuple[str, ...] = ()     # boşsa kitabın tamamı
-    exclude: tuple[str, ...] = ()      # başka esere ait olduğu için çıkarılan bölümler
-
-    def includes(self, section: str) -> bool:
-        def matches(prefixes: tuple[str, ...]) -> bool:
-            return any(section == p or section.startswith(p + "-") for p in prefixes)
-        return (not self.sections or matches(self.sections)) and not matches(self.exclude)
-
-
-@dataclass(frozen=True)
-class Work:
-    slug: str
-    title: str
-    group: Group
-    source: SourceRef | None
-    status: Status = Status.READY
-    note: str = ""
-    language: str = "tr"            # metnin dili: "tr", "ar" ya da "os" (Arapça harfli eserler sağdan sola)
-    private: bool = False           # yalnızca kullanıcının yerel veritabanında; genel sunucuya çıkmaz
-    secondary: bool = False         # ana metin sayılmaz: ana ciltlerde de geçen paragrafları oraya eşlenir
-
-    @property
-    def is_secondary(self) -> bool:
-        return self.secondary or (self.source is not None and self.source.site in SECONDARY_SITES)
+from risale_mcp.catalog.model import Authority, Group, Site, SourceRef, Status, Work
 
 
 def _erisale(book: str, *sections: str, exclude: tuple[str, ...] = ()) -> SourceRef:
@@ -87,14 +25,15 @@ _E, _A, _M, _H, _O = Group.ESKI_SAID, Group.ANA_CILT, Group.MECMUA, Group.HIZB, 
 def _app(book: str, *sections: str) -> SourceRef:
     return SourceRef(Site.RISALEOKU_APP, book, sections)   # bölümler: (ilk başlık, duracağı başlık)
 
-WORKS: tuple[Work, ...] = (
+
+KULLIYAT_WORKS: tuple[Work, ...] = (
     # --- Eski Said dönemi
-    Work("kizil-icaz", "Kızıl İcaz", _E, None, Status.MISSING,
+    Work("kizil-icaz", "Kızıl İcaz", _E, None, Status.MISSING, translation=True, note=
          "Türkçesi: ücretsiz tam tercüme bulunamadı (basılı tercümeler telifli). Arapçası Kızıl İcaz (Arapça)."),
     Work("kizil-icaz-arabi", "Kızıl İcaz (Arapça)", _E, _app("ar_asaribediyye", "قزل ايجاز", "تعليقات"),
          note="Arapça asıl: Ahdarî'nin Süllem'ine hâşiye; İhsan Kasım es-Sâlihî tahkiki (Saykalü'l-İslâm).",
          language="ar"),
-    Work("talikat", "Ta'likat", _E, SourceRef(Site.KESIF, "talikat"),
+    Work("talikat", "Ta'likat", _E, SourceRef(Site.KESIF, "talikat"), translation=True,
          note="Türkçe tam tercüme (Protranslate; Keşif Yolculukları Risale-i Nur Eğitim Programı).",),
     Work("talikat-arabi", "Ta'likat (Arapça)", _E, _app("ar_asaribediyye", "تعليقات", "السانحات"),
          note="Arapça asıl: Gelenbevî'nin Burhân'ına hâşiye; İhsan Kasım es-Sâlihî tahkiki (Saykalü'l-İslâm).",
@@ -106,17 +45,19 @@ WORKS: tuple[Work, ...] = (
          note="Âsâr-ı Bedîiyye baskısı; 20 makale."),
     Work("muhakemat", "Muhakemat", _E, _erisale("muhakemat")),
     Work("teshisul-illet-zeyli", "Teşhisü'l-İllet'in Zeyli", _E,
-         _app("abed", "TEŞHİS-ÜL İLLET'İN ZEYLİ", "İki Mekteb-i Musîbetin"),
+         _app("abed", "TEŞHİS-ÜL İLLET'İN ZEYLİ", "İki Mekteb-i Musîbetin"), translation=True,
          note="Hutbe-i Şamiye'nin Arapça zeylinin müellifçe Türkçeye çevrilmemiş kısımları; Âsâr-ı Bediiyye'deki tercüme."),
     Work("hakikat-cekirdekleri-2", "Hakikat Çekirdekleri (İkinci Cüz)", _E,
          _app("abed", "Hakikat Çekirdekleri (2)", "Bediüzzaman'ın Tarihçe-i Hayatı"), note="Âsâr-ı Bediiyye baskısı."),
     Work("vukufsuz-ehl-i-vukufa-cevap", "Vukufsuz Ehl-i Vukufa Cevap", _E,
          _app("abed", "VUKUFSUZ EHL-İ VUKUFA CEVAP", "HAZRET-İ ÜSTAD'IN TASHİH"), note="Âsâr-ı Bediiyye baskısı."),
-    Work("hutbe-i-samiye", "Hutbe-i Şamiye", _E, _ilk_donem("hutbe-i-samiye")),
-    Work("hutbe-i-samiye-arabi", "Hutbe-i Şamiye (Arapça)", _E, _app("ar_asaribediyye", "الخطبة الشامية", "الخطوات الست"),
+    Work("hutbe-i-samiye", "Hutbe-i Şamiye", _E, _ilk_donem("hutbe-i-samiye"), translation=True,
+         note="Müellifin kendi Türkçe tercümesi."),
+    Work("hutbe-i-samiye-arabi", "Hutbe-i Şamiye (Arapça)", _E, _app("ar_asaribediyye", "الخطبة الشامية", "الخطوات الست"), translation=True,
          note="İhsan Kasım es-Sâlihî'nin Türkçeden tercümesi (1911'de okunan Arapça aslı değil).", language="ar"),
     Work("munazarat", "Münazarat", _E, _ilk_donem("munazarat")),
-    Work("isaratul-icaz", "İşaratü'l-İ'caz", _E, _erisale("isaratul-icaz")),
+    Work("isaratul-icaz", "İşaratü'l-İ'caz", _E, _erisale("isaratul-icaz"), translation=True,
+         note="Abdülmecid Nursî tercümesi."),
     Work("isaratul-icaz-arabi", "İşârâtü'l-İ'câz (Arapça)", _E,
          _app("ar_isarat"),
          note="Arapça asıl; İhsan Kasım es-Sâlihî tahkiki. Türkçesi İşaratü'l-İ'caz (Abdülmecid Nursî tercümesi).",
@@ -138,7 +79,7 @@ WORKS: tuple[Work, ...] = (
          SourceRef(Site.RASAELALNOUR, "mesnevi", ("المثنوي العربي النهائي.doc",)), private=True,
          note="Abdülkadir Badıllı'nın \"el-Kâmil\" baskısı (harekeli); yalnızca kullanıcıda, genel sunucuya çıkmaz.",
          language="ar"),
-    Work("mesnevi-i-nuriye", "Mesnevî-i Nuriye", _E, _erisale("mesnevi-i-nuriye"),
+    Work("mesnevi-i-nuriye", "Mesnevî-i Nuriye", _E, _erisale("mesnevi-i-nuriye"), translation=True,
          note="el-Mesnevî el-Arabî'nin Türkçesi."),
     Work("nurun-ilk-kapisi", "Nur'un İlk Kapısı", _E, _ilk_donem("nurun-ilk-kapisi")),
     # --- Risale-i Nur ana ciltleri
@@ -169,9 +110,9 @@ WORKS: tuple[Work, ...] = (
     Work("hanimlar-rehberi", "Hanımlar Rehberi", _M, _app("rnk_hanimreh")),
     Work("fihrist-risalesi", "Fihrist Risalesi", _M, _app("ihlas_fihristris"),
          note="Ana ciltlerin fihristelerinden derlenmiş; kullanıcının kararıyla 2026-10-30'da yeniden eklendi."),
-    Work("esasat-i-nuriye", "Esasat-ı Nuriye", _M, _app("esasat"), private=True,
+    Work("esasat-i-nuriye", "Esasat-ı Nuriye", _M, _app("esasat"), private=True, authority=Authority.DERLEME,
          note="Sonradan derleme: Rüşdü Tafral ve İttihad İlmî Araştırma Heyeti (İttihad Yayıncılık); Bediüzzaman'ın tertibi değil."),
-    Work("hizmet-rehberi-ve-dusturlari", "Hizmet Rehberi ve Düsturları", _M, _app("hizmettoplama"), private=True,
+    Work("hizmet-rehberi-ve-dusturlari", "Hizmet Rehberi ve Düsturları", _M, _app("hizmettoplama"), private=True, authority=Authority.DERLEME,
          note="Sonradan derleme: Ahmet Koçoğlu (2018); Bediüzzaman'ın tertibi değil."),
     # --- Hizbler
     Work("hizbul-kuranil-muazzam", "Hizbü'l-Kur'ani'l-Muazzam", _H, SourceRef(Site.RISALEOKU_APP, "hizbkuran"), language="ar"),
@@ -180,11 +121,11 @@ WORKS: tuple[Work, ...] = (
          note="Zülfikâr'ın hâtimesi (İhlas Nur baskısı); müellifin takdimleriyle."),
     Work("hizbu-envaril-hakaik", "Hizbü Envari'l-Hakaiki'n-Nuriye (Büyük Cevşen)", _H,
          SourceRef(Site.RISALEOKU_APP, "hizbulhakaik"), note="Cevşenü'l-Kebîr bu cildin içindedir.", language="ar"),
-    Work("tesbihat", "Namaz Tesbihatı", _H, _app("tesbihat"), language="ar",
+    Work("tesbihat", "Namaz Tesbihatı", _H, _app("tesbihat"), language="ar", authority=Authority.BASKASI,
          note="Beş vakit namazın tesbihatı; Bediüzzaman'ın eseri değil."),
-    Work("celcelutiye", "Celcelutiye Kasidesi", _H, _app("celcelutiye"), language="ar",
+    Work("celcelutiye", "Celcelutiye Kasidesi", _H, _app("celcelutiye"), language="ar", authority=Authority.BASKASI,
          note="Bediüzzaman'ın eseri değil; rivayet edilen kaside."),
-    Work("kenzul-ars", "Kenzü'l-Arş Duası", _H, _app("kenzulars"), language="ar",
+    Work("kenzul-ars", "Kenzü'l-Arş Duası", _H, _app("kenzulars"), language="ar", authority=Authority.BASKASI,
          note="Bediüzzaman'ın eseri değil."),
     # --- Osmanlıca (Envar Neşriyat baskısı): Türkçe ciltlerin Arapça harfli metni; eşlenmez, anlamsal aramaya girmez.
     *(Work(f"{slug}-osmanlica", f"{title} (Osmanlıca)", _O, _app(book), language="os") for slug, title, book in (
@@ -197,17 +138,3 @@ WORKS: tuple[Work, ...] = (
         ("asa-yi-musa", "Asâ-yı Mûsâ", "osasamusa"), ("fihrist-risalesi", "Fihrist Risalesi", "osfihrist"),
         ("siracun-nur", "Siracü'n-Nur", "ossiracnur"), ("tilsimlar", "Tılsımlar", "ostilsimlar"))),
 )
-
-_BY_SLUG = {work.slug: work for work in WORKS}
-
-
-def get_work(slug: str) -> Work:
-    try:
-        return _BY_SLUG[slug]
-    except KeyError:
-        raise KeyError(f"Katalogda böyle bir eser yok: {slug!r}") from None
-
-
-def works_from(site: Site, book: str) -> list[Work]:
-    """Aynı kaynak kitabından beslenen eserler (ör. erisale/sozler -> Sözler ve Lemeat)."""
-    return [w for w in WORKS if w.source and w.source.site == site and w.source.book == book]

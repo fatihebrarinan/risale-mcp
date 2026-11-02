@@ -18,10 +18,10 @@ Vektörü çıkarılan metin (birim) seçeneğe (`variant`) göre değişir:
 Anahtar vektörü çıkarılan metinden gelir. Veritabanı yeniden kurulsa da metin değişmedikçe vektör
 geçerli kalır; yalnızca değişen ya da yeni birimlerin vektörü çıkarılır.
 
-Depo: `data/vectors/<model>.<variant>.npy` ve aynı adlı `.keys.json`. Vektörler float16 birim vektördür;
+Depo: `data/dist/kisisel/vectors/<model>.<variant>.npy` ve aynı adlı `.keys.json`. Vektörler float16 birim vektördür;
 sunucunun modeli (`SEARCH_MODEL`, `voyage-context-4`) ise 512 boyutlu int8 vektörleri sağlayıcıdan hazır alır
 (≈56 MB; değerlendirmede 1024 boyutlu float16 ile aynı isabet).
-Değerlendirme sorularının vektörleri `data/vectors/queries.<model>.json`'da önbelleğe alınır.
+Değerlendirme sorularının vektörleri aynı klasörde `queries.<model>.json`'da önbelleğe alınır.
 """
 
 import argparse
@@ -42,10 +42,8 @@ import numpy as np
 
 from risale_mcp.db import connect
 from risale_mcp.env import load_env
-from risale_mcp.paths import DATA_DIR, DB_PATH, INTERIM_DIR, PUBLIC_DB_PATH, ROOT
+from risale_mcp.paths import DB_PATH, PUBLIC_DB_PATH, PUBLIC_VECTORS_DIR, ROOT, VECTORS_DIR
 
-VECTORS_DIR = DATA_DIR / "vectors"
-PUBLIC_VECTORS_DIR = INTERIM_DIR / "vectors-public"   # sunucuya giden kopya (`deploy.sh` üretir)
 DIMENSIONS = 1024
 CHARS_PER_TOKEN = 1.6      # token tahmini için temkinli oran (ölçülen ortalama ≈2,05; Arapça daha yoğun)
 DOCUMENT_TOKENS = 8_000    # bağlamlı modelde bir belgenin en çok tahmini tokenı

@@ -1,7 +1,7 @@
 """Bir eserin kaynaktan bağımsız modeli: başlık ağacı, paragraflar, hâşiyeler.
 
 Ayrıştırıcılar (`books/erisale.py` vb.) metni `TextBuilder` ile kurar, düğüm ve
-paragrafları `Book` üzerinden ekler; `Book.to_json()` `data/books/<eser>.json` biçimidir.
+paragrafları `Book` üzerinden ekler; `Book.to_json()` eser JSON'unun biçimidir.
 
 Kimlikler:
     düğüm      sozler/10/on-iki-hakikat/hakikat-09

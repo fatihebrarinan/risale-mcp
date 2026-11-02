@@ -1,4 +1,4 @@
-"""Taksimat ve cümle kontrol arayüzü: data/books/*.json -> data/interim/review/.
+"""Taksimat ve cümle kontrol arayüzü: eser JSON'ları -> data/interim/review/.
 
 Kullanım:
     uv run python -m risale_mcp.review_ui              # bütün eserler
@@ -20,7 +20,7 @@ from pathlib import Path
 from risale_mcp.books.model import REF_SEPARATOR
 from risale_mcp.catalog import WORKS
 from risale_mcp.checklist import GROUP_TITLES
-from risale_mcp.paths import BOOKS_DIR, INTERIM_DIR, ROOT
+from risale_mcp.paths import INTERIM_DIR, ROOT
 
 OUT_DIR = INTERIM_DIR / "review"
 DATA_DIR = OUT_DIR / "data"
@@ -32,7 +32,7 @@ OUTLINE_FIELDS = ("id", "title", "subtitle", "parent_id", "ref", "sources")
 
 def load_books() -> list[dict]:
     """Ayrıştırılmış eserler, katalog sırasıyla."""
-    paths = [BOOKS_DIR / f"{w.slug}.json" for w in WORKS]
+    paths = [w.book_path for w in WORKS]
     return [json.loads(p.read_text(encoding="utf-8")) for p in paths if p.exists()]
 
 

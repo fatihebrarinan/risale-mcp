@@ -20,6 +20,7 @@ from itertools import accumulate
 from pathlib import Path
 
 from risale_mcp import search as fts
+from risale_mcp.catalog import Authority, Collection
 from risale_mcp.db import connect
 from risale_mcp.embeddings import EmbeddingError
 from risale_mcp.normalize import search_words
@@ -67,6 +68,11 @@ def _elsewhere(node_id: str) -> dict:
     if entry is None:
         return {}
     return {"text_elsewhere": {k: entry[k] for k in ("elsewhere", "rule", "evidence") if k in entry}}
+
+
+def _default_scope(work: str | None, group: str | None, include_related: bool) -> str | None:
+    """Süzgeçsiz arama yalnız külliyata bakar: günümüz Türkçesiyle yazılmış ilgili kaynaklar asıl metnin önüne geçmesin."""
+    return None if work or group or include_related else Collection.KULLIYAT
 
 
 class LibraryError(ValueError):
@@ -140,7 +146,7 @@ class Library:
         sections = dict(self.conn.execute("SELECT work, count(*) FROM nodes GROUP BY work").fetchall())
         written = dict(self.conn.execute("SELECT id, written FROM nodes WHERE parent_id IS NULL AND written IS NOT NULL"))
         rows = self.conn.execute(
-            "SELECT slug, title, group_name, language, status, note, built FROM works"
+            "SELECT slug, title, group_name, collection, authority, translation, language, status, note, built FROM works"
             + (" WHERE group_name = ?" if group else "") + " ORDER BY ord", [group] if group else []).fetchall()
         if group and not rows:
             groups = [r[0] for r in self.conn.execute("SELECT DISTINCT group_name FROM works ORDER BY ord")]
@@ -148,6 +154,12 @@ class Library:
         out = []
         for w in rows:
             record = {"id": w["slug"], "title": w["title"], "group": w["group_name"], "language": w["language"]}
+            if w["collection"] != Collection.KULLIYAT:
+                record["collection"] = w["collection"]
+            if w["authority"] != Authority.MUELLIF:
+                record["authority"] = w["authority"]
+            if w["translation"]:
+                record["translation"] = True
             if w["built"]:
                 record |= {"sections": sections[w["slug"]], "sentences": sentences.get(w["slug"], 0)}
             else:
@@ -290,7 +302,7 @@ class Library:
         result = {"section": root["id"], "ref": root["ref"], "items": items, "next_cursor": next_cursor}
         if written := self._written(root):
             result["written"] = written
-        return result | _elsewhere(root["id"])
+        return result | _elsewhere(root["id"]) | self._work_status(root["work"])
 
     def _paragraph_texts(self, paragraphs: list[sqlite3.Row]) -> dict[str, dict]:
         """Paragraf -> {id, kind, sentences, arabic?, hasiye_of?, canonical?}."""
@@ -400,7 +412,7 @@ class Library:
                 record["hasiye"] = hasiye[r["id"]]
             out.append(record)
         node = self._node(first["node_id"])
-        result = {"section": node["id"], "section_ref": node["ref"], "sentences": out}
+        result = {"section": node["id"], "section_ref": node["ref"], "sentences": out} | self._work_status(node["work"])
         if len(rows) > 1 and not hasiye_only:
             if len({r["node_id"] for r in rows}) > 1:
                 notes.append("The range spans several sections; cite each section's sentences separately.")
@@ -472,24 +484,37 @@ class Library:
 
     # ------------------------------------------------------------ arama ve âyetler
 
+    def _status(self) -> dict[str, dict]:
+        """Sonuçlarda söylenecek eser statüsü: eser -> {authority?, translation?}; müellifin kendi metninde boş."""
+        rows = self.conn.execute("SELECT slug, authority, translation FROM works WHERE authority != ? OR translation = 1",
+                                 (Authority.MUELLIF,))
+        return {r["slug"]: ({"authority": r["authority"]} if r["authority"] != Authority.MUELLIF else {})
+                | ({"translation": True} if r["translation"] else {}) for r in rows}
+
+    def _work_status(self, work: str) -> dict:
+        return self._status().get(work, {})
+
     def search(self, query: str, work: str | None = None, group: str | None = None,
-               limit: int = 20, offset: int = 0) -> dict:
+               limit: int = 20, offset: int = 0, include_related: bool = False) -> dict:
         if work:
             self._node(work)
+        collection = _default_scope(work, group, include_related)
         limit = min(max(limit, 1), MAX_RESULTS)
         try:
-            hits = fts.search(self.conn, query, work=work, group=group, limit=limit, offset=max(offset, 0))
-            by_work = fts.count_by_work(self.conn, query, group=group)
-            sections = fts.search_nodes(self.conn, query, work=work, limit=5)
+            hits = fts.search(self.conn, query, work=work, group=group, limit=limit, offset=max(offset, 0),
+                              collection=collection)
+            by_work = fts.count_by_work(self.conn, query, group=group, collection=collection)
+            sections = fts.search_nodes(self.conn, query, work=work, limit=5, collection=collection)
         except fts.QueryError as error:
             raise LibraryError(str(error)) from None
         if work:
             by_work = {work: by_work.get(work, 0)}
+        status = self._status()
         result = {
             "total": sum(by_work.values()),
             "by_work": by_work,
-            "results": [{"id": h.sentence_id, "cite_as": hit_cite(h.ref, h.incipit, h.text), "text": _preview(h.text)}
-                        for h in hits],
+            "results": [{"id": h.sentence_id, "cite_as": hit_cite(h.ref, h.incipit, h.text), "text": _preview(h.text),
+                         **status.get(h.work, {})} for h in hits],
             "note": SEARCH_NOTE,
         }
         if sections:
@@ -497,7 +522,7 @@ class Library:
         return result
 
     def semantic_search(self, query: str, work: str | None = None, group: str | None = None,
-                        limit: int = 10, offset: int = 0) -> dict:
+                        limit: int = 10, offset: int = 0, include_related: bool = False) -> dict:
         """Anlamca en yakın cümleler ve konunun yoğunlaştığı bölümler (`semantic.py`)."""
         if not query.strip():
             raise LibraryError("Give a question or a concept to search for.")
@@ -509,6 +534,8 @@ class Library:
             works = {r[0] for r in self.conn.execute("SELECT slug FROM works WHERE group_name = ?", (group,))}
             if not works:
                 raise LibraryError(f"Unknown group {group!r}; groups are: eski-said, ana-cilt, mecmua, hizb, osmanlica.")
+        elif collection := _default_scope(work, group, include_related):
+            works = {r[0] for r in self.conn.execute("SELECT slug FROM works WHERE collection = ?", (collection,))}
         try:
             hits, sections = self._semantic_index().search(query, works, min(max(limit, 1), MAX_RESULTS), max(offset, 0))
         except SemanticUnavailable:
@@ -523,11 +550,13 @@ class Library:
         if sections and offset == 0:
             ids_ = [s.node_id for s in sections]
             refs = dict(self.conn.execute(f"SELECT id, ref FROM nodes WHERE id IN ({_placeholders(ids_)})", ids_).fetchall())
+        status = self._status()
         result = {
             "results": [{"id": h.sentence_id,
                          "cite_as": hit_cite(rows[h.sentence_id]["ref"], rows[h.sentence_id]["incipit"],
                                              rows[h.sentence_id]["text"]),
-                         "text": _preview(rows[h.sentence_id]["text"]), "similarity": round(h.score, 3)} for h in hits],
+                         "text": _preview(rows[h.sentence_id]["text"]), "similarity": round(h.score, 3),
+                         **status.get(h.work, {})} for h in hits],
             "note": SEARCH_NOTE,
         }
         if refs:
