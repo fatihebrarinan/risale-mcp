@@ -152,7 +152,7 @@ class Corpus:
             self.spaced_text[report] = f" {' '.join(words(self.reports[report].text))} "
         return self.spaced_text[report]
 
-    def match(self, text: str, prefer: Iterable[str] = ()) -> tuple[str, list[int], int]:
+    def match(self, text: str, prefer: Iterable[str] = (), limit: int | None = MAX_REPORTS) -> tuple[str, list[int], int]:
         """(found | partly_found | phrase_found | none | short, seçilen rivayetler, bulunan rivayet sayısı)."""
         key = skeleton(text)
         if len(key) < MIN_MATCH:
@@ -162,19 +162,19 @@ class Corpus:
         if hits:
             exact = {r for r in hits if self._has_words(text, r)} if cuts == [key] else hits
             if not exact:
-                return "partly_found", self.select(hits, prefer), len(hits)
-            return ("found" if identifies(text) else "phrase_found"), self.select(exact, prefer), len(exact)
+                return "partly_found", self.select(hits, prefer, limit), len(hits)
+            return ("found" if identifies(text) else "phrase_found"), self.select(exact, prefer, limit), len(exact)
         windows = [c[i:i + size] for c in cuts for size in [min(len(c), max(MIN_WINDOW, len(c) // 3))]
                    for i in range(0, len(c) - size + 1, max(1, size // 2))]
         counts = Counter(r for w in windows for r in self.containing(w))
         best = [r for r, n in counts.items() if n >= max(2, len(windows) * PARTIAL)]
         best.sort(key=lambda r: (-counts[r], r))
-        return ("partly_found", self.select(best, prefer), len(best)) if best else ("none", [], 0)
+        return ("partly_found", self.select(best, prefer, limit), len(best)) if best else ("none", [], 0)
 
     def _has_words(self, text: str, report: int) -> bool:
         return f" {' '.join(words(text))} " in self._spaced(report)
 
-    def select(self, found: Iterable[int], prefer: Iterable[str] = ()) -> list[int]:
+    def select(self, found: Iterable[int], prefer: Iterable[str] = (), limit: int | None = MAX_REPORTS) -> list[int]:
         """Saklanacak rivayetler: künyedeki kitaplar, sonra her kitaptan biri, sonra sırayla. Küme sıraya dizilir."""
         ordered = sorted(found) if isinstance(found, (set, frozenset)) else list(found)
         wanted, seen, cited, first, rest = set(prefer), set(), [], [], []
@@ -182,7 +182,7 @@ class Corpus:
             title = self.reports[r].title
             (rest if title in seen else cited if title in wanted else first).append(r)
             seen.add(title)
-        return (cited + first + rest)[:MAX_REPORTS]
+        return (cited + first + rest)[:limit]
 
 
 def words(text: str) -> list[str]:

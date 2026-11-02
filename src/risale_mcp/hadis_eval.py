@@ -127,6 +127,9 @@ def run(name: str, db: Path = DB_PATH, out_dir: Path = INTERIM_DIR / "hadis") ->
     if (audited := out_dir / "rivayet.json").exists():
         from risale_mcp.hadis_rivayet import summary as audit_summary
         lines += audit_summary(json.loads(audited.read_text("utf-8")))
+    if (agreement := out_dir / "uyum.json").exists():
+        from risale_mcp.hadis_uyum import summary as agreement_summary
+        lines += agreement_summary(json.loads(agreement.read_text("utf-8")))
     if (turkish := out_dir / "turkce.json").exists():
         lines += _table("Yalnız Türkçe aktarılan hadis adayları (cümle)", Counter(json.loads(turkish.read_text("utf-8"))["counts"]))
     out_dir.mkdir(parents=True, exist_ok=True)

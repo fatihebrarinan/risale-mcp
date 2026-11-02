@@ -112,7 +112,7 @@ risale-mcp/
 │   ├── fetch.py, build.py, build_db.py, db.py   # indirme, ayrıştırma, veritabanı CLI'ları
 │   ├── sentences.py       # cümle bölücü, incipit, atıflar, altın örnekler
 │   ├── arabic_kinds.py    # Arapça parçaların türü ve dayanağı, âyet adres düzeltmeleri
-│   ├── quran.py, hadis.py, hadis_adaylar.py, hadis_turkce.py, hadis_rivayet.py, ayah_links.py, search.py, semantic.py, embeddings.py, search_eval.py
+│   ├── quran.py, hadis.py, hadis_adaylar.py, hadis_turkce.py, hadis_rivayet.py, hadis_uyum.py, ayah_links.py, search.py, semantic.py, embeddings.py, search_eval.py
 │   ├── library.py, server.py, citations.py, auth.py, golden.py, local_only.py
 │   ├── review_ui.py, review_assets/, static/
 │   ├── sources/           # site başına indirici (ham kayıt + doğrulama)

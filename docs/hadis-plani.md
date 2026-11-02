@@ -25,8 +25,8 @@ Her adımın sonunda `hadis_eval` raporu ve önceki ölçümle fark gösterilir;
 | 2 | Kısa parçalar için künyeli arama, geçiş başına | Yapıldı |
 | 3 | Lafız farkı ve mânen nakil adayları | Yapıldı |
 | 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | Yapıldı |
-| 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | Yapıldı, onay bekliyor |
-| 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | |
+| 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | Yapıldı |
+| 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | Yapıldı, onay bekliyor |
 | 7 | Bağımsız model okuması: künyeyi ve önceki kararı görmez | |
 | 8 | Hadisçi örneklemi; kararlar `tests/golden/`'a kilitlenir | |
 
@@ -61,6 +61,29 @@ Kalan sınırlar:
 - Bazı bulgular uzun bir duanın küçük parçasıdır ("لَهُ الْمُلْكُ"): rivayet doğru olsa da parça hadisin kendisi değildir.
 - 12 örnekle bakıldı, tam doğrulama değildir.
 - Sunucu Adım 0 sürümündedir (şema 9). Yerel şema 11: sonraki deploy veriyle yapılır, `--code` yetmez.
+
+## Adım 6 sonucu
+
+`hadis_uyum.py`, liste `data/interim/hadis/uyum.{md,json}`, ölçüm `adim-6.md`. `hadith_support` değişmedi. Yalnız `found` ve `partly_found`; künyeyle bulunan `located_chapter` döngüsel olurdu, sınanmadı. Bulunan bütün rivayetlere bakıldı, seçilmiş 8'e değil. Sayım geçiş ve künye başınadır (112).
+
+| Küme | Geçiş | `chapter` | `book` | `absent` | `no_corpus` |
+|---|---|---|---|---|---|
+| Ayar gerçek | 78 | 27 | 15 | 22 | 14 |
+| Ayar karışık | 78 | 3,9 | 23,5 | 37,7 | 12,9 |
+| Sınama gerçek | 34 | 10 | 9 | 11 | 4 |
+| Sınama karışık | 34 | 1,2 | 9,6 | 18,1 | 5,1 |
+
+Künyenin bölümü karışık künyeye göre yaklaşık 7–8 kat tutuyor. `book` karışıktan yüksek değil: Adım 2'deki gibi kitapta geçmek kanıt değildir, yalnız bölüm kanıttır.
+
+Kitapta bulunan metinde bölüm 87 künyenin 83'ünde tuttu (Adım 1'deki %85 seçilmiş rivayetlerle, kısa parçalar dahildi; aynı ölçüm değildir). "no." 5'te 2 tuttu, küme çok küçük: rivayete doğrudan götürmez.
+
+Kalan sınırlar:
+
+- `absent` 33 geçiş: künye yanlıştır demek değildir. Örnekte çoğu bilinen hadis, künyedeki kitapta başka lafızla duruyor. 5'i "bk." ya da "iktibas". Lafız farkı mı yanlış künye mi ayrımı yapılmadı, Adım 7'nin girdisidir.
+- `no_corpus` 18 geçiş sınanamadı (Keşfü'l-Hafâ gibi kitaplar).
+- Bölüm yalnız Hadith API kitaplarındadır; öbür kitaplarda en çok `book` çıkar, bu da kanıt değildir.
+
+Hadis işaretinin dayanağı (Adım 5'in `no_prophet` kuyruğu, 21 parça): `kaynak` 15, `meal` 15, `kaynakca` 5, `erisale` 1 (aynı parçada birden çoğu olabilir). "يا آل الذبيح" `kaynak` ve `meal`: işaret kaynağındır, kural gereği değişmez. "تسمع بالمعيدي" yalnız `kaynakca`: işareti `arabic_kinds` verdi, kaynakçası hadis kitabı gösteriyor; değiştirilmedi.
 
 ## Adım 5 sonucu
 
