@@ -26,8 +26,8 @@ Her adımın sonunda `hadis_eval` raporu ve önceki ölçümle fark gösterilir;
 | 3 | Lafız farkı ve mânen nakil adayları | Yapıldı |
 | 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | Yapıldı |
 | 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | Yapıldı |
-| 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | Yapıldı, onay bekliyor |
-| 7 | Bağımsız model okuması: künyeyi ve önceki kararı görmez | |
+| 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | Yapıldı |
+| 7 | Bağımsız model okuması: künyeyi ve önceki kararı görmez | Yapıldı, onay bekliyor |
 | 8 | Hadisçi örneklemi; kararlar `tests/golden/`'a kilitlenir | |
 
 Yeni kaynak ayrı koldur: Keşfü'l-Hafâ, Feyzü'l-Kadîr, Kenzü'l-Ummâl, İhyâ, Mecmaü'z-Zevâid, el-Câmiu's-Sağîr. İzinli kaynak bulunmadan eklenmez.
@@ -61,6 +61,32 @@ Kalan sınırlar:
 - Bazı bulgular uzun bir duanın küçük parçasıdır ("لَهُ الْمُلْكُ"): rivayet doğru olsa da parça hadisin kendisi değildir.
 - 12 örnekle bakıldı, tam doğrulama değildir.
 - Sunucu Adım 0 sürümündedir (şema 9). Yerel şema 11: sonraki deploy veriyle yapılır, `--code` yetmez.
+
+## Adım 7 sonucu
+
+`hadis_okuma.py`, sonuç `data/interim/hadis/okuma.{md,json}`, ölçüm `adim-7.md`. `hadith_support` ve veritabanı değişmedi. İki bağımsız model okuyucu 190 çifti yalnız Arapçadan okudu: kitap adı, künye, seviye ve kuyruk gizliydi. 160'ı gerçek eşleşme, 30'u parçaya rastgele başka parçanın rivayeti verilmiş kontrol.
+
+| Küme | Çift | İkisi de aynı söz | İkisi de değil | Ayrılan |
+|---|---|---|---|---|
+| Kontrol | 30 | 0 | 30 | 0 |
+| `found` | 89 | 89 | 0 | 0 |
+| `partly_found` | 19 | 19 | 0 | 0 |
+| Aday `chapter` | 25 | 21 | 4 | 0 |
+| Aday `close` | 27 | 25 | 2 | 0 |
+
+Aynı söz mü sorusunda okuyucular 160/160 uyuştu; ilişki türünde 142/160 (ayrılanlar çoğunlukla `abridged` / `by_meaning`). Tam uyumda ilk okuyucunun ilişkisi: `verbatim` 92, `by_meaning` 29, `abridged` 15, `related` 5, `different` 1. Sınama kümesinde aynı söz 47/48, ayarda 107/112.
+
+- 52 adayın 46'sını iki okuyucu da aynı söz dedi: Adım 3 listesi büyük ölçüde gerçek lafız farkıdır. 6'sı `related` ya da `different`; hepsi `chapter` 4 ve `close` 2.
+- Söz sahibi, iki okuyucu da aynı dedi: Peygamber 126, başkası 17, belirsiz 15. Başkası denenlerin arasında "يا آل الذبيح" (görünmeyen bir ses), "تسمع بالمعيدي" (bir kadının sözü), "اذا جاء القدر" (Tirmizî'nin sözü), "حب الدنيا" (bu kayıtta Hz. İsâ'nın sözü) var. Tek rivayete dayanır: başka rivayette söz Peygamber'in olabilir.
+- Reddi iki okuyucu da 6 çiftte gördü, kontrolde 0.
+
+Kalan sınırlar:
+
+- Kontrol kolaydı: rastgele çift çoğu zaman bambaşka konudur. 30'da 0 hata, "sayısı farklı ama çok benzeyen" tuzağı ("iki yüz defa" / "yetmiş") ölçmez. 30 örnekte hata çıkmasa bile gerçek oran ≈%10'a kadar olabilir.
+- İki okuyucu aynı modeldir, hataları ortaktır: 160/160 uyum bağımsız iki uzman demek değildir.
+- Okuyucular yalnız gösterilen rivayeti okudu (parça başına 1–2) ve "ezberden yargılama" dendiği hâlde bilgi sızmış olabilir.
+- `found` için aynı söz cevabı neredeyse kelime eşleşmesinin tekrarıdır. Sıhhat, senet ve hüküm sorulmadı.
+- Okuma Türkçe aktarılan 101 cümleyi kapsamadı.
 
 ## Adım 6 sonucu
 
