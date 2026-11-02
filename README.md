@@ -18,13 +18,14 @@ https://mcp.risalemcp.com/mcp
 
 - **claude.ai, Claude masaüstü ve mobil:** [bağdaştırıcıyı ekle](https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=Risale-i%20Nur&connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp) ya da elle *Özelleştirme › Bağdaştırıcılar › Ekle › Özel bağdaştırıcı ekle*. Hesap gerekmez. Her cevapta metnin okunması ve kaynakça için sitedeki [proje talimatını](https://risalemcp.com/#proje) bir Claude projesine yapıştırmanızı öneririz.
 - **Claude Code:** `claude mcp add --transport http risale https://mcp.risalemcp.com/mcp`
-- **ChatGPT ve Gemini:** yakında.
+- **ChatGPT:** *Eklentiler › Ekle › Özel MCP sunucusu ekle*, kimlik doğrulama yok.
+- **Gemini:** yakında.
 
-Hesapsız kullanım toplam sınırlarla korunur; hesabı olanlar sınırsız kullanır. Belgeler: [risalemcp.com/belgeler.html](https://risalemcp.com/belgeler.html), gizlilik: [risalemcp.com/gizlilik.html](https://risalemcp.com/gizlilik.html).
+Hesap gerekmez; kullanım toplam sınırlarla korunur. Belgeler: [risalemcp.com/belgeler.html](https://risalemcp.com/belgeler.html), gizlilik: [risalemcp.com/gizlilik.html](https://risalemcp.com/gizlilik.html).
 
 ## Kapsam
 
-44 eser, ≈7.600 bölüm ve ≈126.000 cümle: Risale-i Nur Külliyatı (Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar, Tarihçe-i Hayat…), Eski Said dönemi eserleri, aslı Arapça eserlerin hem Arapçası hem Türkçesi (İşârâtü'l-İ'câz, el-Mesnevî el-Arabî, Kızıl İcaz, Ta'likat…), mecmualar ve Hizbler. Ayrıca Kur'ân-ı Kerîm: harekeli metin ve Diyanet'in iki meali; eserlerde geçen âyetler Kur'ân metniyle eşlenmiştir. Hangi eserin hangi kaynaktan geldiği ve hangi aşamada olduğu [`ESERLER.md`](ESERLER.md)'de yazar.
+53 eser ve ≈131.000 cümle: Risale-i Nur Külliyatı (Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar, Tarihçe-i Hayat…), Eski Said dönemi eserleri, aslı Arapça eserlerin hem Arapçası hem Türkçesi (İşârâtü'l-İ'câz, el-Mesnevî el-Arabî, Kızıl İcaz, Ta'likat…), mecmualar ve Hizbler. Ayrıca 16 Osmanlıca cilt ve Kur'ân-ı Kerîm: harekeli metin ve Diyanet'in iki meali; eserlerde geçen âyetler Kur'ân metniyle eşlenmiştir. Hangi eserin hangi kaynaktan geldiği ve hangi aşamada olduğu [`ESERLER.md`](ESERLER.md)'de, yalnız yerelde tutulanlar [`HUSUSI-VERILER.md`](HUSUSI-VERILER.md)'de yazar.
 
 Mecmualardaki (Asâ-yı Mûsâ, Zülfikâr…) metinler ana ciltlere eşlenmiştir; aynı metin tek yerde durur ve atıf ana cilde yapılır. Âyet ve hadis mealleri nâşirlerindir, müellife mal edilmez.
 
@@ -44,7 +45,6 @@ Hepsi yalnızca okur.
 | `find_ayah` | Bir âyetin eserlerde geçtiği yerler ve onunla bağ kuran bölümler |
 | `get_ayah` | Kur'ân'dan âyet: harekeli metin ve iki Diyanet meali |
 | `cite` | Alıntıları denetler, cevabın "Kaynaklar" listesini verir |
-| `sign_in` | Hesapla giriş |
 
 Ayrıca kaynaklar (`risale://text/sozler/10`) ve hazır komutlar vardır: konu taraması, "metin ne diyor / yorum" ayrımı, müzakere, kendini sınama, ders planı.
 
@@ -54,14 +54,15 @@ Python 3.11+ ve [uv](https://docs.astral.sh/uv/) gerekir. Metinler depoda **yokt
 
 ```sh
 uv sync
-uv run python -m risale_mcp.fetch get --all --site erisale   # her site ayrı: risale_online, risaleoku, kastamonur, rasaelalnour, kesif, kullanici
+uv run python -m risale_mcp.fetch get --all --site erisale   # her site ayrı: kesif, kullanici; yalnız yerel eserler için risale_online, rasaelalnour
+uv run python -m risale_mcp.fetch risaleoku                  # risaleoku.com'daki kitaplar
 uv run python -m risale_mcp.fetch quran                      # Kur'ân metni ve mealleri (tanzil.net)
 uv run python -m risale_mcp.quran                            # Kur'ân katmanı
 uv run python -m risale_mcp.build --all                      # data/books/*.json ve data/risale.db
 uv run python -m risale_mcp.embeddings build voyage-context-4   # anlamsal arama vektörleri (.env'de VOYAGE_API_KEY)
 ```
 
-İndirici siteleri yormamak için istekler arasında bekler; bütün eserlerin indirilmesi saatler sürer. Bazı eserler kullanıcının kendi dosyalarından gelir (`kullanici`, ayrıntı `CLAUDE.md`'de).
+İndirici siteleri yormamak için istekler arasında bekler; bütün eserlerin indirilmesi saatler sürer. Bazı eserler kullanıcının kendi dosyalarından gelir (`kullanici`, ayrıntı `CLAUDE.md`'de). Klasörlerin düzeni: [`data/README.md`](data/README.md).
 
 Yerel sunucu:
 
@@ -71,7 +72,7 @@ uv run risale-mcp --transport streamable-http --no-auth  # 127.0.0.1:8000/mcp, y
 npx @modelcontextprotocol/inspector uv run risale-mcp    # araçları elle denemek
 ```
 
-İnternete açık sunucu OAuth ile çalışır (`--public-url`, `--anonymous`); hesap yönetimi `uv run risale-mcp auth …`, uzak sunucuya gönderme `scripts/deploy.sh`.
+Genel sunucu açık kipte çalışır (`--public-url … --open`); uzak sunucuya gönderme `scripts/deploy.sh`, yönetim `scripts/sunucu.sh`.
 
 ## Geliştirme
 
@@ -86,6 +87,6 @@ Tasarım, veri modeli, ayrıştırma kuralları ve aşamalar [`CLAUDE.md`](CLAUD
 
 ## Kaynaklar ve izinler
 
-Metinler [erisale.com](https://www.erisale.com), [risale.online](https://risale.online), [risaleoku.com](https://www.risaleoku.com), [kastamonur.com](https://kastamonur.com), [rasaelalnour.com](https://rasaelalnour.com) ve Keşif Yolculukları Risale-i Nur Eğitim Programı'ndan değiştirilmeden alınır; Kur'ân metni ve Diyanet mealleri [Tanzil Project](https://tanzil.net)'ten (mealler ticari olmayan kullanım için), el-Mesnevî el-Arabî'deki âyetlerin çözümü [Quran.com](https://quran.com) verisinden. Metin kaynakları bağdaştırıcının herkese açık kullanımına izin vermiştir. İndirilen metinler ve veritabanı depoya eklenmez.
+Genel sunucunun metinleri [erisale.com](https://www.erisale.com), [risaleoku.com](https://www.risaleoku.com) ve Keşif Yolculukları Risale-i Nur Eğitim Programı'ndan değiştirilmeden alınır; Kur'ân metni ve Diyanet mealleri [Tanzil Project](https://tanzil.net)'ten (mealler ticari olmayan kullanım için). Rumuzat-ı Semaniye kullanıcının sağladığı dosyadan gelir. Kim, hangi şartla izin verdi: [`docs/izinler.md`](docs/izinler.md). İndirilen metinler ve veritabanı depoya eklenmez.
 
 Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir. İletişim: [destek@risalemcp.com](mailto:destek@risalemcp.com)

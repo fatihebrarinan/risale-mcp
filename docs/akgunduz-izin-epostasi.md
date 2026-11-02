@@ -1,7 +1,7 @@
 # Prof. Dr. Ahmed Akgündüz'e izin e-postası (Aşama 17)
 
 Kızıl İcaz'ın Türkçesi için ücretsiz bir kaynak yok; elimizdeki tek metin kullanıcının kendi kitabından taradığı
-Akgündüz tercümesidir (`data/kizil-icaz.pdf`: Bediüzzaman'ın şerhi, Abdülmecid Nursî'nin hâşiyesi ve Ahdarî'nin
+Akgündüz tercümesidir (`data/raw/kullanici/kizil-icaz/kizil-icaz.pdf`: Bediüzzaman'ın şerhi, Abdülmecid Nursî'nin hâşiyesi ve Ahdarî'nin
 Süllem'i, tercüme Prof. Dr. Ahmed Akgündüz). Ta'likat'ın Türkçesi bugün Keşif Yolculukları programının dosyasından
 (Protranslate tercümesi) gelir; Akgündüz tercümesi izin verilirse ikinci bir tercüme olarak eklenebilir.
 
