@@ -8,6 +8,7 @@ from risale_mcp import hadis
 from risale_mcp.build_db import build
 from risale_mcp.arabic_kinds import HADITH_BOOKS, _mukattaat
 from risale_mcp.hadis import Corpus, Report, support
+from risale_mcp.hadis_kunye import parse as parse_citation
 from risale_mcp.library import Library, LibraryError
 from risale_mcp.quran import skeleton
 
@@ -54,6 +55,36 @@ def test_a_part_of_short_cuts_is_searched_whole():
     corpus = Corpus([report("sanadset:1", "x", "علم كثير ثم عمل قليل ثم صبر جميل")])
     assert corpus.match("علم كثير … عمل قليل")[0] == "none"
     assert corpus.match("علم كثير ثم عمل قليل")[0] != "short"
+
+
+def test_locate_searches_only_the_cited_book():
+    corpus = Corpus([Report("bukhari:1", "Sahîh-i Buhârî", "1", "قال المرء مع من احب", "hadith_api", (), 78),
+                     Report("bukhari:2", "Sahîh-i Buhârî", "2", "قال كلام مع غيره", "hadith_api", (), 2),
+                     Report("muslim:1", "Sahîh-i Müslim", "1", "المرء مع من احب", "hadith_api", (), 45)])
+    cite = lambda raw: parse_citation(raw).citations
+    level, found = corpus.locate("اَلْمَرْءُ مَعَ مَنْ اَحَبَّ", cite("Buhari, Edeb: 96"))
+    assert level == "chapter" and found == [0]
+    assert corpus.locate("اَلْمَرْءُ مَعَ مَنْ اَحَبَّ", cite("Buhari, Rikak: 1"))[0] == "book"
+    assert corpus.locate("اَلْمَرْءُ مَعَ مَنْ اَحَبَّ", cite("Tirmizî, Zühd: 50")) == (None, [])
+    assert corpus.locate("المرء مع", cite("Müsned, 1:2")) == (None, [])
+    assert corpus.locate("رء مع من", cite("Buhari, Edeb: 96")) == (None, [])     # kelime sınırı
+
+
+def test_a_book_level_hit_is_not_stored():
+    corpus = Corpus([Report("bukhari:1", "Sahîh-i Buhârî", "1", "قال المرء مع من احب", "hadith_api", (), 78)])
+    parsed = {"Buhari, Rikak: 1": parse_citation("Buhari, Rikak: 1").citations, "Buhari, Edeb: 96": parse_citation("Buhari, Edeb: 96").citations}
+    assert set(hadis._located(corpus, "المرء مع من احب", "short", parsed)) == {"Buhari, Edeb: 96"}
+
+
+def test_cited_books_are_chosen_first():
+    corpus = Corpus([report(f"sanadset:{i}", f"k{i}", "x") for i in range(9)] + [report("sanadset:9", "aranan", "x")])
+    assert corpus.select(set(range(10)), {"aranan"})[0] == 9
+
+
+def test_a_location_belongs_to_its_citation():
+    entry = {"match": "phrase_found", "cited": True, "located": {"Buhari, Edeb: 96": {"level": "chapter"}}}
+    assert support(entry, "kaynak", True, "Buhari, Edeb: 96") == "located_chapter"
+    assert support(entry, "kaynak", True, "Müslim, Birr: 1") == "cited"
 
 
 def test_selection_prefers_different_books():

@@ -381,6 +381,7 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
             conn.executemany("INSERT INTO hadith_locators VALUES (?, ?, ?, ?, ?, ?, ?)",
                              [(row.lastrowid, l.kind, l.chapter, l.section, l.volume, l.page, l.number) for l in c.locators])
 
+    located = []
     for key, kind_source, source, meal, rowid, paragraph, ord_ in conn.execute(
             "SELECT hadith_key, kind_source, source, meal, rowid, paragraph_id, ord FROM arabic"
             " WHERE hadith_key IS NOT NULL").fetchall():
@@ -389,18 +390,21 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
             add_citations(key, paragraph, ord_, "source", source)
         # Kısa ifadede künye anahtara yayılmaz: başka yerde başka hadisin parçası olabilir.
         cited = row_cited(source, meal) if key in entries and not entries[key].get("identifies", True) else None
-        conn.execute("UPDATE arabic SET hadith_support = ? WHERE rowid = ?", (support(entries.get(key), kind_source, cited), rowid))
+        conn.execute("UPDATE arabic SET hadith_support = ? WHERE rowid = ?", (support(entries.get(key), kind_source, cited, source), rowid))
+        for rank, rid in enumerate((entries.get(key, {}).get("located", {}).get(source) or {"reports": ()})["reports"]):
+            located.append((paragraph, ord_, rank, rid))
     for key in keys & set(entries):
         for raw in entries[key].get("nurpedia", ()):
             add_citations(key, None, None, "nurpedia", raw)
     report.counts["hadith_stale"] = len(keys - set(entries))
     matches = [(key, rank, rid) for key in keys & set(entries) for rank, rid in enumerate(entries[key]["reports"])]
-    used = {rid for _, _, rid in matches}
+    used = {rid for _, _, rid in matches} | {rid for *_, rid in located}
     conn.executemany("INSERT INTO hadith_reports VALUES (?, ?, ?, ?, ?, ?)",
                      [(rid, r["title"], r["number"], r["text"], r["source"],
                        json.dumps(r["grades"], ensure_ascii=False) if r["grades"] else None)
                       for rid, r in reports.items() if rid in used])
     conn.executemany("INSERT INTO hadith_matches VALUES (?, ?, ?)", matches)
+    conn.executemany("INSERT INTO hadith_located VALUES (?, ?, ?, ?)", located)
     conn.executemany("INSERT INTO hadith_parts VALUES (?, ?, ?)",
                      [(key, entries[key]["match"], entries[key].get("total", 0)) for key in keys & set(entries)])
     report.counts["hadith_reports"] = len(used)

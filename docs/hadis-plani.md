@@ -22,8 +22,8 @@ Her adımın sonunda `hadis_eval` raporu ve önceki ölçümle fark gösterilir;
 |---|---|---|
 | 0 | Kod hataları, kanıt modeli, `found` ayrımı, dondurulmuş ölçüm | Yapıldı |
 | 1 | Künye ayrıştırma ve kitap kaydı | Yapıldı |
-| 2 | Kısa parçalar için künyeli arama, geçiş başına | Sırada |
-| 3 | Lafız farkı ve mânen nakil adayları | |
+| 2 | Kısa parçalar için künyeli arama, geçiş başına | Yapıldı |
+| 3 | Lafız farkı ve mânen nakil adayları | Sırada |
 | 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | |
 | 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | |
 | 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | |
@@ -36,6 +36,20 @@ Yeni kaynak ayrı koldur: Keşfü'l-Hafâ, Feyzü'l-Kadîr, Kenzü'l-Ummâl, İh
 
 Ana metin, 359 tekil parça: `found` 83, `partly_found` 18, `phrase_found` 41, bulunamayan 142, aranmayan 75. Önceki 126 `found`un 42'si `phrase_found`, 2'si `partly_found` oldu; 1 kesikli parça yeni bulundu, 1 `partly_found` düştü.
 Donmuş kontrol (563): 4 ve daha az kelimede 8/41 `phrase_found`; 5 ve üstünde 3/522 `found`, 10/522 `partly_found`. `partly_found` %1,9 ile tamamen temiz değil, Adım 5–7'de sınanır.
+
+## Adım 2 sonucu
+
+Kısa parça, geçişin künyesindeki kitabın anılan bölümünde kelime sınırıyla geçiyorsa `located_chapter` olur; rivayetler `hadith_located`'da, geçiş başına. Yalnız Hadith API kitaplarında bölüm vardır (Kütüb-i Sitte, Muvatta); Müsned ve Sanadset kitapları bu yoldan bağlanamaz.
+
+Karşı sınama (künyeler parçalar arasında karıştırılır, 5 tur):
+
+| Kelime | Ayar: gerçek / karışık bölümde | Sınama: gerçek / karışık bölümde |
+|---|---|---|
+| 2 | %25 / %3,0 | %47 / %9,4 |
+| 3 | %19 / %3,8 | %40 / %0 |
+| 4 | %10 / %1,0 | %20 / %4,0 |
+
+Kitap düzeyinde (ayar, bölümsüz ve bölümlü toplam) gerçek %31–35, karışık %27–36: kitapta geçmek kanıt değildir, `located_book` bu yüzden kaldırıldı. Tek kelimelik parça aranmaz. Küme küçük (sınamada 37 parça); oranlar yön gösterir, hassas ölçüm değildir. `located_chapter`'ın karışık künyeye göre hata tabanı kabaca her on bulgudan biridir, tekil kayıt doğrulanmış sayılmaz.
 
 ## Adım 1 sonucu
 

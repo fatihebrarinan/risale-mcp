@@ -8,17 +8,22 @@ Derlemde tutması üst sınırdır, kesin hata payı değil: havuzda işaretsiz 
 sonraki adımların bulduğu adaylar onu değiştirmez.
 
 Sınama kümesi (`is_holdout`): parçaların üçte biri anahtarın özetiyle ayrılır; eşik ayarında bakılmaz, yalnız sonda.
+Karşı sınama (`shuffled`): kısa parçalara başka parçaların künyesi verilir. Yanlış künyeyle tutma oranı yöntemin taban
+gürültüsüdür; gerçek künyeyle aradaki fark gücüdür. Sınama kümesi burada da ayrı sayılır.
+
 Ana metin: Osmanlıca ciltler sayıya girmez (aynı metnin Envar baskısı), yalnız onlarda duranlar ayrı gösterilir.
 """
 
 import hashlib
 import json
+import random
 import sys
 from collections import Counter
 from pathlib import Path
 
 from risale_mcp.db import connect
-from risale_mcp.hadis import MIN_MATCH, Corpus, identifies, read_reports
+from risale_mcp.hadis import MIN_MATCH, Corpus, identifies, read_reports, words
+from risale_mcp.hadis_kunye import parse as parse_citation
 from risale_mcp.paths import DB_PATH, HADIS_PATH, INTERIM_DIR, RAW_DIR, ROOT
 from risale_mcp.quran import Quran, pieces, skeleton
 
@@ -65,6 +70,39 @@ def control(corpus: Corpus) -> Counter:
     return counts
 
 
+def located_rates(corpus: Corpus, db: Path, parts: dict, rounds: int = 5) -> list[str]:
+    """Kısa parçalar: kelime sayısına göre gerçek künye ve karıştırılmış künyeyle tutma oranı."""
+    seen: dict[str, tuple[str, str]] = {}
+    for row in connect(db).execute(
+            "SELECT a.hadith_key AS key, a.source, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text"
+            " FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id JOIN works w ON w.slug = p.work"
+            " WHERE a.hadith_key IS NOT NULL AND a.source IS NOT NULL AND p.text IS NOT NULL AND w.language != 'os'"):
+        if parts.get(row["key"], {}).get("match") in ("short", "phrase_found"):
+            seen.setdefault(row["key"], (row["text"], row["source"]))
+    items = [(k, *v) for k, v in seen.items() if parse_citation(v[1]).citations[0].book]
+    def tally(pairs) -> Counter:
+        counts = Counter()
+        for key, text, source in pairs:
+            n = min(len(words(text)), 5)
+            group = f"{'sınama' if is_holdout(key) else 'ayar'} {n} kelime"
+            counts[group, "n"] += 1
+            counts[group, corpus.locate(text, parse_citation(source).citations)[0]] += 1
+        return counts
+    real, fake = tally(items), Counter()
+    rng = random.Random(14)
+    for _ in range(rounds):
+        sources = [s for *_, s in items]
+        rng.shuffle(sources)
+        fake.update(tally((k, t, s) for (k, t, _), s in zip(items, sources)))
+    out = ["\n## Künyeli arama: gerçek künye / karıştırılmış künye\n",
+           "| grup | parça | bölümde | kitapta | karışık bölümde | karışık kitapta |", "|---|---|---|---|---|---|"]
+    for group in sorted({g for g, _ in real}):
+        n = real[group, "n"]
+        out.append(f"| {group} | {n} | {real[group, 'chapter']} | {real[group, 'book']} "
+                   f"| %{100 * fake[group, 'chapter'] / (n * rounds):.1f} | %{100 * fake[group, 'book'] / (n * rounds):.1f} |")
+    return out
+
+
 def run(name: str, db: Path = DB_PATH, out_dir: Path = INTERIM_DIR / "hadis") -> Path:
     data = rows(db)
     parts = json.loads(HADIS_PATH.read_text("utf-8"))["parts"]
@@ -80,7 +118,9 @@ def run(name: str, db: Path = DB_PATH, out_dir: Path = INTERIM_DIR / "hadis") ->
     lines += _table("Dayanak (ana metin, geçiş)", Counter(r["support"] for r in main))
     lines += _table("Dayanağı geçişe göre ayrılan parça", Counter(len(v) for v in best.values() if len(v) > 1))
     lines += _table("Rivayet sayısı sınıra dayanan parça", Counter(len(parts[k]["reports"]) >= 8 for k in main_keys if k in parts))
-    lines += _table("Negatif kontrol (donmuş havuz)", control(Corpus(list(read_reports(RAW_DIR)))))
+    corpus = Corpus(list(read_reports(RAW_DIR)))
+    lines += _table("Negatif kontrol (donmuş havuz)", control(corpus))
+    lines += located_rates(corpus, db, parts)
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{name}.md"
     path.write_text("\n".join(lines) + "\n", "utf-8")

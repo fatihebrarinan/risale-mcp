@@ -40,7 +40,8 @@ OLD_NAMES = json.loads((Path(__file__).parent / "books" / "old_names.json").read
 
 HADITH_NOTE = ("hadith_support is evidence, not a verdict: found = the Arabic occurs word for word in a report and is long "
                "enough to identify it; partly_found = a report carries most of it (it may be abridged, altered or quoted by "
-               "meaning); cited = a hadith book is cited for it, its report was not identified from the text, any reports "
+               "meaning); located_chapter = a short part that occurs in the cited chapter of the cited book at this place; "
+               "cited = a hadith book is cited for it, its report was not identified from the text, any reports "
                "listed only share its words; phrase_found = the words occur in a report but are too short to identify it, "
                "and no book is cited: do not present that report as its source; marked = only the source marks it as a "
                "hadith; unsupported = nothing beyond the words around it. Not found never means it is not a hadith: the "
@@ -730,6 +731,9 @@ class Library:
             parts.append({
                 "hadith_support": support, "occurrences": len(places), "reports_total": part[0] if part else 0,
                 "cited_in": self._hadith_citations(k),
+                "located_reports": [_report_summary(r) for r in self.conn.execute(
+                    "SELECT DISTINCT r.* FROM arabic a JOIN hadith_located l ON l.paragraph_id = a.paragraph_id AND l.ord = a.ord"
+                    " JOIN hadith_reports r ON r.id = l.report_id WHERE a.hadith_key = ? LIMIT ?", (k, MAX_CITATIONS))],
                 "places": [{"id": p["id"], "ref": p["ref"]} for p in places[:limit]],
                 "reports": [_report_summary(r) for r in self.conn.execute(
                     "SELECT r.* FROM hadith_matches m JOIN hadith_reports r ON r.id = m.report_id"

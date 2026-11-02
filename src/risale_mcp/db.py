@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 10
+SCHEMA_VERSION = 11
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -194,6 +194,14 @@ CREATE TABLE hadith_locators (
     number      TEXT
 );
 CREATE INDEX hadith_locators_citation ON hadith_locators(citation_id);
+-- Künyeli aramada bulunan rivayetler: geçiş başına, künyesi başkasını göstermez (`hadis.py`).
+CREATE TABLE hadith_located (
+    paragraph_id TEXT NOT NULL,
+    ord          INTEGER NOT NULL,
+    rank         INTEGER NOT NULL,
+    report_id    TEXT NOT NULL REFERENCES hadith_reports(id),
+    PRIMARY KEY (paragraph_id, ord, rank)
+);
 CREATE TABLE hadith_parts (
     hadith_key TEXT PRIMARY KEY,
     match      TEXT NOT NULL,                      -- derlem sonucu: found, partly_found, phrase_found, none, short

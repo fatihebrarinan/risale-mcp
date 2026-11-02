@@ -11,6 +11,7 @@ Dayanak (`arabic.hadith_support`), en güçlüden:
     found         Arapçası bir rivayette kelime sınırlarıyla tam geçiyor ve rivayeti ayırt edecek kadar uzun
     partly_found  bir rivayet parçanın yarısından çoğunu ya da aynı harfleri kelime sınırı tutmadan taşıyor:
                   kısaltılmış, değiştirilmiş ya da mânen nakil olabilir
+    located_chapter  kısa parça, bu geçişin künyesindeki kitabın anılan bölümünde kelime sınırıyla geçiyor
     cited         tam metni ayırt edilemedi, ama hadis kitabı künyesi var (kaynakça, risaleoku meali, nurpedia)
     phrase_found  sözler bir rivayette geçiyor, ama rivayeti ayırt etmeye kısa ve künyesi yok
     marked        yalnız kaynak hadis diye işaretlemiş
@@ -19,7 +20,9 @@ Dayanak (`arabic.hadith_support`), en güçlüden:
 `MIN_MATCH` harften kısa parça derlemde aranmaz: kalıp sözler rastgele tutar. `MIN_IDENTIFY` kelimeden kısa eşleşme
 rivayeti kanıtlamaz: müellifin hadis işaretsiz Arapçasından 4 ve daha az kelimelilerin %20'si derlemde tutuyor, 5 ve
 üstü %0,6 (`hadis_eval`; harf sayısı ayırt etmiyor, iskelet kısadır). Künye kısa parçada anahtara yayılmaz: aynı kısa ifade başka yerde başka hadisin parçası olabilir.
-"…" ve "الخ" ile atlanan parçanın her kesimi aynı rivayette aranır. "Bulunamadı" hadis olmadığı anlamına gelmez;
+Künyeli arama (`Corpus.locate`) geçiş başınadır ve yalnız kısa parçaya uygulanır. Karşı sınama (`hadis_eval`): künyeler
+karıştırılınca kitap düzeyinde tutma gerçek künyeyle aynıdır (2–4 kelime, ayar kümesi: gerçek %31–35, karışık %27–36),
+kitapta geçmek kanıt değildir ve saklanmaz. Bölüm düzeyinde gerçek %10–25, karışık %1–4: yalnız o kanıttır. "…" ve "الخ" ile atlanan parçanın her kesimi aynı rivayette aranır. "Bulunamadı" hadis olmadığı anlamına gelmez;
 müellif hadisi çoğu yerde kendi ifadesiyle yazar (`docs/hadis-plani.md`). Sanadset'in kitapları arasında tefsir ve tabakât da var: eşleşme rivayettir, her zaman hadis kitabı değil.
 Derece yalnız Hadith API'dendir, âlimin adıyla; Buhârî ve Müslim'de hadis başına derece yoktur, verilmez.
 
@@ -31,19 +34,22 @@ import html
 import json
 import re
 from bisect import bisect_right
-from collections import Counter
+from collections import Counter, defaultdict
 from collections.abc import Iterable, Iterator
 from dataclasses import dataclass
 from pathlib import Path
 
 from risale_mcp.arabic_kinds import HADITH_BOOKS
 from risale_mcp.db import connect
+from risale_mcp.hadis_kitaplar import BY_ID
+from risale_mcp.hadis_kunye import Citation, parse as parse_citation
 from risale_mcp.paths import DB_PATH, HADIS_PATH, RAW_DIR, ROOT
 from risale_mcp.quran import pieces, skeleton
 from risale_mcp.sources.hadis import COLLECTIONS
 
 MIN_MATCH = 10          # derlemde aranan en kısa iskelet (harf)
 MIN_IDENTIFY = 5        # rivayeti ayırt eden en az kelime
+MIN_LOCATE = 2          # künyeli aramada en az kelime
 MIN_WINDOW = 12         # kısmi eşlemede pencere
 PARTIAL = 0.5           # kısmi eşleme için aynı rivayette geçmesi gereken pencere oranı
 MAX_REPORTS = 8         # bir parça için saklanan en çok rivayet
@@ -74,6 +80,7 @@ class Report:
     text: str
     source: str
     grades: tuple[tuple[str, str], ...] = ()
+    section: int | None = None      # Hadith API bölümü
 
 
 def read_reports(raw: Path = RAW_DIR) -> Iterator[Report]:
@@ -82,7 +89,8 @@ def read_reports(raw: Path = RAW_DIR) -> Iterator[Report]:
         for h in json.loads((raw / "hadith_api" / f"ara-{name}.json").read_text(encoding="utf-8"))["hadiths"]:
             if (text := (h.get("text") or "").strip()):
                 yield Report(f"{name}:{h['hadithnumber']}", TITLES[name], str(h["hadithnumber"]), text, "hadith_api",
-                             tuple((g["name"], g["grade"]) for g in h.get("grades") or ()))
+                             tuple((g["name"], g["grade"]) for g in h.get("grades") or ()),
+                             (h.get("reference") or {}).get("book"))
     csv.field_size_limit(10 ** 9)
     with open(raw / "sanadset" / "sanadset.csv", encoding="utf-8", errors="replace", newline="") as f:
         for i, row in enumerate(csv.DictReader(f)):
@@ -106,6 +114,10 @@ class Corpus:
         self.reports = reports
         keys = [skeleton(r.text) for r in reports]
         self.text = "\n".join(keys)
+        self.spaced_text: dict[int, str] = {}
+        self.books: dict[str, list[int]] = defaultdict(list)
+        for i, r in enumerate(reports):
+            self.books[r.title].append(i)
         self.starts, at = [], 0
         for key in keys:
             self.starts.append(at)
@@ -120,7 +132,27 @@ class Corpus:
             at = self.text.find(key, at + 1)
         return found
 
-    def match(self, text: str) -> tuple[str, list[int], int]:
+    def locate(self, text: str, citations: list[Citation]) -> tuple[str | None, list[int]]:
+        """Parçayı yalnız künyedeki kitaplarda arar: (chapter | book | boş, rivayetler; bölümü tutanlar önce)."""
+        needle = f" {' '.join(words(text))} "
+        chapter, book = [], []
+        for c in citations:
+            known = BY_ID.get(c.book)
+            for title in ([TITLES[known.api]] if known.api else known.sanadset) if known else ():
+                sections = {l.section for l in c.locators if l.section is not None}
+                for r in self.books[title]:
+                    if needle in self._spaced(r):
+                        (chapter if self.reports[r].section in sections else book).append(r)
+        if chapter:
+            return "chapter", self.select(dict.fromkeys(chapter + book))
+        return ("book", self.select(dict.fromkeys(book))) if book else (None, [])
+
+    def _spaced(self, report: int) -> str:
+        if report not in self.spaced_text:
+            self.spaced_text[report] = f" {' '.join(words(self.reports[report].text))} "
+        return self.spaced_text[report]
+
+    def match(self, text: str, prefer: Iterable[str] = ()) -> tuple[str, list[int], int]:
         """(found | partly_found | phrase_found | none | short, seçilen rivayetler, bulunan rivayet sayısı)."""
         key = skeleton(text)
         if len(key) < MIN_MATCH:
@@ -130,27 +162,27 @@ class Corpus:
         if hits:
             exact = {r for r in hits if self._has_words(text, r)} if cuts == [key] else hits
             if not exact:
-                return "partly_found", self.select(hits), len(hits)
-            return ("found" if identifies(text) else "phrase_found"), self.select(exact), len(exact)
+                return "partly_found", self.select(hits, prefer), len(hits)
+            return ("found" if identifies(text) else "phrase_found"), self.select(exact, prefer), len(exact)
         windows = [c[i:i + size] for c in cuts for size in [min(len(c), max(MIN_WINDOW, len(c) // 3))]
                    for i in range(0, len(c) - size + 1, max(1, size // 2))]
         counts = Counter(r for w in windows for r in self.containing(w))
         best = [r for r, n in counts.items() if n >= max(2, len(windows) * PARTIAL)]
         best.sort(key=lambda r: (-counts[r], r))
-        return ("partly_found", self.select(best), len(best)) if best else ("none", [], 0)
+        return ("partly_found", self.select(best, prefer), len(best)) if best else ("none", [], 0)
 
     def _has_words(self, text: str, report: int) -> bool:
-        return f" {' '.join(words(text))} " in f" {' '.join(words(self.reports[report].text))} "
+        return f" {' '.join(words(text))} " in self._spaced(report)
 
-    def select(self, found: Iterable[int]) -> list[int]:
-        """Saklanacak rivayetler: önce her kitaptan biri, sonra sırayla; `found` sıralı değilse sıraya dizilir."""
-        ordered = found if isinstance(found, list) else sorted(found)
-        seen, first, rest = set(), [], []
+    def select(self, found: Iterable[int], prefer: Iterable[str] = ()) -> list[int]:
+        """Saklanacak rivayetler: künyedeki kitaplar, sonra her kitaptan biri, sonra sırayla. Küme sıraya dizilir."""
+        ordered = sorted(found) if isinstance(found, (set, frozenset)) else list(found)
+        wanted, seen, cited, first, rest = set(prefer), set(), [], [], []
         for r in ordered:
             title = self.reports[r].title
-            (rest if title in seen else first).append(r)
+            (rest if title in seen else cited if title in wanted else first).append(r)
             seen.add(title)
-        return (first + rest)[:MAX_REPORTS]
+        return (cited + first + rest)[:MAX_REPORTS]
 
 
 def words(text: str) -> list[str]:
@@ -189,27 +221,38 @@ def row_cited(source: str | None, meal: str | None) -> bool:
     return bool(HADITH_BOOKS.search(f"{source or ''} {meal or ''}"))
 
 
+def book_titles(citations: Iterable[Citation]) -> set[str]:
+    """Künyelerin derlemdeki kitap adları."""
+    known = (BY_ID[c.book] for c in citations if c.book)
+    return {t for b in known for t in ([TITLES[b.api]] if b.api else b.sanadset)}
+
+
 def build(db: Path = DB_PATH, raw: Path = RAW_DIR, out: Path = HADIS_PATH) -> Counter:
     """Veritabanındaki hadis parçalarını rivayetlerle eşler; anahtar parçanın harf iskeletidir."""
     conn = connect(db)
     parts: dict[str, list] = {}
+    sources: dict[str, set[str]] = defaultdict(set)
     for row in conn.execute("SELECT a.source, a.meal, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text"
                             " FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id"
                             " WHERE a.kind = 'hadis' AND p.text IS NOT NULL"):
         part = parts.setdefault(skeleton(row["text"]), [row["text"], False])
         part[1] = part[1] or row_cited(row["source"], row["meal"])
+        if row["source"] and row["source"] != "REF-TODO":
+            sources[skeleton(row["text"])].add(row["source"])
     corpus = Corpus(list(read_reports(raw)))
     reports = corpus.reports
     citations = nurpedia_citations(raw / "nurpedia")
     entries, used, counts = {}, {}, Counter()
     for key, (text, cited) in parts.items():
-        match, found, total = corpus.match(text)
+        parsed = {raw: parse_citation(raw).citations for raw in sources[key]}
+        match, found, total = corpus.match(text, book_titles(c for cs in parsed.values() for c in cs))
         refs = _refs_for(key, citations)
         entries[key] = {"match": match, "cited": cited or bool(refs), "total": total, "identifies": identifies(text),
-                        "nurpedia": refs,
+                        "nurpedia": refs, "located": (located := _located(corpus, text, match, parsed)),
                         "reports": [reports[i].id for i in found]}
         counts[match] += 1
         used.update((reports[i].id, reports[i]) for i in found)
+        used.update((reports[i].id, reports[i]) for place in located.values() for i in place.pop("found"))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps({"parts": entries, "reports": {
         r.id: {"title": r.title, "number": r.number, "text": r.text, "source": r.source, "grades": r.grades}
@@ -218,13 +261,16 @@ def build(db: Path = DB_PATH, raw: Path = RAW_DIR, out: Path = HADIS_PATH) -> Co
     return counts
 
 
-SUPPORT_ORDER = ("found", "partly_found", "cited", "phrase_found", "marked", "unsupported")
+SUPPORT_ORDER = ("found", "partly_found", "located_chapter", "cited", "phrase_found", "marked", "unsupported")
 
 
-def support(entry: dict | None, kind_source: str, cited: bool | None = None) -> str | None:
-    """Parçanın bu geçişteki dayanağı (`arabic.hadith_support`); eşlemesi yoksa boş. `cited` verilmezse parçanınkidir."""
+def support(entry: dict | None, kind_source: str, cited: bool | None = None, source: str | None = None) -> str | None:
+    """Parçanın bu geçişteki dayanağı (`arabic.hadith_support`); eşlemesi yoksa boş. `cited` verilmezse parçanınkidir,
+    `source` geçişin künye metnidir."""
     if entry is None:
         return None
+    if place := entry.get("located", {}).get(source):
+        return f"located_{place['level']}"
     cited = entry["cited"] if cited is None else cited
     if entry["match"] in ("found", "partly_found"):
         return entry["match"]
@@ -233,6 +279,18 @@ def support(entry: dict | None, kind_source: str, cited: bool | None = None) -> 
     if entry["match"] == "phrase_found":
         return "phrase_found"
     return "marked" if kind_source in ("kaynak", "erisale") else "unsupported"
+
+
+def _located(corpus: Corpus, text: str, match: str, parsed: dict[str, list[Citation]]) -> dict[str, dict]:
+    """Kısa parçanın künyeli araması, künye metni başına: geçişler aynı künyeyi taşıyorsa aynı sonucu alır."""
+    if match not in ("short", "phrase_found") or len(words(text)) < MIN_LOCATE:
+        return {}
+    places = {}
+    for raw, citations in parsed.items():
+        level, found = corpus.locate(text, citations)
+        if level == "chapter":
+            places[raw] = {"level": level, "found": found, "reports": [corpus.reports[i].id for i in found]}
+    return places
 
 
 def main() -> None:
