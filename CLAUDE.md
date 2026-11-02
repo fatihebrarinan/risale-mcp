@@ -238,14 +238,14 @@ uv run python -m risale_mcp.build_db       # her profil için: eşlemeler verita
 uv run python -m risale_mcp.hadis_eval run <ad>  # ölçüm: data/interim/hadis/<ad>.md; donmuş kontrol tests/golden/hadis_control.json
 ```
 
-Plan, kararlar, bilinen ve olası hatalar: `docs/hadis-plani.md`. Sıra orada.
+Plan, kararlar, bilinen ve olası hatalar: `docs/hadis-plani.md`. Sıra orada. Kitap kaydı `hadis_kitaplar.py`, künye ayrıştırıcı `hadis_kunye.py` (Risale'ye bağlı değiller, `hadis` profili de kullanır; rapor `uv run python -m risale_mcp.hadis_kunye`).
 
 - **Kaynaklar:** eşleme Sanadset 650K (954 kitap, CC BY 4.0, atıf), Hadith API (Kütüb-i Sitte ağırlıklı, Unlicense, beş derlemde âlimlerin dereceleri). Türkçe mealler alınmaz (mütercimleri belli değil). Risaleoku'nun Kütüb-i Sitte'si kullanılmadı: Arapçası %0,9, Türkçe telif eseri gibi. Veritabanına yalnız eşleşen rivayetler girer; ileride `hadis` profili tam derlemi `library/hadis/`'e alır.
 - **Hüküm verilmez, kanıt gösterilir** (kullanıcının kararı: hadis âlimi değil, örneklem elle denetlenmedi). Kaynağın işareti değişmez. `arabic.hadith_support` geçiş başınadır: `found`, `partly_found`, `cited`, `phrase_found`, `marked`, `unsupported`. `found` kelime sınırı ve en az 5 kelime ister: 4 ve daha az kelimede eşleşme rivayeti kanıtlamaz (`phrase_found`; donmuş kontrolde %20'ye karşı %0,6). Künye kanıtı arabic alanlarından ve nurpedia `Ayet-Hadis Mealleri`nden gelir; nurpedia her şeyin kullanımına izin verdi. Müellif hadisi çoğu yerde kendi ifadesiyle yazar: bulunamamak lafız farkı olabilir. Dorar kullanılmaz (`docs/izinler.md`). "Bulunamadı" hadis değildir demek değildir.
 - **Derece:** yalnız Hadith API'nin listesi, âlimin adıyla. Buhârî ve Müslim'de hadis başına derece yok, araç `collection_note` der; model "sahih" diye hüküm vermez.
 - **Kitap türü:** Sanadset'te tefsir ve tabakât da var; eşleşme her zaman hadis kitabı değildir. Mevzu ve zayıf rivayet derleyen kitaplar (`hadis.CAUTION_BOOKS`, adından) sonda sıralanır, `book_note` taşır: orada bulunmak "sağlam" demek değildir ("اختلاف امتي رحمة" yalnız böyle kitaplarda).
 - **Sınıflandırıcı:** İhyâ hadis kitabı sayılmaz; hurûf-u mukattaa hadis adayı olmaz.
-- **Araçlar:** `find_hadith(text)` Arapça sözden Risale'deki yerler, dayanak ve rivayetler; `get_hadith(id)` rivayetin metni, dereceler, kaynak; `read_section` ve `get_passage` hadis parçasında `hadith_support`.
+- **Araçlar:** `find_hadith(text)` Arapça sözden Risale'deki yerler, dayanak, künyeler (`cited_in`) ve rivayetler; `get_hadith(id)` rivayetin metni, dereceler, kaynak; `read_section` ve `get_passage` hadis parçasında `hadith_support`.
 - **Sayılar** (Adım 0, ana metin, 359 tekil parça, derlem sonucu): `found` 83, `partly_found` 18, `phrase_found` 41, bulunamayan 142, 10 harften kısa 75. Geçiş başına dayanak ve kontrol: `data/interim/hadis/adim-0.md`. Eşleşmeler elle doğrulanmadı.
 - **Açık:** üç âyet dizgi şüphesi (`docs/ayet-duzeltmeleri.md`) kullanıcının kararını bekler.
 

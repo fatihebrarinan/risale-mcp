@@ -34,6 +34,8 @@ from risale_mcp.ayah_links import find_links
 from risale_mcp.catalog import Site, WORKS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
 from risale_mcp.hadis import row_cited, support
+from risale_mcp.hadis_kitaplar import BOOKS
+from risale_mcp.hadis_kunye import parse as parse_citation
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import HADIS_PATH, INTERIM_DIR, QURAN_PATH, RAW_DIR, ROOT
 from risale_mcp.profiles import KISISEL, PROFILES, Profile
@@ -368,12 +370,29 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
     data = json.loads(path.read_text(encoding="utf-8"))
     entries, reports = data["parts"], data["reports"]
     keys = set()
-    for key, kind_source, source, meal, rowid in conn.execute(
-            "SELECT hadith_key, kind_source, source, meal, rowid FROM arabic WHERE hadith_key IS NOT NULL").fetchall():
+    conn.executemany("INSERT INTO hadith_books VALUES (?, ?, ?, ?, ?)",
+                     [(b.id, b.title, b.ar or None, b.kind, b.api or None) for b in BOOKS])
+
+    def add_citations(key: str, paragraph: str | None, ord_: int | None, origin: str, raw: str) -> None:
+        for c in parse_citation(raw).citations:
+            row = conn.execute("INSERT INTO hadith_citations (hadith_key, paragraph_id, ord, origin, book, qualifier, raw, leftover)"
+                               " VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                               (key, paragraph, ord_, origin, c.book, c.qualifier, c.raw, c.leftover or None))
+            conn.executemany("INSERT INTO hadith_locators VALUES (?, ?, ?, ?, ?, ?, ?)",
+                             [(row.lastrowid, l.kind, l.chapter, l.section, l.volume, l.page, l.number) for l in c.locators])
+
+    for key, kind_source, source, meal, rowid, paragraph, ord_ in conn.execute(
+            "SELECT hadith_key, kind_source, source, meal, rowid, paragraph_id, ord FROM arabic"
+            " WHERE hadith_key IS NOT NULL").fetchall():
         keys.add(key)
+        if source and source != "REF-TODO":
+            add_citations(key, paragraph, ord_, "source", source)
         # Kısa ifadede künye anahtara yayılmaz: başka yerde başka hadisin parçası olabilir.
         cited = row_cited(source, meal) if key in entries and not entries[key].get("identifies", True) else None
         conn.execute("UPDATE arabic SET hadith_support = ? WHERE rowid = ?", (support(entries.get(key), kind_source, cited), rowid))
+    for key in keys & set(entries):
+        for raw in entries[key].get("nurpedia", ()):
+            add_citations(key, None, None, "nurpedia", raw)
     report.counts["hadith_stale"] = len(keys - set(entries))
     matches = [(key, rank, rid) for key in keys & set(entries) for rank, rid in enumerate(entries[key]["reports"])]
     used = {rid for _, _, rid in matches}

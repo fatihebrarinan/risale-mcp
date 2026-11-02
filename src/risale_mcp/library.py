@@ -45,6 +45,8 @@ HADITH_NOTE = ("hadith_support is evidence, not a verdict: found = the Arabic oc
                "and no book is cited: do not present that report as its source; marked = only the source marks it as a "
                "hadith; unsupported = nothing beyond the words around it. Not found never means it is not a hadith: the "
                "author often gives a hadith in his own words. reports is a selection, reports_total counts them. "
+               "cited_in lists the printed references as they stand (qualifier: see, iktibas, by_meaning); they are the "
+               "publishers', not the author's, and were not checked against the books. "
                "A report may come from a tafsir or history "
                "book, or from a book that lists forged reports (book_note): name the book. Give grades only as listed, with each scholar's name.")
 
@@ -69,6 +71,7 @@ def _arabic_record(row) -> dict:
     if row["hadith_support"]:
         record["hadith_support"] = row["hadith_support"]
     return record
+MAX_CITATIONS = 12       # find_hadith'in bir parça için döndürdüğü en çok künye
 MAX_LINKS = 30           # find_ayah'ın bir âyet için döndürdüğü en çok ilişki
 MAX_AYAHS = 30           # get_ayah'ın bir seferde döndürdüğü en çok âyet (bağlam hariç)
 QURAN_ATTRIBUTION = ("Arabic text: Tanzil Project (tanzil.net), Medina Mushaf script. Translations: Diyanet İşleri "
@@ -726,11 +729,25 @@ class Library:
                 " WHERE a.hadith_key = ? ORDER BY s.seq", (k,)).fetchall()
             parts.append({
                 "hadith_support": support, "occurrences": len(places), "reports_total": part[0] if part else 0,
+                "cited_in": self._hadith_citations(k),
                 "places": [{"id": p["id"], "ref": p["ref"]} for p in places[:limit]],
                 "reports": [_report_summary(r) for r in self.conn.execute(
                     "SELECT r.* FROM hadith_matches m JOIN hadith_reports r ON r.id = m.report_id"
                     " WHERE m.hadith_key = ? ORDER BY m.rank", (k,))]})
         return {"parts": parts, "note": HADITH_NOTE}
+
+    def _hadith_citations(self, key: str) -> list[dict]:
+        """Künyeler: kaynağın ve nurpedia'nın, kitap başına bir kez; `number` bâb ya da baskı numarası olabilir."""
+        seen, out = set(), []
+        for row in self.conn.execute(
+                "SELECT c.raw, c.qualifier, c.origin, b.title, b.kind FROM hadith_citations c LEFT JOIN hadith_books b ON b.id = c.book"
+                " WHERE c.hadith_key = ? ORDER BY c.origin = 'nurpedia', c.id", (key,)):
+            if (mark := (row["title"] or row["raw"], row["raw"])) in seen or len(out) >= MAX_CITATIONS:
+                continue
+            seen.add(mark)
+            out.append({k: v for k, v in {"book": row["title"], "kind": row["kind"], "citation": row["raw"],
+                                          "qualifier": row["qualifier"], "from": row["origin"]}.items() if v})
+        return out
 
     def hadith(self, report_id: str) -> dict:
         """Bir rivayetin metni, kitabı, âlimlerin dereceleri ve kaynağı."""

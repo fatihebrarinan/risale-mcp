@@ -95,7 +95,7 @@ def test_classifier_rules():
 def test_nurpedia_keeps_only_lines_with_a_hadith_book(tmp_path):
     (tmp_path / "a.html").write_text('<div class="mw-parser-output"><p>لَا عَيْشَ اِلَّا عَيْشُ الْاٰخِرَةِ</p><p>Gerçek hayat. (Buharî, Rikak: 1)</p>'
                                      '<p>اِنَّ اللّٰهَ مَعَ الصَّابِر۪ينَ</p><p>Allah sabredenlerle. (Bakara Sûresi, 2:153)</p></div>', "utf-8")
-    assert hadis.nurpedia_citations(tmp_path) == {skeleton("لَا عَيْشَ اِلَّا عَيْشُ الْاٰخِرَةِ")}
+    assert hadis.nurpedia_citations(tmp_path) == {skeleton("لَا عَيْشَ اِلَّا عَيْشُ الْاٰخِرَةِ"): {"Buharî, Rikak: 1"}}
 
 
 @pytest.fixture(scope="module")
@@ -115,7 +115,7 @@ def library(tmp_path_factory):
     (books / "asa-yi-musa.json").write_text(json.dumps(_complete(ASA, _sentences()), ensure_ascii=False), "utf-8")
     key = skeleton(hadith)
     matches = folder / "matches.json"
-    matches.write_text(json.dumps({"parts": {key: {"match": "found", "cited": False, "total": 3, "reports": ["abudawud:7", "bukhari:1", "sanadset:9"]}},
+    matches.write_text(json.dumps({"parts": {key: {"match": "found", "cited": False, "total": 3, "nurpedia": ["Buharî, Bed'ü'l-Vahy: 1"], "reports": ["abudawud:7", "bukhari:1", "sanadset:9"]}},
                                    "reports": {"abudawud:7": {"title": "Sünen-i Ebû Dâvûd", "number": "7", "text": "إنما", "source": "hadith_api", "grades": [["Al-Albani", "Sahih"]]},
                                                "bukhari:1": {"title": "Sahîh-i Buhârî", "number": "1", "text": "إنما", "source": "hadith_api", "grades": []},
                                                "sanadset:9": {"title": "تذكرة الموضوعات للفتني", "number": "3", "text": "إنما", "source": "sanadset", "grades": []},
@@ -144,6 +144,13 @@ def test_find_hadith_gives_places_evidence_and_reports(library):
     assert ids["abudawud:7"]["grades"] == [{"scholar": "Al-Albani", "grade": "Sahih"}]
     assert "grades" not in ids["bukhari:1"] and "no per-hadith grade" in ids["bukhari:1"]["collection_note"]
     assert "forged" in ids["sanadset:9"]["book_note"]
+
+
+def test_find_hadith_lists_the_citations(library):
+    cited = library.find_hadith("انما الاعمال بالنيات")["parts"][0]["cited_in"]
+    assert cited == [{"book": "Sahîh-i Buhârî", "kind": "hadis", "citation": "Buharî, Bed'ü'l-Vahy: 1", "from": "nurpedia"}]
+    row = library.conn.execute("SELECT section, number FROM hadith_locators").fetchone()
+    assert (row["section"], row["number"]) == (1, "1")
 
 
 def test_only_used_reports_enter_and_attribution_is_given(library):

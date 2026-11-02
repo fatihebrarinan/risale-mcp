@@ -21,8 +21,8 @@ Her adımın sonunda `hadis_eval` raporu ve önceki ölçümle fark gösterilir;
 | # | Adım | Durum |
 |---|---|---|
 | 0 | Kod hataları, kanıt modeli, `found` ayrımı, dondurulmuş ölçüm | Yapıldı |
-| 1 | Künye ayrıştırma ve kitap kaydı | Sırada |
-| 2 | Kısa parçalar için künyeli arama, geçiş başına | |
+| 1 | Künye ayrıştırma ve kitap kaydı | Yapıldı |
+| 2 | Kısa parçalar için künyeli arama, geçiş başına | Sırada |
 | 3 | Lafız farkı ve mânen nakil adayları | |
 | 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | |
 | 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | |
@@ -36,6 +36,22 @@ Yeni kaynak ayrı koldur: Keşfü'l-Hafâ, Feyzü'l-Kadîr, Kenzü'l-Ummâl, İh
 
 Ana metin, 359 tekil parça: `found` 83, `partly_found` 18, `phrase_found` 41, bulunamayan 142, aranmayan 75. Önceki 126 `found`un 42'si `phrase_found`, 2'si `partly_found` oldu; 1 kesikli parça yeni bulundu, 1 `partly_found` düştü.
 Donmuş kontrol (563): 4 ve daha az kelimede 8/41 `phrase_found`; 5 ve üstünde 3/522 `found`, 10/522 `partly_found`. `partly_found` %1,9 ile tamamen temiz değil, Adım 5–7'de sınanır.
+
+## Adım 1 sonucu
+
+`hadis_kitaplar.py` kitap kaydı (Risale'ye bağlı değil, `hadis` profili de kullanır), `hadis_kunye.py` ayrıştırıcı, `hadith_books`, `hadith_citations`, `hadith_locators` tabloları. Rapor: `data/interim/hadis/kunye.md`.
+
+- 370 parçanın 365'i künyeli; 461 künye metninin yalnız 1'inde kitap bulunamadı (ham metni durur).
+- Künyedeki kitap adı, metin o kitapta bulunursa Hadith API bölümüyle %85 tutar (149'da 127).
+- Kitap adından sonraki sayı hadis sırası değildir, çoğunlukla bâbdır. "no." sayıları 15'te 3 tuttu: rivayete doğrudan götürmez.
+- Kaynaktaki yazım hataları düzeltilmez: "Buharî, Ahkâm: 4, İmâra: 36" ve "Müslim, … Vitir 24" gibi kitaba uymayan adlar eşlenmeden durur (`section` boş).
+- Künyesi yalnız Kütüb-i Sitte, Muvatta ve Müsned dışı kitapları gösteren 151 parça var; bir kısmı derlemde olmayan kitaplara dayanıyor, Adım 2 onları çözemeyebilir.
+
+Kalan sınırlar:
+
+- 56 farklı adla 425 kitap adı konumu bölüme bağlanmadı; çoğu bölüm tablosu olmayan kitaplardan, hepsi tek tek bakılmadı.
+- Künye içinde 33, başta 35 tür artık metin var; çoğu açıklama, küçük bir kısmı kayıtta olmayan kitap olabilir.
+- %85 ve 15'te 3 tek seferlik ölçümdür; Adım 6'da `hadis_eval`'e girer. Tutmayan 22 vaka örnek düzeyinde incelendi.
 
 ## Veride doğrulanmış hatalar
 

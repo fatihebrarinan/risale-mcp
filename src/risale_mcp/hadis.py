@@ -162,10 +162,9 @@ def identifies(text: str) -> bool:
     return len([w for w in words(text) if w != _ETC]) >= MIN_IDENTIFY
 
 
-def nurpedia_citations(root: Path) -> set[str]:
-    """nurpedia meal sayfalarında hadis kitabı künyesi taşıyan Arapça satırlar (iskelet). Künye saklanmaz: izin
-    kapsamı netleşene kadar yalnız "künyesi var" bilgisi kullanılır."""
-    keys = set()
+def nurpedia_citations(root: Path) -> dict[str, set[str]]:
+    """nurpedia meal sayfalarında hadis kitabı künyesi taşıyan Arapça satırlar: iskelet -> künyeler."""
+    found: dict[str, set[str]] = {}
     for path in root.glob("*.html"):
         page = path.read_text(encoding="utf-8")
         text = re.sub(r"\s+", " ", html.unescape(re.sub(r"<[^>]+>", " ", page[page.find("mw-parser-output"):])))
@@ -173,13 +172,17 @@ def nurpedia_citations(root: Path) -> set[str]:
             after = text[m.end():m.end() + 420]
             if (next_arabic := re.search(r"[؀-ۿ]{3}", after)):
                 after = after[:next_arabic.start()]
-            if any(HADITH_BOOKS.search(ref) for ref in re.findall(r"\(([^()]{4,240})\)", after)):
-                keys.add(skeleton(m.group()))
-    return {k for k in keys if len(k) >= 6}
+            refs = {ref.strip() for ref in re.findall(r"\(([^()]{4,240})\)", after) if HADITH_BOOKS.search(ref)}
+            if refs:
+                found.setdefault(skeleton(m.group()), set()).update(refs)
+    return {k: v for k, v in found.items() if len(k) >= 6}
 
 
-def _cited_in(key: str, citations: set[str]) -> bool:
-    return key in citations or (len(key) >= MIN_MATCH and any(len(c) >= MIN_MATCH and (key in c or c in key) for c in citations))
+def _refs_for(key: str, citations: dict[str, set[str]]) -> list[str]:
+    refs = set(citations.get(key, ()))
+    if len(key) >= MIN_MATCH:
+        refs.update(r for c, v in citations.items() if len(c) >= MIN_MATCH and (key in c or c in key) for r in v)
+    return sorted(refs)
 
 
 def row_cited(source: str | None, meal: str | None) -> bool:
@@ -201,8 +204,9 @@ def build(db: Path = DB_PATH, raw: Path = RAW_DIR, out: Path = HADIS_PATH) -> Co
     entries, used, counts = {}, {}, Counter()
     for key, (text, cited) in parts.items():
         match, found, total = corpus.match(text)
-        entries[key] = {"match": match, "cited": cited or _cited_in(key, citations), "total": total,
-                        "identifies": identifies(text),
+        refs = _refs_for(key, citations)
+        entries[key] = {"match": match, "cited": cited or bool(refs), "total": total, "identifies": identifies(text),
+                        "nurpedia": refs,
                         "reports": [reports[i].id for i in found]}
         counts[match] += 1
         used.update((reports[i].id, reports[i]) for i in found)

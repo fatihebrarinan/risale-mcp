@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 9
+SCHEMA_VERSION = 10
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -162,6 +162,38 @@ CREATE TABLE hadith_reports (
     source TEXT NOT NULL,
     grades TEXT
 );
+-- Künyeler (`hadis_kunye.py`): ham metin her zaman durur. Geçişin künyesi `paragraph_id`, `ord` ile; nurpedia'nın
+-- künyesi parçaya bağlıdır (`hadith_key`). `book` kayıtta olmayan kitapta boştur. Sayılar türüyle saklanır, yorumlanmaz.
+CREATE TABLE hadith_books (
+    id    TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    ar    TEXT,
+    kind  TEXT NOT NULL,                           -- hadis, serh, tefsir, ikincil, diger
+    api   TEXT                                     -- Hadith API derlemi
+);
+CREATE TABLE hadith_citations (
+    id           INTEGER PRIMARY KEY,
+    hadith_key   TEXT NOT NULL,
+    paragraph_id TEXT,
+    ord          INTEGER,
+    origin       TEXT NOT NULL,                    -- source (kaynağın künyesi), nurpedia
+    book         TEXT REFERENCES hadith_books(id),
+    qualifier    TEXT,                             -- see, iktibas, by_meaning
+    raw          TEXT NOT NULL,
+    leftover     TEXT
+);
+CREATE INDEX hadith_citations_key ON hadith_citations(hadith_key);
+CREATE INDEX hadith_citations_book ON hadith_citations(book);
+CREATE TABLE hadith_locators (
+    citation_id INTEGER NOT NULL REFERENCES hadith_citations(id),
+    kind        TEXT NOT NULL,                     -- chapter, no, volume, page, number, bare
+    chapter     TEXT,
+    section     INTEGER,                           -- Hadith API bölümü
+    volume      INTEGER,
+    page        TEXT,
+    number      TEXT
+);
+CREATE INDEX hadith_locators_citation ON hadith_locators(citation_id);
 CREATE TABLE hadith_parts (
     hadith_key TEXT PRIMARY KEY,
     match      TEXT NOT NULL,                      -- derlem sonucu: found, partly_found, phrase_found, none, short
