@@ -51,6 +51,21 @@ Karşı sınama (künyeler parçalar arasında karıştırılır, 5 tur):
 
 Kitap düzeyinde (ayar, bölümsüz ve bölümlü toplam) gerçek %31–35, karışık %27–36: kitapta geçmek kanıt değildir, `located_book` bu yüzden kaldırıldı. Tek kelimelik parça aranmaz. Küme küçük (sınamada 37 parça); oranlar yön gösterir, hassas ölçüm değildir. `located_chapter`'ın karışık künyeye göre hata tabanı kabaca her on bulgudan biridir, tekil kayıt doğrulanmış sayılmaz.
 
+Kalan sınırlar:
+
+- Sonuç: 26 tekil parça, 92 geçiş (ana metinde 61). Bulunan rivayetler `hadith_located`'da.
+- Karışık künyeye göre kabaca her on bulgudan biri tesadüfi olabilir. Sınama kümesi küçüktür.
+- Yalnız Kütüb-i Sitte ve Muvatta'da bölüm vardır. Müsned, Şifâ, Keşfü'l-Hafâ gibi kitaplara dayanan kısa parçalar bu yoldan bağlanamaz.
+- Tek kelimelik parça aranmaz.
+- Aynı parçanın geçişleri arasında dayanak farkı henüz çıkmadı; altyapı hazır.
+- Bazı bulgular uzun bir duanın küçük parçasıdır ("لَهُ الْمُلْكُ"): rivayet doğru olsa da parça hadisin kendisi değildir.
+- 12 örnekle bakıldı, tam doğrulama değildir.
+- Sunucu Adım 0 sürümündedir (şema 9). Yerel şema 11: sonraki deploy veriyle yapılır, `--code` yetmez.
+
+## Adım 3'e başlarken
+
+Dal `hadis-katmani`, son commit'ler `b6e8d20`, `dd6fecd`, push kullanıcıda. Girdi: ana metinde 142 "bulunamadı" parça. Çıktı kesin eşleşme değil, gözden geçirilecek aday listesidir. Benzerlik otomatik eşleme olamaz (`اَوَّلُ مَا خَلَقَ اللّٰهُ نُور۪ي` için en yakın sonuç başka hadis olabilir). Künyedeki `by_meaning` işareti (194 kayıt) kanıttır. İlişki türleri: `verbatim`, `abridged`, `by_meaning`. Model gerekirse önce maliyet tahmini verilip sorulur. Adım sonunda `hadis_eval` raporu ve fark gösterilir, onay beklenir.
+
 ## Adım 1 sonucu
 
 `hadis_kitaplar.py` kitap kaydı (Risale'ye bağlı değil, `hadis` profili de kullanır), `hadis_kunye.py` ayrıştırıcı, `hadith_books`, `hadith_citations`, `hadith_locators` tabloları. Rapor: `data/interim/hadis/kunye.md`.
