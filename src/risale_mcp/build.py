@@ -19,7 +19,7 @@ import sys
 from collections import Counter
 from functools import cache
 
-from risale_mcp import build_db, checklist, embeddings, sentences
+from risale_mcp import build_db, checklist, embeddings, local_only, sentences
 from risale_mcp.quran import QURAN_PATH
 from risale_mcp.books import erisale as erisale_parser
 from risale_mcp.books import kastamonur as kastamonur_parser
@@ -117,7 +117,7 @@ def erisale_report(book: Book, parse: erisale_parser.ParseReport) -> list[str]:
     if parse.restored_headings:
         lines.append(f"  yol bilgisinden başlık: {parse.restored_headings}")
     if parse.supplemented:
-        lines.append(f"  Hayrat'tan tamamlanan: {parse.supplemented}")
+        lines.append(f"  Başka baskıdan tamamlanan: {parse.supplemented}")
     if parse.unknown_blocks:
         lines.append(f"  BİLİNMEYEN BLOK      : {dict(parse.unknown_blocks)}")
     return lines
@@ -126,7 +126,7 @@ def erisale_report(book: Book, parse: erisale_parser.ParseReport) -> list[str]:
 def parse(work: Work) -> tuple[Book, list[str]]:
     """Eserin kaynağına göre ayrıştırıcıyı seçer: (eser, ayrıştırıcıya özgü rapor satırları)."""
     if work.source.site is Site.ERISALE:
-        supplements = {s: risale_online_parser.passage(s.book, RAW_DIR / Site.RISALE_ONLINE, s.page, s.first, s.stop)
+        supplements = {s: risaleoku_app_parser.passage(s.book, RAW_DIR / Site.RISALEOKU_APP, s.first, s.stop)
                        for s in erisale_parser.SUPPLEMENTS.get(work.slug, ())}
         book, parse_report = erisale_parser.parse_work(work, _erisale_book(work.source.book), supplements)
         return book, erisale_report(book, parse_report)
@@ -227,6 +227,7 @@ def main() -> None:
     if not args.no_db:
         print("\nveritabanı:\n" + "\n".join(build_db.build(quran_path=QURAN_PATH, meals_from=RAW_DIR / Site.RISALEOKU_APP).lines()))
         build_db.build(out=PUBLIC_DB_PATH, quran_path=QURAN_PATH, public=True, meals_from=RAW_DIR / Site.RISALEOKU_APP)
+        local_only.main()
         if count := embeddings.missing(connect(DB_PATH)):
             print(f"\nanlamsal arama: {count} cümlenin vektörü yok; tamamlamak için "
                   f"`uv run python -m risale_mcp.embeddings build {embeddings.SEARCH_MODEL}`")

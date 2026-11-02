@@ -32,7 +32,7 @@ MIN_DELAY = {Site.RISALEOKU: risaleoku.CRAWL_DELAY}  # robots.txt Crawl-delay
 # Geçiş için gereken raflar (Arapça, Osmanlıca, Evrad) ve kitaplar; bkz. docs/risaleoku-gecis-plani.md
 RISALEOKU_SHELVES = (55, 27, 28)
 RISALEOKU_BOOKS = ("abed", "esasat", "ihlas_zulfikar", "ihlas_tilsimlar", "ihls_siracunnur", "env_siracunnur",
-                   "rnk_gencreh", "rnk_hanimreh", "rnk_ksozler", "badmesnevi", "badisarat")
+                   "rnk_gencreh", "rnk_hanimreh", "rnk_ksozler", "badmesnevi", "badisarat", "soz_stg")
 RISALEOKU_SKIP = ("kuran", "kuranmeal", "hizbkuranmeal")  # Kur'ân katmanı Tanzil'den gelir
 
 

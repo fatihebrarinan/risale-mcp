@@ -79,3 +79,21 @@ def test_contextual_model_only_with_context_variant(conn):
 def test_rrf_rewards_hits_found_by_both_searches():
     a, b, c = ("s1", "n1"), ("s2", "n2"), ("s3", "n3")
     assert rrf([[a, b], [c, b]])[0] == b
+
+
+def test_export_public_leaves_private_vectors_local(tmp_path, monkeypatch):
+    conn = object()
+    monkeypatch.setattr(embeddings, "VECTORS_DIR", tmp_path / "all")
+    store = embeddings.VectorStore("m", "context", tmp_path / "all", dtype=np.int8)
+    store.dtype = np.int8
+    store.add(["ozel:0", "ortak:0", "ortak:1"], np.array([[1], [2], [3]], dtype=np.int8))
+    store.save()
+    monkeypatch.setattr(embeddings, "units", lambda c, v: [type("U", (), {"key": k}) for k in ("ortak:1", "ortak:0")])
+
+    assert embeddings.export_public(conn, tmp_path / "out", "m") == (2, 1)
+    out = embeddings.VectorStore("m", "context", tmp_path / "out")
+    assert out.keys == ["ortak:0", "ortak:1"] and out.vectors.tolist() == [[2], [3]]
+
+    monkeypatch.setattr(embeddings, "units", lambda c, v: [type("U", (), {"key": "yok:0"})])
+    with pytest.raises(embeddings.EmbeddingError):
+        embeddings.export_public(conn, tmp_path / "out", "m")

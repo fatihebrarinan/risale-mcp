@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Aşama 12: kodu ve hazır veriyi uzak sunucuya gönderir, bağımlılıkları kurar, servisi yeniden başlatır.
 #
-#   scripts/deploy.sh            # kod + risale.db + vektörler + quran.json
+#   scripts/deploy.sh            # kod + risale-public.db + süzülmüş vektörler + quran.json
 #   scripts/deploy.sh --code     # yalnızca kod ve site/ (veri değişmediyse)
 #
 # Ayrıştırma ve veritabanı kurulumu bu bilgisayarda yapılır; ham veri sunucuya gitmez. Sunucudaki `data/auth.db`
@@ -39,7 +39,9 @@ if [[ "${1:-}" != "--code" ]]; then
     # `private` eserler (Esasat, harekeli Mesnevî…) yalnızca yereldedir: sunucuya risale-public.db gider.
     rsync -az --info=progress2 -e "${SSH[*]}" data/risale-public.db "$HOST:$DEST/data/risale.db"
     rsync -az --info=progress2 -e "${SSH[*]}" data/quran.json "$HOST:$DEST/data/"
-    rsync -az --delete -e "${SSH[*]}" data/vectors/ "$HOST:$DEST/data/vectors/"
+    # `private` eserlerin vektörleri de yerelde kalır: sunucuya süzülmüş kopya gider.
+    uv run python -m risale_mcp.embeddings export-public
+    rsync -az --delete -e "${SSH[*]}" data/interim/vectors-public/ "$HOST:$DEST/data/vectors/"
     grep '^VOYAGE_API_KEY=' .env | "${SSH[@]}" "$HOST" "cat > $DEST/.env && chmod 600 $DEST/.env"
 fi
 

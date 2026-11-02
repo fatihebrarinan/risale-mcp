@@ -201,15 +201,3 @@ def add_converted(book: Book, node: Node, converted: Converted) -> dict:
     for offset, body in converted.hasiyeler:
         book.add_hasiye(record["id"], node, offset, body)
     return record
-
-
-def passage(book: str, root: Path, page: int, first: str, stop: str) -> list[Converted]:
-    """Hayrat baskısında `page` sayfasındaki `first` paragrafından sonra başlayıp `stop`
-    paragrafından önce biten paragraflar (ikisi de dahil değil); başka baskıdaki bir eksiği
-    tamamlamak için."""
-    paragraphs = sorted(source.load_paragraphs(book, root), key=lambda p: (int(p["sayfa"]), _sira(p)))
-    texts = [match_words(re.sub(r"<[^>]+>", " ", p["latince_html"])) for p in paragraphs]
-    start = next(i for i, (p, t) in enumerate(zip(paragraphs, texts))
-                 if int(p["sayfa"]) == page and t == match_words(first))
-    end = texts.index(match_words(stop), start)
-    return [c for raw in paragraphs[start + 1:end] if (c := convert_paragraph(raw))]

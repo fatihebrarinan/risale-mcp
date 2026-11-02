@@ -252,7 +252,7 @@ def test_supplement_fills_a_missing_section_from_another_edition():
     source = _two_pages([("H1", [regular("Giriş")]), ("H1", [regular("Mektublar")]), ("H2", [regular("Birinci")]), ("Paragraph", [regular("Bir.")])],
                         [("H2", [regular("Üçüncü")]), ("Paragraph", [regular("Üç.")])],
                         ["Mektublar", "Üçüncü"], missing=(5, 6, 7))
-    supplement = Supplement(4, 2, "İkinci", "kitap", 1, "", "")
+    supplement = Supplement(4, 2, "İkinci", "kitap", "", "")
     body = [Converted("paragraph", Text("İki.", []), {}, [(4, Text("Hâşiye.", []))])]
     book, report = parse_work(WORK, source, {supplement: body})
     nodes = outline(book)

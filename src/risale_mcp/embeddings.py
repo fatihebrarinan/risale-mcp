@@ -42,9 +42,10 @@ import numpy as np
 
 from risale_mcp.db import connect
 from risale_mcp.env import load_env
-from risale_mcp.paths import DATA_DIR, DB_PATH, ROOT
+from risale_mcp.paths import DATA_DIR, DB_PATH, INTERIM_DIR, PUBLIC_DB_PATH, ROOT
 
 VECTORS_DIR = DATA_DIR / "vectors"
+PUBLIC_VECTORS_DIR = INTERIM_DIR / "vectors-public"   # sunucuya giden kopya (`deploy.sh` üretir)
 DIMENSIONS = 1024
 CHARS_PER_TOKEN = 1.6      # token tahmini için temkinli oran (ölçülen ortalama ≈2,05; Arapça daha yoğun)
 DOCUMENT_TOKENS = 8_000    # bağlamlı modelde bir belgenin en çok tahmini tokenı
@@ -293,6 +294,22 @@ class VectorStore:
         return [(self.keys[rows[i]], float(scores[i])) for i in top]
 
 
+def export_public(public: sqlite3.Connection, out: Path, model: str = SEARCH_MODEL) -> tuple[int, int]:
+    """Sunucuya gidecek kopya: yalnızca `public` veritabanının cümlelerinin vektörleri. `private` eserlerin
+    vektörleri yerelde kalır. Eksik vektör varsa kopya yazılmaz. Sonuç: (yazılan, dışarıda kalan)."""
+    store = VectorStore(model, "context")
+    wanted = {u.key for u in units(public, "context")}
+    if missing := wanted - set(store.keys):
+        raise EmbeddingError(f"{len(missing)} birimin vektörü yok; önce `embeddings build {model}`.")
+    rows = [store.index[k] for k in sorted(wanted, key=store.index.__getitem__)]
+    out.mkdir(parents=True, exist_ok=True)
+    tmp = out / f"{model}.context.tmp.npy"
+    np.save(tmp, store.vectors[rows])
+    (out / f"{model}.context.keys.json").write_text(json.dumps([store.keys[i] for i in rows]), encoding="utf-8")
+    tmp.replace(out / f"{model}.context.npy")
+    return len(rows), len(store.keys) - len(rows)
+
+
 # ---------------------------------------------------------------- vektör çıkarma
 
 def _batches(items: list[Unit], model: Model) -> Iterator[list[Unit]]:
@@ -402,9 +419,17 @@ def main() -> None:
     build_parser.add_argument("model", choices=sorted(MODELS))
     build_parser.add_argument("--variant", choices=VARIANTS)
     commands.add_parser("status", help="depolar ve eksik vektörler")
+    commands.add_parser("export-public", help="sunucuya gidecek kopya: private eserlerin vektörleri çıkarılır")
     parser.add_argument("--db", type=Path, default=DB_PATH)
     args = parser.parse_args()
     load_env()
+    if args.command == "export-public":
+        try:
+            kept, dropped = export_public(connect(PUBLIC_DB_PATH), PUBLIC_VECTORS_DIR)
+        except EmbeddingError as error:
+            sys.exit(str(error))
+        print(f"{PUBLIC_VECTORS_DIR.relative_to(ROOT)}: {kept} vektör, {dropped} yalnız yerelde kaldı")
+        return
     conn = connect(args.db)
     if args.command == "build":
         model = MODELS[args.model]

@@ -65,7 +65,7 @@
 | 40 | Zülfikâr | `risaleoku_app/ihlas_zulfikar` | ✅ indirildi | ✅ 343 düğüm, 2168 paragraf, 662 cümle; %81 ana cilde eşlendi |  |
 | 41 | Tılsımlar Mecmuası | `risaleoku_app/ihlas_tilsimlar` | ✅ indirildi | ✅ 128 düğüm, 1000 paragraf, 214 cümle; %81 ana cilde eşlendi |  |
 | 42 | Âsâr-ı Bediiyye | `risaleoku_app/abed` | ✅ indirildi | ✅ 209 düğüm, 4535 paragraf, 3939 cümle; %58 ana cilde eşlendi | Eski Said dönemi eserlerinin mecmuası; Abdülkadir Badıllı'nın derlemesi. |
-| 43 | Sikke-i Tasdik-i Gaybî | `erisale/sikke-i-tasdik-i-gaybi` | ✅ indirildi (15 blok tamamlandı) | ✅ 255 düğüm, 1593 paragraf, 1638 cümle; %64 ana cilde eşlendi |  |
+| 43 | Sikke-i Tasdik-i Gaybî | `erisale/sikke-i-tasdik-i-gaybi` | ✅ indirildi (15 blok tamamlandı) | ✅ 255 düğüm, 1592 paragraf, 1633 cümle; %64 ana cilde eşlendi |  |
 | 44 | İman ve Küfür Muvazeneleri | `erisale/iman-ve-kufur-muvazeneleri` | ✅ indirildi | ✅ 146 düğüm, 1011 paragraf, 68 cümle; %98 ana cilde eşlendi |  |
 | 45 | Siracü'n-Nur | `risaleoku_app/ihls_siracunnur` | ✅ indirildi | ✅ 178 düğüm, 1370 paragraf, 780 cümle; %68 ana cilde eşlendi |  |
 | 46 | Siracü'n-Nur (Hayrat) | `risale_online/siracun-nur` | ✅ indirildi | ✅ 250 düğüm, 1329 paragraf, 1848 cümle; %51 ana cilde eşlendi | Hayrat baskısı; Onikinci Şuâ'ya bağlı belgeler (raporlar, müdafaalar) yalnız burada. Yalnızca kullanıcıda. |

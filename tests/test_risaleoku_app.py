@@ -1,5 +1,7 @@
 """risaleoku.com uygulamasının metin biçimi: işaretler, hâşiye, Arapça, fihrist, şablonla yerleştirme."""
 
+import gzip
+
 from risale_mcp.books.risaleoku import TocEntry
 from risale_mcp.books.risaleoku_app import (_anchored, _slice, add_footnotes, article_starts, inline_starts, read_blocks,
                                             read_toc, title_entries)
@@ -187,3 +189,15 @@ def test_footnote_running_over_several_lines_is_read_whole():
     blocks = read_blocks("#1\n   Metin (1) sonu.\n", {}, "ar")
     add_footnotes(blocks, "1|(1)|Birinci satır\n    ikinci satır\n")
     assert blocks[0].text.footnotes[0].content.text == "Birinci satır ikinci satır"
+
+
+def test_passage_takes_the_section_before_stop_not_the_first_namesake(tmp_path):
+    from risale_mcp.books.risaleoku_app import passage
+
+    book = tmp_path / "kitap"
+    book.mkdir()
+    body = "<Husrev'in Fıkrası>\n   Önceki metin.\n<Husrev'in Fıkrası>\n   Asıl metin.\n÷Talebeniz>\n<Sonraki>\n   Başka.\n"
+    with gzip.open(book / "text.txt.gz", "wt", encoding="utf-8") as f:
+        f.write(body)
+    found = passage("kitap", tmp_path, "HUSREV'İN FIKRASI", "SONRAKİ")
+    assert [(c.kind, c.text.text) for c in found] == [("paragraph", "Asıl metin."), ("signature", "Talebeniz")]

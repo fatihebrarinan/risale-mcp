@@ -31,6 +31,7 @@ from pathlib import Path
 
 from risale_mcp.books.kastamonur import EDITION_GAPS as ASAR_GAPS
 from risale_mcp.books.model import ARABIC_SCRIPT, ArabicSpan, Book, FootnoteMark, Text
+from risale_mcp.books.risale_online import Converted
 from risale_mcp.books.risaleoku import Block, TocEntry, _Heading, assemble
 from risale_mcp.catalog import Group, Work
 from risale_mcp.headings import parse_heading, parse_inline_label
@@ -556,6 +557,17 @@ def _edition_gaps(book: Book) -> None:
 def _read(root: Path, key: str, name: str) -> str:
     path = root / key / f"{name}.txt.gz"
     return gzip.open(path, "rt", encoding="utf-8").read() if path.exists() else ""
+
+
+def passage(key: str, root: Path, first: str, stop: str) -> list[Converted]:
+    """`stop` başlığından önceki son `first` başlığı ile `stop` arasındaki paragraflar (ikisi de dahil değil);
+    başka kaynaktaki bir eksiği tamamlamak için."""
+    blocks = read_blocks(_read(root, key, "text"), source.load_meals(root), "tr")
+    texts = [match_words(b.text.text) for b in blocks]
+    end = texts.index(match_words(stop))
+    start = end - 1 - texts[end - 1::-1].index(match_words(first))
+    return [Converted("signature" if b.signature else "arabic" if b.text.is_arabic() else "paragraph",
+                      b.text, {"center": True} if b.centered else {}, []) for b in blocks[start + 1:end]]
 
 
 def parse_work(work: Work, root: Path) -> Book:

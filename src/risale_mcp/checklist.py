@@ -47,7 +47,7 @@ def _raw_status(work: Work) -> str:
         if missing:
             path = BOOKS_DIR / f"{work.slug}.json"
             gaps = json.loads(path.read_text(encoding="utf-8"))["gaps"] if path.exists() else True
-            if not gaps:                       # ayrıştırıcı tamamladı (Sikke'de başlık yol bilgisinden, metin Hayrat'tan)
+            if not gaps:                       # ayrıştırıcı tamamladı (Sikke'de başlık yol bilgisinden, metin risaleoku'dan)
                 return f"{DONE} indirildi ({len(missing)} blok tamamlandı)"
             return f"{PARTIAL} {len(missing)} blok sitede yok"
     return f"{DONE} indirildi"

@@ -28,7 +28,7 @@ Kurallar:
     adlandırıyorsa eksik o başlıktır: düğüm yol bilgisinden açılır, metin kaybı yoktur
     (Sikke-i Tasdik-i Gaybî'de ikinci "Risale-i Nur'dan Parlak Fıkralar…").
   - `SUPPLEMENTS`'teki eksik bölüm başka baskıdan tamamlanır; düğümün alt başlığı bunu söyler
-    (Sikke'de ikinci "Husrev'in Bir Fıkrasıdır", Hayrat baskısından).
+    (Sikke'de ikinci "Husrev'in Bir Fıkrasıdır", risaleoku.com'daki Sözler Neşriyat baskısından).
 """
 
 import re
@@ -64,12 +64,11 @@ LABEL_TYPES = {"Heading", "Mark", "Bold", "BoldItalic"}
 
 @dataclass(frozen=True)
 class Supplement:
-    """erisale'de indirilemeyen bir bölüm, Hayrat baskısındaki (risale.online) karşılığından."""
+    """erisale'de indirilemeyen bir bölüm, risaleoku'daki bir baskının karşılığından."""
     after: int      # eksikten önceki son erisale bloğu
     level: int      # bölüm başlığının seviyesi
     title: str      # erisale'nin içindekilerindeki adı
-    book: str       # risale.online kitabı; metin `page` sayfasındaki `first` paragrafından sonra
-    page: int       # başlar, `stop` paragrafından önce biter
+    book: str       # risaleoku kitabı; metin `stop` başlığından önceki son `first` başlığından sonra başlar
     first: str
     stop: str
 
@@ -77,12 +76,12 @@ class Supplement:
 SUPPLEMENTS = {
     # İçindekilerde #338; ilk "Husrev'in Bir Fıkrasıdır" (#319) ile aynı adres.
     "sikke-i-tasdik-i-gaybi": (
-        Supplement(337, 2, "Husrev’in Bir Fıkrasıdır", "sikke-i-tasdik-i-gaybi", 36,
-                   "[Husrev’in bir fıkrasıdır.]", "[Risâle-i Nûr’un beş talebesinin bir fıkrasıdır.]"),
+        Supplement(337, 2, "Husrev’in Bir Fıkrasıdır", "soz_stg",
+                   "HUSREV'İN BİR FIKRASIDIR", "RİSALE-İ NURUN BEŞ TALEBESİNİN BİR FIKRASIDIR"),
     ),
 }
 SUPPLEMENT_NOTE = ("Bu bölüm erisale'de indirilemediği için (aynı başlıklı başka bir bölümle aynı adresi "
-                   "paylaşıyor) Hayrat baskısından (risale.online) alınmıştır.")
+                   "paylaşıyor) Sözler Neşriyat baskısından (risaleoku.com) alınmıştır.")
 
 
 # ---------------------------------------------------------------- satır içi metin
@@ -433,6 +432,6 @@ class _Parser:
 
 def parse_work(work: Work, source: BookBlocks,
                supplements: dict[Supplement, list[Converted]] | None = None) -> tuple[Book, ParseReport]:
-    """`supplements`: eserin `SUPPLEMENTS` kayıtları ve Hayrat baskısındaki paragrafları."""
+    """`supplements`: eserin `SUPPLEMENTS` kayıtları ve başka baskıdaki paragrafları."""
     parser = _Parser(work, source, supplements or {})
     return parser.run(), parser.report
