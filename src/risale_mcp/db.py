@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 8
+SCHEMA_VERSION = 9
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -146,7 +146,7 @@ CREATE TABLE arabic (
     ayah_end     INTEGER,
     ayah_check   TEXT,
     hadith_key     TEXT,                           -- harf iskeleti (`hadis.py`)
-    hadith_support TEXT,                           -- dayanak: found, partly_found, cited, marked, unsupported
+    hadith_support TEXT,                           -- dayanak: `hadis.py`; geçiş başına
     PRIMARY KEY (paragraph_id, ord)
 );
 CREATE INDEX arabic_ayah ON arabic(sura, ayah_start);
@@ -161,6 +161,11 @@ CREATE TABLE hadith_reports (
     text   TEXT NOT NULL,
     source TEXT NOT NULL,
     grades TEXT
+);
+CREATE TABLE hadith_parts (
+    hadith_key TEXT PRIMARY KEY,
+    match      TEXT NOT NULL,                      -- derlem sonucu: found, partly_found, phrase_found, none, short
+    total      INTEGER NOT NULL                    -- bulunan rivayet sayısı (`hadith_matches` seçkidir)
 );
 CREATE TABLE hadith_matches (
     hadith_key TEXT NOT NULL,

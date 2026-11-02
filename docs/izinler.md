@@ -13,7 +13,7 @@ Kayıtlar kullanıcının bildirimine dayanır; iznin metni depoda yoktur.
 | **erisale.com** (e-Risale) | Sitedeki metinler | Kaynak gösterilecek (sitede belgelerde gösteriliyor) | Görüşme, 2026-10-30 | Birincil kaynak: 27 eser, genel sunucuda |
 | **risaleoku.com** | Bütün eserler (başkasının telifli tercümeleri, ör. Kütüb-i Sitte, bu izne dayanılarak alınmadı) | Kazanç olmayacak, kaynak gösterilecek | Site sahibi, 2026-10-30 | 42 eser; 40'ı genel sunucuda, 2 sonradan derleme yalnız yerelde. Sikke'nin ikinci "Husrev'in Bir Fıkrası" da buradan (Sözler Neşriyat baskısı) |
 | **kastamonur.com** | Kayıtlı değil | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 | Telif tarihleri (Aşama 13.2; sayfa "kaynaksız kopyalamaya rızamız yoktur" der, kaynak her kayıtta durur). Nutuk ve Makalat'ın ham verisi diskte; bu eserler risaleoku'dan gelir |
-| **nurpedia.org** | Kayıtlı değil | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 (istek 2026-10-29) | Hadis işaretlerinin denetimi (Aşama 14): `Risale:Hadisler` ve 120 kadar `Ayet-Hadis Mealleri` sayfası yerelde (2026-11-02, kullanıcının isteğiyle). Metni sunucuya çıkmaz. Kapsam ve şart netleştirilmeli. robots.txt yapay zekâ botlarını kapatır, `*` okuma sayfalarına açıktır |
+| **nurpedia.org** | Elindeki her şey | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 (istek 2026-10-29) | Hadis işaretleri ve künyeleri (Aşama 14): `Risale:Hadisler` ve 120 kadar `Ayet-Hadis Mealleri` sayfası yerelde. robots.txt yapay zekâ botlarını kapatır, `*` okuma sayfalarına açıktır |
 
 ## Genel lisans ya da telif bildirimiyle serbest
 
@@ -23,7 +23,7 @@ Bize özel bir izin değildir; yayımlanan şartlara uyarak kullanıyoruz.
 |---|---|---|
 | Keşif Yolculukları (Ediz Sözüer) | "Asliyetini korumak ve kaynak belirtmek" | Ta'likat'ın Türkçesi, genel sunucuda |
 | Tanzil Project | Metin değiştirilmez, kaynak ve bağlantı verilir | Kur'ân metni, genel sunucuda |
-| Sanadset 650K (Mghari, Bouras, El Hibaoui; Mendeley Data 5xth87zwb5) | CC BY 4.0: kaynak gösterilir | Hadis eşlemesi (Aşama 14), henüz yalnız yerelde |
+| Sanadset 650K (Mghari, Bouras, El Hibaoui; Mendeley Data 5xth87zwb5) | CC BY 4.0: kaynak gösterilir | Hadis eşlemesi (Aşama 14), henüz yalnız yerelde. Not: makale kaynak siteleri bilerek gizler ("we anonymize the website and Hadith pages"), kitap baskısı vermez; "kamu malı" ifadesi yazarların beyanıdır. Lisans yazarların veri setini kapsar, üst kaynağın hakkı doğrulanamadı. Metnin doğruluğu kullanıcının kararıyla kabul edildi (2026-11-02) |
 | Hadith API (fawazahmed0/hadith-api) | Unlicense. Yalnız Arapça ve dereceler; `tur-*` mealler alınmaz, mütercimleri belli değil | Hadis dereceleri (Aşama 14), henüz yalnız yerelde |
 | Diyanet mealleri (Tanzil üzerinden) | Ticari olmayan kullanım; ortak derlemlere girerse Diyanet'ten izin gerekir | İki meal, genel sunucuda |
 
@@ -44,6 +44,12 @@ genel sunucudaki Rumuzat satırı açık meseledir.
 | Kaynak | Karar | Durum |
 |---|---|---|
 | Hizmet Vakfı (rasaelalnour.com) | 2026-10-30'da izin vermedi | Site bırakıldı, Arapça eserler risaleoku'dan alındı. Yalnız harekeli Mesnevî yerelde durur, sunucuya çıkmaz |
+
+## Şartları kullanıma izin vermeyen
+
+| Kaynak | Şart | Durum |
+|---|---|---|
+| Dorar (dorar.net) | Sitede "جميع الحقوق محفوظة"; SSS: ansiklopediler yalnız sitede arama ve gezinme içindir, kopyalanamaz. API şartları (`/api-services/terms`): içerik münhasıran Dorar'ın; toplu indirme ve tam depolama yasak; önbellek 24–48 saat; yeniden yayın ve üçüncü tarafa açmak yasak; hadis metni hüküm özetiyle birlikte gösterilir; kullanım onaylı ürünle sınırlı. robots.txt: `use=reference`, `ai-train=no` | Kullanılmıyor (kullanıcının şartı "telif yazısı yoksa"ydı; yazı var, 2026-11-02). Toplu alınmaz. Tek yol `/api-services/request` başvurusu; elle incelenir, kararı ve başvuruyu kullanıcı verir |
 
 ## Bekleyen
 

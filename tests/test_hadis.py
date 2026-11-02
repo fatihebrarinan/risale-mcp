@@ -24,17 +24,42 @@ def corpus():
 
 
 def test_full_match_lists_every_report(corpus):
-    match, found = corpus.match(skeleton("إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ"))
-    assert match == "found" and found == [0, 2]
+    assert corpus.match("إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ وَإِنَّمَا لِكُلِّ امْرِئٍ مَا نَوَى")[:2] == ("found", [0])
+    assert corpus.match("إِنَّمَا الْأَعْمَالُ بِالنِّيَّاتِ")[0] == "phrase_found"
 
 
 def test_short_parts_are_not_searched(corpus):
-    assert corpus.match(skeleton("العلم")) == ("short", [])
+    assert corpus.match("العلم") == ("short", [], 0)
 
 
 def test_partial_needs_most_of_it_in_one_report(corpus):
-    assert corpus.match(skeleton("اطلبوا العلم ولو بالصين فإن طلب العلم فريضة على كل مسلم"))[0] == "partly_found"
-    assert corpus.match(skeleton("قال رجل من اهل البادية كلاما طويلا لا يوجد في شيء"))[0] == "none"
+    assert corpus.match("اطلبوا العلم ولو بالصين فإن طلب العلم فريضة على كل مسلم")[0] == "partly_found"
+    assert corpus.match("قال رجل من اهل البادية كلاما طويلا لا يوجد في شيء")[0] == "none"
+
+
+def test_a_match_must_keep_word_boundaries():
+    corpus = Corpus([report("sanadset:1", "x", "انا معاشر الانبياء امرنا ان نكلم الناس على قدر عقولهم")])
+    assert corpus.match("كلم الناس على قدر عقولهم")[0] == "partly_found"
+    assert corpus.match("نكلم الناس على قدر عقولهم")[0] == "found"
+
+
+def test_every_cut_of_an_elided_part_is_searched():
+    corpus = Corpus([report("sanadset:1", "x", "اطلبوا العلم ولو بالصين ثم كلام اخر طويل فإن طلب العلم فريضة")])
+    assert corpus.match("اطلبوا العلم ولو بالصين … فإن طلب العلم فريضة")[0] == "found"
+    assert corpus.match("اطلبوا العلم ولو بالصين الخ")[0] == "phrase_found"     # dört kelime rivayeti ayırt etmez
+    assert corpus.match("اطلبوا العلم ولو بالصين ثم الخ")[0] == "found"
+
+
+def test_a_part_of_short_cuts_is_searched_whole():
+    corpus = Corpus([report("sanadset:1", "x", "علم كثير ثم عمل قليل ثم صبر جميل")])
+    assert corpus.match("علم كثير … عمل قليل")[0] == "none"
+    assert corpus.match("علم كثير ثم عمل قليل")[0] != "short"
+
+
+def test_selection_prefers_different_books():
+    corpus = Corpus([report(f"sanadset:{i}", "a", "x") for i in range(9)] + [report("sanadset:9", "b", "x")])
+    chosen = corpus.select(set(range(10)))
+    assert len(chosen) == hadis.MAX_REPORTS and 9 in chosen
 
 
 def test_books_of_forged_reports_come_last():
@@ -47,11 +72,18 @@ def test_books_of_forged_reports_come_last():
     ({"match": "partly_found", "cited": True}, "meal", "partly_found"),
     ({"match": "none", "cited": True}, "kaynak", "cited"),
     ({"match": "short", "cited": False}, "kaynak", "marked"),
+    ({"match": "phrase_found", "cited": False}, "kaynak", "phrase_found"),
+    ({"match": "phrase_found", "cited": True}, "kaynak", "cited"),
     ({"match": "none", "cited": False}, "baglam", "unsupported"),
     (None, "kaynak", None),
 ])
 def test_support(entry, source, expected):
     assert support(entry, source) == expected
+
+
+def test_a_short_part_takes_only_its_own_citation():
+    entry = {"match": "phrase_found", "cited": True}
+    assert support(entry, "kaynak", True) == "cited" and support(entry, "kaynak", False) == "phrase_found"
 
 
 def test_classifier_rules():
@@ -83,7 +115,7 @@ def library(tmp_path_factory):
     (books / "asa-yi-musa.json").write_text(json.dumps(_complete(ASA, _sentences()), ensure_ascii=False), "utf-8")
     key = skeleton(hadith)
     matches = folder / "matches.json"
-    matches.write_text(json.dumps({"parts": {key: {"match": "found", "cited": False, "reports": ["abudawud:7", "bukhari:1", "sanadset:9"]}},
+    matches.write_text(json.dumps({"parts": {key: {"match": "found", "cited": False, "total": 3, "reports": ["abudawud:7", "bukhari:1", "sanadset:9"]}},
                                    "reports": {"abudawud:7": {"title": "Sünen-i Ebû Dâvûd", "number": "7", "text": "إنما", "source": "hadith_api", "grades": [["Al-Albani", "Sahih"]]},
                                                "bukhari:1": {"title": "Sahîh-i Buhârî", "number": "1", "text": "إنما", "source": "hadith_api", "grades": []},
                                                "sanadset:9": {"title": "تذكرة الموضوعات للفتني", "number": "3", "text": "إنما", "source": "sanadset", "grades": []},
@@ -107,7 +139,7 @@ def _sentences():
 
 def test_find_hadith_gives_places_evidence_and_reports(library):
     part = library.find_hadith("انما الاعمال بالنيات")["parts"][0]
-    assert part["hadith_support"] == "found" and part["places"][0]["id"].startswith("sozler/11/")
+    assert part["hadith_support"] == "found" and part["reports_total"] == 3 and part["places"][0]["id"].startswith("sozler/11/")
     ids = {r["id"]: r for r in part["reports"]}
     assert ids["abudawud:7"]["grades"] == [{"scholar": "Al-Albani", "grade": "Sahih"}]
     assert "grades" not in ids["bukhari:1"] and "no per-hadith grade" in ids["bukhari:1"]["collection_note"]

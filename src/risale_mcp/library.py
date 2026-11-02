@@ -22,7 +22,7 @@ from pathlib import Path
 from risale_mcp import search as fts
 from risale_mcp.catalog import Authority, Collection
 from risale_mcp.db import connect
-from risale_mcp.hadis import ATTRIBUTION, CAUTION_BOOKS
+from risale_mcp.hadis import ATTRIBUTION, CAUTION_BOOKS, SUPPORT_ORDER
 from risale_mcp.quran import skeleton
 from risale_mcp.embeddings import EmbeddingError
 from risale_mcp.normalize import search_words
@@ -38,10 +38,14 @@ ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen 
 OLD_NAMES = json.loads((Path(__file__).parent / "books" / "old_names.json").read_text(encoding="utf-8"))["sections"]
 
 
-HADITH_NOTE = ("hadith_support is evidence, not a verdict: found = the Arabic occurs in a report; partly_found = a report "
-               "carries most of it (it may be abridged or quoted by meaning); cited = its text was not found but a hadith "
-               "book is cited for it; marked = only the source marks it as a hadith; unsupported = nothing beyond the "
-               "words around it. Not found never means it is not a hadith. A report may come from a tafsir or history "
+HADITH_NOTE = ("hadith_support is evidence, not a verdict: found = the Arabic occurs word for word in a report and is long "
+               "enough to identify it; partly_found = a report carries most of it (it may be abridged, altered or quoted by "
+               "meaning); cited = a hadith book is cited for it, its report was not identified from the text, any reports "
+               "listed only share its words; phrase_found = the words occur in a report but are too short to identify it, "
+               "and no book is cited: do not present that report as its source; marked = only the source marks it as a "
+               "hadith; unsupported = nothing beyond the words around it. Not found never means it is not a hadith: the "
+               "author often gives a hadith in his own words. reports is a selection, reports_total counts them. "
+               "A report may come from a tafsir or history "
                "book, or from a book that lists forged reports (book_note): name the book. Give grades only as listed, with each scholar's name.")
 
 
@@ -714,12 +718,14 @@ class Library:
             return {"parts": [], "note": "No part marked as a hadith in the works has these words. Try search."}
         parts = []
         for k in keys:
-            support = self.conn.execute("SELECT hadith_support FROM arabic WHERE hadith_key = ? LIMIT 1", (k,)).fetchone()[0]
+            found = {r[0] for r in self.conn.execute("SELECT DISTINCT hadith_support FROM arabic WHERE hadith_key = ?", (k,))}
+            support = next((s for s in SUPPORT_ORDER if s in found), None)     # kısa ifadede geçişler ayrılabilir
+            part = self.conn.execute("SELECT total FROM hadith_parts WHERE hadith_key = ?", (k,)).fetchone()
             places = self.conn.execute(
                 "SELECT s.id, s.ref FROM arabic a JOIN sentences s ON s.id = a.sentence_id"
                 " WHERE a.hadith_key = ? ORDER BY s.seq", (k,)).fetchall()
             parts.append({
-                "hadith_support": support, "occurrences": len(places),
+                "hadith_support": support, "occurrences": len(places), "reports_total": part[0] if part else 0,
                 "places": [{"id": p["id"], "ref": p["ref"]} for p in places[:limit]],
                 "reports": [_report_summary(r) for r in self.conn.execute(
                     "SELECT r.* FROM hadith_matches m JOIN hadith_reports r ON r.id = m.report_id"

@@ -33,7 +33,7 @@ from pathlib import Path
 from risale_mcp.ayah_links import find_links
 from risale_mcp.catalog import Site, WORKS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
-from risale_mcp.hadis import support
+from risale_mcp.hadis import row_cited, support
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import HADIS_PATH, INTERIM_DIR, QURAN_PATH, RAW_DIR, ROOT
 from risale_mcp.profiles import KISISEL, PROFILES, Profile
@@ -368,10 +368,12 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
     data = json.loads(path.read_text(encoding="utf-8"))
     entries, reports = data["parts"], data["reports"]
     keys = set()
-    for key, kind_source, rowid in conn.execute(
-            "SELECT hadith_key, kind_source, rowid FROM arabic WHERE hadith_key IS NOT NULL").fetchall():
+    for key, kind_source, source, meal, rowid in conn.execute(
+            "SELECT hadith_key, kind_source, source, meal, rowid FROM arabic WHERE hadith_key IS NOT NULL").fetchall():
         keys.add(key)
-        conn.execute("UPDATE arabic SET hadith_support = ? WHERE rowid = ?", (support(entries.get(key), kind_source), rowid))
+        # Kısa ifadede künye anahtara yayılmaz: başka yerde başka hadisin parçası olabilir.
+        cited = row_cited(source, meal) if key in entries and not entries[key].get("identifies", True) else None
+        conn.execute("UPDATE arabic SET hadith_support = ? WHERE rowid = ?", (support(entries.get(key), kind_source, cited), rowid))
     report.counts["hadith_stale"] = len(keys - set(entries))
     matches = [(key, rank, rid) for key in keys & set(entries) for rank, rid in enumerate(entries[key]["reports"])]
     used = {rid for _, _, rid in matches}
@@ -380,6 +382,8 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
                        json.dumps(r["grades"], ensure_ascii=False) if r["grades"] else None)
                       for rid, r in reports.items() if rid in used])
     conn.executemany("INSERT INTO hadith_matches VALUES (?, ?, ?)", matches)
+    conn.executemany("INSERT INTO hadith_parts VALUES (?, ?, ?)",
+                     [(key, entries[key]["match"], entries[key].get("total", 0)) for key in keys & set(entries)])
     report.counts["hadith_reports"] = len(used)
 
 
