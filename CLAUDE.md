@@ -80,7 +80,7 @@ Aynı altyapı üç ayrı metin derlemine hizmet edecek. Kod tek olur, veri ve s
 ```
 risale-mcp/
 ├── site/                  # risalemcp.com: index, belgeler, gizlilik, kullanım şartları, en/; talimat.md, chatgpt-talimat.md (proje talimatları; site gösterir, kullanıcı kopyalar)
-├── docs/                  # Caddyfile, servis birimleri, dizin başvuruları, izinler.md, izin e-postaları, ozellikler.md, risaleoku-gecis-plani.md, ayet-duzeltmeleri.md
+├── docs/                  # Caddyfile, servis birimleri, dizin başvuruları, izinler.md, telif-tablosu.md, telif-tarihleri-plani.md, izin e-postaları, ozellikler.md, risaleoku-gecis-plani.md, ayet-duzeltmeleri.md
 ├── scripts/               # deploy.sh (kod, hazır veri, site; auth.db'ye dokunmaz), sunucu.sh (uzak yönetim), chatgpt-paket.sh, ikon.sh
 ├── packaging/chatgpt/     # OpenAI eklenti paketi
 ├── data/                  # git'e eklenmez (README.md hariç, her klasörün işi orada)
@@ -100,7 +100,7 @@ risale-mcp/
 │   ├── library.py, server.py, citations.py, auth.py, golden.py, local_only.py
 │   ├── review_ui.py, review_assets/, static/
 │   ├── sources/           # site başına indirici (ham kayıt + doğrulama)
-│   └── books/             # model.py, mecmua.py, kaynak başına ayrıştırıcı, outlines/, pdf_text.py, rumuzat.py
+│   └── books/             # model.py, mecmua.py, telif.py, telif.json, kaynak başına ayrıştırıcı, outlines/, pdf_text.py, rumuzat.py
 └── tests/                 # pytest; golden/ altında altın sorular, âyet kararları, arama seti, cümle örnekleri
 ```
 
@@ -113,7 +113,7 @@ Her eser `data/books/<eser>.json` dosyasıdır (`uv run python -m risale_mcp.bui
 - Üst alanlar: `work`, `title`, `group`, `language` (`tr` | `ar`), `source`.
 - **`outline`**: başlık ağacı, kitap sırasıyla. İlk kayıt eserin kendisidir (kök).
   - `id`, `parent_id`, `title` (basılı başlık), `ref` (`Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat`)
-  - isteğe bağlı: `subtitle`, `toc_title` (kaynağın içindekilerdeki adı, farklıysa), `type`, `number`, `heading` (`H1`…`H6` ya da `inline`), `url` (kaynaktaki bölüm sayfası; doğrulama için), `sources` (mecmuada: karşılık gelen ana cilt düğümleri)
+  - isteğe bağlı: `subtitle`, `toc_title` (kaynağın içindekilerdeki adı, farklıysa), `type`, `number`, `heading` (`H1`…`H6` ya da `inline`), `url` (kaynaktaki bölüm sayfası; doğrulama için), `sources` (mecmuada: karşılık gelen ana cilt düğümleri), `written` (telif bilgisi: `date`, `place`, `language`, `estimated`, `status`, `source`, `note`; `books/telif.json`'dan gelir, bkz. Telif tarihleri)
 - **`paragraphs`**: görüntü ve bağlam için, kitap sırasıyla; hâşiye bağlı olduğu kaydın hemen ardından gelir.
   - `id` (`<düğüm>/p003`), `node_id`, `kind`, `text`
   - `kind`: `paragraph`, `arabic` (tamamı Arapça), `poem` (kıta; satırlar `\n` ile), `quote`, `signature`, `table`, `hasiye`
@@ -176,6 +176,9 @@ Ayrıntı `books/mecmua.py` başındaki açıklamadadır. Mecmualar ve ikincil k
 - **Mealler nâşirindir.** Âyet ve hadis mealleri (`meal`) Bediüzzaman'ın değil, sonradan nâşirlerin eklediği tercümelerdir; baskıdan baskıya değişir (erisale ile Hayrat farklı). Araç sonuçlarında `publisher_translation` adıyla gider; model onları anlamı aktarmak için kullanır, müellife mal etmez, metin diye alıntılamaz. Müellifin kendi izahı Arapçanın hemen ardından metnin içindedir ("Yani, …") ve metin olarak atfedilir.
 - **Arapça türü ve dayanağı.** Kaynağın işareti (`kind_source = kaynak`) değiştirilmez. risaleoku âyet/hadis ayırmaz, erisale de bazı alıntıları `arabi` bırakır: `build_db` her parçayı `arabic_kinds.py`'den geçirir (JSON'lar değişmez). Dayanaklar: `kuran` (metin Kur'ân'da), `meal` (aynı Arapçanın risaleoku meal kaydı âyet numarası ya da hadis kaynağı veriyor), `kaynakca` (kaynakçası hadis kitabı), `erisale` (aynı Arapçayı erisale hadis diye işaretlemiş), `baglam` (yalnız yanındaki söz: hadis adayı, araçta `kind_unverified`). Kalıp ifadeler ("Mâşâallâh") `arabi` kalır, bağlamı "âyet" derse âyettir. Parçanın yalnız bir kısmı âyetse parça `arabi`, âyet `ayah_quotes`'tadır. Rapor ve gözden geçirme örneklemleri `data/interim/arabic_kinds/`.
 - erisale'nin Arapça metindeki köşeli numaraları ("[4]فَهَذَا…") Arapça asıl ile hâşiyedeki tercümesini eşleştirir; metinde kalır.
+
+### Telif tarihleri (Aşama 13.2)
+Asıl liste `books/telif.json`'dur (`data/books` her `build`'de yeniden üretilir), elle düzenlenir; `build` düğümlere `written` yazar, eserde olmayan kimlik kurulumu durdurur. İnceleme tablosu `docs/telif-tablosu.md` (`uv run python -m risale_mcp.books.telif`). Tarih serbest metindir ("1938 veya 1942"). Karar kuralı: eserin kendi künyesi, sonra kastamonur'un ayrıntılı listesi, boşsa Hayrat'ın toplu tarihi; ayrılan kaynak `note`'ta. kastamonur'un listeleri bağımsız değildir (Enstitü ve Sorularla Risale). Kullanıcının kararları: Meyve Risalesi `sualar/11`, Sekizinci Şuâ "1938 veya 1942", "1926 – Barla" kayıtları 1926 kalır (Barla'ya resmî varış 1 Mart 1927 olsa da), Hayrat'ın tarihleri kaynak gösterilerek kullanılır. Karşılaştırma: `docs/telif-tarihleri-plani.md`.
 
 ## Veritabanı (Aşama 5)
 
@@ -317,9 +320,9 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 
 | Araç | İşi |
 |---|---|
-| `list_works(group?)` | Eserler, kimlikleri, grupları, boyutları; metni bulunamayanlar `available: false` |
-| `get_outline(section, depth=2)` | Başlık ağacı; her düğümde alt ağacın ana metin cümle sayısı, derinlik sınırında `subsections` |
-| `read_section(section, cursor?, max_words=1500)` | Bölümü alt bölümleriyle kitap sırasıyla okur: başlıklar (`ref`; bölümün bağ kurduğu âyetler `linked_verses`), paragraflar (cümle `id` + metin), hâşiyeler (`hasiye_of`), âyet/hadis meal ve kaynağı, eksikler (`gap`). Paragraf sınırında sayfalar, `next_cursor` ile sürer. Mecmuada eşlenmiş paragraf ana cildin cümleleriyle (`canonical`) gelir. |
+| `list_works(group?)` | Eserler, kimlikleri, grupları, boyutları, telif bilgisi (`written`); metni bulunamayanlar `available: false` |
+| `get_outline(section, depth=2)` | Başlık ağacı; her düğümde alt ağacın ana metin cümle sayısı, telif bilgisi (`written`), derinlik sınırında `subsections` |
+| `read_section(section, cursor?, max_words=1500)` | Bölümü alt bölümleriyle kitap sırasıyla okur: telif bilgisi (`written`; üst risaleden geliyorsa `section` ile), başlıklar (`ref`; bölümün bağ kurduğu âyetler `linked_verses`), paragraflar (cümle `id` + metin), hâşiyeler (`hasiye_of`), âyet/hadis meal ve kaynağı, eksikler (`gap`). Paragraf sınırında sayfalar, `next_cursor` ile sürer. Mecmuada eşlenmiş paragraf ana cildin cümleleriyle (`canonical`) gelir. |
 | `get_passage(id, context=0)` | Cümle ya da aralık (`…/c010..c015`), `ref` ve `incipit` ile; bağlı hâşiyeler ve âyet mealleri. Bir bölümde en çok 8 cümlelik aralıkta kullanıcıya gösterilecek atıf (`cite_as`: "… ile başlayan N cümle"). Bölümün sonunu aşan aralık son cümlede kesilir (`note`). |
 | `search(query, work?, group?, limit=20, offset=0)` | Cümle araması (`search.py` sorgu dili); toplam, eser başına sayı, eşleşen başlıklar |
 | `find_sentence(incipit, scope?)` | İlk kelimelerden cümle (işaretsiz; son kelime eksik olabilir) |
@@ -384,12 +387,11 @@ Metin–yorum ayrımı, özetin doğruluğu ve tuzak sorulardaki davranış elle
 
 ## Aşamalar
 
-Tamamlananlar: 1–12 (indirici, ayrıştırıcı, cümleler, diğer eserler, veritabanı, MCP sunucusu, uçtan uca test, anlamsal arama, Kur'ân katmanı, âyet ilişkileri, aslı Arapça eserler, uzaktan erişim). Geçiş kalitesi 2026-10-30'da bitti (`docs/risaleoku-gecis-plani.md`).
+Tamamlananlar: 1–12 ve 13.2 (indirici, ayrıştırıcı, cümleler, diğer eserler, veritabanı, MCP sunucusu, uçtan uca test, anlamsal arama, Kur'ân katmanı, âyet ilişkileri, aslı Arapça eserler, uzaktan erişim). Geçiş kalitesi 2026-10-30'da bitti (`docs/risaleoku-gecis-plani.md`).
 
 Sıradakiler (kullanıcının sırası):
 
 13. **İç atıf ağı:** Risale'nin kendi göndermeleri ("Yirmi Beşinci Söz'de beyan edildiği gibi") bölüm kimliklerine çözülür; kanıt cümlesiyle, kurallarla. Model bir konuyu Bediüzzaman'ın kendi bağlantılarıyla izler. Çözülemeyen göndermeler açıkça listelenir; adres tahmin edilmez.
-13.2. **Telif tarihleri:** Her ayrı risalenin (Birinci Şuâ, İkinci Şuâ…) yazıldığı tarih, yer ve dil `data/books` düğümlerinde `written` alanı olarak tutulur. Ana kaynak kastamonur.com'un telif tarihleri sayfası, gerisi internetten araştırılır; bulunamayan boş kalır. Plan: `docs/telif-tarihleri-plani.md`.
 13.3. **Kaynak seçimi:** Hangi eser için hangi kaynağın kullanılacağını kullanıcının istediği zaman belirleyebileceği bir sistem; arayüzü de olabilir. Bugün seçim `catalog.py`'de koddadır. Kaynak değişince kimlikler ve cümle numaraları kayabilir: seçim, eski atıfların etkisini göstermelidir. `docs/izinler.md`'de izni olmayan kaynak genel sunucu için seçilemez.
 14. **Hadis katmanı:** Açık ve güvenilir bir hadis derleminin (aşamanın başında araştırılır, lisansı doğrulanır) eklenmesi; Risale'deki hadislerin iskeletle eşlenmesi. Sıhhat derecesi kaynak verisinden gelir, biz hüküm vermeyiz; eşleme "tam alıntı / mânen / bulunamadı" diye ayrılır. Temeli `arabic_kinds.py`'nin işaretleridir (1.075 parça; `kind_source` dayanağı). **Aşamanın başında kullanıcı örneklemleri gözden geçirir** (`data/interim/arabic_kinds/sample-*.md`, önce `hadis-meal`, `hadis-erisale`, `hadis-baglam`, sonra `ayet-meal`): her kayıtta "bu tür doğru mu"; yanlışlar kurala döner, kararlar âyet ilişkilerindeki gibi kilitlenir. Örneklem önce yalnız Türkçe ciltlerden yeniden üretilir. Üç dizgi şüphesine de o sırada bakılabilir.
 15. **Konu fihristi (2. hedef):** Konu → cümle listeleri. Anlamsal aramanın üzerine kurulur; konu listesi ve her konunun cümleleri elle gözden geçirilebilir bir dosyada durur, sunucuya araç ya da kaynak olarak eklenir. Konu, ardışık cümle aralıklarından ("pasaj") oluşan ayrı bir katmandır.

@@ -37,6 +37,7 @@ geçmediğini söyler; **Yok** olanlar öncelikli adaydır.
 | Aslı Arapça eserlerin iki dilde aynı bölüm kimliğiyle okunması | "İşaratü'l-İ'caz'ın bu bölümünün Arapçası?" | `read_section`, paralel kimlikler | Kısmen |
 | Kızıl İcaz'da Süllem beyitlerinin ve Abdülmecid Nursî şerhinin müelliften ayrılması | "Bu söz Bediüzzaman'ın mı?" | `commentary_by`, `quote` paragrafı | Kısmen |
 | 16 Osmanlıca ciltte kelime araması | "Sözler'in Osmanlıcasında bu kelimeyi ara" | `search` | Evet |
+| Her risalenin yazıldığı tarih, yer ve dil, kaynağıyla; tahminler işaretli | "İkinci Şuâ ne zaman, nerede yazıldı?" | `list_works`, `get_outline`, `read_section` (`written`) | Yok |
 | Konunun yoğunlaştığı bölümler | "Bu konu en çok nerede işlenir?" | `semantic_search` (`sections`) | Yok |
 
 ## Hazır komutlar

@@ -34,7 +34,7 @@ Ham kaynak verisi hiçbir zaman sunucuya gitmez.
 | `kullanici` | 198 MB | Rumuzat-ı Semaniye sunucuda; Kızıl İcaz'ın Türkçe PDF'i yalnız yerelde, ayrıştırılmadı (Aşama 17) |
 | `rasaelalnour` | 3 MB | Yalnız yerel harekeli Mesnevî; izin vermedi, sunucuya çıkmaz |
 | `qurancom` | 1 MB | Yalnız yerel harekeli Mesnevî'deki âyetlerin çözümü |
-| `kastamonur` | 0 MB | Kullanılmıyor: Nutuk ve Makalat artık risaleoku'dan; izin var (`docs/izinler.md`) |
+| `kastamonur` | 1 MB | Telif tarihi sayfaları kullanımda; Nutuk ve Makalat artık risaleoku'dan; izin var (`docs/izinler.md`) |
 | `risaleoku` | 2 MB | Kullanılmıyor: sitenin kapanan eski sayfaları, karşılaştırma için |
 | `yeniasya` | 5 MB | Kullanılmıyor: bozuk kodlu PDF metni, karşılaştırma için |
 

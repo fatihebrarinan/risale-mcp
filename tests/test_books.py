@@ -9,6 +9,7 @@ import json
 
 import pytest
 
+from risale_mcp.books import telif
 from risale_mcp.books.erisale import parse_work
 from risale_mcp.books.model import ArabicSpan, Text, TextBuilder
 from risale_mcp.catalog import Group, Site, SourceRef, Work
@@ -315,3 +316,23 @@ def test_signature_parts_are_lines():
         ("H1", [regular("İkinci Söz")]),
     )
     assert book.paragraphs[0]["text"] == "Umum Risale‑i Nur Şâkirdleri nâmına\nSaid Nursî"
+
+
+def test_telif_writes_to_node_and_rejects_unknown_id():
+    listing = {"sources": {"k": {"name": "Kaynak", "url": None}},
+               "written": {"kitap/2": {"date": "1936", "place": "Eskişehir", "source": "k"},
+                           "kitap2/1": {"date": "1900", "source": "k"}}}
+    book = {"work": "kitap", "outline": [{"id": "kitap"}, {"id": "kitap/2"}]}
+    assert telif.apply(book, listing) == 1
+    assert book["outline"][1]["written"] == {"date": "1936", "place": "Eskişehir", "source": "Kaynak"}
+    assert "written" not in book["outline"][0]
+    with pytest.raises(ValueError, match="kitap/2"):
+        telif.apply({"work": "kitap", "outline": [{"id": "kitap"}]}, listing)
+
+
+def test_telif_list_is_well_formed():
+    listing = telif.load()
+    for key, entry in listing["written"].items():
+        assert entry["source"] in listing["sources"], key
+        assert ("date" in entry) != ("status" in entry), key
+        assert set(entry) <= {"date", "status", "place", "language", "estimated", "source", "note"}, key

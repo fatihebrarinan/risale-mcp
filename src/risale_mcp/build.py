@@ -28,7 +28,7 @@ from risale_mcp.books import rasaelalnour as rasaelalnour_parser
 from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
 from risale_mcp.books import risaleoku_app as risaleoku_app_parser
-from risale_mcp.books import rumuzat, saykal
+from risale_mcp.books import rumuzat, saykal, telif
 from risale_mcp.books import yeniasya as yeniasya_parser
 from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
 from risale_mcp.books.model import Book
@@ -194,6 +194,7 @@ def build_work(work: Work) -> None:
                                                  keep_unique=work.source.site is not Site.ERISALE,
                                                  fill=not work.private))     # sonradan derlemelerde dizin ve başlık çok
     data["sentences"] = sentences.segment(data)
+    extra.append(f"  telif bilgisi        : {telif.apply(data)} bölüm")
     out = BOOKS_DIR / f"{work.slug}.json"
     out.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     (OUTLINE_DIR / f"{work.slug}.txt").write_text(outline_text(book), encoding="utf-8")

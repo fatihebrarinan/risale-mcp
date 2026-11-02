@@ -30,7 +30,7 @@ RAW_ROLES = {
     "kullanici": "Rumuzat-ı Semaniye sunucuda; Kızıl İcaz'ın Türkçe PDF'i yalnız yerelde, ayrıştırılmadı (Aşama 17)",
     "rasaelalnour": "Yalnız yerel harekeli Mesnevî; izin vermedi, sunucuya çıkmaz",
     "qurancom": "Yalnız yerel harekeli Mesnevî'deki âyetlerin çözümü",
-    "kastamonur": "Kullanılmıyor: Nutuk ve Makalat artık risaleoku'dan; izin var (`docs/izinler.md`)",
+    "kastamonur": "Telif tarihi sayfaları kullanımda; Nutuk ve Makalat artık risaleoku'dan; izin var (`docs/izinler.md`)",
     "risaleoku": "Kullanılmıyor: sitenin kapanan eski sayfaları, karşılaştırma için",
     "yeniasya": "Kullanılmıyor: bozuk kodlu PDF metni, karşılaştırma için",
 }

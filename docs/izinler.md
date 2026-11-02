@@ -12,7 +12,7 @@ Kayıtlar kullanıcının bildirimine dayanır; iznin metni depoda yoktur.
 |---|---|---|---|---|
 | **erisale.com** (e-Risale) | Sitedeki metinler | Kaynak gösterilecek (sitede belgelerde gösteriliyor) | Görüşme, 2026-10-30 | Birincil kaynak: 27 eser, genel sunucuda |
 | **risaleoku.com** | Bütün eserler | Kazanç olmayacak, kaynak gösterilecek | Site sahibi, 2026-10-30 | 42 eser; 40'ı genel sunucuda, 2 sonradan derleme yalnız yerelde. Sikke'nin ikinci "Husrev'in Bir Fıkrası" da buradan (Sözler Neşriyat baskısı) |
-| **kastamonur.com** | Kayıtlı değil | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 | Kullanılmıyor. Nutuk ve Makalat'ın ham verisi diskte; bu eserler risaleoku'dan gelir |
+| **kastamonur.com** | Kayıtlı değil | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 | Telif tarihleri (Aşama 13.2; sayfa "kaynaksız kopyalamaya rızamız yoktur" der, kaynak her kayıtta durur). Nutuk ve Makalat'ın ham verisi diskte; bu eserler risaleoku'dan gelir |
 | **nurpedia.org** | Kayıtlı değil | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 (istek 2026-10-29) | Kullanılmıyor, hiçbir metin indirilmedi. robots.txt yapay zekâ botlarını kapatıyordu |
 
 ## Genel lisans ya da telif bildirimiyle serbest
@@ -35,6 +35,7 @@ genel sunucudaki Rumuzat satırı açık meseledir.
 | risale.online | Siracü'n-Nur (Hayrat). Sikke'nin 13 bloğu 2026-11-02'de risaleoku'ya taşındı | Yalnız yerelde |
 | **Rumuzat-ı Semaniye PDF'i** | Kullanıcının dosyası; hak sahibi kayıtlı değil | **Genel sunucuda** |
 | Quran.com | Harekeli Mesnevî'deki âyetlerin kelime kodları | Yalnız yerelde |
+| risale.online (Hayrat) | Telif tarihleri listesi (metin değil, tarih bilgisi; kaynak gösterilerek) | `telif.json`, genel sunucuda (kullanıcının kararı) |
 
 ## Reddeden
 

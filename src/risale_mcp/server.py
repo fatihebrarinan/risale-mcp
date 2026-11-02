@@ -99,6 +99,10 @@ is text.
 - Qur'an: copy the vowelled Arabic from get_ayah (or as the works quote it), never from memory. Cite a verse as \
 get_ayah's ref ("Bakara Sûresi, 2:255", no ›), name the Diyanet translation you use and mention covers_verses. \
 A translation aids the meaning; it does not replace the Arabic.
+- Writing dates (written, in list_works, get_outline and read_section): state when, where and in which language a \
+work was written only from this field, never from memory. Dates come from secondary lists: name its source, say \
+"estimated" when estimated is set, mention what note says when the sources differ, and say the date is not known if \
+the field is absent.
 - Verse links (find_ayah links, read_section linked_verses) were found by rules, not verdicts: never call a \
 passage the tafsir of a verse; give the link's kind and evidence sentence; a weak link is one sentence's \
 reference, not the section's topic. Bring verses up only when they matter to the question.
@@ -238,8 +242,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     def list_works(
         group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
     ) -> str:
-        """List the works with their ids, groups and sizes. Works whose text could not be found are listed as
-        not available."""
+        """List the works with their ids, groups and sizes, and when they were written (written) where known. Works
+        whose text could not be found are listed as not available."""
         with _tool_errors():
             return _json(library.works(group))
 
@@ -248,8 +252,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         section: Annotated[str, Field(description="A work id (e.g. 'sozler') or a section id (e.g. 'sozler/10').")],
         depth: Annotated[int, Field(description="How many levels of subsections to include.", ge=0, le=6)] = 2,
     ) -> str:
-        """Show the heading tree of a work or section: ids, titles, subtitles and the number of sentences under each
-        section. Sections cut off by the depth limit show their number of subsections."""
+        """Show the heading tree of a work or section: ids, titles, subtitles, when each treatise was written (written) and the number of sentences under
+        each section. Sections cut off by the depth limit show their number of subsections."""
         with _tool_errors():
             return _json(library.outline(section, depth))
 
@@ -259,8 +263,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         cursor: Annotated[str | None, Field(description="next_cursor from the previous call, to continue.")] = None,
         max_words: Annotated[int, Field(description="Approximate size of one page.", ge=200, le=8000)] = 1500,
     ) -> str:
-        """Read a section and its subsections in book order: headings (ref; linked_verses: verses the section
-        links to), paragraphs as sentences (id, text), the author's hâşiyes (hasiye_of: their sentence;
+        """Read a section and its subsections in book order: when it was written (written; with section when that
+        is the enclosing treatise), headings (ref; linked_verses: verses the section links to; written), paragraphs as sentences (id, text), the author's hâşiyes (hasiye_of: their sentence;
         commentary_by: someone else's commentary), the publisher's translations of quoted verses and hadiths, and
         gaps where the source lacks text. Long sections come in pages: pass next_cursor back to continue."""
         with _tool_errors():

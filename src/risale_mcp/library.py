@@ -12,6 +12,7 @@ Okuma birimleri:
 - Cümle ve hâşiye kimlikleri eser verisindeki gibi kalıcıdır (`sozler/10/c032/h1/c002`).
 """
 
+import json
 import re
 import sqlite3
 from collections import defaultdict
@@ -121,6 +122,7 @@ class Library:
     def works(self, group: str | None = None) -> list[dict]:
         sentences = dict(self.conn.execute("SELECT work, count(*) FROM sentences GROUP BY work").fetchall())
         sections = dict(self.conn.execute("SELECT work, count(*) FROM nodes GROUP BY work").fetchall())
+        written = dict(self.conn.execute("SELECT id, written FROM nodes WHERE parent_id IS NULL AND written IS NOT NULL"))
         rows = self.conn.execute(
             "SELECT slug, title, group_name, language, status, note, built FROM works"
             + (" WHERE group_name = ?" if group else "") + " ORDER BY ord", [group] if group else []).fetchall()
@@ -136,6 +138,8 @@ class Library:
                 record |= {"available": False, "status": w["status"]}
             if w["note"]:
                 record["note"] = w["note"]
+            if w["slug"] in written:
+                record["written"] = json.loads(written[w["slug"]])
             out.append(record)
         return out
 
@@ -145,6 +149,15 @@ class Library:
             hint = "use get_outline to see section ids" if "/" in node_id else "use list_works for work ids"
             raise LibraryError(f"No section with id {node_id!r}; {hint}.")
         return row
+
+    def _written(self, node: sqlite3.Row) -> dict | None:
+        """Bölümün ya da içinde bulunduğu en yakın üst bölümün telif bilgisi; üst bölümdense `section` onu gösterir."""
+        own = node["id"]
+        while node["written"] is None and node["parent_id"]:
+            node = self._node(node["parent_id"])
+        if node["written"] is None:
+            return None
+        return json.loads(node["written"]) | ({"section": node["id"]} if node["id"] != own else {})
 
     def _subtree(self, node: sqlite3.Row, max_depth: int | None = None) -> list[sqlite3.Row]:
         sql = "SELECT * FROM nodes WHERE work = ? AND ord BETWEEN ? AND ?"
@@ -176,6 +189,8 @@ class Library:
             record = {"id": n["id"], "title": n["title"]}
             if n["subtitle"]:
                 record["subtitle"] = n["subtitle"]
+            if n["written"]:
+                record["written"] = json.loads(n["written"])
             record["sentences"] = prefix[n["last_ord"] - first + 1] - prefix[n["ord"] - first]
             if n["id"] != root["id"]:
                 records[n["parent_id"]].setdefault("children", []).append(record)
@@ -240,6 +255,8 @@ class Library:
                 item = {"section": n["id"], "title": n["title"], "ref": n["ref"]}
                 if n["subtitle"]:
                     item["subtitle"] = n["subtitle"]
+                if n["written"] and n["id"] != root["id"]:
+                    item["written"] = json.loads(n["written"])
                 if n["id"] in verses:
                     item["linked_verses"] = verses[n["id"]]
                 if continued and n["ord"] == ord_:
@@ -254,7 +271,10 @@ class Library:
             items.extend(gaps.get(p["id"], []))
         if next_cursor is None:
             headings_until(root["last_ord"])           # metinsiz son alt bölümler
-        return {"section": root["id"], "ref": root["ref"], "items": items, "next_cursor": next_cursor}
+        result = {"section": root["id"], "ref": root["ref"], "items": items, "next_cursor": next_cursor}
+        if written := self._written(root):
+            result["written"] = written
+        return result
 
     def _paragraph_texts(self, paragraphs: list[sqlite3.Row]) -> dict[str, dict]:
         """Paragraf -> {id, kind, sentences, arabic?, hasiye_of?, canonical?}."""

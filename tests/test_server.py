@@ -283,3 +283,12 @@ def test_real_kizil_icaz_commentary_is_a_separate_layer(real_library):
     assert sharh["sentences"][0]["id"].endswith("/s1/c001")
     ref = real_library.conn.execute("SELECT ref FROM sentences WHERE id = ?", (sharh["sentences"][0]["id"],)).fetchone()[0]
     assert " › Şerh › 1. cümle" in ref
+
+
+def test_written_shown_and_inherited_by_subsections(library):
+    written = {"date": "1927", "place": "Barla", "source": "Kaynak"}
+    assert library.outline("sozler")["children"][0]["written"] == written
+    assert library.read_section("sozler/10")["written"] == written
+    assert library.read_section("sozler/10/hakikat-01")["written"] == written | {"section": "sozler/10"}
+    assert "written" not in library.read_section("sozler/11")
+    assert next(w for w in library.works() if w["id"] == "sozler").get("written") is None

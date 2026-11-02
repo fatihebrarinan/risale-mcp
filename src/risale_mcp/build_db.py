@@ -185,10 +185,11 @@ def _insert_nodes(conn: sqlite3.Connection, work: str, outline: list[dict]) -> N
     for ord_, (node, last, depth) in enumerate(zip(outline, _subtree_ends(outline), _depths(outline))):
         cur = conn.execute(
             "INSERT INTO nodes (id, work, parent_id, ord, last_ord, depth, title, subtitle, toc_title,"
-            " type, number, heading, ref, url) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            " type, number, heading, ref, url, written) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (node["id"], work, node["parent_id"], ord_, last, depth, node["title"], node.get("subtitle"),
              node.get("toc_title"), node.get("type"), node.get("number"), node.get("heading"),
-             node["ref"], node.get("url")))
+             node["ref"], node.get("url"),
+             json.dumps(node["written"], ensure_ascii=False) if "written" in node else None))
         headings = " ".join(filter(None, (node["title"], node.get("subtitle"), node.get("toc_title"))))
         conn.execute("INSERT INTO nodes_fts (rowid, words) VALUES (?, ?)",
                      (cur.lastrowid, " ".join(search_words(headings))))

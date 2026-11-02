@@ -11,8 +11,7 @@ sayfa "kaynaksız kopyalamaya rızamız yoktur" diyor, bu yüzden her kayıtta k
 - **Tablo:** Eski eserler, Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar: tarih, eser, dil, neşir tarihi.
 - **Tarih ve yer listesi:** Sözler, Mektubat, Lem'alar, Şualar, Asâ-yı Mûsâ: tarih, yer ya da dayanak ("Barla", "Eskişehir Hapsi", "Tahminen").
 
-Sayfada olmayan eserler (Barla Lâhikası'nın ayrıntısı, Tarihçe-i Hayat, mecmualar gibi) internetten araştırılır.
-Bulunamayan tarih boş kalır.
+Sayfada olmayanlar ve sorunlu yerler başka kaynaklarla karşılaştırılır (aşağıda). Bulunamayan tarih boş kalır.
 
 ## Yapılacaklar
 
@@ -38,15 +37,34 @@ Bulunamayan tarih boş kalır.
 Tek yeni kod `build` ve veritabanındaki bu küçük eklemedir; asıl iş eşlemedir. Kullanıcı 2. adımın tablosunu gördükten sonra
 3. adıma geçilir.
 
-## Kaynağın sorunlu yerleri
+## Karşılaştırma sonuçları
 
-Eşlemede tek tek bakılacak yerler; sayfadaki bilgi değiştirilmez, gerekirse not düşülür.
+Durum: uygulandı (2026-11-02). Liste `src/risale_mcp/books/telif.json` (177 kayıt), inceleme tablosu `docs/telif-tablosu.md`.
 
-| Yer | Sorun | Yapılacak |
+kastamonur'un listeleri bağımsız değildir: tablosu Risale-i Nur Enstitüsü'nün kronolojisi (Köprü, 2000), tarih ve yer listesi
+Sorularla Risale'nin listesidir. Bağımsız ikinci kol Hayrat'ın listesidir (risale.online); toplu tarihler verir.
+
+**Karar kuralı:** Eserin kendi künyesi ya da ifadesi önce gelir; sonra kastamonur'un ayrıntılı listesi esastır. Kaynak boşsa ya da
+"tesbit edilemedi" diyorsa Hayrat'ın toplu tarihi alınır ve kayıtta belirtilir. Ayrılan kaynak `note` alanına yazılır.
+
+| Yer | Kaynaklar | Karar |
 |---|---|---|
-| Şuâ numaraları | Sayfa Meyve Risalesi'ni Onikinci Şuâ der, bizim verimizde `sualar/11` | Numaraya değil risalenin adına göre eşlenir |
-| Onuncu Söz | Tablo 1926, ikinci liste 1928 (1342) | Yer bilgili ikinci liste esas alınır |
-| Otuzuncu Mektup, İşarat-ül İ'caz | Tablo 1914–16, ikinci liste 1916 (baskı tarihi) | Telif 1914–16, baskı not olarak |
-| Birinci ve Beşinci Şuâ | Tebyiz (temize çekme) tarihi ayrı | `note` alanına yazılır |
-| Bir risalenin parçaları | "Onuncu Sözün Üçüncü Zeyli 1936", "Yirminci Sözün Birinci Makamı 1930" | Kaynak parça için ayrı tarih veriyorsa kayıt o alt bölüme konur |
-| Kitap adı değişenler | Sayfada "Katre", "Zehre", "Lemaat" | Bizim eser ve bölüm kimliklerimize elle eşlenir |
+| Onuncu Söz | Enstitü 1926, Hayrat 1927, Sorularla Risale 1928 (1342), Nurpedia 1927–28; ilk baskı 1928 | 1927. Müellifin andığı Rûmî 1342, 13 Mart 1927'de biter; Barla'ya resmî varış 1 Mart 1927 |
+| Meyve Risalesi | Tablolar adı Onikinci Şuâ'nın yanına yazar | `sualar/11`, 1943–1944 Denizli (kullanıcının kararı). `sualar/12` 1944 |
+| İşârâtü'l-İ'câz, Otuzuncu Mektup | 1914–16, 1916–18, 1914–18; baskı 1916 ya da 1918 | 1914–1916, baskı 1918, dil Arapça |
+| Sekizinci Şuâ | kastamonur ve Enstitü 1942, Hayrat 1938 | "1938 veya 1942" (kullanıcının kararı) |
+| Dokuzuncu Şuâ | kastamonur "tesbit edilemedi", Hayrat 1938 | ~1938: eserin "dokuz-on sene sonra" ifadesiyle uyumlu |
+| Ondokuzuncu Lem'a | Tablo 1935, liste 1934, Hayrat 1934–35 | 1934–1935 |
+| Hutuvat-ı Sitte | Eser ve bir liste 1920, tablo 1922 | 1920 |
+| Nutuk | Tablo 1911, liste 1908–09 | 1908–1909 |
+| Yirmidokuzuncu Lem'a, Otuzüçüncü Lem'a | Tablo dili Türkçe der | Arapça |
+| Birinci ve Beşinci Şuâ | Tebyiz tarihi ayrı | 1936 ve 1938, `note` alanında |
+| Yirmialtıncı ve Yirmisekizinci Mektup | Parçaların tarihi bizim bölümlerimize eşlenemedi | Mektubun tamamına aralık yazıldı; tahmin edilmedi |
+| Küçük Sözler ve "1926 – Barla" kayıtları | Hayrat 1927; Barla'ya resmî varış 1 Mart 1927 | 1926 kalır, `note` alanında (kullanıcının kararı) |
+
+Doğrulama kaynakları: [Köprü](https://www.koprudergisi.com/bahar-2000/risale-i-nur-kulliyatinin-telif-kronolojisi/),
+[Hayrat](https://risale.online/soru-cevap/risalelerin-telif-tarihleri),
+[Sorularla Risale](https://sorularlarisale.com/risale-i-nur-kulliyatinin-telif-tarihleri-hakkinda-kronolojik-bilgi-verir-misiniz),
+[Nurpedia, Onuncu Söz](https://nurpedia.org/wiki/Onuncu_S%C3%B6z),
+[Risale Haber, Bilal Tunç](https://www.risalehaber.com/said-nursinin-ahireti-ispat-eden-hasir-risalesini-yazdigi-tam-tarih-432598h.htm),
+[TDV](https://islamansiklopedisi.org.tr/said-nursi).

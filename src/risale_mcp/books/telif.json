@@ -1,0 +1,1186 @@
+{
+ "sources": {
+  "kastamonur": {
+   "name": "kastamonur.com",
+   "url": "https://www.kastamonur.com/risale-i-nur-telif-tarihleri/"
+  },
+  "enstitu": {
+   "name": "Risale-i Nur Enstitüsü (Köprü, 2000)",
+   "url": "https://www.koprudergisi.com/bahar-2000/risale-i-nur-kulliyatinin-telif-kronolojisi/"
+  },
+  "hayrat": {
+   "name": "risale.online (Hayrat)",
+   "url": "https://risale.online/soru-cevap/risalelerin-telif-tarihleri"
+  },
+  "nurpedia": {
+   "name": "nurpedia.org",
+   "url": "https://nurpedia.org/wiki/Onuncu_S%C3%B6z"
+  },
+  "eser": {
+   "name": "eserin kendisi",
+   "url": null
+  }
+ },
+ "written": {
+  "sozler/1": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1927 der."
+  },
+  "sozler/2": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1927 der."
+  },
+  "sozler/3": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1927 der."
+  },
+  "sozler/4": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1927 der."
+  },
+  "sozler/5": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1927 der."
+  },
+  "sozler/6": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1927 der."
+  },
+  "sozler/7": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1927 der."
+  },
+  "sozler/8": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1927 der."
+  },
+  "sozler/9": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1927 der."
+  },
+  "sozler/10": {
+   "date": "1927",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Kaynaklar ayrılıyor: Enstitü 1926, Hayrat 1927, Sorularla Risale ve kastamonur 1928 (1342). Müellif satır sayısını 1342 ile ilişkilendirir; Rûmî 1342, 13 Mart 1927'de biter. Nurpedia: Barla'ya varış 1 Mart 1927, ilk baskı 1928 (İstanbul)."
+  },
+  "sozler/10/parca-01": {
+   "date": "1938",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "hayrat",
+   "note": "Dokuzuncu Şuâ ile aynı metin."
+  },
+  "sozler/10/parca-02": {
+   "date": "1935–1936",
+   "place": "Eskişehir Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/10/parca-03": {
+   "date": "1936",
+   "place": "Eskişehir Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/10/parca-04": {
+   "date": "1927",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/10/parca-05": {
+   "date": "1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/11": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 11–24. Sözler için verdiği toplu tarih; kastamonur boş."
+  },
+  "sozler/12": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 11–24. Sözler için verdiği toplu tarih; kastamonur boş."
+  },
+  "sozler/13": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 11–24. Sözler için verdiği toplu tarih; kastamonur boş."
+  },
+  "sozler/14": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 11–24. Sözler için verdiği toplu tarih; kastamonur boş."
+  },
+  "sozler/15": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 11–24. Sözler için verdiği toplu tarih; kastamonur boş."
+  },
+  "sozler/16": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 11–24. Sözler için verdiği toplu tarih; kastamonur boş."
+  },
+  "sozler/17": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 11–24. Sözler için verdiği toplu tarih; kastamonur boş."
+  },
+  "sozler/19": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 11–24. Sözler için verdiği toplu tarih; kastamonur boş."
+  },
+  "sozler/24": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 11–24. Sözler için verdiği toplu tarih; kastamonur boş."
+  },
+  "sozler/14/zeyl": {
+   "date": "1933",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/18": {
+   "date": "1927",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1928 der."
+  },
+  "sozler/20": {
+   "date": "1926–1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "İki makam ayrı tarihlidir. Tablo Yirminci Söz'ün tamamı için 1926 der."
+  },
+  "sozler/20/makam-01": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/20/makam-02": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/21": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1928 der."
+  },
+  "sozler/22": {
+   "date": "1926",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1928 der."
+  },
+  "sozler/23": {
+   "date": "1929",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1928 der."
+  },
+  "sozler/25": {
+   "date": "1927",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1928 der."
+  },
+  "sozler/25/zeyl-01": {
+   "date": "1938",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/25/mesele-10": {
+   "date": "1943–1944",
+   "place": "Denizli Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/26": {
+   "date": "1928–1929",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat"
+  },
+  "sozler/27": {
+   "date": "1929",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sozler/28": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur"
+  },
+  "sozler/29": {
+   "date": "1928–1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1929 der."
+  },
+  "sozler/30": {
+   "date": "1928–1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1929 der."
+  },
+  "sozler/31": {
+   "date": "1928–1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1929 der."
+  },
+  "sozler/32": {
+   "date": "1928–1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1929 der."
+  },
+  "sozler/33": {
+   "date": "1928–1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1929 der."
+  },
+  "mektubat/1": {
+   "date": "1929",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "mektubat/2": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "mektubat/3": {
+   "date": "1930",
+   "place": "Barla (Çam Dağı, yaz ayları)",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "mektubat/4": {
+   "date": "1930–1931",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur"
+  },
+  "mektubat/5": {
+   "date": "1930–1931",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur"
+  },
+  "mektubat/6": {
+   "date": "1930–1931",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur"
+  },
+  "mektubat/7": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 1–18. Mektuplar için verdiği toplu tarih; kastamonur boş."
+  },
+  "mektubat/8": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 1–18. Mektuplar için verdiği toplu tarih; kastamonur boş."
+  },
+  "mektubat/10": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 1–18. Mektuplar için verdiği toplu tarih; kastamonur boş."
+  },
+  "mektubat/11": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 1–18. Mektuplar için verdiği toplu tarih; kastamonur boş."
+  },
+  "mektubat/12": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 1–18. Mektuplar için verdiği toplu tarih; kastamonur boş."
+  },
+  "mektubat/15": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 1–18. Mektuplar için verdiği toplu tarih; kastamonur boş."
+  },
+  "mektubat/18": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 1–18. Mektuplar için verdiği toplu tarih; kastamonur boş."
+  },
+  "mektubat/9": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "mektubat/13": {
+   "date": "1929",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "mektubat/14": {
+   "status": "telif edilmedi",
+   "source": "kastamonur",
+   "note": "Eserin kendi kaydı da böyle: \"Te'lif edilmemiştir.\""
+  },
+  "mektubat/16": {
+   "date": "1930–1931",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "mektubat/16/zeyl": {
+   "date": "1931",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "mektubat/17": {
+   "date": "1930",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "mektubat/19": {
+   "date": "1929",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1930 der."
+  },
+  "mektubat/20": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1930–1932 der."
+  },
+  "mektubat/21": {
+   "date": "1930–1932",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 20–24. Mektuplar için verdiği toplu tarih; kastamonur boş."
+  },
+  "mektubat/22": {
+   "date": "1930–1932",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 20–24. Mektuplar için verdiği toplu tarih; kastamonur boş."
+  },
+  "mektubat/23": {
+   "date": "1933",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1930–1932 der."
+  },
+  "mektubat/24": {
+   "date": "1928",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1930–1932 der."
+  },
+  "mektubat/25": {
+   "status": "telif edilmedi",
+   "source": "kastamonur",
+   "note": "Eserin kendi kaydı da böyle: \"Te'lif edilmemiştir.\""
+  },
+  "mektubat/26": {
+   "date": "1931–1932",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Kaynak mektup için 1932, \"İkinci Kısmı\" için 1931 der; bizim dört mebhasımızdan hangisi olduğu belli olmadığı için mektubun tamamına yazıldı."
+  },
+  "mektubat/27": {
+   "date": "1929–1960",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Lâhika mektuplarının tamamı; tarihler Lâhika eserlerindedir."
+  },
+  "mektubat/28": {
+   "date": "1931–1933",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Kaynak birinci parça için 1931 (tahminen), ikinci parça için 1933 der; parçalar bizim mes'elelerimize eşlenemedi."
+  },
+  "mektubat/29": {
+   "date": "1932–1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat"
+  },
+  "mektubat/29/kisim-01": {
+   "date": "1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "mektubat/30": {
+   "date": "1914–1916",
+   "place": "Birinci Dünya Savaşı, doğu cephesi",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "İşârâtü'l-İ'câz. Baskı 1918 (İstanbul). Köprü tablosu 1916–18, Hayrat 1914–18, kastamonur'un ikinci listesi 1916 (baskı) der. Dili kaynaklarda yanlışlıkla Türkçe; eser Arapça yazılmıştır."
+  },
+  "mektubat/31": {
+   "status": "tarih verilmedi",
+   "source": "kastamonur",
+   "note": "Tarih yok: Lem'alar'ın ve Şualar'ın kendisidir, tarihler tek tek oradadır."
+  },
+  "mektubat/32": {
+   "date": "1921",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Lemeât."
+  },
+  "mektubat/33": {
+   "date": "1929",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur",
+   "note": "Otuzüçüncü Söz ile aynı risale. Afyon müdafaası Birinci Mektup'tan önce yazıldığını söyler."
+  },
+  "lemalar/1": {
+   "date": "1932",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1933 der."
+  },
+  "lemalar/2": {
+   "date": "1932",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1933 der."
+  },
+  "lemalar/3": {
+   "date": "1932",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1933 der."
+  },
+  "lemalar/4": {
+   "date": "1932",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1933 der."
+  },
+  "lemalar/5": {
+   "status": "telif edilmedi",
+   "source": "kastamonur",
+   "note": "Eser: Dördüncü Şuâ (Hasbiye Risalesi) olarak sonradan yazıldı. Hayrat toplu tarihi (1–7. Lem'alar, 1933) bu ikisini ayırmaz."
+  },
+  "lemalar/6": {
+   "status": "telif edilmedi",
+   "source": "kastamonur",
+   "note": "Hayrat toplu tarihi (1–7. Lem'alar, 1933) bu ikisini ayırmaz."
+  },
+  "lemalar/7": {
+   "date": "1932",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1933 der."
+  },
+  "lemalar/8": {
+   "date": "1933",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "lemalar/9": {
+   "date": "1932",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1933–1934 der."
+  },
+  "lemalar/10": {
+   "date": "1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur"
+  },
+  "lemalar/11": {
+   "date": "1933",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur"
+  },
+  "lemalar/12": {
+   "date": "1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "lemalar/13": {
+   "date": "1933–1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 9–17. Lem'alar için verdiği toplu tarih; kastamonur \"tesbit edilemedi\" der."
+  },
+  "lemalar/14": {
+   "date": "1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur"
+  },
+  "lemalar/14/makam-02": {
+   "date": "1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur"
+  },
+  "lemalar/15": {
+   "date": "1933–1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Fihrist; tarih Hayrat'ın 9–17. Lem'alar için verdiği toplu tarihtir."
+  },
+  "lemalar/16": {
+   "date": "1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur"
+  },
+  "lemalar/17": {
+   "date": "1933",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "lemalar/18": {
+   "date": "1934",
+   "place": "Isparta",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Kasım 1934. Yer Hayrat'tan."
+  },
+  "lemalar/19": {
+   "date": "1934–1935",
+   "place": "Isparta",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "kastamonur iki yerde iki tarih verir: tablo 1935, liste \"1934, Ramazandan sonra\". Hayrat aralığı ikisini kapsar."
+  },
+  "lemalar/20": {
+   "date": "1934",
+   "place": "Isparta",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat'ın 19–23. Lem'alar için toplu tarihi 1934–1935."
+  },
+  "lemalar/21": {
+   "date": "1934",
+   "place": "Isparta",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat'ın 19–23. Lem'alar için toplu tarihi 1934–1935."
+  },
+  "lemalar/22": {
+   "date": "1934",
+   "place": "Isparta",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat'ın 19–23. Lem'alar için toplu tarihi 1934–1935."
+  },
+  "lemalar/23": {
+   "date": "1934–1935",
+   "place": "Isparta",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın toplu tarihi; kastamonur \"tesbit edilemedi\" der."
+  },
+  "lemalar/24": {
+   "date": "1934",
+   "place": "Isparta",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1935 der."
+  },
+  "lemalar/25": {
+   "date": "1934",
+   "place": "Isparta",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1935 der."
+  },
+  "lemalar/26": {
+   "date": "1934",
+   "place": "Isparta",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1935 der."
+  },
+  "lemalar/27": {
+   "date": "1935–1936",
+   "place": "Eskişehir Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Müdafaa. Hayrat listesi 1935 der."
+  },
+  "lemalar/28": {
+   "date": "1935",
+   "place": "Eskişehir Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "lemalar/29": {
+   "date": "1935",
+   "place": "Eskişehir Hapsi",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Kaynağın tablosu dili Türkçe der; Lem'a-i Arabiye'dir, metnimiz tercümesidir."
+  },
+  "lemalar/30": {
+   "date": "1935–1936",
+   "place": "Eskişehir Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "lemalar/31": {
+   "date": "1935–1936",
+   "place": "Eskişehir Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Şualar'ın kendisidir; bu tarih başlangıcıdır, Şualar tek tek tarihlidir."
+  },
+  "lemalar/32": {
+   "date": "1921",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Lemeât. Eser: \"yirmi gün Ramazan'da\"."
+  },
+  "lemalar/33": {
+   "date": "1921–1923",
+   "place": "İstanbul, Ankara",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Mesnevî-i Arabî. Yer Hayrat'tan. Kaynağın tablosu dili Türkçe der; eser Arapçadır."
+  },
+  "sualar/1": {
+   "date": "1936",
+   "place": "Eskişehir Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Tebyiz 1938. Yer Hayrat'tan."
+  },
+  "sualar/2": {
+   "date": "1936",
+   "place": "Eskişehir Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sualar/3": {
+   "date": "1937",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Yer Hayrat'tan."
+  },
+  "sualar/4": {
+   "date": "1938",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur",
+   "note": "Yer Hayrat'tan."
+  },
+  "sualar/5": {
+   "date": "1938",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Bu tebyiz tarihidir; eser aslının çok daha eski olduğunu söyler. Bir listede 1908 geçer, dizgi hatasıdır."
+  },
+  "sualar/6": {
+   "date": "1936–1938",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "source": "hayrat",
+   "note": "Hayrat'ın 3–6. Şuâlar için toplu tarihi; kastamonur \"tesbit edilemedi\" der."
+  },
+  "sualar/7": {
+   "date": "1938",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Âyetü'l-Kübrâ. Yer Hayrat'tan."
+  },
+  "sualar/8": {
+   "date": "1938 veya 1942",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Kaynaklar ayrılıyor: kastamonur ve Enstitü 1942, Hayrat 1938. Kastamonu Lâhikası'nın 26. mektubu eseri anar."
+  },
+  "sualar/9": {
+   "date": "1938",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "hayrat",
+   "note": "kastamonur \"tesbit edilemedi\" der. Eser Onuncu Söz'den \"dokuz-on sene sonra\" dediği için Hayrat'ın tarihiyle uyumludur."
+  },
+  "sualar/10": {
+   "date": "1940",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "estimated": true,
+   "source": "kastamonur",
+   "note": "Fihrist. Hayrat 1938–1943 der."
+  },
+  "sualar/11": {
+   "date": "1943–1944",
+   "place": "Denizli Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Meyve Risalesi. Tablolar adı yanlışlıkla Onikinci Şuâ'nın yanına yazar; tarih Onbirinci Şuâ satırındandır."
+  },
+  "sualar/12": {
+   "date": "1944",
+   "place": "Denizli Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat 12–13. Şuâlar için 1943–1944 der."
+  },
+  "sualar/13": {
+   "date": "1943–1944",
+   "place": "Denizli Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sualar/14": {
+   "date": "1948–1949",
+   "place": "Afyon Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat listesi 1949 der."
+  },
+  "sualar/15": {
+   "date": "1949",
+   "place": "Afyon Hapsi",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "kizil-icaz-arabi": {
+   "date": "1899",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "İlk baskı 1921."
+  },
+  "talikat-arabi": {
+   "date": "1899–1906",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "kastamonur: \"1899–1906 yılları arasında\"."
+  },
+  "talikat": {
+   "date": "1899–1906",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Metnimiz tercümedir."
+  },
+  "divan-i-harb-i-orfi": {
+   "date": "1909",
+   "source": "eser",
+   "note": "Eserin künyesi; kastamonur da aynı. İlk baskı 1911."
+  },
+  "nutuk": {
+   "date": "1908–1909",
+   "source": "kastamonur",
+   "note": "kastamonur'un öbür listesi ve Enstitü 1911 der; nutukların kendisi 1908 hürriyet ilânına bağlıdır."
+  },
+  "muhakemat": {
+   "date": "1911",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "İlk baskı 1911; Badıllı 1921 der."
+  },
+  "teshisul-illet-zeyli": {
+   "date": "1911",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Teşhîsü'l-İllet. Metnimiz tercümedir."
+  },
+  "hutbe-i-samiye": {
+   "date": "1911",
+   "source": "eser",
+   "note": "Eserin künyesi; kastamonur da aynı."
+  },
+  "munazarat": {
+   "date": "1911",
+   "source": "eser",
+   "note": "Eserin künyesi 1911 (Rûmî 1329) der; Rûmî 1329 miladî 1913'tür, künye kendi içinde tutmuyor."
+  },
+  "isaratul-icaz": {
+   "date": "1914–1916",
+   "place": "Birinci Dünya Savaşı, doğu cephesi",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Baskı 1918 (İstanbul). Eser: \"birinci senesinde, cebhe-i harpte\". Metnimiz Abdülmecid Nursî'nin tercümesidir."
+  },
+  "isaratul-icaz-arabi": {
+   "date": "1914–1916",
+   "place": "Birinci Dünya Savaşı, doğu cephesi",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Baskı 1918 (İstanbul). TDV: Pasinler cephesi. Metinde tebyiz notu: 19 Şubat 1331."
+  },
+  "nokta": {
+   "date": "1919",
+   "place": "İstanbul",
+   "language": "Türkçe",
+   "source": "eser",
+   "note": "Eserin künyesi Hicrî 1337. Yer kastamonur: Darü'l-Hikmet'te iken."
+  },
+  "sunuhat": {
+   "date": "1920",
+   "place": "İstanbul",
+   "language": "Türkçe",
+   "source": "eser",
+   "note": "Eserin künyesi; yer kastamonur: Darü'l-Hikmet'te iken."
+  },
+  "hutuvat-i-sitte": {
+   "date": "1920",
+   "place": "İstanbul",
+   "source": "eser",
+   "note": "Eserin künyesi. kastamonur'un öbür listesi ve Enstitü 1922 der; takdimi 1920–1923 der."
+  },
+  "hakikat-cekirdekleri": {
+   "date": "1920",
+   "place": "İstanbul",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Yer: Darü'l-Hikmet'te iken."
+  },
+  "hakikat-cekirdekleri-2": {
+   "date": "1921",
+   "place": "İstanbul",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Yer: Darü'l-Hikmet'te iken."
+  },
+  "tuluat": {
+   "date": "1921",
+   "place": "İstanbul",
+   "language": "Türkçe",
+   "source": "eser",
+   "note": "Eserin künyesi Hicrî 1339. Yer kastamonur: Darü'l-Hikmet'te iken."
+  },
+  "rumuz": {
+   "date": "1921",
+   "place": "İstanbul",
+   "language": "Türkçe",
+   "source": "eser",
+   "note": "Eserin künyesi Hicrî 1339. Yer kastamonur: Darü'l-Hikmet'te iken."
+  },
+  "isarat": {
+   "date": "1921",
+   "place": "İstanbul",
+   "source": "eser",
+   "note": "Eserin künyesi Hicrî 1339. Yer kastamonur: Darü'l-Hikmet'te iken."
+  },
+  "suaat-i-marifetin-nebi": {
+   "date": "1921",
+   "language": "Türkçe",
+   "source": "eser",
+   "note": "Eserin künyesi Hicrî 1339."
+  },
+  "lemeat": {
+   "date": "1921",
+   "place": "İstanbul",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Eser: \"Eski Said'in en son te'lifi\", \"yirmi gün Ramazan'da\". Yer: Darü'l-Hikmet'te iken."
+  },
+  "nurun-ilk-kapisi": {
+   "date": "1925",
+   "source": "kastamonur"
+  },
+  "vukufsuz-ehl-i-vukufa-cevap": {
+   "date": "1953",
+   "source": "eser",
+   "note": "Nâşirin hâşiyesi: \"Bu cevap 1953 senesine aittir.\""
+  },
+  "rumuzat-i-semaniye": {
+   "date": "1932–1934",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "hayrat"
+  },
+  "el-mesnevi-el-arabi": {
+   "date": "1921–1923",
+   "place": "İstanbul, Ankara",
+   "language": "Arapça",
+   "source": "hayrat",
+   "note": "kastamonur da aynı."
+  },
+  "el-mesnevi-el-arabi/katre": {
+   "date": "1922",
+   "language": "Arapça",
+   "source": "kastamonur"
+  },
+  "el-mesnevi-el-arabi/habbe": {
+   "date": "1922",
+   "place": "Ankara",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Yer eserin fihristinden."
+  },
+  "el-mesnevi-el-arabi/zerre": {
+   "date": "1922",
+   "language": "Arapça",
+   "source": "kastamonur"
+  },
+  "el-mesnevi-el-arabi/semme": {
+   "date": "1922",
+   "language": "Arapça",
+   "source": "kastamonur"
+  },
+  "el-mesnevi-el-arabi/zuhre": {
+   "date": "1923",
+   "language": "Arapça",
+   "source": "kastamonur"
+  },
+  "el-mesnevi-el-arabi/hubab": {
+   "date": "1923",
+   "place": "Ankara",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Yer eserin fihristinden."
+  },
+  "el-mesnevi-el-arabi/nokta": {
+   "date": "1919",
+   "place": "İstanbul",
+   "language": "Türkçe",
+   "source": "eser",
+   "note": "Aslı Türkçe \"Nokta\" risalesi."
+  },
+  "mesnevi-i-nuriye": {
+   "date": "1921–1923",
+   "place": "İstanbul, Ankara",
+   "language": "Arapça",
+   "source": "hayrat",
+   "note": "kastamonur da aynı. Metnimiz tercümedir."
+  },
+  "mesnevi-i-nuriye/katre": {
+   "date": "1922",
+   "language": "Arapça",
+   "source": "kastamonur"
+  },
+  "mesnevi-i-nuriye/habbe": {
+   "date": "1922",
+   "place": "Ankara",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Yer eserin fihristinden."
+  },
+  "mesnevi-i-nuriye/zerre": {
+   "date": "1922",
+   "language": "Arapça",
+   "source": "kastamonur"
+  },
+  "mesnevi-i-nuriye/semme": {
+   "date": "1922",
+   "language": "Arapça",
+   "source": "kastamonur"
+  },
+  "mesnevi-i-nuriye/zuhre": {
+   "date": "1923",
+   "language": "Arapça",
+   "source": "kastamonur"
+  },
+  "mesnevi-i-nuriye/hubab": {
+   "date": "1923",
+   "place": "Ankara",
+   "language": "Arapça",
+   "source": "kastamonur",
+   "note": "Yer eserin fihristinden."
+  },
+  "mesnevi-i-nuriye/nokta": {
+   "date": "1919",
+   "place": "İstanbul",
+   "language": "Türkçe",
+   "source": "eser",
+   "note": "Aslı Türkçe \"Nokta\" risalesi."
+  },
+  "barla-lahikasi": {
+   "date": "1926–1935",
+   "place": "Barla",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat 1927–1935 der. Sonundaki bir kısım Kastamonu ve Emirdağ mektuplarıdır."
+  },
+  "kastamonu-lahikasi": {
+   "date": "1936–1943",
+   "place": "Kastamonu",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "emirdag-lahikasi": {
+   "date": "1944–1960",
+   "place": "Emirdağ",
+   "language": "Türkçe",
+   "source": "kastamonur",
+   "note": "Hayrat: ikinci ciltte son Isparta hayatı da var."
+  },
+  "emirdag-lahikasi/emirdag-lahikasi-1": {
+   "date": "1944–1947",
+   "place": "Emirdağ",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "emirdag-lahikasi/emirdag-lahikasi-2": {
+   "date": "1949–1960",
+   "place": "Emirdağ, Isparta",
+   "language": "Türkçe",
+   "source": "kastamonur"
+  },
+  "sikke-i-tasdik-i-gaybi": {
+   "date": "1943",
+   "place": "Kastamonu",
+   "source": "hayrat",
+   "note": "Derleme tarihi; içindeki risaleler kendi tarihlerini taşır."
+  },
+  "asa-yi-musa": {
+   "date": "1945",
+   "place": "Emirdağ",
+   "source": "hayrat",
+   "note": "Derleme tarihi; içindeki risaleler kendi tarihlerini taşır."
+  },
+  "zulfikar": {
+   "date": "1946",
+   "place": "Emirdağ",
+   "source": "hayrat",
+   "note": "Derleme tarihi; içindeki risaleler kendi tarihlerini taşır."
+  },
+  "siracun-nur": {
+   "date": "1946",
+   "place": "Emirdağ",
+   "source": "hayrat",
+   "note": "Derleme tarihi; içindeki risaleler kendi tarihlerini taşır."
+  },
+  "tilsimlar": {
+   "date": "1947",
+   "place": "Emirdağ",
+   "source": "hayrat",
+   "note": "Derleme tarihi; içindeki risaleler kendi tarihlerini taşır."
+  }
+ }
+}

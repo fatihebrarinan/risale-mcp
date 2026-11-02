@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 5
+SCHEMA_VERSION = 6
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -62,7 +62,8 @@ CREATE TABLE nodes (
     number    INTEGER,
     heading   TEXT,
     ref       TEXT NOT NULL,
-    url       TEXT
+    url       TEXT,
+    written   TEXT
 );
 CREATE INDEX nodes_work_ord ON nodes(work, ord);
 CREATE INDEX nodes_parent ON nodes(parent_id);
