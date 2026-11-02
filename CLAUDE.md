@@ -112,7 +112,7 @@ risale-mcp/
 │   ├── fetch.py, build.py, build_db.py, db.py   # indirme, ayrıştırma, veritabanı CLI'ları
 │   ├── sentences.py       # cümle bölücü, incipit, atıflar, altın örnekler
 │   ├── arabic_kinds.py    # Arapça parçaların türü ve dayanağı, âyet adres düzeltmeleri
-│   ├── quran.py, hadis.py, ayah_links.py, search.py, semantic.py, embeddings.py, search_eval.py
+│   ├── quran.py, hadis.py, hadis_adaylar.py, ayah_links.py, search.py, semantic.py, embeddings.py, search_eval.py
 │   ├── library.py, server.py, citations.py, auth.py, golden.py, local_only.py
 │   ├── review_ui.py, review_assets/, static/
 │   ├── sources/           # site başına indirici (ham kayıt + doğrulama)
@@ -238,7 +238,7 @@ uv run python -m risale_mcp.build_db       # her profil için: eşlemeler verita
 uv run python -m risale_mcp.hadis_eval run <ad>  # ölçüm: data/interim/hadis/<ad>.md; donmuş kontrol tests/golden/hadis_control.json
 ```
 
-Plan, kararlar, bilinen ve olası hatalar: `docs/hadis-plani.md`. Sıra orada. Kitap kaydı `hadis_kitaplar.py`, künye ayrıştırıcı `hadis_kunye.py` (Risale'ye bağlı değiller, `hadis` profili de kullanır; rapor `uv run python -m risale_mcp.hadis_kunye`).
+Plan, kararlar, bilinen ve olası hatalar: `docs/hadis-plani.md`. Sıra orada. Lafız farkı adayları `uv run python -m risale_mcp.hadis_adaylar` (≈10 dk, yalnız `data/interim/hadis/adaylar.*`; eşleme değildir). Kitap kaydı `hadis_kitaplar.py`, künye ayrıştırıcı `hadis_kunye.py` (Risale'ye bağlı değiller, `hadis` profili de kullanır; rapor `uv run python -m risale_mcp.hadis_kunye`).
 
 - **Kaynaklar:** eşleme Sanadset 650K (954 kitap, CC BY 4.0, atıf), Hadith API (Kütüb-i Sitte ağırlıklı, Unlicense, beş derlemde âlimlerin dereceleri). Türkçe mealler alınmaz (mütercimleri belli değil). Risaleoku'nun Kütüb-i Sitte'si kullanılmadı: Arapçası %0,9, Türkçe telif eseri gibi. Veritabanına yalnız eşleşen rivayetler girer; ileride `hadis` profili tam derlemi `library/hadis/`'e alır.
 - **Hüküm verilmez, kanıt gösterilir** (kullanıcının kararı: hadis âlimi değil, örneklem elle denetlenmedi). Kaynağın işareti değişmez. `arabic.hadith_support` geçiş başınadır: `found`, `partly_found`, `located_chapter` (kısa parça, künyenin anılan bölümünde; kitapta geçmek karşı sınamada kanıt çıkmadı), `cited`, `phrase_found`, `marked`, `unsupported`. `found` kelime sınırı ve en az 5 kelime ister: 4 ve daha az kelimede eşleşme rivayeti kanıtlamaz (`phrase_found`; donmuş kontrolde %20'ye karşı %0,6). Künye kanıtı arabic alanlarından ve nurpedia `Ayet-Hadis Mealleri`nden gelir; nurpedia her şeyin kullanımına izin verdi. Müellif hadisi çoğu yerde kendi ifadesiyle yazar: bulunamamak lafız farkı olabilir. Dorar kullanılmaz (`docs/izinler.md`). "Bulunamadı" hadis değildir demek değildir.

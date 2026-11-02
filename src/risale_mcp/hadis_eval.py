@@ -121,6 +121,9 @@ def run(name: str, db: Path = DB_PATH, out_dir: Path = INTERIM_DIR / "hadis") ->
     corpus = Corpus(list(read_reports(RAW_DIR)))
     lines += _table("Negatif kontrol (donmuş havuz)", control(corpus))
     lines += located_rates(corpus, db, parts)
+    if (candidates := out_dir / "adaylar.json").exists():
+        from risale_mcp.hadis_adaylar import summary
+        lines += summary(json.loads(candidates.read_text("utf-8")))
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / f"{name}.md"
     path.write_text("\n".join(lines) + "\n", "utf-8")

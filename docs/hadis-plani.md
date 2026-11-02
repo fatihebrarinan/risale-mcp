@@ -23,7 +23,7 @@ Her adımın sonunda `hadis_eval` raporu ve önceki ölçümle fark gösterilir;
 | 0 | Kod hataları, kanıt modeli, `found` ayrımı, dondurulmuş ölçüm | Yapıldı |
 | 1 | Künye ayrıştırma ve kitap kaydı | Yapıldı |
 | 2 | Kısa parçalar için künyeli arama, geçiş başına | Yapıldı |
-| 3 | Lafız farkı ve mânen nakil adayları | Sırada |
+| 3 | Lafız farkı ve mânen nakil adayları | Yapıldı, onay bekliyor |
 | 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | |
 | 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | |
 | 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | |
@@ -62,9 +62,28 @@ Kalan sınırlar:
 - 12 örnekle bakıldı, tam doğrulama değildir.
 - Sunucu Adım 0 sürümündedir (şema 9). Yerel şema 11: sonraki deploy veriyle yapılır, `--code` yetmez.
 
-## Adım 3'e başlarken
+## Adım 3 sonucu
 
-Dal `hadis-katmani`, son commit'ler `b6e8d20`, `dd6fecd`, push kullanıcıda. Girdi: ana metinde 142 "bulunamadı" parça. Çıktı kesin eşleşme değil, gözden geçirilecek aday listesidir. Benzerlik otomatik eşleme olamaz (`اَوَّلُ مَا خَلَقَ اللّٰهُ نُور۪ي` için en yakın sonuç başka hadis olabilir). Künyedeki `by_meaning` işareti (194 kayıt) kanıttır. İlişki türleri: `verbatim`, `abridged`, `by_meaning`. Model gerekirse önce maliyet tahmini verilip sorulur. Adım sonunda `hadis_eval` raporu ve fark gösterilir, onay beklenir.
+`hadis_adaylar.py`, liste `data/interim/hadis/adaylar.{md,json}`, ölçüm `adim-3.md`. Eşleme değildir: `arabic`, `hadith_support`, veritabanı ve araçlar değişmedi; önceki ölçümün sayıları aynı kaldı. 142 "bulunamadı" parçanın 51'i (66 geçiş) öne çıktı: `chapter` 24, `close` 27; `review` 91.
+
+Arama künyeyi görmez; seviyeler iki bağımsız kanıttır. İlk 10 adayın künyenin anılan bölümünde olması:
+
+| Küme | Künyesi bölüm gösteren | Gerçek künye | Karışık künye |
+|---|---|---|---|
+| Ayar | 37 | 18 | 1,7 |
+| Sınama | 18 | 6 | 0,9 |
+
+`close` eşiği (12+ kelime 0,5; 8–11 0,7; 5–7 0,9; 4 ve daha az yok) negatif kontrolde ayar 4/354, sınama 2/187 geçti. 5–7 kelimede sınama 2/33: ayardaki %3 hedefinin üstünde, küme küçük.
+
+Kalan sınırlar:
+
+- Sınamada oran düştü (%49'dan %33'e); ayar eşik seçiminde kullanıldı, asıl oran sınamadakine daha yakın sayılmalı.
+- `chapter` puana bakmaz, zayıf adaylar da girer ("يلقون قتلا وتشريدا" için yalnız tek kelime). Karışık künyeye göre bulguların kabaca her 7–15'te biri tesadüfidir.
+- `chapter` yalnız bölümü olan kitaplarda çalışır (55 parça); Müsned, Şifâ, Keşfü'l-Hafâ dayanaklı parçalar yalnız `close` yoluyla çıkabilir.
+- `abridged` ve `variant` yalnız ipucudur. `by_meaning` künyesi yalnız 4 parçada var; mânen nakil hükmü hiçbir parçada verilmedi.
+- Salâvat gibi kalıp çerçeveler benzerliği şişirebilir: alıntının kendisi değil, çerçeve tutabilir. Bir kısmı mevzu kitaplarından gelir, "ليس بحديث" diyen kayıtlar da vardır (Adım 5).
+- `stem` kökün ilk harfini ön ek sanabilir ("كتب"→"تب"; "بكتب" ile ayrı düşer), kaçıran aday olabilir. Anlamsal (vektör) arama denenmedi.
+- Kaçırma oranı ölçülmedi: `review`'daki 91 parçanın kaçında gerçek karşılık olduğu bilinmiyor. 12 örnekle bakıldı, liste okunmadı.
 
 ## Adım 1 sonucu
 
