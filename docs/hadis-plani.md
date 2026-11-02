@@ -27,8 +27,8 @@ Her adımın sonunda `hadis_eval` raporu ve önceki ölçümle fark gösterilir;
 | 4 | Türkçe aktarılan hadisler için daraltılmış aday listesi | Yapıldı |
 | 5 | Rivayet denetimi: senet, sözün sahibi, kitap türü, "hadis değildir" diyen geçiş | Yapıldı |
 | 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | Yapıldı |
-| 7 | Bağımsız model okuması: künyeyi ve önceki kararı görmez | Yapıldı, onay bekliyor |
-| 8 | Hadisçi örneklemi; kararlar `tests/golden/`'a kilitlenir | |
+| 7 | Bağımsız model okuması: künyeyi ve önceki kararı görmez | Yapıldı |
+| 8 | Hadisçi örneklemi; kararlar `tests/golden/`'a kilitlenir | Örneklem hazır, hadisçi bekleniyor |
 
 Yeni kaynak ayrı koldur: Keşfü'l-Hafâ, Feyzü'l-Kadîr, Kenzü'l-Ummâl, İhyâ, Mecmaü'z-Zevâid, el-Câmiu's-Sağîr. İzinli kaynak bulunmadan eklenmez.
 
@@ -61,6 +61,16 @@ Kalan sınırlar:
 - Bazı bulgular uzun bir duanın küçük parçasıdır ("لَهُ الْمُلْكُ"): rivayet doğru olsa da parça hadisin kendisi değildir.
 - 12 örnekle bakıldı, tam doğrulama değildir.
 - Sunucu Adım 0 sürümündedir (şema 9). Yerel şema 11: sonraki deploy veriyle yapılır, `--code` yetmez.
+
+## Adım 8 durumu
+
+`hadis_ornek.py`. Örneklem `data/interim/hadis/ornek/hadis-orneklemi.xlsx` (87 satır, 40'ı Öncelik 1); gönderilmeyecek anahtar aynı klasörde `key.json`. Biçim kullanıcıdan gelmedi, açılır seçimli Excel seçildi. Hadisçi model kararlarını ve tabakaları görmez; kontrol satırı olduğu söylenir, hangileri olduğu söylenmez.
+
+Tabakalar (Öncelik 1 / toplam): `by_meaning` 10/23, başkasının sözü 8/17, reddeden ifade 4/6, modelin reddettiği aday 3/6, `located_chapter` 6/12, `verbatim` 3/8, kontrol 4/6, Türkçe tuzak 2/3, ilişki türünde ayrılan 0/6. `located_chapter` modelden geçmedi, bu örneklemde ilk kez okunacak.
+
+Doldurulunca: `uv run python -m risale_mcp.hadis_ornek collect <dosya>` kararları `tests/golden/hadis_review.json`'a yazar, model okumasıyla karşılaştırmayı `ornek/karsilastirma.md`'ye. Dosya başka örneklemdense durur. Kilitlenen kararlar `hadith_support`'u kendiliğinden değiştirmez; hangi kararın veriye nasıl gireceği kararlar görüldükten sonra belirlenir.
+
+Bekleyen: Yayın (`deploy`) ve şema değişikliği yapılmadı, sunucu Adım 0 sürümünde. Adım 3–8 çıktıları `data/interim/`'dedir, araçlara girmedi.
 
 ## Adım 7 sonucu
 
