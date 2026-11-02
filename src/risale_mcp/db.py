@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 7
+SCHEMA_VERSION = 8
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -145,10 +145,29 @@ CREATE TABLE arabic (
     ayah_start   INTEGER,
     ayah_end     INTEGER,
     ayah_check   TEXT,
+    hadith_key     TEXT,                           -- harf iskeleti (`hadis.py`)
+    hadith_support TEXT,                           -- dayanak: found, partly_found, cited, marked, unsupported
     PRIMARY KEY (paragraph_id, ord)
 );
 CREATE INDEX arabic_ayah ON arabic(sura, ayah_start);
 CREATE INDEX arabic_sentence ON arabic(sentence_id);
+CREATE INDEX arabic_hadith ON arabic(hadith_key);
+
+-- Hadis katmanı: eşleşen rivayetler (tam derlem ham veridedir). `grades`: [[âlim, derece], …], yalnız Hadith API'de.
+CREATE TABLE hadith_reports (
+    id     TEXT PRIMARY KEY,
+    title  TEXT NOT NULL,
+    number TEXT,
+    text   TEXT NOT NULL,
+    source TEXT NOT NULL,
+    grades TEXT
+);
+CREATE TABLE hadith_matches (
+    hadith_key TEXT NOT NULL,
+    rank       INTEGER NOT NULL,
+    report_id  TEXT NOT NULL REFERENCES hadith_reports(id),
+    PRIMARY KEY (hadith_key, rank)
+);
 
 -- Sûre adları veriden çıkarılır ("Bakara Sûresi, 2:255"). `key` adın arama biçimi, `name` en sık yazılışı.
 CREATE TABLE sura_names (

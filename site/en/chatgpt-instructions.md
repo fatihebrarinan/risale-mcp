@@ -17,6 +17,7 @@ Quotations:
 - Give the text's own words on their own line as a block quote, not inside your prose: `> "…"`, copied exactly from the sentences the tools return. Use quotation marks only for the text's own words.
 - If a parable or a line of thought runs over several sentences of one section, give it as a single quotation with a single source (a range of at most 8 sentences).
 - Translations of verses and hadiths are the publishers', not the author's; do not attribute them to the author. The author's own explanation introduced with "Yani, …" is part of the text.
+- Do not rule on a hadith yourself or call it sound or weak from memory. `hadith_support` shows the evidence; `find_hadith` gives the reports; give grades only as `get_hadith` lists them, with the scholar's name. Not being found does not mean it is not a hadith.
 - Never write the Arabic of a verse from memory; give it from `get_ayah` or as the works quote it.
 - Say what you could not find. Never invent a reference, quotation or title.
 

@@ -10,7 +10,8 @@ data/
 │   ├── risale/
 │   │   ├── kulliyat/     Bediüzzaman'ın eserleri ve mecmuaları: <eser>.json
 │   │   └── ilgili/       Külliyat dışı kaynaklar (henüz boş): Sorularla Risale, tarihçeler, hatıralar
-│   └── kuran/quran.json  Kur'ân katmanı
+│   ├── kuran/quran.json  Kur'ân katmanı
+│   └── hadis/matches.json  Risale'deki hadislerin rivayetlerle eşlemesi; `hadis.py` üretir. Tam derlem şimdilik `raw/`dedir
 ├── dist/<profil>/        Kurulan çıktı (`profiles.py`); kişisel ve genel
 │   ├── risale.db         Veritabanı; library'den yeniden kurulur
 │   └── vectors/          Anlamsal arama vektörleri. kisisel/vectors asıl depodur (ücretli çıkarılır, silinmemeli); genel/vectors ondan süzülür

@@ -10,7 +10,7 @@ buradan geçirir; JSON'lar değişmez. Karar sırası (`kind_source` sütununda 
     meal     aynı Arapçanın risaleoku meal kaydı âyet numarası ya da hadis kaynağı veriyor
     erisale  aynı Arapçayı erisale hadis diye işaretlemiş
     baglam   yalnız yanındaki söz ("hadîs-i şerîf", "ferman etmiş", "âyeti") söylüyor; hadiste kesin değil, adaydır:
-             derlemle doğrulaması Aşama 14'ündür
+             derlemle dayanağı `hadis.py`'dedir
 
 Kalıp sözler (`FORMULAS`: Besmele, hamdele, "Mâşâallâh"…) Kur'ân'da geçse de âyet sayılmaz; yanında "âyet" denirse
 sayılır. Bir parçanın yalnız bir kısmı âyetse parça `arabi` kalır, âyet `ayah_quotes`'tadır.
@@ -24,6 +24,7 @@ from dataclasses import dataclass, field
 from functools import cache
 from pathlib import Path
 
+from risale_mcp.catalog import WORKS, Group
 from risale_mcp.normalize import fold
 from risale_mcp.quran import Match, Quran, pieces, skeleton, sura_ref
 from risale_mcp.sources import risaleoku_app as app_source
@@ -62,12 +63,14 @@ _FORMULA_TEXTS = (
     "ان الله", "سبحانه", "سبحانه وتعالى", "الباقي هو الباقي", "لا اله الا انت", "سبحانك", "ربنا", "بالله", "اللهم",
 )
 FORMULAS = {skeleton(t) for t in _FORMULA_TEXTS}
+# Hurûf-u mukattaa: Kur'ân'ın harfleridir; yanında "ferman etmiş" dense de hadis adayı olmaz.
+MUKATTAAT = {skeleton(t) for t in ("الم", "المص", "الر", "المر", "كهيعص", "طه", "طسم", "طس", "يس", "ص", "حم", "عسق", "ق", "ن")}
 _REF = re.compile(r"S[ûu]resi,?\s*(\d+)\s*[:/]\s*(\d+)")
 _SEPARATE = re.compile(r"[٭﴿﴾]")
-_HADITH_BOOKS = re.compile(
+HADITH_BOOKS = re.compile(
     r"Buh[âa]r[iî]|Müslim|Tirmiz[iî]|Eb[ûu] ?D[âa]v[ûu]d|Nes[âa][iî]|[İI]bn[-‑ i]+M[âa]ce|Müsned|Musned|Taber[âa]n[iî]|"
     r"Müstedrek|Beyhak[iî]|Acl[ûu]n[iî]|Keşfü|Münâv[iî]+|Feyzü|Kenzü|Deylem[iî]|Suy[ûu]t[iî]|Muvatta|D[âa]rim[iî]|"
-    r"Bezz[âa]r|Heysem[iî]|Mecmau|Mecmaü|İbn[-‑ ]Hibb[âa]n|\(Hadis|Hadis\.|hadis no|İhy[âa]")
+    r"Bezz[âa]r|Heysem[iî]|Mecmau|Mecmaü|İbn[-‑ ]Hibb[âa]n|\(Hadis|Hadis\.|hadis no")
 _GAP = r"[\s,.;:()\"“”’'«»…\-‑]*(?:\S+\s+){0,3}?"
 _TR_AYAH_AFTER = re.compile(_GAP + r"(?:ayet|sure)", re.I)
 _TR_AYAH_BEFORE = re.compile(r"(?:ayet|sure-i|kuran(?:da|ın)?\b|furkan|ferman-ı ilahi)[^.!?]{0,50}$", re.I)
@@ -113,7 +116,7 @@ def read_meal_evidence(root: Path) -> dict[str, tuple[str, str]]:
                 if 1 <= int(ref[1]) <= 114:
                     out[key] = ("ayet", sura_ref(int(ref[1]), int(ref[2])))
                 break
-            if _HADITH_BOOKS.search(text):
+            if HADITH_BOOKS.search(text):
                 out[key] = ("hadis", _citation(text))
                 break
     return out
@@ -122,7 +125,7 @@ def read_meal_evidence(root: Path) -> dict[str, tuple[str, str]]:
 def _citation(meal: str) -> str:
     """Meal kaydının kaynak kısmı: tırnak kapandıktan sonrası, yoksa kaydın tamamı."""
     tail = re.split(r"[\"”]\s*", meal)[-1].strip()
-    return tail if _HADITH_BOOKS.search(tail) else meal
+    return tail if HADITH_BOOKS.search(tail) else meal
 
 
 class Classifier:
@@ -160,7 +163,7 @@ class Classifier:
             return Decision("ayet", _ref(hits), "kuran")
         if self._all_in_quran(text):
             return Decision("ayet", None, "kuran")
-        if source and source != "REF-TODO" and _HADITH_BOOKS.search(source):
+        if source and source != "REF-TODO" and HADITH_BOOKS.search(source):
             return Decision("hadis", source, "kaynakca")
         if evidence:
             if evidence[0] == "hadis":
@@ -169,7 +172,7 @@ class Classifier:
                 return Decision("ayet", evidence[1], "meal")
         if key in self.marked and len(key) >= MIN_EVIDENCE:
             return Decision("hadis", self.marked[key][1], "erisale")
-        if hadith_ctx and len(key) >= MIN_EVIDENCE and not ayah_ctx:
+        if hadith_ctx and len(key) >= MIN_EVIDENCE and not ayah_ctx and not _mukattaat(text):
             return Decision("hadis", source if source != "REF-TODO" else None, "baglam")
         return Decision(kind, source, "kaynak")
 
@@ -197,6 +200,10 @@ class Classifier:
                 self.report.conflicts.append((paragraph, "hadis", "metin Kur'ân'da geçiyor: " + _ref(hits, many=True), text))
 
 
+def _mukattaat(text: str) -> bool:
+    return all(skeleton(word) in MUKATTAAT for word in text.split())
+
+
 def _numbers(ref: str) -> tuple[int, int, int]:
     sura, ayah = ref.rsplit(" ", 1)[1].split(":")
     return int(sura), int(ayah), int(ayah)
@@ -220,6 +227,9 @@ def _context(before: str, after: str, language: str) -> tuple[bool, bool]:
     return bool(ayah.search(near)), bool(hadith.search(near))
 
 
+_REVIEWED_WORKS = {w.slug for w in WORKS if w.language == "tr" and not w.private and w.group in (Group.ESKI_SAID, Group.ANA_CILT)}
+
+
 def write_report(report: Report, folder: Path, sample: int = 40) -> None:
     """Sayımlar, kaynağın işaretiyle çatışanlar ve gözden geçirme örneklemleri."""
     import random
@@ -233,6 +243,8 @@ def write_report(report: Report, folder: Path, sample: int = 40) -> None:
     (folder / "report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     rng = random.Random(14)
     for name, rows in report.samples.items():
+        # Gözden geçirme yalnız Türkçe ana metinlere bakar (Aşama 14): mecmua ve Osmanlıca kopyalardır, aynı Arapça bir kez.
+        rows = list({skeleton(r[2]): r for r in rows if r[0].split("/")[0] in _REVIEWED_WORKS}.values())
         chosen = rng.sample(rows, min(sample, len(rows)))
         (folder / f"sample-{name}.md").write_text(
             f"# {name} ({len(rows)} parçadan {len(chosen)})\n\n" + "\n".join(

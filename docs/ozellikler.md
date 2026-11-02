@@ -13,6 +13,7 @@ geçmediğini söyler; **Yok** olanlar öncelikli adaydır.
 | Risale'deki bir bölümün hangi âyetlerle bağ kurduğu | "Bu bölüm hangi âyetlerle ilişkili?" | `read_section` (`linked_verses`) | Kısmen ("Okurken dikkat") |
 | Bir âyetle bağ kuran yerler, bağın türü ve kanıt cümlesi | "Âyetü'l-Kürsî'ye Risale'nin neresi işaret ediyor?" | `find_ayah` (`links`) | Kısmen (araç tablosu) |
 | Bir âyetin Risale'de kaç kez geçtiği | "Bu âyet eserlerde kaç defa geçiyor?" | `get_ayah`, `find_ayah` | Yok |
+| Bir hadisin dayanağı, rivayetleri ve âlimlerin dereceleri (hüküm verilmez) | "Bu hadis hangi kitaplarda geçiyor?" | `find_hadith`, `get_hadith` | Yok |
 | Kaynağın işaretlemediği âyet alıntılarını da bulma | "Bu âyeti geçen bütün yerleri göster" | `find_ayah` (`via: text`) | Yok |
 | Eserlerdeki âyetlerin Kur'ân metniyle denetlenmesi; müellifin uyarlaması (iktibas) ve dizgi şüphesi uyarısı | "Buradaki âyet Mushaf'la aynı mı?" | `find_ayah` (`check`) | Yok |
 | Âyetin Risale-i Nur'a işaret ettiği yerler (ayrı tür) | "Hangi âyetlerin Risale-i Nur'a işaret ettiği söylenir?" | `find_ayah` (`links`, tür `risale`) | Yok |

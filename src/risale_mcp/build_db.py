@@ -33,11 +33,12 @@ from pathlib import Path
 from risale_mcp.ayah_links import find_links
 from risale_mcp.catalog import Site, WORKS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
+from risale_mcp.hadis import support
 from risale_mcp.normalize import search_words
-from risale_mcp.paths import INTERIM_DIR, QURAN_PATH, RAW_DIR, ROOT
+from risale_mcp.paths import HADIS_PATH, INTERIM_DIR, QURAN_PATH, RAW_DIR, ROOT
 from risale_mcp.profiles import KISISEL, PROFILES, Profile
 from risale_mcp.arabic_kinds import AYAH_FIXES, AYAH_SUSPECTS, Classifier, read_meal_evidence, write_report
-from risale_mcp.quran import SURA_NAMES, Match, Quote, Quran, pieces, sura_ref, verse_context
+from risale_mcp.quran import SURA_NAMES, Match, Quote, Quran, pieces, skeleton, sura_ref, verse_context
 
 # "Bakara Sûresi, 2:255", "Âyet: Sûre-i Âl-i İmrân, 18", "Kalem Sûresi: 1", "Sûre-i Nasr, 1’den"
 _SURA_NAME = re.compile(r"^(?:Âyet:\s*)?(?:Sûre-i\s+(?P<pre>[^,:\d]+?)|(?P<post>[^,:\d]+?)\s+S[ûu]resi)\s*[,:]?\s*(?=\d)")
@@ -151,6 +152,9 @@ class BuildReport:
         if self.links:
             strong = sum(n for k, n in self.links.items() if k.endswith("/strong"))
             lines.append(f"  âyet ilişkisi: {sum(self.links.values())} ({strong} güçlü)")
+        if c["hadith_reports"] or c["hadith_stale"]:
+            lines.append(f"  hadis        : {c['hadith_reports']} rivayet; eşlemesi olmayan parça {c['hadith_stale']}"
+                         + (" (`uv run python -m risale_mcp.hadis`, sonra yeniden kurun)" if c["hadith_stale"] else ""))
         if self.unresolved_ayah:
             lines.append(f"  çözülemeyen âyet kaynağı: {sum(self.unresolved_ayah.values())}")
             lines += [f"      {n}× {s}" for s, n in self.unresolved_ayah.most_common(10)]
@@ -273,9 +277,10 @@ def _insert_arabic(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran
             elif quran and kind != "ayet" and "﴿" in text:
                 located += [(p["id"], p["node_id"], i, part["start"], q) for q in quran.locate(text)]
             conn.execute(
-                "INSERT INTO arabic VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                "INSERT INTO arabic VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                 (p["id"], i, sentence_at(p["id"], part["start"]), part["start"], part["end"], kind, kind_source,
-                 part.get("meal"), source, ayah and ayah.sura, ayah and ayah.start, ayah and ayah.end, check))
+                 part.get("meal"), source, ayah and ayah.sura, ayah and ayah.start, ayah and ayah.end, check,
+                 skeleton(text) if kind == "hadis" else None, None))
             report.counts["arabic"] += 1
     if quran and book.get("language") == "ar":  # bölümün âyetlerinde (İşaratü'l-İ'caz) ya da Kur'ân'da tek yerde
         located += _parenthesized(book, verse_context(book["outline"]), quran)
@@ -352,10 +357,30 @@ def _as_arabic_part(conn: sqlite3.Connection, paragraph: str, ord_: int, offset:
                      (source, match.sura, match.start, match.end, paragraph, ord_))
         return True
     next_ord = conn.execute("SELECT COALESCE(MAX(ord), -1) + 1 FROM arabic WHERE paragraph_id = ?", (paragraph,)).fetchone()[0]
-    conn.execute("INSERT INTO arabic VALUES (?, ?, ?, ?, ?, 'ayet', 'kuran', NULL, ?, ?, ?, ?, 'exact')",
+    conn.execute("INSERT INTO arabic VALUES (?, ?, ?, ?, ?, 'ayet', 'kuran', NULL, ?, ?, ?, ?, 'exact', NULL, NULL)",
                  (paragraph, next_ord, sentence_at(paragraph, q.start), q.start, q.end, source,
                   match.sura, match.start, match.end))
     return True
+
+
+def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) -> None:
+    """Hadis parçalarının dayanağı ve eşleşen rivayetler; profilde geçmeyen parçaların rivayetleri girmez."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    entries, reports = data["parts"], data["reports"]
+    keys = set()
+    for key, kind_source, rowid in conn.execute(
+            "SELECT hadith_key, kind_source, rowid FROM arabic WHERE hadith_key IS NOT NULL").fetchall():
+        keys.add(key)
+        conn.execute("UPDATE arabic SET hadith_support = ? WHERE rowid = ?", (support(entries.get(key), kind_source), rowid))
+    report.counts["hadith_stale"] = len(keys - set(entries))
+    matches = [(key, rank, rid) for key in keys & set(entries) for rank, rid in enumerate(entries[key]["reports"])]
+    used = {rid for _, _, rid in matches}
+    conn.executemany("INSERT INTO hadith_reports VALUES (?, ?, ?, ?, ?, ?)",
+                     [(rid, r["title"], r["number"], r["text"], r["source"],
+                       json.dumps(r["grades"], ensure_ascii=False) if r["grades"] else None)
+                      for rid, r in reports.items() if rid in used])
+    conn.executemany("INSERT INTO hadith_matches VALUES (?, ?, ?)", matches)
+    report.counts["hadith_reports"] = len(used)
 
 
 def _insert_links(conn: sqlite3.Connection, report: BuildReport) -> None:
@@ -440,11 +465,11 @@ def _verify(conn: sqlite3.Connection, report: BuildReport) -> None:
 def build_profile(profile: Profile) -> BuildReport:
     """Profilin veritabanını kaynak klasörlerinden kurar."""
     profile.db.parent.mkdir(parents=True, exist_ok=True)
-    return build(profile.book_dirs, profile.db, QURAN_PATH, profile, RAW_DIR / Site.RISALEOKU_APP)
+    return build(profile.book_dirs, profile.db, QURAN_PATH, profile, RAW_DIR / Site.RISALEOKU_APP, HADIS_PATH)
 
 
 def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None = None,
-          profile: Profile = KISISEL, meals_from: Path | None = None) -> BuildReport:
+          profile: Profile = KISISEL, meals_from: Path | None = None, hadis_path: Path | None = None) -> BuildReport:
     """`quran_path` verilirse (ve dosya varsa) Kur'ân katmanı kurulur, Risale'deki âyetler onunla eşlenir.
     `profile`: hangi eserlerin gireceği; profil dışındaki JSON'lar atlanır. `meals_from`: risaleoku ham verisi;
     Arapça parçaların türünde aynı metnin meal kaydı da kanıt olur (bkz. `arabic_kinds`)."""
@@ -490,6 +515,8 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
             if quran:
                 _insert_quran(conn, quran, report)
                 _insert_links(conn, report)
+            if hadis_path and hadis_path.exists():
+                _insert_hadith(conn, hadis_path, report)
             sura_rows = suras.rows()
             # Veride hiç numarasıyla geçmeyen sûreler de adıyla aranabilsin (Kur'ân katmanının Türkçe adları).
             learned = {key for key, _, _ in sura_rows}

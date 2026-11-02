@@ -31,6 +31,9 @@ RAW_ROLES = {
     "rasaelalnour": "Yalnız yerel harekeli Mesnevî; izin vermedi, sunucuya çıkmaz",
     "qurancom": "Yalnız yerel harekeli Mesnevî'deki âyetlerin çözümü",
     "kastamonur": "Telif tarihi sayfaları kullanımda; Nutuk ve Makalat artık risaleoku'dan; izin var (`docs/izinler.md`)",
+    "nurpedia": "Yalnız yerel: hadis işaretlerinin denetimi (Aşama 14); metni sunucuya çıkmaz",
+    "sanadset": "Hadis katmanı (Aşama 14): CC BY 4.0, eşleşen rivayetler sunucuya gider",
+    "hadith_api": "Hadis katmanı (Aşama 14): Unlicense; âlimlerin dereceleri",
     "risaleoku": "Kullanılmıyor: sitenin kapanan eski sayfaları, karşılaştırma için",
     "yeniasya": "Kullanılmıyor: bozuk kodlu PDF metni, karşılaştırma için",
 }

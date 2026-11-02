@@ -22,6 +22,8 @@ from pathlib import Path
 from risale_mcp import search as fts
 from risale_mcp.catalog import Authority, Collection
 from risale_mcp.db import connect
+from risale_mcp.hadis import ATTRIBUTION, CAUTION_BOOKS
+from risale_mcp.quran import skeleton
 from risale_mcp.embeddings import EmbeddingError
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import DB_PATH
@@ -36,11 +38,32 @@ ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen 
 OLD_NAMES = json.loads((Path(__file__).parent / "books" / "old_names.json").read_text(encoding="utf-8"))["sections"]
 
 
+HADITH_NOTE = ("hadith_support is evidence, not a verdict: found = the Arabic occurs in a report; partly_found = a report "
+               "carries most of it (it may be abridged or quoted by meaning); cited = its text was not found but a hadith "
+               "book is cited for it; marked = only the source marks it as a hadith; unsupported = nothing beyond the "
+               "words around it. Not found never means it is not a hadith. A report may come from a tafsir or history "
+               "book, or from a book that lists forged reports (book_note): name the book. Give grades only as listed, with each scholar's name.")
+
+
+def _report_summary(row) -> dict:
+    """Derece yalnız âlimin adıyla; Buhârî ve Müslim'de hadis başına derece yoktur, uydurulmaz."""
+    record = {"id": row["id"], "book": row["title"], "number": row["number"]}
+    if row["grades"]:
+        record["grades"] = [{"scholar": s, "grade": g} for s, g in json.loads(row["grades"])]
+    elif row["id"].split(":")[0] in ("bukhari", "muslim"):
+        record["collection_note"] = "In this Sahih; no per-hadith grade is held."
+    if CAUTION_BOOKS.search(row["title"]):
+        record["book_note"] = "This book collects weak or forged reports: a match here means the saying is discussed there, not that it is sound, and it may be listed as forged."
+    return record
+
+
 def _arabic_record(row) -> dict:
     """Bağlamdan çıkarılan hadis adaydır, doğrulanmamıştır: model bunu bilmeli."""
     record = {k: row[k] for k in ("text", "kind", "publisher_translation", "source") if row[k]}
     if row["kind_source"] == "baglam":
         record["kind_unverified"] = True
+    if row["hadith_support"]:
+        record["hadith_support"] = row["hadith_support"]
     return record
 MAX_LINKS = 30           # find_ayah'ın bir âyet için döndürdüğü en çok ilişki
 MAX_AYAHS = 30           # get_ayah'ın bir seferde döndürdüğü en çok âyet (bağlam hariç)
@@ -324,7 +347,7 @@ class Library:
         arabic = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.paragraph_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
-                " a.kind, a.kind_source, a.meal AS publisher_translation, a.source FROM arabic a"
+                " a.kind, a.kind_source, a.hadith_support, a.meal AS publisher_translation, a.source FROM arabic a"
                 " JOIN paragraphs p ON p.id = a.paragraph_id"
                 f" WHERE a.paragraph_id IN ({_placeholders(wanted)}) AND a.kind IN ({_placeholders(ANNOTATED_ARABIC)})"
                 " ORDER BY a.paragraph_id, a.ord", [*wanted, *ANNOTATED_ARABIC]):
@@ -452,7 +475,7 @@ class Library:
         out = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.sentence_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
-                " a.kind, a.kind_source, a.meal AS publisher_translation, a.source FROM arabic a"
+                " a.kind, a.kind_source, a.hadith_support, a.meal AS publisher_translation, a.source FROM arabic a"
                 " JOIN paragraphs p ON p.id = a.paragraph_id"
                 f" WHERE a.sentence_id IN ({_placeholders(sentence_ids)}) ORDER BY a.paragraph_id, a.ord", sentence_ids):
             if a["publisher_translation"] or a["source"]:
@@ -678,6 +701,37 @@ class Library:
         row = self.conn.execute("SELECT name FROM quran_suras WHERE number = ?", (number,)).fetchone()
         row = row or self.conn.execute("SELECT name FROM sura_names WHERE number = ? LIMIT 1", (number,)).fetchone()
         return row[0] if row else None
+
+    def find_hadith(self, text: str, limit: int = 20) -> dict:
+        """Arapça metinden Risale'deki hadis parçaları, dayanakları ve eşleşen rivayetler (`hadis.py`)."""
+        key = skeleton(text)
+        if len(key) < 4:
+            raise LibraryError("Give the Arabic words of the hadith; use search for Turkish words.")
+        keys = [r[0] for r in self.conn.execute(
+            "SELECT hadith_key FROM arabic WHERE hadith_key = ? OR hadith_key LIKE ? OR (length(hadith_key) >= 8 AND ? LIKE '%' || hadith_key || '%')"
+            " GROUP BY hadith_key ORDER BY hadith_key != ?, count(*) DESC LIMIT 5", (key, f"%{key}%", key, key))]
+        if not keys:
+            return {"parts": [], "note": "No part marked as a hadith in the works has these words. Try search."}
+        parts = []
+        for k in keys:
+            support = self.conn.execute("SELECT hadith_support FROM arabic WHERE hadith_key = ? LIMIT 1", (k,)).fetchone()[0]
+            places = self.conn.execute(
+                "SELECT s.id, s.ref FROM arabic a JOIN sentences s ON s.id = a.sentence_id"
+                " WHERE a.hadith_key = ? ORDER BY s.seq", (k,)).fetchall()
+            parts.append({
+                "hadith_support": support, "occurrences": len(places),
+                "places": [{"id": p["id"], "ref": p["ref"]} for p in places[:limit]],
+                "reports": [_report_summary(r) for r in self.conn.execute(
+                    "SELECT r.* FROM hadith_matches m JOIN hadith_reports r ON r.id = m.report_id"
+                    " WHERE m.hadith_key = ? ORDER BY m.rank", (k,))]})
+        return {"parts": parts, "note": HADITH_NOTE}
+
+    def hadith(self, report_id: str) -> dict:
+        """Bir rivayetin metni, kitabı, âlimlerin dereceleri ve kaynağı."""
+        row = self.conn.execute("SELECT * FROM hadith_reports WHERE id = ?", (report_id,)).fetchone()
+        if row is None:
+            raise LibraryError(f"No report with id {report_id!r}; use the ids find_hadith returns.")
+        return _report_summary(row) | {"text": row["text"], "source": ATTRIBUTION[row["source"]], "note": HADITH_NOTE}
 
     def _sura_number(self, sura: str) -> int:
         sura = str(sura).strip()

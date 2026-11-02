@@ -96,6 +96,9 @@ or give sentence numbers.
 language.
 
 Layers that are not the author's words:
+- Hadiths: a hadith part carries hadith_support, the evidence for it (found, partly_found, cited, marked, unsupported). \
+It is evidence, not a verdict: never rule on a hadith yourself, never call it sound or weak from memory. find_hadith \
+gives the reports and their books; give grades only as get_hadith lists them, with the scholar's name.
 - A part with kind_unverified was called a hadith only by the words around it: say it is presented as a hadith in the text, do not vouch for it.
 - Translations of verses and hadiths in the works (publisher_translation) are the publishers'. Use them only to \
 convey the meaning, say whose they are, never quote them as the text. The author's own explanation ("Yani, …") \
@@ -305,6 +308,24 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         relying on it."""
         with _tool_errors():
             return _json(library.search(query, work, group, limit, offset, include_related))
+
+    @server.tool(title="Find a hadith", annotations=read_only("Find a hadith"), structured_output=False)
+    def find_hadith(
+        text: Annotated[str, Field(description="Arabic words of the hadith, as the works quote them.")],
+        limit: Annotated[int, Field(ge=1, le=50)] = 20,
+    ) -> str:
+        """Where the works quote a hadith, the evidence for it (hadith_support), and the reports that carry it, with
+        their books, numbers and scholars' grades where held. Reports come from outside the works."""
+        with _tool_errors():
+            return _json(library.find_hadith(text, limit))
+
+    @server.tool(title="Read a report", annotations=read_only("Read a report"), structured_output=False)
+    def get_hadith(
+        id: Annotated[str, Field(description="A report id from find_hadith.")],
+    ) -> str:
+        """The full Arabic text of a report, its book and number, scholars' grades where held, and its source."""
+        with _tool_errors():
+            return _json(library.hadith(id))
 
     @server.tool(title="Search by meaning", annotations=read_only("Search by meaning"), structured_output=False)
     def semantic_search(

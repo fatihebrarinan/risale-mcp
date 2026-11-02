@@ -21,7 +21,7 @@ from typing import Callable
 
 from risale_mcp.catalog import WORKS, Site, Status, Work, get_work, works_from
 from risale_mcp.paths import INTERIM_DIR, RAW_DIR, ROOT
-from risale_mcp.sources import (erisale, kastamonur, kesif, kullanici, rasaelalnour, risale_online, risaleoku,
+from risale_mcp.sources import (erisale, hadis, kastamonur, kesif, kullanici, nurpedia, rasaelalnour, risale_online, risaleoku,
                                 risaleoku_app, tanzil, yeniasya)
 from risale_mcp.sources.http import PoliteClient
 
@@ -181,6 +181,14 @@ def cmd_quran(args: argparse.Namespace) -> None:
         sys.exit(1)
 
 
+def cmd_hadis(args: argparse.Namespace) -> None:
+    # Hadis derlemleri ve Risale'deki hadislerin dayanakları (Aşama 14); katalogdaki eserlerden değildir.
+    hadis.fetch_hadith_api(RAW_DIR / "hadith_api", PoliteClient(args.delay), refresh=args.refresh)
+    hadis.fetch_sanadset(RAW_DIR / "sanadset", PoliteClient(args.delay, timeout=300), refresh=args.refresh)
+    pages, missing = nurpedia.fetch(RAW_DIR / "nurpedia", PoliteClient(args.delay), refresh=args.refresh)
+    print(f"nurpedia: {pages} sayfa, {len(missing)} sayfa yok")
+
+
 def cmd_risaleoku(args: argparse.Namespace) -> None:
     root = RAW_DIR / "risaleoku_app"
     client = PoliteClient(args.delay)
@@ -222,6 +230,10 @@ def main() -> None:
     quran.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
     quran.add_argument("--delay", type=float, default=DEFAULT_DELAY, help="istekler arası saniye")
     quran.set_defaults(func=cmd_quran)
+    hadith = sub.add_parser("hadis", help="hadis derlemleri ve nurpedia'nın hadis sayfaları")
+    hadith.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
+    hadith.add_argument("--delay", type=float, default=2.0, help="istekler arası bekleme (sn)")
+    hadith.set_defaults(func=cmd_hadis)
     app = sub.add_parser("risaleoku", help="risaleoku.com uygulamasının kitapları")
     app.add_argument("books", nargs="*", help="kitap anahtarları (verilmezse geçiş için gerekenler)")
     app.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")

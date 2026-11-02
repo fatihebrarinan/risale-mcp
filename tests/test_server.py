@@ -197,7 +197,8 @@ async def test_server_lists_tools_prompts_and_resources(library):
     async with Client(create_server(library)) as client:
         tools = {t.name: t for t in (await client.list_tools()).tools}
         assert set(tools) == {"list_works", "get_outline", "read_section", "get_passage", "search",
-                              "find_sentence", "find_ayah", "get_ayah", "cite", "semantic_search"}
+                              "find_sentence", "find_ayah", "get_ayah", "cite", "semantic_search",
+                              "find_hadith", "get_hadith"}
         assert all(t.annotations.read_only_hint for t in tools.values())
         assert all(t.title and t.annotations.title == t.title for t in tools.values())   # dizin başlığı annotations'ta okur
         assert all(t.output_schema is None for t in tools.values())      # sonuç bir kez, düz metin olarak gider
