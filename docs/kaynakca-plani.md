@@ -71,6 +71,23 @@ girmemesini onayladı (2026-11-03).
   kelimeleri (en az 2) parçadaysa parça girer.
 - "iktibas" ve "mânen" künyelerin hepsinde ortaksa notun içinde bir kez yazılır ("(iktibas, doğrulanmadı)").
 
+## K2–K5 sonucu (2026-11-03)
+
+- **K2:** `cite` her kaynağın altına "  - Âyet: …" ve "  - Hadis: …" satırlarını ekler (`sources[].embedded`); `CITE_NOTE`,
+  sunucu talimatı ve sitedeki dört proje talimatı bunların notlarıyla kopyalanmasını söyler. Alt satırlarda "›" yoktur,
+  `citations.check` onları atıf saymaz.
+- **K3:** `hadis_okumalar.py` Adım 3–7'yi `data/library/hadis/readings.json`'a toplar; `build_db` yalnız `kisisel`
+  profilde yükler (şema 12: `hadith_readings`, `hadith_flags`, `hadith_verdicts`). `find_hadith`: `model_readings`,
+  `report_flags`, `verdicts`; `get_passage`/`read_section`: `model_reading` işareti. `hadith_support` değişmez.
+  Kisisel: 160 okuma, 52 uyarı, 13 ifade; genel: 0.
+- **K4:** `20261103-081252`, 7 soru: 52/52 atıf doğrulandı, beklenen bölümler okundu (önceki çalıştırmada K3'te
+  okunmamıştı). Ortalama 40 sn / 4.000 token / 0,26 $ (önce 48 sn / 4.899 / 0,30 $). İki soruda `cite` âyet satırı
+  döndürdü (C11: Furkān 25:77, Mü'min 40:60; E19: Bakara 2:117), model ikisinde de aynen kopyaladı. Hadis satırı
+  çıkan soru yoktu. B7'deki tek hata modelin aracı öneksiz çağırmasıydı. K5 cevabında model Nutuk'ta "birinci kılıç"
+  başlığının altında Divan-ı Harb-i Örfî'den bir paragraf olduğunu söyledi: bakılacak.
+- **K5:** 2026-11-03'te yayınlandı (şema 12). Canlıda `cite` alt satırları verdi, `find_hadith` genelde model okuması
+  vermedi.
+
 ## Kapsam dışı
 
 - Yalnız Türkçe aktarılan hadisler (101 aday cümle): Arapçası olmadığı için parça yok; kaynakçaya girmez.
