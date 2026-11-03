@@ -11,6 +11,7 @@ LIBRARY_DIR = DATA_DIR / "library"                  # asıl veri, alan ve koleks
 KULLIYAT_DIR = LIBRARY_DIR / "risale" / "kulliyat"  # eşleme ve kaynak karşılaştırmaları bu koleksiyona bakar
 QURAN_PATH = LIBRARY_DIR / "kuran" / "quran.json"   # Kur'ân katmanı
 HADIS_PATH = LIBRARY_DIR / "hadis" / "matches.json" # Risale'deki hadislerin rivayetlerle eşlemesi (`hadis.py`)
+LINKS_DIR = DATA_DIR / "links"                      # bağlar: alan/yöntem.jsonl (`links.py`); profiller ortak okur
 
 DIST_DIR = DATA_DIR / "dist"        # profil başına kurulan veritabanı ve vektörler (`profiles.py`)
 DB_PATH = DIST_DIR / "kisisel" / "risale.db"        # yerel veritabanı: hepsi
