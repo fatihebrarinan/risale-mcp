@@ -12,7 +12,7 @@ Alanlar:
     part      cümlede birden çok Arapça parça varsa hangisi: parçanın iskelet anahtarı (`quran.skeleton`; hadiste
               `arabic.hadith_key` ile aynı). Sıra numarası değil: yeniden ayrıştırmada kaymasın
     target    ad alanlı kimlik: quran:2:255, quran:2:255-257, hadis:bukhari/52, hadis-derlem:sanadset:220501
-              (kütüphanede henüz olmayan rivayet), risale:lemalar/30
+              (kütüphanede henüz olmayan rivayet; Hadith API alt numarası tirmidhi:2780.2), risale:lemalar/30
     type      quote (söz aktarılıyor), relation (âyetle bağ), reference (başka yere gönderme)
     relation  alıntıda lafız ilişkisi (verbatim, abridged, by_meaning, phrase); ilişkide türü (isaret, acilis, izah,
               dayanak, risale); göndermede `old_name`
@@ -42,7 +42,7 @@ METHODS = ("source_mark", "quran_text", "corpus", "cited_chapter", "reading", "r
 STRENGTHS = ("strong", "weak")
 SCOPES = ("sentence", "section")
 _TARGET = re.compile(r"^(?:quran:(\d{1,3}):(\d{1,3})(?:-(\d{1,3}))?|hadis:[a-z0-9-]+/[0-9]+(?:-\d+)?"
-                     r"|hadis-derlem:[a-z_]+:[0-9]+|risale:[a-z0-9/._-]+)$")
+                     r"|hadis-derlem:[a-z_]+:[0-9]+(?:\.[0-9]+)?|risale:[a-z0-9/._-]+)$")
 
 
 @dataclass(frozen=True)
@@ -86,8 +86,10 @@ def part_key(text: str) -> str:
 
 def write(path: Path, links: Iterable[Link], **meta) -> int:
     """Üst bilgi ve kitap sırasıyla değil, (kaynak, hedef) sırasıyla bağlar: dosya farkı okunur kalsın."""
-    rows = sorted({(l.source, l.target, l.part or "", l.type, l.method): l for l in links}.values(),
-                  key=lambda l: (l.source, l.part or "", l.target, l.method))
+    # Tekilleştirme kaydın tamamıyla: aynı yöntemle kurulmuş ama kanıtı ayrı iki bağ (Adım 7'nin ve Adım 9'un aynı
+    # rivayet için okumaları) ayrı kalır.
+    rows = sorted({json.dumps(l.to_json(), ensure_ascii=False, sort_keys=True): l for l in links}.values(),
+                  key=lambda l: (l.source, l.part or "", l.target, l.method, json.dumps(l.evidence, sort_keys=True)))
     bad = [(l, p) for l in rows if (p := l.problems())]
     if bad:
         raise ValueError(f"{path.name}: geçersiz bağ {bad[0][1]}: {bad[0][0]}")
@@ -173,10 +175,10 @@ def check(conn: sqlite3.Connection, links: Iterable[Link]) -> dict[str, list]:
 
 
 def _opening_matches(display: str, row: sqlite3.Row) -> bool:
-    """`display`'deki ilk kelimeler (“…” içi) cümlenin incipit'iyle başlıyor mu; tırnak yoksa denetlenmez."""
-    if not (m := re.search(r"“([^”]+)”", display)):
+    """`display`'deki ilk kelimeler (son “…” çifti: başlık da tırnak taşıyabilir, “Ye's”) cümleyle başlıyor mu."""
+    if not (quoted := re.findall(r"“([^”]+)”", display)):
         return True
-    shown = m[1].rstrip("…").strip()
+    shown = quoted[-1].rstrip("…").strip()
     return row["text"].startswith(shown) or row["incipit"].startswith(shown) or shown.startswith(row["incipit"])
 
 

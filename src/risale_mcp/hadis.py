@@ -299,7 +299,8 @@ def _located(corpus: Corpus, text: str, match: str, parsed: dict[str, list[Citat
 def main() -> None:
     counts = build()
     print(dict(counts))
-    print(f"yazıldı: {HADIS_PATH.relative_to(ROOT)}; şimdi `uv run python -m risale_mcp.build_db`")
+    from risale_mcp.links_hadis import export
+    print(f"yazıldı: {HADIS_PATH.relative_to(ROOT)}; bağlar {export()}; şimdi `uv run python -m risale_mcp.build_db`")
 
 
 if __name__ == "__main__":

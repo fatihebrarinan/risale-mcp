@@ -229,7 +229,9 @@ def main() -> None:
     (OUT.parent / "bolge.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), "utf-8")
     (OUT.parent / "bolge.md").write_text(render(result), "utf-8")
     print("\n".join(summary(result)))
-    print(f"yazıldı: {REGION_PATH} ({export(result)} çift); şimdi `uv run python -m risale_mcp.build_db` (her profil)")
+    from risale_mcp.links_hadis import export as export_links
+    print(f"yazıldı: {REGION_PATH} ({export(result)} çift); bağlar {export_links()};"
+          " şimdi `uv run python -m risale_mcp.build_db` (her profil)")
 
 
 if __name__ == "__main__":

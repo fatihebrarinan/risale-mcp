@@ -87,6 +87,8 @@ def main() -> None:
           f" (ikisi de aynı söz {sum(c['same'] for p in parts for c in p['candidates'])}), okuma "
           f"{sum(len(p['readings']) for p in parts)}, uyarılı parça {sum(bool(p['flags']) for p in parts)},"
           f" rivayet {len(result['reports'])}")
+    from risale_mcp.links_hadis import export
+    print(f"bağlar: {export()}")
 
 
 if __name__ == "__main__":
