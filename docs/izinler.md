@@ -23,8 +23,8 @@ Bize özel bir izin değildir; yayımlanan şartlara uyarak kullanıyoruz.
 |---|---|---|
 | Keşif Yolculukları (Ediz Sözüer) | "Asliyetini korumak ve kaynak belirtmek" | Ta'likat'ın Türkçesi, genel sunucuda |
 | Tanzil Project | Metin değiştirilmez, kaynak ve bağlantı verilir | Kur'ân metni, genel sunucuda |
-| Sanadset 650K (Mghari, Bouras, El Hibaoui; Mendeley Data 5xth87zwb5) | CC BY 4.0: kaynak gösterilir | Hadis eşlemesi (Aşama 14), henüz yalnız yerelde. Not: makale kaynak siteleri bilerek gizler ("we anonymize the website and Hadith pages"), kitap baskısı vermez; "kamu malı" ifadesi yazarların beyanıdır. Lisans yazarların veri setini kapsar, üst kaynağın hakkı doğrulanamadı. Metnin doğruluğu kullanıcının kararıyla kabul edildi (2026-11-02) |
-| Hadith API (fawazahmed0/hadith-api) | Unlicense. Yalnız Arapça ve dereceler; `tur-*` mealler alınmaz, mütercimleri belli değil | Hadis dereceleri (Aşama 14), henüz yalnız yerelde |
+| Sanadset 650K (Mghari, Bouras, El Hibaoui; Mendeley Data 5xth87zwb5) | CC BY 4.0: kaynak gösterilir | Hadis eşlemesi (Aşama 14), genel sunucuda yalnız eşleşen rivayetler. Not: makale kaynak siteleri bilerek gizler ("we anonymize the website and Hadith pages"), kitap baskısı vermez; "kamu malı" ifadesi yazarların beyanıdır. Lisans yazarların veri setini kapsar, üst kaynağın hakkı doğrulanamadı. Metnin doğruluğu kullanıcının kararıyla kabul edildi (2026-11-02) |
+| Hadith API (fawazahmed0/hadith-api) | Unlicense. Yalnız Arapça ve dereceler; `tur-*` mealler alınmaz, mütercimleri belli değil | Hadis dereceleri (Aşama 14), genel sunucuda eşleşen rivayetlerle |
 | Diyanet mealleri (Tanzil üzerinden) | Ticari olmayan kullanım; ortak derlemlere girerse Diyanet'ten izin gerekir | İki meal, genel sunucuda |
 
 ## Açık izin kaydı olmayanlar

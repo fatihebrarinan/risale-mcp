@@ -60,7 +60,7 @@ Kalan sınırlar:
 - Aynı parçanın geçişleri arasında dayanak farkı henüz çıkmadı; altyapı hazır.
 - Bazı bulgular uzun bir duanın küçük parçasıdır ("لَهُ الْمُلْكُ"): rivayet doğru olsa da parça hadisin kendisi değildir.
 - 12 örnekle bakıldı, tam doğrulama değildir.
-- Sunucu Adım 0 sürümündedir (şema 9). Yerel şema 11: sonraki deploy veriyle yapılır, `--code` yetmez.
+- Sunucu 2026-11-03'te veriyle yayınlandı (şema 11): Adım 2'ye kadar olan seviyeler araçlarda.
 
 ## Adım 8 durumu
 
@@ -70,7 +70,7 @@ Tabakalar (Öncelik 1 / toplam): `by_meaning` 10/23, başkasının sözü 8/17, 
 
 Doldurulunca: `uv run python -m risale_mcp.hadis_ornek collect <dosya>` kararları `tests/golden/hadis_review.json`'a yazar, model okumasıyla karşılaştırmayı `ornek/karsilastirma.md`'ye. Dosya başka örneklemdense durur. Kilitlenen kararlar `hadith_support`'u kendiliğinden değiştirmez; hangi kararın veriye nasıl gireceği kararlar görüldükten sonra belirlenir.
 
-Bekleyen: Yayın (`deploy`) ve şema değişikliği yapılmadı, sunucu Adım 0 sürümünde. Adım 3–8 çıktıları `data/interim/`'dedir, araçlara girmedi.
+Yayın: sunucu 2026-11-03'ten beri Adım 2 sürümünde (şema 11). Adım 3–8 çıktıları `data/interim/`'dedir, araçlara girmedi.
 
 ## Adım 7 sonucu
 
