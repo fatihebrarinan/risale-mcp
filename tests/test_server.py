@@ -304,3 +304,15 @@ def test_instructions_say_the_texts_may_be_quoted_in_full():
 
 def test_instructions_ask_to_copy_the_verse_and_hadith_lines():
     assert "indented Âyet and Hadis lines" in INSTRUCTIONS and "(doğrulanmadı)" in INSTRUCTIONS
+
+
+def test_model_readings_stay_off_the_public_server():
+    """Hadisçi görmeden model okuması genel sunucuya çıkmaz (`docs/kaynakca-plani.md`, K3)."""
+    import sqlite3
+    from risale_mcp.paths import DB_PATH, PUBLIC_DB_PATH
+    if not (PUBLIC_DB_PATH.exists() and DB_PATH.exists()):
+        pytest.skip("veritabanı yok")
+    count = "SELECT (SELECT count(*) FROM hadith_readings) + (SELECT count(*) FROM hadith_flags) + (SELECT count(*) FROM hadith_verdicts)"
+    assert sqlite3.connect(PUBLIC_DB_PATH).execute(count).fetchone()[0] == 0
+    assert sqlite3.connect(DB_PATH).execute(count).fetchone()[0] > 0
+    assert "never a \\\nverdict" in INSTRUCTIONS or "never a verdict" in INSTRUCTIONS.replace("\n", " ")

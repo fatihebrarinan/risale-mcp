@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 11
+SCHEMA_VERSION = 12
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -212,6 +212,33 @@ CREATE TABLE hadith_matches (
     rank       INTEGER NOT NULL,
     report_id  TEXT NOT NULL REFERENCES hadith_reports(id),
     PRIMARY KEY (hadith_key, rank)
+);
+-- Model okuması ve rivayet denetimi (`hadis_okumalar.py`): yalnız `kisisel` profilde dolu, genelde boş. Hüküm değildir.
+-- kind: candidate (derlemde lafzı tutmayan parçanın okunan adayı), match (bulunan eşleşmenin okunan rivayeti).
+CREATE TABLE hadith_readings (
+    hadith_key       TEXT NOT NULL,
+    report_id        TEXT NOT NULL REFERENCES hadith_reports(id),
+    kind             TEXT NOT NULL,
+    tier             TEXT,                         -- adayda: chapter (künyenin bölümünde), close (benzerlik)
+    in_cited_chapter INTEGER,
+    relation_a       TEXT NOT NULL,                -- iki okuyucunun cevabı: verbatim, abridged, by_meaning, related, different
+    relation_b       TEXT NOT NULL,
+    speaker_a        TEXT,
+    speaker_b        TEXT,
+    denied           INTEGER NOT NULL,             -- iki okuyucu da rivayette reddeden ifade gördü
+    same             INTEGER NOT NULL              -- iki okuyucu da aynı söz dedi
+);
+CREATE INDEX hadith_readings_key ON hadith_readings(hadith_key);
+CREATE TABLE hadith_flags (
+    hadith_key TEXT NOT NULL,
+    flag       TEXT NOT NULL                       -- `hadis_rivayet.QUEUES` anahtarları
+);
+CREATE INDEX hadith_flags_key ON hadith_flags(hadith_key);
+CREATE TABLE hadith_verdicts (
+    hadith_key TEXT NOT NULL,
+    report_id  TEXT NOT NULL REFERENCES hadith_reports(id),
+    verdict    TEXT NOT NULL,                      -- denied, weakened, other_saying
+    text       TEXT NOT NULL                       -- rivayetin ardındaki ifade, kitabın kendi sözü
 );
 
 -- Sûre adları veriden çıkarılır ("Bakara Sûresi, 2:255"). `key` adın arama biçimi, `name` en sık yazılışı.

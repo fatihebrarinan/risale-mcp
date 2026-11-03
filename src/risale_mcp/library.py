@@ -53,6 +53,20 @@ HADITH_NOTE = ("hadith_support is evidence, not a verdict: found = the Arabic oc
                "book, or from a book that lists forged reports (book_note): name the book. Give grades only as listed, with each scholar's name.")
 
 
+# Model okuması ve rivayet denetimi (`hadis_okumalar.py`): yalnız yerel profilde dolu. Hüküm değildir.
+READING_NOTE = ("model_readings and report_flags come from two model readers and rule-based checks, not from a hadith "
+                "scholar: they are leads, never a verdict. A candidate the readers called the same saying (same: true) "
+                "is a likely variant wording or the author's rendering by meaning (relation), not a verified source; "
+                "say so and keep hadith_support as the evidence. verdicts are the book's own words after a report, "
+                "one scholar's view: give them with the book's name.")
+FLAG_TEXT = {"denied": "a report is followed by words denying it is a hadith",
+             "other_saying": "a report attributes it to someone else",
+             "only_caution": "found only in books that collect weak or forged reports",
+             "no_prophet": "no report attributes it to the Prophet",
+             "no_chain": "no report carries a chain of narrators",
+             "weakened": "a report is followed by words weakening it"}
+
+
 def _report_summary(row) -> dict:
     """Derece yalnız âlimin adıyla; Buhârî ve Müslim'de hadis başına derece yoktur, uydurulmaz."""
     record = {"id": row["id"], "book": row["title"], "number": row["number"]}
@@ -72,6 +86,8 @@ def _arabic_record(row) -> dict:
         record["kind_unverified"] = True
     if row["hadith_support"]:
         record["hadith_support"] = row["hadith_support"]
+    if "model_reading" in row.keys() and row["model_reading"]:
+        record["model_reading"] = "find_hadith lists two model readers' leads for it (not a verdict)"
     return record
 MAX_CITATIONS = 12       # find_hadith'in bir parça için döndürdüğü en çok künye
 MAX_LINKS = 30           # find_ayah'ın bir âyet için döndürdüğü en çok ilişki
@@ -378,8 +394,9 @@ class Library:
         arabic = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.paragraph_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
-                " a.kind, a.kind_source, a.hadith_support, a.meal AS publisher_translation, a.source FROM arabic a"
-                " JOIN paragraphs p ON p.id = a.paragraph_id"
+                " a.kind, a.kind_source, a.hadith_support, a.meal AS publisher_translation, a.source,"
+                " EXISTS (SELECT 1 FROM hadith_readings h WHERE h.hadith_key = a.hadith_key AND h.same = 1) AS model_reading"
+                " FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id"
                 f" WHERE a.paragraph_id IN ({_placeholders(wanted)}) AND a.kind IN ({_placeholders(ANNOTATED_ARABIC)})"
                 " ORDER BY a.paragraph_id, a.ord", [*wanted, *ANNOTATED_ARABIC]):
             arabic[a["paragraph_id"]].append(_arabic_record(a))
@@ -506,8 +523,9 @@ class Library:
         out = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.sentence_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
-                " a.kind, a.kind_source, a.hadith_support, a.meal AS publisher_translation, a.source FROM arabic a"
-                " JOIN paragraphs p ON p.id = a.paragraph_id"
+                " a.kind, a.kind_source, a.hadith_support, a.meal AS publisher_translation, a.source,"
+                " EXISTS (SELECT 1 FROM hadith_readings h WHERE h.hadith_key = a.hadith_key AND h.same = 1) AS model_reading"
+                " FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id"
                 f" WHERE a.sentence_id IN ({_placeholders(sentence_ids)}) ORDER BY a.paragraph_id, a.ord", sentence_ids):
             if a["publisher_translation"] or a["source"]:
                 out[a["sentence_id"]].append(_arabic_record(a))
@@ -820,11 +838,35 @@ class Library:
                 "located_reports": [_report_summary(r) for r in self.conn.execute(
                     "SELECT DISTINCT r.* FROM arabic a JOIN hadith_located l ON l.paragraph_id = a.paragraph_id AND l.ord = a.ord"
                     " JOIN hadith_reports r ON r.id = l.report_id WHERE a.hadith_key = ? LIMIT ?", (k, MAX_CITATIONS))],
+                **self._readings(k),
                 "places": [{"id": p["id"], "ref": p["ref"]} for p in places[:limit]],
                 "reports": [_report_summary(r) for r in self.conn.execute(
                     "SELECT r.* FROM hadith_matches m JOIN hadith_reports r ON r.id = m.report_id"
                     " WHERE m.hadith_key = ? ORDER BY m.rank", (k,))]})
-        return {"parts": parts, "note": HADITH_NOTE}
+        note = HADITH_NOTE + (" " + READING_NOTE if any("model_readings" in p or "report_flags" in p for p in parts) else "")
+        return {"parts": parts, "note": note}
+
+    def _readings(self, key: str) -> dict:
+        """Model okuması, rivayet denetiminin uyarıları ve kitapların ifadeleri; yoksa boş (genel profil)."""
+        out: dict = {}
+        readings = self.conn.execute(
+            "SELECT h.*, r.title, r.number, r.text, r.grades, r.id FROM hadith_readings h JOIN hadith_reports r ON r.id = h.report_id"
+            " WHERE h.hadith_key = ? ORDER BY h.kind = 'match', h.same DESC", (key,)).fetchall()
+        if readings:
+            out["model_readings"] = [{
+                **_report_summary(r), "text": r["text"],
+                "kind": "candidate (its words do not match; read by two models)" if r["kind"] == "candidate" else "matched report",
+                "same": bool(r["same"]), "relation": sorted({r["relation_a"], r["relation_b"]}),
+                **({"speaker": r["speaker_a"]} if r["speaker_a"] == r["speaker_b"] and r["speaker_a"] else {}),
+                **({"in_cited_chapter": True} if r["in_cited_chapter"] else {})} for r in readings]
+        if flags := [FLAG_TEXT[f[0]] for f in self.conn.execute("SELECT flag FROM hadith_flags WHERE hadith_key = ?", (key,))
+                     if f[0] in FLAG_TEXT]:
+            out["report_flags"] = flags
+        if verdicts := self.conn.execute(
+                "SELECT v.verdict, v.text, r.title FROM hadith_verdicts v JOIN hadith_reports r ON r.id = v.report_id"
+                " WHERE v.hadith_key = ?", (key,)).fetchall():
+            out["verdicts"] = [{"book": v["title"], "kind": v["verdict"], "words": v["text"]} for v in verdicts]
+        return out
 
     def _hadith_citations(self, key: str) -> list[dict]:
         """Künyeler: kaynağın ve nurpedia'nın, kitap başına bir kez; `number` bâb ya da baskı numarası olabilir."""

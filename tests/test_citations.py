@@ -260,3 +260,15 @@ def test_cite_lists_the_verses_and_hadiths_of_the_quotation_under_its_source():
         assert len(CitationChecker(lib).check(result["bibliography"])) == 2
     finally:
         lib.close()
+
+
+@pytest.mark.skipif(not DB_PATH.exists(), reason="gerçek veritabanı yok")
+def test_find_hadith_gives_model_readings_as_leads_on_the_personal_server():
+    lib = Library(DB_PATH)
+    try:
+        part = lib.find_hadith("اَلْحِكْمَةُ ضَالَّةٌ الْمُؤْمِنِ اَخَذَهَا اَيْنَمَا وَجَدَهَا")["parts"][0]
+        assert part["hadith_support"] == "cited"                         # okuma dayanağı değiştirmez
+        reading = part["model_readings"][0]
+        assert reading["same"] and reading["kind"].startswith("candidate") and reading["id"] == "tirmidhi:2687"
+    finally:
+        lib.close()

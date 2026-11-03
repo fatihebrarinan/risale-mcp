@@ -39,6 +39,7 @@ from risale_mcp.hadis_kunye import parse as parse_citation
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import HADIS_PATH, INTERIM_DIR, QURAN_PATH, RAW_DIR, ROOT
 from risale_mcp.profiles import KISISEL, PROFILES, Profile
+from risale_mcp.hadis_okumalar import READINGS_PATH
 from risale_mcp.arabic_kinds import AYAH_FIXES, AYAH_SUSPECTS, Classifier, read_meal_evidence, write_report
 from risale_mcp.quran import SURA_NAMES, Match, Quote, Quran, pieces, skeleton, sura_ref, verse_context
 
@@ -410,6 +411,36 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
     report.counts["hadith_reports"] = len(used)
 
 
+def _insert_readings(conn: sqlite3.Connection, path: Path, report: BuildReport) -> None:
+    """Model okuması ve rivayet denetimi (`hadis_okumalar.py`), yalnız veritabanında bulunan parçalar için."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    keys = {r[0] for r in conn.execute("SELECT DISTINCT hadith_key FROM arabic WHERE hadith_key IS NOT NULL")}
+    have = {r[0] for r in conn.execute("SELECT id FROM hadith_reports")}
+    rows, flags, verdicts, needed = [], [], [], set()
+    for key, part in data["parts"].items():
+        if key not in keys:
+            continue
+        for kind, items in (("candidate", part["candidates"]), ("match", part["readings"])):
+            for c in items:
+                rows.append((key, c["report"], kind, c.get("tier"), c.get("in_cited_chapter"), *c["relation"],
+                             *c["speaker"], c["denied"], c["same"]))
+                needed.add(c["report"])
+        flags += [(key, f) for f in part["flags"]]
+        verdicts += [(key, v["report"], v["verdict"], v["text"]) for v in part["verdicts"]]
+        needed |= {v["report"] for v in part["verdicts"]}
+    missing = needed - have - set(data["reports"])
+    if missing:
+        raise ValueError(f"readings.json'da metni olmayan rivayet: {sorted(missing)[:5]}")
+    conn.executemany("INSERT INTO hadith_reports VALUES (?, ?, ?, ?, ?, ?)",
+                     [(rid, r["title"], r["number"], r["text"], r["source"],
+                       json.dumps(r["grades"], ensure_ascii=False) if r["grades"] else None)
+                      for rid, r in data["reports"].items() if rid in needed - have])
+    conn.executemany("INSERT INTO hadith_readings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+    conn.executemany("INSERT INTO hadith_flags VALUES (?, ?)", flags)
+    conn.executemany("INSERT INTO hadith_verdicts VALUES (?, ?, ?, ?)", verdicts)
+    report.counts["hadith_readings"] = len(rows)
+
+
 def _insert_links(conn: sqlite3.Connection, report: BuildReport) -> None:
     """Âyet ilişkileri: bütün eserler ve âyet eşlemesi yazıldıktan sonra veritabanından çıkarılır."""
     conn.row_factory = sqlite3.Row
@@ -544,6 +575,8 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
                 _insert_links(conn, report)
             if hadis_path and hadis_path.exists():
                 _insert_hadith(conn, hadis_path, report)
+                if profile.private and READINGS_PATH.exists():      # hadisçi görmeden genel sunucuya çıkmaz
+                    _insert_readings(conn, READINGS_PATH, report)
             sura_rows = suras.rows()
             # Veride hiç numarasıyla geçmeyen sûreler de adıyla aranabilsin (Kur'ân katmanının Türkçe adları).
             learned = {key for key, _, _ in sura_rows}
