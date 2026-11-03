@@ -77,3 +77,15 @@ def test_hadith_link_targets_round_trip_and_corpus_links():
     assert [(l.target, l.relation, l.strength, l.evidence["rank"]) for l in corpus] == [
         ("hadis-derlem:bukhari:1", "phrase", "weak", 0), ("hadis-derlem:muslim:4927", "phrase", "weak", 1)]
     assert [(l.method, l.target) for l in located_links(rows, parts)] == [("cited_chapter", "hadis-derlem:bukhari:6689")]
+
+
+def test_verse_links_and_old_names_are_computed_into_the_database(small_db):
+    """Âyet bağları her kurulumda hesaplanır ve `links` tablosuna girer; eski adlar `old_names.json`'dan."""
+    from risale_mcp.links_kuran import reference_links
+    conn = sqlite3.connect(small_db[0])
+    files = dict(conn.execute("SELECT file, count(*) FROM links GROUP BY file").fetchall())
+    assert files.get("kuran/quote.jsonl", 0) >= 1
+    row = conn.execute("SELECT source, target, method FROM links WHERE file = 'kuran/quote.jsonl' AND source = 'sozler/11/c001'").fetchone()
+    assert row[1].startswith("quran:") and row[2] in ("source_mark", "quran_text")
+    refs = {(l.source, l.target) for l in reference_links()}
+    assert ("mektubat/31", "risale:lemalar") in refs and all(l.scope == "section" for l in reference_links())

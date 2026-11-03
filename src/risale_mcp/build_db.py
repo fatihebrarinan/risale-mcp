@@ -369,12 +369,14 @@ def _as_arabic_part(conn: sqlite3.Connection, paragraph: str, ord_: int, offset:
 
 def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport, root: Path | None = None) -> None:
     """Bağ dosyaları (`links.py`): kaynağı bu veritabanında olanlar; `private` dosyalar yalnız yerel profilde."""
-    from risale_mcp.links import LINKS_DIR, files, read
+    from risale_mcp.links import LINKS_DIR, files, read, read_meta
     LINKS = root or LINKS_DIR
     sentences = {r[0] for r in conn.execute("SELECT id FROM sentences")}
     nodes = {r[0] for r in conn.execute("SELECT id FROM nodes")}
     rows, dropped = [], 0
     for path in files(LINKS, private=profile.private):
+        if read_meta(path).get("computed"):              # âyet bağları ve eski adlar: her kurulumda hesaplanır
+            continue
         name = str(path.relative_to(LINKS))
         for l in read(path)[1]:
             if l.source in (nodes if l.scope == "section" else sentences):
@@ -385,6 +387,24 @@ def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport,
     conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
     report.counts["links"] = len(rows)
     report.counts["links_dropped"] = dropped
+
+
+def _computed_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport, root: Path | None = None) -> None:
+    """Âyet alıntısı, âyet ilişkileri ve eski adlar (`links_kuran.py`): bu profilde hesaplanır, `links` tablosuna
+    yazılır; yerel profil (hepsini kapsar) dosyaya da döker. Kaynağı bu veritabanında olmayan bağ girmez."""
+    from risale_mcp.links import LINKS_DIR, write
+    from risale_mcp.links_kuran import COMPUTED, computed
+    sentences = {r[0] for r in conn.execute("SELECT id FROM sentences")}
+    nodes = {r[0] for r in conn.execute("SELECT id FROM nodes")}
+    for name, links in computed(conn).items():
+        kept = list({json.dumps(l.to_json(), ensure_ascii=False, sort_keys=True): l for l in links
+                     if l.source in (nodes if l.scope == "section" else sentences)}.values())   # dosya gibi tekil
+        conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                         [(l.source, l.part, l.target, l.type, l.relation, l.method, l.strength, l.scope,
+                           json.dumps(l.evidence, ensure_ascii=False) if l.evidence else None, name) for l in kept])
+        report.counts[f"links {name}"] = len(kept)
+        if profile.private:
+            write((root or LINKS_DIR) / name, kept, computed=COMPUTED, producer="build_db")
 
 
 def _report_store(*paths: Path) -> dict[str, dict]:
@@ -636,6 +656,7 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
                 _insert_quran(conn, quran, report)
                 _insert_links(conn, report)
             _load_links(conn, profile, report, links_dir)
+            _computed_links(conn, profile, report, links_dir)
             if hadis_path and hadis_path.exists():
                 _insert_hadith(conn, hadis_path, report)
                 _insert_region(conn, report)                          # okumayla bulunan: iki profilde de
