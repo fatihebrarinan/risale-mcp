@@ -29,6 +29,7 @@ Her adımın sonunda `hadis_eval` raporu ve önceki ölçümle fark gösterilir;
 | 6 | Künye uyumu: yalnız künyesiz bulunan eşleşmelerde | Yapıldı |
 | 7 | Bağımsız model okuması: künyeyi ve önceki kararı görmez | Yapıldı |
 | 8 | Hadisçi örneklemi; kararlar `tests/golden/`'a kilitlenir | Örneklem hazır, hadisçi bekleniyor |
+| 9 | Künyenin bölgesinde okuma: künye bâblı kitaplara (Kütüb-i Sitte, Muvatta) gidiyorsa bölgedeki rivayetler okunur | Yapıldı (2026-11-03) |
 
 Yeni kaynak ayrı koldur: Keşfü'l-Hafâ, Feyzü'l-Kadîr, Kenzü'l-Ummâl, İhyâ, Mecmaü'z-Zevâid, el-Câmiu's-Sağîr. İzinli kaynak bulunmadan eklenmez.
 
@@ -61,6 +62,50 @@ Kalan sınırlar:
 - Bazı bulgular uzun bir duanın küçük parçasıdır ("لَهُ الْمُلْكُ"): rivayet doğru olsa da parça hadisin kendisi değildir.
 - 12 örnekle bakıldı, tam doğrulama değildir.
 - Sunucu 2026-11-03'te veriyle yayınlandı (şema 11): Adım 2'ye kadar olan seviyeler araçlarda.
+
+## Adım 9: künyenin bölgesinde okuma (plan)
+
+Genel sıranın 2a-2'si. `hadis_bolge.py`; kitaplar `docs/hadis-kitaplari-plani.md`.
+
+- **Kapsam:** kaynakçada "doğrulanmadı" ya da "lafız farkıyla bulundu" alan geçişlerin, Kütüb-i Sitte ya da Muvatta'yı
+  bölüm ve numarayla gösteren tekil künyeleri (kaynağınki ve nurpedia'nınki); en az 2 kelimelik parça.
+- **Bölge:** `hadis_kutub.Index.cited` (bâb ya da kitap içi sıra, kitaba göre pencere; künye–bölge ölçümünde
+  bulunmuş parçaların %60'ında rivayet bölgedeydi, karışık künyede %7).
+- **Aday:** bölgedeki hadisler parçaya benzerliğe göre sıralanır (`hadis_adaylar.measure`); en yakın ve, puanı
+  yarısından yüksekse, ikincisi.
+- **Okuma:** Adım 7 gibi iki kör okuyucu, üç parti; yönerge `data/interim/hadis/bolge/yonerge.md`'de yazılı.
+- **Kontroller:** `same_region` (aynı bölgenin en az benzeyen hadisi, künyelerin %25'inde; aynı bâb, aynı konu) ve
+  `other_part` (aynı kitaptan başka parçanın adayı, %10). Adım 7'nin kontrolü kolaydı; `same_region` zor kontroldür.
+- **Sonucun yeri:** hüküm değildir; `hadith_support` ve kaynakçanın notu değişmez (K1'de onaylanan kural). Bulunanlar
+  `readings.json`'a `region` türüyle girer, yalnız `kisisel` profilde görünür ve hadisçi örneklemine aday olur.
+
+## Adım 9 sonucu (2026-11-03)
+
+`hadis_bolge.py`, sonuç `data/interim/hadis/bolge.{md,json}`, çiftler ve yönerge `data/interim/hadis/bolge/`.
+100 parçanın bu kitaplara giden 288 tekil künyesi var; 232'sinin bölgesinde benzerliği sıfırdan büyük aday çıktı.
+
+| Küme | Çift | İkisi de aynı söz | İkisi de değil | Ayrılan |
+|---|---|---|---|---|
+| Gerçek aday | 360 | 162 | 190 | 8 |
+| Zor kontrol (`same_region`) | 75 | 0 | 75 | 0 |
+| Kolay kontrol (`other_part`) | 34 | 0 | 34 | 0 |
+
+- Künyenin bölgesinde iki okuyucunun da aynı söz dediği rivayet bulunan: 232 künyeden 124, 98 parçadan 58
+  (Türkçe eserlerde 88 geçiş). İlişki: `by_meaning` 89, `abridged` 50, `verbatim` 23. Kitap başına çift: Tirmizî
+  53, Buhârî 38, İbn Mâce 22, Ebû Dâvûd 20, Müslim 17, Nesâî 12.
+- En düşük puanlı 10 "aynı söz" kararı elle okundu, hepsi yerinde: puanın düşüklüğü parçanın birden çok söz taşımasından
+  (salavatın içinde "أصحابي كالنجوم … خير القرون قرني"; okuyucular yalnız eşleşen kısmı saydı ve notta öbürünün
+  bulunmadığını yazdı).
+- Sonuç `readings.json`'a `tier: region` ile girdi; `find_hadith` yalnız `kisisel` profilde gösterir. `hadith_support`
+  ve kaynakçanın notu değişmedi.
+
+Kalan sınırlar:
+
+- Zor kontrol bölgenin en az benzeyen hadisidir: aynı bâbdır ama kelimeleri ortak değildir. Kelimesi benzeyen başka
+  sözü ("iki yüz" / "yetmiş") ölçmez. 109 kontrolde 0 hata, gerçek oran ≈%3'e kadar olabilir.
+- İki okuyucu aynı modeldir; uzman değildir. Bölgede olmamak künyenin yanlış olduğunu göstermez: pencere dar,
+  bâb sayımı baskıdan baskıya kayar.
+- Okunan yalnız bölgedir: künyenin başka kitapları (Müsned, Keşfü'l-Hafâ…) bu dilimde yok.
 
 ## Adım 8 durumu
 

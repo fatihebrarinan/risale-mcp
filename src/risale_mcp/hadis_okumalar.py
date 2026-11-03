@@ -8,6 +8,8 @@ Hiçbiri hüküm değildir ve `hadith_support`'u değiştirmez:
 - `candidates`: derlemde lafzı tutmayan parçanın, iki model okuyucunun okuduğu adayı (Adım 3 ve 7). `relation` iki
   okuyucunun cevabı (verbatim, abridged, by_meaning, related, different), `same` ikisi de aynı söz dedi mi.
 - `readings`: bulunan (`found`, `partly_found`) eşleşmenin okunan rivayeti; ilişki ve söz sahibi.
+- `region` (adayların içinde, `tier: region`): künyenin bölgesinde okunan rivayet (Adım 9, `hadis_bolge.py`); Hadith
+  API karşılığı varsa o kimlikle (`bukhari:6115`), yoksa JK metniyle (`jk:bukhari/5764`).
 - `flags`: rivayet denetiminin kuyrukları (reddeden ifade, başkasının sözü, yalnız mevzu kitaplarında, Peygamber'e
   bağlı görünmüyor, senet yok, zayıflatan ifade); `verdicts` ifadenin kendisi, kitabıyla.
 
@@ -18,6 +20,7 @@ import json
 from pathlib import Path
 
 from risale_mcp.hadis import read_reports
+from risale_mcp.hadis_kutub import TITLES as KUTUB_TITLES
 from risale_mcp.paths import INTERIM_DIR, LIBRARY_DIR, RAW_DIR
 
 READINGS_PATH = LIBRARY_DIR / "hadis" / "readings.json"
@@ -46,6 +49,20 @@ def build(interim: Path = INTERIM_DIR / "hadis", raw: Path = RAW_DIR, out: Path 
                                                    "in_cited_chapter": bool(cand.get("in_cited_chapter"))})
         else:
             part(row["key"])["readings"].append(reading)
+    jk_texts: dict[str, dict] = {}
+    if (bolge := interim / "bolge.json").exists():
+        for row in json.loads(bolge.read_text("utf-8"))["rows"]:
+            if row["decoy"]:
+                continue
+            a, b = row["answers"]
+            report = f"{row['book']}:{row['api']}" if row.get("api") else f"jk:{row['report']}"
+            if not row.get("api"):
+                jk_texts[report] = {"title": KUTUB_TITLES[row["book"]], "number": row["report"].split("/")[-1], "text": row["shown"],
+                                    "source": "openiti", "grades": []}
+            part(row["key"])["candidates"].append({
+                "report": report, "relation": [a["relation"], b["relation"]], "speaker": [a["speaker"], b["speaker"]],
+                "denied": bool(a["denied"] and b["denied"]), "tier": "region", "in_cited_chapter": True,
+                "same": bool(row["agree_same"] and a["relation"] in ("verbatim", "abridged", "by_meaning"))})
     for p in rivayet["parts"]:
         if p["queues"]:
             part(p["key"])["flags"] = sorted(set(part(p["key"])["flags"]) | set(p["queues"]))
@@ -56,6 +73,7 @@ def build(interim: Path = INTERIM_DIR / "hadis", raw: Path = RAW_DIR, out: Path 
              {v["report"] for p in parts.values() for v in p["verdicts"]}
     reports = {r.id: {"title": r.title, "number": r.number, "text": r.text, "source": r.source, "grades": list(r.grades)}
                for r in read_reports(raw) if r.id in wanted}
+    reports.update(jk_texts)
     result = {"parts": parts, "reports": reports}
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(result, ensure_ascii=False), "utf-8")
