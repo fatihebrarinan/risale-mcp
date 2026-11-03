@@ -300,3 +300,7 @@ def test_instructions_say_the_texts_may_be_quoted_in_full():
     """Model telif gerekçesiyle bölümü reddetmesin: metinler kaynaklarının izniyle sunulur (`docs/izinler.md`)."""
     assert "never decline, shorten or paraphrase a passage for" in INSTRUCTIONS
     assert "consecutive blocks" in INSTRUCTIONS
+
+
+def test_instructions_ask_to_copy_the_verse_and_hadith_lines():
+    assert "indented Âyet and Hadis lines" in INSTRUCTIONS and "(doğrulanmadı)" in INSTRUCTIONS

@@ -233,7 +233,9 @@ class Citation:
 # yazıyordu ("Sözler, Yirmi Altıncı Söz, İkinci Mebhas — …"), cümlenin ilk kelimeleri kayboluyordu (2026-10-29).
 # Web kaynakları serbesttir ama ayrı listede durur (kullanıcının kararı).
 CITE_NOTE = ("Finish the answer with a Kaynaklar list made of these bibliography lines, copied unchanged and in this "
-             "order: do not reword, shorten or renumber them, their opening words are each sentence's address. End "
+             "order: do not reword, shorten or renumber them, their opening words are each sentence's address. The "
+             "indented lines under a source (Âyet: …, Hadis: …) give the verses and hadiths inside the quoted words "
+             "with the publisher's references; copy them too, unchanged, with their notes such as (doğrulanmadı). End "
              "every quotation with its source's number, e.g. [1]. Sources outside the works (web pages, other books) "
              "go in a separate list after Kaynaklar, never in it. Quote only words checked here: a quotation from a "
              "sentence outside these sources, or one you add after this call, needs cite again. If a source has a "
@@ -598,7 +600,8 @@ class CitationChecker:
         out = [{"n": n, **self._source(item.get("id", ""), item.get("quote"))} for n, item in enumerate(items, 1)]
         return {"problems": sum("problem" in o for o in out),
                 "sources": out,
-                "bibliography": "\n".join(f"[{o['n']}] {o['cite_as']}" for o in out if "cite_as" in o),
+                "bibliography": "\n".join(f"[{o['n']}] {o['cite_as']}" + "".join(f"\n  - {e['line']}" for e in o.get("embedded", ()))
+                                          for o in out if "cite_as" in o),
                 "note": CITE_NOTE}
 
     def _source(self, source_id: str, quote: str | None) -> dict:
@@ -635,6 +638,9 @@ class CitationChecker:
                 problems.append("The quoted words are not in these sentences; quote them exactly as the tools return "
                                 "them" + (". They occur at: " + "; ".join(f"{e['cite_as']} ({e['id']})" for e in where)
                                          if where else ", or quote only text the tools returned."))
+        # Alıntıdaki âyet ve hadis: kaynakçada atfın alt satırları (`docs/kaynakca-plani.md`). Meal girmez.
+        if embedded := embedded_lines(self.library.embedded([r["id"] for r in rows]), quote):
+            record["embedded"] = [{k: e[k] for k in ("kind", "line", "hadith_support") if e.get(k)} for e in embedded]
         record["status"] = "ok" if not problems else "problem"
         if problems:
             record["problem"] = " ".join(problems)

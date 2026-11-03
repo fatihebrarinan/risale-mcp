@@ -242,3 +242,21 @@ def test_embedded_lines_in_the_real_database(sentence_id, line):
         assert line in [p["line"] for p in lib.embedded([sentence_id])]
     finally:
         lib.close()
+
+
+@pytest.mark.skipif(not DB_PATH.exists(), reason="gerçek veritabanı yok")
+def test_cite_lists_the_verses_and_hadiths_of_the_quotation_under_its_source():
+    lib = Library(DB_PATH)
+    try:
+        result = CitationChecker(lib).sources([
+            {"id": "lemalar/11/nukte-01/c001"},
+            {"id": "lemalar/10/c002", "quote": "يَوْمَ تَجِدُ كُلُّ نَفْسٍ"}])
+        lines = result["bibliography"].splitlines()
+        assert lines[0].startswith("[1] Lem'alar › Onbirinci Lem'a")
+        assert lines[1].startswith("  - Hadis: Müsnedü'l-Firdevs") and lines[1].endswith("(doğrulanmadı)")
+        assert lines[2].startswith("[2] ") and lines[3] == "  - Âyet: Âl-i İmrân Sûresi, 3:30"
+        assert result["sources"][1]["embedded"] == [{"kind": "ayet", "line": "Âyet: Âl-i İmrân Sûresi, 3:30"}]
+        # Kaynakçanın alt satırları atıf sayılmaz: denetim yalnız numaralı satırları atıf bulur.
+        assert len(CitationChecker(lib).check(result["bibliography"])) == 2
+    finally:
+        lib.close()

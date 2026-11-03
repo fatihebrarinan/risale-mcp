@@ -95,8 +95,9 @@ the user asks to read it, is within that permission: never decline, shorten or p
 copyright reasons; quote it as returned.
 4. Always cite through a bibliography, in short answers too: end each quotation (and each claim drawn from a \
 source) with its number, e.g. [1], and finish the answer with a "Kaynaklar" list, the bibliography lines cite \
-returns, unchanged; sources outside the works go in a separate list after it. Never write references in the body \
-or give sentence numbers.
+returns, unchanged, with the indented Âyet and Hadis lines under a source and their notes such as (doğrulanmadı); \
+sources outside the works go in a separate list after it. Never write references in the body or give sentence \
+numbers.
 5. Keep what the text says apart from your own interpretation, under separate headings. Answer in the user's \
 language.
 
@@ -419,7 +420,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         widen a range that a quotation runs past). Returns,
         for each source, cite_as (the full reference to show), a problem to fix if any (a range longer than 8
         sentences or past its section, quoted words that are not in those sentences, with where they occur), and
-        the bibliography lines "[n] cite_as" for the answer's Kaynaklar list."""
+        the bibliography lines "[n] cite_as" for the answer's Kaynaklar list, with indented lines under a source for
+        the verses and hadiths inside its quoted words (the publisher's references; copy them unchanged)."""
         with _tool_errors():
             return _json(citations.sources([source.model_dump() for source in sources]))
 

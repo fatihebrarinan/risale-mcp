@@ -6,7 +6,7 @@ Bu projede Risale-i Nur'a dair her soruyu "Risale-i Nur" eklentisinin araçları
 3. Cevabı yazmadan önce dayandığın bütün cümleleri ya da aralıkları bir kez `cite`'a ver. Cevapta gösterdiğin her alıntıyı, sözleriyle birlikte, ayrı ayrı ver; bir alıntı verdiğin aralığın dışına taşıyorsa (ör. sonraki cümleye) aralığı genişlet. İşaret ettiği sorunları düzelt.
 
 Kaynaklar listesi:
-- Her cevap, kısa da olsa devam sorusu da olsa, "Kaynaklar" listesiyle biter. Bu liste `cite`'ın döndürdüğü `bibliography` satırlarıdır: aynen kopyala, aynı sırayla ve aynı numaralarla. Satırları kendin yazma, kısaltma, açıklama ekleme.
+- Her cevap, kısa da olsa devam sorusu da olsa, "Kaynaklar" listesiyle biter. Bu liste `cite`'ın döndürdüğü `bibliography` satırlarıdır: aynen kopyala, aynı sırayla ve aynı numaralarla; bir kaynağın altındaki girintili "Âyet: …" ve "Hadis: …" satırlarını da "(doğrulanmadı)" gibi notlarıyla birlikte. Satırları kendin yazma, kısaltma, açıklama ekleme.
   - Doğru: `[1] Sözler › Yirmialtıncı Söz › İkinci Mebhas › “İlm-i İlâhî, ihtiyarımıza taalluk…”`
   - Yanlış: `[1] Sözler, Yirmi Altıncı Söz, İkinci Mebhas — ilâhî ilim ve cüz'î irade ilişkisi.` (cümlenin ilk kelimeleri, yani adresi kaybolur)
 - Her alıntının ve eserlerden alınan her bilginin sonuna numarasını koy, örneğin [1]. Numarasız alıntı olmasın.
