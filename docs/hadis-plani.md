@@ -96,8 +96,10 @@ Genel sıranın 2a-2'si. `hadis_bolge.py`; kitaplar `docs/hadis-kitaplari-plani.
 - En düşük puanlı 10 "aynı söz" kararı elle okundu, hepsi yerinde: puanın düşüklüğü parçanın birden çok söz taşımasından
   (salavatın içinde "أصحابي كالنجوم … خير القرون قرني"; okuyucular yalnız eşleşen kısmı saydı ve notta öbürünün
   bulunmadığını yazdı).
-- Sonuç `readings.json`'a `tier: region` ile girdi; `find_hadith` yalnız `kisisel` profilde gösterir. `hadith_support`
-  ve kaynakçanın notu değişmedi.
+- Sonuç `readings.json`'a `tier: region` ile girdi (yalnız `kisisel`). Kullanıcının kararıyla (2026-11-03) bulunanlar
+  "okumayla bulundu" sayılır: `region.json`, iki profilde `hadith_region`; künyesi yalnız anılmış geçişin dayanağı
+  `read_chapter` (genelde 100 geçiş), metni zaten bulunmuş 20 geçişte yalnız kaynakçanın notu değişir. Genel
+  kaynakçada hadisli cümlelerin 50 satırı "okumayla bulundu" ("doğrulanmadı" 449'dan 399'a).
 
 Kalan sınırlar:
 

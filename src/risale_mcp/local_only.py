@@ -34,7 +34,7 @@ RAW_ROLES = {
     "nurpedia": "Ham sayfalar yerelde: hadis işaretleri ve künyeleri (Aşama 14); sunucuya yalnız sonuçları çıkar",
     "sanadset": "Hadis katmanı (Aşama 14): CC BY 4.0, eşleşen rivayetler sunucuya gider",
     "hadith_api": "Hadis katmanı (Aşama 14): Unlicense; âlimlerin dereceleri",
-    "openiti": "Hadis kitapları (Kütüb-i Sitte, Muvatta; bâblı): CC BY-NC-SA 4.0, yalnız yerelde (`docs/hadis-kitaplari-plani.md`)",
+    "openiti": "Hadis kitapları (Kütüb-i Sitte, Muvatta; bâblı): CC BY-NC-SA 4.0, kitaplar yerelde; okumayla bulunan rivayetler sunucuda (`docs/izinler.md`)",
     "risaleoku": "Kullanılmıyor: sitenin kapanan eski sayfaları, karşılaştırma için",
     "yeniasya": "Kullanılmıyor: bozuk kodlu PDF metni, karşılaştırma için",
 }

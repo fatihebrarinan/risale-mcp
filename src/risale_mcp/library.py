@@ -42,6 +42,8 @@ OLD_NAMES = json.loads((Path(__file__).parent / "books" / "old_names.json").read
 HADITH_NOTE = ("hadith_support is evidence, not a verdict: found = the Arabic occurs word for word in a report and is long "
                "enough to identify it; partly_found = a report carries most of it (it may be abridged, altered or quoted by "
                "meaning); located_chapter = a short part that occurs in the cited chapter of the cited book at this place; "
+               "read_chapter = two blind model readers found the same saying (often in other words or abridged) in the "
+               "region of the cited book the citation points to (read_reports); "
                "cited = a hadith book is cited for it, its report was not identified from the text, any reports "
                "listed only share its words; phrase_found = the words occur in a report but are too short to identify it, "
                "and no book is cited: do not present that report as its source; marked = only the source marks it as a "
@@ -170,6 +172,7 @@ def _placeholders(items) -> str:
 AYAH_LINE_NOTES = {"iktibas": "iktibas", "dizgi_suphesi": "numara metinle tutmuyor", "near": "komşu âyette"}
 # Hadis: gösterilen künye nâşirindir. Derlemde künyedeki kitapta bulunmadıkça "doğrulanmadı" der.
 HADITH_PARTLY = "lafız farkıyla bulundu"
+HADITH_READ = "okumayla bulundu"          # künyenin bölgesinde iki kör okuyucu aynı söz dedi (kullanıcının kararı)
 HADITH_UNVERIFIED = "doğrulanmadı"
 _QUALIFIER_SUFFIX = {"iktibas": "iktibas", "by_meaning": "mânen"}
 
@@ -584,10 +587,14 @@ class Library:
         books = {c["book"] for c in citations if c["book"]}
         reports = self.conn.execute("SELECT r.id, r.title FROM hadith_matches m JOIN hadith_reports r ON r.id = m.report_id"
                                     " WHERE m.hadith_key = ?", (r["hadith_key"],)).fetchall()
+        read = self.conn.execute("SELECT 1 FROM hadith_region WHERE paragraph_id = ? AND ord = ?",
+                                 (r["paragraph_id"], r["ord"])).fetchone()
         if support == "located_chapter" or (support == "found" and _in_books(reports, books)):
             note = None
         elif support == "partly_found" and _in_books(reports, books):
             note = HADITH_PARTLY
+        elif read:
+            note = HADITH_READ
         else:
             note = HADITH_UNVERIFIED
         notes = ", ".join(filter(None, (shared, note)))
@@ -835,6 +842,9 @@ class Library:
             parts.append({
                 "hadith_support": support, "occurrences": len(places), "reports_total": part[0] if part else 0,
                 "cited_in": self._hadith_citations(k),
+                "read_reports": [{**_report_summary(r), "relation": r["relation"]} for r in self.conn.execute(
+                    "SELECT DISTINCT r.*, g.relation FROM arabic a JOIN hadith_region g ON g.paragraph_id = a.paragraph_id"
+                    " AND g.ord = a.ord JOIN hadith_reports r ON r.id = g.report_id WHERE a.hadith_key = ? LIMIT ?", (k, MAX_CITATIONS))],
                 "located_reports": [_report_summary(r) for r in self.conn.execute(
                     "SELECT DISTINCT r.* FROM arabic a JOIN hadith_located l ON l.paragraph_id = a.paragraph_id AND l.ord = a.ord"
                     " JOIN hadith_reports r ON r.id = l.report_id WHERE a.hadith_key = ? LIMIT ?", (k, MAX_CITATIONS))],

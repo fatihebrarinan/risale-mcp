@@ -40,6 +40,7 @@ from risale_mcp.normalize import search_words
 from risale_mcp.paths import HADIS_PATH, INTERIM_DIR, QURAN_PATH, RAW_DIR, ROOT
 from risale_mcp.profiles import KISISEL, PROFILES, Profile
 from risale_mcp.hadis_okumalar import READINGS_PATH
+from risale_mcp.hadis_bolge import REGION_PATH
 from risale_mcp.arabic_kinds import AYAH_FIXES, AYAH_SUSPECTS, Classifier, read_meal_evidence, write_report
 from risale_mcp.quran import SURA_NAMES, Match, Quote, Quran, pieces, skeleton, sura_ref, verse_context
 
@@ -411,6 +412,39 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
     report.counts["hadith_reports"] = len(used)
 
 
+READ_FROM = ("cited", "phrase_found", "marked", "unsupported")   # okumayla bulunan bu dayanakları `read_chapter` yapar
+
+
+def _insert_region(conn: sqlite3.Connection, path: Path, report: BuildReport) -> None:
+    """Künyenin bölgesinde okumayla bulunan rivayetler, geçiş başına: geçişin kendi künyesi (yoksa nurpedia'nınki)
+    o kitabı aynı yazılışla gösteriyorsa. Metni derlemde bulunmuş geçişin dayanağı değişmez, yalnız not."""
+    data = json.loads(path.read_text(encoding="utf-8"))
+    wanted = {(e["key"], e["book"], e["citation"]): e for e in data["entries"]}
+    by_key: dict[str, list] = {}
+    for e in data["entries"]:
+        by_key.setdefault(e["key"], []).append(e)
+    rows, used = [], set()
+    for paragraph, ord_, key in conn.execute(
+            f"SELECT paragraph_id, ord, hadith_key FROM arabic WHERE hadith_key IN ({','.join('?' * len(by_key))})",
+            list(by_key)).fetchall():
+        own = conn.execute("SELECT book, raw FROM hadith_citations WHERE paragraph_id = ? AND ord = ?", (paragraph, ord_)).fetchall()
+        own = own or conn.execute("SELECT book, raw FROM hadith_citations WHERE hadith_key = ? AND origin = 'nurpedia'", (key,)).fetchall()
+        for book, raw in own:
+            if e := wanted.get((key, book, raw)):
+                rows.append((paragraph, ord_, e["report"], ",".join(e["relation"])))
+                used.add(e["report"])
+    have = {r[0] for r in conn.execute("SELECT id FROM hadith_reports")}
+    conn.executemany("INSERT INTO hadith_reports VALUES (?, ?, ?, ?, ?, ?)",
+                     [(rid, r["title"], r["number"], r["text"], r["source"],
+                       json.dumps(r["grades"], ensure_ascii=False) if r["grades"] else None)
+                      for rid, r in data["reports"].items() if rid in used - have])
+    conn.executemany("INSERT INTO hadith_region VALUES (?, ?, ?, ?)", list(dict.fromkeys(rows)))
+    places = {(p, o) for p, o, *_ in rows}
+    conn.executemany(f"UPDATE arabic SET hadith_support = 'read_chapter' WHERE paragraph_id = ? AND ord = ?"
+                     f" AND hadith_support IN ({','.join('?' * len(READ_FROM))})", [(p, o, *READ_FROM) for p, o in places])
+    report.counts["hadith_region"] = len(places)
+
+
 def _insert_readings(conn: sqlite3.Connection, path: Path, report: BuildReport) -> None:
     """Model okuması ve rivayet denetimi (`hadis_okumalar.py`), yalnız veritabanında bulunan parçalar için."""
     data = json.loads(path.read_text(encoding="utf-8"))
@@ -575,6 +609,8 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
                 _insert_links(conn, report)
             if hadis_path and hadis_path.exists():
                 _insert_hadith(conn, hadis_path, report)
+                if REGION_PATH.exists():                              # okumayla bulunan: iki profilde de
+                    _insert_region(conn, REGION_PATH, report)
                 if profile.private and READINGS_PATH.exists():      # hadisçi görmeden genel sunucuya çıkmaz
                     _insert_readings(conn, READINGS_PATH, report)
             sura_rows = suras.rows()

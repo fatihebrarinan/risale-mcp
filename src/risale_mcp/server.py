@@ -102,7 +102,7 @@ numbers.
 language.
 
 Layers that are not the author's words:
-- Hadiths: a hadith part carries hadith_support, the evidence for it (found, partly_found, located_chapter, cited, phrase_found, marked, unsupported). \
+- Hadiths: a hadith part carries hadith_support, the evidence for it (found, partly_found, located_chapter, read_chapter, cited, phrase_found, marked, unsupported). \
 It is evidence, not a verdict: never rule on a hadith yourself, never call it sound or weak from memory. With \
 phrase_found or cited do not present a listed report as the source of the words; located_reports are the ones found \
 through the citation. find_hadith \

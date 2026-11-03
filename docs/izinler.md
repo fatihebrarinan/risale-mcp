@@ -2,7 +2,7 @@
 
 Eserlerini kullanmamıza kimin, hangi şartla izin verdiğinin tek listesi. Yeni kaynak eklenmeden önce buraya bakılır;
 izin alınınca buraya yazılır. Yazışmalar ve taslaklar: `docs/kaynak-bilgilendirme-epostasi.md`,
-`docs/akgunduz-izin-epostasi.md`. Son güncelleme: 2026-11-02.
+`docs/akgunduz-izin-epostasi.md`. Son güncelleme: 2026-11-03.
 
 ## Açıkça izin verenler
 
@@ -24,6 +24,7 @@ Bize özel bir izin değildir; yayımlanan şartlara uyarak kullanıyoruz.
 | Keşif Yolculukları (Ediz Sözüer) | "Asliyetini korumak ve kaynak belirtmek" | Ta'likat'ın Türkçesi, genel sunucuda |
 | Tanzil Project | Metin değiştirilmez, kaynak ve bağlantı verilir | Kur'ân metni, genel sunucuda |
 | Sanadset 650K (Mghari, Bouras, El Hibaoui; Mendeley Data 5xth87zwb5) | CC BY 4.0: kaynak gösterilir | Hadis eşlemesi (Aşama 14), genel sunucuda yalnız eşleşen rivayetler. Not: makale kaynak siteleri bilerek gizler ("we anonymize the website and Hadith pages"), kitap baskısı vermez; "kamu malı" ifadesi yazarların beyanıdır. Lisans yazarların veri setini kapsar, üst kaynağın hakkı doğrulanamadı. Metnin doğruluğu kullanıcının kararıyla kabul edildi (2026-11-02) |
+| OpenITI (KITAB projesi, Aga Khan University; Zenodo sürüm kaydı) | CC BY-NC-SA 4.0: kaynak gösterilir (OpenITI, dosya ve sürüm), ticari kullanılmaz, türetilen veri aynı lisansla paylaşılır | Kütüb-i Sitte ve Muvatta'nın JK baskıları (`docs/hadis-kitaplari-plani.md`): kitaplar yalnız yerelde; künyenin bölgesinde okumayla bulunan rivayetlerin 6'sı yalnız JK metniyle genel sunucuda (2026-11-03) |
 | Hadith API (fawazahmed0/hadith-api) | Unlicense. Yalnız Arapça ve dereceler; `tur-*` mealler alınmaz, mütercimleri belli değil | Hadis dereceleri (Aşama 14), genel sunucuda eşleşen rivayetlerle |
 | Diyanet mealleri (Tanzil üzerinden) | Ticari olmayan kullanım; ortak derlemlere girerse Diyanet'ten izin gerekir | İki meal, genel sunucuda |
 

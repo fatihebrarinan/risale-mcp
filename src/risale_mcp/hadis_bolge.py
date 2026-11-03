@@ -3,7 +3,7 @@
 
     uv run python -m risale_mcp.hadis_bolge prepare    # data/interim/hadis/bolge/batch-N.json, key.json, yonerge.md
     (iki okuyucu: bolge/<A|B>-<N>-answers.json; yönerge yonerge.md'de)
-    uv run python -m risale_mcp.hadis_bolge score      # bolge.{md,json}
+    uv run python -m risale_mcp.hadis_bolge score      # bolge.{md,json}, data/library/hadis/region.json
 
 Kaynakçada "doğrulanmadı" ya da "lafız farkıyla bulundu" yazan geçişlerin künyesi Kütüb-i Sitte ya da Muvatta'yı
 bölüm ve numarayla gösteriyorsa künyenin bölgesi (`hadis_kutub.Index.cited`: bâb ya da kitap içi sıra, kitaba göre
@@ -15,8 +15,11 @@ Okuyucu yalnız iki Arapça metni görür (kitap, künye, puan gizli). Kontrolle
 - `other_part`: aynı kitaptan başka bir parçanın en yakın adayı (Adım 7'nin kolay kontrolü).
 Adım 7'nin kontrolü kolaydı (rastgele çift başka konudur); `same_region` o eksiği kapatmak içindir.
 
-Okuma hüküm değildir: `hadith_support` ve kaynakçanın notu değişmez (kullanıcının onayladığı plan, K1 madde 5).
-Sonuç `readings.json`'a `region` türüyle girer, yalnız `kisisel` profilde görünür, hadisçi örneklemine aday olur.
+Kullanıcının kararı (2026-11-03): iki okuyucunun da aynı söz dediği rivayet künyenin bölgesindeyse geçiş "okumayla
+bulundu" sayılır. `score` bunları `data/library/hadis/region.json`'a yazar (rivayetin metniyle: Hadith API karşılığı
+varsa harekeli metin ve dereceler, yoksa JK metni); `build_db` iki profilde de yükler, künyesi yalnız anılmış
+(`cited`, `phrase_found`, `marked`, `unsupported`) geçişin dayanağı `read_chapter` olur, kaynakçanın notu
+"okumayla bulundu"dur. Bütün okumalar (bulunmayanlar dahil) `readings.json`'a `region` türüyle de girer (yalnız yerel).
 """
 
 import json
@@ -28,7 +31,7 @@ from pathlib import Path
 from risale_mcp.hadis_adaylar import kept_words, measure, stems
 from risale_mcp.hadis_kutub import Index, citations, load
 from risale_mcp.hadis_okuma import score as score_pairs, same
-from risale_mcp.paths import DB_PATH, INTERIM_DIR
+from risale_mcp.paths import DB_PATH, INTERIM_DIR, LIBRARY_DIR, RAW_DIR
 
 OUT = INTERIM_DIR / "hadis" / "bolge"
 BATCHES = 3
@@ -190,6 +193,34 @@ def render(result: dict) -> str:
     return "\n".join(lines) + "\n"
 
 
+REGION_PATH = LIBRARY_DIR / "hadis" / "region.json"
+
+
+def export(result: dict, raw: Path = RAW_DIR, out: Path = REGION_PATH) -> int:
+    """İki okuyucunun da aynı söz dediği gerçek çiftler: (parça, kitap, künye) -> rivayet, metniyle."""
+    from risale_mcp.hadis import TITLES as API_TITLES
+    from risale_mcp.hadis_kutub import TITLES as BOOK_TITLES
+    found = [r for r in result["rows"] if not r["decoy"] and all(same(a) for a in r["answers"])]
+    api: dict[str, dict] = {}
+    for book in {r["book"] for r in found if r.get("api")}:
+        for h in json.loads((raw / "hadith_api" / f"ara-{book}.json").read_text("utf-8"))["hadiths"]:
+            api[f"{book}:{h['hadithnumber']}"] = h
+    entries, reports = [], {}
+    for r in found:
+        rid = f"{r['book']}:{r['api']}" if r.get("api") and f"{r['book']}:{r['api']}" in api else f"jk:{r['report']}"
+        if rid.startswith("jk:"):
+            reports[rid] = {"title": BOOK_TITLES[r["book"]], "number": r["report"].split("/")[-1], "text": r["shown"],
+                            "source": "openiti", "grades": []}
+        else:
+            h = api[rid]
+            reports[rid] = {"title": API_TITLES[r["book"]], "number": str(h["hadithnumber"]), "text": h["text"],
+                            "source": "hadith_api", "grades": [[g["name"], g["grade"]] for g in h.get("grades") or ()]}
+        entries.append({"key": r["key"], "book": r["book"], "citation": r["citation"], "report": rid,
+                        "relation": sorted({a["relation"] for a in r["answers"]})})
+    out.write_text(json.dumps({"entries": entries, "reports": reports}, ensure_ascii=False, indent=0), "utf-8")
+    return len(entries)
+
+
 def main() -> None:
     if sys.argv[1:] == ["prepare"]:
         print(prepare())
@@ -198,6 +229,7 @@ def main() -> None:
     (OUT.parent / "bolge.json").write_text(json.dumps(result, ensure_ascii=False, indent=1), "utf-8")
     (OUT.parent / "bolge.md").write_text(render(result), "utf-8")
     print("\n".join(summary(result)))
+    print(f"yazıldı: {REGION_PATH} ({export(result)} çift); şimdi `uv run python -m risale_mcp.build_db` (her profil)")
 
 
 if __name__ == "__main__":

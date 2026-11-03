@@ -36,8 +36,9 @@ içeriyorsa kaynakçada onun adresi de verilir. Hadiste kaynağın (nâşirin) k
    - notsuz: Arapçası derlemde kelimesi kelimesine (`found`) bulundu ve bulunan rivayetlerden biri künyedeki
      kitapta; ya da kısa parça künyenin anılan bölümünde (`located_chapter`).
    - "(lafız farkıyla bulundu)": `partly_found`, künyedeki kitapta.
-   - "(doğrulanmadı)": öbür bütün künyeli durumlar. Model okuması (Adım 7) da bu notu kaldırmaz: hadisçi görmeden
-     doğrulama sayılmaz.
+   - "(okumayla bulundu)": künyenin bölgesinde (Kütüb-i Sitte, Muvatta) iki kör okuyucu aynı sözü buldu (Adım 9;
+     kullanıcının kararı, 2026-11-03: bu bulgular "doğrulanmadı" kalmaz).
+   - "(doğrulanmadı)": öbür bütün künyeli durumlar. Adım 3–7'nin okumaları bu notu kaldırmaz.
    - künye yoksa: "Hadis (kaynakta künye yok)". `kind_unverified` parça: "hadis olarak sunulmuş (künye yok)".
 6. **Adım 3–7 yalnız `kisisel` profilde** araçlara girer, hadisçinin kararlarına kadar genel sunucuya çıkmaz. Kaynakça
    kuralları (madde 1–5) iki profilde de aynıdır.

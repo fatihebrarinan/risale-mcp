@@ -245,6 +245,20 @@ def test_embedded_lines_in_the_real_database(sentence_id, line):
 
 
 @pytest.mark.skipif(not DB_PATH.exists(), reason="gerçek veritabanı yok")
+def test_a_hadith_found_by_reading_in_the_cited_region_counts_as_found():
+    """Kullanıcının kararı (2026-11-03): künyenin bölgesinde iki okuyucunun aynı söz dediği rivayet "okumayla bulundu"."""
+    lib = Library(DB_PATH)
+    try:
+        lines = [p for p in lib.embedded(["mektubat/19/mucizat-i-ahmediye-asm/yedinci-nukteli-isaret/misal-15/c009"])
+                 if p["kind"] == "hadis"]
+        assert lines[0]["line"].endswith("(okumayla bulundu)") and lines[0]["hadith_support"] == "read_chapter"
+        part = lib.find_hadith("خُذْ مَا جِئْتَ بِهِ وَاقْبِضْ عَلَيْهِ وَلَا تَكُبَّهُ")["parts"][0]
+        assert part["hadith_support"] == "read_chapter" and part["read_reports"][0]["id"] == "tirmidhi:3839"
+    finally:
+        lib.close()
+
+
+@pytest.mark.skipif(not DB_PATH.exists(), reason="gerçek veritabanı yok")
 def test_cite_lists_the_verses_and_hadiths_of_the_quotation_under_its_source():
     lib = Library(DB_PATH)
     try:

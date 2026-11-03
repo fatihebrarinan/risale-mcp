@@ -12,6 +12,8 @@ Dayanak (`arabic.hadith_support`), en güçlüden:
     partly_found  bir rivayet parçanın yarısından çoğunu ya da aynı harfleri kelime sınırı tutmadan taşıyor:
                   kısaltılmış, değiştirilmiş ya da mânen nakil olabilir
     located_chapter  kısa parça, bu geçişin künyesindeki kitabın anılan bölümünde kelime sınırıyla geçiyor
+    read_chapter  künyenin bölgesindeki (Kütüb-i Sitte, Muvatta; bâb ya da kitap içi sıra) bir rivayeti iki kör okuyucu
+                  aynı söz dedi (`hadis_bolge.py`; kullanıcının kararıyla bulundu sayılır, 2026-11-03)
     cited         tam metni ayırt edilemedi, ama hadis kitabı künyesi var (kaynakça, risaleoku meali, nurpedia)
     phrase_found  sözler bir rivayette geçiyor, ama rivayeti ayırt etmeye kısa ve künyesi yok
     marked        yalnız kaynak hadis diye işaretlemiş
@@ -69,6 +71,7 @@ MAIN_BOOKS = ("مسند أحمد بن حنبل", "صحيح ابن حبان", "ا
 CAUTION_BOOKS = re.compile(r"موضوع|الضعفاء|الضعيف|المجروحين|الأباطيل|تنزيه الشريعة|اللآلئ")
 _ETC = skeleton("الخ")
 ATTRIBUTION = {"hadith_api": "Hadith API (github.com/fawazahmed0/hadith-api), Unlicense",
+               "openiti": "OpenITI (KITAB project), JK editions, CC BY-NC-SA 4.0",
                "sanadset": "Sanadset 650K (Mghari, Bouras, El Hibaoui, Data in Brief 2022), CC BY 4.0"}
 
 
@@ -261,7 +264,7 @@ def build(db: Path = DB_PATH, raw: Path = RAW_DIR, out: Path = HADIS_PATH) -> Co
     return counts
 
 
-SUPPORT_ORDER = ("found", "partly_found", "located_chapter", "cited", "phrase_found", "marked", "unsupported")
+SUPPORT_ORDER = ("found", "partly_found", "located_chapter", "read_chapter", "cited", "phrase_found", "marked", "unsupported")
 
 
 def support(entry: dict | None, kind_source: str, cited: bool | None = None, source: str | None = None) -> str | None:

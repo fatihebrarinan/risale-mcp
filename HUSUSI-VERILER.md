@@ -35,9 +35,10 @@ Ham kaynak verisi hiçbir zaman sunucuya gitmez.
 | `rasaelalnour` | 3 MB | Yalnız yerel harekeli Mesnevî; izin vermedi, sunucuya çıkmaz |
 | `qurancom` | 1 MB | Yalnız yerel harekeli Mesnevî'deki âyetlerin çözümü |
 | `kastamonur` | 1 MB | Telif tarihi sayfaları kullanımda; Nutuk ve Makalat artık risaleoku'dan; izin var (`docs/izinler.md`) |
-| `nurpedia` | 8 MB | Yalnız yerel: hadis işaretlerinin denetimi (Aşama 14); metni sunucuya çıkmaz |
+| `nurpedia` | 8 MB | Ham sayfalar yerelde: hadis işaretleri ve künyeleri (Aşama 14); sunucuya yalnız sonuçları çıkar |
 | `sanadset` | 1.431 MB | Hadis katmanı (Aşama 14): CC BY 4.0, eşleşen rivayetler sunucuya gider |
 | `hadith_api` | 44 MB | Hadis katmanı (Aşama 14): Unlicense; âlimlerin dereceleri |
+| `openiti` | 24 MB | Hadis kitapları (Kütüb-i Sitte, Muvatta; bâblı): CC BY-NC-SA 4.0, kitaplar yerelde; okumayla bulunan rivayetler sunucuda (`docs/izinler.md`) |
 | `risaleoku` | 2 MB | Kullanılmıyor: sitenin kapanan eski sayfaları, karşılaştırma için |
 | `yeniasya` | 5 MB | Kullanılmıyor: bozuk kodlu PDF metni, karşılaştırma için |
 

@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 12
+SCHEMA_VERSION = 13
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -213,6 +213,15 @@ CREATE TABLE hadith_matches (
     report_id  TEXT NOT NULL REFERENCES hadith_reports(id),
     PRIMARY KEY (hadith_key, rank)
 );
+-- Künyenin bölgesinde okumayla bulunan rivayet (`hadis_bolge.py`, `region.json`): iki profilde de. Geçiş başına; künyesi
+-- yalnız anılmış geçişin dayanağı `read_chapter` olur, kaynakçanın notu "okumayla bulundu"dur (kullanıcının kararı).
+CREATE TABLE hadith_region (
+    paragraph_id TEXT NOT NULL,
+    ord          INTEGER NOT NULL,
+    report_id    TEXT NOT NULL REFERENCES hadith_reports(id),
+    relation     TEXT NOT NULL                     -- iki okuyucunun cevabı: verbatim, abridged, by_meaning
+);
+CREATE INDEX hadith_region_place ON hadith_region(paragraph_id, ord);
 -- Model okuması ve rivayet denetimi (`hadis_okumalar.py`): yalnız `kisisel` profilde dolu, genelde boş. Hüküm değildir.
 -- kind: candidate (derlemde lafzı tutmayan parçanın okunan adayı), match (bulunan eşleşmenin okunan rivayeti).
 CREATE TABLE hadith_readings (
