@@ -90,3 +90,11 @@ B3'ün ölçütü: veritabanının hadis ve âyet sayıları ve araç çıktıla
   `arabic.hadith_support`, `hadith_reports`, `hadith_matches`, `hadith_located`, `hadith_region`, `hadith_readings`,
   `hadith_flags`, `hadith_verdicts`, `hadith_citations`, `hadith_parts`, `ayah_links` önceki kurulumla birebir aynı.
   Genelde yerel dosya yüklenmez (`links` 3.315, kisisel 4.826).
+- **B4:** `links_kuran.py`; âyet alıntısı (`kuran/quote`: kisisel 10.263 tekil bağ, genel 9.860 civarı), âyet
+  ilişkileri (`kuran/relation`: 977) ve eski adlar (`risale/reference`: 15). Metinden kurallarla çıktıkları için
+  `build_db` her profilde hesaplar ve `links` tablosuna yazar; yerel profil dosyaya döker (`computed: build_db`),
+  `build_db` bu dosyaları geri okumaz. Bütün eski tablolar yine birebir aynı; doğrulamada sorun 0.
+- **B5:** `get_hadith` ters yönü verir (`linked_in_works`: rivayete bağlı Risale cümleleri, yöntem ve ilişkiyle;
+  yerel model okumalarının adayları girmez). Öbür araçların çıktısı değişmedi (tablolar aynı).
+
+HA1 bitti (2026-11-03). Yayın yapılmadı: şema 14, deploy veriyle yapılmalı.

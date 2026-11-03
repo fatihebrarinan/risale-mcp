@@ -896,7 +896,23 @@ class Library:
         row = self.conn.execute("SELECT * FROM hadith_reports WHERE id = ?", (report_id,)).fetchone()
         if row is None:
             raise LibraryError(f"No report with id {report_id!r}; use the ids find_hadith returns.")
-        return _report_summary(row) | {"text": row["text"], "source": ATTRIBUTION[row["source"]], "note": HADITH_NOTE}
+        return _report_summary(row) | {"text": row["text"], "source": ATTRIBUTION[row["source"]],
+                                       **({"linked_in_works": places} if (places := self._report_places(report_id)) else {}),
+                                       "note": HADITH_NOTE}
+
+    def _report_places(self, report_id: str, limit: int = MAX_CITATIONS) -> list[dict]:
+        """Ters yön: rivayete bağlı Risale cümleleri, bağ tablosundan (`links`). Model okumalarının adayları
+        (yerel `reading_lead`) girmez, onlar `find_hadith`'in `model_readings`'indedir."""
+        from risale_mcp.links_hadis import target
+        rows = self.conn.execute(
+            "SELECT l.source, l.method, l.relation, s.ref, s.incipit, s.text FROM links l JOIN sentences s ON s.id = l.source"
+            " WHERE l.target = ? AND l.file != 'hadis/reading_lead.jsonl' ORDER BY l.strength = 'weak', s.seq",
+            (target(report_id),)).fetchall()
+        out: dict[str, dict] = {}
+        for r in rows:
+            out.setdefault(r["source"], {"id": r["source"], "cite_as": hit_cite(r["ref"], r["incipit"], r["text"]),
+                                         "method": r["method"], "relation": r["relation"]})
+        return list(out.values())[:limit]
 
     def _sura_number(self, sura: str) -> int:
         sura = str(sura).strip()

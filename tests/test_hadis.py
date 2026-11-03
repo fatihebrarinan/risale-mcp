@@ -212,3 +212,9 @@ def test_find_hadith_needs_arabic(library):
     with pytest.raises(LibraryError):
         library.find_hadith("haşir")
     assert library.find_hadith("لا يوجد هذا الكلام ابدا في شيء")["parts"] == []
+
+
+def test_get_hadith_lists_where_the_works_quote_it(library):
+    """Ters yön (HA1, B5): rivayetten Risale'deki cümleye, bağ tablosundan."""
+    places = library.hadith("bukhari:1")["linked_in_works"]
+    assert places[0]["id"] == "sozler/11/c009" and places[0]["method"] == "corpus" and places[0]["relation"] == "verbatim"

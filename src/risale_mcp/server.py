@@ -333,7 +333,10 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     def get_hadith(
         id: Annotated[str, Field(description="A report id from find_hadith.")],
     ) -> str:
-        """The full Arabic text of a report, its book and number, scholars' grades where held, and its source."""
+        """The full Arabic text of a report, its book and number, scholars' grades where held, its source, and
+        where the works quote it (linked_in_works: the sentence, how the link was made: corpus = the words occur in
+        the report, cited_chapter = a short part in the cited chapter, reading = two blind readers in the cited
+        region)."""
         with _tool_errors():
             return _json(library.hadith(id))
 
