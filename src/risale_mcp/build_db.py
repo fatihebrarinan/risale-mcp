@@ -367,10 +367,50 @@ def _as_arabic_part(conn: sqlite3.Connection, paragraph: str, ord_: int, offset:
     return True
 
 
+def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport) -> None:
+    """Bağ dosyaları (`links.py`): kaynağı bu veritabanında olanlar; `private` dosyalar yalnız yerel profilde."""
+    from risale_mcp.links import LINKS_DIR, files, read
+    sentences = {r[0] for r in conn.execute("SELECT id FROM sentences")}
+    nodes = {r[0] for r in conn.execute("SELECT id FROM nodes")}
+    rows, dropped = [], 0
+    for path in files(LINKS_DIR, private=profile.private):
+        name = str(path.relative_to(LINKS_DIR))
+        for l in read(path)[1]:
+            if l.source in (nodes if l.scope == "section" else sentences):
+                rows.append((l.source, l.part, l.target, l.type, l.relation, l.method, l.strength, l.scope,
+                             json.dumps(l.evidence, ensure_ascii=False) if l.evidence else None, name))
+            else:
+                dropped += 1
+    conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+    report.counts["links"] = len(rows)
+    report.counts["links_dropped"] = dropped
+
+
+def _report_store(*paths: Path) -> dict[str, dict]:
+    """Rivayet metinleri: üreten işlerin dosyalarındaki `reports` (bağlar yalnız kimlik taşır)."""
+    store: dict[str, dict] = {}
+    for path in paths:
+        if path.exists():
+            for rid, r in json.loads(path.read_text(encoding="utf-8"))["reports"].items():
+                store.setdefault(rid, r)
+    return store
+
+
+def _hadith_links(conn: sqlite3.Connection, method: str, file: str | None = None) -> list[tuple]:
+    """(paragraf, sıra, rivayet kimliği, bağ) : bağın cümlesindeki aynı anahtarlı geçişler."""
+    from risale_mcp.links_hadis import report_id
+    query = ("SELECT a.paragraph_id, a.ord, l.target, l.relation, l.evidence FROM links l"
+             " JOIN arabic a ON a.sentence_id = l.source AND a.hadith_key = l.part WHERE l.method = ?")
+    args = [method] + ([file] if file else [])
+    rows = conn.execute(query + (" AND l.file = ?" if file else ""), args).fetchall()
+    return [(p, o, report_id(t), rel, json.loads(ev) if ev else {}) for p, o, t, rel, ev in rows]
+
+
 def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) -> None:
-    """Hadis parçalarının dayanağı ve eşleşen rivayetler; profilde geçmeyen parçaların rivayetleri girmez."""
+    """Hadis parçalarının künyeleri, dayanağı ve rivayetleri. Parçanın derlem sonucu (`match`, `cited`) `matches.json`'dan,
+    rivayet bağları `links` tablosundan; profilde geçmeyen parçaların rivayetleri girmez."""
     data = json.loads(path.read_text(encoding="utf-8"))
-    entries, reports = data["parts"], data["reports"]
+    entries = data["parts"]
     keys = set()
     conn.executemany("INSERT INTO hadith_books VALUES (?, ?, ?, ?, ?)",
                      [(b.id, b.title, b.ar or None, b.kind, b.api or None) for b in BOOKS])
@@ -383,7 +423,8 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
             conn.executemany("INSERT INTO hadith_locators VALUES (?, ?, ?, ?, ?, ?, ?)",
                              [(row.lastrowid, l.kind, l.chapter, l.section, l.volume, l.page, l.number) for l in c.locators])
 
-    located = []
+    located = sorted((p, o, ev["rank"], rid) for p, o, rid, _, ev in _hadith_links(conn, "cited_chapter"))
+    located_at = {(p, o) for p, o, *_ in located}
     for key, kind_source, source, meal, rowid, paragraph, ord_ in conn.execute(
             "SELECT hadith_key, kind_source, source, meal, rowid, paragraph_id, ord FROM arabic"
             " WHERE hadith_key IS NOT NULL").fetchall():
@@ -392,19 +433,18 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
             add_citations(key, paragraph, ord_, "source", source)
         # Kısa ifadede künye anahtara yayılmaz: başka yerde başka hadisin parçası olabilir.
         cited = row_cited(source, meal) if key in entries and not entries[key].get("identifies", True) else None
-        conn.execute("UPDATE arabic SET hadith_support = ? WHERE rowid = ?", (support(entries.get(key), kind_source, cited, source), rowid))
-        for rank, rid in enumerate((entries.get(key, {}).get("located", {}).get(source) or {"reports": ()})["reports"]):
-            located.append((paragraph, ord_, rank, rid))
+        entry = {**entries[key], "located": {}} if key in entries else None
+        value = "located_chapter" if entry and (paragraph, ord_) in located_at else support(entry, kind_source, cited, source)
+        conn.execute("UPDATE arabic SET hadith_support = ? WHERE rowid = ?", (value, rowid))
     for key in keys & set(entries):
         for raw in entries[key].get("nurpedia", ()):
             add_citations(key, None, None, "nurpedia", raw)
     report.counts["hadith_stale"] = len(keys - set(entries))
-    matches = [(key, rank, rid) for key in keys & set(entries) for rank, rid in enumerate(entries[key]["reports"])]
+    from risale_mcp.links_hadis import report_id
+    matches = sorted({(part, json.loads(ev)["rank"], report_id(t)) for part, t, ev in conn.execute(
+        "SELECT part, target, evidence FROM links WHERE method = 'corpus' AND part IS NOT NULL")})
     used = {rid for _, _, rid in matches} | {rid for *_, rid in located}
-    conn.executemany("INSERT INTO hadith_reports VALUES (?, ?, ?, ?, ?, ?)",
-                     [(rid, r["title"], r["number"], r["text"], r["source"],
-                       json.dumps(r["grades"], ensure_ascii=False) if r["grades"] else None)
-                      for rid, r in reports.items() if rid in used])
+    _insert_reports(conn, used, _report_store(path))
     conn.executemany("INSERT INTO hadith_matches VALUES (?, ?, ?)", matches)
     conn.executemany("INSERT INTO hadith_located VALUES (?, ?, ?, ?)", located)
     conn.executemany("INSERT INTO hadith_parts VALUES (?, ?, ?)",
@@ -412,33 +452,26 @@ def _insert_hadith(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
     report.counts["hadith_reports"] = len(used)
 
 
+def _insert_reports(conn: sqlite3.Connection, wanted: set[str], store: dict[str, dict]) -> None:
+    have = {r[0] for r in conn.execute("SELECT id FROM hadith_reports")}
+    missing = wanted - have - set(store)
+    if missing:
+        raise ValueError(f"metni olmayan rivayet: {sorted(missing)[:5]}")
+    conn.executemany("INSERT INTO hadith_reports VALUES (?, ?, ?, ?, ?, ?)",
+                     [(rid, store[rid]["title"], store[rid]["number"], store[rid]["text"], store[rid]["source"],
+                       json.dumps(store[rid]["grades"], ensure_ascii=False) if store[rid]["grades"] else None)
+                      for rid in sorted(wanted - have)])
+
+
 READ_FROM = ("cited", "phrase_found", "marked", "unsupported")   # okumayla bulunan bu dayanakları `read_chapter` yapar
 
 
-def _insert_region(conn: sqlite3.Connection, path: Path, report: BuildReport) -> None:
-    """Künyenin bölgesinde okumayla bulunan rivayetler, geçiş başına: geçişin kendi künyesi (yoksa nurpedia'nınki)
-    o kitabı aynı yazılışla gösteriyorsa. Metni derlemde bulunmuş geçişin dayanağı değişmez, yalnız not."""
-    data = json.loads(path.read_text(encoding="utf-8"))
-    wanted = {(e["key"], e["book"], e["citation"]): e for e in data["entries"]}
-    by_key: dict[str, list] = {}
-    for e in data["entries"]:
-        by_key.setdefault(e["key"], []).append(e)
-    rows, used = [], set()
-    for paragraph, ord_, key in conn.execute(
-            f"SELECT paragraph_id, ord, hadith_key FROM arabic WHERE hadith_key IN ({','.join('?' * len(by_key))})",
-            list(by_key)).fetchall():
-        own = conn.execute("SELECT book, raw FROM hadith_citations WHERE paragraph_id = ? AND ord = ?", (paragraph, ord_)).fetchall()
-        own = own or conn.execute("SELECT book, raw FROM hadith_citations WHERE hadith_key = ? AND origin = 'nurpedia'", (key,)).fetchall()
-        for book, raw in own:
-            if e := wanted.get((key, book, raw)):
-                rows.append((paragraph, ord_, e["report"], ",".join(e["relation"])))
-                used.add(e["report"])
-    have = {r[0] for r in conn.execute("SELECT id FROM hadith_reports")}
-    conn.executemany("INSERT INTO hadith_reports VALUES (?, ?, ?, ?, ?, ?)",
-                     [(rid, r["title"], r["number"], r["text"], r["source"],
-                       json.dumps(r["grades"], ensure_ascii=False) if r["grades"] else None)
-                      for rid, r in data["reports"].items() if rid in used - have])
-    conn.executemany("INSERT INTO hadith_region VALUES (?, ?, ?, ?)", list(dict.fromkeys(rows)))
+def _insert_region(conn: sqlite3.Connection, report: BuildReport) -> None:
+    """Künyenin bölgesinde okumayla bulunan rivayetler (`hadis/reading.jsonl`), geçiş başına. Künyesi yalnız anılmış
+    geçişin dayanağı `read_chapter` olur; metni derlemde bulunmuş geçişte yalnız kaynakçanın notu değişir."""
+    rows = list(dict.fromkeys((p, o, rid, rel) for p, o, rid, rel, _ in _hadith_links(conn, "reading", "hadis/reading.jsonl")))
+    _insert_reports(conn, {rid for _, _, rid, _ in rows}, _report_store(REGION_PATH))
+    conn.executemany("INSERT INTO hadith_region VALUES (?, ?, ?, ?)", rows)
     places = {(p, o) for p, o, *_ in rows}
     conn.executemany(f"UPDATE arabic SET hadith_support = 'read_chapter' WHERE paragraph_id = ? AND ord = ?"
                      f" AND hadith_support IN ({','.join('?' * len(READ_FROM))})", [(p, o, *READ_FROM) for p, o in places])
@@ -446,29 +479,21 @@ def _insert_region(conn: sqlite3.Connection, path: Path, report: BuildReport) ->
 
 
 def _insert_readings(conn: sqlite3.Connection, path: Path, report: BuildReport) -> None:
-    """Model okuması ve rivayet denetimi (`hadis_okumalar.py`), yalnız veritabanında bulunan parçalar için."""
+    """Model okumaları (`hadis/reading_lead.jsonl`, yalnız yerel) ve rivayet denetiminin uyarıları (`readings.json`)."""
+    from risale_mcp.links_hadis import report_id
     data = json.loads(path.read_text(encoding="utf-8"))
-    keys = {r[0] for r in conn.execute("SELECT DISTINCT hadith_key FROM arabic WHERE hadith_key IS NOT NULL")}
-    have = {r[0] for r in conn.execute("SELECT id FROM hadith_reports")}
-    rows, flags, verdicts, needed = [], [], [], set()
+    rows = sorted({(part, report_id(t), ev["kind"], ev.get("tier"), ev.get("in_cited_chapter"), *ev["readers"],
+                    *ev["speaker"], ev["denied"], ev["same"])
+                   for part, t, ev in ((part, t, json.loads(ev)) for part, t, ev in conn.execute(
+                       "SELECT part, target, evidence FROM links WHERE file = 'hadis/reading_lead.jsonl'"))},
+                  key=lambda r: tuple("" if x is None else str(x) for x in r))
+    keys = {r[0] for r in rows}
+    flags, verdicts = [], []
     for key, part in data["parts"].items():
-        if key not in keys:
-            continue
-        for kind, items in (("candidate", part["candidates"]), ("match", part["readings"])):
-            for c in items:
-                rows.append((key, c["report"], kind, c.get("tier"), c.get("in_cited_chapter"), *c["relation"],
-                             *c["speaker"], c["denied"], c["same"]))
-                needed.add(c["report"])
-        flags += [(key, f) for f in part["flags"]]
-        verdicts += [(key, v["report"], v["verdict"], v["text"]) for v in part["verdicts"]]
-        needed |= {v["report"] for v in part["verdicts"]}
-    missing = needed - have - set(data["reports"])
-    if missing:
-        raise ValueError(f"readings.json'da metni olmayan rivayet: {sorted(missing)[:5]}")
-    conn.executemany("INSERT INTO hadith_reports VALUES (?, ?, ?, ?, ?, ?)",
-                     [(rid, r["title"], r["number"], r["text"], r["source"],
-                       json.dumps(r["grades"], ensure_ascii=False) if r["grades"] else None)
-                      for rid, r in data["reports"].items() if rid in needed - have])
+        if key in keys or conn.execute("SELECT 1 FROM arabic WHERE hadith_key = ? LIMIT 1", (key,)).fetchone():
+            flags += [(key, f) for f in part["flags"]]
+            verdicts += [(key, v["report"], v["verdict"], v["text"]) for v in part["verdicts"]]
+    _insert_reports(conn, {r[1] for r in rows} | {v[1] for v in verdicts}, _report_store(path))
     conn.executemany("INSERT INTO hadith_readings VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
     conn.executemany("INSERT INTO hadith_flags VALUES (?, ?)", flags)
     conn.executemany("INSERT INTO hadith_verdicts VALUES (?, ?, ?, ?)", verdicts)
@@ -607,10 +632,10 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
             if quran:
                 _insert_quran(conn, quran, report)
                 _insert_links(conn, report)
+            _load_links(conn, profile, report)
             if hadis_path and hadis_path.exists():
                 _insert_hadith(conn, hadis_path, report)
-                if REGION_PATH.exists():                              # okumayla bulunan: iki profilde de
-                    _insert_region(conn, REGION_PATH, report)
+                _insert_region(conn, report)                          # okumayla bulunan: iki profilde de
                 if profile.private and READINGS_PATH.exists():      # hadisçi görmeden genel sunucuya çıkmaz
                     _insert_readings(conn, READINGS_PATH, report)
             sura_rows = suras.rows()

@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 13
+SCHEMA_VERSION = 14
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -213,6 +213,22 @@ CREATE TABLE hadith_matches (
     report_id  TEXT NOT NULL REFERENCES hadith_reports(id),
     PRIMARY KEY (hadith_key, rank)
 );
+-- Bağlar (`links.py`, `data/links/**/*.jsonl`): Risale'nin âyet, hadis ve kendi içiyle bağlarının ortak kaydı. Profilde
+-- bulunmayan kaynağa giden bağ yüklenmez; `private` dosyalar yalnız yerel profilde. Hadis tabloları bundan türetilir.
+CREATE TABLE links (
+    source   TEXT NOT NULL,                        -- cümle kimliği; scope section ise düğüm
+    part     TEXT,                                 -- cümlede hangi Arapça parça (iskelet anahtarı)
+    target   TEXT NOT NULL,                        -- quran:2:255, hadis:bukhari/52, hadis-derlem:tirmidhi:3839, risale:…
+    type     TEXT NOT NULL,                        -- quote, relation, reference
+    relation TEXT,
+    method   TEXT NOT NULL,                        -- source_mark, quran_text, corpus, cited_chapter, reading, rule, curated
+    strength TEXT NOT NULL,
+    scope    TEXT NOT NULL,
+    evidence TEXT,                                 -- JSON
+    file     TEXT NOT NULL                         -- bağ dosyası (alan/yöntem.jsonl)
+);
+CREATE INDEX links_source ON links(source, part);
+CREATE INDEX links_target ON links(target);
 -- Künyenin bölgesinde okumayla bulunan rivayet (`hadis_bolge.py`, `region.json`): iki profilde de. Geçiş başına; künyesi
 -- yalnız anılmış geçişin dayanağı `read_chapter` olur, kaynakçanın notu "okumayla bulundu"dur (kullanıcının kararı).
 CREATE TABLE hadith_region (

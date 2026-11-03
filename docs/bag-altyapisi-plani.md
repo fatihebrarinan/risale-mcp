@@ -58,9 +58,12 @@ rivayet kimliği derlemin kimliği (`sanadset:220501`, `tirmidhi:3839`), kütüp
    Risale veritabanı olmadan okuyabilsin.
 4. **`hadith_support` özettir:** geçişin bağlarından ve künyesinden türetilir (en güçlü yöntem). Kaynakçanın notu da
    bağlardan gelir.
-5. **Rivayet kimliği kütüphaneye geçer:** Hadith API karşılığı olan rivayet (yedi kitap) `hadis:<kitap>/<no>` olur
-   (`hadis_kutub`'un `api` alanından); Sanadset'tekiler HA3'e kadar `hadis-derlem:` ile kalır, metinleri
-   `data/library/hadis/derlem.json`'da (bugünkü `matches.json`'ın `reports`'u).
+5. **Rivayet kimliği şimdilik derlemindir** (B2'de değişti): bağın hedefi bugünkü rivayet kimliğidir, ad alanıyla
+   (`hadis-derlem:tirmidhi:3839`, `hadis-derlem:sanadset:220501`; Hadith API alt numarası `tirmidhi:2780.2`). Yalnız
+   Hadith API karşılığı olmayan JK metinleri kütüphane kimliğiyle (`hadis:bukhari/5764`). Sebep: numara sistemleri
+   kitaba göre değişir (Buhârî'de JK numarası okuyucunun bildiği Fethu'l-Bârî numarası değil, Müslim'de Türkçe
+   künyeler Abdülbaki numarasını kullanır); gösterilecek numara hadis sunucusunun kararıdır (HA5). Metinler üreten
+   işin dosyasında kalır (`matches.json`, `region.json`, `readings.json`), bağ yalnız kimlik taşır.
 6. **Kimlikler kayarsa:** kaynak cümle kimliği yeniden ayrıştırmada kayabilir; bağ dosyası `part` (parça anahtarı) ve
    `display`'deki ilk kelimelerle denetlenir, tutmayan bağ yüklenmez ve raporlanır (kontrol işaretlerindeki gibi).
 
@@ -75,3 +78,15 @@ rivayet kimliği derlemin kimliği (`sanadset:220501`, `tirmidhi:3839`), kütüp
 | B5 | Araçlar `links` tablosundan; ters yön (`hadis:bukhari/52` → Risale'deki yerler) | `find_hadith`, `get_hadith` |
 
 B3'ün ölçütü: veritabanının hadis ve âyet sayıları ve araç çıktıları geçişten önceki hâliyle aynı kalır.
+
+## Durum
+
+- **B1** (2026-11-03): `links.py`; kayıt, dosya, doğrulama (`uv run python -m risale_mcp.links check`). Başlığın kendisi
+  tırnak taşıyabildiği için (İkinci Kelime: “Ye's”) kimlik kayması son tırnak çiftinden denetlenir.
+- **B2:** `links_hadis.py`; `hadis.py`, `hadis_bolge score`, `hadis_okumalar` bitince bağları yazar. `corpus` 2.737,
+  `cited_chapter` 434, `reading` 209, `reading_lead` 1.446 (yerel). Doğrulamada sorun 0. Aynı rivayetin Adım 7 ve
+  Adım 9 okumaları ayrı bağdır: dosya kaydın tamamıyla tekilleştirilir.
+- **B3:** şema 14, `links` tablosu; `build_db` hadis tablolarını ve dayanağı bağlardan kurar. Ölçüt tuttu: iki profilde
+  `arabic.hadith_support`, `hadith_reports`, `hadith_matches`, `hadith_located`, `hadith_region`, `hadith_readings`,
+  `hadith_flags`, `hadith_verdicts`, `hadith_citations`, `hadith_parts`, `ayah_links` önceki kurulumla birebir aynı.
+  Genelde yerel dosya yüklenmez (`links` 3.315, kisisel 4.826).
