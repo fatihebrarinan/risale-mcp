@@ -66,3 +66,22 @@ def test_book_ids_are_unique_and_collections_have_sections():
     assert section("bukhari", "Fedâilü's-Sahâbe") == 62 and section("muslim", "Salâtü'l-Müsâfirîn") == 6
     assert section("bukhari", "el-Amel Fi's-Salât") == 21 and section("tirmidhi", "yok") is None
     assert normalize_name("Keşfü’l-Hafâ") == "kesfulhafa"
+
+
+def test_raw_ends_where_the_citation_ends():
+    """Kaynakçaya giden ham künye: meal ayracının kapanışı, sondaki "bk." ve açıklama künyeye girmez."""
+    assert [c.raw for c in parse("Müsned, 4:405, 409.) buyuran zâta ve âl ve ashabına salât ve selâm et").citations] \
+        == ["Müsned, 4:405, 409"]
+    assert parse("el-Aclûnî, Keşfü’l-Hafâ, 1:132, Hadis No: 381) 2: (").citations[0].raw \
+        == "el-Aclûnî, Keşfü’l-Hafâ, 1:132, Hadis No: 381"
+    assert parse("el-Münâvî, Feyzü'l-Kadîr, 6:108, hadis no: 8605; Aynı manada diğer rivayetler için bk.").citations[0].raw \
+        == "el-Münâvî, Feyzü'l-Kadîr, 6:108, hadis no: 8605"
+    assert parse("İbnu Abdilber, et-Temhîd: c. 8 s. 61. Ayrıca bk.:").citations[0].raw == "İbnu Abdilber, et-Temhîd: c. 8 s. 61"
+
+
+def test_raw_keeps_names_after_semicolons_and_initials():
+    """Kayıtta olmayan yazar ve kitap da nâşirin künyesidir; tek harfli kısaltma cümle sonu değildir."""
+    assert parse("El-Münâvî, Feyzu'l-Kadîr 2:410; Mer'î b. Yûsuf; Ekâvîlü's-Sikât s. 45").citations[0].raw \
+        == "El-Münâvî, Feyzu'l-Kadîr 2:410; Mer'î b. Yûsuf; Ekâvîlü's-Sikât s. 45"
+    assert parse("Müsned (thk. Arnaut), 4:12; Buharî, Îman: 1").citations[0].raw == "Müsned (thk. Arnaut), 4:12"
+    assert parse("Feyzü'l-Kadîr, 3:262-263. İmam-ı Ali'ye (r.a.) ait olduğu rivayet edilmektedir.").citations[0].raw.count("(") == 0

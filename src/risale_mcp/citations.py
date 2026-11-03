@@ -719,6 +719,48 @@ def _marker_numbers(markers: str) -> list[int]:
     return numbers
 
 
+WINDOW = 3                  # alıntıda aranan Arapça parçanın en kısa kelime dizisi
+_ARABIC_WORD = re.compile(r"[\u0600-\u06FF]")
+
+
+def _contains(words: list[str], run: list[str]) -> bool:
+    return any(words[i:i + len(run)] == run for i in range(len(words) - len(run) + 1))
+
+
+def _in_quote(part: str, pieces: list[str]) -> bool:
+    """Arapça parçanın bir kısmı alıntıda mı: parçanın ardışık `WINDOW` kelimesi alıntıda, ya da alıntının ardışık
+    Arapça kelimeleri (en az iki, kısa parçada parçanın tamamı) parçada. "…" ile atlanan yer alıntı sayılmaz."""
+    words = _key(part).split()
+    if not words:
+        return False
+    need = min(WINDOW, len(words))
+    for piece in map(str.split, pieces):
+        if any(_contains(piece, words[i:i + need]) for i in range(len(words) - need + 1)):
+            return True
+        run: list[str] = []
+        for word in piece + [""]:                       # alıntıdaki Arapça kelime dizileri
+            if word and _ARABIC_WORD.search(word):
+                run.append(word)
+                continue
+            if len(run) >= min(2, len(words)) and _contains(words, run):
+                return True
+            run = []
+    return False
+
+
+def embedded_lines(parts: list[dict], quote: str | None) -> list[dict]:
+    """Kaynakçanın alt satırlarına giren parçalar: alıntı verilmişse içine düşenler, verilmemişse hepsi; aynı satır bir kez."""
+    pieces = _block_parts(quote) if quote else None
+    seen, out = set(), []
+    for part in parts:
+        if pieces is not None and not _in_quote(part["text"], pieces):
+            continue
+        if part["line"] not in seen:
+            seen.add(part["line"])
+            out.append(part)
+    return out
+
+
 def _block_parts(block: str) -> list[str]:
     """Alıntı bloğunun "…" ile ayrılan parçaları, karşılaştırma biçiminde."""
     text = block.strip().strip('"“”«»').strip()

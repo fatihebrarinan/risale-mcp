@@ -101,6 +101,20 @@ def _locators(book: str, segment: str) -> tuple[list[Locator], str]:
     return found, "".join(rest)
 
 
+_RAW_EDGE = " ;,.(:"
+_SEE_TAIL = re.compile(r"(?:;[^;]*?)?\b(?:ayrica\s+)?(?:bk|bkz|bakiniz)\b[.:\s]*$")
+
+
+def _unmatched_close(segment: str) -> int:
+    """Eşi olmayan ilk ")" (künye bir meal ya da açıklama ayracının içindeyse orada biter); yoksa sonu."""
+    depth = 0
+    for i, ch in enumerate(segment):
+        depth += (ch == "(") - (ch == ")")
+        if depth < 0:
+            return i
+    return len(segment)
+
+
 def _own_part(book: str, segment: str) -> tuple[str, str]:
     """Kitabın kendi kısmı ve artığı: ";" kitabı bitirir; Kütüb-i Sitte'de sonraki parça başka bölümse sürer."""
     head, *rest = segment.split(";")
@@ -118,16 +132,24 @@ def parse(raw: str) -> Parsed:
     citations = []
     for i, (start, end, book) in enumerate(marks):
         stop = marks[i + 1][0] if i + 1 < len(marks) else len(folded)
-        segment = _EDITION.sub(" ", folded[end:stop])
-        cut = re.search(r"\)\s*[^\W\d]|(?<!\d)[.]\s+[^\W\d]{3}", segment)      # künyeden sonra süren cümle
+        # Baskı ayracı aynı uzunlukta boşluk olur: konumlar `raw`'la hizalı kalır, kesilen yer künyeden de kesilir.
+        segment = _EDITION.sub(lambda m: " " * len(m[0]), folded[end:stop])
+        # Künyeden sonra süren cümle; tek harfli kısaltmadan ("b. Yûsuf", "M. Bahaeddin") sonra değil.
+        cut = re.search(r"\)\s*[^\W\d]|(?<!\d)(?<!\b[^\W\d])[.]\s+[^\W\d]{3}", segment)
         segment = segment[:cut.start()] if cut else segment
+        segment = segment[:_unmatched_close(segment)]                    # meal ayracının kapanışı: künye biter
+        # Künye ";"den sonra da sürer (kayıtta olmayan yazar ya da kitap); yalnız sondaki "… için bk" açıklaması atılır.
+        own = _SEE_TAIL.sub("", segment).rstrip(_RAW_EDGE)
+        if own.count("(") > own.count(")"):                            # kesilen ayraç künyede açık kalmasın
+            own = own[:own.rindex("(")]
         segment, left_over = _own_part(book, segment)
         locators, left = _locators(book, segment)
         left += left_over
         left = re.sub(_SEE, "", left)
         kind = qualifier or ("see" if see_from is not None and start >= see_from else None)
-        last = where[min(stop, len(where)) - 1] + 1 if where else 0
-        citations.append(Citation(book, kind, raw[where[start]:last].strip(" ;,."), locators or [Locator("bare")],
+        own_end = min(end + len(own.rstrip(_RAW_EDGE)), len(where))
+        last = where[own_end - 1] + 1 if where and own_end else 0
+        citations.append(Citation(book, kind, raw[where[start]:last].strip(_RAW_EDGE), locators or [Locator("bare")],
                                   "" if _NOISE.match(left) else left.strip(" ,.;:()")))
     head = folded[:marks[0][0]] if marks else folded
     head = "" if _NOISE.match(re.sub(_SEE, "", head)) else head.strip(" ,.;:()")

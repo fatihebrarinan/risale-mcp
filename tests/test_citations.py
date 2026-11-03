@@ -204,3 +204,41 @@ def test_real_relative_citations_resolve_in_context(real_checker):
                                "> (İkinci Mebhas › \"Masdar kisbimizdir…\")")
     assert [c.sentence.rsplit("/", 1)[0] for c in found] == ["sozler/26/mebhas-01"] * 2 + ["sozler/26/mebhas-02"]
     assert all(c.status == "ok" for c in found)
+
+
+# ------------------------------------------------------------ kaynakçanın âyet ve hadis satırları
+
+from risale_mcp.citations import embedded_lines  # noqa: E402
+
+_PARTS = [{"kind": "hadis", "text": "اَلسَّلَامُ عَلَيْكَ اَيُّهَا النَّبِيُّ", "line": "Hadis: Buharî, Ezân: 148"},
+          {"kind": "ayet", "text": "حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَك۪يلُ", "line": "Âyet: Âl-i İmrân Sûresi, 3:173"},
+          {"kind": "hadis", "text": "اَلسَّلَامُ عَلَيْكَ", "line": "Hadis: Buharî, Ezân: 148"}]
+
+
+def test_without_a_quote_every_part_of_the_sources_is_listed_once():
+    assert [p["line"] for p in embedded_lines(_PARTS, None)] == ["Hadis: Buharî, Ezân: 148", "Âyet: Âl-i İmrân Sûresi, 3:173"]
+
+
+def test_with_a_quote_only_the_parts_it_takes_in_are_listed():
+    """Harekesiz yazılmış, parçanın yalnız bir kısmını alan alıntı da sayılır; "…" ile atlanan parça girmez."""
+    assert [p["line"] for p in embedded_lines(_PARTS, "Her gün çok defa السلام عليك ايها dediği …")] == ["Hadis: Buharî, Ezân: 148"]
+    assert embedded_lines(_PARTS, "Her gün çok defa … dediği") == []
+    assert [p["line"] for p in embedded_lines(_PARTS, "der: حَسْبُنَا اللّٰهُ")] == ["Âyet: Âl-i İmrân Sûresi, 3:173"]
+
+
+@pytest.mark.skipif(not DB_PATH.exists(), reason="gerçek veritabanı yok")
+@pytest.mark.parametrize("sentence_id,line", [
+    ("lemalar/10/c002", "Âyet: Âl-i İmrân Sûresi, 3:30"),
+    # metin künyedeki kitapta (Buhârî) kelimesi kelimesine bulundu: notsuz
+    ("sualar/15/makam-02/dort-kudsi-kelime-i-miraciye/birincisi/c001", "Hadis: Buharî, Ezân: 148, 150, el-Amel Fi's-Salât: 4, "
+     "İsti'zân: 3, 28, Da'avât: 16, Tevhîd: 5; Müslim, Salât: 56, 60, 62; Ebu Davud, Salât: 178; Tirmizî, Salât: 100"),
+    # künyedeki kitaplar derlemde yok: nâşirin künyesi verilir, doğrulanmadı
+    ("lemalar/11/nukte-01/c001", "Hadis: Müsnedü'l-Firdevs, 4:198; Cem'ü'l-Fevaid, 1:29; Feyzü'l-Kadîr, hadis no: 9:171; "
+     "Fethu'l-Kebir, 3:353 (doğrulanmadı)"),
+])
+def test_embedded_lines_in_the_real_database(sentence_id, line):
+    lib = Library(DB_PATH)
+    try:
+        assert line in [p["line"] for p in lib.embedded([sentence_id])]
+    finally:
+        lib.close()

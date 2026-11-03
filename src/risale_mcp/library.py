@@ -22,7 +22,8 @@ from pathlib import Path
 from risale_mcp import search as fts
 from risale_mcp.catalog import Authority, Collection
 from risale_mcp.db import connect
-from risale_mcp.hadis import ATTRIBUTION, CAUTION_BOOKS, SUPPORT_ORDER
+from risale_mcp.hadis import ATTRIBUTION, CAUTION_BOOKS, SUPPORT_ORDER, TITLES
+from risale_mcp.hadis_kitaplar import BY_ID
 from risale_mcp.quran import skeleton
 from risale_mcp.embeddings import EmbeddingError
 from risale_mcp.normalize import search_words
@@ -146,6 +147,28 @@ def _ayah_span(start: int, end: int) -> str:
 
 def _placeholders(items) -> str:
     return ",".join("?" * len(items))
+
+
+# Kaynakçanın alt satırları (`docs/kaynakca-plani.md`): alıntılanan cümledeki âyetin ve hadisin adresi. Meal girmez.
+# Âyet: Kur'ân metniyle tutan numara notsuz; numarası olmayan âyet satıra girmez (adres uydurulmaz).
+AYAH_LINE_NOTES = {"iktibas": "iktibas", "dizgi_suphesi": "numara metinle tutmuyor", "near": "komşu âyette"}
+# Hadis: gösterilen künye nâşirindir. Derlemde künyedeki kitapta bulunmadıkça "doğrulanmadı" der.
+HADITH_PARTLY = "lafız farkıyla bulundu"
+HADITH_UNVERIFIED = "doğrulanmadı"
+_QUALIFIER_SUFFIX = {"iktibas": "iktibas", "by_meaning": "mânen"}
+
+
+def _citation_text(raw: str, qualifier: str | None) -> str:
+    """Künye kaynaktaki gibi (`hadis_kunye` artığını atmıştır); "bk." de kaynağındır, kalır."""
+    return ("bk. " if qualifier == "see" else "") + raw
+
+
+def _in_books(report_ids: list[tuple[str, str]], books: set[str]) -> bool:
+    """Bulunan rivayetlerden biri künyedeki kitaplardan birinde mi (Hadith API derlemi ya da Sanadset adı)."""
+    titles = set()
+    for b in filter(None, (BY_ID.get(book) for book in books)):
+        titles |= {TITLES[b.api]} if b.api else set(b.sanadset)
+    return any(title in titles for _, title in report_ids)
 
 
 class Library:
@@ -489,6 +512,69 @@ class Library:
             if a["publisher_translation"] or a["source"]:
                 out[a["sentence_id"]].append(_arabic_record(a))
         return out
+
+    def embedded(self, sentence_ids: list[str]) -> list[dict]:
+        """Cümlelerdeki âyet ve hadis parçaları, metindeki sırayla: kaynakçanın alt satırları (`line`) ve dayanağı.
+        Adresi olmayan âyet girmez; künyesi olmayan hadis "künye yok" der. Meal girmez."""
+        if not sentence_ids:
+            return []
+        rows = self.conn.execute(
+            "SELECT a.paragraph_id, a.ord, a.sentence_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
+            " a.kind, a.kind_source, a.sura, a.ayah_start, a.ayah_end, a.ayah_check, a.hadith_key, a.hadith_support"
+            " FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id JOIN sentences s ON s.id = a.sentence_id"
+            f" WHERE a.sentence_id IN ({_placeholders(sentence_ids)}) AND (a.kind IN ('ayet', 'hadis') OR a.sura IS NOT NULL)"
+            " ORDER BY s.seq, a.span_start", sentence_ids).fetchall()
+        quotes = self.conn.execute(
+            "SELECT q.sentence_id, substr(p.text, q.span_start + 1, q.span_end - q.span_start) AS text, q.sura,"
+            " q.ayah_start, q.ayah_end, q.span_start FROM ayah_quotes q JOIN paragraphs p ON p.id = q.paragraph_id"
+            f" WHERE q.sentence_id IN ({_placeholders(sentence_ids)})", sentence_ids).fetchall()
+        out = []
+        for r in rows:
+            if r["sura"] is not None:
+                note = AYAH_LINE_NOTES.get(r["ayah_check"])
+                ref = self._verse_ref(r["sura"], r["ayah_start"], r["ayah_end"])
+                out.append({"kind": "ayet", "sentence_id": r["sentence_id"], "text": r["text"], "ref": ref,
+                            "line": f"Âyet: {ref}" + (f" ({note})" if note else "")})
+            elif r["kind"] == "hadis":
+                out.append({"sentence_id": r["sentence_id"], "text": r["text"], **self._hadith_line(r)})
+        for q in quotes:      # bir duanın içinde geçen âyet: parça `arabi`, âyet ayrıca bulunmuş
+            ref = self._verse_ref(q["sura"], q["ayah_start"], q["ayah_end"])
+            out.append({"kind": "ayet", "sentence_id": q["sentence_id"], "text": q["text"], "ref": ref, "line": f"Âyet: {ref}"})
+        order = {sid: i for i, sid in enumerate(sentence_ids)}
+        return sorted(out, key=lambda e: order.get(e["sentence_id"], 0))
+
+    def _hadith_line(self, r: sqlite3.Row) -> dict:
+        """Geçişin kendi künyesi, yoksa nurpedia'nınki (parçaya bağlı); notu derlemdeki kanıttan."""
+        citations = self.conn.execute(
+            "SELECT raw, qualifier, book FROM hadith_citations WHERE paragraph_id = ? AND ord = ? ORDER BY id",
+            (r["paragraph_id"], r["ord"])).fetchall() or self.conn.execute(
+            "SELECT raw, qualifier, book FROM hadith_citations WHERE hadith_key = ? AND origin = 'nurpedia' ORDER BY id",
+            (r["hadith_key"],)).fetchall()
+        support = r["hadith_support"]
+        record = {"kind": "hadis", "hadith_support": support}
+        if not citations:
+            label = "Hadis olarak sunulmuş (künye yok)" if r["kind_source"] == "baglam" else "Hadis (kaynakta künye yok)"
+            return {**record, "citations": [], "line": label}
+        # "iktibas", "mânen" künyenin değil sözündür: bütün künyelerde aynıysa bir kez, değilse künyenin yanında.
+        marks = {_QUALIFIER_SUFFIX.get(c["qualifier"]) for c in citations}
+        shared = marks.pop() if len(marks) == 1 else None
+        texts = list(dict.fromkeys(
+            _citation_text(c["raw"], c["qualifier"]) + ("" if shared or c["qualifier"] not in _QUALIFIER_SUFFIX
+                                                         else f" ({_QUALIFIER_SUFFIX[c['qualifier']]})")
+            for c in citations))
+        texts = [t for t in texts if t and t != "bk."]
+        books = {c["book"] for c in citations if c["book"]}
+        reports = self.conn.execute("SELECT r.id, r.title FROM hadith_matches m JOIN hadith_reports r ON r.id = m.report_id"
+                                    " WHERE m.hadith_key = ?", (r["hadith_key"],)).fetchall()
+        if support == "located_chapter" or (support == "found" and _in_books(reports, books)):
+            note = None
+        elif support == "partly_found" and _in_books(reports, books):
+            note = HADITH_PARTLY
+        else:
+            note = HADITH_UNVERIFIED
+        notes = ", ".join(filter(None, (shared, note)))
+        return {**record, "citations": texts, "verified": note != HADITH_UNVERIFIED,
+                "line": "Hadis: " + "; ".join(texts) + (f" ({notes})" if notes else "")}
 
     def find_sentence(self, incipit: str, scope: str | None = None, limit: int = 10) -> dict:
         """İlk kelimelerinden cümleyi bulur (işaretsiz; son kelime eksik yazılabilir)."""
