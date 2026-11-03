@@ -185,6 +185,7 @@ def cmd_hadis(args: argparse.Namespace) -> None:
     # Hadis derlemleri ve Risale'deki hadislerin dayanakları (Aşama 14); katalogdaki eserlerden değildir.
     hadis.fetch_hadith_api(RAW_DIR / "hadith_api", PoliteClient(args.delay), refresh=args.refresh)
     hadis.fetch_sanadset(RAW_DIR / "sanadset", PoliteClient(args.delay, timeout=300), refresh=args.refresh)
+    hadis.fetch_openiti(RAW_DIR / "openiti", PoliteClient(args.delay), refresh=args.refresh)
     pages, missing = nurpedia.fetch(RAW_DIR / "nurpedia", PoliteClient(args.delay), refresh=args.refresh)
     print(f"nurpedia: {pages} sayfa, {len(missing)} sayfa yok")
 
