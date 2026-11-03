@@ -161,7 +161,12 @@ def library(tmp_path_factory):
     out = folder / "test.db"
     quran = folder / "quran.json"
     quran.write_text(json.dumps(mini_quran(), ensure_ascii=False), "utf-8")
-    build(books, out, quran, hadis_path=matches)
+    # Gerçek akış: kur, bağları üret (`hadis.py` gibi), bağlarla yeniden kur. Gerçek `data/links`'e dokunulmaz.
+    links = folder / "links"
+    build(books, out, quran, hadis_path=matches, links_dir=links)
+    from risale_mcp.links_hadis import export
+    export(out, links / "hadis", matches, folder / "yok.json", folder / "yok.json")
+    build(books, out, quran, hadis_path=matches, links_dir=links)
     lib = Library(out)
     yield lib
     lib.close()

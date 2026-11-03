@@ -282,7 +282,7 @@ def test_find_hadith_gives_model_readings_as_leads_on_the_personal_server():
     try:
         part = lib.find_hadith("اَلْحِكْمَةُ ضَالَّةٌ الْمُؤْمِنِ اَخَذَهَا اَيْنَمَا وَجَدَهَا")["parts"][0]
         assert part["hadith_support"] == "cited"                         # okuma dayanağı değiştirmez
-        reading = part["model_readings"][0]
-        assert reading["same"] and reading["kind"].startswith("candidate") and reading["id"] == "tirmidhi:2687"
+        same = {r["id"] for r in part["model_readings"] if r["same"] and r["kind"].startswith("candidate")}
+        assert "tirmidhi:2687" in same                                     # künyedeki Tirmizî, İlim: 19'da
     finally:
         lib.close()

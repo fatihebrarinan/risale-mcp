@@ -109,20 +109,21 @@ def lead_links(rows: list[dict], readings: dict) -> list[Link]:
     return out
 
 
-def export(db: Path = DB_PATH, out: Path = OUT) -> dict[str, int]:
+def export(db: Path = DB_PATH, out: Path = OUT, matches: Path = HADIS_PATH, region: Path = REGION_PATH,
+           readings: Path = READINGS_PATH) -> dict[str, int]:
     conn = sqlite3.connect(db)
     rows = passages(conn)
-    parts = json.loads(HADIS_PATH.read_text("utf-8"))["parts"] if HADIS_PATH.exists() else {}
+    parts = json.loads(matches.read_text("utf-8"))["parts"] if matches.exists() else {}
     counts = {
         "corpus": write(out / "corpus.jsonl", corpus_links(rows, parts), producer="hadis.py", source="matches.json"),
         "cited_chapter": write(out / "cited_chapter.jsonl", located_links(rows, parts), producer="hadis.py",
                                source="matches.json"),
     }
-    if REGION_PATH.exists():
-        counts["reading"] = write(out / "reading.jsonl", reading_links(conn, rows, json.loads(REGION_PATH.read_text("utf-8"))),
+    if region.exists():
+        counts["reading"] = write(out / "reading.jsonl", reading_links(conn, rows, json.loads(region.read_text("utf-8"))),
                                   producer="hadis_bolge.py", source="region.json")
-    if READINGS_PATH.exists():
-        counts["reading_lead"] = write(out / "reading_lead.jsonl", lead_links(rows, json.loads(READINGS_PATH.read_text("utf-8"))),
+    if readings.exists():
+        counts["reading_lead"] = write(out / "reading_lead.jsonl", lead_links(rows, json.loads(readings.read_text("utf-8"))),
                                        producer="hadis_okumalar.py", source="readings.json", private=True,
                                        note="Model okumaları, hüküm değil: hadisçi görmeden genel sunucuya çıkmaz")
     return counts

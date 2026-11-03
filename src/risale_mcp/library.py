@@ -861,7 +861,7 @@ class Library:
         out: dict = {}
         readings = self.conn.execute(
             "SELECT h.*, r.title, r.number, r.text, r.grades, r.id FROM hadith_readings h JOIN hadith_reports r ON r.id = h.report_id"
-            " WHERE h.hadith_key = ? ORDER BY h.kind = 'match', h.same DESC", (key,)).fetchall()
+            " WHERE h.hadith_key = ? ORDER BY h.kind = 'match', h.same DESC, h.in_cited_chapter IS NOT 1, h.report_id", (key,)).fetchall()
         if readings:
             out["model_readings"] = [{
                 **_report_summary(r), "text": r["text"],

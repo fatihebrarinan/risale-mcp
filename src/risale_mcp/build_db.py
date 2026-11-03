@@ -367,14 +367,15 @@ def _as_arabic_part(conn: sqlite3.Connection, paragraph: str, ord_: int, offset:
     return True
 
 
-def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport) -> None:
+def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport, root: Path | None = None) -> None:
     """Bağ dosyaları (`links.py`): kaynağı bu veritabanında olanlar; `private` dosyalar yalnız yerel profilde."""
     from risale_mcp.links import LINKS_DIR, files, read
+    LINKS = root or LINKS_DIR
     sentences = {r[0] for r in conn.execute("SELECT id FROM sentences")}
     nodes = {r[0] for r in conn.execute("SELECT id FROM nodes")}
     rows, dropped = [], 0
-    for path in files(LINKS_DIR, private=profile.private):
-        name = str(path.relative_to(LINKS_DIR))
+    for path in files(LINKS, private=profile.private):
+        name = str(path.relative_to(LINKS))
         for l in read(path)[1]:
             if l.source in (nodes if l.scope == "section" else sentences):
                 rows.append((l.source, l.part, l.target, l.type, l.relation, l.method, l.strength, l.scope,
@@ -586,8 +587,10 @@ def build_profile(profile: Profile) -> BuildReport:
 
 
 def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None = None,
-          profile: Profile = KISISEL, meals_from: Path | None = None, hadis_path: Path | None = None) -> BuildReport:
+          profile: Profile = KISISEL, meals_from: Path | None = None, hadis_path: Path | None = None,
+          links_dir: Path | None = None) -> BuildReport:
     """`quran_path` verilirse (ve dosya varsa) Kur'ân katmanı kurulur, Risale'deki âyetler onunla eşlenir.
+    `links_dir`: bağ dosyaları (varsayılan `data/links`; testler kendi klasörünü verir).
     `profile`: hangi eserlerin gireceği; profil dışındaki JSON'lar atlanır. `meals_from`: risaleoku ham verisi;
     Arapça parçaların türünde aynı metnin meal kaydı da kanıt olur (bkz. `arabic_kinds`)."""
     books = _load_books([books_dir] if isinstance(books_dir, Path) else books_dir)
@@ -632,7 +635,7 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
             if quran:
                 _insert_quran(conn, quran, report)
                 _insert_links(conn, report)
-            _load_links(conn, profile, report)
+            _load_links(conn, profile, report, links_dir)
             if hadis_path and hadis_path.exists():
                 _insert_hadith(conn, hadis_path, report)
                 _insert_region(conn, report)                          # okumayla bulunan: iki profilde de
