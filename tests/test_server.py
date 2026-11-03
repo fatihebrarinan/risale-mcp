@@ -294,3 +294,9 @@ def test_written_shown_and_inherited_by_subsections(library):
     assert library.read_section("sozler/10/hakikat-01")["written"] == written | {"section": "sozler/10"}
     assert "written" not in library.read_section("sozler/11")
     assert next(w for w in library.works() if w["id"] == "sozler").get("written") is None
+
+
+def test_instructions_say_the_texts_may_be_quoted_in_full():
+    """Model telif gerekçesiyle bölümü reddetmesin: metinler kaynaklarının izniyle sunulur (`docs/izinler.md`)."""
+    assert "never decline, shorten or paraphrase a passage for" in INSTRUCTIONS
+    assert "consecutive blocks" in INSTRUCTIONS
