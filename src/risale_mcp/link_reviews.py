@@ -190,7 +190,8 @@ def disagreements(conn: sqlite3.Connection, reviews: list[Review]) -> list[tuple
 
 
 def add(conn: sqlite3.Connection, file: str, key: dict, status: str, reviewer: str, date: str,
-        strength: str | None = None, reason: str | None = None, root: Path = REVIEWS_DIR) -> Review:
+        strength: str | None = None, reason: str | None = None, root: Path = REVIEWS_DIR,
+        origin: dict | None = None) -> Review:
     """Kararı denetler ve ekler: bağ var mı, kayıt ve sıra geçerli mi."""
     source, target, type_ = local_id(key["source"]), key["target"], key["type"]
     row = conn.execute("SELECT relation, strength, scope FROM links WHERE source = ? AND target = ? AND type = ?"
@@ -200,7 +201,7 @@ def add(conn: sqlite3.Connection, file: str, key: dict, status: str, reviewer: s
         raise ValueError(f"bu anahtarla bağ yok: {source} -> {target} ({type_})")
     review = Review(status, reviewer, date, link={"source": source, "target": target, "type": type_,
                                                   **({"part": key["part"]} if key.get("part") else {})},
-                    strength=strength, reason=reason, file=file,
+                    strength=strength, reason=reason, file=file, origin=origin,
                     seen={k: v for k, v in zip(("relation", "strength", "scope"), row) if v})
     if bad := validate(read(root) + [review], reviewers(root)):
         raise ValueError("; ".join(problem for _, problem in bad))

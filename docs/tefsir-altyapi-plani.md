@@ -326,6 +326,27 @@ T3 bilgiyi Maraşlî'nin girişine verdi; T4 nakil uydurmadı. Kullanıcıya sor
   aramanın eki ayırmaması ("Beyzavi" tam kelime, metinde "Beyzâvî'nin"); `Beyzav*` buluyor. T6 değil, bugünkü
   arama; ayrı iş.
 
+### T7: kullanıcı örneklemi (sürüyor, 2026-11-04)
+
+Örneklem `data/interim/tefsir/t7-orneklem.html` (Arapça tek yazı tipi, büyük; `.md` ve numara anahtarları `.json`),
+`uv run python -m risale_mcp.links_tefsir --sample` (önceki seçimi ve numaraları korur).
+
+İlk tur ve çıkanlar:
+- **Gösterim hatası (bende):** âyetin metni 160 harfte kesiliyordu; uzun âyetlerin sonu görünmediği için A9, A11, A24,
+  A38 "aynı âyet değil" göründü. Artık tam metin, bulunan kelimeler âyetin içinde de vurgulu (vakıf işaretleri kelime
+  sayılmaz; Bakara 21'de hat ile imlâ kelime sayısı tutmadığından vurgu yok).
+- **Anahtar hatası:** aynı cümlede aynı âyetin iki alıntısı aynı bağ anahtarına düşüyordu (A11 ile A24). Kur'ân
+  alıntısı bağı artık alıntının iskeletini parça anahtarı olarak taşır (`links.check` işaretsiz metinde parçayı
+  cümlenin iskeletinde arar).
+- **Kural hataları:** A24 "عز من قائل" kalıbının "قائل"ını alıntıya katıyordu (iskelette "قالوا"): alıntıyı haber
+  veren kelimeler başta atlanır (`QUOTE_FORMULAS`). A25 "لما علم ما" âyetin "أعلم ما"sı sanıldı: kendi âyetinin 2
+  kelimelik gevşek eşiği yalnız cümle başında (lemma). Alıntılar 419 → 330, isabet %97,8, kapsama %89,9.
+- **Kararlar** (denetim kaydı, `tefsir/quran_text.jsonl`, `origin: T7`): lemma 13 ✓, A35 ✓ (grubun adı
+  düzeltildi: "birimin kendi âyeti dışında"). 8 satırın bağı kural değişikliğiyle kalktı.
+- **B (hadis):** kullanıcı Arapçayı ayırt edemiyor; hadisçiye bırakıldı (HA6), karar yazılmadı.
+- **C:** 28 uzun cümlenin hepsi kalır; `tests/golden/beyzavi_long_sentences.json` kilitler.
+- Bekleyen: A9, A11, A24, A38 (düzeltilmiş gösterimle yeniden) ve yorumsuz kalan A23, A26–A34, A36, A37, A39, A40.
+
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık
 kullanıcıyla seçilir.

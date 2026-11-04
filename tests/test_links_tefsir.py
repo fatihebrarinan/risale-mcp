@@ -27,10 +27,11 @@ def test_lemma_is_the_units_own_verse_at_the_sentence_start():
     assert ambiguous == 0
 
 
-def test_own_verse_is_found_with_fewer_words_but_only_there():
-    text = "وقوله اهدنا الصراط يعني البيان"
-    assert [(q.text, q.lemma) for q in lt.find_quotes(QW, "s", text, (1, 6, 6))[0]] == [("اهدنا الصراط", False)]
+def test_own_verse_is_found_with_fewer_words_only_at_the_sentence_start():
+    text = "اهدنا الصراط يعني البيان"
+    assert [(q.text, q.lemma) for q in lt.find_quotes(QW, "s", text, (1, 6, 6))[0]] == [("اهدنا الصراط", True)]
     assert lt.find_quotes(QW, "s", text, (2, 1, 1))[0] == []          # başka birimde iki kelime yetmez
+    assert lt.find_quotes(QW, "s", "ثم اهدنا الصراط يعني", (1, 6, 6))[0] == []   # cümle ortasında da (T7, A25)
 
 
 def test_other_verses_need_a_unique_place():
@@ -60,3 +61,11 @@ def test_measure_counts_overlaps_both_ways():
               lt.Quote("s", 0, 0, "ما تقدم من ذنبك", (48, 2, 2), False, False, 1)]
     m = lt.measure(quotes, [" ".join(t[2] for t in lt._tokens("الصراط المستقيم")), "نستعين"])
     assert (m["bulunan"], m["isabet"], m["jk_isaretli"], m["kapsanan"]) == (2, 1, 1, 1)
+
+
+def test_review_rules_formula_words_and_mid_sentence_own_verse():
+    """T7: "قائل" alıntının başı olmaz (A24); kendi âyetinin iki kelimesi cümle ortasında alıntı sayılmaz (A25)."""
+    quotes, _ = lt.find_quotes(QW, "s", "بقوله عز من قائل الذين يؤمنون بالغيب ويقيمون الصلاة", (2, 1, 1))
+    assert [q.text for q in quotes] == ["الذين يؤمنون بالغيب ويقيمون الصلاة"]
+    assert lt.find_quotes(QW, "s", "فإنه لما اهدنا الصراط خفي", (1, 6, 6))[0] == []
+    assert [q.lemma for q in lt.find_quotes(QW, "s", "اهدنا الصراط بيان", (1, 6, 6))[0]] == [True]

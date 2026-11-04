@@ -37,7 +37,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from risale_mcp import openiti
-from risale_mcp.links import Link, cite_as, write
+from risale_mcp.links import Link, cite_as, part_key, write
 from risale_mcp.paths import DB_PATH, INTERIM_DIR, LIBRARY_DIR, LINKS_DIR
 from risale_mcp.quran import Quran, skeleton
 
@@ -47,8 +47,11 @@ REPORT_DIR = INTERIM_DIR / "tefsir"
 HADITH_STORE = LIBRARY_DIR / "hadis" / "tefsir-beyzavi.json"   # eser klasörüne konmaz: oradaki her JSON eserdir
 MIN_WORDS = 3           # ölçümle seçildi (`--measure`)
 MIN_LETTERS = 9         # 7'de sık kalıplar ("ما تقدم من", "كل واحد منهما") başka sûreye bağlanıyordu
-OWN_MIN_WORDS = 2       # birimin kendi âyetinde: bağlam doğruluyor ("إياك نعبد")
-OWN_MIN_LETTERS = 4
+OWN_MIN_WORDS = 2       # birimin kendi âyetinde ve cümlenin başında (lemma): bağlam doğruluyor ("إياك نعبد"). Cümle
+OWN_MIN_LETTERS = 4     # ortasında 2 kelime yetmez: "لما علم ما" iskelette âyetin "أعلم ما"sı sanıldı (T7, A25)
+# Alıntıyı haber veren kalıp kelimeler alıntının başı olamaz: "عز من قائل هذا…"da "قائل" iskelette âyetin "قالوا"sı
+# sanıldı (T7, A24). Baştaki böyle kelime atlanır.
+QUOTE_FORMULAS = frozenset({"قائل", "قوله", "وقوله", "لقوله", "كقوله", "تعالى", "سبحانه", "قال", "وقال"})
 JK_KEY = "beyzavi-jk"
 JK_STOP = "اسجدوا لآدم"  # JK'da pilotun sonu (Bakara 34)
 HADITH_CUES = re.compile(r"(?:عليه (?:الصلاة و)?السلام|صلى الله عليه وسلم|رسول الله|النبي|روي|روى)[^«]{0,40}$")
@@ -113,12 +116,17 @@ def find_quotes(qw: QuranWords, sid: str, text: str, own: tuple[int, int, int] |
     tokens = _tokens(text)
     out, ambiguous, i = [], 0, 0
     while i < len(tokens):
+        if text[tokens[i][0]:tokens[i][1]].strip("،.:؛") in QUOTE_FORMULAS:
+            i += 1
+            continue
         j = i
         while j < len(tokens) and qw.contains([t[2] for t in tokens[i:j + 1]]):
             j += 1
         words = [t[2] for t in tokens[i:j]]
         places = qw.places(words) if len(words) >= OWN_MIN_WORDS and sum(map(len, words)) >= OWN_MIN_LETTERS else set()
         mine = {p for p in places if own and p[0] == own[0] and p[1] <= own[2] and own[1] <= p[2]}
+        if mine and i > 0 and len(words) < min_words:      # cümle ortasında kendi âyeti: gevşek eşik yok
+            mine = set()
         if mine or (len(words) >= min_words and sum(map(len, words)) >= min_letters):
             place = min(mine) if mine else (next(iter(places)) if len(places) == 1 else None)
             if place is None:
@@ -167,6 +175,7 @@ def quote_links(conn: sqlite3.Connection, book: dict, quotes: list[Quote]) -> li
         # Kendi âyetinin cümle ortasındaki sözü zayıf: kısa olabilir (eşik bağlamla gevşek), kalıp ifade de olabilir.
         strength = "weak" if q.own and not q.lemma else "strong"
         out.append(Link(q.sentence, _verse(q.place), "quote", "quran_text", strength, "lemma" if q.lemma else "verbatim",
+                        part_key(q.text),                 # aynı cümlede aynı âyetin iki alıntısı ayrı bağ (T7)
                         evidence={"text": q.text, "start": q.start, "end": q.end, "letters": len(skeleton(q.text)),
                                   **({"own_verse": True} if q.own else {}), **({"candidate": True} if q.lemma else {})},
                         display=cite_as(conn, q.sentence)))
@@ -321,33 +330,74 @@ SAMPLE_SEED = 7
 LONG_WORDS = 100
 
 
-def review_sample(conn: sqlite3.Connection, quran: Quran) -> tuple[list[str], dict]:
+def verse_marked(quran: Quran, sura: int, a: int, b: int, quoted: str) -> str:
+    """Âyetin tam metni (Medine Mushafı hattı), alıntılanan kelimeler **…** içinde. Kelimeler imlâî metinde iskeletle
+    bulunur, hat metninde aynı sıradaki kelimeler vurgulanır. Vakıf işaretleri (ۖ ۚ) hat metninde ayrı yazılır, kelime
+    sayılmaz; kelime sayıları yine tutmazsa vurgu yapılmaz."""
+    shown = [w for k in range(a, b + 1) for w in quran.ayahs[(sura, k)]["text"].split()]
+    clean = [w for k in range(a, b + 1) for w in quran.ayahs[(sura, k)]["text_clean"].split() if _LETTER.search(w)]
+    real = [i for i, w in enumerate(shown) if _LETTER.search(w)]          # hat metninde kelime olanlar
+    want = [t[2] for t in _tokens(quoted)]
+    sk = [skeleton(w) for w in clean]
+    if len(real) == len(clean) and want:
+        for i in range(len(sk)):
+            j, m = i, 0
+            while j < len(sk) and m < len(want):
+                if not sk[j]:
+                    j += 1
+                    continue
+                if sk[j] != want[m]:
+                    break
+                j, m = j + 1, m + 1
+            if m == len(want):
+                first, last = real[i], real[j - 1]
+                return " ".join(shown[:first] + ["**" + " ".join(shown[first:last + 1]) + "**"] + shown[last + 1:])
+    return " ".join(shown)
+
+
+def review_sample(conn: sqlite3.Connection, quran: Quran, previous: dict | None = None) -> tuple[list[str], dict]:
     """Numaralı örneklem (Markdown) ve numaraların anahtarları (JSON): A Kur'ân alıntıları (15 lemma, 10 kendi âyetinin
     cümle ortası, 15 başka âyet), B bağ kurulan hadis sözleri, C 100 kelimeyi aşan cümleler. Daha önce karara
-    bağlanmış bağ örnekleme girmez."""
+    bağlanmış bağ örnekleme girmez. `previous`: önceki örneklemin anahtarları; verilirse A aynı bağlarla, aynı
+    numarayla yeniden yazılır (kullanıcı ona bakmış olabilir)."""
     import random
     from risale_mcp import link_reviews
     reviewed = {r.key for r in link_reviews.current(link_reviews.read()) if r.key}
-    rows = conn.execute("SELECT l.source, l.target, l.type, l.relation, l.strength, l.evidence, s.text FROM links l"
+    rows = conn.execute("SELECT l.source, l.target, l.type, l.relation, l.strength, l.evidence, s.text, l.part FROM links l"
                         " JOIN sentences s ON s.id = l.source WHERE l.file = 'tefsir/quran_text.jsonl'").fetchall()
-    rows = [r for r in rows if (r[0], r[1], r[2], "") not in reviewed]
+    every = rows                                       # önceki seçim kararı verilmişleri de bulmalı
+    rows = [r for r in rows if (r[0], r[1], r[2], r[7] or "") not in reviewed]
     rng = random.Random(SAMPLE_SEED)
     groups = (("lemma", 15, lambda r: r[3] == "lemma"), ("kendi âyeti, cümle ortası", 10, lambda r: r[4] == "weak"),
-              ("başka âyet", 15, lambda r: r[3] == "verbatim" and r[4] == "strong"))
+              ("birimin kendi âyeti dışında bir âyet", 15, lambda r: r[3] == "verbatim" and r[4] == "strong"))
+    old = list((previous or {}).get("A", {}).values())
     keys: dict = {"A": {}, "B": {}, "C": {}}
     lines = ["# T7: Beyzâvî örneklemi", "",
              "Her satır için ✓ (doğru) ya da ✗ (yanlış; isterseniz kısa not). Numarasıyla bildirin: \"A3 ✗ âyet değil\".",
              "Kararlar isminizle denetim kaydına yazılır (`data/links/reviews/tefsir/`).", "",
              "## A. Kur'ân alıntıları", "",
              "Soru: **bulunan söz gerçekten bu âyetten bir alıntı mı?** Lemma için ayrıca: cümle âyetin bu lafzını şerh "
-             "ederek mi başlıyor? Âyetin Tanzil metni karşılaştırma içindir.", ""]
+             "ederek mi başlıyor? Âyetin Tanzil metni tamdır; bulunan kelimeler âyetin içinde de vurgulu. Alıntı çoğu "
+             "zaman âyetin bir kısmıdır.", ""]
     n = 0
     for title, size, pick in groups:
         chosen = sorted(rng.sample([r for r in rows if pick(r)], min(size, sum(map(pick, rows)))), key=lambda r: r[0])
+        if old:                                        # önceki seçim: aynı anahtar ve aynı grup
+            mine, old = old[:size], old[size:]
+            chosen = []
+            for k in mine:                             # parça değiştiyse anahtar ve grupla; bağ kalktıysa satır kalır
+                same = [r for r in every if pick(r) and (r[0], r[1], r[2]) == (k["source"], k["target"], k["type"])]
+                chosen.append(next((r for r in same if k.get("part") in (None, r[7])), same[0] if len(same) == 1 else None)
+                              or ("removed", k))
         lines += [f"### {title} ({len(chosen)})", "", "| # | Cümle | Bulunan söz (cümlede) | Âyet | Âyetin metni |",
                   "|---|---|---|---|---|"]
         for r in chosen:
             n += 1
+            if r[0] == "removed":                          # kural değişti: bağ artık yok
+                k = r[1]
+                lines.append(f"| A{n} | `{k['source']}` | (bağ kural değişikliğiyle kalktı) | {k['target'].removeprefix('quran:')} | |")
+                keys["A"][f"A{n}"] = {**k, "removed": True}
+                continue
             ev = json.loads(r[5])
             text = r[6]
             shown = text[:ev["start"]] + "**" + text[ev["start"]:ev["end"]] + "**" + text[ev["end"]:]
@@ -356,9 +406,10 @@ def review_sample(conn: sqlite3.Connection, quran: Quran) -> tuple[list[str], di
             sura_s, _, ayahs = r[1].removeprefix("quran:").partition(":")
             a_s, _, b_s = ayahs.partition("-")
             sura, a, b = int(sura_s), int(a_s), int(b_s or a_s)
-            verse = " ".join(quran.ayahs[(sura, k)]["text"] for k in range(a, b + 1))
-            lines.append(f"| A{n} | `{r[0]}` | {shown.replace('|', '/')} | {sura}:{ayahs} | {verse[:160]} |")
-            keys["A"][f"A{n}"] = {"source": r[0], "target": r[1], "type": r[2]}
+            verse = verse_marked(quran, sura, a, b, ev["text"])           # tam metin: kesilince âyetin sonu görünmüyordu
+            done = " (kararınız kayıtlı)" if (r[0], r[1], r[2], r[7] or "") in reviewed else ""
+            lines.append(f"| A{n}{done} | `{r[0]}` | {shown.replace('|', '/')} | {sura}:{ayahs} | {verse} |")
+            keys["A"][f"A{n}"] = {"source": r[0], "target": r[1], "type": r[2], "part": r[7], "group": title}
         lines.append("")
     store = json.loads(HADITH_STORE.read_text("utf-8"))["reports"] if HADITH_STORE.exists() else {}
     from risale_mcp.links_hadis import report_id
@@ -407,6 +458,7 @@ td.ar b { background: var(--mark); font-weight: 700; border-radius: 3px; padding
 td.no { font-weight: 700; white-space: nowrap; } code { font-size: .85em; color: var(--muted); }
 """
 _ARABIC = re.compile(r"[\u0600-\u06FF]")
+_LETTER = re.compile(r"[\u0621-\u064A\u0671-\u06D3]")      # Arapça harf (vakıf işareti ve hareke değil)
 
 
 def sample_html(lines: list[str]) -> str:
@@ -460,7 +512,8 @@ def main() -> None:
     args = parser.parse_args()
     conn = sqlite3.connect(args.db)
     if args.sample:
-        lines, keys = review_sample(conn, Quran.load())
+        previous = REPORT_DIR / "t7-orneklem.json"
+        lines, keys = review_sample(conn, Quran.load(), json.loads(previous.read_text("utf-8")) if previous.exists() else None)
         REPORT_DIR.mkdir(parents=True, exist_ok=True)
         (REPORT_DIR / "t7-orneklem.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
         (REPORT_DIR / "t7-orneklem.html").write_text(sample_html(lines), encoding="utf-8")

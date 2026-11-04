@@ -12,7 +12,8 @@ Alanlar:
               düğüm kimliği (`scope: section`). Önek isteğe bağlıdır: `risale:sozler/10/c001`; öneksiz kimlik bu
               kütüphanenin metnidir (bugünkü dosyalar öyle yazılır, kimlikler profilde tektir)
     part      cümlede birden çok Arapça parça varsa hangisi: parçanın iskelet anahtarı (`quran.skeleton`; hadiste
-              `arabic.hadith_key` ile aynı). Sıra numarası değil: yeniden ayrıştırmada kaymasın
+              `arabic.hadith_key` ile aynı). Sıra numarası değil: yeniden ayrıştırmada kaymasın. İşaretsiz metinde
+              (müfessirin şerhi) alıntının iskeletidir, cümlenin iskeletinde geçmelidir
     target    ad alanlı kimlik: quran:2:255, quran:2:255-257, hadis:bukhari/52, hadis-derlem:sanadset:220501
               (kütüphanede henüz olmayan rivayet; Hadith API alt numarası tirmidhi:2780.2) ya da metin: bir eserin
               cümlesi, aralığı ya da bölümü, koleksiyonun ad alanıyla (risale:lemalar/30, risale:sozler/1/c004..c007;
@@ -247,7 +248,9 @@ def check(conn: sqlite3.Connection, links: Iterable[Link]) -> dict[str, list]:
             continue
         first = source["id"].partition("..")[0]
         row = sentence(first)
-        if link.part and link.part not in keys(first):
+        # Parça: cümlenin işaretli Arapça parçalarından biri ya da (işaretsiz metinde, müfessirin şerhi) cümlenin
+        # harf iskeletinin bir parçası: aynı cümlede aynı âyetin iki alıntısı ayrı bağdır (T7).
+        if link.part and link.part not in keys(first) and link.part not in skeleton(row["text"]):
             out.setdefault("no_part", []).append((link, link.part))
         if link.display and row["incipit"] and not _opening_matches(link.display, row):
             out.setdefault("moved", []).append((link, row["incipit"]))

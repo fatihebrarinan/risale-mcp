@@ -157,3 +157,15 @@ def test_real_book_covers_the_pilot_range():
     assert covered == [(1, a) for a in range(1, 8)] + [(2, a) for a in range(1, 34)]
     assert all(s.get("printed") for s in data["sentences"])
     assert sum(p["kind"] == "ayah" for p in data["paragraphs"]) == 40
+
+
+def test_users_long_sentence_decision_holds():
+    """T7: 100 kelimeyi aşan 28 cümle olduğu gibi kalır (kullanıcının kararı); bölme kuralı onları değiştirmemeli."""
+    from risale_mcp.paths import ROOT
+    path = get_work("beyzavi").book_path
+    if not path.exists():
+        pytest.skip("beyzavi.json yok")
+    by_id = {s["id"]: s for s in json.loads(path.read_text("utf-8"))["sentences"]}
+    locked = json.loads((ROOT / "tests" / "golden" / "beyzavi_long_sentences.json").read_text("utf-8"))["sentences"]
+    assert len(locked) == 28
+    assert [(sid, by_id[sid]["hash"]) for sid, _, _ in locked if sid in by_id] == [(sid, h) for sid, h, _ in locked]
