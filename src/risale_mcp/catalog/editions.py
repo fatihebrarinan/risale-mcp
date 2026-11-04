@@ -56,6 +56,22 @@ def _risaleoku_catalog(raw_dir: Path) -> dict[str, dict]:
     return out
 
 
+def _openiti(raw_dir: Path, key: str) -> dict:
+    """OpenITI sürümü: depodaki dosya, sabit commit ve üst bilginin söylediği baskı (sayfaların ait olduğu)."""
+    from risale_mcp import openiti
+    manifest = _read(raw_dir / "manifest.json") or {}
+    out: dict = {"site_url": "https://github.com/OpenITI"}
+    if file := manifest.get("files", {}).get(key):
+        out["file"] = file
+        if commit := manifest.get("commits", {}).get(file.split("/", 1)[0]):
+            out["commit"] = commit
+    if manifest.get("fetched_at"):
+        out["fetched_at"] = manifest["fetched_at"]
+    if (raw_dir / f"{key}.txt").exists() and (printed := openiti.load(key, raw_dir).edition):
+        out["printed_edition"] = printed
+    return out
+
+
 def edition(work: Work, raw_root: Path = RAW_DIR) -> dict | None:
     if work.source is None:
         return None
@@ -77,6 +93,8 @@ def edition(work: Work, raw_root: Path = RAW_DIR) -> dict | None:
             record["supplements"] = [{"site": "kullanici", "book": TABLES_FROM[work.slug], "what": "tablolar",
                                       **{k: other[k] for k in ("file", "sha1") if k in other},
                                       "note": "nurpedia tabloları resim olarak verir; kullanıcının kararı ve sorumluluğuyla"}]
+    if site is Site.OPENITI:
+        record.update(_openiti(raw_dir, book))
     from risale_mcp.books.erisale import SUPPLEMENTS
     if site is Site.ERISALE and work.slug in SUPPLEMENTS:
         app = _risaleoku_catalog(raw_root / str(Site.RISALEOKU_APP))

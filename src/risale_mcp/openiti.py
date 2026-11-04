@@ -11,6 +11,7 @@ Biçim (OpenITI mARkdown):
     #META# 040.EdEDITOR :: …        üst bilgi; `#META#Header#End#` satırında biter. `NODATA` boş sayılır
     # metin                         paragraf başı; `~~` ile başlayan satırlar paragrafın devamıdır
     ### | başlık, ### || alt başlık  başlık; çizgi sayısı seviyedir (`Paragraph.level`)
+    ### $ başlık                     kişi ya da madde başlığı: seviyesiz (`Paragraph.entity`)
     PageV01P003                     sayfa işareti: 1. cildin 3. sayfasının SONU. İşaretten önceki metin o sayfadadır,
                                     sonraki metin bir sonraki işaretin sayfasındadır (OpenITI'nin kuralı)
     @QB@ … @QE@                     âyet alıntısı: metinde "﴿ … ﴾" olur, yeri `quran` aralıklarındadır
@@ -42,7 +43,7 @@ _MARK = re.compile(r"(?P<page>PageV(?P<vol>\d+)P(?P<num>\d+))|(?P<ms>\bms\d+\b)|
                    r"|(?P<qb>@QB@)|(?P<qe>@QE@)")
 _META = re.compile(r"^#META#\s*\d+\.(\w+)\s*::\s*(.*)$")
 _YML = re.compile(r"^\d+#(\w+)#(\w+)#*:\s?(.*)$")
-_LEVEL = re.compile(r"^###\s*(\|+)\s*")
+_LEVEL = re.compile(r"^###\s*(\|+|\$+)\s*")
 # Doldurulmamış `.yml` şablonunun değerleri: bilgi değildir (Beyzâvî'nin dört sürümünde öyle kalmış).
 YML_TEMPLATE = ("permalink, permalink", "all@id, vol1@id", "the name of the annotator", "a free running comment here",
                 "YYYY-MM-DD", "formalized issues, separated with commas")
@@ -68,6 +69,7 @@ class Paragraph:
     breaks: list[tuple[int, Page]] = field(default_factory=list)  # `text` içinde sayfa sonları: (konum, biten sayfa)
     page: Page | None = None                        # metnin başladığı sayfa
     end_page: Page | None = None                    # metnin bittiği sayfa
+    entity: bool = False                            # "### $": kişi ya da madde başlığı (seviyesiz)
 
     def printed(self) -> dict | None:
         """Araçlara ve JSON'a giden biçim: {"volume", "page"} ve sayfa aşıyorsa "end"."""
@@ -161,9 +163,10 @@ def read(raw: str) -> Document:
     meta, body = split_header(raw)
     paragraphs = []
     for line in raw_paragraphs(body):
-        level = len(m[1]) if (m := _LEVEL.match(line)) else None
+        m = _LEVEL.match(line)
+        level = len(m[1]) if m and m[1][0] == "|" else None
         text, quran, breaks = clean(line[m.end():] if m else line.lstrip("#"))
-        paragraphs.append(Paragraph(line, text, level, quran, breaks))
+        paragraphs.append(Paragraph(line, text, level, quran, breaks, entity=bool(m) and m[1][0] == "$"))
     _pages(paragraphs)
     return Document(meta, paragraphs)
 

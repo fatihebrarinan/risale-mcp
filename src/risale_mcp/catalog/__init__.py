@@ -1,14 +1,15 @@
 """Eser kataloğu: her eserin kaynağı, koleksiyonu ve statüsü tek yerde.
 
-Kayıtlar koleksiyon başına ayrı dosyadadır (`kulliyat.py`, `ilgili.py`); yapı taşları `model.py`'de.
+Kayıtlar koleksiyon başına ayrı dosyadadır (`kulliyat.py`, `ilgili.py`, `tefsir.py`); yapı taşları `model.py`'de.
 Eser kimliği bütün katalogda tektir: atıflar kimlikte eseri öneksiz taşır (`sozler/10/…`).
 """
 
 from risale_mcp.catalog.ilgili import ILGILI_WORKS
 from risale_mcp.catalog.kulliyat import KULLIYAT_WORKS
+from risale_mcp.catalog.tefsir import TEFSIR_WORKS
 from risale_mcp.catalog.model import Authority, Collection, Group, Site, SECONDARY_SITES, SourceRef, Status, Work
 
-WORKS: tuple[Work, ...] = KULLIYAT_WORKS + ILGILI_WORKS
+WORKS: tuple[Work, ...] = KULLIYAT_WORKS + ILGILI_WORKS + TEFSIR_WORKS
 
 _BY_SLUG = {work.slug: work for work in WORKS}
 if len(_BY_SLUG) != len(WORKS):

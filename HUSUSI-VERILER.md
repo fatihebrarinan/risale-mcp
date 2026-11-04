@@ -5,9 +5,9 @@
 
 | Veritabanı | Eser | Bölüm | Paragraf | Cümle | Arapça parça |
 |---|---:|---:|---:|---:|---:|
-| Yerel (`data/dist/kisisel/`) | 73 | 9.604 | 120.740 | 259.627 | 26.155 |
+| Yerel (`data/dist/kisisel/`) | 74 | 9.650 | 121.202 | 260.604 | 26.158 |
 | Sunucu (`data/dist/genel/`) | 69 | 9.002 | 107.221 | 242.758 | 25.564 |
-| **Fark** | **4** | **602** | **13.519** | **16.869** | **591** |
+| **Fark** | **5** | **648** | **13.981** | **17.846** | **594** |
 
 Ortak eserlerde metin aynıdır (JSON özetleri tutuyor).
 
@@ -19,6 +19,7 @@ Ortak eserlerde metin aynıdır (JSON özetleri tutuyor).
 | 2 | Siracü'n-Nur (Hayrat) | `risale_online/siracun-nur` | 250 | 1.349 | 1.848 | Hayrat baskısı; Onikinci Şuâ'ya bağlı belgeler (raporlar, müdafaalar) yalnız burada. Yalnızca kullanıcıda. |
 | 3 | Esasat-ı Nuriye | `risaleoku_app/esasat` | 56 | 4.648 | 4.782 | Sonradan derleme: Rüşdü Tafral ve İttihad İlmî Araştırma Heyeti (İttihad Yayıncılık); Bediüzzaman'ın tertibi değil. |
 | 4 | Hizmet Rehberi ve Düsturları | `risaleoku_app/hizmettoplama` | 166 | 5.499 | 3.219 | Sonradan derleme: Ahmet Koçoğlu (2018); Bediüzzaman'ın tertibi değil. |
+| 5 | Envârü't-Tenzîl | `openiti/beyzavi-shamela` | 46 | 462 | 977 | Envârü't-Tenzîl ve Esrârü't-Te'vîl. OpenITI Shamela0023588 (Maraşlî tahkiki, Dâru İhyâi't-Türâsi'l-Arabî, 1418). Pilot: muhakkikin girişi, hutbe, Fâtiha ve Bakara 1–33 (T3); gerisi ayrıştırılmadı. |
 
 ## Eser olmayan yerel veriler
 
@@ -38,7 +39,7 @@ Ham kaynak verisi hiçbir zaman sunucuya gitmez.
 | `nurpedia` | 9 MB | Ham sayfalar yerelde: hadis işaretleri ve künyeleri (Aşama 14); sunucuya yalnız sonuçları çıkar |
 | `sanadset` | 1.431 MB | Hadis katmanı (Aşama 14): CC BY 4.0, eşleşen rivayetler sunucuya gider |
 | `hadith_api` | 44 MB | Hadis katmanı (Aşama 14): Unlicense; âlimlerin dereceleri |
-| `openiti` | 24 MB | Hadis kitapları (Kütüb-i Sitte, Muvatta; bâblı): CC BY-NC-SA 4.0, kitaplar yerelde; okumayla bulunan rivayetler sunucuda (`docs/izinler.md`) |
+| `openiti` | 50 MB | Hadis kitapları (Kütüb-i Sitte, Muvatta; bâblı): CC BY-NC-SA 4.0, kitaplar yerelde; okumayla bulunan rivayetler sunucuda (`docs/izinler.md`) |
 | `risaleoku` | 2 MB | Kullanılmıyor: sitenin kapanan eski sayfaları, karşılaştırma için |
 | `yeniasya` | 5 MB | Kullanılmıyor: bozuk kodlu PDF metni, karşılaştırma için |
 

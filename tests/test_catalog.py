@@ -4,7 +4,7 @@ import re
 
 import pytest
 
-from risale_mcp.catalog import WORKS, Site, SourceRef, Status, get_work, works_from
+from risale_mcp.catalog import Collection, WORKS, Site, SourceRef, Status, get_work, works_from
 
 
 def test_slugs_are_unique_and_url_safe():
@@ -17,9 +17,13 @@ def test_every_listed_work_is_present():
     # Kullanıcının listesindeki 42 madde; aslı Arapça eserlerin (Mesnevî, İşaratü'l-İ'caz, Kızıl İcaz, Ta'likat)
     # Arapçası ve Türkçesi ayrı eser; Hutbe-i Şamiye'nin Arapçası da (İhsan Kasım tercümesi) ayrı eser.
     # 2026-10-30'da risaleoku.com'dan 11 eser, 16 Osmanlıca cilt ve harekeli Mesnevî eklendi.
-    assert len(WORKS) == 74
+    risale = [w for w in WORKS if w.collection is not Collection.TEFSIR]
+    assert len(risale) == 74
     assert sum(w.group == "osmanlica" for w in WORKS) == 16
-    assert {w.slug for w in WORKS if w.private} == {"el-mesnevi-el-arabi-harekeli", "esasat-i-nuriye", "siracun-nur-hayrat",
+    # Müfessirlerin eserleri (tefsir pilotu) ayrı sayılır; pilot bitene kadar hepsi yalnız yerelde.
+    assert {w.slug for w in WORKS if w.collection is Collection.TEFSIR} == {"beyzavi"}
+    assert all(w.private for w in WORKS if w.collection is Collection.TEFSIR)
+    assert {w.slug for w in risale if w.private} == {"el-mesnevi-el-arabi-harekeli", "esasat-i-nuriye", "siracun-nur-hayrat",
                                                     "hizmet-rehberi-ve-dusturlari"}
 
 

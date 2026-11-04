@@ -48,6 +48,9 @@ PERMISSIONS: dict[str, Permission] = {p.key: p for p in (
     Permission("kullanici", "Kullanıcının dosyası", Kind.UNRECORDED, "Hak sahibi kayıtlı değil", "Kayıt yok"),
     Permission("risale-online", "risale.online (Hayrat)", Kind.UNRECORDED, "Kayıtlı değil", "Kayıt yok"),
     Permission("rasaelalnour", "Hizmet Vakfı (rasaelalnour.com)", Kind.REFUSED, "İzin verilmedi", "2026-10-30"),
+    Permission("openiti", "OpenITI (KITAB projesi, Aga Khan University)", Kind.LICENCE,
+               "CC BY-NC-SA 4.0: kaynak gösterilir (dosya ve sürüm), ticari kullanılmaz, aynı lisansla paylaşılır",
+               "Lisans (Zenodo sürüm kaydı)"),
     Permission("yeniasya", "Yeni Asya", Kind.UNRECORDED, "Ortak proje planda; mevcut veri kullanılmıyor", "Kayıt yok"),
 )}
 
@@ -55,4 +58,5 @@ SITE_PERMISSION = {
     Site.ERISALE: "erisale", Site.RISALEOKU_APP: "risaleoku", Site.RISALEOKU: "risaleoku", Site.KESIF: "kesif",
     Site.KASTAMONUR: "kastamonur", Site.KULLANICI: "kullanici", Site.RISALE_ONLINE: "risale-online",
     Site.RASAELALNOUR: "rasaelalnour", Site.YENIASYA: "yeniasya", Site.NURPEDIA: "nurpedia",
+    Site.OPENITI: "openiti",
 }

@@ -6,4 +6,5 @@
 |---|---:|---:|---|
 | Risale-i Nur Külliyatı | 74 | 73 | [liste](docs/eserler/risale-kulliyat.md) |
 | Risale-i Nur ile ilgili kaynaklar | 0 | 0 | henüz eser yok |
+| Müfessirlerin eserleri | 1 | 1 | [liste](docs/eserler/tefsir.md) |
 | Kur'ân-ı Kerîm | 114 sûre | ✅ | `data/library/kuran/` |

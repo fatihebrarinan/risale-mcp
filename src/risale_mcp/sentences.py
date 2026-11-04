@@ -100,6 +100,8 @@ def split(text: str, arabic: list[dict] | None = None, star: bool = False) -> li
 
 def split_paragraph(paragraph: dict, star: bool = False) -> list[tuple[int, int]]:
     text = paragraph["text"]
+    if paragraph["kind"] == "ayah":                 # müfessirin baskısındaki âyet satırı: adresi âyetin kendisi
+        return []
     if paragraph["kind"] in ("arabic", "signature"):
         return [(0, len(text))] if text else []
     if paragraph["kind"] == "table":

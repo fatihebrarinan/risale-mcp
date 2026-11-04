@@ -18,6 +18,7 @@ class Collection(StrEnum):
     """
     KULLIYAT = "risale/kulliyat"    # Bediüzzaman'ın eserleri ve mecmuaları
     ILGILI = "risale/ilgili"        # Külliyat dışı: Sorularla Risale, mufassal tarihçeler, hatıralar
+    TEFSIR = "tefsir"               # Müfessirlerin eserleri (`docs/tefsir-altyapi-plani.md`); ad alanı `tefsir:`
 
 
 AUTHOR = "Bediüzzaman Said Nursî"      # külliyatın müellifi: `Work.author`'un varsayılanı
@@ -44,6 +45,7 @@ class Group(StrEnum):
     MECMUA = "mecmua"
     HIZB = "hizb"
     OSMANLICA = "osmanlica"
+    TEFSIR = "tefsir"                # müfessirlerin eserleri
 
 
 class Status(StrEnum):
@@ -64,6 +66,7 @@ class Site(StrEnum):
     KESIF = "kesif"                  # Keşif Yolculukları Risale-i Nur Eğitim Programı: Ta'likat'ın Türkçesi (Word)
     KULLANICI = "kullanici"          # kullanıcının sağladığı dosya (PDF): internette serbest metni olmayan eserler
     NURPEDIA = "nurpedia"            # nurpedia.org (MediaWiki): Rumuzat-ı Semaniye'nin metni
+    OPENITI = "openiti"              # OpenITI (KITAB projesi): klasik eserlerin sabit commit'teki sürümleri (`sources/openiti.py`)
 
 
 # Bu kaynaklardaki eserler ana metin sayılmaz: ana ciltlerde de geçen parçaları oraya eşlenir.

@@ -145,6 +145,9 @@ class Node:
     url: str | None = None          # kaynaktaki bölüm sayfası (doğrulama için)
     children: list["Node"] = field(default_factory=list)
     paragraph_count: int = 0
+    # Kaynağa özgü ek alanlar, başlık ağacına olduğu gibi yazılır: müfessirin âyet birimi `verses`, basılı sayfa
+    # `printed`, eser içi katman `authority` ve `by` (`books/beyzavi.py`). Boşsa hiçbir şey yazılmaz.
+    extra: dict = field(default_factory=dict)
 
     def path(self) -> list[str]:
         return [] if self.parent is None else self.parent.path() + [self.title]
@@ -227,6 +230,7 @@ class Book:
                 value = getattr(node, key)
                 if value not in (None, ""):
                     record[key] = value
+            record.update(node.extra)
             records.append(record)
         return records
 

@@ -162,7 +162,7 @@ adıyla anar, Beyzâvî de büyük ölçüde ondan süzülmüştür.
 | T0 (bitti) | Kaynak: Beyzâvî OpenITI'de aranır (baskı, commit, lisans); başka nüsha gerekirse izin istenir | `docs/izinler.md` satırı, ham veri `data/raw/openiti/` |
 | T1 | Ham veriyi incelemek: âyet işaretleri, bölümler, hâşiyeler, nakil kalıpları; örnekler kullanıcıya | Örnek dökümü |
 | T2 | Kararlar: koleksiyon (`library/tefsir/`), şema, kimlik biçimi | Bu belgenin "Kararlar"ı |
-| T3 | Ayrıştırıcı ve cümle bölücü (Arapça nesir, el-Mesnevî el-Arabî'nin kuralları) | `data/library/tefsir/beyzavi.json`, altın örnekler |
+| T3 (bitti) | Ayrıştırıcı ve cümle bölücü (Arapça nesir, el-Mesnevî el-Arabî'nin kuralları) | `data/library/tefsir/beyzavi.json`, altın örnekler |
 | T4 | Beyzâvî'nin bağları için H4 ve H5'in eksik kalan kısmı | `links.py`, testler |
 | T5 | Bağlar: Beyzâvî parçası → âyet (yapıdan); Beyzâvî'nin âyet ve hadis alıntıları (bugünkü yöntemler); İşârât bölümü ↔ Beyzâvî parçası (aynı âyet aralığı yalnız aday; ilişki türü okumayla) | `data/links/tefsir/*.jsonl`, sayım ve örneklem |
 | T6 | Araçlar: âyetten Risale'nin ve Beyzâvî'nin yerleri, Risale önce; talimat ("tefsir" denmez, eserin sahibi söylenir) | Altın sorular |
@@ -252,6 +252,20 @@ Kullanıcı T1'in beş önerisini onayladı; tek değişiklik: âyet birimin ba�
    `notes`'unda.
 10. **Ölçüt:** eser `private`, genel profile girmez: genel profilin araç çıktısında fark olmamalı (H0), Risale'nin
    kimlikleri değişmemeli (H1); yerel profilde yalnız eklenen kimlikler.
+
+### T3: ayrıştırıcı (bitti, 2026-11-04)
+
+`books/beyzavi.py`; JSON `data/library/tefsir/beyzavi.json` (yalnız yerel profil). 46 düğüm, 422 paragraf, 40 âyet
+satırı, 977 cümle (âyet birimlerinde 767), hepsi basılı sayfalı (1/5–1/70). T2'den ayrılan ya da netleşenler:
+
+- Girişin başlık seviyeleri tutarsız (liste maddeleri, tam cümleler `### |`): alt düğüm yalnız girişin kendi
+  içindekiler listesinin iki ana kısmı (`mukaddime-tahkik/1`, `/2`); öbür başlık satırları kendi paragrafını açar.
+- `### $` (mARkdown'da kişi ya da madde başlığı) okuyucuya eklendi; hadis kitaplarında yok, onlar değişmedi.
+- "[الجزء الاول]" cilt etiketi metne değil `notes`'a.
+- Genel profil: araç çıktısında fark yok (`tool_snapshot` t3), kimlik farkı yok. Yerel profil: 977 cümle ve 46
+  bölüm eklendi; `build_db`'nin bugünkü parantezli alıntı yöntemi 3 Kur'ân alıntısı buldu (Kıyâme 40, Bakara 11 ve 14).
+- T6'ya kalan: `read_section` cümlesi olmayan paragrafın metnini göstermiyor, âyet satırı boş görünüyor; düğümün
+  `verses`, `authority` ve `printed` alanları araçlara henüz gitmiyor.
 
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık

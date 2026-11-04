@@ -5,7 +5,7 @@ import json
 import pytest
 
 from risale_mcp.build_db import check_permissions
-from risale_mcp.catalog import WORKS, Authority, Site, SourceRef, Work, get_work
+from risale_mcp.catalog import WORKS, Authority, Collection, Site, SourceRef, Work, get_work
 from risale_mcp.catalog.editions import _risaleoku_catalog, edition
 from risale_mcp.catalog.model import AUTHOR, Group
 from risale_mcp.catalog.permissions import PERMISSIONS
@@ -40,6 +40,8 @@ def test_authors_are_only_what_the_catalog_knows():
     for work in WORKS:
         if work.authority is Authority.BASKASI:
             assert work.author is None, work.slug                # bilinmeyen yazar tahmin edilmez
+        elif work.collection is Collection.TEFSIR:               # müfessirin eseri kendi yazarının
+            assert work.author and work.author != AUTHOR, work.slug
         else:
             assert work.author == AUTHOR, work.slug
     assert get_work("isaratul-icaz").translator == "Abdülmecid Nursî"

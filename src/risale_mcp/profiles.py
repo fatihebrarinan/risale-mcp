@@ -29,7 +29,8 @@ class Profile:
         return work.collection in self.collections and (self.private or not work.private)
 
 
-KISISEL = Profile("kisisel", (Collection.KULLIYAT, Collection.ILGILI), DB_PATH, VECTORS_DIR, private=True)
+# Müfessirlerin eserleri (`tefsir`) şimdilik yalnız yerel profilde: pilot `private`, genel profilin koleksiyonları değişmez.
+KISISEL = Profile("kisisel", (Collection.KULLIYAT, Collection.ILGILI, Collection.TEFSIR), DB_PATH, VECTORS_DIR, private=True)
 GENEL = Profile("genel", (Collection.KULLIYAT, Collection.ILGILI), PUBLIC_DB_PATH, PUBLIC_VECTORS_DIR)
 
 PROFILES = {p.name: p for p in (KISISEL, GENEL)}

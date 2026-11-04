@@ -23,6 +23,7 @@ OUT_DIR = ROOT / "docs" / "eserler"
 COLLECTION_TITLES = {
     Collection.KULLIYAT: "Risale-i Nur Külliyatı",
     Collection.ILGILI: "Risale-i Nur ile ilgili kaynaklar",
+    Collection.TEFSIR: "Müfessirlerin eserleri",
 }
 
 GROUP_TITLES = {
@@ -31,6 +32,7 @@ GROUP_TITLES = {
     Group.MECMUA: "Mecmualar",
     Group.HIZB: "Hizbler ve dualar",
     Group.OSMANLICA: "Osmanlıca eserler",
+    Group.TEFSIR: "Müfessirlerin eserleri",
 }
 
 DONE, PARTIAL, TODO, NONE, PAUSED = "✅", "⚠️", "⬜", "❌", "⏸️"

@@ -41,14 +41,15 @@ def test_valid_targets(target):
     ({"target": "risale:sozler/1", "type": "relation", "relation": "objection"}, True),
     ({"target": "risale:sozler/1", "relation": "verbatim"}, False),             # metne giden alıntının türü
     ({"target": "risale:sozler/1", "type": "relation", "relation": "isaret"}, False),
-    ({"target": "tefsir:beyzavi/1"}, False),                                    # koleksiyonu yok: ad alanı yok
+    ({"target": "tefsir:beyzavi/2/6", "type": "relation", "relation": "same_view"}, True),   # tefsir koleksiyonu
+    ({"target": "tafsir:beyzavi/2/6", "type": "relation", "relation": "same_view"}, False),  # koleksiyonu yok
 ])
 def test_text_endpoints(kw, ok):
     assert (link(**kw).problems() == []) is ok
 
 
 def test_namespaces_come_from_collections():
-    assert TEXT_NAMESPACES == ("risale",)
+    assert TEXT_NAMESPACES == ("risale", "tefsir")
     assert local_id("risale:sozler/10/c001") == "sozler/10/c001" == local_id("sozler/10/c001")
     assert local_id("quran:2:255") == "quran:2:255"
     assert link(source="risale:sozler/10/c001").key == link(source="sozler/10/c001").key

@@ -28,7 +28,7 @@ from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
 from risale_mcp.books import risaleoku_app as risaleoku_app_parser
 from risale_mcp.books import nurpedia as nurpedia_parser
-from risale_mcp.books import rumuzat, saykal, telif
+from risale_mcp.books import beyzavi, printed, rumuzat, saykal, telif
 from risale_mcp.books import yeniasya as yeniasya_parser
 from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
 from risale_mcp.books.model import Book
@@ -181,6 +181,11 @@ def parse(work: Work) -> tuple[Book, list[str]]:
                       f" işareti bulunamayan metin {report.unmatched_texts[:3]}",
                       f"  Arapça               : harfe çevrilemeyen {len(report.pdf.unresolved)}"
                       f" {report.pdf.unresolved[:5]}, bağlanamayan hareke {report.pdf.stray_marks}"]
+    if work.source.site is Site.OPENITI:
+        book, report = beyzavi.parse(work)
+        return book, [f"  âyet birimi          : {report.units}, âyet satırı {report.ayah_lines}",
+                      f"  satır → paragraf     : {report.lines} → {report.paragraphs - report.ayah_lines} (+{report.ayah_lines} âyet)",
+                      f"  basılı sayfa         : {'–'.join(report.pages)}, sayfası bilinmeyen paragraf {report.unknown_pages}"]
     raise ValueError(f"{work.source.site} için ayrıştırıcı yok")
 
 
@@ -206,6 +211,8 @@ def build_work(work: Work) -> None:
                                                  keep_unique=work.source.site is not Site.ERISALE,
                                                  fill=not work.private))     # sonradan derlemelerde dizin ve başlık çok
     data["sentences"] = sentences.segment(data)
+    if count := printed.apply(data):                          # yalnız sayfa veren klasik eserler
+        extra.append(f"  basılı sayfalı cümle : {count}")
     extra.append(f"  telif bilgisi        : {telif.apply(data)} bölüm")
     out = work.book_path
     out.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")

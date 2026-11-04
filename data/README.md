@@ -10,6 +10,7 @@ data/
 │   ├── risale/
 │   │   ├── kulliyat/     Bediüzzaman'ın eserleri ve mecmuaları: <eser>.json
 │   │   └── ilgili/       Külliyat dışı kaynaklar (henüz boş): Sorularla Risale, tarihçeler, hatıralar
+│   ├── tefsir/           Müfessirlerin eserleri (pilot: beyzavi.json, yalnız yerel profil)
 │   ├── kuran/quran.json  Kur'ân katmanı
 │   └── hadis/matches.json  Risale'deki hadislerin rivayetlerle eşlemesi; `hadis.py` üretir. Tam derlem şimdilik `raw/`dedir
 ├── links/<alan>/<yöntem>.jsonl  Bağlar: Risale'nin âyet, hadis ve kendi içiyle bağları (`links.py`, `docs/bag-altyapisi-plani.md`); üreten iş yazar, her profil okur
