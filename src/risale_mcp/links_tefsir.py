@@ -315,12 +315,93 @@ def _write_reports(stats: dict, quotes: list[Quote], hadith_rows: list[dict], is
     (REPORT_DIR / "t5-isarat.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+# ---------------------------------------------------------------- T7: kullanıcı örneklemi
+
+SAMPLE_SEED = 7
+LONG_WORDS = 100
+
+
+def review_sample(conn: sqlite3.Connection, quran: Quran) -> tuple[list[str], dict]:
+    """Numaralı örneklem (Markdown) ve numaraların anahtarları (JSON): A Kur'ân alıntıları (15 lemma, 10 kendi âyetinin
+    cümle ortası, 15 başka âyet), B bağ kurulan hadis sözleri, C 100 kelimeyi aşan cümleler. Daha önce karara
+    bağlanmış bağ örnekleme girmez."""
+    import random
+    from risale_mcp import link_reviews
+    reviewed = {r.key for r in link_reviews.current(link_reviews.read()) if r.key}
+    rows = conn.execute("SELECT l.source, l.target, l.type, l.relation, l.strength, l.evidence, s.text FROM links l"
+                        " JOIN sentences s ON s.id = l.source WHERE l.file = 'tefsir/quran_text.jsonl'").fetchall()
+    rows = [r for r in rows if (r[0], r[1], r[2], "") not in reviewed]
+    rng = random.Random(SAMPLE_SEED)
+    groups = (("lemma", 15, lambda r: r[3] == "lemma"), ("kendi âyeti, cümle ortası", 10, lambda r: r[4] == "weak"),
+              ("başka âyet", 15, lambda r: r[3] == "verbatim" and r[4] == "strong"))
+    keys: dict = {"A": {}, "B": {}, "C": {}}
+    lines = ["# T7: Beyzâvî örneklemi", "",
+             "Her satır için ✓ (doğru) ya da ✗ (yanlış; isterseniz kısa not). Numarasıyla bildirin: \"A3 ✗ âyet değil\".",
+             "Kararlar isminizle denetim kaydına yazılır (`data/links/reviews/tefsir/`).", "",
+             "## A. Kur'ân alıntıları", "",
+             "Soru: **bulunan söz gerçekten bu âyetten bir alıntı mı?** Lemma için ayrıca: cümle âyetin bu lafzını şerh "
+             "ederek mi başlıyor? Âyetin Tanzil metni karşılaştırma içindir.", ""]
+    n = 0
+    for title, size, pick in groups:
+        chosen = sorted(rng.sample([r for r in rows if pick(r)], min(size, sum(map(pick, rows)))), key=lambda r: r[0])
+        lines += [f"### {title} ({len(chosen)})", "", "| # | Cümle | Bulunan söz (cümlede) | Âyet | Âyetin metni |",
+                  "|---|---|---|---|---|"]
+        for r in chosen:
+            n += 1
+            ev = json.loads(r[5])
+            text = r[6]
+            shown = text[:ev["start"]] + "**" + text[ev["start"]:ev["end"]] + "**" + text[ev["end"]:]
+            if len(shown) > 260:
+                shown = "… " + shown[max(0, ev["start"] - 80):ev["end"] + 84] + " …"
+            sura_s, _, ayahs = r[1].removeprefix("quran:").partition(":")
+            a_s, _, b_s = ayahs.partition("-")
+            sura, a, b = int(sura_s), int(a_s), int(b_s or a_s)
+            verse = " ".join(quran.ayahs[(sura, k)]["text"] for k in range(a, b + 1))
+            lines.append(f"| A{n} | `{r[0]}` | {shown.replace('|', '/')} | {sura}:{ayahs} | {verse[:160]} |")
+            keys["A"][f"A{n}"] = {"source": r[0], "target": r[1], "type": r[2]}
+        lines.append("")
+    store = json.loads(HADITH_STORE.read_text("utf-8"))["reports"] if HADITH_STORE.exists() else {}
+    from risale_mcp.links_hadis import report_id
+    lines += ["## B. Hadis sözleri", "", "Soru: **Beyzâvî'nin sözü ile rivayet aynı hadis mi?** (Derece sorulmuyor; "
+              "hüküm verilmez.) Her sözün ilk bulunan rivayeti, metninin sonuyla (senet başta kalır).", "",
+              "| # | Cümle | Beyzâvî'nin sözü | Eşleşme | Rivayet (kitap, no) | Rivayetin metni |", "|---|---|---|---|---|---|"]
+    k = 0
+    for source, target, type_, ev in conn.execute(
+            "SELECT source, target, type, evidence FROM links WHERE file = 'tefsir/corpus.jsonl'"
+            " AND json_extract(evidence, '$.rank') = 0 ORDER BY source"):
+        k += 1
+        ev = json.loads(ev)
+        r = store.get(report_id(target), {})
+        lines.append(f"| B{k} | `{source}` | {ev['text']} | {ev['match']} | {r.get('title', '?')}, {r.get('number', '?')} | "
+                     f"… {(r.get('text') or '')[-260:].replace('|', '/')} |")         # metin senetten sonra: sonu gösterilir
+        keys["B"][f"B{k}"] = {"source": source, "target": target, "type": type_}
+    lines += ["", "## C. Uzun cümleler", "",
+              f"{LONG_WORDS} kelimeyi aşan cümleler. Bölücü yalnız . ؟ ! işaretinden böler; \"؛\" ve \":\" bölmez (Risale'nin "
+              "kuralı). Soru: **olduğu gibi kalsın mı?** Toplu cevap yeter (\"C hepsi kalsın\"); bölünmesi gerekeni "
+              "numarasıyla ve nereden bölüneceğiyle yazın.", "", "| # | Cümle | Kelime | Baş ve son |", "|---|---|---|---|"]
+    long = [(sid, text) for sid, text in conn.execute(
+        "SELECT id, text FROM sentences WHERE work = ? ORDER BY seq", (WORK,)) if len(text.split()) > LONG_WORDS]
+    for k, (sid, text) in enumerate(long, 1):
+        words = text.split()
+        lines.append(f"| C{k} | `{sid}` | {len(words)} | {' '.join(words[:12])} … {' '.join(words[-8:])} |")
+        keys["C"][f"C{k}"] = {"sentence": sid, "words": len(words)}
+    return lines, keys
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--measure", action="store_true", help="yalnız Kur'ân alıntısı ölçümü")
+    parser.add_argument("--sample", action="store_true", help="T7 örneklemi: data/interim/tefsir/t7-orneklem.{md,json}")
     parser.add_argument("--db", type=Path, default=DB_PATH)
     args = parser.parse_args()
     conn = sqlite3.connect(args.db)
+    if args.sample:
+        lines, keys = review_sample(conn, Quran.load())
+        REPORT_DIR.mkdir(parents=True, exist_ok=True)
+        (REPORT_DIR / "t7-orneklem.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        (REPORT_DIR / "t7-orneklem.json").write_text(json.dumps(keys, ensure_ascii=False, indent=1), encoding="utf-8")
+        print(f"  örneklem: A {len(keys['A'])}, B {len(keys['B'])}, C {len(keys['C'])}; {REPORT_DIR / 't7-orneklem.md'}")
+        return
     book = _book()
     qw = QuranWords(Quran.load())
     marked = jk_quotes()
