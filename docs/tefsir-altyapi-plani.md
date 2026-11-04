@@ -310,6 +310,16 @@ talimatı aynı kaldı. Ayrıntı CLAUDE.md'de. Âyetten: önce Risale'nin yerle
 İşârât ile Beyzâvî ayrı ayrı (Fâtiha 5), muhakkik katmanının atfı (vefat tarihi), tuzak (Beyzâvî'nin Risale'den
 nakli).
 
+Altın soruların ilk çalıştırması (`20261104-164638`, yerel sunucu): dördünde de beklenen bölüm okundu ve anıldı,
+12 atfın 12'si doğrulandı, araç hatası yok, ortalama 46 sn ve 0,25 $. T1 sözü Beyzâvî'ye verdi, tercümesini "benim"
+diye ayırdı; T2 önce İşârât'ı sonra Beyzâvî'yi ayrı başlıklarda verdi ve aralarında kayıtlı bağ olmadığını söyledi;
+T3 bilgiyi Maraşlî'nin girişine verdi; T4 nakil uydurmadı. Kullanıcıya sorulacaklar:
+- Model eserleri "tefsir" diye anıyor ("iki tefsiri ayrı ayrı veriyorum", "2:6'nın tefsirinin başında"). Kural bir
+  yerin bir âyetin tefsiri diye anılmamasıydı; tür adı olarak "tefsir" (Envârü't-Tenzîl bir tefsir kitabıdır) ayrı mı?
+- T4'te model "Risale'de Beyzâvî'ye atıf yok" dedi; T3'teki model Muhâkemat'ta "Tefsîr-i Beyzâvî"yi buldu. Sebep
+  aramanın eki ayırmaması ("Beyzavi" tam kelime, metinde "Beyzâvî'nin"); `Beyzav*` buluyor. T6 değil, bugünkü
+  arama; ayrı iş.
+
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık
 kullanıcıyla seçilir.
