@@ -159,7 +159,7 @@ adıyla anar, Beyzâvî de büyük ölçüde ondan süzülmüştür.
 
 | # | İş | Çıktı |
 |---|---|---|
-| T0 | Kaynak: Beyzâvî OpenITI'de aranır (baskı, commit, lisans); başka nüsha gerekirse izin istenir | `docs/izinler.md` satırı, ham veri `data/raw/openiti/` |
+| T0 (bitti) | Kaynak: Beyzâvî OpenITI'de aranır (baskı, commit, lisans); başka nüsha gerekirse izin istenir | `docs/izinler.md` satırı, ham veri `data/raw/openiti/` |
 | T1 | Ham veriyi incelemek: âyet işaretleri, bölümler, hâşiyeler, nakil kalıpları; örnekler kullanıcıya | Örnek dökümü |
 | T2 | Kararlar: koleksiyon (`library/tefsir/`), şema, kimlik biçimi | Bu belgenin "Kararlar"ı |
 | T3 | Ayrıştırıcı ve cümle bölücü (Arapça nesir, el-Mesnevî el-Arabî'nin kuralları) | `data/library/tefsir/beyzavi.json`, altın örnekler |
@@ -168,12 +168,34 @@ adıyla anar, Beyzâvî de büyük ölçüde ondan süzülmüştür.
 | T6 | Araçlar: âyetten Risale'nin ve Beyzâvî'nin yerleri, Risale önce; talimat ("tefsir" denmez, eserin sahibi söylenir) | Altın sorular |
 | T7 | Kullanıcı örneklemi denetler; kararlar `tests/golden/`'a kilitlenir | Karar dosyası |
 
+### T0: nüsha (bitti, 2026-11-04)
+
+Beş OpenITI sürümü de sabit commit'ten indirildi (`0700AH` @ `3d8ff4e`, 2025-11-28; `uv run python -m risale_mcp.fetch
+tefsir`, `sources/tefsir.py`; ham veri `data/raw/openiti/beyzavi-*.txt`). Özet `uv run python -m risale_mcp.openiti
+beyzavi-jk …`. Dördünün `.yml`'si doldurulmamış şablondur; baskı bilgisi yalnız üst bilgidendir.
+
+| Sürüm | Baskı (üst bilgi) | Sayfa | Âyet ayrımı | Not |
+|---|---|---|---|---|
+| **Shamela0023588** | Maraşlî tahkiki, Dâru İhyâi't-Türâsi'l-Arabî, Beyrut, 1. baskı 1418 | 5 cilt, işaretler neredeyse kesintisiz (cilt başına 0–5 boşluk) | Her âyete başlık: `[سورة البقرة (2) : آية 1]` (bazısı satıra bölünmüş, `</span>` artığı) | Noktalama ve «» var; Kur'ân alıntısı işaretsiz. Başta muhakkikin girişi (≈18 sayfa, 1418): alınmaz |
+| JK000128 | Dâru'l-Fikr, Beyrut, 5 cilt; muhakkik yok | 1/3–5/554, 1. ciltte 18 boşluk; hutbe içinde sayfalar ikişer atlıyor (3→7, 11→13→15): baskıda araya başka metin giriyor olabilir | Yok; `< >` içinde dijitalleştirenin başlıkları ("أسماء السورة") | Tek `@QB@…@QE@` işaretli sürüm (24.813). Noktalama az |
+| ShamAY0034065 | Dâru'l-Fikr (Shamela "موافق للمطبوع") | JK ile aynı (1/2–5/554) | Sûre başlıkları | JK'nın aynı baskısı, işaretsiz |
+| Shia002637Vols | 5 cilt | JK ile aynı | Yok | 2.559 paragraf: satırlar birleşmiş |
+| Tafsir01006 | Yok (altafsir.com) | Yok | En temiz: `[2.1]` başlıkları, lemma `{ }` içinde; Bakara 31–33 tek başlıkta | `.yml`: eksik metin (giriş yok), baskıya dayanmıyor |
+
+**Seçim: Shamela0023588.** Gerekçe: adı bilinen tek tahkikli baskı (baskı kaydı ve `printed` ona dayanır), sayfa
+işaretleri tutarlı, her âyetin başlığı var (âyet aralığı yapıdan gelir), noktalama cümle bölmeye elverişli. Kur'ân
+alıntıları işaretsiz olduğu için Risale'deki gibi Kur'ân metninde aranır (`quran.skeleton`); JK'nın `@QB@`
+işaretleri bu aramanın denetimi olarak kullanılabilir (T1). Muhakkikin girişi ve varsa notları müellifin metni
+değildir, alınmaz (Mesnevî'deki ilk çapadan önceki kısım gibi). Öbür dört sürüm ham veri olarak karşılaştırma için
+durur. İzin: OpenITI satırı (CC BY-NC-SA 4.0); klasik metin serbest, tahkik farkları baskı kaydında. Başka kaynaktan
+izin gerekmedi. Pilot `private` kalır.
+
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık
 kullanıcıyla seçilir.
 
 ## Açık sorular
 
-- Beyzâvî'nin hangi nüshası; hâşiyeleri (Şeyhzâde, Kâdî hâşiyeleri) ayrı eser mi, katman mı.
+- ~~Beyzâvî'nin hangi nüshası~~ (T0: Shamela0023588, Maraşlî); hâşiyeleri (Şeyhzâde, Kâdî hâşiyeleri) ayrı eser mi, katman mı.
 - Çalışmalar katmanı (katkıcı notları) hangi profilde durur; genel sunucuya ne zaman çıkar.
 - Denetçi kimdir: ilk aşamada kullanıcının davet ettiği isimli âlimler; seçim ölçütü yazılı olmalı.

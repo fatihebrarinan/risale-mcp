@@ -68,7 +68,8 @@ def test_marks_are_dropped_without_touching_the_letters():
 
 def test_version_info_reads_the_yml():
     yml = ("00#VERS#URI######: 0256Bukhari.Sahih.JK000110-ara1\n80#VERS#COLLATED#: http://x (2002 reprint)\n"
-           "90#VERS#COMMENT##: 1- The version I used\n    has other page numbers.\n80#VERS#LINKS####:\n")
+           "90#VERS#COMMENT##: 1- The version I used\n    has other page numbers.\n80#VERS#LINKS####:\n"
+           "80#VERS#BASED####: permalink, permalink, permalink\n90#VERS#DATE#####: YYYY-MM-DD\n")   # şablon: bilgi değil
     assert version_info(yml) == {"URI": "0256Bukhari.Sahih.JK000110-ara1", "COLLATED": "http://x (2002 reprint)",
                                  "COMMENT": "1- The version I used has other page numbers."}
 

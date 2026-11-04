@@ -43,6 +43,9 @@ _MARK = re.compile(r"(?P<page>PageV(?P<vol>\d+)P(?P<num>\d+))|(?P<ms>\bms\d+\b)|
 _META = re.compile(r"^#META#\s*\d+\.(\w+)\s*::\s*(.*)$")
 _YML = re.compile(r"^\d+#(\w+)#(\w+)#*:\s?(.*)$")
 _LEVEL = re.compile(r"^###\s*(\|+)\s*")
+# Doldurulmamış `.yml` şablonunun değerleri: bilgi değildir (Beyzâvî'nin dört sürümünde öyle kalmış).
+YML_TEMPLATE = ("permalink, permalink", "all@id, vol1@id", "the name of the annotator", "a free running comment here",
+                "YYYY-MM-DD", "formalized issues, separated with commas")
 EDITION_FIELDS = {"EdEDITOR": "editor", "EdPUBLISHER": "publisher", "EdPLACE": "place", "EdYEAR": "year",
                   "EdNUMBER": "edition", "BookVOLS": "volumes"}
 
@@ -195,7 +198,7 @@ def version_info(yml: str) -> dict[str, str]:
             out[key] = m[3].strip()
         elif key and line.startswith((" ", "\t")):
             out[key] = (out[key] + " " + line.strip()).strip()
-    return {k: v for k, v in out.items() if v and not v.startswith("NODATA")}
+    return {k: v for k, v in out.items() if v and not v.startswith(("NODATA", *YML_TEMPLATE))}
 
 
 def load(key: str, root: Path = RAW_ROOT) -> Document:
