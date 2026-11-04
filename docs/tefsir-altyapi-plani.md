@@ -214,9 +214,44 @@ Döküm `data/interim/tefsir/beyzavi-t1.md` (pilot aralığı: baştan Bakara 33
 - **Sayfa:** aralıkta 62 işaret, 54'ü kendi satırında; girişin başında `PageV00P000` (0/0).
 - **Baskılar:** Shamela'nın 5'li kelime dizilerinin %94,5'i JK'da da var (JK'nınkilerin %92'si Shamela'da).
 
-T2'de karar verilecekler (kullanıcıyla): birim ve kimlik (`beyzavi/2/6`), âyet satırının tutulup tutulmayacağı
-(Kur'ân metni kopyalanmaz kuralı), paragrafların birleştirilmesi, lemmanın parça sınırı olup olmayacağı, girişin
-ve baskı başlıklarının katmanı.
+### T2: kararlar (2026-11-04, kullanıcı onayladı)
+
+Kullanıcı T1'in beş önerisini onayladı; tek değişiklik: âyet birimin başında durur. Prototip ve örnek birim
+`data/interim/tefsir/beyzavi-t2-ornek.json` (39 birim, 445 ham satır → 240 paragraf, 768 cümle).
+
+1. **Yer ve ad alanı:** yeni koleksiyon `Collection.TEFSIR = "tefsir"` (`data/library/tefsir/beyzavi.json`; ad
+   alanı kendiliğinden `tefsir:`, H4). Eser `beyzavi`: kök başlığı "Envârü't-Tenzîl" (Arapça eserler gibi atıf kökü
+   Türkçe, alt başlıklar basılı Arapça), `language: ar`, `author` Nâsırüddîn el-Beyzâvî, `editor` Muhammed
+   Abdurrahman el-Maraşlî, `authority: muellif`, `private`. Yeni site `Site.OPENITI`, izin satırı OpenITI; baskı kaydı
+   üst bilgiden ve commit'ten (`openiti.Document.edition`, H3/H6).
+2. **Kapsam:** muhakkikin girişi, hutbe, Fâtiha, Bakara 1–33. Gerisi pilotta ayrıştırılmaz (eserin notunda yazılı).
+3. **Başlık ağacı ve kimlikler:**
+   - `beyzavi/mukaddime-tahkik`: Maraşlî'nin girişi, ayrı katman (`authority: muhakkik`, `by`: Maraşlî); alt
+     başlıkları düğüm olur, "1- …" gibi numaralı liste maddeleri paragraf kalır (ayrıntısı T3'te örnekle).
+   - `beyzavi/hutbe`: müellifin hutbesi; başlık ("خطبة الكتاب") baskının, alt başlıkta işaretli.
+   - `beyzavi/1`, `beyzavi/2`: sûre düğümleri, başlık basılı hâliyle "سورة الفاتحة" (numarası `verses`'te), baskının diye
+     işaretli; sûrenin ilk âyet başlığından önceki metni ("مكية وآيها سبع آيات…") müellifindir, düğümün kendi metnidir.
+   - Âyet birimleri `beyzavi/<sûre>/<âyet>` ya da `beyzavi/1/3-4`: başlık basılı hâliyle "آية 6" / "الآيات 3 الى 4",
+     `verses: {sura, start, end}`, baskının başlığı diye işaretli. Atıf: "Envârü't-Tenzîl › سورة البقرة › آية 6 › 3. cümle".
+4. **Birimin başındaki âyet (kullanıcının kararı):** baskının âyet satırı birimin ilk paragrafıdır, basıldığı gibi
+   (`kind: "ayah"`, `verses: "quran:2:6"`). Beyzâvî'nin cümlesi sayılmaz, numarası yoktur: adresi âyetin kendisidir,
+   atıf Kur'ân'a gider. "Müfessirin eseri Kur'ân metnini kopyalamaz" kuralının tek istisnası budur: görüntü içindir,
+   Kur'ân'ın metni ve adresi yine Kur'ân katmanınındır. Bakara 1'in başındaki besmele satırı da `ayah` paragrafıdır,
+   numarasız (sûre başı).
+5. **Paragraflar:** paragraf yalnız cümle sonunda (. ؟ !) biter; öbür satırlar bir sonrakine bir boşlukla eklenir,
+   noktalamayla başlayan satır (". ولنا") boşluksuz. Satırların içi değişmez. Her paragrafta `printed` (başladığı ve
+   bittiği sayfa).
+6. **Cümleler:** bugünkü bölücü, kural değişmeden (Arapça nesir: `.` `؟` `!` ardından Arapça harf). Kimlik
+   `beyzavi/2/6/c003`; her cümlede `printed`. Uzun cümleler (26'sı 100 kelimeyi aşıyor, en uzunu 203) bölünmez,
+   T7 örnekleminde bakılır.
+7. **Lemma:** parça sınırı değil; cümle başı biriminin âyet lafzıyla başlıyorsa `lemma` adayı işareti (T5'te üretilir,
+   T7'de denetlenir).
+8. **Kur'ân alıntıları ve hadisler:** ayrıştırıcı işaretlemez; T5'te bugünkü yöntemlerle (`quran_text`, hadis
+   eşlemesi) bağ olarak çıkar, JK'nın `@QB@` işaretleri ölçüm için.
+9. **Muhakkikin dipnot işaretleri** («1»): metinde kalır (metin değişmez); dipnotların kaynakta olmadığı eserin
+   `notes`'unda.
+10. **Ölçüt:** eser `private`, genel profile girmez: genel profilin araç çıktısında fark olmamalı (H0), Risale'nin
+   kimlikleri değişmemeli (H1); yerel profilde yalnız eklenen kimlikler.
 
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık
