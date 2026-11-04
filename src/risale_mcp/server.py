@@ -264,7 +264,10 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         provider = Provider(store, public_url)
         protected = {"auth": auth_settings(public_url), "auth_server_provider": provider,
                      "middleware": [usage_middleware(store), *([hide_sign_in_middleware()] if anonymous else [])]}
-    classical = library.has_classical()
+    try:                                                       # veritabanı olmadan da kurulur (testler, ilk açılış)
+        classical = library.has_classical()
+    except Exception:
+        classical = False
     server = MCPServer(NAME, title="Risale-i Nur", instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),
                        description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
                        icons=_icons(public_url), **protected)

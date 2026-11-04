@@ -18,7 +18,9 @@ def checker(small_db):
 
 def test_questions_file_is_well_formed():
     questions = load_questions()
-    assert len({q["id"] for q in questions}) == len(questions) == 25
+    # Kullanıcının 25 sorusu (golden_questions.md) ve tefsir pilotunun 4 sorusu (T1–T4, T6)
+    assert len({q["id"] for q in questions}) == len(questions) == 29
+    assert sum(q["id"].startswith("T") for q in questions) == 4
     assert all({"id", "category", "question", "expected", "sections"} <= set(q) for q in questions)
 
 
