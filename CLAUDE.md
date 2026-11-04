@@ -13,6 +13,8 @@ Nihai kullanım hedefleri:
 
 İlk hedef 1. hedefin altyapısıdır. 2. ve 3. hedefler sonraki aşamalardır.
 
+**Uzun vadeli hedef (2026-11-04): tefsir altyapısı.** Müellifin İşârâtü'l-İ'câz'ı ve Risaleleri ileride bir heyetin yapacağı işe "me'haz" diye göstermesine (`isaratul-icaz/mukaddemat/tenbih/c012`) dayanır. Bizim işimiz tefsir yazmak değildir; o heyetin elinde olacak kaynağa bağlı altyapıyı kurmaktır. Hiçbir çıktı kendini "tefsir" diye anmaz. Altyapı hüccet üretmez, kimin neyi hangi kanıtla söylediğini kaydeder. Katkı kapısı ilim ve ihtisasa göre açılır, meşrebe göre değil. Yapı: Kur'ân ortak adrestir, hadis her katmandan bağlanır, Risale-i Nur ve İşârât eksendir (veride değil görünümde: araçların sırası, varsayılanlar, talimat), müfessirlerin eserleri kendi metinlerinin sahibidir. Birkaç yıl sürebilir; ölçüt hız değil sağlamlıktır. Plan, hazırlık adımları (H) ve Beyzâvî pilotu (T): `docs/tefsir-altyapi-plani.md`.
+
 ## Temel ilkeler
 
 - **Her adres veriden gelir, asla tahmin edilmez.** Adres üretemediğimiz metin, adres uydurularak değil, açıkça "adres belirsiz" işaretiyle saklanır.
@@ -20,7 +22,7 @@ Nihai kullanım hedefleri:
   - MCP ↔ model arasında: `Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › 32. cümle`
   - Model ↔ kullanıcı arasında: `Sözler › Onuncu Söz › On iki Hakikat › Dokuzuncu Hakikat › "Şüphesiz ki bu haşri gösterir…"` (cümlenin ilk kelimeleri)
   - Bir temsil, misal ya da tek bir düşünce aynı bölümde birkaç cümle sürüyorsa ardışık cümleler tek atıfla verilir (en çok 8; paragraf sınırı yok, çünkü paragraflar her yerde anlama göre ayrılmamıştır): `Sözler › Birinci Söz › "Bedevî Arab çöllerinde…" ile başlayan 4 cümle`; MCP ↔ model arasında kimlik `…/c004..c007`, yol `… › 4.–7. cümle`.
-- **Sayfa numarası yoktur.** Hiçbir veri dosyasında basılı sayfa bilgisi tutulmaz.
+- **Risale'de sayfa numarası yoktur.** Risale eserlerinin hiçbir veri dosyasında basılı sayfa bilgisi tutulmaz. Klasik eserlerde (müfessirlerin eserleri, hadis kitapları) asıl adres yine yapısaldır; kaynak verdiyse basılı cilt ve sayfa ikincil bilgi olarak durur (`printed`; kullanıcının kararı, 2026-11-04). Sayfa kimliğe girmez, tahmin edilmez.
 - **Metin tek yerde durur.** Mecmualar (Asâ-yı Mûsâ, Zülfikâr…) ana ciltlerdeki metne işaret eden içindekiler listeleridir; yalnızca mecmuaya özgü parçalar mecmuada saklanır.
 - **Kaynak web'dir.** Ham yanıtlar bir kez indirilip diske kaydedilir; ayrıştırma her zaman diskten yapılır.
 
@@ -60,7 +62,7 @@ Kurallar:
 - **İlgili kaynaklar varsayılan aramaya girmez.** Günümüz Türkçesiyle yazıldıkları için anlamsal aramada eski dilli asıl metnin önüne geçerler. `search` ve `semantic_search` süzgeçsiz çağrıda yalnız külliyata bakar; `include_related`, `work` ya da `group` verilirse gelir.
 - **Yeni ilgili eser** `catalog/ilgili.py`'deki `ilgili()` ile eklenir: `authority` zorunlu, müellif olamaz, izin `docs/izinler.md`'ye yazılana kadar `private`. Grubu ilk eserle açılır.
 - **Yeni alan:** kaynağın izni alınır, koleksiyon `Collection`'a, `catalog/` dosyası ve `checklist.COLLECTION_TITLES` eklenir, profil listeler. Birimi cümle değilse (hadis numarası, âyet) bugünkü eser modeline zorlanmaz, Kur'ân gibi kendi katmanını kurar; hadisin şeması Aşama 14'ün başında belirlenir.
-- **Tefsirler (plan):** `library/tefsir/` altında durur, her parça âyet aralığını taşır, Kur'ân metnini kopyalamaz. Âyet kimliği ortak adres olduğu için tefsirler birbirine ve Risale'ye âyet üzerinden bağlanır. Ortak âyet ortak görüş demek değildir. Risale'nin bir yeri yine "tefsir" diye anılmaz (bkz. Âyet ilişkileri).
+- **Müfessirlerin eserleri (plan, `docs/tefsir-altyapi-plani.md`):** `library/tefsir/` altında durur, her parça âyet aralığını taşır, Kur'ân metnini kopyalamaz, baskı kaydı ve lisansıyla gelir. Âyet kimliği ortak adres olduğu için eserler birbirine ve Risale'ye âyet üzerinden bulunur, ama ortak âyet bağ değildir: ilişki (aynı söz, nakil, aynı görüş, farklı görüş, itiraz) türü, kanıtı ve denetimiyle bağ dosyasına yazılır. Risale bir âyette önce gelir; bu sıralamadır, verinin hükmü değil. Risale'nin bir yeri yine "tefsir" diye anılmaz (bkz. Âyet ilişkileri). Pilot: Beyzâvî'nin Envârü't-Tenzîl'i, İşârât'ın aralığında (Fâtiha, Bakara 1–33).
 - **`ayah_links`** ileride genel bir bağ tablosuna dönüşebilir (kaynak, hedef, tür, güç, kanıt, yöntem); ikinci bağ türü (Aşama 14) gelince değerlendirilir. `data/links/` klasörü dosya bazlı ilk bağ gelince açılır.
 
 ### Derlemler (plan, henüz uygulanmadı)
@@ -465,3 +467,13 @@ aşağıdadır, kullanıcının onayıyla değişir. Ayrıntılı geçmiş: `doc
   - **Lisans:** genel hadis sunucusuna yalnız izni açık kitaplar çıkar (OpenITI CC BY-NC-SA: kaynak, ticari olmayan, aynı lisans); Türkçe tercümeler kendi iznine bağlıdır (HA4). Ortak derlemler (e-Risale, Yeni Asya) hadis kitaplarını taşımaz.
 - **HA6. Hadisçi:** Örneklem okumayla bulunanlardan (Adım 9) bir dilimle yenilenir; kararlar `tests/golden/`'a kilitlenir ve kurallara döner.
 - **HA7. Yalnız Türkçe aktarılan hadisler:** 101 aday cümle (Adım 4); künye varsa künyenin bölgesinde aranır.
+
+### Tefsir altyapısı aşamaları
+
+Ayrıntı ve gerekçeler `docs/tefsir-altyapi-plani.md`'de. Önce hazırlık, sonra pilot; her hazırlık adımı bugünkü Risale verisinde yapılır, ölçütü Risale'nin kimliklerinin, sayılarının ve araç çıktılarının değişmemesidir.
+
+- **H1. Kimlik manifestosu ve derlem sürümü** (önce: öbürlerinin ölçütünü verir): bütün cümle kimlikleri ve özetleri, `build` kayan kimliği raporlar; yayına sürüm etiketi, `cite`'ta sürüm.
+- **H2. Eserin yazarı** (`Work.author`; `authority` eserin kendi yazarına göre). **H3. Baskı kaydı** (baskı, muhakkik, dijital nüsha, lisans; genel profil izni yazılmamış eseri kurmaz).
+- **H4. Bağ uçlarının genelleşmesi** (iki uç da herhangi bir eser; metinden metne ilişki türleri). **H5. Denetim kaydı** (`data/links/reviews/`, isimli denetçi, itiraz silinmez; ilk veri âyet ilişkilerinin 62 kararı).
+- **H6. Ortak OpenITI okuyucu** (âyet işaretleri, sayfadan `printed`; hadis kitapları da kullanır).
+- **T0–T7. Beyzâvî pilotu:** nüsha ve lisans, ham veri incelemesi, şema, ayrıştırıcı, bağlar, araçlar, kullanıcı örneklemi.

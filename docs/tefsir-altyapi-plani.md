@@ -94,9 +94,9 @@ Eksik (önem sırasıyla):
 4. **Müfessir eserinin şeması** (pilotta kesinleşir): parça, âyet aralığı, katman (müellif, muhakkik notu, hâşiye),
    nakledilen görüş ve kime nispet edildiği ("قال ابن عباس", "قيل", "عن الزجاج"). Nispetler eserler arası nakil
    zincirinin altyapısıdır.
-5. **Basılı sayfa kararı.** Risale'de sayfa yoktur ve kalır. Klasik eserlerde âlimlerin atıf geleneği baskı, cilt
-   ve sayfadır. Öneri: asıl adres yapısal (âyet aralığı + parça kimliği); basılı cilt ve sayfa, kaynak verdiyse
-   ikincil bilgi (`printed`). İlke koleksiyon başına yazılır; karar pilotun başında kullanıcıdan alınır.
+5. **Basılı sayfa (karar, 2026-11-04).** Risale'de sayfa yoktur ve kalır. Klasik eserlerde âlimlerin atıf geleneği
+   baskı, cilt ve sayfadır: asıl adres yapısaldır (âyet aralığı + parça kimliği), basılı cilt ve sayfa kaynak
+   verdiyse ikincil bilgidir (`printed`). Sayfa hiçbir zaman kimliğe girmez, tahmin edilmez.
 6. **İzinler.** Klasik metnin kendisi serbest, dijital nüshalar lisanslıdır (OpenITI CC BY-NC-SA 4.0). Türkçe
    eserlerde aslı serbest, sadeleştirilmiş baskı telifli olabilir. Her eserde izin ayrıştırmadan önce gelir.
 
@@ -109,6 +109,28 @@ Eksik (önem sırasıyla):
 - Çok model orkestrasyonu. İstemcinin işidir; sunucu modelden bağımsız kalır.
 - Kimlik ve ehliyet doğrulamalı geniş katkı platformu. En sona kalır; önce denetim kaydı ve isimli denetçiler.
 
+## Hazırlık: pilottan önce altyapı (H)
+
+Kod incelemesinden (2026-11-04). Her biri bugünkü Risale verisinde yapılır ve sınanır; Beyzâvî gelmeden önce
+bitmesi, pilotun yeni bir şey değil yalnız yeni bir eser eklemesini sağlar. Ölçüt her adımda aynıdır: Risale'nin
+kimlikleri, sayıları ve araç çıktıları değişmez.
+
+| # | Bugün | İş |
+|---|---|---|
+| H1 | Yalnız Sözler'in birkaç düğümünün cümleleri kilitli (`tests/golden/sentences_sozler.json`). Cümle bölücü ortaktır: Arapça nesir için yapılacak bir değişiklik `isaratul-icaz-arabi` ya da `el-mesnevi-el-arabi`'nin numaralarını sessizce kaydırabilir. Veritabanında yalnız `built_at` var; derlem sürümü yok. | **Kimlik manifestosu ve derlem sürümü:** her eserin bütün cümle kimlikleri ve özetleri (`hash`) bir manifestoda; `build` bir öncekiyle karşılaştırır, kayan, silinen ve metni değişen kimlikleri raporlar (kasıtlı değilse durur). Yayına çıkan veritabanına sürüm etiketi; `cite` sonucunda sürüm. Sonraki her adım bununla ölçülür, bu yüzden ilk. |
+| H2 | `Work` müellifi örtük olarak Bediüzzaman sayar: `Authority.MUELLIF` "müellifin eseri", talimat "the author" der. Eserin yazarı alanı yok; `Group` yalnız Risale gruplarını bilir. | **Eserin yazarı:** `Work.author` (ad, vefat; varsayılan Bediüzzaman), `authority` eserin kendi yazarına göre okunur. Risale için davranış değişmez; talimat değişikliği T6'da. |
+| H3 | Eser kaynağı yalnız site ve kitap kimliği (`SourceRef`); baskı, muhakkik, lisans `docs/izinler.md`'de düz yazı. | **Baskı kaydı:** eser düzeyinde baskı, muhakkik, dijital nüsha (sabit commit), lisans ve izin satırı. 74 eser için doldurulur; genel profil izni yazılmamış eseri kurmaz (bugün bu kural yalnız `private` ile korunuyor). |
+| H4 | Bağın kaynağı örtük olarak Risale cümlesi; metinden metne hedef yalnız `risale:`. | **Bağ uçlarının genelleşmesi:** iki uç da herhangi bir eserin cümlesi ya da bölümü olabilir; ad alanı koleksiyondan (`risale:`, ileride `tefsir:`). Metinden metne ilişki türleri için yer açılır (aynı söz, nakil, aynı görüş, farklı görüş, itiraz); türlerin kendisi T5'te okumayla kesinleşir. |
+| H5 | Denetim kararları tek bir test dosyasında (`tests/golden/ayah_links_review.json`, 62 âyet ilişkisi kararı); bağlar her kurulumda yeniden üretildiği için karar bağın içine yazılamaz. | **Denetim kaydı:** bağlardan ayrı, yalnız eklenen dosyalar (`data/links/reviews/`): bağın anahtarı (kaynak, hedef, tür, parça), durum (`reviewed`, `disputed`, `withdrawn`), denetçi, tarih, gerekçe. Denetçi listesi isimlidir. İlk veri bugünkü 62 karar (denetçi: kullanıcı); test aynı kararları buradan okur. Araçlar bağın denetim durumunu verir. |
+| H6 | OpenITI okuyucu hadis kitaplarına gömülü (`hadis_kutub.py`, `sources/hadis.py`); sayfa işaretleri (`PageV01P003`) atılıyor. | **Ortak OpenITI okuyucu:** indirme (sabit commit, üst bilgi), mARkdown ayrıştırma, `@QB@…@QE@` âyet işaretleri ve sayfa işaretinden `printed`. Hadis kitapları da bunu kullanır; HA3'teki Müsned künyeleri (cilt:sayfa) için de gereklidir. |
+
+Önerilen sıra: H1, sonra H2–H3 (eser modeli), H4–H5 (bağlar), H6. H1 en önce gelir, çünkü öbürlerinin "hiçbir şey
+kaymadı" ölçütünü o verir.
+
+Kaynak durumu (2026-11-04, yalnız listeleme): OpenITI'de Envârü't-Tenzîl'in beş nüshası var
+(`0700AH/data/0685NasirDinBaydawi/0685NasirDinBaydawi.AnwarTanzil`: `JK000128`, `ShamAY0034065`, `Shamela0023588`,
+`Shia002637Vols`, `Tafsir01006`), Keşşâf da (`0550AH/data/0538JarAllahZamakhshari.Kashshaf`). Nüsha seçimi T0'dır.
+
 ## Pilot: Beyzâvî, İşârâtü'l-İ'câz'ın kapsadığı aralık
 
 İşârât Fâtiha'yı ve Bakara'nın 1–33. âyetlerini işler (39 bölüm, 5.224 cümle). Pilot aynı aralıkta Beyzâvî'nin
@@ -119,9 +141,9 @@ adıyla anar, Beyzâvî de büyük ölçüde ondan süzülmüştür.
 |---|---|---|
 | T0 | Kaynak: Beyzâvî OpenITI'de aranır (baskı, commit, lisans); başka nüsha gerekirse izin istenir | `docs/izinler.md` satırı, ham veri `data/raw/openiti/` |
 | T1 | Ham veriyi incelemek: âyet işaretleri, bölümler, hâşiyeler, nakil kalıpları; örnekler kullanıcıya | Örnek dökümü |
-| T2 | Kararlar: koleksiyon (`library/tefsir/`), şema, basılı sayfa, kimlik biçimi | Bu belgenin "Kararlar"ı |
+| T2 | Kararlar: koleksiyon (`library/tefsir/`), şema, kimlik biçimi | Bu belgenin "Kararlar"ı |
 | T3 | Ayrıştırıcı ve cümle bölücü (Arapça nesir, el-Mesnevî el-Arabî'nin kuralları) | `data/library/tefsir/beyzavi.json`, altın örnekler |
-| T4 | Denetim kaydı alanları bağ biçimine (`docs/bag-altyapisi-plani.md`'ye ek) | `links.py`, testler |
+| T4 | Beyzâvî'nin bağları için H4 ve H5'in eksik kalan kısmı | `links.py`, testler |
 | T5 | Bağlar: Beyzâvî parçası → âyet (yapıdan); Beyzâvî'nin âyet ve hadis alıntıları (bugünkü yöntemler); İşârât bölümü ↔ Beyzâvî parçası (aynı âyet aralığı yalnız aday; ilişki türü okumayla) | `data/links/tefsir/*.jsonl`, sayım ve örneklem |
 | T6 | Araçlar: âyetten Risale'nin ve Beyzâvî'nin yerleri, Risale önce; talimat ("tefsir" denmez, eserin sahibi söylenir) | Altın sorular |
 | T7 | Kullanıcı örneklemi denetler; kararlar `tests/golden/`'a kilitlenir | Karar dosyası |
@@ -132,7 +154,6 @@ kullanıcıyla seçilir.
 
 ## Açık sorular
 
-- Basılı sayfa (T2).
-- Beyzâvî'nin hangi baskısı; hâşiyeleri (Şeyhzâde, Kâdî hâşiyeleri) ayrı eser mi, katman mı.
+- Beyzâvî'nin hangi nüshası; hâşiyeleri (Şeyhzâde, Kâdî hâşiyeleri) ayrı eser mi, katman mı.
 - Çalışmalar katmanı (katkıcı notları) hangi profilde durur; genel sunucuya ne zaman çıkar.
 - Denetçi kimdir: ilk aşamada kullanıcının davet ettiği isimli âlimler; seçim ölçütü yazılı olmalı.
