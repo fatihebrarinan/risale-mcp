@@ -21,6 +21,7 @@ from pathlib import Path
 
 from risale_mcp import search as fts
 from risale_mcp.catalog import Authority, Collection
+from risale_mcp.catalog.model import AUTHOR
 from risale_mcp.db import connect
 from risale_mcp.hadis import ATTRIBUTION, CAUTION_BOOKS, SUPPORT_ORDER, TITLES
 from risale_mcp.hadis_kitaplar import BY_ID
@@ -159,6 +160,19 @@ def hit_cite(sentence_ref: str, incipit: str, text: str) -> str:
     return cite(sentence_ref.rsplit(REF_SEP, 1)[0], opening(incipit, text))
 
 
+AYAH_LINE_NOTE = ("The edition's printed verse at the head of the unit: Qur'an text, not the author's sentence; "
+                  "cite the verse with get_ayah.")
+
+
+def _verse_target(target: str | None) -> tuple[int, int, int] | None:
+    """"quran:2:6" ya da "quran:1:3-4" -> (sûre, ilk, son)."""
+    if not target or not target.startswith("quran:"):
+        return None
+    sura, _, ayahs = target.removeprefix("quran:").partition(":")
+    start, _, end = ayahs.partition("-")
+    return int(sura), int(start), int(end or start)
+
+
 def _ayah_span(start: int, end: int) -> str:
     return f"{start}" if start == end else f"{start}-{end}"
 
@@ -226,7 +240,7 @@ class Library:
         sections = dict(self.conn.execute("SELECT work, count(*) FROM nodes GROUP BY work").fetchall())
         written = dict(self.conn.execute("SELECT id, written FROM nodes WHERE parent_id IS NULL AND written IS NOT NULL"))
         rows = self.conn.execute(
-            "SELECT slug, title, group_name, collection, authority, translation, language, status, note, built FROM works"
+            "SELECT slug, title, group_name, collection, authority, translation, author, language, status, note, built FROM works"
             + (" WHERE group_name = ?" if group else "") + " ORDER BY ord", [group] if group else []).fetchall()
         if group and not rows:
             groups = [r[0] for r in self.conn.execute("SELECT DISTINCT group_name FROM works ORDER BY ord")]
@@ -238,6 +252,8 @@ class Library:
                 record["collection"] = w["collection"]
             if w["authority"] != Authority.MUELLIF:
                 record["authority"] = w["authority"]
+            if w["author"] and w["author"] != AUTHOR:
+                record["author"] = w["author"]
             if w["translation"]:
                 record["translation"] = True
             if w["built"]:
@@ -370,6 +386,14 @@ class Library:
                     item["written"] = json.loads(n["written"])
                 if n["id"] in verses:
                     item["linked_verses"] = verses[n["id"]]
+                if n["extra"]:                       # müfessirin birimi: âyetleri, basılı sayfası, katmanı (T6)
+                    extra = json.loads(n["extra"])
+                    if v := extra.get("verses"):
+                        item["verses"] = self._verse_ref(v["sura"], v["start"], v["end"])
+                    if extra.get("printed"):
+                        item["printed"] = extra["printed"]
+                    if extra.get("authority"):
+                        item["layer"] = {k: extra[k] for k in ("authority", "by") if extra.get(k)}
                 if continued and n["ord"] == ord_:
                     item["continued"] = True
                 items.append(item)
@@ -401,9 +425,10 @@ class Library:
         wanted = ids + sources
         sentences = defaultdict(list)
         for s in self.conn.execute(
-                f"SELECT id, paragraph_id, text FROM sentences WHERE paragraph_id IN ({_placeholders(wanted)}) ORDER BY seq",
+                f"SELECT id, paragraph_id, text, printed FROM sentences WHERE paragraph_id IN ({_placeholders(wanted)}) ORDER BY seq",
                 wanted):
-            sentences[s["paragraph_id"]].append({"id": s["id"], "text": s["text"]})
+            sentences[s["paragraph_id"]].append({"id": s["id"], "text": s["text"],
+                                                 **({"printed": json.loads(s["printed"])} if s["printed"] else {})})
         arabic = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.paragraph_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
@@ -422,6 +447,10 @@ class Library:
         out = {}
         for p in paragraphs:
             record = {"id": p["id"], "kind": p["kind"]}
+            if p["kind"] == "ayah":                  # müfessirin baskısındaki âyet satırı: cümle değil (T6)
+                record |= {"text": p["text"], "note": AYAH_LINE_NOTE}
+                if verse := _verse_target(p["verses"]):
+                    record["verses"] = self._verse_ref(*verse)
             if p["kind"] == "hasiye":
                 record["hasiye_of"] = p["anchor"] or p["parent_id"]
                 if p["commentator"]:
@@ -488,6 +517,8 @@ class Library:
         out = []
         for r in shown:
             record = {"id": r["id"], "ref": r["ref"], "incipit": r["incipit"], "text": r["text"]}
+            if r["printed"]:
+                record["printed"] = json.loads(r["printed"])
             if context > 0:
                 record["target"] = r["id"] in targets
             if arabic.get(r["id"]):
@@ -497,6 +528,8 @@ class Library:
             out.append(record)
         node = self._node(first["node_id"])
         result = {"section": node["id"], "section_ref": node["ref"], "sentences": out} | self._work_status(node["work"])
+        if self.has_classical() and (layer := self._layer(node["id"])):     # muhakkikin girişi gibi (T6)
+            result["layer"] = layer
         if len(rows) > 1 and not hasiye_only:
             if len({r["node_id"] for r in rows}) > 1:
                 notes.append("The range spans several sections; cite each section's sentences separately.")
@@ -638,10 +671,29 @@ class Library:
 
     def _status(self) -> dict[str, dict]:
         """Sonuçlarda söylenecek eser statüsü: eser -> {authority?, translation?}; müellifin kendi metninde boş."""
-        rows = self.conn.execute("SELECT slug, authority, translation FROM works WHERE authority != ? OR translation = 1",
-                                 (Authority.MUELLIF,))
+        rows = self.conn.execute("SELECT slug, authority, translation, author FROM works"
+                                 " WHERE authority != ? OR translation = 1 OR author != ?", (Authority.MUELLIF, AUTHOR))
+        # Yazar varsayılandan (Bediüzzaman) farklıysa söylenir: müfessirin eseri kendi yazarınındır (T6).
         return {r["slug"]: ({"authority": r["authority"]} if r["authority"] != Authority.MUELLIF else {})
+                | ({"author": r["author"]} if r["author"] and r["author"] != AUTHOR else {})
                 | ({"translation": True} if r["translation"] else {}) for r in rows}
+
+    def has_classical(self) -> bool:
+        """Veritabanında müfessir eseri var mı (yerel profil): talimat, araç ve alanlar yalnız o zaman görünür (T6)."""
+        return self.conn.execute("SELECT 1 FROM works WHERE collection = ? AND built = 1 LIMIT 1",
+                                 (Collection.TEFSIR,)).fetchone() is not None
+
+    def _layer(self, node_id: str) -> dict | None:
+        """Bölümün eser içi katmanı (muhakkikin girişi): kendisinde ya da üst bölümlerinde `authority`."""
+        node = node_id
+        while node:
+            row = self.conn.execute("SELECT extra FROM nodes WHERE id = ?", (node,)).fetchone()
+            if row and row[0] and "authority" in (extra := json.loads(row[0])):
+                by = extra.get("by")
+                return {"authority": extra["authority"], **({"by": by} if by else {}),
+                        "note": f"This section is {by or 'the editor'}'s text, not the work's author's."}
+            node = node.rpartition("/")[0]
+        return None
 
     def _work_status(self, work: str) -> dict:
         return self._status().get(work, {})
@@ -666,7 +718,7 @@ class Library:
             "total": sum(by_work.values()),
             "by_work": by_work,
             "results": [{"id": h.sentence_id, "cite_as": hit_cite(h.ref, h.incipit, h.text), "text": _preview(h.text),
-                         **status.get(h.work, {})} for h in hits],
+                         **status.get(h.work, {}), **self._sentence_layer(h.work, h.sentence_id)} for h in hits],
             "note": SEARCH_NOTE,
         }
         if sections:
@@ -708,7 +760,7 @@ class Library:
                          "cite_as": hit_cite(rows[h.sentence_id]["ref"], rows[h.sentence_id]["incipit"],
                                              rows[h.sentence_id]["text"]),
                          "text": _preview(rows[h.sentence_id]["text"]), "similarity": round(h.score, 3),
-                         **status.get(h.work, {})} for h in hits],
+                         **status.get(h.work, {}), **self._sentence_layer(h.work, h.sentence_id)} for h in hits],
             "note": SEARCH_NOTE,
         }
         if refs:
@@ -761,7 +813,58 @@ class Library:
         if ayah is not None and self._has_quran():
             result["quran"] = self.ayahs(number, ayah)["ayahs"][0]
             result["links"] = self._links(number, ayah)
+            if self.has_classical() and (classical := self._classical(number, ayah)):
+                result["classical_works"] = classical          # Risale'nin yerlerinden sonra (eksen görünümde, T6)
         return result
+
+    def _sentence_layer(self, work: str, sentence_id: str) -> dict:
+        """Arama sonucunda: cümle eser içi bir katmandaysa (muhakkikin girişi) onu söyler; yalnız müfessir eserinde."""
+        if not self.has_classical() or work not in self._classical_works():
+            return {}
+        layer = self._layer(sentence_id.rsplit("/", 1)[0])
+        return {"layer": layer} if layer else {}
+
+    def _classical_works(self) -> dict[str, sqlite3.Row]:
+        return {r["slug"]: r for r in self.conn.execute(
+            "SELECT slug, title, author FROM works WHERE collection = ? AND built = 1 ORDER BY ord", (Collection.TEFSIR,))}
+
+    def _classical(self, sura: int, ayah: int, limit: int = MAX_LINKS) -> list[dict]:
+        """Âyetin müfessirlerin eserlerindeki yerleri (T6): âyeti işleyen birim (yapı bağı) ve şerhteki alıntıları
+        (lemma adayı ve öbürleri, güçlüler önce). Bağın türü ve yöntemiyle; hüküm değil."""
+        works = self._classical_works()
+        out: dict[str, dict] = {}
+        rows = self.conn.execute(
+            "SELECT l.source, l.type, l.relation, l.strength, l.scope, l.method, l.target FROM links l"
+            " WHERE l.file LIKE 'tefsir/%' AND l.target LIKE ? ORDER BY l.strength = 'weak', l.rowid",
+            (f"quran:{sura}:%",)).fetchall()
+        for r in rows:
+            verse = _verse_target(r["target"])
+            if not verse or not verse[1] <= ayah <= verse[2]:
+                continue
+            work = r["source"].split("/", 1)[0]
+            if work not in works:
+                continue
+            entry = out.setdefault(work, {"work": work, "title": works[work]["title"], "author": works[work]["author"],
+                                          "units": [], "quotations": [], "quotations_total": 0})
+            if r["scope"] == "section":
+                node = self._node(r["source"])
+                unit = {"section": node["id"], "ref": node["ref"], "verses": self._verse_ref(*verse),
+                        "relation": r["relation"], "method": r["method"]}
+                if node["extra"] and (printed := json.loads(node["extra"]).get("printed")):
+                    unit["printed"] = printed
+                entry["units"].append(unit)
+                continue
+            known = next((q for q in entry["quotations"] if q["id"] == r["source"]), None)
+            if known:                                   # cümlede birden çok alıntı: tek kayıt, ilişkiler birlikte
+                if r["relation"] not in known["relation"].split(", "):
+                    known["relation"] += ", " + r["relation"]
+                continue
+            entry["quotations_total"] += 1
+            if len(entry["quotations"]) < limit:
+                s = self._sentence(r["source"])
+                entry["quotations"].append({"id": s["id"], "cite_as": hit_cite(s["ref"], s["incipit"], s["text"]),
+                                            "relation": r["relation"], "strength": r["strength"], "method": r["method"]})
+        return list(out.values())
 
     def _links(self, sura: int, ayah: int) -> list[dict]:
         """Âyetle bağ kuran yerler (güçlüler önce, kitap sırasıyla), kanıt cümleleriyle."""

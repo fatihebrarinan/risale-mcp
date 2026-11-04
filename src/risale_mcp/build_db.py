@@ -205,11 +205,12 @@ def _insert_nodes(conn: sqlite3.Connection, work: str, outline: list[dict]) -> N
     for ord_, (node, last, depth) in enumerate(zip(outline, _subtree_ends(outline), _depths(outline))):
         cur = conn.execute(
             "INSERT INTO nodes (id, work, parent_id, ord, last_ord, depth, title, subtitle, toc_title,"
-            " type, number, heading, ref, url, written) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            " type, number, heading, ref, url, written, extra) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (node["id"], work, node["parent_id"], ord_, last, depth, node["title"], node.get("subtitle"),
              node.get("toc_title"), node.get("type"), node.get("number"), node.get("heading"),
              node["ref"], node.get("url"),
-             json.dumps(node["written"], ensure_ascii=False) if "written" in node else None))
+             json.dumps(node["written"], ensure_ascii=False) if "written" in node else None,
+             json.dumps(extra, ensure_ascii=False) if (extra := {k: node[k] for k in NODE_EXTRA if k in node}) else None))
         headings = " ".join(filter(None, (node["title"], node.get("subtitle"), node.get("toc_title"))))
         conn.execute("INSERT INTO nodes_fts (rowid, words) VALUES (?, ?)",
                      (cur.lastrowid, " ".join(search_words(headings))))
@@ -221,20 +222,25 @@ def _insert_paragraphs(conn: sqlite3.Connection, work: str, paragraphs: list[dic
     for ord_, p in enumerate(paragraphs):
         conn.execute(
             "INSERT INTO paragraphs (id, work, node_id, ord, kind, text, parent_id, mark_offset, anchor,"
-            " commentator, center, continued) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            " commentator, center, continued, verses) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (p["id"], work, p["node_id"], ord_, p["kind"], p.get("text"), p.get("parent_id"),
-             p.get("offset"), p.get("anchor"), p.get("commentator"), int(p.get("center", False)), int(p.get("continued", False))))
+             p.get("offset"), p.get("anchor"), p.get("commentator"), int(p.get("center", False)), int(p.get("continued", False)),
+             p.get("verses")))
         conn.executemany("INSERT INTO paragraph_sources VALUES (?, ?, ?)",
                          [(p["id"], i, source) for i, source in enumerate(p.get("source", []))])
+
+
+NODE_EXTRA = ("verses", "printed", "authority", "by")      # başlık ağacının kaynağa özgü alanları (`Node.extra`)
 
 
 def _insert_sentences(conn: sqlite3.Connection, work: str, sentences: list[dict], hasiye: set[str]) -> None:
     for s in sentences:
         cur = conn.execute(
             "INSERT INTO sentences (id, work, node_id, paragraph_id, n, hasiye, span_start, span_end, text,"
-            " incipit, hash, ref) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            " incipit, hash, ref, printed) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
             (s["id"], work, s["node_id"], s["paragraph_id"], s["n"], int(s["paragraph_id"] in hasiye),
-             s["start"], s["end"], s["text"], s["incipit"], s["hash"], s["ref"]))
+             s["start"], s["end"], s["text"], s["incipit"], s["hash"], s["ref"],
+             json.dumps(s["printed"]) if s.get("printed") else None))
         conn.execute("INSERT INTO sentences_fts (rowid, words) VALUES (?, ?)",
                      (cur.lastrowid, " ".join(search_words(s["text"]))))
 

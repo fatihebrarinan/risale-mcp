@@ -165,7 +165,7 @@ adıyla anar, Beyzâvî de büyük ölçüde ondan süzülmüştür.
 | T3 (bitti) | Ayrıştırıcı ve cümle bölücü (Arapça nesir, el-Mesnevî el-Arabî'nin kuralları) | `data/library/tefsir/beyzavi.json`, altın örnekler |
 | T4 (bitti) | Beyzâvî'nin bağları için H4 ve H5'in eksik kalan kısmı | `links.py`, testler |
 | T5 (bitti) | Bağlar: Beyzâvî parçası → âyet (yapıdan); Beyzâvî'nin âyet ve hadis alıntıları (bugünkü yöntemler); İşârât bölümü ↔ Beyzâvî parçası (aynı âyet aralığı yalnız aday; ilişki türü okumayla) | `data/links/tefsir/*.jsonl`, sayım ve örneklem |
-| T6 | Araçlar: âyetten Risale'nin ve Beyzâvî'nin yerleri, Risale önce; talimat ("tefsir" denmez, eserin sahibi söylenir) | Altın sorular |
+| T6 (bitti) | Araçlar: âyetten Risale'nin ve Beyzâvî'nin yerleri, Risale önce; talimat ("tefsir" denmez, eserin sahibi söylenir) | Altın sorular |
 | T7 | Kullanıcı örneklemi denetler; kararlar `tests/golden/`'a kilitlenir | Karar dosyası |
 
 ### T0: nüsha (bitti, 2026-11-04)
@@ -300,6 +300,15 @@ H4–H5'ten T4'e kalanlar yapıldı (ayrıntı CLAUDE.md'de ve `links.py`, `link
 - **Ölçüt:** tefsir bağlarıyla ve onlarsız yerel kurulumda Risale'nin hadis, âyet ve denetim tabloları aynı; genel
   sunucunun araç çıktısı aynı.
 - T7'ye: lemma adayları ve Kur'ân alıntısı örneklemi (`t5-kuran.md`), hadis adayları.
+
+### T6: araçlar (bitti, 2026-11-04)
+
+Her ek veriye bağlı: yalnız veritabanında müfessir eseri varsa görünür (yerel profil). Genel sunucunun araç çıktısı ve
+talimatı aynı kaldı. Ayrıntı CLAUDE.md'de. Âyetten: önce Risale'nin yerleri (`results`, `links`), sonra
+`classical_works` (birim ve şerhteki alıntılar). Eserin yazarı her sonuçta; muhakkikin girişi `layer` ile; baskının
+âyet satırı metniyle ama cümle değil. Yeni araç `text_links`. Altın sorular T1–T4: içerik (Bakara 6, Kûfeliler),
+İşârât ile Beyzâvî ayrı ayrı (Fâtiha 5), muhakkik katmanının atfı (vefat tarihi), tuzak (Beyzâvî'nin Risale'den
+nakli).
 
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık

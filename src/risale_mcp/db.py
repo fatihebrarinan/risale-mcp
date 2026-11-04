@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 18
+SCHEMA_VERSION = 19
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -72,7 +72,9 @@ CREATE TABLE nodes (
     heading   TEXT,
     ref       TEXT NOT NULL,
     url       TEXT,
-    written   TEXT
+    written   TEXT,
+    extra     TEXT                   -- JSON, kaynağa özgü (T6): müfessirin âyet birimi `verses`, basılı sayfa `printed`,
+                                     -- eser içi katman `authority` ve `by` (muhakkikin girişi); Risale'de boş
 );
 CREATE INDEX nodes_work_ord ON nodes(work, ord);
 CREATE INDEX nodes_parent ON nodes(parent_id);
@@ -101,7 +103,8 @@ CREATE TABLE paragraphs (
     anchor      TEXT,
     commentator TEXT,
     center      INTEGER NOT NULL DEFAULT 0,
-    continued   INTEGER NOT NULL DEFAULT 0
+    continued   INTEGER NOT NULL DEFAULT 0,
+    verses      TEXT                   -- müfessirin âyet satırı (`kind: ayah`): "quran:2:6" (T6)
 );
 CREATE INDEX paragraphs_node ON paragraphs(node_id, ord);
 CREATE INDEX paragraphs_parent ON paragraphs(parent_id);
@@ -128,7 +131,8 @@ CREATE TABLE sentences (
     text         TEXT NOT NULL,
     incipit      TEXT NOT NULL,
     hash         TEXT NOT NULL,
-    ref          TEXT NOT NULL
+    ref          TEXT NOT NULL,
+    printed      TEXT                   -- JSON: basılı cilt ve sayfa (yalnız sayfa veren klasik eserler; Risale'de boş)
 );
 CREATE INDEX sentences_node ON sentences(node_id, seq);
 CREATE INDEX sentences_paragraph ON sentences(paragraph_id, seq);

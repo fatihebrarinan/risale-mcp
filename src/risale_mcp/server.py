@@ -143,6 +143,21 @@ class Source(BaseModel):
                                                          "(… for omitted parts); leave out if you only paraphrase.")
 
 
+# Müfessirlerin eserleri (tefsir altyapısı, T6): yalnız veritabanında böyle bir eser varsa talimata eklenir (bugün yerel
+# profil); genel sunucunun talimatı değişmez. "Tefsir" kelimesi bir hükümdür: hiçbir yer öyle anılmaz (kullanıcının kararı).
+CLASSICAL_INSTRUCTIONS = """
+
+Classical works of other authors (list_works collection tefsir, e.g. al-Baydawi's Anwar al-Tanzil):
+- They are their own authors' texts: name the author (the author field) and never attribute their words to \
+Bediüzzaman. A section with layer (authority muhakkik, by) is the editor's introduction, not the author's.
+- A unit opens with the edition's printed verse (paragraph kind ayah): that is the Qur'an, cite it with get_ayah, \
+not as the author's sentence. printed gives the edition's volume/page as secondary information; the address is the id.
+- find_ayah lists them after the Risale's places (classical_works): the Risale comes first. Give what each says \
+in its own words, with its own citation, and keep them apart; text_links shows links recorded between texts, with \
+their kind, method and reviews. The same verse is not a relation: never say one text explains, follows or \
+rejects another unless a link says so, and never call any passage the tafsir of a verse."""
+
+
 def read_only(title: str) -> ToolAnnotations:
     """Salt okunur aracın işaretleri; başlık dizin listesi için `annotations.title`'da da durur."""
     return ToolAnnotations(title=title, read_only_hint=True, destructive_hint=False, idempotent_hint=True,
@@ -249,7 +264,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         provider = Provider(store, public_url)
         protected = {"auth": auth_settings(public_url), "auth_server_provider": provider,
                      "middleware": [usage_middleware(store), *([hide_sign_in_middleware()] if anonymous else [])]}
-    server = MCPServer(NAME, title="Risale-i Nur", instructions=INSTRUCTIONS,
+    classical = library.has_classical()
+    server = MCPServer(NAME, title="Risale-i Nur", instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),
                        description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
                        icons=_icons(public_url), **protected)
     for path, (name, media) in STATIC.items():               # ikon: istemciler sunucu adresinden de alabilir
@@ -371,6 +387,19 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             show the user a sign-in card; afterwards it reports who is signed in."""
             token = get_access_token()
             return _json({"signed_in_as": token.subject if token else None})
+
+    if classical:
+        @server.tool(title="Links between texts", annotations=read_only("Links between texts"), structured_output=False)
+        def text_links(
+            id: Annotated[str, Field(description="A sentence id, a range first..last or a section id.")],
+            limit: Annotated[int, Field(ge=1, le=100)] = 50,
+        ) -> str:
+            """List the links recorded between this text and other texts (the Risale and classical works), both
+            directions: the other end's id and citation (available false: its text is not on this server), the kind
+            (quote: same_words, transmits; relation: same_view, different_view, objection), the method and strength,
+            and named reviewers' checks. A link is a recorded relation with its evidence, not a verdict."""
+            with _tool_errors():
+                return _json(library.text_links(id, limit))
 
     @server.tool(title="Find sentence", annotations=read_only("Find sentence"), structured_output=False)
     def find_sentence(
