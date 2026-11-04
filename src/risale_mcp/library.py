@@ -214,6 +214,13 @@ class Library:
 
     # ------------------------------------------------------------ eserler ve başlık ağacı
 
+    def corpus_version(self) -> str | None:
+        """Metnin sürümü (`manifest.py`): yayın etiketi, yayınlanmamışsa "unreleased:<özet>"; eski veritabanında yok."""
+        meta = dict(self.conn.execute("SELECT key, value FROM meta WHERE key IN ('corpus_version', 'corpus_hash')").fetchall())
+        if "corpus_version" in meta:
+            return meta["corpus_version"]
+        return f"unreleased:{meta['corpus_hash']}" if "corpus_hash" in meta else None
+
     def works(self, group: str | None = None) -> list[dict]:
         sentences = dict(self.conn.execute("SELECT work, count(*) FROM sentences GROUP BY work").fetchall())
         sections = dict(self.conn.execute("SELECT work, count(*) FROM nodes GROUP BY work").fetchall())

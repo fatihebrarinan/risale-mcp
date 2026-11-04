@@ -121,6 +121,7 @@ class BuildReport:
     located: Counter = field(default_factory=Counter)          # işaretsiz Kur'ân metni
     unlocated: list = field(default_factory=list)              # (paragraf, numara): bulunamayan işaretsiz alıntı
     links: Counter = field(default_factory=Counter)            # âyet ilişkileri: "tür/güç" -> sayı
+    id_changes: object = None                                  # manifest.Changes: kabul edilmiş manifestoya göre
 
     def ayah_report(self) -> str:
         """Kaynağın âyet numarası Kur'ân metniyle tutmayan yerler ve bulunamayan işaretsiz alıntılar."""
@@ -162,6 +163,8 @@ class BuildReport:
         if self.unresolved_ayah:
             lines.append(f"  çözülemeyen âyet kaynağı: {sum(self.unresolved_ayah.values())}")
             lines += [f"      {n}× {s}" for s, n in self.unresolved_ayah.most_common(10)]
+        if self.id_changes is not None:
+            lines.append(f"  kimlikler    : {self.id_changes.summary()}")
         return lines
 
 
@@ -600,19 +603,22 @@ def _verify(conn: sqlite3.Connection, report: BuildReport) -> None:
         raise RuntimeError("Veritabanı JSON'larla tutmuyor:\n  " + "\n  ".join(wrong))
 
 
-def build_profile(profile: Profile) -> BuildReport:
-    """Profilin veritabanını kaynak klasörlerinden kurar."""
+def build_profile(profile: Profile, accept_id_changes: bool = False) -> BuildReport:
+    """Profilin veritabanını kaynak klasörlerinden kurar. Var olan cümle ya da bölüm kimliği değişirse kurulum durur
+    (`manifest.py`); kasıtlıysa `accept_id_changes`."""
     profile.db.parent.mkdir(parents=True, exist_ok=True)
-    return build(profile.book_dirs, profile.db, QURAN_PATH, profile, RAW_DIR / Site.RISALEOKU_APP, HADIS_PATH)
+    return build(profile.book_dirs, profile.db, QURAN_PATH, profile, RAW_DIR / Site.RISALEOKU_APP, HADIS_PATH,
+                 manifest_check=True, accept_id_changes=accept_id_changes)
 
 
 def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None = None,
           profile: Profile = KISISEL, meals_from: Path | None = None, hadis_path: Path | None = None,
-          links_dir: Path | None = None) -> BuildReport:
+          links_dir: Path | None = None, manifest_check: bool = False, accept_id_changes: bool = False) -> BuildReport:
     """`quran_path` verilirse (ve dosya varsa) Kur'ân katmanı kurulur, Risale'deki âyetler onunla eşlenir.
     `links_dir`: bağ dosyaları (varsayılan `data/links`; testler kendi klasörünü verir).
     `profile`: hangi eserlerin gireceği; profil dışındaki JSON'lar atlanır. `meals_from`: risaleoku ham verisi;
-    Arapça parçaların türünde aynı metnin meal kaydı da kanıt olur (bkz. `arabic_kinds`)."""
+    Arapça parçaların türünde aynı metnin meal kaydı da kanıt olur (bkz. `arabic_kinds`). `manifest_check`: kimlik
+    manifestosuyla denetim (`manifest.py`; yalnız profil kurulumu, testler kapalı)."""
     books = _load_books([books_dir] if isinstance(books_dir, Path) else books_dir)
     catalog = [w for w in WORKS if profile.includes(w)]
     known = {w.slug for w in WORKS}
@@ -675,6 +681,9 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
                 ("built_at", datetime.now(timezone.utc).isoformat(timespec="seconds")),
             ])
         _verify(conn, report)
+        if manifest_check:
+            from risale_mcp import manifest
+            report.id_changes = manifest.check_build(conn, profile.name, accept_id_changes)
         for table in ("sentences_fts", "nodes_fts"):
             conn.execute(f"INSERT INTO {table} ({table}) VALUES ('optimize')")
         conn.execute("ANALYZE")
@@ -693,10 +702,13 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--profile", choices=PROFILES, default=KISISEL.name, help="kurulacak profil")
-    profile = PROFILES[parser.parse_args().profile]
+    parser.add_argument("--accept-id-changes", action="store_true",
+                        help="var olan kimliklerin değişmesini kabul et (kasıtlı ayrıştırma değişikliği; bkz. manifest.py)")
+    args = parser.parse_args()
+    profile = PROFILES[args.profile]
     if not any(path for books_dir in profile.book_dirs for path in books_dir.glob("*.json")):
         sys.exit("Eser JSON'u yok; önce `uv run python -m risale_mcp.build --all`.")
-    report = build_profile(profile)
+    report = build_profile(profile, args.accept_id_changes)
     print("\n".join(report.lines()))
     if report.counts["quran_ayahs"]:
         AYAH_REPORT.parent.mkdir(parents=True, exist_ok=True)

@@ -16,6 +16,7 @@ data/
 ├── dist/<profil>/        Kurulan çıktı (`profiles.py`); kişisel ve genel
 │   ├── risale.db         Veritabanı; library'den yeniden kurulur
 │   └── vectors/          Anlamsal arama vektörleri. kisisel/vectors asıl depodur (ücretli çıkarılır, silinmemeli); genel/vectors ondan süzülür
+├── manifest/<profil>/    Kimlik manifestosu (`manifest.py`): kabul edilmiş hâl, sürümler, kimlik değişikliği raporları. Silinmemeli: eski sürümlerin tek kaydıdır
 ├── interim/              Üretilen ara çıktılar ve raporlar; silinse yeniden üretilir (`golden/` hariç)
 │   ├── erisale/          doğrulanmış blok listeleri
 │   ├── rasaelalnour/     açılmış Word dosyaları
@@ -24,6 +25,7 @@ data/
 │   ├── quran/, ayah_links/, arabic_kinds/   denetim raporları ve örneklemler
 │   ├── golden/           altın soru çalıştırmaları (eski ölçümler yeniden üretilemez)
 │   ├── search_eval/      arama ölçümleri
+│   ├── tool_snapshot/    araç çıktısı kayıtları (`tool_snapshot.py`); `yayin-*` kayıtları deploy'un karşılaştırma tabanıdır, silinmemeli
 │   └── chatgpt/          OpenAI eklenti paketi
 ├── logs/                 İndirme ve kurulum günlükleri
 ├── archive/              Artık kullanılmayan, saklanan dosyalar (asama-1/: ilk Sözler PDF/EPUB denemesi)

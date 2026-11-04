@@ -428,7 +428,10 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         the bibliography lines "[n] cite_as" for the answer's Kaynaklar list, with indented lines under a source for
         the verses and hadiths inside its quoted words (the publisher's references; copy them unchanged)."""
         with _tool_errors():
-            return _json(citations.sources([source.model_dump() for source in sources]))
+            result = citations.sources([source.model_dump() for source in sources])
+            if version := library.corpus_version():          # atfın dayandığı metin sürümü (manifest.py)
+                result["corpus_version"] = version
+            return _json(result)
 
     # ------------------------------------------------------------ kaynaklar (kullanıcının eklediği bağlam)
 

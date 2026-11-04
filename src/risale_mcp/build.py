@@ -211,6 +211,8 @@ def main() -> None:
     parser.add_argument("works", nargs="*", help="katalogdaki eser slug'ları")
     parser.add_argument("--all", action="store_true", help="ayrıştırıcısı olan bütün eserler")
     parser.add_argument("--no-db", action="store_true", help="veritabanını yeniden kurma")
+    parser.add_argument("--accept-id-changes", action="store_true",
+                        help="var olan kimliklerin değişmesini kabul et (kasıtlı ayrıştırma değişikliği; bkz. manifest.py)")
     args = parser.parse_args()
     if not (args.all or args.works):
         sys.exit("Eser slug'ı ya da --all verin.")
@@ -227,7 +229,7 @@ def main() -> None:
     checklist.main()
     if not args.no_db:
         for profile in PROFILES.values():
-            lines = build_db.build_profile(profile).lines()
+            lines = build_db.build_profile(profile, args.accept_id_changes).lines()
             print(f"\nveritabanı ({profile.name}):\n" + "\n".join(lines))
         local_only.main()
         if count := embeddings.missing(connect(DB_PATH)):

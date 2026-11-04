@@ -117,6 +117,7 @@ risale-mcp/
 │   ├── raw/<kaynak>/      # ham yanıtlar, kaynak başına; kullanıcının PDF'leri raw/kullanici/<kitap>/
 │   ├── library/           # asıl veri: risale/kulliyat/<eser>.json, risale/ilgili/, kuran/quran.json, hadis/matches.json
 │   ├── dist/<profil>/     # kisisel, genel: risale.db ve vectors/ (kisisel/vectors asıl depo, ücretli çıkarılır)
+│   ├── manifest/<profil>/ # kabul edilmiş kimlik manifestosu, sürümler, kimlik değişikliği raporları (silinmez: eski sürümlerin tek kaydı)
 │   ├── interim/           # erisale/ blokları, review/ kontrol arayüzü (taşınmaz: tarayıcı işaretleri adrese bağlı olabilir), outline/, quran/ayah_check.md, ayah_links/, arabic_kinds/, golden/, search_eval/, tool_snapshot/, chatgpt/
 │   ├── logs/, archive/    # günlükler; kullanılmayan eski dosyalar (asama-1/)
 │   └── auth.db            # kullanım kaydı, hata ayıklama anahtarı; OAuth kipinde hesaplar (risale.db gibi yeniden kurulmaz)
@@ -127,7 +128,7 @@ risale-mcp/
 │   ├── sentences.py       # cümle bölücü, incipit, atıflar, altın örnekler
 │   ├── arabic_kinds.py    # Arapça parçaların türü ve dayanağı, âyet adres düzeltmeleri
 │   ├── quran.py, hadis.py, hadis_adaylar.py, hadis_turkce.py, hadis_rivayet.py, hadis_uyum.py, hadis_okuma.py, hadis_ornek.py, ayah_links.py, search.py, semantic.py, embeddings.py, search_eval.py, tool_snapshot.py
-│   ├── library.py, server.py, citations.py, auth.py, golden.py, local_only.py
+│   ├── library.py, server.py, citations.py, auth.py, golden.py, local_only.py, manifest.py
 │   ├── review_ui.py, review_assets/, static/
 │   ├── sources/           # site başına indirici (ham kayıt + doğrulama)
 │   └── books/             # model.py, mecmua.py, telif.py, telif.json, old_names.json, kaynak başına ayrıştırıcı, outlines/, pdf_text.py, rumuzat.py
@@ -396,6 +397,7 @@ Ayrıntı `auth.py` başındadır.
 - **Hata ayıklama adresi:** `scripts/sunucu.sh auth debug-url --new` gizli bir `https://mcp.risalemcp.com/mcp/<anahtar>` verir (anahtarın yalnızca özeti saklanır); o adrese gelen istekler `(debug)` kullanıcısıyla, girdileriyle 7 gün kaydedilir ve sınırlara takılmaz. Okuma `scripts/sunucu.sh auth usage --user '(debug)' --params`, kapatma `--revoke`.
 - **Kullanım kaydı:** her MCP isteği zaman, araç, süre ve hata türüyle `usage` tablosuna yazılır, 90 gün tutulur. Parametreler (sorgular, alıntılar) kaydedilmez, IP de: Anthropic'in dizin politikası gereksiz konuşma verisini yasaklar (kullanıcının kararı). Gizlilik politikası (`site/gizlilik.html`) bunları söyler; değişirse orası da değişir.
 - **Uzak sunucu:** Hetzner Cloud CAX11 (ARM, 4 GB, Helsinki, Ubuntu 24.04), genel IPv4 `95.217.21.105`, Tailscale adı `risale` (`100.108.174.19`; SSH yalnız oradan, anahtar `~/.ssh/risale_hetzner`). Bağlayıcı **`https://mcp.risalemcp.com/mcp`**, tanıtım sitesi `https://risalemcp.com`; ikisini Caddy sunar (`docs/Caddyfile`), sertifika Let's Encrypt. Alan adı Cloudflare'de "DNS only" (proxy uzun MCP bağlantılarını 100 sn'de keser). Servis `risale-mcp` (`docs/risale-mcp.server.service`). Güvenlik duvarı: 80, 443; SSH yalnız `tailscale0`.
+- **Deploy'dan önce araç çıktısı kaydı** (kullanıcının kuralı, 2026-11-04; `--code` dahil): `deploy.sh` bunu kendisi yapar: veri gidecekse `manifest release`, sonra `tool_snapshot record aday-<zaman>` ve son `yayin-*` kaydıyla `compare`; beklenmeyen fark varsa hiçbir şey gönderilmez. Beklenen fark `DEPLOY_EXPECT="cite" scripts/deploy.sh` ile bildirilir. Gönderilen kayıt `yayin-<zaman>` olur (ilki `yayin-20261103-141900`: 2026-11-03'te deploy edilen hâl).
 - **Güncelleme:** `scripts/deploy.sh` (kod, `genel` profilinin veritabanı ve vektörleri, `quran.json`, `.env`'den yalnız `VOYAGE_API_KEY`), yalnız kod ve site için `--code`. Ayrıştırma ve veritabanı kurulumu yerelde yapılır. `data/auth.db`'nin asıl kopyası sunucudadır, deploy ona dokunmaz. Yönetim: `scripts/sunucu.sh auth …`, `status|restart|logs|ssh`.
 - **Logo:** Claude ve dizin bağlayıcının simgesini `https://mcp.risalemcp.com/favicon.ico`'dan alır. Logo değişince `icon.svg`'den `icon.png` ve `favicon.ico` üretilir (`scripts/ikon.sh`), `src/risale_mcp/static/` ve `site/` altına konur.
 - **Dizin başvuruları:** Claude (`docs/dizin-basvurusu.md`) ve OpenAI (`docs/chatgpt-dizin-basvurusu.md`) gönderildi, karar bekleniyor. Yayıncı adı "Nur Hadimleri". Kabul edilirse sitedeki kurulum adımlarına dizinden ekleme yolu açılır (`site/index.html`'de yorum satırı olarak hazır).
@@ -485,7 +487,7 @@ aşağıdadır, kullanıcının onayıyla değişir. Ayrıntılı geçmiş: `doc
 Ayrıntı ve gerekçeler `docs/tefsir-altyapi-plani.md`'de. Önce hazırlık, sonra pilot; her hazırlık adımı bugünkü Risale verisinde yapılır, ölçütü Risale'nin kimliklerinin, sayılarının ve araç çıktılarının değişmemesidir (sunucunun kullanıcıları var; hazırlık onların gördüğünü değiştirmez, pilot `private` kalır).
 
 - **H0. Araç çıktısı karşılaştırması (bitti, 2026-11-04):** `uv run python -m risale_mcp.tool_snapshot record <ad>` sabit 96 çağrıyı (`tests/golden/tool_calls.json`: her araç, kaynaklar, hazır komutlar, hatalı girdiler; talimat ve araç şemaları da) genel profilde süreç içi MCP istemcisiyle kaydeder, `compare <önceki> <sonraki> [--expect araç…]` fark raporu verir (`data/interim/tool_snapshot/`); beklenmeyen fark varsa çıkış kodu 1, deploy edilmez. Anlamsal aramanın sorgu vektörleri diskte sabitlenir (Voyage aynı soruya biraz farklı vektör veriyor).
-- **H1. Kimlik manifestosu ve derlem sürümü** (H0 ile önce: öbürlerinin ölçütünü verirler): bütün cümle kimlikleri ve özetleri, `build` kayan kimliği raporlar; yayına sürüm etiketi, `cite`'ta sürüm.
+- **H1. Kimlik manifestosu ve derlem sürümü (bitti, 2026-11-04):** `manifest.py`. Her profil kurulumu bütün cümle kimliklerini özetleriyle ve bölüm yollarını kabul edilmiş manifestoyla (`data/manifest/<profil>/accepted.json.gz`) karşılaştırır: eklenen kabul edilir, silinen ya da metni değişen cümle ve silinen bölüm kurulumu durdurur (veritabanı yazılmaz; rapor `changes/`, kayma başladığı cümleyle; kasıtlıysa `--accept-id-changes`). `meta`da `corpus_hash`; `manifest release` yayına giden veritabanına etiket verir (`releases/`, önceki sürümle farklar), `cite` sonucu `corpus_version` taşır. `deploy.sh` veri gönderirken release'i kendisi yapar.
 - **H2. Eserin yazarı** (`Work.author`; `authority` eserin kendi yazarına göre). **H3. Baskı kaydı** (baskı, muhakkik, dijital nüsha, lisans; genel profil izni yazılmamış eseri kurmaz).
 - **H4. Bağ uçlarının genelleşmesi** (iki uç da herhangi bir eser; metinden metne ilişki türleri). **H5. Denetim kaydı** (`data/links/reviews/`, isimli denetçi, itiraz silinmez; ilk veri âyet ilişkilerinin 62 kararı).
 - **H6. Ortak OpenITI okuyucu** (âyet işaretleri, sayfadan `printed`; hadis kitapları da kullanır).

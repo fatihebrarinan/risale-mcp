@@ -3,6 +3,11 @@
 #
 #   scripts/deploy.sh            # kod + genel profilin veritabanı ve vektörleri + quran.json
 #   scripts/deploy.sh --code     # yalnızca kod ve site/ (veri değişmediyse)
+#   DEPLOY_EXPECT="cite" scripts/deploy.sh   # bu araçların çıktısındaki fark beklenen sayılır
+#
+# Göndermeden önce (kullanıcının kuralı, `--code` dahil): veri gidecekse genel veritabanı sürüm etiketi alır
+# (`manifest release`); araç çıktısı kaydedilir ve son yayın kaydıyla karşılaştırılır (`tool_snapshot`, H0).
+# Beklenmeyen fark varsa hiçbir şey gönderilmez; rapor data/interim/tool_snapshot/aday-…/ altındadır.
 #
 # Ayrıştırma ve veritabanı kurulumu bu bilgisayarda yapılır; ham veri sunucuya gitmez. Sunucudaki `data/auth.db`
 # (hesaplar, oturumlar, kullanım kaydı) asıl kopyadır, bu betik onu ezmez. `.env`'den yalnızca VOYAGE_API_KEY gider.
@@ -14,6 +19,21 @@ KEY="${RISALE_KEY:-$HOME/.ssh/risale_hetzner}"
 DEST=/home/risale/risale-mcp
 SSH=(ssh -i "$KEY" -o BatchMode=yes)
 cd "$(dirname "$0")/.."
+
+if [[ "${1:-}" != "--code" ]]; then
+    uv run python -m risale_mcp.manifest release --profile genel
+fi
+STAMP=$(date +%Y%m%d-%H%M%S)
+SNAPSHOTS=data/interim/tool_snapshot
+PREV=$(ls -d "$SNAPSHOTS"/yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename)
+uv run python -m risale_mcp.tool_snapshot record "aday-$STAMP"
+if [[ -n "$PREV" ]]; then
+    # shellcheck disable=SC2086
+    uv run python -m risale_mcp.tool_snapshot compare "$PREV" "aday-$STAMP" --expect ${DEPLOY_EXPECT:-} \
+        || { echo "araç çıktısında beklenmeyen fark: gönderilmedi (rapor $SNAPSHOTS/aday-$STAMP/diff-$PREV.md)"; exit 1; }
+else
+    echo "önceki yayın kaydı yok: karşılaştırılmadı"
+fi
 
 echo "kod gönderiliyor…"
 git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DEST/"
@@ -50,3 +70,7 @@ fi
 
 "${SSH[@]}" "$HOST" "chown -R risale:risale $DEST && su - risale -c 'cd $DEST && ~/.local/bin/uv sync --no-dev --frozen -q' \
     && systemctl restart risale-mcp 2>/dev/null; systemctl is-active risale-mcp || true"
+
+# Gönderilen hâl bir sonraki deploy'un karşılaştırma tabanıdır
+mv "$SNAPSHOTS/aday-$STAMP" "$SNAPSHOTS/yayin-$STAMP"
+echo "araç çıktısı kaydı: $SNAPSHOTS/yayin-$STAMP"
