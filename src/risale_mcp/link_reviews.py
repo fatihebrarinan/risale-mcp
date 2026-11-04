@@ -2,6 +2,12 @@
 
     uv run python -m risale_mcp.link_reviews check [--db yol]    # kararları denetler, bağlarıyla eşler
     uv run python -m risale_mcp.link_reviews list                # denetçiler ve kararların sayısı
+    uv run python -m risale_mcp.link_reviews add <alan/yöntem.jsonl> --source S --target T --type relation \
+        --status reviewed --strength strong --reviewer <kimlik> [--part P] [--reason …] [--date YYYY-MM-DD] [--db yol]
+
+`add` kararı dosyanın sonuna ekler (T4): bağ veritabanında anahtarıyla bulunmalı (yerel profil; `--db`), kararın
+verildiği andaki hâli (`seen`: ilişki türü, güç, kapsam) veriden yazılır; geri çekme yalnız aynı denetçinin önceki
+kararına, itiraz yalnız gerekçeyle. Model denetçi değildir: komutu bir insan çalıştırır.
 
 Bağlar kurallardan ya da üreten işlerden her kurulumda yeniden çıkar; karar bağın içine yazılamaz. Kararlar ayrı,
 yalnız eklenen dosyalardadır: `data/links/reviews/<alan>/<yöntem>.jsonl` (bağ dosyasının adıyla; ör.
@@ -183,10 +189,48 @@ def disagreements(conn: sqlite3.Connection, reviews: list[Review]) -> list[tuple
     return out
 
 
+def add(conn: sqlite3.Connection, file: str, key: dict, status: str, reviewer: str, date: str,
+        strength: str | None = None, reason: str | None = None, root: Path = REVIEWS_DIR) -> Review:
+    """Kararı denetler ve ekler: bağ var mı, kayıt ve sıra geçerli mi."""
+    source, target, type_ = local_id(key["source"]), key["target"], key["type"]
+    row = conn.execute("SELECT relation, strength, scope FROM links WHERE source = ? AND target = ? AND type = ?"
+                       " AND COALESCE(part, '') = ? ORDER BY strength = 'weak' LIMIT 1",
+                       (source, target, type_, key.get("part") or "")).fetchone()
+    if row is None:
+        raise ValueError(f"bu anahtarla bağ yok: {source} -> {target} ({type_})")
+    review = Review(status, reviewer, date, link={"source": source, "target": target, "type": type_,
+                                                  **({"part": key["part"]} if key.get("part") else {})},
+                    strength=strength, reason=reason, file=file,
+                    seen={k: v for k, v in zip(("relation", "strength", "scope"), row) if v})
+    if bad := validate(read(root) + [review], reviewers(root)):
+        raise ValueError("; ".join(problem for _, problem in bad))
+    append(root / file, review, root)
+    return review
+
+
 def main() -> None:
     args = sys.argv[1:]
+    if args and args[0] == "add":
+        import argparse
+        from datetime import date
+        parser = argparse.ArgumentParser(prog="link_reviews add")
+        parser.add_argument("file")
+        for name in ("--source", "--target", "--type", "--status", "--reviewer"):
+            parser.add_argument(name, required=True)
+        for name in ("--part", "--strength", "--reason", "--db"):
+            parser.add_argument(name)
+        parser.add_argument("--date", default=date.today().isoformat())
+        a = parser.parse_args(args[1:])
+        conn = sqlite3.connect(Path(a.db) if a.db else DB_PATH)
+        try:
+            review = add(conn, a.file, {"source": a.source, "target": a.target, "type": a.type, "part": a.part},
+                         a.status, a.reviewer, a.date, a.strength, a.reason)
+        except ValueError as error:
+            sys.exit(f"eklenmedi: {error}")
+        print(f"eklendi ({a.file}): {json.dumps(review.to_json(), ensure_ascii=False)}")
+        return
     if not args or args[0] not in ("check", "list"):
-        sys.exit("kullanım: python -m risale_mcp.link_reviews check|list [--db yol]")
+        sys.exit("kullanım: python -m risale_mcp.link_reviews check|list|add [--db yol]")
     people, reviews = reviewers(), read()
     if args[0] == "list":
         for rid, person in people.items():

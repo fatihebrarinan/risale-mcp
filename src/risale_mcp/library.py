@@ -941,6 +941,64 @@ class Library:
                                          "method": r["method"], "relation": r["relation"]})
         return list(out.values())[:limit]
 
+    def text_links(self, text_id: str, limit: int = 100) -> dict:
+        """Metinden metne bağlar, iki yönde (T4; araca T6'da bağlanır): verilen cümleye, aralığa ya da bölüme (alt
+        bölümleriyle) dokunan bağlar. Her bağda öbür uç: kimliği, atfı (bu veritabanındaysa veriden, değilse bağın
+        kayıtlı atfından), bu sunucuda olup olmadığı; tür, ilişki, yöntem, güç, kanıt ve denetim kararları."""
+        from risale_mcp.links import TEXT_NAMESPACES, cite_as, local_id, resolve, text_endpoint
+        here = resolve(self.conn, text_id)
+        if here is None:
+            raise LibraryError(f"No sentence, range or section {text_id!r}.")
+        node, ns = here["node"], here["namespace"]
+
+        def seqs(end: dict) -> tuple[int, int] | None:
+            """Ucun cümle sırası aralığı; bölüm ucu için None."""
+            if end["kind"] == "section":
+                return None
+            first, _, last = end["id"].partition("..")
+            a = self.conn.execute("SELECT seq FROM sentences WHERE id = ?", (first,)).fetchone()[0]
+            if last:
+                last = last if "/" in last else f"{first.rsplit('/', 1)[0]}/{last}"
+                return a, self.conn.execute("SELECT seq FROM sentences WHERE id = ?", (last,)).fetchone()[0]
+            return a, a
+
+        span = seqs(here)
+
+        def touches(value: str, scope: str | None) -> bool:
+            end = resolve(self.conn, value, scope)
+            if end is None:
+                return False
+            if span is None:                                   # bölüm: kendisi ve altındaki her şey
+                return end["id"] == text_id or end["id"].startswith(text_id + "/")
+            other = seqs(end)
+            return other is not None and other[0] <= span[1] and span[0] <= other[1]
+
+        text_targets = " OR ".join("target LIKE ?" for _ in TEXT_NAMESPACES)     # ad alanları koleksiyonlardan (H4)
+        rows = self.conn.execute(
+            f"SELECT * FROM links WHERE ({text_targets}) AND (source = ? OR source LIKE ? OR target = ? OR target LIKE ?)",
+            (*(f"{n}:%" for n in TEXT_NAMESPACES), node, node + "/%", f"{ns}:{node}", f"{ns}:{node}/%")).fetchall()
+        out = []
+        for r in rows:
+            if not text_endpoint(r["target"]):
+                continue
+            outgoing = touches(r["source"], r["scope"])
+            incoming = touches(r["target"], None)
+            if not (outgoing or incoming):
+                continue
+            other, other_scope, stored = ((r["target"], None, r["target_display"]) if outgoing
+                                          else (r["source"], r["scope"], r["display"]))
+            shown = cite_as(self.conn, other, other_scope)
+            item = {"direction": "out" if outgoing else "in", "other": local_id(other),
+                    "cite_as": shown or stored, "available": shown is not None,
+                    "type": r["type"], "relation": r["relation"], "method": r["method"], "strength": r["strength"]}
+            if r["evidence"]:
+                item["evidence"] = json.loads(r["evidence"])
+            if reviews := self._reviews(r["source"], r["target"], r["type"], r["part"] or ""):
+                item["reviews"] = reviews
+            out.append(item)
+        out.sort(key=lambda x: (x["strength"] == "weak", x["direction"], x["other"]))
+        return {"text": text_id, "total": len(out), "links": out[:limit]}
+
     def _sura_number(self, sura: str) -> int:
         sura = str(sura).strip()
         if sura.isdigit():

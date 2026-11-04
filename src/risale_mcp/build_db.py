@@ -385,7 +385,28 @@ def _link_row(link, name: str) -> tuple:
     """`links` tablosunun satırı; kaynak yerel kimlikle (önek yalnız dosyada), hedef ad alanıyla."""
     from risale_mcp.links import local_id
     return (local_id(link.source), link.part, link.target, link.type, link.relation, link.method, link.strength,
-            link.scope, json.dumps(link.evidence, ensure_ascii=False) if link.evidence else None, name)
+            link.scope, json.dumps(link.evidence, ensure_ascii=False) if link.evidence else None, name,
+            link.display, link.target_display)
+
+
+def _target_allowed(link, profile: Profile, nodes: set[str], sentences: set[str]) -> str | None:
+    """Metin hedefli bağın bu profile girip giremeyeceği: None girer, değilse düşme sebebi. Hedef bu veritabanındaysa
+    girer. Değilse hedefin eseri katalogda olmalı, yalnız yerelde duran (`private`) bir eser olmamalı (o eseri taşımayan
+    profile bağı da sızmaz) ve hedefin atfı (`target_display`) kayıtlı olmalı: metni olmayan sunucu onu gösterir."""
+    from risale_mcp.catalog import get_work
+    from risale_mcp.links import local_id, text_endpoint
+    if not text_endpoint(link.target):
+        return None
+    target = local_id(link.target).partition("..")[0]
+    if target in nodes or target in sentences:
+        return None
+    try:
+        work = get_work(target.split("/", 1)[0])
+    except KeyError:
+        return "target_unknown"
+    if work.private and not (profile.private and profile.includes(work)):
+        return "target_private"
+    return None if link.target_display else "target_no_display"
 
 
 def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport, root: Path | None = None) -> None:
@@ -400,11 +421,13 @@ def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport,
             continue
         name = str(path.relative_to(LINKS))
         for l in read(path)[1]:
-            if _in_profile(l, sentences, nodes):
-                rows.append(_link_row(l, name))
-            else:
+            if not _in_profile(l, sentences, nodes):
                 dropped += 1
-    conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+            elif reason := _target_allowed(l, profile, nodes, sentences):
+                report.counts[f"links_{reason}"] += 1
+            else:
+                rows.append(_link_row(l, name))
+    conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
     report.counts["links"] = len(rows)
     report.counts["links_dropped"] = dropped
 
@@ -421,7 +444,7 @@ def _computed_links(conn: sqlite3.Connection, profile: Profile, report: BuildRep
     for name, links in computed(conn).items():
         kept = list({json.dumps(l.to_json(), ensure_ascii=False, sort_keys=True): l for l in links
                      if _in_profile(l, sentences, nodes)}.values())   # dosya gibi tekil
-        conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [_link_row(l, name) for l in kept])
+        conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [_link_row(l, name) for l in kept])
         report.counts[f"links {name}"] = len(kept)
         if profile.private and dump:
             write((root or LINKS_DIR) / name, kept, computed=COMPUTED, producer="build_db")

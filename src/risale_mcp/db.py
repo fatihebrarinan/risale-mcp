@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 17
+SCHEMA_VERSION = 18
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -231,7 +231,9 @@ CREATE TABLE links (
     strength TEXT NOT NULL,
     scope    TEXT NOT NULL,
     evidence TEXT,                                 -- JSON
-    file     TEXT NOT NULL                         -- bağ dosyası (alan/yöntem.jsonl)
+    file     TEXT NOT NULL,                        -- bağ dosyası (alan/yöntem.jsonl)
+    display  TEXT,                                 -- kaynağın kayıtlı atfı
+    target_display TEXT                            -- metin hedefinin kayıtlı atfı: hedef bu profilde yoksa gösterilen (T4)
 );
 CREATE INDEX links_source ON links(source, part);
 CREATE INDEX links_target ON links(target);

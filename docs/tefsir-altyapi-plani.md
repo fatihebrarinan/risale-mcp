@@ -163,7 +163,7 @@ adıyla anar, Beyzâvî de büyük ölçüde ondan süzülmüştür.
 | T1 | Ham veriyi incelemek: âyet işaretleri, bölümler, hâşiyeler, nakil kalıpları; örnekler kullanıcıya | Örnek dökümü |
 | T2 | Kararlar: koleksiyon (`library/tefsir/`), şema, kimlik biçimi | Bu belgenin "Kararlar"ı |
 | T3 (bitti) | Ayrıştırıcı ve cümle bölücü (Arapça nesir, el-Mesnevî el-Arabî'nin kuralları) | `data/library/tefsir/beyzavi.json`, altın örnekler |
-| T4 | Beyzâvî'nin bağları için H4 ve H5'in eksik kalan kısmı | `links.py`, testler |
+| T4 (bitti) | Beyzâvî'nin bağları için H4 ve H5'in eksik kalan kısmı | `links.py`, testler |
 | T5 | Bağlar: Beyzâvî parçası → âyet (yapıdan); Beyzâvî'nin âyet ve hadis alıntıları (bugünkü yöntemler); İşârât bölümü ↔ Beyzâvî parçası (aynı âyet aralığı yalnız aday; ilişki türü okumayla) | `data/links/tefsir/*.jsonl`, sayım ve örneklem |
 | T6 | Araçlar: âyetten Risale'nin ve Beyzâvî'nin yerleri, Risale önce; talimat ("tefsir" denmez, eserin sahibi söylenir) | Altın sorular |
 | T7 | Kullanıcı örneklemi denetler; kararlar `tests/golden/`'a kilitlenir | Karar dosyası |
@@ -266,6 +266,19 @@ satırı, 977 cümle (âyet birimlerinde 767), hepsi basılı sayfalı (1/5–1/
   bölüm eklendi; `build_db`'nin bugünkü parantezli alıntı yöntemi 3 Kur'ân alıntısı buldu (Kıyâme 40, Bakara 11 ve 14).
 - T6'ya kalan: `read_section` cümlesi olmayan paragrafın metnini göstermiyor, âyet satırı boş görünüyor; düğümün
   `verses`, `authority` ve `printed` alanları araçlara henüz gitmiyor.
+
+### T4: bağların eksikleri (bitti, 2026-11-04)
+
+H4–H5'ten T4'e kalanlar yapıldı (ayrıntı CLAUDE.md'de ve `links.py`, `link_reviews.py` başında):
+
+- **Hedefin atfı** (`target_display`) ve iki ucun atfını veriden kuran `links.cite_as`; doğrulama hedefin kaymasını
+  da yakalar. Şema 18.
+- **Sızma koruması:** metin hedefli bağ, hedefin eseri yalnız yerelde duruyorsa o eseri taşımayan profile girmez;
+  hedef başka sunucunun alanındaysa yalnız atfı kayıtlıysa girer (o sunucu metni değil atfı gösterir).
+- **İki yönlü okuma:** `Library.text_links` (araç T6'da).
+- **Yöntem `structure`:** T5'te Beyzâvî biriminin âyetle bağı için (birim başlığı söylüyor; okuma değil).
+- **Denetim kaydına yazma komutu:** `link_reviews add`.
+- Kalan açık soru: denetçi seçme ölçütü (Açık sorular).
 
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık

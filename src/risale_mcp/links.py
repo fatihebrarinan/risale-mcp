@@ -22,10 +22,14 @@ Alanlar:
               dayanak, risale); göndermede `old_name`. Metinden metne (`TEXT_RELATIONS`, H4; türler T5'te okumayla
               kesinleşir): quote ile same_words (aynı söz, kaynağı anılmadan) ya da transmits (nakil: kaynak hedefin
               sözünü aktarıyor), relation ile same_view, different_view, objection (kaynak hedefe itiraz ediyor)
-    method    bağı kuran: source_mark, quran_text, corpus, cited_chapter, reading, rule, curated (ileride scholar)
+    method    bağı kuran: source_mark, quran_text, corpus, cited_chapter, reading, rule, curated, structure (eserin
+              yapısı söylüyor: müfessirin âyet birimi başlığı), scholar (isimli âlimin okuması)
     strength  strong | weak
     evidence  yönteme göre serbest (kanıt cümlesi, künye, okuyucu cevapları, puan)
     display   kaynağın gösterilecek atfı (`cite_as`); doğrulamada kimlik kaymasını yakalar
+    target_display  metin hedefinin atfı (T4): hedefin metni bu profilde yoksa (başka sunucunun alanı) bağ yine
+              gösterilebilsin; üreten iş `cite_as` ile yazar, doğrulama hedefin kaymasını yakalar. Yalnız yerelde
+              duran (`private`) bir esere giden bağ, o eseri taşımayan profile hiç girmez (`build_db`)
 
 Ad alanı (H4): metnin ad alanı eserin koleksiyonundan gelir (`risale/kulliyat` -> `risale`); yeni bir koleksiyon
 (`tefsir/…`) eklenince ad alanı kendiliğinden geçerli olur. Kimlikler önek almaz: önek yalnız bağın ucundadır.
@@ -45,12 +49,13 @@ from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+from risale_mcp.books.model import REF_SEPARATOR as REF_SEP
 from risale_mcp.catalog.model import Collection
 from risale_mcp.paths import DB_PATH, LINKS_DIR
 from risale_mcp.quran import skeleton
 
 TYPES = ("quote", "relation", "reference")
-METHODS = ("source_mark", "quran_text", "corpus", "cited_chapter", "reading", "rule", "curated", "scholar")
+METHODS = ("source_mark", "quran_text", "corpus", "cited_chapter", "reading", "rule", "curated", "structure", "scholar")
 STRENGTHS = ("strong", "weak")
 SCOPES = ("sentence", "section")
 # Metnin ad alanları: koleksiyonların ilk parçası (`risale/kulliyat` -> risale). Kur'ân ve hadis metin ad alanı değil.
@@ -90,6 +95,7 @@ class Link:
     scope: str = "sentence"
     evidence: dict = field(default_factory=dict, hash=False, compare=False)
     display: str | None = field(default=None, hash=False, compare=False)
+    target_display: str | None = field(default=None, hash=False, compare=False)
 
     def problems(self) -> list[str]:
         """Kaydın kendi içindeki hatalar (veritabanına bakmadan)."""
@@ -245,7 +251,33 @@ def check(conn: sqlite3.Connection, links: Iterable[Link]) -> dict[str, list]:
             out.setdefault("no_part", []).append((link, link.part))
         if link.display and row["incipit"] and not _opening_matches(link.display, row):
             out.setdefault("moved", []).append((link, row["incipit"]))
+    for link in links:
+        if not (link.target_display and text_endpoint(link.target)) or link.problems():
+            continue
+        target = resolve(conn, link.target)
+        if target and target["kind"] != "section":
+            row = sentence(target["id"].partition("..")[0])
+            if row["incipit"] and not _opening_matches(link.target_display, row):
+                out.setdefault("target_moved", []).append((link, row["incipit"]))
     return out
+
+
+def cite_as(conn: sqlite3.Connection, value: str, scope: str | None = None) -> str | None:
+    """Metin ucunun kullanıcıya gösterilecek atfı, veriden: cümlede "yol › “ilk kelimeler…”", aralıkta "… ile başlayan
+    N cümle", bölümde yolun kendisi. Uç bu veritabanında yoksa None (o zaman bağın kayıtlı `display`'i kullanılır)."""
+    from risale_mcp.library import cite, opening
+    end = resolve(conn, value, scope)
+    if end is None:
+        return None
+    if end["kind"] == "section":
+        return conn.execute("SELECT ref FROM nodes WHERE id = ?", (end["id"],)).fetchone()[0]
+    first, _, last = end["id"].partition("..")
+    ref, incipit, text, n = conn.execute("SELECT ref, incipit, text, n FROM sentences WHERE id = ?", (first,)).fetchone()
+    count = 1
+    if last:                                  # düğüm içi sıra: aradaki hâşiye cümleleri sayılmaz
+        last = last if "/" in last else f"{first.rsplit('/', 1)[0]}/{last}"
+        count = conn.execute("SELECT n FROM sentences WHERE id = ?", (last,)).fetchone()[0] - n + 1
+    return cite(ref.rsplit(REF_SEP, 1)[0], opening(incipit, text), count)
 
 
 def _opening_matches(display: str, row: sqlite3.Row) -> bool:
