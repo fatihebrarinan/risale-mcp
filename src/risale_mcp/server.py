@@ -144,7 +144,9 @@ class Source(BaseModel):
 
 
 # Müfessirlerin eserleri (tefsir altyapısı, T6): yalnız veritabanında böyle bir eser varsa talimata eklenir (bugün yerel
-# profil); genel sunucunun talimatı değişmez. "Tefsir" kelimesi bir hükümdür: hiçbir yer öyle anılmaz (kullanıcının kararı).
+# profil); genel sunucunun talimatı değişmez. Müfessirin eseri gerçek tefsirdir ve öyle anılır; modelin kendi yazdığı
+# hiçbir şey "tefsir" diye anılmaz; Risale'nin bir yeri kuralla bulunan bağla tefsir diye anılmaz (kullanıcının
+# açıklaması, 2026-11-04).
 CLASSICAL_INSTRUCTIONS = """
 
 Classical works of other authors (list_works collection tefsir, e.g. al-Baydawi's Anwar al-Tanzil):
@@ -155,7 +157,10 @@ not as the author's sentence. printed gives the edition's volume/page as seconda
 - find_ayah lists them after the Risale's places (classical_works): the Risale comes first. Give what each says \
 in its own words, with its own citation, and keep them apart; text_links shows links recorded between texts, with \
 their kind, method and reviews. The same verse is not a relation: never say one text explains, follows or \
-rejects another unless a link says so, and never call any passage the tafsir of a verse."""
+rejects another unless a link says so.
+- A classical tafsir work is tafsir and may be called so (al-Baydawi's tafsir of the verse). Your own writing is \
+not: never call your summary, comparison or draft a tafsir. A Risale passage stays under the rule above: give its \
+link's kind and evidence, not "tafsir"."""
 
 
 def read_only(title: str) -> ToolAnnotations:

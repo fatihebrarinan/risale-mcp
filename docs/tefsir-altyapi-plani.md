@@ -5,10 +5,15 @@ Kullanıcının kararıyla açıldı (2026-11-04). Uzun vadeli bir iştir; birka
 
 ## Terimler
 
-- **Bizim işimiz tefsir yazmak değildir; tefsir altyapısı kurmaktır.** Projenin hiçbir çıktısı, aracı, sayfası ya da
-  talimatı kendini "tefsir" diye anmaz. Model de bir yeri "tefsir" diye sunmaz (Âyet ilişkileri'ndeki kural genişler).
-- **Müfessirin eseri:** Beyzâvî'nin Envârü't-Tenzîl'i gibi, kendi adıyla anılan eser. "Tefsir" kelimesi yalnızca
-  bu eserlerin türünü söylemek için ve kendi adlarında geçer.
+- **Bizim işimiz tefsir yazmak değildir; tefsir altyapısı kurmaktır.** Yapay zekânın ürettiği hiçbir şey (taslak,
+  özet, karşılaştırma, modelin kendi açıklaması) "tefsir" diye anılmaz; ileride heyete yapay zekâyla taslak
+  hazırlansa da (kullanıcının açıklaması, 2026-11-04).
+- **Müfessirin eseri:** Beyzâvî'nin Envârü't-Tenzîl'i gibi, kendi adıyla anılan eser. Bunlar gerçek tefsir
+  kitaplarıdır, içlerindeki cümleler birer tefsirdir: öyle anılabilir ("Beyzâvî'nin tefsiri", "âyetin Envâr'daki
+  tefsiri"). Ayrım şudur: müfessirin sözü tefsirdir, modelin sözü tefsir değildir.
+- **Risale-i Nur'un âyetle bağı** ayrı bir karardır (Aşama 10, âyet ilişkileri): kuralla bulunan bir bağ, Risale'nin
+  bir yerini bir âyetin tefsiri diye anmaya yetmez; bağ türüyle ve kanıtıyla anılır. İşârâtü'l-İ'câz'ın kendi
+  başlıkları ("Âyetin Tefsiri") basıldığı gibi kalır.
 - **Me'haz:** müellifin İşârâtü'l-İ'câz ve Risaleler için kullandığı kelime (aşağıda). Altyapının vazifesi, ileride
   bu işi yapacak heyetin elinde en iyi me'haz ve en iyi araç olmaktır.
 
@@ -314,7 +319,8 @@ Altın soruların ilk çalıştırması (`20261104-164638`, yerel sunucu): dörd
 12 atfın 12'si doğrulandı, araç hatası yok, ortalama 46 sn ve 0,25 $. T1 sözü Beyzâvî'ye verdi, tercümesini "benim"
 diye ayırdı; T2 önce İşârât'ı sonra Beyzâvî'yi ayrı başlıklarda verdi ve aralarında kayıtlı bağ olmadığını söyledi;
 T3 bilgiyi Maraşlî'nin girişine verdi; T4 nakil uydurmadı. Kullanıcıya sorulacaklar:
-- Model eserleri "tefsir" diye anıyor ("iki tefsiri ayrı ayrı veriyorum", "2:6'nın tefsirinin başında"). Kural bir
+- (Kullanıcı cevapladı, 2026-11-04: müfessirin eseri tefsirdir ve öyle anılır; yasak yapay zekânın ürettiği metin
+  için. Bkz. Terimler.) Model eserleri "tefsir" diye anıyor ("iki tefsiri ayrı ayrı veriyorum", "2:6'nın tefsirinin başında"). Kural bir
   yerin bir âyetin tefsiri diye anılmamasıydı; tür adı olarak "tefsir" (Envârü't-Tenzîl bir tefsir kitabıdır) ayrı mı?
 - T4'te model "Risale'de Beyzâvî'ye atıf yok" dedi; T3'teki model Muhâkemat'ta "Tefsîr-i Beyzâvî"yi buldu. Sebep
   aramanın eki ayırmaması ("Beyzavi" tam kelime, metinde "Beyzâvî'nin"); `Beyzav*` buluyor. T6 değil, bugünkü
