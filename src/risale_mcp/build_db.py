@@ -31,7 +31,9 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from risale_mcp.ayah_links import find_links
-from risale_mcp.catalog import Site, WORKS
+from risale_mcp.catalog import Site, WORKS, Work
+from risale_mcp.catalog.editions import edition
+from risale_mcp.catalog.permissions import PERMISSIONS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
 from risale_mcp.hadis import row_cited, support
 from risale_mcp.hadis_kitaplar import BOOKS
@@ -122,6 +124,7 @@ class BuildReport:
     unlocated: list = field(default_factory=list)              # (paragraf, numara): bulunamayan işaretsiz alıntı
     links: Counter = field(default_factory=Counter)            # âyet ilişkileri: "tür/güç" -> sayı
     id_changes: object = None                                  # manifest.Changes: kabul edilmiş manifestoya göre
+    permission_warnings: list = field(default_factory=list)    # izin kaydı olmadan genel profildeki eserler
 
     def ayah_report(self) -> str:
         """Kaynağın âyet numarası Kur'ân metniyle tutmayan yerler ve bulunamayan işaretsiz alıntılar."""
@@ -163,6 +166,7 @@ class BuildReport:
         if self.unresolved_ayah:
             lines.append(f"  çözülemeyen âyet kaynağı: {sum(self.unresolved_ayah.values())}")
             lines += [f"      {n}× {s}" for s, n in self.unresolved_ayah.most_common(10)]
+        lines += [f"  UYARI izin   : {w}" for w in self.permission_warnings]
         if self.id_changes is not None:
             lines.append(f"  kimlikler    : {self.id_changes.summary()}")
         return lines
@@ -603,6 +607,31 @@ def _verify(conn: sqlite3.Connection, report: BuildReport) -> None:
         raise RuntimeError("Veritabanı JSON'larla tutmuyor:\n  " + "\n  ".join(wrong))
 
 
+def check_permissions(catalog: list[Work], built: set[str], profile: Profile) -> list[str]:
+    """H3: sunucuya giden (`private` olmayan) profil yalnız izni kayıtlı eserleri kurar. İzin kaydı olmayan ya da
+    reddedilen kaynaktan gelen eser kurulumu durdurur, sessizce düşmez. Kullanıcının kararını bekleyen istisnalar
+    (`Work.public_without_record`) uyarı olarak döner."""
+    if profile.private:
+        return []
+    wrong, warnings = [], []
+    for work in catalog:
+        if work.slug not in built:
+            continue
+        key = work.permission_key
+        permission = PERMISSIONS.get(key) if key else None
+        if permission is None:
+            wrong.append(f"{work.slug}: izin kaydı yok ({key!r})")
+        elif not permission.public:
+            if work.public_without_record:
+                warnings.append(f"{work.slug}: {permission.source} ({permission.kind}); {work.public_without_record}")
+            else:
+                wrong.append(f"{work.slug}: {permission.source} ({permission.kind})")
+    if wrong:
+        raise RuntimeError(f"{profile.name} profili izni kayıtlı olmayan eser kuruyor (docs/izinler.md, "
+                           "catalog/permissions.py; ya izin yazılır ya eser private olur):\n  " + "\n  ".join(wrong))
+    return warnings
+
+
 def build_profile(profile: Profile, accept_id_changes: bool = False) -> BuildReport:
     """Profilin veritabanını kaynak klasörlerinden kurar. Var olan cümle ya da bölüm kimliği değişirse kurulum durur
     (`manifest.py`); kasıtlıysa `accept_id_changes`."""
@@ -647,14 +676,18 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
         conn.execute("PRAGMA synchronous = OFF")
         conn.executescript(SCHEMA)
         with conn:
+            report.permission_warnings = check_permissions(catalog, set(books), profile)
             for ord_, work in enumerate(catalog):
                 data, sha1 = books.get(work.slug, (None, None))
                 language = data.get("language", work.language) if data else work.language
                 source = work.source
+                record = edition(work) if data else None
                 conn.execute(
-                    "INSERT INTO works VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                    "INSERT INTO works VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                     (work.slug, ord_, work.title, work.group, work.collection, work.authority, int(work.translation), language,
-                     work.status, work.note or None, source and source.site, source and source.book, int(data is not None), sha1))
+                     work.status, work.note or None, source and source.site, source and source.book, int(data is not None), sha1,
+                     work.author, work.translator, work.editor, work.compiler, work.permission_key,
+                     json.dumps(record, ensure_ascii=False) if record else None))
                 if data:
                     _insert_book(conn, data, suras, quran, report, kinds)
                     report.works += 1

@@ -1,7 +1,8 @@
 # Metin kullanım izinleri
 
 Eserlerini kullanmamıza kimin, hangi şartla izin verdiğinin tek listesi. Yeni kaynak eklenmeden önce buraya bakılır;
-izin alınınca buraya yazılır. Yazışmalar ve taslaklar: `docs/kaynak-bilgilendirme-epostasi.md`,
+izin alınınca buraya, sonra koddaki karşılığına (`src/risale_mcp/catalog/permissions.py`) yazılır; genel profil
+izni orada kayıtlı olmayan eseri kurmaz. Yazışmalar ve taslaklar: `docs/kaynak-bilgilendirme-epostasi.md`,
 `docs/akgunduz-izin-epostasi.md`. Son güncelleme: 2026-11-03.
 
 ## Açıkça izin verenler

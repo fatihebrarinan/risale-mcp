@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 14
+SCHEMA_VERSION = 15
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -47,7 +47,13 @@ CREATE TABLE works (
     site        TEXT,
     source_book TEXT,
     built       INTEGER NOT NULL,
-    json_sha1   TEXT
+    json_sha1   TEXT,
+    author      TEXT,               -- eserin yazarı (`Work.author`); bilinmiyorsa NULL
+    translator  TEXT,
+    editor      TEXT,               -- muhakkik
+    compiler    TEXT,               -- derleyen
+    permission  TEXT,               -- izin kaydı (`catalog/permissions.py`)
+    edition     TEXT                -- baskı kaydı, JSON (`catalog/editions.py`)
 );
 
 CREATE TABLE nodes (
