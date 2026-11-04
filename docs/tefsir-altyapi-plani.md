@@ -361,6 +361,8 @@ Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, 
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık
 kullanıcıyla seçilir.
 
+Değerlendirme ve sonraki adımlar: `docs/tefsir-pilot-degerlendirme.md` (2026-11-04).
+
 ## Açık sorular
 
 - ~~Beyzâvî'nin hangi nüshası~~ (T0: Shamela0023588, Maraşlî); hâşiyeleri (Şeyhzâde, Kâdî hâşiyeleri) ayrı eser mi, katman mı.
