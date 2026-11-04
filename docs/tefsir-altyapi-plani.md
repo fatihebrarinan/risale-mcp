@@ -176,7 +176,7 @@ beyzavi-jk …`. Dördünün `.yml`'si doldurulmamış şablondur; baskı bilgis
 
 | Sürüm | Baskı (üst bilgi) | Sayfa | Âyet ayrımı | Not |
 |---|---|---|---|---|
-| **Shamela0023588** | Maraşlî tahkiki, Dâru İhyâi't-Türâsi'l-Arabî, Beyrut, 1. baskı 1418 | 5 cilt, işaretler neredeyse kesintisiz (cilt başına 0–5 boşluk) | Her âyete başlık: `[سورة البقرة (2) : آية 1]` (bazısı satıra bölünmüş, `</span>` artığı) | Noktalama ve «» var; Kur'ân alıntısı işaretsiz. Başta muhakkikin girişi (≈18 sayfa, 1418): alınmaz |
+| **Shamela0023588** | Maraşlî tahkiki, Dâru İhyâi't-Türâsi'l-Arabî, Beyrut, 1. baskı 1418 | 5 cilt, işaretler neredeyse kesintisiz (cilt başına 0–5 boşluk) | Her âyete başlık: `[سورة البقرة (2) : آية 1]` (bazısı satıra bölünmüş, `</span>` artığı) | Noktalama ve «» var; Kur'ân alıntısı işaretsiz. Başta muhakkikin girişi (≈18 sayfa, 1418): Maraşlî'nin diye işaretli alınır |
 | JK000128 | Dâru'l-Fikr, Beyrut, 5 cilt; muhakkik yok | 1/3–5/554, 1. ciltte 18 boşluk; hutbe içinde sayfalar ikişer atlıyor (3→7, 11→13→15): baskıda araya başka metin giriyor olabilir | Yok; `< >` içinde dijitalleştirenin başlıkları ("أسماء السورة") | Tek `@QB@…@QE@` işaretli sürüm (24.813). Noktalama az |
 | ShamAY0034065 | Dâru'l-Fikr (Shamela "موافق للمطبوع") | JK ile aynı (1/2–5/554) | Sûre başlıkları | JK'nın aynı baskısı, işaretsiz |
 | Shia002637Vols | 5 cilt | JK ile aynı | Yok | 2.559 paragraf: satırlar birleşmiş |
@@ -185,10 +185,38 @@ beyzavi-jk …`. Dördünün `.yml`'si doldurulmamış şablondur; baskı bilgis
 **Seçim: Shamela0023588.** Gerekçe: adı bilinen tek tahkikli baskı (baskı kaydı ve `printed` ona dayanır), sayfa
 işaretleri tutarlı, her âyetin başlığı var (âyet aralığı yapıdan gelir), noktalama cümle bölmeye elverişli. Kur'ân
 alıntıları işaretsiz olduğu için Risale'deki gibi Kur'ân metninde aranır (`quran.skeleton`); JK'nın `@QB@`
-işaretleri bu aramanın denetimi olarak kullanılabilir (T1). Muhakkikin girişi ve varsa notları müellifin metni
-değildir, alınmaz (Mesnevî'deki ilk çapadan önceki kısım gibi). Öbür dört sürüm ham veri olarak karşılaştırma için
+işaretleri bu aramanın denetimi olarak kullanılabilir (T1). Muhakkikin girişi alınır (kullanıcının kararı,
+2026-11-04), ama müellifin metni değildir: Maraşlî'ye ait olduğu işaretli ayrı bir katman olarak durur, müellife mal
+edilmez. Öbür dört sürüm ham veri olarak karşılaştırma için
 durur. İzin: OpenITI satırı (CC BY-NC-SA 4.0); klasik metin serbest, tahkik farkları baskı kaydında. Başka kaynaktan
 izin gerekmedi. Pilot `private` kalır.
+
+### T1: ham veri incelemesi (2026-11-04)
+
+Döküm `data/interim/tefsir/beyzavi-t1.md` (pilot aralığı: baştan Bakara 33'ün sonuna).
+
+- **Kısımlar:** Maraşlî'nin girişi 300 paragraf, 4.153 kelime (1/5–1/23; kendi dipnot işaretleri «n», dipnotlar
+  OpenITI temizliğinde atılmış); müellifin hutbesi 315 kelime (başlığı "خطبة الكتاب" baskının); Fâtiha ve Bakara
+  1–33: 39 âyet birimi, 23.853 kelime, 1/25–1/70.
+- **Âyet birimleri:** her birimde başlık, âyetin metni ("… (6)") ve şerh. 39 başlığın 30'u satırlara bölünmüş
+  (`### |` boş, `</span>` artığı); birleştirince 39'unun da numarası ve âyet satırı Tanzil'le tutuyor, aralıkta boşluk
+  ve tekrar yok. Fâtiha 3–4 tek birim.
+- **Lemma:** şerh âyetin lafzını işaretsiz tekrar ederek ilerler ("صراط الذين أنعمت عليهم بدل من الأول…"); şerh
+  paragraflarının 98'i (446'dan) lemmayla başlıyor, öbürleri paragraf içinde. Lemmanın sonu işaretli değil.
+- **Paragraflar:** 407 sınırın 96'sı cümle ortasında, 110'u ":" ya da "»"dan sonra: Shamela'nın biçim kalıntısı
+  (hadis ve âyet ayrı `span`'deydi), yazarın paragrafı değil. 13 paragraf ". " ile başlıyor.
+- **Kur'ân alıntıları işaretsiz:** JK'nın aynı aralıktaki 424 `@QB@` işaretinden 6 harften uzun 314'ünün 304'ü
+  Shamela'nın şerhinde aynı harflerle geçiyor: alıntılar var, Kur'ân metninde aranarak bulunur.
+- **«» içinde 31 söz:** hadisler ("كل أمر ذي بال…"), kırâatler ("وغير الضالين"), dilbilgisi alıntıları.
+- **Nispet kalıpları:** قيل 87, قوله تعالى 85, قال 44, قرئ/قرأ 38, عليه الصلاة والسلام 23, روي 14, المعتزلة 8,
+  عن ابن عباس 4; Zemahşerî ve Keşşâf adıyla hiç anılmıyor.
+- **Noktalama:** 848 cümle sonu işareti, ortalama 28 kelimede bir; uzun cümleler "،" ile sürüyor.
+- **Sayfa:** aralıkta 62 işaret, 54'ü kendi satırında; girişin başında `PageV00P000` (0/0).
+- **Baskılar:** Shamela'nın 5'li kelime dizilerinin %94,5'i JK'da da var (JK'nınkilerin %92'si Shamela'da).
+
+T2'de karar verilecekler (kullanıcıyla): birim ve kimlik (`beyzavi/2/6`), âyet satırının tutulup tutulmayacağı
+(Kur'ân metni kopyalanmaz kuralı), paragrafların birleştirilmesi, lemmanın parça sınırı olup olmayacağı, girişin
+ve baskı başlıklarının katmanı.
 
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık
