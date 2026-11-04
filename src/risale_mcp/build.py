@@ -27,6 +27,7 @@ from risale_mcp.books import rasaelalnour as rasaelalnour_parser
 from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
 from risale_mcp.books import risaleoku_app as risaleoku_app_parser
+from risale_mcp.books import nurpedia as nurpedia_parser
 from risale_mcp.books import rumuzat, saykal, telif
 from risale_mcp.books import yeniasya as yeniasya_parser
 from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
@@ -37,6 +38,7 @@ from risale_mcp.paths import DB_PATH, INTERIM_DIR, KULLIYAT_DIR, RAW_DIR, ROOT
 from risale_mcp.profiles import PROFILES
 from risale_mcp.sources import kesif as kesif_source
 from risale_mcp.sources import kullanici as kullanici_source
+from risale_mcp.sources import nurpedia as nurpedia_source
 from risale_mcp.sources import qurancom as qurancom_source
 from risale_mcp.sources import rasaelalnour as rasaelalnour_source
 from risale_mcp.sources import erisale
@@ -162,6 +164,16 @@ def parse(work: Work) -> tuple[Book, list[str]]:
     if work.source.site is Site.KESIF:
         book, report = saykal.parse(work, kesif_source.docx_path(RAW_DIR / Site.KESIF, work.source.book))
         return book, [f"  dipnot               : {report.footnotes}, birleşen paragraf {report.joined}"]
+    if work.source.site is Site.NURPEDIA:
+        root = nurpedia_source.text_dir(RAW_DIR / "nurpedia", work.source.book)
+        # Resim olan tablolar kullanıcının PDF'inden (eski kaynak): yerleri onun paragraflarıyla bulunur
+        pdf, _ = rumuzat.parse(work, kullanici_source.pdf_path(RAW_DIR / Site.KULLANICI, work.source.book))
+        book, report = nurpedia_parser.parse(work, root, pdf.to_json())
+        return book, [f"  sayfa                : " + ", ".join(f"{t.split(':', 1)[1]} (sürüm {r})" for t, r in report.pages),
+                      f"  hâşiye               : {report.hasiye}, metni bulunamayan {report.unmatched_notes[:3]}",
+                      f"  PDF'ten tablo        : {report.tables}", *(f"      {r}" for r in report.table_runs),
+                      f"  şablon artığı        : {report.templates}",
+                      f"  takma ad (yeri değişen eski bölüm): {len(book.meta.get('aliases', []))}"]
     if work.source.site is Site.KULLANICI:
         book, report = rumuzat.parse(work, kullanici_source.pdf_path(RAW_DIR / Site.KULLANICI, work.source.book))
         return book, [f"  tablo                : {report.tables}",
@@ -189,7 +201,7 @@ def build_work(work: Work) -> None:
     OUTLINE_DIR.mkdir(parents=True, exist_ok=True)
     data = book.to_json()
     if needs_mapping(work):
-        kinds = rumuzat.MAPPED_KINDS if work.source.site is Site.KULLANICI else None
+        kinds = rumuzat.MAPPED_KINDS if work.source.site in (Site.KULLANICI, Site.NURPEDIA) else None
         extra += mapping_report(map_to_canonical(data, _canonical_index(), kinds,
                                                  keep_unique=work.source.site is not Site.ERISALE,
                                                  fill=not work.private))     # sonradan derlemelerde dizin ve başlık çok

@@ -567,6 +567,8 @@ def _insert_book(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran: 
     conn.executemany("INSERT INTO gaps VALUES (?, ?, ?, ?, ?)",
                      [(work, g["node_id"], g.get("after"), g["missing_blocks"], g.get("note"))
                       for g in book.get("gaps", [])])
+    conn.executemany("INSERT INTO node_aliases VALUES (?, ?, ?, ?)",
+                     [(a["old"], a["new"], work, a.get("note")) for a in book.get("aliases", [])])
     c = report.counts
     c["nodes"] += len(book["outline"])
     c["paragraphs"] += len(book["paragraphs"])

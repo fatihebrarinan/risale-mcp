@@ -190,6 +190,13 @@ def cmd_hadis(args: argparse.Namespace) -> None:
     print(f"nurpedia: {pages} sayfa, {len(missing)} sayfa yok")
 
 
+def cmd_nurpedia(args: argparse.Namespace) -> None:
+    # Eser metni (Rumuzat-ı Semaniye); hadis sayfaları `fetch hadis` ile gelir.
+    for work in args.works or list(nurpedia.TEXTS):
+        pages = nurpedia.fetch_text(RAW_DIR / "nurpedia", work, PoliteClient(args.delay), refresh=args.refresh)
+        print(f"nurpedia/{work}: {len(pages)} metin sayfası")
+
+
 def cmd_risaleoku(args: argparse.Namespace) -> None:
     root = RAW_DIR / "risaleoku_app"
     client = PoliteClient(args.delay)
@@ -235,6 +242,11 @@ def main() -> None:
     hadith.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
     hadith.add_argument("--delay", type=float, default=2.0, help="istekler arası bekleme (sn)")
     hadith.set_defaults(func=cmd_hadis)
+    nur = sub.add_parser("nurpedia", help="nurpedia.org'dan alınan eser metinleri (Rumuzat-ı Semaniye)")
+    nur.add_argument("works", nargs="*", help="eser kimlikleri (verilmezse hepsi)")
+    nur.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
+    nur.add_argument("--delay", type=float, default=2.0, help="istekler arası bekleme (sn)")
+    nur.set_defaults(func=cmd_nurpedia)
     app = sub.add_parser("risaleoku", help="risaleoku.com uygulamasının kitapları")
     app.add_argument("books", nargs="*", help="kitap anahtarları (verilmezse geçiş için gerekenler)")
     app.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")

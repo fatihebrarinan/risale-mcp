@@ -14,7 +14,7 @@ Kayıtlar kullanıcının bildirimine dayanır; iznin metni depoda yoktur.
 | **erisale.com** (e-Risale) | Sitedeki metinler | Kaynak gösterilecek (sitede belgelerde gösteriliyor) | Görüşme, 2026-10-30 | Birincil kaynak: 27 eser, genel sunucuda |
 | **risaleoku.com** | Bütün eserler (başkasının telifli tercümeleri, ör. Kütüb-i Sitte, bu izne dayanılarak alınmadı) | Kazanç olmayacak, kaynak gösterilecek | Site sahibi, 2026-10-30 | 42 eser; 40'ı genel sunucuda, 2 sonradan derleme yalnız yerelde. Sikke'nin ikinci "Husrev'in Bir Fıkrası" da buradan (Sözler Neşriyat baskısı) |
 | **kastamonur.com** | Kayıtlı değil | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 | Telif tarihleri (Aşama 13.2; sayfa "kaynaksız kopyalamaya rızamız yoktur" der, kaynak her kayıtta durur). Nutuk ve Makalat'ın ham verisi diskte; bu eserler risaleoku'dan gelir |
-| **nurpedia.org** | Elindeki her şey | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 (istek 2026-10-29) | Hadis işaretleri ve künyeleri (Aşama 14): `Risale:Hadisler` ve 120 kadar `Ayet-Hadis Mealleri` sayfası yerelde. robots.txt yapay zekâ botlarını kapatır, `*` okuma sayfalarına açıktır |
+| **nurpedia.org** | Elindeki her şey | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 (istek 2026-10-29) | Rumuzat-ı Semaniye'nin metni, genel sunucuda (2026-11-04'ten; kullanıcının kararı). Hadis işaretleri ve künyeleri (Aşama 14): `Risale:Hadisler` ve 120 kadar `Ayet-Hadis Mealleri` sayfası yerelde. robots.txt yapay zekâ botlarını kapatır, `*` okuma sayfalarına açıktır |
 
 ## Genel lisans ya da telif bildirimiyle serbest
 
@@ -31,13 +31,14 @@ Bize özel bir izin değildir; yayımlanan şartlara uyarak kullanıyoruz.
 
 ## Açık izin kaydı olmayanlar
 
-Bu kaynaklar için izin kaydı bulunamadı. `site/kullanim-sartlari.html` metinlerin "izinle alındığını" söylediği için
-genel sunucudaki Rumuzat satırı açık meseledir.
+Bu kaynaklar için izin kaydı bulunamadı. Rumuzat'ın açık meselesi 2026-11-04'te kapandı: metin izin veren
+nurpedia'dan gelir; yalnız nurpedia'nın resim verdiği tablolar PDF'ten, kullanıcının kararı ve sorumluluğuyla
+("Bu PDF'i insanlara hizmet için internete yüklemişler. Tabloları oradan alma sorumluluğunu ben kendim üstleniyorum.").
 
 | Kaynak | Ne alındı | Nerede |
 |---|---|---|
 | risale.online | Siracü'n-Nur (Hayrat). Sikke'nin 13 bloğu 2026-11-02'de risaleoku'ya taşındı | Yalnız yerelde |
-| **Rumuzat-ı Semaniye PDF'i** | Kullanıcının dosyası; hak sahibi kayıtlı değil | **Genel sunucuda** |
+| Rumuzat-ı Semaniye PDF'i | Kullanıcının dosyası; hak sahibi kayıtlı değil. Yalnız Yedinci Remz'in 20 tablosu (nurpedia'da resim) | Genel sunucuda, kullanıcının kararı ve sorumluluğuyla |
 | Quran.com | Harekeli Mesnevî'deki âyetlerin kelime kodları | Yalnız yerelde |
 | risale.online (Hayrat) | Telif tarihleri listesi (metin değil, tarih bilgisi; kaynak gösterilerek) | `telif.json`, genel sunucuda (kullanıcının kararı) |
 

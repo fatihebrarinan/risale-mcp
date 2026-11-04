@@ -1,11 +1,13 @@
-"""nurpedia.org: Risale'deki hadislerin listesi ve bölüm bölüm âyet-hadis mealleri.
+"""nurpedia.org: Risale'deki hadislerin listesi ve bölüm bölüm âyet-hadis mealleri; Rumuzat-ı Semaniye'nin metni.
 
-Metin değil, hadis işaretlerinin dayanağıdır: `Risale:Hadisler` sayfası elle hazırlanmış listedir (kaynağı
+Hadis sayfaları metin değil, hadis işaretlerinin dayanağıdır: `Risale:Hadisler` sayfası elle hazırlanmış listedir (kaynağı
 Abdülkadir Badıllı'nın "Risale-i Nur'un Kudsi Kaynakları"), `Risale:<bölüm> (Ayet-Hadis Mealleri)` sayfaları
-Arapçayı meali ve tahriciyle verir. Sunucuya metni çıkmaz. İzin: `docs/izinler.md`. robots.txt yalnızca özel
+Arapçayı meali ve tahriciyle verir; sunucuya metinleri çıkmaz. İzin: `docs/izinler.md`. robots.txt yalnızca özel
 sayfaları ve `api.php`'yi kapatır; okuma sayfaları indirilir.
 
-Ham arşiv (`data/raw/nurpedia/`): <sayfa adı>.html, manifest.json
+Ham arşiv (`data/raw/nurpedia/`): <sayfa adı>.html, manifest.json. Eser metni ayrı klasördedir
+(`metin/<eser>/`: dizin ve metin sayfaları, sayfa başına nurpedia'nın sürüm numarasıyla manifest.json);
+kullanıcının kararıyla Rumuzat-ı Semaniye buradan gelir (2026-11-04, `books/nurpedia.py`).
 """
 
 import re
@@ -22,6 +24,32 @@ INDEX = "Risale:Hadisler"
 LISTS = (INDEX, "Risale:Kudsi_Hadisler", "Risale:33_Hadis")
 SUFFIX = "_(Ayet-Hadis_Mealleri)"
 SERIES = (("Söz", 33), ("Mektup", 33), ("Lem'a", 33), ("Şua", 15))    # sitenin kullandığı sayfa adları
+
+
+# Eser -> (dizin sayfası, metin sayfaları nurpedia'nın sırasıyla). Fihrist sayfası içindekilerdir, alınmaz.
+TEXTS = {
+    "rumuzat-i-semaniye": ("Risale:Rumuzat-ı_Semaniye", (
+        "Risale:29._Mektubun_3._Kısmı", "Risale:29._Mektubun_4._Kısmı",
+        "Risale:29._Mektubun_8._Kısmı_(Rumuzat-ı_Semaniye)", "Risale:28._Mektubun_7._Meselesinden")),
+}
+
+
+def text_dir(root: Path, work: str) -> Path:
+    return root / "metin" / work
+
+
+def fetch_text(root: Path, work: str, client: PoliteClient, *, refresh: bool = False) -> list[str]:
+    """Eserin dizin ve metin sayfalarını indirir; manifestoya sayfaların nurpedia sürüm numarası yazılır."""
+    index, pages = TEXTS[work]
+    out = text_dir(root, work)
+    revisions = {}
+    for title in (index, *pages):
+        html = fetch_cached(page_path(out, title), BASE_URL + quote(title, safe=":'()_."), client, refresh)
+        match = re.search(rb'"wgRevisionId":(\d+)', html)
+        revisions[title] = int(match[1]) if match else None
+    write_manifest(out / "manifest.json", site="nurpedia", book=work, index=index, pages=list(pages),
+                   revisions=revisions)
+    return list(pages)
 
 
 def page_path(root: Path, title: str) -> Path:

@@ -23,9 +23,13 @@ from risale_mcp.catalog.model import Site, Work
 from risale_mcp.paths import RAW_DIR
 
 # Ham verinin klasörü sitenin adından farklı olan kaynaklar
-_RAW_NAME = {Site.KESIF: "kesif", Site.KULLANICI: "kullanici"}
+_RAW_NAME = {Site.KESIF: "kesif", Site.KULLANICI: "kullanici", Site.NURPEDIA: "nurpedia/metin"}
 _SITE_URL = {Site.ERISALE: "https://www.erisale.com", Site.RISALEOKU_APP: "https://risaleoku.com",
              Site.RISALE_ONLINE: "https://risale.online"}
+
+
+# Tabloları kullanıcının PDF'inden gelen nurpedia eserleri (`books/nurpedia.py`)
+TABLES_FROM = {"rumuzat-i-semaniye": "rumuzat-i-semaniye"}
 
 
 def _read(path: Path) -> dict | None:
@@ -61,11 +65,18 @@ def edition(work: Work, raw_root: Path = RAW_DIR) -> dict | None:
         record["site_url"] = url
     raw_dir = raw_root / _RAW_NAME.get(site, str(site))
     manifest = _read(raw_dir / book / "manifest.json") or {}
-    for key in ("url", "file", "sha1", "files", "fetched_at"):
+    for key in ("url", "file", "sha1", "files", "index", "pages", "revisions", "fetched_at"):
         if manifest.get(key):
             record[key] = manifest[key]
     if site is Site.RISALEOKU_APP:
         record.update(_risaleoku_catalog(raw_dir).get(book, {}))
+    if site is Site.NURPEDIA:
+        record["site_url"] = "https://www.nurpedia.org"
+        if work.slug in TABLES_FROM:                           # resim olan tablolar başka kaynaktan
+            other = _read(raw_root / "kullanici" / TABLES_FROM[work.slug] / "manifest.json") or {}
+            record["supplements"] = [{"site": "kullanici", "book": TABLES_FROM[work.slug], "what": "tablolar",
+                                      **{k: other[k] for k in ("file", "sha1") if k in other},
+                                      "note": "nurpedia tabloları resim olarak verir; kullanıcının kararı ve sorumluluğuyla"}]
     from risale_mcp.books.erisale import SUPPLEMENTS
     if site is Site.ERISALE and work.slug in SUPPLEMENTS:
         app = _risaleoku_catalog(raw_root / str(Site.RISALEOKU_APP))

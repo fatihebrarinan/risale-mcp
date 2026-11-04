@@ -90,10 +90,10 @@ KULLIYAT_WORKS: tuple[Work, ...] = (
     Work("mektubat", "Mektubat", _A, _erisale("mektubat", exclude=("hakikat-cekirdekleri",))),
     Work("lemalar", "Lem'alar", _A, _erisale("lemalar")),
     Work("sualar", "Şualar", _A, _erisale("sualar")),
-    Work("rumuzat-i-semaniye", "Rumuzat-ı Semaniye", _A, SourceRef(Site.KULLANICI, "rumuzat-i-semaniye"),
-         note="Yirmi Dokuzuncu Mektub'un Üçüncü, Dördüncü ve Sekizinci Kısımları; kullanıcının PDF'i. "
-              "Mektubat'ta da bulunan paragraflar oraya eşlenir.",
-         public_without_record="Hak sahibi kayıtlı değil (docs/izinler.md, açık mesele); kullanıcının kararı bekleniyor."),
+    Work("rumuzat-i-semaniye", "Rumuzat-ı Semaniye", _A, SourceRef(Site.NURPEDIA, "rumuzat-i-semaniye"), secondary=True,
+         note="Yirmi Dokuzuncu Mektub'un Üçüncü, Dördüncü ve Sekizinci Kısımları ve Yirmi Sekizinci Mektub'un Yedinci "
+              "Mes'elesinden bir parça; nurpedia.org (baskısı belirtilmemiş). Yedinci Remz'in tabloları kullanıcının "
+              "PDF'inden (nurpedia'da resim). Mektubat'ta da bulunan paragraflar oraya eşlenir."),
     Work("barla-lahikasi", "Barla Lahikası", _A, _erisale("barla-lahikasi")),
     Work("kastamonu-lahikasi", "Kastamonu Lahikası", _A, _erisale("kastamonu-lahikasi")),
     Work("emirdag-lahikasi", "Emirdağ Lahikası", _A, _erisale("emirdag-lahikasi"), note="İki cilt."),

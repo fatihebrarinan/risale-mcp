@@ -43,6 +43,8 @@ PERMISSIONS: dict[str, Permission] = {p.key: p for p in (
     Permission("kesif", "Keşif Yolculukları Risale-i Nur Eğitim Programı (Ediz Sözüer)", Kind.LICENCE,
                "Asliyetini korumak ve kaynak belirtmek", "Telif bildirimi"),
     Permission("kastamonur", "kastamonur.com", Kind.GRANTED, "Kayıtlı değil", "Kullanıcının bildirimi, 2026-11-02"),
+    Permission("nurpedia", "nurpedia.org", Kind.GRANTED, "Kayıtlı değil (elindeki her şey)",
+               "Kullanıcının bildirimi, 2026-11-02"),
     Permission("kullanici", "Kullanıcının dosyası", Kind.UNRECORDED, "Hak sahibi kayıtlı değil", "Kayıt yok"),
     Permission("risale-online", "risale.online (Hayrat)", Kind.UNRECORDED, "Kayıtlı değil", "Kayıt yok"),
     Permission("rasaelalnour", "Hizmet Vakfı (rasaelalnour.com)", Kind.REFUSED, "İzin verilmedi", "2026-10-30"),
@@ -52,5 +54,5 @@ PERMISSIONS: dict[str, Permission] = {p.key: p for p in (
 SITE_PERMISSION = {
     Site.ERISALE: "erisale", Site.RISALEOKU_APP: "risaleoku", Site.RISALEOKU: "risaleoku", Site.KESIF: "kesif",
     Site.KASTAMONUR: "kastamonur", Site.KULLANICI: "kullanici", Site.RISALE_ONLINE: "risale-online",
-    Site.RASAELALNOUR: "rasaelalnour", Site.YENIASYA: "yeniasya",
+    Site.RASAELALNOUR: "rasaelalnour", Site.YENIASYA: "yeniasya", Site.NURPEDIA: "nurpedia",
 }

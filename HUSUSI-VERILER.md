@@ -5,8 +5,8 @@
 
 | Veritabanı | Eser | Bölüm | Paragraf | Cümle | Arapça parça |
 |---|---:|---:|---:|---:|---:|
-| Yerel (`data/dist/kisisel/`) | 73 | 9.552 | 119.543 | 258.956 | 25.468 |
-| Sunucu (`data/dist/genel/`) | 69 | 8.950 | 106.024 | 242.087 | 24.877 |
+| Yerel (`data/dist/kisisel/`) | 73 | 9.604 | 120.740 | 259.627 | 26.155 |
+| Sunucu (`data/dist/genel/`) | 69 | 9.002 | 107.221 | 242.758 | 25.564 |
 | **Fark** | **4** | **602** | **13.519** | **16.869** | **591** |
 
 Ortak eserlerde metin aynıdır (JSON özetleri tutuyor).
@@ -35,7 +35,7 @@ Ham kaynak verisi hiçbir zaman sunucuya gitmez.
 | `rasaelalnour` | 3 MB | Yalnız yerel harekeli Mesnevî; izin vermedi, sunucuya çıkmaz |
 | `qurancom` | 1 MB | Yalnız yerel harekeli Mesnevî'deki âyetlerin çözümü |
 | `kastamonur` | 1 MB | Telif tarihi sayfaları kullanımda; Nutuk ve Makalat artık risaleoku'dan; izin var (`docs/izinler.md`) |
-| `nurpedia` | 8 MB | Ham sayfalar yerelde: hadis işaretleri ve künyeleri (Aşama 14); sunucuya yalnız sonuçları çıkar |
+| `nurpedia` | 9 MB | Ham sayfalar yerelde: hadis işaretleri ve künyeleri (Aşama 14); sunucuya yalnız sonuçları çıkar |
 | `sanadset` | 1.431 MB | Hadis katmanı (Aşama 14): CC BY 4.0, eşleşen rivayetler sunucuya gider |
 | `hadith_api` | 44 MB | Hadis katmanı (Aşama 14): Unlicense; âlimlerin dereceleri |
 | `openiti` | 24 MB | Hadis kitapları (Kütüb-i Sitte, Muvatta; bâblı): CC BY-NC-SA 4.0, kitaplar yerelde; okumayla bulunan rivayetler sunucuda (`docs/izinler.md`) |

@@ -253,6 +253,9 @@ class Library:
 
     def _node(self, node_id: str) -> sqlite3.Row:
         row = self.conn.execute("SELECT * FROM nodes WHERE id = ?", (node_id,)).fetchone()
+        if row is None:                          # yeni kaynakta yeri değişen eski bölüm (node_aliases)
+            row = self.conn.execute("SELECT n.* FROM node_aliases a JOIN nodes n ON n.id = a.new_id "
+                                    "WHERE a.old_id = ?", (node_id,)).fetchone()
         if row is None:
             hint = "use get_outline to see section ids" if "/" in node_id else "use list_works for work ids"
             raise LibraryError(f"No section with id {node_id!r}; {hint}.")

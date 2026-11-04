@@ -48,7 +48,8 @@ def _raw_status(work: Work) -> str:
         return f"{NONE} kaynak bulunamadı"
     if work.status is Status.DEFERRED:
         return f"{PAUSED} ertelendi"
-    if not (RAW_DIR / work.source.site / work.source.book / "manifest.json").exists():
+    folder = RAW_DIR / "nurpedia" / "metin" if work.source.site is Site.NURPEDIA else RAW_DIR / work.source.site
+    if not (folder / work.source.book / "manifest.json").exists():
         return f"{TODO} indirilmedi"
     if work.source.site is Site.ERISALE and not work.source.sections:
         blocks = INTERIM_DIR / "erisale" / f"{work.source.book}.blocks.json"

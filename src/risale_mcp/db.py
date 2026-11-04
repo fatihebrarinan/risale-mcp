@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 15
+SCHEMA_VERSION = 16
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -354,6 +354,14 @@ CREATE TABLE notes (
 
 -- Kaynakta bulunamayan bloklar; metin uydurulmaz. `after` NULL ise düğümün başındadır.
 -- `note`: eksiğin açıklaması (ör. başka bir baskıda olup bu baskıda olmayan makale).
+-- Yeni kaynakta yeri değişen eski bölümler: eski kimlik yenisine çözülür (Rumuzat'ın nurpedia'ya geçişi).
+CREATE TABLE node_aliases (
+    old_id  TEXT PRIMARY KEY,
+    new_id  TEXT NOT NULL REFERENCES nodes(id),
+    work    TEXT NOT NULL REFERENCES works(slug),
+    note    TEXT
+);
+
 CREATE TABLE gaps (
     work           TEXT NOT NULL REFERENCES works(slug),
     node_id        TEXT NOT NULL,

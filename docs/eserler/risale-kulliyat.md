@@ -51,7 +51,7 @@
 | 31 | Mektubat | `erisale/mektubat` | ✅ indirildi | ✅ 678 düğüm, 3565 paragraf, 9371 cümle |  |
 | 32 | Lem'alar | `erisale/lemalar` | ✅ indirildi | ✅ 741 düğüm, 3273 paragraf, 9298 cümle |  |
 | 33 | Şualar | `erisale/sualar` | ✅ indirildi | ✅ 850 düğüm, 4414 paragraf, 9878 cümle |  |
-| 34 | Rumuzat-ı Semaniye | `kullanici/rumuzat-i-semaniye` | ✅ indirildi | ✅ 73 düğüm, 340 paragraf, 1963 cümle; %2 ana cilde eşlendi | Yirmi Dokuzuncu Mektub'un Üçüncü, Dördüncü ve Sekizinci Kısımları; kullanıcının PDF'i. Mektubat'ta da bulunan paragraflar oraya eşlenir. |
+| 34 | Rumuzat-ı Semaniye | `nurpedia/rumuzat-i-semaniye` | ✅ indirildi | ✅ 125 düğüm, 1528 paragraf, 2634 cümle; %4 ana cilde eşlendi | Yirmi Dokuzuncu Mektub'un Üçüncü, Dördüncü ve Sekizinci Kısımları ve Yirmi Sekizinci Mektub'un Yedinci Mes'elesinden bir parça; nurpedia.org (baskısı belirtilmemiş). Yedinci Remz'in tabloları kullanıcının PDF'inden (nurpedia'da resim). Mektubat'ta da bulunan paragraflar oraya eşlenir. |
 | 35 | Barla Lahikası | `erisale/barla-lahikasi` | ✅ indirildi | ✅ 405 düğüm, 2382 paragraf, 6618 cümle |  |
 | 36 | Kastamonu Lahikası | `erisale/kastamonu-lahikasi` | ✅ indirildi | ✅ 213 düğüm, 1520 paragraf, 4030 cümle |  |
 | 37 | Emirdağ Lahikası | `erisale/emirdag-lahikasi` | ✅ indirildi | ✅ 425 düğüm, 3073 paragraf, 7948 cümle | İki cilt. |

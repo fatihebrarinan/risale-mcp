@@ -10,7 +10,7 @@ from risale_mcp.books.pdf_text import Glyph, Report, _letter, _logical
 from risale_mcp.books.rumuzat import label_info
 from risale_mcp.catalog import get_work
 from risale_mcp.headings import HeadingInfo
-from risale_mcp.paths import KULLIYAT_DIR, RAW_DIR
+from risale_mcp.paths import RAW_DIR
 from risale_mcp.sources.kullanici import pdf_path
 
 PDF = pdf_path(RAW_DIR / "kullanici", "rumuzat-i-semaniye")
@@ -79,13 +79,14 @@ def test_label_info(label, strict, info):
     assert label_info(label, strict) == info
 
 
-needs_pdf = pytest.mark.skipif(not (PDF.exists() and (KULLIYAT_DIR / "rumuzat-i-semaniye.json").exists()),
-                               reason="kullanıcının PDF'i ya da eser JSON'u yok")
+needs_pdf = pytest.mark.skipif(not PDF.exists(), reason="kullanıcının PDF'i yok")
 
 
 @needs_pdf
-def test_real_book():
-    book = json.loads((KULLIYAT_DIR / "rumuzat-i-semaniye.json").read_text(encoding="utf-8"))
+def test_real_pdf():
+    """Eski kaynak: PDF'in ayrıştırılması (Rumuzat artık nurpedia'dan; PDF tabloların kaynağıdır)."""
+    from risale_mcp.books.rumuzat import parse
+    book = parse(get_work("rumuzat-i-semaniye"), PDF)[0].to_json()
     ids = {n["id"].removeprefix("rumuzat-i-semaniye/") for n in book["outline"]}
     assert {"kisim-03/mesele-09", "kisim-04/nukte-02/silsile-08", "kisim-04/nukte-03/nukte-04",
             "kisim-08/remiz-01/remiz-05", "kisim-08/remiz-07/parca-03", "kisim-08/remiz-08"} <= ids
@@ -95,6 +96,4 @@ def test_real_book():
     assert len(hasiye) == 20
     assert hasiye[0]["text"].startswith("Tevafukat ise ittifaka işarettir.")
     assert "(Hâşiye" not in " ".join(p.get("text", "") for p in book["paragraphs"])
-    # Üçüncü Kısım'ın Birinci Mes'elesi Mektubat'tadır: metni orada durur.
-    assert book["paragraphs"][2]["source"][0] == "mektubat/29/kisim-03/mesele-01/p001"
-    assert get_work("rumuzat-i-semaniye").source.site == "kullanici"
+    assert sum(p["kind"] == "table" for p in book["paragraphs"]) == 24

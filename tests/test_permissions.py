@@ -21,8 +21,8 @@ def test_every_sourced_work_has_a_known_permission():
 def test_public_profile_holds_only_permitted_works_and_known_exceptions():
     exceptions = [w.slug for w in WORKS if GENEL.includes(w) and w.source
                   and not PERMISSIONS[w.permission_key].public]
-    assert exceptions == ["rumuzat-i-semaniye"]                  # açık mesele: kullanıcının kararı bekleniyor
-    assert all(get_work(s).public_without_record for s in exceptions)
+    assert exceptions == []                     # Rumuzat 2026-11-04'te izinli kaynağa (nurpedia) geçti
+    assert get_work("rumuzat-i-semaniye").permission_key == "nurpedia"
     assert not any(GENEL.includes(w) for w in WORKS if w.permission_key == "rasaelalnour")
 
 

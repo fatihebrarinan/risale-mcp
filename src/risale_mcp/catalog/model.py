@@ -63,6 +63,7 @@ class Site(StrEnum):
     RASAELALNOUR = "rasaelalnour"    # rasaelalnour.com: İhsan Kasım'ın Arapça Külliyatı (Word, RAR arşivi)
     KESIF = "kesif"                  # Keşif Yolculukları Risale-i Nur Eğitim Programı: Ta'likat'ın Türkçesi (Word)
     KULLANICI = "kullanici"          # kullanıcının sağladığı dosya (PDF): internette serbest metni olmayan eserler
+    NURPEDIA = "nurpedia"            # nurpedia.org (MediaWiki): Rumuzat-ı Semaniye'nin metni
 
 
 # Bu kaynaklardaki eserler ana metin sayılmaz: ana ciltlerde de geçen parçaları oraya eşlenir.
