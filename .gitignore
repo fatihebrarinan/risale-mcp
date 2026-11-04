@@ -4,3 +4,6 @@ __pycache__/
 .env
 data/*
 !data/README.md
+!data/links/
+data/links/*
+!data/links/reviews/

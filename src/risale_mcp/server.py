@@ -122,7 +122,8 @@ work was written only from this field, never from memory. Dates come from second
 the field is absent.
 - Verse links (find_ayah links, read_section linked_verses) were found by rules, not verdicts: never call a \
 passage the tafsir of a verse; give the link's kind and evidence sentence; a weak link is one sentence's \
-reference, not the section's topic. Bring verses up only when they matter to the question.
+reference, not the section's topic. Bring verses up only when they matter to the question. A link's reviews \
+are named people's checks of the link, not of the passage's meaning: say who checked it only if asked.
 - The Turkish versions of works the author wrote in Arabic are translations (parallel ids: isaratul-icaz-arabi/… \
 ↔ isaratul-icaz/…). Sections marked as İhsan Kasım's translation render Turkish originals: quote the original. \
 In Kızıl İcaz, "quote" paragraphs are Ahdarî's verses; commentary_by marks Abdülmecid Nursî's commentary, \
@@ -395,7 +396,9 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         strong first, each with its evidence sentence. Link kinds: isaret (the text says it points to, alludes to
         or explains the verse), acilis (the section opens with it), izah (the author's "Yani…" explanation; in
         works he wrote in Arabic the Turkish wording is the translator's), dayanak (the text relies on it: "…
-        sırrınca"), risale (the verse's allusion to the Risale-i Nur)."""
+        sırrınca"), risale (the verse's allusion to the Risale-i Nur). A link with reviews was checked by a named
+        reviewer (status reviewed or disputed, the reviewer's own strength, date, reason); a link without reviews
+        was found by rules and nobody has checked it."""
         with _tool_errors():
             return _json(library.find_ayah(sura, ayah, limit, offset))
 

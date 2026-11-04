@@ -64,3 +64,20 @@ def test_compare_separates_expected_tools(tmp_path, monkeypatch):
     write("c", {"cite_as": "X"}, {"total": 2}, {"skipped": True})
     assert tool_snapshot.compare("a", "c", ("cite",)) == 1
     assert "total: 1 → 2" in (tmp_path / "c" / "diff-a.md").read_text()
+
+
+def test_compare_expects_instructions_and_tool_descriptions_by_name(tmp_path, monkeypatch):
+    monkeypatch.setattr(tool_snapshot, "SNAPSHOT_DIR", tmp_path)
+    monkeypatch.setattr(tool_snapshot, "load_calls", lambda path=None: [])
+
+    def write(name, instructions, tools):
+        (tmp_path / name).mkdir()
+        (tmp_path / name / "calls.json").write_text(json.dumps(
+            {"instructions": instructions, "tools": tools, "resources": [], "prompts": {}, "calls": {}}))
+
+    write("a", "i", {"find_ayah": {"description": "x"}, "cite": {"description": "y"}})
+    write("b", "i2", {"find_ayah": {"description": "x2"}, "cite": {"description": "y"}})
+    assert tool_snapshot.compare("a", "b", ("find_ayah", "instructions")) == 0
+    assert tool_snapshot.compare("a", "b", ("find_ayah",)) == 1                    # talimat adıyla beklenir
+    write("c", "i", {"find_ayah": {"description": "x2"}, "cite": {"description": "y2"}})
+    assert tool_snapshot.compare("a", "c", ("find_ayah",)) == 1                    # başka aracın açıklaması

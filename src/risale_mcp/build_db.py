@@ -374,6 +374,20 @@ def _as_arabic_part(conn: sqlite3.Connection, paragraph: str, ord_: int, offset:
     return True
 
 
+def _in_profile(link, sentences: set[str], nodes: set[str]) -> bool:
+    """Bağın kaynağı bu veritabanında mı: cümle, aralığın ilk cümlesi ya da bölüm (önek atılır, H4)."""
+    from risale_mcp.links import local_id
+    first = local_id(link.source).partition("..")[0]
+    return first in (nodes if link.scope == "section" else sentences)
+
+
+def _link_row(link, name: str) -> tuple:
+    """`links` tablosunun satırı; kaynak yerel kimlikle (önek yalnız dosyada), hedef ad alanıyla."""
+    from risale_mcp.links import local_id
+    return (local_id(link.source), link.part, link.target, link.type, link.relation, link.method, link.strength,
+            link.scope, json.dumps(link.evidence, ensure_ascii=False) if link.evidence else None, name)
+
+
 def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport, root: Path | None = None) -> None:
     """Bağ dosyaları (`links.py`): kaynağı bu veritabanında olanlar; `private` dosyalar yalnız yerel profilde."""
     from risale_mcp.links import LINKS_DIR, files, read, read_meta
@@ -386,9 +400,8 @@ def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport,
             continue
         name = str(path.relative_to(LINKS))
         for l in read(path)[1]:
-            if l.source in (nodes if l.scope == "section" else sentences):
-                rows.append((l.source, l.part, l.target, l.type, l.relation, l.method, l.strength, l.scope,
-                             json.dumps(l.evidence, ensure_ascii=False) if l.evidence else None, name))
+            if _in_profile(l, sentences, nodes):
+                rows.append(_link_row(l, name))
             else:
                 dropped += 1
     conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
@@ -396,22 +409,45 @@ def _load_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport,
     report.counts["links_dropped"] = dropped
 
 
-def _computed_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport, root: Path | None = None) -> None:
+def _computed_links(conn: sqlite3.Connection, profile: Profile, report: BuildReport, root: Path | None = None,
+                    dump: bool = True) -> None:
     """Âyet alıntısı, âyet ilişkileri ve eski adlar (`links_kuran.py`): bu profilde hesaplanır, `links` tablosuna
-    yazılır; yerel profil (hepsini kapsar) dosyaya da döker. Kaynağı bu veritabanında olmayan bağ girmez."""
+    yazılır; yerel profil (hepsini kapsar) dosyaya da döker (`dump`: profilin kendi kurulumu ya da testin klasörü;
+    küçük test kurulumları gerçek dosyaları ezmesin). Kaynağı bu veritabanında olmayan bağ girmez."""
     from risale_mcp.links import LINKS_DIR, write
     from risale_mcp.links_kuran import COMPUTED, computed
     sentences = {r[0] for r in conn.execute("SELECT id FROM sentences")}
     nodes = {r[0] for r in conn.execute("SELECT id FROM nodes")}
     for name, links in computed(conn).items():
         kept = list({json.dumps(l.to_json(), ensure_ascii=False, sort_keys=True): l for l in links
-                     if l.source in (nodes if l.scope == "section" else sentences)}.values())   # dosya gibi tekil
-        conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                         [(l.source, l.part, l.target, l.type, l.relation, l.method, l.strength, l.scope,
-                           json.dumps(l.evidence, ensure_ascii=False) if l.evidence else None, name) for l in kept])
+                     if _in_profile(l, sentences, nodes)}.values())   # dosya gibi tekil
+        conn.executemany("INSERT INTO links VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [_link_row(l, name) for l in kept])
         report.counts[f"links {name}"] = len(kept)
-        if profile.private:
+        if profile.private and dump:
             write((root or LINKS_DIR) / name, kept, computed=COMPUTED, producer="build_db")
+
+
+def _load_reviews(conn: sqlite3.Connection, report: BuildReport, root: Path | None = None) -> None:
+    """Denetim kararları (`link_reviews.py`): geçerli olanlar, bağı bu veritabanında bulunanlar. Geçersiz kayıt
+    (listede olmayan denetçi, eksik gerekçe…) kurulumu durdurur."""
+    from risale_mcp import link_reviews
+    folder = (root / "reviews") if root else link_reviews.REVIEWS_DIR
+    people, reviews = link_reviews.reviewers(folder), link_reviews.read(folder)
+    if bad := link_reviews.validate(reviews, people):
+        raise ValueError(f"geçersiz denetim kararı ({bad[0][0].file}): {bad[0][1]}")
+    links = {tuple(r) for r in conn.execute("SELECT source, target, type, COALESCE(part, '') FROM links")}
+    rows, unmatched = [], 0
+    for r in link_reviews.current(reviews):
+        if r.key is None:                                # eski biçim: yalnız test
+            continue
+        if r.key not in links:
+            unmatched += 1
+            continue
+        rows.append((*r.key, r.status, r.strength, r.reviewer, people[r.reviewer].get("name", r.reviewer), r.date,
+                     r.reason, r.file))
+    conn.executemany("INSERT INTO link_reviews VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+    report.counts["link_reviews"] = len(rows)
+    report.counts["reviews_unmatched"] = unmatched
 
 
 def _report_store(*paths: Path) -> dict[str, dict]:
@@ -697,7 +733,9 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
                 _insert_quran(conn, quran, report)
                 _insert_links(conn, report)
             _load_links(conn, profile, report, links_dir)
-            _computed_links(conn, profile, report, links_dir)
+            _computed_links(conn, profile, report, links_dir,
+                            dump=links_dir is not None or out.resolve() == profile.db.resolve())
+            _load_reviews(conn, report, links_dir)
             if hadis_path and hadis_path.exists():
                 _insert_hadith(conn, hadis_path, report)
                 _insert_region(conn, report)                          # okumayla bulunan: iki profilde de

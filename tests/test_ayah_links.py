@@ -107,12 +107,13 @@ def test_tools_show_links(db_path):
 
 
 def test_real_links_keep_the_users_review():
-    """Kullanıcının örneklem kararları (tests/golden/ayah_links_review.json) gerçek veritabanında tutar."""
-    from risale_mcp.ayah_links import load_reviews, review_status
+    """Kullanıcının örneklem kararları (data/links/reviews/kuran/relation.jsonl, H5) gerçek veritabanında tutar."""
+    from risale_mcp.ayah_links import load_reviews
     from risale_mcp.db import connect
+    from risale_mcp.link_reviews import disagreements
     from risale_mcp.paths import DB_PATH
     if not DB_PATH.exists():
         pytest.skip("risale.db yok")
-    conn = connect()
-    wrong = [r for r in load_reviews() if (review_status(conn, r) == "strong") != (r["expect"] == "strong")]
-    assert wrong == []
+    reviews = load_reviews()
+    assert len(reviews) == 62
+    assert disagreements(connect(), reviews) == []

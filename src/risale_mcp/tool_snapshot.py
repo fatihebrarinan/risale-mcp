@@ -11,8 +11,8 @@ gördüğü her şeyi kaydeder: sunucu talimatı, araçların adı, açıklamas�
 `calls.json` (hepsi) ve `meta.json` (profil, veritabanının kuruluş zamanı, kod commit'i).
 
 `compare` iki kaydı karşılaştırır, `data/interim/tool_snapshot/<sonraki>/diff-<önceki>.md` raporunu yazar. JSON
-çıktılarda fark alan yoluyla verilir (`results[0].ref`). `--expect` ile adı verilen araçlardaki farklar beklenen
-sayılır; başka fark varsa çıkış kodu 1'dir: deploy edilmez.
+çıktılarda fark alan yoluyla verilir (`results[0].ref`). `--expect` ile adı verilen araçlardaki farklar (çıktı,
+açıklama, şema) beklenen sayılır, `instructions` sunucu talimatındakini de beklenen yapar; başka fark varsa çıkış kodu 1'dir: deploy edilmez.
 
 Anlamsal arama sorgu vektörünü Voyage'dan alır (ücretli, ağ) ve aynı soruya her seferinde biraz farklı vektör
 döner: kayıt sorgu vektörlerini `query_vectors.npz`'de saklar, sonraki kayıtlar onları kullanır (yalnız sunucunun
@@ -187,7 +187,10 @@ def compare(before: str, after: str, expect: tuple[str, ...] = ()) -> int:
     for key in ("instructions", "tools", "resources", "prompts"):
         diff = json_diff(old.get(key), new.get(key))
         if diff:
-            sections.append((key, diff, False))
+            # Talimat, kaynak listesi ve hazır komutlar adıyla beklenir (`--expect instructions`); araç şeması ve
+            # açıklaması aracın adıyla (farkın her satırı o araçlarınsa).
+            expected = key in expect or (key == "tools" and all(line.split(".", 1)[0] in expect for line in diff))
+            sections.append((key, diff, expected))
     for name in sorted(old["calls"].keys() | new["calls"].keys()):
         a, b = old["calls"].get(name), new["calls"].get(name)
         if a is None or b is None:

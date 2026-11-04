@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 16
+SCHEMA_VERSION = 17
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -235,6 +235,23 @@ CREATE TABLE links (
 );
 CREATE INDEX links_source ON links(source, part);
 CREATE INDEX links_target ON links(target);
+-- Denetim kararları (`link_reviews.py`, `data/links/reviews/`, H5): isimli denetçinin bir bağ üzerine geçerli kararı
+-- (denetçi ve bağ başına son satır, geri çekilenler yok). Bağa anahtarıyla (kaynak, hedef, tür, parça) bağlanır; bağı
+-- bu profilde olmayan karar yüklenmez. Eski biçimli kararlar (bölüm öneki ve âyet) yalnız testtedir.
+CREATE TABLE link_reviews (
+    source   TEXT NOT NULL,
+    target   TEXT NOT NULL,
+    type     TEXT NOT NULL,
+    part     TEXT NOT NULL,                        -- parçasız bağda ''
+    status   TEXT NOT NULL,                        -- reviewed, disputed
+    strength TEXT,                                 -- denetçinin hükmü
+    reviewer TEXT NOT NULL,
+    name     TEXT NOT NULL,                        -- denetçinin görünen adı (reviewers.json)
+    date     TEXT NOT NULL,
+    reason   TEXT,
+    file     TEXT NOT NULL                         -- karar dosyası (alan/yöntem.jsonl)
+);
+CREATE INDEX link_reviews_key ON link_reviews(source, target, type, part);
 -- Künyenin bölgesinde okumayla bulunan rivayet (`hadis_bolge.py`, `region.json`): iki profilde de. Geçiş başına; künyesi
 -- yalnız anılmış geçişin dayanağı `read_chapter` olur, kaynakçanın notu "okumayla bulundu"dur (kullanıcının kararı).
 CREATE TABLE hadith_region (

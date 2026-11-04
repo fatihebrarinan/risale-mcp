@@ -4,7 +4,7 @@ import sqlite3
 
 import pytest
 
-from risale_mcp.links import Link, check, files, part_key, read, read_meta, write
+from risale_mcp.links import TEXT_NAMESPACES, Link, check, files, local_id, part_key, read, read_meta, resolve, write
 
 QUL = "قُلْ هُوَ اللّٰهُ اَحَدٌ"
 
@@ -29,7 +29,29 @@ def test_record_problems(kw, problem):
 @pytest.mark.parametrize("target", ["quran:2:255", "quran:2:255-257", "hadis:bukhari/52", "hadis:muslim/8-2",
                                     "hadis-derlem:sanadset:220501", "hadis-derlem:tirmidhi:2780.2", "risale:lemalar/30"])
 def test_valid_targets(target):
-    assert link(target=target).problems() == []
+    kw = {"type": "reference", "relation": "old_name"} if target.startswith("risale:") else {}   # metne giden bağın türü
+    assert link(target=target, **kw).problems() == []
+
+
+@pytest.mark.parametrize("kw,ok", [
+    ({"source": "risale:sozler/10/c001"}, True),                                # önekli kaynak (H4)
+    ({"source": "sozler/10/c001..c004"}, True),                                 # aralık
+    ({"source": "quran:2:255"}, False),                                         # Kur'ân bağın metin ucu olamaz
+    ({"target": "risale:sozler/1/c004..c007", "relation": "same_words"}, True),  # metinden metne
+    ({"target": "risale:sozler/1", "type": "relation", "relation": "objection"}, True),
+    ({"target": "risale:sozler/1", "relation": "verbatim"}, False),             # metne giden alıntının türü
+    ({"target": "risale:sozler/1", "type": "relation", "relation": "isaret"}, False),
+    ({"target": "tefsir:beyzavi/1"}, False),                                    # koleksiyonu yok: ad alanı yok
+])
+def test_text_endpoints(kw, ok):
+    assert (link(**kw).problems() == []) is ok
+
+
+def test_namespaces_come_from_collections():
+    assert TEXT_NAMESPACES == ("risale",)
+    assert local_id("risale:sozler/10/c001") == "sozler/10/c001" == local_id("sozler/10/c001")
+    assert local_id("quran:2:255") == "quran:2:255"
+    assert link(source="risale:sozler/10/c001").key == link(source="sozler/10/c001").key
 
 
 def test_write_and_read_keep_meta_order_and_drop_defaults(tmp_path):
@@ -57,12 +79,31 @@ def test_check_against_the_database(small_db):
         link(part="يوجد"),                                                      # parça o cümlede yok
         link(display="Sözler › Onbirinci Söz › “Başka bir cümle…”"),           # kimlik kaymış
         link(source="sozler/10", scope="section", type="relation", relation="acilis", method="rule"),
-        link(target="risale:sozler/99", type="reference", method="curated"),   # hedef bölüm yok
+        link(target="risale:sozler/99", type="reference", relation="old_name", method="curated"),   # hedef yok
     ])
     assert {k: len(v) for k, v in problems.items()} == {"no_source": 1, "no_part": 1, "moved": 1, "no_target": 1}
     assert check(conn, [good]) == {}
     titled = link(display="Hutbe › İkinci Kelime: “Ye's” › “قُلْ هُوَ اللّٰهُ…”")       # başlıkta tırnak
     assert check(conn, [titled]) == {}
+
+
+def test_text_to_text_links_against_the_database(small_db):
+    """H4: iki uç da bir eserin cümlesi, aralığı ya da bölümü; önek eserin koleksiyonuyla tutmalı."""
+    conn = sqlite3.connect(small_db[0])
+    first, second = (r[0] for r in conn.execute("SELECT id FROM sentences WHERE node_id = 'sozler/10' ORDER BY seq LIMIT 2"))
+    assert resolve(conn, f"risale:{first}..{second.rsplit('/', 1)[1]}")["kind"] == "range"
+    assert resolve(conn, "risale:sozler/10")["kind"] == "section"
+    assert resolve(conn, f"{second}..{first.rsplit('/', 1)[1]}") is None                  # geriye giden aralık
+    assert resolve(conn, f"{first}..sozler/10/hakikat-01/c001") is None                    # bölümü aşan aralık
+    text = {"type": "quote", "method": "scholar", "relation": "same_words"}
+    problems = check(conn, [
+        link(source=f"risale:{first}", target=f"risale:{second}", **text),
+        link(source="sozler/11/c001", target=f"risale:{first}..{second}", **text),
+        link(source="sozler/11/c001", target="risale:sozler/10/c999", **text),              # hedef cümle yok
+        link(source="risale:sozler/10", scope="section", target="risale:sozler/11", type="relation",
+             method="scholar", relation="same_view"),
+    ])
+    assert {k: len(v) for k, v in problems.items()} == {"no_target": 1}
 
 
 def test_hadith_link_targets_round_trip_and_corpus_links():

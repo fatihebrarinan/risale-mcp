@@ -8,20 +8,31 @@ veritabanı olmadan da okuyabilsin diye kaynağın atfı `display`'de durur.
 
 Alanlar:
 
-    source    Risale'de bağın ucu: cümle kimliği; bölüm kapsamlı bağda düğüm kimliği (`scope: section`)
+    source    bağın metindeki ucu: cümle kimliği, aralık (`…/c004..c007`, aynı bölümde) ya da bölüm kapsamlı bağda
+              düğüm kimliği (`scope: section`). Önek isteğe bağlıdır: `risale:sozler/10/c001`; öneksiz kimlik bu
+              kütüphanenin metnidir (bugünkü dosyalar öyle yazılır, kimlikler profilde tektir)
     part      cümlede birden çok Arapça parça varsa hangisi: parçanın iskelet anahtarı (`quran.skeleton`; hadiste
               `arabic.hadith_key` ile aynı). Sıra numarası değil: yeniden ayrıştırmada kaymasın
     target    ad alanlı kimlik: quran:2:255, quran:2:255-257, hadis:bukhari/52, hadis-derlem:sanadset:220501
-              (kütüphanede henüz olmayan rivayet; Hadith API alt numarası tirmidhi:2780.2), risale:lemalar/30
+              (kütüphanede henüz olmayan rivayet; Hadith API alt numarası tirmidhi:2780.2) ya da metin: bir eserin
+              cümlesi, aralığı ya da bölümü, koleksiyonun ad alanıyla (risale:lemalar/30, risale:sozler/1/c004..c007;
+              ileride tefsir:…)
     type      quote (söz aktarılıyor), relation (âyetle bağ), reference (başka yere gönderme)
     relation  alıntıda lafız ilişkisi (verbatim, abridged, by_meaning, phrase); ilişkide türü (isaret, acilis, izah,
-              dayanak, risale); göndermede `old_name`
+              dayanak, risale); göndermede `old_name`. Metinden metne (`TEXT_RELATIONS`, H4; türler T5'te okumayla
+              kesinleşir): quote ile same_words (aynı söz, kaynağı anılmadan) ya da transmits (nakil: kaynak hedefin
+              sözünü aktarıyor), relation ile same_view, different_view, objection (kaynak hedefe itiraz ediyor)
     method    bağı kuran: source_mark, quran_text, corpus, cited_chapter, reading, rule, curated (ileride scholar)
     strength  strong | weak
     evidence  yönteme göre serbest (kanıt cümlesi, künye, okuyucu cevapları, puan)
     display   kaynağın gösterilecek atfı (`cite_as`); doğrulamada kimlik kaymasını yakalar
 
-Doğrulama (`check`): kaynak cümle ya da düğüm var mı, `part` o cümlenin Arapça parçalarından biri mi, `display`
+Ad alanı (H4): metnin ad alanı eserin koleksiyonundan gelir (`risale/kulliyat` -> `risale`); yeni bir koleksiyon
+(`tefsir/…`) eklenince ad alanı kendiliğinden geçerli olur. Kimlikler önek almaz: önek yalnız bağın ucundadır.
+
+Denetim kararları bağların içinde değil, ayrı dosyalardadır (`link_reviews.py`, H5).
+
+Doğrulama (`check`): kaynak cümle, aralık ya da düğüm var mı, önekliyse eser o ad alanında mı, `part` o cümlenin Arapça parçalarından biri mi, `display`
 kaynağın bugünkü atfıyla tutuyor mu, hedef biçimi geçerli mi. Tutmayan bağ yüklenmez, raporlanır.
 """
 
@@ -34,6 +45,7 @@ from collections.abc import Iterable
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
+from risale_mcp.catalog.model import Collection
 from risale_mcp.paths import DB_PATH, LINKS_DIR
 from risale_mcp.quran import skeleton
 
@@ -41,8 +53,29 @@ TYPES = ("quote", "relation", "reference")
 METHODS = ("source_mark", "quran_text", "corpus", "cited_chapter", "reading", "rule", "curated", "scholar")
 STRENGTHS = ("strong", "weak")
 SCOPES = ("sentence", "section")
+# Metnin ad alanları: koleksiyonların ilk parçası (`risale/kulliyat` -> risale). Kur'ân ve hadis metin ad alanı değil.
+TEXT_NAMESPACES = tuple(sorted({c.value.split("/", 1)[0] for c in Collection}))
+# Metinden metne bağın türleri (hedef bir eserin metniyse): geçici, T5'te okumayla kesinleşir.
+TEXT_RELATIONS = {"quote": ("same_words", "transmits"), "relation": ("same_view", "different_view", "objection"),
+                  "reference": ("old_name",)}
+_TEXT_ID = r"[a-z0-9][a-z0-9/._-]*"
 _TARGET = re.compile(r"^(?:quran:(\d{1,3}):(\d{1,3})(?:-(\d{1,3}))?|hadis:[a-z0-9-]+/[0-9]+(?:-\d+)?"
-                     r"|hadis-derlem:[a-z_]+:[0-9]+(?:\.[0-9]+)?|risale:[a-z0-9/._-]+)$")
+                     r"|hadis-derlem:[a-z_]+:[0-9]+(?:\.[0-9]+)?"
+                     rf"|(?:{'|'.join(TEXT_NAMESPACES)}):{_TEXT_ID})$")
+_SOURCE = re.compile(rf"^(?:(?:{'|'.join(TEXT_NAMESPACES)}):)?{_TEXT_ID}$")
+
+
+def text_endpoint(value: str) -> tuple[str | None, str] | None:
+    """Metin ucu: (ad alanı ya da öneksizse None, yerel kimlik); Kur'ân ya da hadis ucuysa None."""
+    namespace, sep, local = value.partition(":")
+    if not sep:
+        return None, value
+    return (namespace, local) if namespace in TEXT_NAMESPACES else None
+
+
+def local_id(value: str) -> str:
+    """Metin ucunun veritabanındaki kimliği (önek atılmış); metin değilse olduğu gibi."""
+    return end[1] if (end := text_endpoint(value)) else value
 
 
 @dataclass(frozen=True)
@@ -69,11 +102,21 @@ class Link:
             out.append(f"strength {self.strength!r}")
         if self.scope not in SCOPES:
             out.append(f"scope {self.scope!r}")
+        if not _SOURCE.match(self.source):
+            out.append(f"source {self.source!r}")
         if not (m := _TARGET.match(self.target)):
             out.append(f"target {self.target!r}")
         elif self.target.startswith("quran:") and not (1 <= int(m[1]) <= 114 and (m[3] is None or int(m[3]) >= int(m[2]))):
             out.append(f"target {self.target!r}")
+        elif text_endpoint(self.target) and self.type in TEXT_RELATIONS and self.relation not in TEXT_RELATIONS[self.type]:
+            out.append(f"relation {self.relation!r} (metinden metne {self.type}: {', '.join(TEXT_RELATIONS[self.type])})")
         return out
+
+    @property
+    def key(self) -> tuple:
+        """Bağın anahtarı (denetim kararları buna bağlanır, H5): kaynak, hedef, tür, parça. Güç ve ilişki türü
+        anahtarda değildir: kurallar değişince onlar değişebilir, kararın konusu da çoğu zaman onlardır."""
+        return local_id(self.source), self.target, self.type, self.part or ""
 
     def to_json(self) -> dict:
         return {k: v for k, v in asdict(self).items() if v not in (None, {}, "") and not (k == "scope" and v == "sentence")}
@@ -116,9 +159,12 @@ def read(path: Path) -> tuple[dict, list[Link]]:
 
 
 def files(root: Path = LINKS_DIR, private: bool = True) -> list[Path]:
-    """Bağ dosyaları; `private=False` yalnız yerel işaretli dosyaları atlar (genel profil)."""
+    """Bağ dosyaları; `private=False` yalnız yerel işaretli dosyaları atlar (genel profil). Denetim kararları
+    (`reviews/`, `link_reviews.py`) bağ değildir."""
     out = []
     for path in sorted(root.glob("**/*.jsonl")):
+        if path.relative_to(root).parts[0] == "reviews":
+            continue
         if private or not read_meta(path).get("private"):
             out.append(path)
     return out
@@ -129,6 +175,35 @@ def read_meta(path: Path) -> dict:
     with open(path, encoding="utf-8") as f:
         first = f.readline()
     return json.loads(first).get("meta", {}) if first.strip() else {}
+
+
+def resolve(conn: sqlite3.Connection, value: str, scope: str | None = None) -> dict | None:
+    """Metin ucunu veritabanında çözer: {kind: sentence | range | section, id, node, work, namespace} ya da None
+    (yok, ad alanı tutmuyor ya da aralık bir bölümün içinde ileri gitmiyor). `scope` verilmezse (hedef) önce cümle
+    ya da aralık, sonra bölüm denenir."""
+    if (end := text_endpoint(value)) is None:
+        return None
+    namespace, local = end
+    first, _, last = local.partition("..")
+    row = None
+    if scope != "section":
+        row = conn.execute("SELECT s.id, s.node_id, s.seq, w.slug, w.collection FROM sentences s"
+                           " JOIN works w ON w.slug = s.work WHERE s.id = ?", (first,)).fetchone()
+    if row is not None:
+        out = {"kind": "sentence", "id": local, "node": row[1], "work": row[3], "namespace": row[4].split("/", 1)[0]}
+        if last:
+            last = last if "/" in last else f"{first.rsplit('/', 1)[0]}/{last}"
+            end_row = conn.execute("SELECT node_id, seq FROM sentences WHERE id = ?", (last,)).fetchone()
+            if end_row is None or end_row[0] != row[1] or end_row[1] < row[2]:
+                return None
+            out["kind"] = "range"
+    elif scope != "sentence" and not last and (node := conn.execute(
+            "SELECT n.id, w.slug, w.collection FROM nodes n JOIN works w ON w.slug = n.work WHERE n.id = ?",
+            (local,)).fetchone()):
+        out = {"kind": "section", "id": local, "node": node[0], "work": node[1], "namespace": node[2].split("/", 1)[0]}
+    else:
+        return None
+    return out if namespace in (None, out["namespace"]) else None
 
 
 def check(conn: sqlite3.Connection, links: Iterable[Link]) -> dict[str, list]:
@@ -156,21 +231,20 @@ def check(conn: sqlite3.Connection, links: Iterable[Link]) -> dict[str, list]:
         if p := link.problems():
             out.setdefault("invalid", []).append((link, "; ".join(p)))
             continue
-        if link.scope == "section":
-            if not conn.execute("SELECT 1 FROM nodes WHERE id = ?", (link.source,)).fetchone():
-                out.setdefault("no_source", []).append((link, link.source))
-            continue
-        row = sentence(link.source)
-        if row is None:
+        source = resolve(conn, link.source, link.scope)
+        if source is None:
             out.setdefault("no_source", []).append((link, link.source))
             continue
-        if link.part and link.part not in keys(link.source):
+        if text_endpoint(link.target) and resolve(conn, link.target) is None:
+            out.setdefault("no_target", []).append((link, link.target))
+        if source["kind"] == "section":
+            continue
+        first = source["id"].partition("..")[0]
+        row = sentence(first)
+        if link.part and link.part not in keys(first):
             out.setdefault("no_part", []).append((link, link.part))
         if link.display and row["incipit"] and not _opening_matches(link.display, row):
             out.setdefault("moved", []).append((link, row["incipit"]))
-        if link.target.startswith("risale:") and not conn.execute(
-                "SELECT 1 FROM nodes WHERE id = ?", (link.target.removeprefix("risale:"),)).fetchone():
-            out.setdefault("no_target", []).append((link, link.target))
     return out
 
 

@@ -56,7 +56,7 @@ from risale_mcp.paths import INTERIM_DIR, ROOT
 from risale_mcp.quran import skeleton, verse_context
 
 OUT_DIR = INTERIM_DIR / "ayah_links"
-REVIEWS = ROOT / "tests" / "golden" / "ayah_links_review.json"   # kullanıcının örneklem kararları
+REVIEW_FILE = "kuran/relation.jsonl"     # kullanıcının örneklem kararları: `link_reviews.py`, data/links/reviews/
 KINDS = ("isaret", "acilis", "izah", "dayanak", "risale")
 OPENING_SENTENCES = 2           # bu kadar cümle içinde kurulan bağ bölümün tamamını kapsar
 BESMELE = (1, 1)
@@ -217,16 +217,26 @@ def _arabic_openings(conn: sqlite3.Connection, add) -> None:
 
 # ---------------------------------------------------------------- elle gözden geçirme
 
-def load_reviews(path: Path = REVIEWS) -> list[dict]:
-    return json.loads(path.read_text(encoding="utf-8"))["reviews"] if path.exists() else []
+def load_reviews() -> list:
+    """Âyet ilişkileri üzerine geçerli kararlar (`link_reviews.py`)."""
+    from risale_mcp import link_reviews
+    return [r for r in link_reviews.current(link_reviews.read()) if r.file == REVIEW_FILE]
 
 
-def review_status(conn: sqlite3.Connection, review: dict) -> str | None:
-    """Kullanıcının kararındaki yerin bugünkü gücü: strong, weak ya da None (ilişki yok)."""
-    row = conn.execute(
-        "SELECT strength FROM ayah_links WHERE sura = ? AND ? BETWEEN ayah_start AND ayah_end AND node_id LIKE ?"
-        " ORDER BY strength = 'weak' LIMIT 1", (review["sura"], review["ayah"], review["node"] + "%")).fetchone()
-    return row[0] if row else None
+def _reviewed(row: sqlite3.Row, reviews: list) -> bool:
+    """Bu ilişkiye karar verilmiş mi: anahtarıyla ya da eski biçimde bölüm öneki ve âyetle."""
+    source = row["node_id"] if row["scope"] == "section" else row["evidence_id"]
+    verse = f"quran:{row['sura']}:{row['ayah_start']}" + (
+        f"-{row['ayah_end']}" if row["ayah_end"] != row["ayah_start"] else "")
+    for r in reviews:
+        if r.key and r.key[:3] == (source, verse, "relation"):
+            return True
+        if r.match:
+            sura, ayah = (int(x) for x in r.match["verse"].removeprefix("quran:").split(":"))
+            if row["sura"] == sura and row["ayah_start"] <= ayah <= row["ayah_end"] \
+                    and row["node_id"].startswith(r.match["node_prefix"]):
+                return True
+    return False
 
 
 def _rows(conn: sqlite3.Connection) -> list[sqlite3.Row]:
@@ -274,10 +284,7 @@ def write_reports(conn: sqlite3.Connection, round_: int) -> Counter:
     (OUT_DIR / "links.md").write_text("\n".join(lines), encoding="utf-8")
 
     reviews = load_reviews()
-    reviewed = {(r["sura"], r["ayah"], r["node"]) for r in reviews}
-    strong = [r for r in rows if r["strength"] == "strong"
-              and not any(r["sura"] == s and r["ayah_start"] <= a <= r["ayah_end"] and r["node_id"].startswith(n)
-                          for s, a, n in reviewed)]
+    strong = [r for r in rows if r["strength"] == "strong" and not _reviewed(r, reviews)]
     sample = sorted(random.Random(SAMPLE_SEED + round_).sample(strong, min(SAMPLE_SIZE, len(strong))),
                     key=lambda r: (r["kind"], r["node_ref"]))
     (OUT_DIR / f"sample-{round_}.md").write_text("\n".join([
@@ -290,16 +297,16 @@ def write_reports(conn: sqlite3.Connection, round_: int) -> Counter:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--round", type=int, default=1 + max((r["round"] for r in load_reviews()), default=0),
+    parser.add_argument("--round", type=int, default=1 + max(((r.origin or {}).get("round", 0) for r in load_reviews()), default=0),
                         help="örneklem turu (varsayılan: gözden geçirilmiş son turun bir sonrası)")
     args = parser.parse_args()
     conn = connect()
     counts = write_reports(conn, args.round)
     for kind in KINDS:
         print(f"  {kind:8} güçlü {counts[(kind, 'strong')]:4}, zayıf {counts[(kind, 'weak')]:4}")
+    from risale_mcp.link_reviews import disagreements
     reviews = load_reviews()
-    agree = sum((review_status(conn, r) == "strong") == (r["expect"] == "strong") for r in reviews)
-    print(f"  kullanıcı kararlarıyla uyum: {agree}/{len(reviews)}")
+    print(f"  kullanıcı kararlarıyla uyum: {len(reviews) - len(disagreements(conn, reviews))}/{len(reviews)}")
     print(f"  yazıldı: {(OUT_DIR / 'links.md').relative_to(ROOT)}, {(OUT_DIR / f'sample-{args.round}.md').relative_to(ROOT)}")
 
 

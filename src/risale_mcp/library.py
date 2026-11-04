@@ -766,13 +766,30 @@ class Library:
     def _links(self, sura: int, ayah: int) -> list[dict]:
         """Âyetle bağ kuran yerler (güçlüler önce, kitap sırasıyla), kanıt cümleleriyle."""
         rows = self.conn.execute(
-            "SELECT l.kind, l.strength, l.scope, n.id AS node_id, n.ref AS node_ref, s.id AS sid, s.ref AS sref,"
-            " s.incipit, s.text FROM ayah_links l JOIN nodes n ON n.id = l.node_id JOIN sentences s ON s.id = l.evidence_id"
-            " WHERE l.sura = ? AND ? BETWEEN l.ayah_start AND l.ayah_end"
+            "SELECT l.kind, l.strength, l.scope, l.ayah_start, l.ayah_end, n.id AS node_id, n.ref AS node_ref,"
+            " s.id AS sid, s.ref AS sref, s.incipit, s.text FROM ayah_links l JOIN nodes n ON n.id = l.node_id"
+            " JOIN sentences s ON s.id = l.evidence_id WHERE l.sura = ? AND ? BETWEEN l.ayah_start AND l.ayah_end"
             " ORDER BY l.strength = 'weak', s.seq LIMIT ?", (sura, ayah, MAX_LINKS)).fetchall()
-        return [{"kind": r["kind"], "strength": r["strength"], "scope": r["scope"], "section": r["node_id"],
-                 "ref": r["node_ref"], "evidence": {"id": r["sid"], "ref": r["sref"],
-                                                    "opening": opening(r["incipit"], r["text"])}} for r in rows]
+        out = []
+        for r in rows:
+            item = {"kind": r["kind"], "strength": r["strength"], "scope": r["scope"], "section": r["node_id"],
+                    "ref": r["node_ref"], "evidence": {"id": r["sid"], "ref": r["sref"],
+                                                       "opening": opening(r["incipit"], r["text"])}}
+            verse = f"quran:{sura}:{r['ayah_start']}" + (f"-{r['ayah_end']}" if r["ayah_end"] != r["ayah_start"] else "")
+            source = r["node_id"] if r["scope"] == "section" else r["sid"]
+            if reviews := self._reviews(source, verse, "relation"):
+                item["reviews"] = reviews
+            out.append(item)
+        return out
+
+    def _reviews(self, source: str, target: str, type_: str, part: str = "") -> list[dict]:
+        """Bağ üzerine isimli denetçilerin geçerli kararları (`link_reviews.py`); yoksa boş: bağı kural kurdu,
+        kimse bakmadı."""
+        return [{k: v for k, v in (("status", r["status"]), ("strength", r["strength"]), ("by", r["name"]),
+                                   ("date", r["date"]), ("reason", r["reason"])) if v}
+                for r in self.conn.execute(
+                    "SELECT status, strength, name, date, reason FROM link_reviews WHERE source = ? AND target = ?"
+                    " AND type = ? AND part = ? ORDER BY date, reviewer", (source, target, type_, part))]
 
     def ayahs(self, sura: str | int, ayah: int, end: int | None = None, context: int = 0) -> dict:
         """Kur'ân'dan âyet ya da âyet aralığı: harekeli metin (Medine Mushafı hattı) ve Diyanet mealleri."""

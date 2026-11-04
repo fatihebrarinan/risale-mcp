@@ -1,0 +1,213 @@
+"""Denetim kaydı: bağlar üzerine isimli denetçilerin kararları (H5, `docs/tefsir-altyapi-plani.md`).
+
+    uv run python -m risale_mcp.link_reviews check [--db yol]    # kararları denetler, bağlarıyla eşler
+    uv run python -m risale_mcp.link_reviews list                # denetçiler ve kararların sayısı
+
+Bağlar kurallardan ya da üreten işlerden her kurulumda yeniden çıkar; karar bağın içine yazılamaz. Kararlar ayrı,
+yalnız eklenen dosyalardadır: `data/links/reviews/<alan>/<yöntem>.jsonl` (bağ dosyasının adıyla; ör.
+`reviews/kuran/relation.jsonl` âyet ilişkilerinin kararları). Bu klasör git'tedir (`data/` içinde tek istisna
+`README.md` ve burası): kararlar insan emeğidir, yeniden üretilemez, git'te gözden geçirilir. Denetçiler
+`reviewers.json`'dadır; listede olmayan denetçinin kararı kurulumu durdurur.
+
+Bir satır bir karardır:
+
+    {"link": {"source": "sozler/33/pencere-17", "target": "quran:45:3", "type": "relation"},
+     "status": "reviewed", "strength": "strong", "reviewer": "…", "date": "2026-10-27",
+     "reason": "…", "seen": {"relation": "acilis", "strength": "strong", "scope": "section"},
+     "origin": {"round": 1, "no": 4}}
+
+    link      bağın anahtarı (`links.Link.key`): kaynak (öneksiz yerel kimlik), hedef, tür, parça. Güç ve ilişki
+              türü anahtarda değildir: kurallar değişince onlar değişir, kararın konusu da çoğu zaman onlardır
+    match     `link` yerine, yalnız eski kararlar için: {"node_prefix", "verse"}. 1. turun örneklemi saklanmadığı
+              için bazı kararlar hangi bağa verildiği bilinmeden, bölüm ve âyetle kayıtlıdır; bunlar araçlara
+              gitmez, yalnız testi kilitler (kullanıcı bağı seçerse `link`'e çevrilir)
+    status    reviewed  denetçi baktı; `strength` onun hükmüdür (kuralınkinden farklı olabilir; araç ikisini de verir)
+              disputed  itiraz: bağ yanlış (olmamalı ya da türü yanlış); `reason` zorunlu
+              withdrawn denetçi aynı bağdaki önceki kararını geri çeker
+    strength  denetçinin hükmü: strong | weak; weak "zayıf olmalı ya da hiç olmamalı" demektir
+    seen      karar verildiğinde bağın hâli (tarih için; anahtar değil)
+    origin    kararın geldiği yer (örneklem turu ve numarası)
+
+Hiçbir satır silinmez ve değiştirilmez: itiraz ve geri çekme yeni satırdır. Bir denetçinin bir bağdaki geçerli
+kararı dosyadaki son satırıdır; geri çekilen karar geçersizdir ama satırı durur. Farklı denetçilerin kararları yan
+yana durur, biri öbürünü silmez. Model önerisi bir karar değildir: denetçi yalnız insandır.
+
+`build_db` geçerli kararları (`link` anahtarlı) `link_reviews` tablosuna yükler; bağı bu profilde bulunmayan
+karar yüklenmez ve sayılır (`reviews_unmatched`). Araçlar bağın yanında kararları verir (`find_ayah` links).
+"""
+
+import json
+import re
+import sqlite3
+import sys
+from collections import Counter
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+
+from risale_mcp.links import STRENGTHS, TYPES, Link, local_id
+from risale_mcp.paths import DB_PATH, LINKS_DIR
+
+REVIEWS_DIR = LINKS_DIR / "reviews"
+REVIEWERS = "reviewers.json"
+STATUSES = ("reviewed", "disputed", "withdrawn")
+_DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+
+
+@dataclass(frozen=True)
+class Review:
+    status: str
+    reviewer: str
+    date: str
+    link: dict | None = None
+    match: dict | None = None
+    strength: str | None = None
+    reason: str | None = None
+    seen: dict | None = None
+    origin: dict | None = None
+    file: str = field(default="", compare=False)
+
+    @property
+    def key(self) -> tuple | None:
+        if not self.link:
+            return None
+        return local_id(self.link["source"]), self.link["target"], self.link["type"], self.link.get("part") or ""
+
+    def problems(self, reviewers: dict) -> list[str]:
+        out = []
+        if self.status not in STATUSES:
+            out.append(f"status {self.status!r}")
+        if self.reviewer not in reviewers:
+            out.append(f"denetçi listede yok: {self.reviewer!r}")
+        if not _DATE.match(self.date or ""):
+            out.append(f"date {self.date!r}")
+        if bool(self.link) == bool(self.match):
+            out.append("link ya da match (yalnız biri)")
+        if self.link and (set(self.link) - {"source", "target", "type", "part"} or self.link.get("type") not in TYPES
+                          or not self.link.get("source") or not self.link.get("target")):
+            out.append(f"link {self.link!r}")
+        if self.strength is not None and self.strength not in STRENGTHS:
+            out.append(f"strength {self.strength!r}")
+        if self.status == "disputed" and not self.reason:
+            out.append("itirazın gerekçesi yok")
+        return out
+
+    def to_json(self) -> dict:
+        return {k: v for k, v in asdict(self).items() if v not in (None, "", {}) and k != "file"}
+
+
+def link_key(link: Link) -> dict:
+    """Bağdan kararın `link` alanı."""
+    source, target, type_, part = link.key
+    return {"source": source, "target": target, "type": type_, **({"part": part} if part else {})}
+
+
+def reviewers(root: Path = REVIEWS_DIR) -> dict:
+    path = root / REVIEWERS
+    return json.loads(path.read_text(encoding="utf-8"))["reviewers"] if path.exists() else {}
+
+
+def read(root: Path = REVIEWS_DIR) -> list[Review]:
+    """Bütün kararlar, dosya ve satır sırasıyla."""
+    out = []
+    for path in sorted(root.glob("**/*.jsonl")):
+        name = str(path.relative_to(root))
+        for line in path.read_text(encoding="utf-8").splitlines():
+            if line.strip():
+                out.append(Review(**json.loads(line), file=name))
+    return out
+
+
+def append(path: Path, review: Review, root: Path = REVIEWS_DIR) -> None:
+    """Yeni karar: dosyanın sonuna eklenir (hiçbir satır değişmez)."""
+    if problems := review.problems(reviewers(root)):
+        raise ValueError(f"geçersiz karar: {'; '.join(problems)}")
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with open(path, "a", encoding="utf-8") as f:
+        f.write(json.dumps(review.to_json(), ensure_ascii=False) + "\n")
+
+
+def current(reviews: list[Review]) -> list[Review]:
+    """Geçerli kararlar: denetçi ve bağ başına son satır; geri çekilenler düşer."""
+    last: dict[tuple, Review] = {}
+    for r in reviews:
+        target = r.key or json.dumps(r.match, sort_keys=True)
+        last[(r.file, target, r.reviewer)] = r
+    return [r for r in last.values() if r.status != "withdrawn"]
+
+
+def validate(reviews: list[Review], people: dict) -> list[tuple[Review, str]]:
+    """Kaydın kendi hataları ve sırası: geri çekme yalnız aynı denetçinin önceki kararına."""
+    out, seen = [], set()
+    for r in reviews:
+        out += [(r, p) for p in r.problems(people)]
+        target = (r.file, r.key or json.dumps(r.match, sort_keys=True), r.reviewer)
+        if r.status == "withdrawn" and target not in seen:
+            out.append((r, "geri çekilecek önceki karar yok"))
+        seen.add(target)
+    return out
+
+
+def summary(reviews: list[Review], people: dict) -> list[dict]:
+    """Araçların gösterdiği biçim: denetçinin adıyla, tarih sırasıyla."""
+    return [{"status": r.status, **({"strength": r.strength} if r.strength else {}),
+             "by": people.get(r.reviewer, {}).get("name", r.reviewer), "date": r.date,
+             **({"reason": r.reason} if r.reason else {})} for r in sorted(reviews, key=lambda r: r.date)]
+
+
+def match_status(conn: sqlite3.Connection, match: dict) -> str | None:
+    """Eski biçimli kararın (bölüm öneki ve âyet) bugünkü gücü: âyet ilişkilerinde, varsa güçlüsü."""
+    sura, ayah = (int(x) for x in match["verse"].removeprefix("quran:").split(":"))
+    row = conn.execute(
+        "SELECT strength FROM ayah_links WHERE sura = ? AND ? BETWEEN ayah_start AND ayah_end AND node_id LIKE ?"
+        " ORDER BY strength = 'weak' LIMIT 1", (sura, ayah, match["node_prefix"] + "%")).fetchone()
+    return row[0] if row else None
+
+
+def link_strength(conn: sqlite3.Connection, key: tuple) -> str | None:
+    """Anahtarın bağı bu veritabanında varsa gücü (aynı anahtarlı birden çok bağdan güçlüsü)."""
+    row = conn.execute("SELECT strength FROM links WHERE source = ? AND target = ? AND type = ? AND COALESCE(part, '') = ?"
+                       " ORDER BY strength = 'weak' LIMIT 1", key).fetchone()
+    return row[0] if row else None
+
+
+def disagreements(conn: sqlite3.Connection, reviews: list[Review]) -> list[tuple[Review, str | None]]:
+    """Geçerli `reviewed` kararlarından bugünkü bağla tutmayanlar: güçlü denilen bağ yok ya da zayıf, zayıf denilen
+    bağ güçlü. Bu liste boş olmalıdır (test); dolu ise kural ya da kimlik kaymıştır."""
+    out = []
+    for r in current(reviews):
+        if r.status != "reviewed" or not r.strength:
+            continue
+        now = link_strength(conn, r.key) if r.key else match_status(conn, r.match)
+        if (now == "strong") != (r.strength == "strong"):
+            out.append((r, now))
+    return out
+
+
+def main() -> None:
+    args = sys.argv[1:]
+    if not args or args[0] not in ("check", "list"):
+        sys.exit("kullanım: python -m risale_mcp.link_reviews check|list [--db yol]")
+    people, reviews = reviewers(), read()
+    if args[0] == "list":
+        for rid, person in people.items():
+            print(f"{rid}: {person.get('name')} ({person.get('role', '')})")
+        for (name, status), n in sorted(Counter((r.file, r.status) for r in reviews).items()):
+            print(f"  {name}: {status} {n}")
+        return
+    bad = validate(reviews, people)
+    for r, problem in bad:
+        print(f"geçersiz ({r.file}): {problem}: {r.to_json()}")
+    conn = sqlite3.connect(Path(args[args.index("--db") + 1]) if "--db" in args else DB_PATH)
+    live = current(reviews)
+    unmatched = [r for r in live if r.key and link_strength(conn, r.key) is None]
+    wrong = disagreements(conn, reviews)
+    print(f"karar {len(reviews)}, geçerli {len(live)}, bağı bulunmayan {len(unmatched)}, tutmayan {len(wrong)},"
+          f" eski biçimli {sum(1 for r in live if r.match)}")
+    for r, now in wrong:
+        print(f"  tutmuyor: {r.link or r.match} karar {r.strength}, bugün {now}")
+    if bad or wrong:
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

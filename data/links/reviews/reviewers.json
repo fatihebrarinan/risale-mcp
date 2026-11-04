@@ -1,0 +1,10 @@
+{
+ "about": "Denetçiler: kararları kayıtlı olan isimli kişiler (link_reviews.py). Görünen ad (name) araçlarda kararın yanında gider.",
+ "reviewers": {
+  "fatihebrarinan": {
+   "name": "fatihebrarinan",
+   "role": "proje sahibi",
+   "since": "2026-10-27"
+  }
+ }
+}
