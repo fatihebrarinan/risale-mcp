@@ -834,7 +834,7 @@ class Library:
         works = self._classical_works()
         out: dict[str, dict] = {}
         rows = self.conn.execute(
-            "SELECT l.source, l.type, l.relation, l.strength, l.scope, l.method, l.target FROM links l"
+            "SELECT l.source, l.type, l.relation, l.strength, l.scope, l.method, l.target, l.part FROM links l"
             " WHERE l.file LIKE 'tefsir/%' AND l.target LIKE ? ORDER BY l.strength = 'weak', l.rowid",
             (f"quran:{sura}:%",)).fetchall()
         for r in rows:
@@ -862,8 +862,11 @@ class Library:
             entry["quotations_total"] += 1
             if len(entry["quotations"]) < limit:
                 s = self._sentence(r["source"])
-                entry["quotations"].append({"id": s["id"], "cite_as": hit_cite(s["ref"], s["incipit"], s["text"]),
-                                            "relation": r["relation"], "strength": r["strength"], "method": r["method"]})
+                quote = {"id": s["id"], "cite_as": hit_cite(s["ref"], s["incipit"], s["text"]),
+                         "relation": r["relation"], "strength": r["strength"], "method": r["method"]}
+                if reviews := self._reviews(r["source"], r["target"], r["type"], r["part"] or ""):
+                    quote["reviews"] = reviews
+                entry["quotations"].append(quote)
         return list(out.values())
 
     def _links(self, sura: int, ayah: int) -> list[dict]:

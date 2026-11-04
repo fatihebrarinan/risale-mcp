@@ -171,7 +171,7 @@ adıyla anar, Beyzâvî de büyük ölçüde ondan süzülmüştür.
 | T4 (bitti) | Beyzâvî'nin bağları için H4 ve H5'in eksik kalan kısmı | `links.py`, testler |
 | T5 (bitti) | Bağlar: Beyzâvî parçası → âyet (yapıdan); Beyzâvî'nin âyet ve hadis alıntıları (bugünkü yöntemler); İşârât bölümü ↔ Beyzâvî parçası (aynı âyet aralığı yalnız aday; ilişki türü okumayla) | `data/links/tefsir/*.jsonl`, sayım ve örneklem |
 | T6 (bitti) | Araçlar: âyetten Risale'nin ve Beyzâvî'nin yerleri, Risale önce; talimat ("tefsir" denmez, eserin sahibi söylenir) | Altın sorular |
-| T7 | Kullanıcı örneklemi denetler; kararlar `tests/golden/`'a kilitlenir | Karar dosyası |
+| T7 (bitti) | Kullanıcı örneklemi denetler; kararlar `tests/golden/`'a kilitlenir | Karar dosyası |
 
 ### T0: nüsha (bitti, 2026-11-04)
 
@@ -326,7 +326,7 @@ T3 bilgiyi Maraşlî'nin girişine verdi; T4 nakil uydurmadı. Kullanıcıya sor
   aramanın eki ayırmaması ("Beyzavi" tam kelime, metinde "Beyzâvî'nin"); `Beyzav*` buluyor. T6 değil, bugünkü
   arama; ayrı iş.
 
-### T7: kullanıcı örneklemi (sürüyor, 2026-11-04)
+### T7: kullanıcı örneklemi (bitti, 2026-11-04)
 
 Örneklem `data/interim/tefsir/t7-orneklem.html` (Arapça tek yazı tipi, büyük; `.md` ve numara anahtarları `.json`),
 `uv run python -m risale_mcp.links_tefsir --sample` (önceki seçimi ve numaraları korur).
@@ -345,7 +345,17 @@ T3 bilgiyi Maraşlî'nin girişine verdi; T4 nakil uydurmadı. Kullanıcıya sor
   düzeltildi: "birimin kendi âyeti dışında"). 8 satırın bağı kural değişikliğiyle kalktı.
 - **B (hadis):** kullanıcı Arapçayı ayırt edemiyor; hadisçiye bırakıldı (HA6), karar yazılmadı.
 - **C:** 28 uzun cümlenin hepsi kalır; `tests/golden/beyzavi_long_sentences.json` kilitler.
-- Bekleyen: A9, A11, A24, A38 (düzeltilmiş gösterimle yeniden) ve yorumsuz kalan A23, A26–A34, A36, A37, A39, A40.
+- İkinci tur (düzeltilmiş gösterimle): kalan 18 satırın hepsi doğru (A9, A11, A24, A38 dahil). Sonuç: 40'lık örneklemin
+  32'si doğru ve kayıtlı, 8'inin bağı kullanıcının bulduğu kural hatalarının düzeltmesiyle kalktı; kalan bağlarda
+  örneklemde yanlış yok. Denetim kaydında 32 karar (güç: bağın bugünkü gücü), `find_ayah`'ın `classical_works`
+  alıntılarında `reviews` olarak görünür.
+
+**Pilotun ölçütü tuttu:** Beyzâvî'nin her parçası âyet aralığıyla adreslenir (39 birim, Fâtiha ve Bakara 1–33 eksiksiz),
+cümle düzeyinde atfedilir (977 cümle, basılı sayfasıyla), Risale'nin aynı âyetteki yeriyle yan yana okunur
+(`find_ayah`: önce Risale, sonra `classical_works`), her bağın türü, yöntemi ve kanıtı vardır; alıntı bağları
+kullanıcının örnekleminden geçti. Açık kalanlar: hadis bağları hadisçiye (HA6), İşârât ile ilişki okumayla (bağ
+yok), aramanın ek ayırmaması (T6), genel sunucuya çıkış ayrı karar (pilot `private`). Sıradaki eser ve aralık
+kullanıcıyla seçilir.
 
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık
