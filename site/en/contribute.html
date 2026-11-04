@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Contribute · Risale-i Nur MCP</title>
-<meta name="description" content="A source-bound infrastructure for tafsir: what the project aims at, where it stands today and what it asks of volunteer reviewers.">
+<meta name="description" content="Risale-i Nur MCP is looking for volunteer reviewers: the fields in which competent people are needed.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
@@ -24,57 +24,24 @@
   <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
 </nav>
 
-<h1>A source-bound infrastructure for tafsir</h1>
-<p class="lead">We are looking for volunteer reviewers. This page explains what the project aims at, where it stands today and what it asks of you.</p>
+<h1>Contribute</h1>
+<p class="lead">Risale-i Nur MCP is looking for volunteers to review texts and the links between them and their sources.</p>
 
-<h2>The aim</h2>
-<p>At the beginning of İşârâtü'l-İ'câz, Bediüzzaman Said Nursî expresses the hope that this work, together with the Risales, will become a "me'haz" (a source) from which "a fortunate committee" will one day write "a Qur'anic tafsir". The main aim of this project is to prepare the infrastructure that committee will have in hand.</p>
-<p>We are not writing a tafsir. We are building a source-bound library and network of links to make the work of the specialist and research scholars who will write it easier. This infrastructure gives no verdicts: it records who said what, and on what evidence.</p>
+<h2>Who is needed?</h2>
+<p>People who:</p>
+<ol>
+  <li>read Arabic and can recognise the verse quotations in works of tafsir,</li>
+  <li>read Arabic, understand the science of hadith and can recognise the hadiths in works of tafsir,</li>
+  <li>know the methodology of tafsir and can see the basic connections between works of tafsir,</li>
+  <li>know the Risale-i Nur well and can compare the sources given with the source in their own hands.</li>
+</ol>
 
-<h2>The structure</h2>
-<p>The Qur'an is the outermost circle: it encompasses everything and is the shared address. Every work and every link ends in a verse, or in a word of a verse. Inside are the Risale-i Nur and the works of the mufassirs (al-Baydawi, al-Zamakhshari, al-Razi…).</p>
-<p>The Risale-i Nur is, in its author's words, "a powerful tafsir" of the Qur'an, and it is the axis of this structure: at a verse, the links the Risale makes with that verse are shown first; each mufassir can be linked to it separately, and the mufassirs' works are linked among themselves. All of them are linked to hadiths.</p>
-<p>The words of a work always belong to their own author: no scholar's words are attributed to another, and nothing an AI writes is attributed to a scholar.</p>
-
-<h2>What is a link?</h2>
-<p>Two texts speaking about the same verse is not, by itself, a link. A link is a recorded relation between two places, with its type (same words, transmission, same view, different view, objection, allusion to a verse…), its evidence, and who reviewed it.</p>
-<p>Some links a computer can find (the verse quotations in a tafsir, for example); others only a competent reading can find (whether two mufassirs hold the same view, for example). In both cases the final word belongs to a human reviewer.</p>
-
-<h2>How it works</h2>
-<p>All texts and links live in a single library. Three separate MCP servers open it to users: Risale-i Nur, Hadith and Tafsir. Each server carries the text of its own field; it does not copy the text of the others, only gives its address; the Qur'an is in all of them. Users add these servers to an AI application such as Claude or ChatGPT, and the AI shows the place it relies on, down to the sentence.</p>
-
-<h2>Where it stands today</h2>
-<ul>
-  <li><strong>The Risale-i Nur server is running</strong> (<a href="/en/">setup on the home page</a>): the whole collection, except the Turkish of Kızıl İcaz, addressed sentence by sentence, together with the Qur'an, verse links and the first hadith matches. Next come a general accuracy review (sentence splitting, headings, verse and hadith links) and support for the Ottoman text.</li>
-  <li><strong>The first trial on the tafsir side is finished:</strong> al-Baydawi's Anwar al-Tanzil was taken in for the part İşârât covers (al-Fatiha and al-Baqara 1–33); 977 sentences, their verse quotations and their links to the Risale were built, and a sample was reviewed by hand. The next work is al-Kashshaf. Every new work needs competent people to review its verse quotations, its hadith links and its relations to other works.</li>
-  <li><strong>Turkish support</strong> is not there yet but is planned: for now the mufassirs' works are only in their Arabic original.</li>
-  <li><strong>The Hadith server</strong> will be set up soon. Whether the Risale's hadiths are found in the sources is searched by computer today; this too needs to pass under a hadith scholar's eye.</li>
-</ul>
-
-<h2>Proposing and reviewing links</h2>
-<p>A "propose a link" door will be added to the server: permitted people (or anyone able to; not decided yet) will be able to propose a link between two places, stating its type and evidence. A proposal first waits as a "candidate"; it enters the library once a reviewer competent in that field decides whether the link is right and how strong it is.</p>
-<p>Reviewers do not erase each other's decisions; an objection stays on record with its reason; every decision carries the reviewer's name and date. The door opens by knowledge and expertise, not by affiliation.</p>
-
-<h2>Where it leads: verse files</h2>
-<p>As links and works settle, a file will be prepared for every verse (and, where needed, every word): first the places in the Risale-i Nur related to that verse, then what the mufassirs said in their own words, the hadiths they rely on and how those stand in the sources (without verdicts), the recorded links, and open questions. AI may compile and comment on this material, but what it writes stands under a separate heading, marked "AI compilation, not tafsir". These files will be a source for the committee that will one day write the tafsir.</p>
-
-<h2>Principles</h2>
-<p>Every address comes from the data, never from a guess. Every word belongs to its author. Texts are taken from sources that gave permission, and every answer names its source; the project is non-profit, and the servers are free and need no account. The measure is soundness, not speed; the work may take several years.</p>
-
-<h2>What we ask of you</h2>
-<p>We are looking for volunteer reviewers competent in one of these fields:</p>
-<ul>
-  <li>reading Arabic well enough to recognise a verse quotation in a tafsir,</li>
-  <li>the science of hadith,</li>
-  <li>the methodology of tafsir,</li>
-  <li>knowing the Risale-i Nur well.</li>
-</ul>
-<p>There is work for those who do not read Arabic too: checking the sentence splitting, headings and verse links of the Risale-i Nur text.</p>
-<p>Reviewing is done at a computer, in small samples, in your own time: a link and its evidence are put before you and you say "right / wrong / note". Your decision is recorded under your name.</p>
+<h2>How will it work?</h2>
+<p>How the reviewing will be done is not settled yet; the platform it needs is being prepared. This page will be updated when it is ready.</p>
 
 <div class="note">
   <strong>Contact</strong><br>
-  To become a reviewer or to ask a question, write briefly in which field you can help: <a href="mailto:destek@risalemcp.com?subject=Reviewer">destek@risalemcp.com</a>
+  Write briefly in which field you can help: <a href="mailto:destek@risalemcp.com?subject=Reviewer">destek@risalemcp.com</a>
 </div>
 
 <footer>Risale-i Nur MCP · Nur Hadimleri · <a href="/en/docs.html">Documentation</a> · <a href="/en/privacy.html">Privacy</a> · <a href="/en/terms.html">Terms of use</a> · <a href="/katki.html" lang="tr">Türkçe</a></footer>

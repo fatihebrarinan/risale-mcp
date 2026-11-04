@@ -415,10 +415,16 @@ geçer, yapılınca değişir; bağ önerme kararı açık kalır; iletişim bil
 Kullanıcı metni son hâli saydı. Son düzeltmeler: kaynakların adları "İlkeler"den çıkarıldı (kullanıcının isteği);
 "74 eserden 73'ü" yerine "külliyatın tamamı, Kızıl İcaz'ın Türkçesi dışında" (74 yerel profilin sayısıdır, yalnız
 yerelde duran eserler dahil; genel sunucuda 70 eserden 69'u, sitedeki "53 eser ve 16 Osmanlıca cilt" ile aynı).
-Sitedeki karşılığı `site/katki.html` ve `site/en/contribute.html`; metin değişirse üçü birlikte değişir.
+Bu metin sitede yayımlanmaz (aşağıya bakın).
 
-**WhatsApp mesajı** (kişiye özel davet için; telefon numarası sitede değil, yalnız burada):
+**Sitenin katkı sayfası kısaltıldı (2026-11-05).** Görüşülen ehil kişilerin tavsiyesiyle projenin amacı ve
+özellikleri sitede ulu orta yayılmaz; tanıtım metni yalnız bu dosyada kalır. `site/katki.html` ve
+`site/en/contribute.html` yalnız aranan dört niteliği (âyet alıntısı, hadis, tefsirler arası bağlantı, Risale ile
+kaynak karşılaştırması), işin nasıl yapılacağının henüz belli olmadığını ve iletişimi söyler; platform hazır olunca
+güncellenir.
 
-> Selamün aleyküm. Bediüzzaman'ın İşârâtü'l-İ'câz'da bahsettiği, ileride tefsir yazacak heyete me'haz olacak bir altyapı üzerinde çalışıyoruz: Risale-i Nur, müfessirlerin eserleri ve hadisler, Kur'ân'a ve birbirine cümle düzeyinde, kanıtıyla bağlanıyor. Bu bağları denetleyecek gönüllüler arıyoruz: Arapça okuyan, hadis ya da tefsir bilen, Risale'yi iyi bilen; Arapça bilmeyenlere de iş var. Kendi vaktinizde, küçük parçalar hâlinde.
+**WhatsApp mesajı** (kişiye özel; telefon numarası sitede değil, yalnız burada):
+
+> Selamün aleyküm. Risale-i Nur MCP projesinde metinleri ve kaynaklarını denetleyecek gönüllüler arıyoruz: Arapça okuyup tefsirlerdeki âyet alıntılarını ya da hadisleri tanıyabilen, tefsir usûlünü bilen, Risale-i Nur'u iyi bilen kişiler.
 > Ayrıntı: https://risalemcp.com/katki.html
 > İletişim: [telefon] · destek@risalemcp.com
