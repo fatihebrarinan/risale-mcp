@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Katkıda Bulunun · Risale-i Nur MCP</title>
+<meta name="description" content="Kaynağa bağlı bir tefsir altyapısı: proje neyi amaçlıyor, bugün nerede ve gönüllü denetçilerden ne bekliyor.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css?v=6">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="en" href="/en/contribute.html">
+<script src="/site.js?v=6" defer></script>
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/belgeler.html">Belgeler</a>
+  <a href="/katki.html" aria-current="page">Katkı</a>
+  <a href="/gizlilik.html">Gizlilik</a>
+  <a href="/en/contribute.html" lang="en">English</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Açık ve koyu görünüm arasında geç" title="Açık ve koyu görünüm arasında geç"></button>
+</nav>
+
+<h1>Kaynağa bağlı bir tefsir altyapısı</h1>
+<p class="lead">Gönüllü denetçi arıyoruz. Bu sayfa projenin neyi amaçladığını, bugün nerede olduğunu ve sizden ne beklediğini anlatır.</p>
+
+<h2>Amaç</h2>
+<p>Bediüzzaman Said Nursî, İşârâtü'l-İ'câz'ın başında, bu eserin Risalelerle beraber "me'haz" olacağını ve "ileride bahtiyar bir hey'et"in onlardan "bir tefsir-i Kur'ânî" yazacağını ümit eder. Bu projenin temel amacı, o heyetin elinde olacak altyapıyı hazırlamaktır.</p>
+<p>Biz tefsir yazmıyoruz; tefsiri yazacak mütehassıs ve muhakkik âlimlerin işini kolaylaştıracak, kaynağa bağlı bir kütüphane ve bağ ağı kuruyoruz. Bu altyapı hüküm vermez: kimin, neyi, hangi kanıtla söylediğini kaydeder.</p>
+
+<h2>Yapının şeması</h2>
+<p>En dış halkada Kur'ân-ı Kerîm var; her şeyi kuşatır ve ortak adrestir: her eser, her bağ sonunda bir âyete ya da âyetin bir lafzına varır. İçeride Risale-i Nur ve müfessirlerin eserleri (Beyzâvî, Zemahşerî, Râzî…) durur.</p>
+<p>Risale-i Nur, müellifin ifadesiyle Kur'ân'ın "kuvvetli bir tefsiri"dir ve bu yapının eksenidir: bir âyette önce Risale'nin o âyetle kurduğu bağlar gösterilir, müfessirlerin her biri ona ayrı ayrı bağlanabilir; müfessirlerin eserleri de kendi aralarında bağlanır. Hepsi hadislere bağlanır.</p>
+<p>Bir eserin sözü her zaman kendi sahibine aittir; bir âlimin sözü başkasına, yapay zekânın yazdığı hiçbir şey de bir âlime mal edilmez.</p>
+
+<h2>Bağ nedir?</h2>
+<p>İki metnin aynı âyetten bahsetmesi tek başına bağ değildir. Bağ, iki yer arasındaki ilişkinin türüyle (aynı söz, nakil, aynı görüş, farklı görüş, itiraz, âyete işaret…), kanıtıyla ve onu kimin denetlediğiyle kayıtlı olmasıdır.</p>
+<p>Bir kısmını bilgisayar bulur (bir tefsirde geçen âyet alıntıları gibi), bir kısmı ancak ehil bir okumayla bulunur (iki müfessirin aynı görüşte olup olmadığı gibi). Her ikisinde de son sözü insan denetçi söyler.</p>
+
+<h2>Programdaki karşılığı</h2>
+<p>Bütün metinler ve bağlar tek bir kütüphanede durur. Bu kütüphaneyi kullanıcıya üç ayrı MCP sunucusu açar: Risale-i Nur, Hadis ve Tefsir. Her sunucu kendi alanının metnini taşır, öbür alanların metnini kopyalamaz, yalnız adresini verir; Kur'ân hepsinde vardır. Kullanıcı Claude ya da ChatGPT gibi bir yapay zekâ uygulamasına bu sunucuları ekler; yapay zekâ cevap verirken dayandığı yeri cümlesine kadar gösterir.</p>
+
+<h2>Bugün nerede?</h2>
+<ul>
+  <li><strong>Risale-i Nur sunucusu çalışıyor</strong> (<a href="/">kurulum ana sayfada</a>): külliyatın tamamı, Kızıl İcaz'ın Türkçesi dışında, cümle cümle adresli; Kur'ân, âyet bağları ve ilk hadis eşleşmeleriyle birlikte. Bundan sonrası genel bir doğruluk kontrolü (cümle bölmesi, başlıklar, âyet ve hadis bağları) ve Osmanlıca metin desteği.</li>
+  <li><strong>Tefsir tarafında ilk deneme bitti:</strong> Beyzâvî'nin Envârü't-Tenzîl'i, İşârât'ın kapsadığı kısımda (Fâtiha ve Bakara 1–33) alındı; 977 cümle, âyet alıntıları ve Risale ile bağları kuruldu, örneklem elle denetlendi. Sıradaki eser Keşşâf. Her yeni eserde âyet alıntılarını, hadis bağlarını ve öbür eserlerle ilişkilerini denetleyecek ehil insanlara ihtiyaç var.</li>
+  <li><strong>Türkçe desteği</strong> henüz yok ama planda: müfessirlerin eserleri şimdilik yalnız Arapça aslıyla duruyor.</li>
+  <li><strong>Hadis sunucusu</strong> yakın zamanda kurulacak. Risale'deki hadislerin kaynaklarda bulunup bulunmadığı bugün bilgisayarla aranıyor; bunun da bir hadisçinin gözünden geçmesi gerekiyor.</li>
+</ul>
+
+<h2>Bağ önerme ve denetim</h2>
+<p>Sunucuya bir "bağ önerme" kapısı eklenecek: izin verilen kişiler (ya da yapabilen herkes; henüz karar verilmedi) iki yer arasında bir bağ önerebilecek, türünü ve kanıtını yazarak. Öneri önce "aday" olarak bekler; o alanda ehil bir denetçi bağın doğru olup olmadığına ve ne kadar güçlü olduğuna karar verince kütüphaneye girer.</p>
+<p>Denetçiler birbirinin kararını silmez, itiraz gerekçesiyle kayıtlı kalır; her kararın altında denetçinin adı ve tarihi durur. Kapı ilim ve ihtisasa göre açılır, meşrebe göre değil.</p>
+
+<h2>Varılacak yer: âyet dosyaları</h2>
+<p>Bağlar ve eserler oturdukça her âyet (gerekirse her lafız) için bir dosya hazırlanacak: önce Risale-i Nur'un o âyetle ilgili yerleri, sonra müfessirlerin kendi sözleriyle söyledikleri, dayandıkları hadisler ve bunların kaynaklardaki durumu (hüküm verilmeden), kayıtlı bağlar, açık sorular. Yapay zekâ bu bilgileri derleyip yorumlayabilir; ama yazdığı ayrı başlıkta ve "yapay zekâ derlemesidir, tefsir değildir" işaretiyle durur. Bu dosyalar, ileride tefsiri yazacak heyete bir me'haz olacak.</p>
+
+<h2>İlkeler</h2>
+<p>Her adres veriden gelir, tahmin edilmez. Her söz sahibine aittir. Metinler izin veren kaynaklardan alınır ve her cevapta kaynak gösterilir; proje kazanç amacı gütmez, sunucular ücretsiz ve hesapsız kullanılır. Ölçüt hız değil sağlamlıktır; iş birkaç yıl sürebilir.</p>
+
+<h2>Sizden ne istiyoruz?</h2>
+<p>Şu alanlardan birinde ehliyeti olan gönüllü denetçiler arıyoruz:</p>
+<ul>
+  <li>Arapça okuyup bir tefsirdeki âyet alıntısını tanıyabilen,</li>
+  <li>hadis ilminde ehil olan,</li>
+  <li>tefsir usûlünü bilen,</li>
+  <li>Risale-i Nur'u iyi bilen.</li>
+</ul>
+<p>Arapça bilmeyenlerin de yapabileceği bir iş var: Risale-i Nur metninin cümle bölmesini, başlıklarını ve âyet bağlarını kontrol etmek.</p>
+<p>Denetim bilgisayar başında, küçük örneklemler hâlinde, kendi vaktinizde yapılır: önünüze bağ ve kanıtı konur, "doğru / yanlış / not" dersiniz. Kararınız adınızla kaydedilir.</p>
+
+<div class="note">
+  <strong>İletişim</strong><br>
+  Denetçi olmak ya da soru sormak için hangi alanda katkı verebileceğinizi kısaca yazın: <a href="mailto:destek@risalemcp.com?subject=Denet%C3%A7ilik">destek@risalemcp.com</a>
+</div>
+
+<footer>Risale-i Nur MCP · Nur Hadimleri · <a href="/belgeler.html">Belgeler</a> · <a href="/gizlilik.html">Gizlilik</a> · <a href="/kullanim-sartlari.html">Kullanım şartları</a> · <a href="/en/contribute.html" lang="en">English</a></footer>
+</main>
+</body>
+</html>

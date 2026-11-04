@@ -319,8 +319,8 @@ kopyalamaz, yalnız adresini verir; Kur'ân hepsinde vardır. Kullanıcı Claude
 uygulamasına bu sunucuları ekler; yapay zekâ cevap verirken dayandığı yeri cümlesine kadar gösterir.
 
 **Bugün nerede?**
-- **Risale-i Nur sunucusu çalışıyor** (`mcp.risalemcp.com`): 74 eserden 73'ü cümle cümle adresli; Kur'ân, âyet
-  bağları ve ilk hadis eşleşmeleriyle birlikte. Eksik olan Kızıl İcaz'ın Türkçesi. Bundan sonrası genel bir doğruluk
+- **Risale-i Nur sunucusu çalışıyor** (`mcp.risalemcp.com`): külliyatın tamamı, Kızıl İcaz'ın Türkçesi dışında, cümle cümle adresli; Kur'ân, âyet
+  bağları ve ilk hadis eşleşmeleriyle birlikte. Bundan sonrası genel bir doğruluk
   kontrolü (cümle bölmesi, başlıklar, âyet ve hadis bağları) ve Osmanlıca metin desteği.
 - **Tefsir tarafında ilk deneme bitti:** Beyzâvî'nin Envârü't-Tenzîl'i, İşârât'ın kapsadığı kısımda (Fâtiha ve Bakara
   1–33) alındı; 977 cümle, âyet alıntıları ve Risale ile bağları kuruldu, örneklem elle denetlendi. Sıradaki eser
@@ -343,7 +343,7 @@ bu bilgileri derleyip yorumlayabilir; ama yazdığı ayrı başlıkta ve "yapay 
 işaretiyle durur. Bu dosyalar, ileride tefsiri yazacak heyete bir me'haz olacak.
 
 **İlkeler.** Her adres veriden gelir, tahmin edilmez. Her söz sahibine aittir. Metinler izin veren kaynaklardan
-(e-Risale, risaleoku.com ve öbürleri) alınır ve her cevapta kaynak gösterilir; proje kazanç amacı gütmez, sunucular
+alınır ve her cevapta kaynak gösterilir; proje kazanç amacı gütmez, sunucular
 ücretsiz ve hesapsız kullanılır. Ölçüt hız değil sağlamlıktır; iş birkaç yıl sürebilir.
 
 **Sizden ne istiyoruz?** Şu alanlardan birinde ehliyeti olan gönüllü denetçiler arıyoruz: Arapça okuyup bir tefsirdeki
@@ -409,3 +409,16 @@ geçer, yapılınca değişir; bağ önerme kararı açık kalır; iletişim bil
 3. **Unutulanlar (tekrar kontrolde bulunan):** Arapça bilmeyen gönüllülere de iş var (Risale metninin doğruluk
    kontrolü, Aşama 16); denetimin küçük örneklemlerle, kişinin kendi vaktinde yapıldığı; kaynakların izinli olduğu ve
    sunucuların ücretsiz, hesapsız kullanıldığı.
+
+### Son hâl (2026-11-05)
+
+Kullanıcı metni son hâli saydı. Son düzeltmeler: kaynakların adları "İlkeler"den çıkarıldı (kullanıcının isteği);
+"74 eserden 73'ü" yerine "külliyatın tamamı, Kızıl İcaz'ın Türkçesi dışında" (74 yerel profilin sayısıdır, yalnız
+yerelde duran eserler dahil; genel sunucuda 70 eserden 69'u, sitedeki "53 eser ve 16 Osmanlıca cilt" ile aynı).
+Sitedeki karşılığı `site/katki.html` ve `site/en/contribute.html`; metin değişirse üçü birlikte değişir.
+
+**WhatsApp mesajı** (kişiye özel davet için; telefon numarası sitede değil, yalnız burada):
+
+> Selamün aleyküm. Bediüzzaman'ın İşârâtü'l-İ'câz'da bahsettiği, ileride tefsir yazacak heyete me'haz olacak bir altyapı üzerinde çalışıyoruz: Risale-i Nur, müfessirlerin eserleri ve hadisler, Kur'ân'a ve birbirine cümle düzeyinde, kanıtıyla bağlanıyor. Bu bağları denetleyecek gönüllüler arıyoruz: Arapça okuyan, hadis ya da tefsir bilen, Risale'yi iyi bilen; Arapça bilmeyenlere de iş var. Kendi vaktinizde, küçük parçalar hâlinde.
+> Ayrıntı: https://risalemcp.com/katki.html
+> İletişim: [telefon] · destek@risalemcp.com
