@@ -388,10 +388,74 @@ def review_sample(conn: sqlite3.Connection, quran: Quran) -> tuple[list[str], di
     return lines, keys
 
 
+# Örneklemin HTML'i: bütün Arapça tek yazı tipiyle ve büyük (kullanıcının isteği, 2026-11-04: âyet sütunu ile bulunan söz
+# farklı görünüyordu, Arapça küçüktü). Markdown görüntüleyiciye bağlıdır; HTML'de yazı tipi sayfanındır. Dışarıdan
+# bir şey yüklenmez: yazı tipi bilgisayardakidir (Amiri ya da Scheherazade yoksa Noto Naskh Arabic).
+SAMPLE_CSS = """
+:root { --bg: #fdfcf9; --fg: #1d1d1b; --muted: #6b6b66; --line: #ddd8cc; --mark: #fbe7a6; --head: #f2eee4; }
+@media (prefers-color-scheme: dark) { :root { --bg: #1b1b19; --fg: #ecebe6; --muted: #a3a29b; --line: #3a3934;
+  --mark: #6b5a1c; --head: #26251f; } }
+body { background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; margin: 0 auto;
+  max-width: 1400px; padding: 16px; }
+h1, h2, h3 { line-height: 1.25; } h3 { color: var(--muted); }
+table { border-collapse: collapse; width: 100%; margin: 12px 0 28px; }
+th, td { border: 1px solid var(--line); padding: 8px 10px; vertical-align: top; text-align: start; }
+th { background: var(--head); font-weight: 600; }
+td.ar { font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif; font-size: 1.55em; line-height: 2.1;
+  direction: rtl; text-align: right; }
+td.ar b { background: var(--mark); font-weight: 700; border-radius: 3px; padding: 0 2px; }
+td.no { font-weight: 700; white-space: nowrap; } code { font-size: .85em; color: var(--muted); }
+"""
+_ARABIC = re.compile(r"[\u0600-\u06FF]")
+
+
+def sample_html(lines: list[str]) -> str:
+    """Örneklemin Markdown satırlarından sayfa: başlıklar, paragraflar, tablolar (**kalın**, `kod`)."""
+    import html
+
+    def inline(text: str) -> str:
+        text = html.escape(text)
+        text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
+        return re.sub(r"`(.+?)`", r"<code>\1</code>", text)
+
+    out, table = [], None
+    for line in lines:
+        if line.startswith("|"):
+            cells = line.strip()[1:-1].split(" | ")
+            if set(line.replace("|", "").strip()) <= {"-"}:
+                continue
+            if table is None:
+                table = True
+                out.append("<table><tr>" + "".join(f"<th>{inline(c.strip())}</th>" for c in cells) + "</tr>")
+                continue
+            row = []
+            for i, c in enumerate(cells):
+                c = c.strip()
+                cls = "no" if i == 0 else "ar" if _ARABIC.search(c) and not c.startswith("`") else ""
+                row.append(f"<td class=\"{cls}\">{inline(c)}</td>" if cls else f"<td>{inline(c)}</td>")
+            out.append("<tr>" + "".join(row) + "</tr>")
+            continue
+        if table:
+            out.append("</table>")
+            table = None
+        for prefix, tag in (("### ", "h3"), ("## ", "h2"), ("# ", "h1")):
+            if line.startswith(prefix):
+                out.append(f"<{tag}>{inline(line[len(prefix):])}</{tag}>")
+                break
+        else:
+            if line.strip():
+                out.append(f"<p>{inline(line)}</p>")
+    if table:
+        out.append("</table>")
+    return ("<!doctype html><html lang=\"tr\"><head><meta charset=\"utf-8\">"
+            "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>Beyzâvî örneklemi</title>"
+            f"<style>{SAMPLE_CSS}</style></head><body>" + "\n".join(out) + "</body></html>\n")
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--measure", action="store_true", help="yalnız Kur'ân alıntısı ölçümü")
-    parser.add_argument("--sample", action="store_true", help="T7 örneklemi: data/interim/tefsir/t7-orneklem.{md,json}")
+    parser.add_argument("--sample", action="store_true", help="T7 örneklemi: data/interim/tefsir/t7-orneklem.{html,md,json}")
     parser.add_argument("--db", type=Path, default=DB_PATH)
     args = parser.parse_args()
     conn = sqlite3.connect(args.db)
@@ -399,8 +463,9 @@ def main() -> None:
         lines, keys = review_sample(conn, Quran.load())
         REPORT_DIR.mkdir(parents=True, exist_ok=True)
         (REPORT_DIR / "t7-orneklem.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
+        (REPORT_DIR / "t7-orneklem.html").write_text(sample_html(lines), encoding="utf-8")
         (REPORT_DIR / "t7-orneklem.json").write_text(json.dumps(keys, ensure_ascii=False, indent=1), encoding="utf-8")
-        print(f"  örneklem: A {len(keys['A'])}, B {len(keys['B'])}, C {len(keys['C'])}; {REPORT_DIR / 't7-orneklem.md'}")
+        print(f"  örneklem: A {len(keys['A'])}, B {len(keys['B'])}, C {len(keys['C'])}; {REPORT_DIR / 't7-orneklem.html'} (ve .md)")
         return
     book = _book()
     qw = QuranWords(Quran.load())
