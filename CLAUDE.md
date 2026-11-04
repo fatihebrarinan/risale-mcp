@@ -56,6 +56,18 @@ Sistem yalnız Risale-i Nur için değildir; hadis, tefsir ve ilgili kaynaklar d
 - **Metnin sahibi** (`catalog.Authority`, `Work.authority`): `muellif`, `derleme`, `baskasi`, `nakil`, `serh`, `modern`. Müellifin olmayan metinde araçlar `authority` döndürür, talimat onu müellife mal etmeyi yasaklar. "Üstad dedi ki" diyen hatıra müellifin metni değil, anlatanın aktarmasıdır. Eser düzeyindedir. Tercüme asıl sahibinin eseri sayılır (`muellif`), `Work.translation` ile işaretlenir ve araçlarda `translation: true` döner; mütercim `note`'tadır. Şerh gibi eser içi katmanlar ve eserin içindeki tercüme bölümleri (Arapça Mesnevî'nin Nokta'sı) ayrıca işaretlidir.
 - **Profil** (`profiles.py`): bir sunucunun hangi koleksiyonlardan kurulduğu; `data/dist/<profil>/` altında tek veritabanı ve vektörler. `kisisel` hepsi ve `private` eserler, `genel` sunucuya gider (`risale-mcp --profile genel`). Alanlar arası bağlar bir arada sorgulanabilsin diye alan başına değil profil başına tek veritabanı vardır. Kur'ân genel sunucuda kalır (`find_ayah` ve âyet bağları ona dayanır). **Hadis ayrı sunucudur** (kullanıcının kararı, 2026-11-03): hadis kitapları `hadis` profiliyle ayrı bir bağlayıcı olur (HA5); risale sunucusu yalnız Risale'ye bağlanan rivayetleri ve bugünkü ince hadis araçlarını taşır, hadis sunucusu olmadan da çalışır. İki sunucunun ortak verisi bağlardır (`data/links/`, HA1).
 
+**Sunucular ve kapsam** (kullanıcının kararı, 2026-11-04): ana sunucu ya da alt sunucu yoktur. Hiyerarşi veridedir (Kur'ân ortak adres, hadis her yerden bağlanır, Risale eksen); sunucular aynı kütüphanenin eşit, birbirinden bağımsız görünümleridir. Üç katman: kütüphane (`data/library/` ve `data/links/`, tek ve ortak), profil (hangi koleksiyonlar hangi lisansla), sunucu (profil + talimat + araç seti + adres). Kural: **her sunucu kendi alanının metnini taşır; başka alanın metnini kopyalamaz, kimlik ve atıf (`display`) verir; Kur'ân her sunucudadır, çünkü ortak adres odur.** Böylece metin tek yerde durur, aynı cümle iki bağlayıcıdan gelmez, her sunucunun lisansı ve talimatı kendinedir; karşılaştırma ad alanlı kimliklerle (`risale:`, `hadis:`, `tefsir:`) ve ortak bağ dosyalarıyla yapılır.
+
+| Sunucu | Kendi metni | Öbür alanlardan |
+|---|---|---|
+| `risale` (bugünkü, `genel`) | Bediüzzaman'ın eserleri | Kur'ân metni; Risale'den çıkan hadis bağları ve ince hadis araçları |
+| `hadis` (HA5) | Hadis kitapları, dereceler | Kur'ân; rivayetin Risale'deki yerleri (kimlik ve atıf) |
+| tefsir altyapısı (ileride) | Müfessirlerin eserleri | Kur'ân; bir âyette önce Risale'nin bağları (eksen), kimlik ve atıfla |
+| `erisale`, `yeniasya` (ortak derlemler) | Yalnız o ortağın metni | Kur'ân |
+| `kisisel` (yerel) | Hepsi | — |
+
+Bedeli: tam deneyim için kullanıcı birden çok bağlayıcı ekler; talimat ve sitedeki kurulum sayfası bunu söyler. Hepsini tek bağlayıcıda toplayan çatı sunucusu kurulmaz (araç listesi ve talimatlar sulanır, lisanslar karışır, dizin başvurusu tek büyük paket olur); gerekirse bu yapı onu engellemez.
+
 Kurallar:
 
 - **Kimlikler değişmez, önek almaz** (`sozler/10/…`); eser kimliği katalogda tektir (`catalog/__init__.py` denetler).
@@ -105,7 +117,7 @@ risale-mcp/
 │   ├── raw/<kaynak>/      # ham yanıtlar, kaynak başına; kullanıcının PDF'leri raw/kullanici/<kitap>/
 │   ├── library/           # asıl veri: risale/kulliyat/<eser>.json, risale/ilgili/, kuran/quran.json, hadis/matches.json
 │   ├── dist/<profil>/     # kisisel, genel: risale.db ve vectors/ (kisisel/vectors asıl depo, ücretli çıkarılır)
-│   ├── interim/           # erisale/ blokları, review/ kontrol arayüzü (taşınmaz: tarayıcı işaretleri adrese bağlı olabilir), outline/, quran/ayah_check.md, ayah_links/, arabic_kinds/, golden/, search_eval/, chatgpt/
+│   ├── interim/           # erisale/ blokları, review/ kontrol arayüzü (taşınmaz: tarayıcı işaretleri adrese bağlı olabilir), outline/, quran/ayah_check.md, ayah_links/, arabic_kinds/, golden/, search_eval/, tool_snapshot/, chatgpt/
 │   ├── logs/, archive/    # günlükler; kullanılmayan eski dosyalar (asama-1/)
 │   └── auth.db            # kullanım kaydı, hata ayıklama anahtarı; OAuth kipinde hesaplar (risale.db gibi yeniden kurulmaz)
 ├── src/risale_mcp/
@@ -114,7 +126,7 @@ risale-mcp/
 │   ├── fetch.py, build.py, build_db.py, db.py   # indirme, ayrıştırma, veritabanı CLI'ları
 │   ├── sentences.py       # cümle bölücü, incipit, atıflar, altın örnekler
 │   ├── arabic_kinds.py    # Arapça parçaların türü ve dayanağı, âyet adres düzeltmeleri
-│   ├── quran.py, hadis.py, hadis_adaylar.py, hadis_turkce.py, hadis_rivayet.py, hadis_uyum.py, hadis_okuma.py, hadis_ornek.py, ayah_links.py, search.py, semantic.py, embeddings.py, search_eval.py
+│   ├── quran.py, hadis.py, hadis_adaylar.py, hadis_turkce.py, hadis_rivayet.py, hadis_uyum.py, hadis_okuma.py, hadis_ornek.py, ayah_links.py, search.py, semantic.py, embeddings.py, search_eval.py, tool_snapshot.py
 │   ├── library.py, server.py, citations.py, auth.py, golden.py, local_only.py
 │   ├── review_ui.py, review_assets/, static/
 │   ├── sources/           # site başına indirici (ham kayıt + doğrulama)
@@ -472,7 +484,7 @@ aşağıdadır, kullanıcının onayıyla değişir. Ayrıntılı geçmiş: `doc
 
 Ayrıntı ve gerekçeler `docs/tefsir-altyapi-plani.md`'de. Önce hazırlık, sonra pilot; her hazırlık adımı bugünkü Risale verisinde yapılır, ölçütü Risale'nin kimliklerinin, sayılarının ve araç çıktılarının değişmemesidir (sunucunun kullanıcıları var; hazırlık onların gördüğünü değiştirmez, pilot `private` kalır).
 
-- **H0. Araç çıktısı karşılaştırması:** sabit ≈100 çağrı genel profilde, her adımdan sonra fark raporu; beklenmeyen fark varsa deploy edilmez.
+- **H0. Araç çıktısı karşılaştırması (bitti, 2026-11-04):** `uv run python -m risale_mcp.tool_snapshot record <ad>` sabit 96 çağrıyı (`tests/golden/tool_calls.json`: her araç, kaynaklar, hazır komutlar, hatalı girdiler; talimat ve araç şemaları da) genel profilde süreç içi MCP istemcisiyle kaydeder, `compare <önceki> <sonraki> [--expect araç…]` fark raporu verir (`data/interim/tool_snapshot/`); beklenmeyen fark varsa çıkış kodu 1, deploy edilmez. Anlamsal aramanın sorgu vektörleri diskte sabitlenir (Voyage aynı soruya biraz farklı vektör veriyor).
 - **H1. Kimlik manifestosu ve derlem sürümü** (H0 ile önce: öbürlerinin ölçütünü verirler): bütün cümle kimlikleri ve özetleri, `build` kayan kimliği raporlar; yayına sürüm etiketi, `cite`'ta sürüm.
 - **H2. Eserin yazarı** (`Work.author`; `authority` eserin kendi yazarına göre). **H3. Baskı kaydı** (baskı, muhakkik, dijital nüsha, lisans; genel profil izni yazılmamış eseri kurmaz).
 - **H4. Bağ uçlarının genelleşmesi** (iki uç da herhangi bir eser; metinden metne ilişki türleri). **H5. Denetim kaydı** (`data/links/reviews/`, isimli denetçi, itiraz silinmez; ilk veri âyet ilişkilerinin 62 kararı).
