@@ -16,8 +16,10 @@ satırlar paragrafın devamıdır. Baskılara göre başlık yazılışı:
     # 1 كتاب الطهارة                    Ebû Dâvûd'un ilk kitabı (kısa satır)
     # 12 حدثنا …                        hadis 12; numarasız paragraf önceki hadisin devamıdır (Müslim'de öbür tarikler)
 
-Ayıklanan işaretler (metin değişmez, yalnız işaret atılır): sayfa (`PageV01P003`; projede sayfa bilgisi tutulmaz),
-`ms0001`, dipnot işareti (`\\ 1 \\`). Âyet işareti `@QB@ … @QE@` "﴿ … ﴾" olur. Senet ile metin ilk " * " işaretinden
+Okuma ortak OpenITI okuyucusuyla (`openiti.py`, H6): işaretler atılır (metin değişmez), âyet işareti
+`@QB@ … @QE@` "﴿ … ﴾" olur. Sayfa işaretinden hadisin basılı cildi ve sayfası (`printed`: {volume, page}, birden çok
+sayfaya yayılıyorsa `end` "1/4"); sayfalar üst bilgideki baskınındır (`source.edition`), ikincil bilgidir, kimliğe
+girmez. HA3'te sayfayla verilen künyeler (Müsned'de cilt:sayfa) bunu kullanır. Senet ile metin ilk " * " işaretinden
 ayrılır; işaret yoksa `isnad` boştur. "# | 1 ( قال … )" gibi numarasız ve "باب/كتاب" taşımayan ayraçlı satır başlık
 değildir (Müslim'de metnin parçası): önceki hadise eklenir.
 
@@ -31,6 +33,7 @@ from collections import Counter
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from risale_mcp import openiti
 from risale_mcp.paths import INTERIM_DIR, LIBRARY_DIR, RAW_DIR
 from risale_mcp.sources.hadis import OPENITI_BOOKS, OPENITI_COMMITS
 
@@ -41,10 +44,6 @@ LICENCE = "CC BY-NC-SA 4.0"
 MAX_DIGITS = 6               # daha uzun "numara" birleşmiş dizgi hatasıdır
 MAX_GAP = 50                 # bundan büyük numara boşluğu yanlış okunmuş numaradır, rapora ayrı yazılır
 
-_PAGE = re.compile(r"\s*PageV\d+P\d+\s*")
-_MS = re.compile(r"\s*\bms\d+\b\s*")
-_NOTE = re.compile(r"\s*\\\s*\d+\s*\\\s*")
-_SPACES = re.compile(r"\s+")
 _LEVEL = re.compile(r"^###\s*(\|+)\s*(.*)$")
 _PIPE = re.compile(r"^#\s*\|\s*\d*\s*(.*)$")               # "# | 1 ( … )" ya da "# | 1 - كتاب …"
 _NUMBERED = re.compile(r"^#\s+(\d+)\s+(.*)$")
@@ -68,24 +67,17 @@ class Hadith:
     number: int
     node_id: str
     paragraphs: list[str] = field(default_factory=list)
+    page: openiti.Page | None = None                  # basılı sayfa: başladığı ve bittiği
+    end_page: openiti.Page | None = None
 
 
 def clean(text: str) -> str:
-    text = _NOTE.sub(" ", _MS.sub(" ", _PAGE.sub(" ", text)))
-    return _SPACES.sub(" ", text.replace("@QB@", "﴿").replace("@QE@", "﴾")).strip()
+    return openiti.clean(text)[0]
 
 
 def paragraphs(raw: str) -> list[str]:
     """Üst bilgiden sonraki paragraflar; `~~` satırları öncekine eklenir."""
-    body = raw.split("#META#Header#End#", 1)[1]
-    out: list[str] = []
-    for line in body.splitlines():
-        if line.startswith("~~"):
-            if out:
-                out[-1] += " " + line[2:]
-        elif line.startswith("#"):
-            out.append(line)
-    return out
+    return openiti.raw_paragraphs(openiti.split_header(raw)[1])
 
 
 def heading(text: str) -> tuple[str, int | None, str] | None:
@@ -126,6 +118,7 @@ def parse(book: str, raw: str) -> tuple[list[Node], list[Hadith], Counter]:
     def add_text(text: str) -> None:
         if hadiths and (text := clean(text)):
             hadiths[-1].paragraphs.append(text)
+            hadiths[-1].end_page = para.end_page or hadiths[-1].end_page
             stats["devam"] += 1
         elif text:
             stats["hadis_oncesi"] += 1
@@ -136,9 +129,12 @@ def parse(book: str, raw: str) -> tuple[list[Node], list[Hadith], Counter]:
         # Aynı numaranın sonraki tarikleri (Müslim'de Abdülbaki'nin ana numarası tekrarlanır) "-2", "-3" eki alır.
         seen_numbers[number] += 1
         suffix = f"-{seen_numbers[number]}" if seen_numbers[number] > 1 else ""
-        hadiths.append(Hadith(f"{book}/{number}{suffix}", number, current.id, [clean(text)] if clean(text) else []))
+        hadiths.append(Hadith(f"{book}/{number}{suffix}", number, current.id, [clean(text)] if clean(text) else [],
+                              para.page, para.end_page))
 
-    for p in paragraphs(raw):
+    doc = openiti.read(raw)
+    for para in doc.paragraphs:
+        p = para.raw
         if m := _LEVEL.match(p):
             depth, text = len(m[1]), m[2]
             if depth == 3 and (n := re.match(r"\s*(\d+)\s*$", clean(text))):
@@ -181,6 +177,7 @@ def parse(book: str, raw: str) -> tuple[list[Node], list[Hadith], Counter]:
             start_hadith(number, rest)
             continue
         add_text(body)
+    stats["sayfasiz"] = sum(h.page is None for h in hadiths)
     return nodes, hadiths, stats
 
 
@@ -201,7 +198,8 @@ def split(text: str) -> tuple[str, str]:
     return "", text
 
 
-def to_json(book: str, nodes: list[Node], hadiths: list[Hadith]) -> dict:
+def to_json(book: str, nodes: list[Node], hadiths: list[Hadith], edition: dict | None = None) -> dict:
+    """`edition`: sayfa numaralarının ait olduğu baskı (`openiti.Document.edition`)."""
     repo, path = OPENITI_BOOKS[book]
     records = []
     for h in hadiths:
@@ -211,10 +209,13 @@ def to_json(book: str, nodes: list[Node], hadiths: list[Hadith]) -> dict:
         record = {"id": h.id, "number": h.number, "node_id": h.node_id, "isnad": isnad, "matn": matn, "text": text}
         if refs := [r for _, r in parts if r]:
             record["refs"] = " ".join(refs)
+        if h.page:
+            record["printed"] = {"volume": h.page.volume, "page": h.page.page,
+                                 **({"end": str(h.end_page)} if h.end_page and h.end_page != h.page else {})}
         records.append(record)
     return {"book": book, "title": TITLES[book],
             "source": {"name": "OpenITI (KITAB project)", "file": f"{repo}/data/{path}", "commit": OPENITI_COMMITS[repo],
-                       "licence": LICENCE},
+                       "licence": LICENCE, **({"edition": edition} if edition else {})},
             "outline": [{"id": n.id, "parent_id": n.parent_id, "level": n.level, "number": n.number, "title": n.title}
                         for n in nodes],
             "hadiths": records}
@@ -276,8 +277,9 @@ def build(raw_dir: Path = RAW_DIR / "openiti", out_dir: Path = KUTUB_DIR) -> dic
     out_dir.mkdir(parents=True, exist_ok=True)
     report = {}
     for book in OPENITI_BOOKS:
-        nodes, hadiths, stats = parse(book, (raw_dir / f"{book}.txt").read_text(encoding="utf-8"))
-        data = to_json(book, nodes, hadiths)
+        raw = (raw_dir / f"{book}.txt").read_text(encoding="utf-8")
+        nodes, hadiths, stats = parse(book, raw)
+        data = to_json(book, nodes, hadiths, openiti.read(raw).edition)
         api_path = RAW_DIR / "hadith_api" / f"ara-{book}.json"
         aligned = align(data, json.loads(api_path.read_text(encoding="utf-8"))["hadiths"]) if api_path.exists() else Counter()
         (out_dir / f"{book}.json").write_text(json.dumps(data, ensure_ascii=False, indent=0), encoding="utf-8")

@@ -38,7 +38,7 @@ paylaşılır. Proje ticari değildir; kitap dosyaları bu lisansla işaretlenir
 4. **Künyeye bağ:** Risale künyesi "Buharî, Ezân: 148" kitap adı ve bâb numarasıdır. Kitap adı `hadis_kitaplar`'daki
    Türkçe adlardan bu dosyanın kitap düğümüne, numara bâba eşlenir. Bu bağın doğruluğu ölçülür (aşağıda).
 5. **Kapsam:** yalnız yerel. `hadis` profili ve genel sunucuya çıkış ayrı karardır.
-6. **Ham metinde düzeltme yok:** sayfa işaretleri (`PageV01P003`), `ms0001`, dipnot işaretleri (`\ 1 \`) ve
+6. **Ham metinde düzeltme yok:** sayfa işaretleri (`PageV01P003`; H6 ile basılı cilt ve sayfa olarak saklanır, `printed`), `ms0001`, dipnot işaretleri (`\ 1 \`) ve
    `@QB@ … @QE@` (âyet) ayıklanır, metin değiştirilmez; âyet yerleri işaretlenir.
 
 ## Doğrulama (her kitap için)
