@@ -470,9 +470,10 @@ aşağıdadır, kullanıcının onayıyla değişir. Ayrıntılı geçmiş: `doc
 
 ### Tefsir altyapısı aşamaları
 
-Ayrıntı ve gerekçeler `docs/tefsir-altyapi-plani.md`'de. Önce hazırlık, sonra pilot; her hazırlık adımı bugünkü Risale verisinde yapılır, ölçütü Risale'nin kimliklerinin, sayılarının ve araç çıktılarının değişmemesidir.
+Ayrıntı ve gerekçeler `docs/tefsir-altyapi-plani.md`'de. Önce hazırlık, sonra pilot; her hazırlık adımı bugünkü Risale verisinde yapılır, ölçütü Risale'nin kimliklerinin, sayılarının ve araç çıktılarının değişmemesidir (sunucunun kullanıcıları var; hazırlık onların gördüğünü değiştirmez, pilot `private` kalır).
 
-- **H1. Kimlik manifestosu ve derlem sürümü** (önce: öbürlerinin ölçütünü verir): bütün cümle kimlikleri ve özetleri, `build` kayan kimliği raporlar; yayına sürüm etiketi, `cite`'ta sürüm.
+- **H0. Araç çıktısı karşılaştırması:** sabit ≈100 çağrı genel profilde, her adımdan sonra fark raporu; beklenmeyen fark varsa deploy edilmez.
+- **H1. Kimlik manifestosu ve derlem sürümü** (H0 ile önce: öbürlerinin ölçütünü verirler): bütün cümle kimlikleri ve özetleri, `build` kayan kimliği raporlar; yayına sürüm etiketi, `cite`'ta sürüm.
 - **H2. Eserin yazarı** (`Work.author`; `authority` eserin kendi yazarına göre). **H3. Baskı kaydı** (baskı, muhakkik, dijital nüsha, lisans; genel profil izni yazılmamış eseri kurmaz).
 - **H4. Bağ uçlarının genelleşmesi** (iki uç da herhangi bir eser; metinden metne ilişki türleri). **H5. Denetim kaydı** (`data/links/reviews/`, isimli denetçi, itiraz silinmez; ilk veri âyet ilişkilerinin 62 kararı).
 - **H6. Ortak OpenITI okuyucu** (âyet işaretleri, sayfadan `printed`; hadis kitapları da kullanır).
