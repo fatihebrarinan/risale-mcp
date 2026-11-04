@@ -12,7 +12,7 @@ data/
 │   │   └── ilgili/       Külliyat dışı kaynaklar (henüz boş): Sorularla Risale, tarihçeler, hatıralar
 │   ├── tefsir/           Müfessirlerin eserleri (pilot: beyzavi.json, yalnız yerel profil)
 │   ├── kuran/quran.json  Kur'ân katmanı
-│   └── hadis/matches.json  Risale'deki hadislerin rivayetlerle eşlemesi; `hadis.py` üretir. Tam derlem şimdilik `raw/`dedir
+│   └── hadis/matches.json  Risale'deki hadislerin rivayetlerle eşlemesi; `hadis.py` üretir. Tam derlem şimdilik `raw/`dedir; tefsir-beyzavi.json: Beyzâvî'nin hadis bağlarının rivayet metinleri (`links_tefsir.py`)
 ├── links/<alan>/<yöntem>.jsonl  Bağlar: Risale'nin âyet, hadis ve kendi içiyle bağları (`links.py`, `docs/bag-altyapisi-plani.md`); üreten iş yazar, her profil okur
 │   └── reviews/          Denetim kararları (`link_reviews.py`, git'te): isimli denetçilerin bağlar üzerine kararları, yalnız eklenir; silinmemeli
 ├── dist/<profil>/        Kurulan çıktı (`profiles.py`); kişisel ve genel

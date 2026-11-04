@@ -164,7 +164,7 @@ adıyla anar, Beyzâvî de büyük ölçüde ondan süzülmüştür.
 | T2 | Kararlar: koleksiyon (`library/tefsir/`), şema, kimlik biçimi | Bu belgenin "Kararlar"ı |
 | T3 (bitti) | Ayrıştırıcı ve cümle bölücü (Arapça nesir, el-Mesnevî el-Arabî'nin kuralları) | `data/library/tefsir/beyzavi.json`, altın örnekler |
 | T4 (bitti) | Beyzâvî'nin bağları için H4 ve H5'in eksik kalan kısmı | `links.py`, testler |
-| T5 | Bağlar: Beyzâvî parçası → âyet (yapıdan); Beyzâvî'nin âyet ve hadis alıntıları (bugünkü yöntemler); İşârât bölümü ↔ Beyzâvî parçası (aynı âyet aralığı yalnız aday; ilişki türü okumayla) | `data/links/tefsir/*.jsonl`, sayım ve örneklem |
+| T5 (bitti) | Bağlar: Beyzâvî parçası → âyet (yapıdan); Beyzâvî'nin âyet ve hadis alıntıları (bugünkü yöntemler); İşârât bölümü ↔ Beyzâvî parçası (aynı âyet aralığı yalnız aday; ilişki türü okumayla) | `data/links/tefsir/*.jsonl`, sayım ve örneklem |
 | T6 | Araçlar: âyetten Risale'nin ve Beyzâvî'nin yerleri, Risale önce; talimat ("tefsir" denmez, eserin sahibi söylenir) | Altın sorular |
 | T7 | Kullanıcı örneklemi denetler; kararlar `tests/golden/`'a kilitlenir | Karar dosyası |
 
@@ -279,6 +279,27 @@ H4–H5'ten T4'e kalanlar yapıldı (ayrıntı CLAUDE.md'de ve `links.py`, `link
 - **Yöntem `structure`:** T5'te Beyzâvî biriminin âyetle bağı için (birim başlığı söylüyor; okuma değil).
 - **Denetim kaydına yazma komutu:** `link_reviews add`.
 - Kalan açık soru: denetçi seçme ölçütü (Açık sorular).
+
+### T5: bağlar (2026-11-04)
+
+`links_tefsir.py` (kurallar başında); dosyalar `data/links/tefsir/` (`private`), raporlar `data/interim/tefsir/t5-*.md`.
+
+| Bağ | Sayı | Yöntem |
+|---|---|---|
+| Birim → âyetleri (`verse_unit`) | 39 | `structure`: birimin başlığı |
+| İşaretsiz Kur'ân alıntısı | 419 (lemma adayı 115, kendi âyeti 239) | `quran_text`: kelime sınırlı iskelet araması |
+| Hadis («» ve hadis işareti) | 10 (18 sözden: bulundu 1, kısmen 4, bulunamadı 11, kısa 1, Kur'ân 1) | `corpus`: Risale'ninkiyle aynı eşleyici |
+
+- **Eşik ölçümü** (JK'nın `@QB@` işaretleri, yalnız müellifin metni): 3 kelime / 7 harfte isabet %96, kapsama %92;
+  örneklemde sık kalıplar başka sûreye bağlanıyordu ("ما تقدم من" → Fetih 2), seçilen 3 kelime / 9 harf: isabet
+  %97,5, kapsama %90,5. Kendi âyetinde bağlam doğruladığı için 2 kelime / 4 harf; cümle ortasındakiler zayıf.
+- **Birden çok yerde geçen söz** (33) numarasız kalır, bağ kurulmaz (Risale'deki kural).
+- **İşârât:** her Beyzâvî biriminin İşârât'ta aynı âyetle açılan bölümü var (Türkçe ve Arapça). Arapça İşârât ile
+  ortak 4 kelimelik diziler yalnız kalıp ifadeler ("ابن عباس رضي الله تعالى عنهم"); İşârât Beyzâvî'yi lafzen aktarmıyor.
+  İlişki (aynı görüş, farklı görüş, nakil) ancak okumayla kurulur: aday listesi `t5-isarat.md`, bağ yok.
+- **Ölçüt:** tefsir bağlarıyla ve onlarsız yerel kurulumda Risale'nin hadis, âyet ve denetim tabloları aynı; genel
+  sunucunun araç çıktısı aynı.
+- T7'ye: lemma adayları ve Kur'ân alıntısı örneklemi (`t5-kuran.md`), hadis adayları.
 
 Pilotun ölçütü: Beyzâvî'nin her parçası âyet aralığıyla adreslenir, cümle düzeyinde atfedilir, Risale'nin aynı
 âyetteki yeriyle yan yana okunur; hiçbir bağ kanıtsız ve yöntemsiz değildir. Ölçüt tutarsa sıradaki eser ve aralık
