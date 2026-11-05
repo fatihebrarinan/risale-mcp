@@ -47,7 +47,7 @@ Genel sunucunun kaynakları (kim, hangi şartla izin verdi: `docs/izinler.md`; y
 - **Fihrist Risalesi** mecmua olarak katalogdadır (`fihrist-risalesi`). **Hizb-i Nurî** Zülfikâr'ın hâtimesidir (`hizb-i-nuri`, müellifin takdimleriyle).
 - Bir kaynak kitabı birden çok esere bölünebilir: erisale'nin "İlk Dönem Eserleri" kitabı Divan-ı Harb-i Örfî, Münazarat, Sünuhat vb. eserlere ayrılır. Lemeat (Sözler'in sonu) ve Hakikat Çekirdekleri (Mektubat'ın sonu) ayrı eserdir. Seçim, katalogdaki bölüm slug önekleriyle yapılır.
 
-Ham ve ara veri git'e eklenmez. Denetim kararları (`data/links/reviews/`) insan emeğidir, yeniden üretilemez; ama denetçilerin adları ve kararları açık depoda durmaz (kullanıcının kararı, 2026-11-05): klasör kendi ayrı, yerel git deposundadır (`data/links/reviews/.git`), yedeği kullanıcıdadır.
+Ham ve ara veri git'e eklenmez. Denetim kararları (`data/links/reviews/`) insan emeğidir, yeniden üretilemez; ama denetçilerin adları ve kararları açık depoda durmaz (kullanıcının kararı, 2026-11-05): klasör kendi ayrı, yerel git deposundadır (`data/links/reviews/.git`), uzak kopyası özel depo `fatihebrarinan/risale-mcp-denetim`.
 
 ## Alanlar, koleksiyonlar, profiller
 

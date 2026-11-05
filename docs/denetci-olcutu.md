@@ -139,8 +139,8 @@ Kullanıcının kaydı: `kuran`, `risale`, `metin` (kullanıcının kararı). Pr
   ("M. Yılmaz"), takma ad olmaz (kullanıcının kararı).
 - **Depo:** proje deposu açık kalır, ama denetçilerin adları ve kararları açık depoda durmaz (kullanıcının kararı,
   2026-11-05). `data/links/reviews/` ana depodan çıkarıldı (`.gitignore`) ve kendi ayrı, yerel git deposundadır
-  (`data/links/reviews/.git`): kararlar yeniden üretilemez, geçmişi orada tutulur; yedeği (özel bir uzak depo ya da
-  başka bir yer) kullanıcıdadır. Ayrılmadan önceki 94 karar ve kullanıcının adı ana deponun geçmişinde durur; bunlar
+  (`data/links/reviews/.git`): kararlar yeniden üretilemez, geçmişi orada tutulur; uzak kopyası özel depo
+  `fatihebrarinan/risale-mcp-denetim` (2026-11-05). Ayrılmadan önceki 94 karar ve kullanıcının adı ana deponun geçmişinde durur; bunlar
   kullanıcının kendi kararlarıdır.
 - **Saklanan ama yayımlanmayan:** e-posta, telefon, eğitim beyanı, deneme sonuçlarının ayrıntısı; denetim deposuna
   da girmez, kullanıcının kendi kaydında durur.

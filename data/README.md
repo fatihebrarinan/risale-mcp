@@ -1,6 +1,6 @@
 # data/
 
-Bu klasörde yalnızca bu dosya git'tedir; `links/reviews/` (denetim kararları) açık depoda değil, kendi ayrı, yerel git deposundadır (yedeği kullanıcıda). Kod yollarını `src/risale_mcp/paths.py`'den alır.
+Bu klasörde yalnızca bu dosya git'tedir; `links/reviews/` (denetim kararları) açık depoda değil, kendi ayrı, yerel git deposundadır (uzak kopyası özel depo `fatihebrarinan/risale-mcp-denetim`). Kod yollarını `src/risale_mcp/paths.py`'den alır.
 
 ```
 data/

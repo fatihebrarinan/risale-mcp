@@ -13,7 +13,7 @@ Bağlar kurallardan ya da üreten işlerden her kurulumda yeniden çıkar; karar
 yalnız eklenen dosyalardadır: `data/links/reviews/<alan>/<yöntem>.jsonl` (bağ dosyasının adıyla; ör.
 `reviews/kuran/relation.jsonl` âyet ilişkilerinin kararları). Kararlar insan emeğidir, yeniden üretilemez; ama
 denetçilerin adları ve kararları herkese açık değildir (kullanıcının kararı, 2026-11-05): bu klasör açık depoda
-değil, kendi ayrı git deposundadır (`data/links/reviews/.git`), yedeği kullanıcıdadır. Denetçiler
+değil, kendi ayrı git deposundadır (`data/links/reviews/.git`), uzak kopyası özel depo `fatihebrarinan/risale-mcp-denetim`. Denetçiler
 `reviewers.json`'dadır; listede olmayan denetçinin kararı kurulumu durdurur. Her denetçinin sabit bir numarası
 vardır (`number`; bir kez verilir, başkasına geçmez): araçlar ve veritabanı yalnız onu taşır, ad ve kimlik
 yayımlanmaz (kullanıcının kararı, 2026-11-05). Okuyan kişiyi değil gerekçeyi tartar; aynı denetçinin kararlarının
