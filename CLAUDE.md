@@ -546,4 +546,5 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   şekilde", kaynak gösterme ricası) kabul etti. Ayrı sunucular ve yerel paket kapsamda (pakette kaynaklara nezaketen
   bilgi ve şartlar paketin içinde); Osmanlıca izin değil teknik soru (Aşama 19). Yazılı cevaplar yerelde
   `data/raw/kullanici/izinler/`; kayıt `docs/izinler.md` "Kapsam" ve `catalog/permissions.py`.
-- **Sırada:** Y0.4 (Türkçe erişim kararı), Y0.6 (dizin politikaları, Y3'ten önce).
+- **Y0.4 Türkçe erişim (taslak, 2026-11-05):** `docs/turkce-erisim.md`; kullanıcının kararını bekliyor.
+- **Sırada:** Y0.6 (dizin politikaları, Y3'ten önce).
