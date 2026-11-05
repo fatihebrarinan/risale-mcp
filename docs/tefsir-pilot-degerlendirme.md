@@ -110,6 +110,48 @@ MCP yazma araçlarına izin verir; ama doğrudan bağ yazma değil, **öneri**:
 Denetim kaydı (H5) böylece katkı platformunun çekirdeği olur. Platform sonra; önce birkaç isimli denetçiyle akışın
 işlediği görülür.
 
+## Bağ şeması (sade şema; kullanıcı onayladı, 2026-11-05)
+
+Kullanıcının dört sorusundan (bağlar birleşsin mi, hadis bağları tek tür mü, Risale–tefsir bağları ne zaman,
+Risale–Risale ve öbür alanların kendi içindeki bağlar) çıktı. Bugünkü veri modeli (`links.py`) zaten büyük ölçüde
+böyledir; değişen çoğunlukla plan ve adlandırmadır.
+
+- **Üç cins kalıcıdır:** lafız (`quote`: söz geçiyor), ilişki (`relation`: anlamca bağ), gönderme (`reference`: metin
+  oraya gönderiyor). Yeni bir alan çifti (Risale–tefsir, hadis–hadis, konu) yeni cins açmaz; hangi alanlar arasında
+  olduğu uçların ad alanından okunur. Dosyaların `<alan>/<yöntem>.jsonl` diye bölünmesi düzen içindir, tür değildir.
+- **Yöntem ve alt tür ayrı görünür.** Kur'ân – Risale ilişkisi (kuralla, `rule`; işaret, açılış…) ile müfessirin âyet
+  birimi (eserin yapısıyla, `structure`; `verse_unit`) aynı cinstir, ama kanıtın kaynağı farklıdır (kural tahmin
+  eder, yapı söyler) ve adlandırma kuralı alt türe dayanır: müfessirin birimi tefsirdir, Risale'nin bir yeri "tefsir"
+  diye anılmaz. Alt tür atılıp tek etikete indirilmez. Görünümde birleşebilir (`find_ayah`'ta tek liste, önce Risale).
+- **Hadis bağlarının hepsi lafız bağıdır;** derlem, künyenin bölümü ve okuma yöntemdir. Mânen nakil (`by_meaning`)
+  de lafız bağıdır: müellif hadisi kendi ifadesiyle aktarır. Bir yerin hadisi aktarmadan konusunu işlemesi ileride
+  ilişki bağı olur; hedefi o zaman bir rivayet değil hadisin kendisidir (hadis – hadis grubu). Kısa eşleşme (`phrase`)
+  rivayeti kanıtlamaz, araçlarda ayrı görünmeye devam eder.
+- **Durum ekseni** (Y1.3): kabul edilmiş ya da aday. Hadis model okumaları (`reading_lead`) ayrı dosya olmaktan çıkar,
+  aday olarak aynı kayda girer.
+- **Risale – tefsir ve tefsir – tefsir:** mekanik olanlar erken (Y1.7): müfessirden müfessire aynı sözle nakil (uzun
+  ortak diziler, örneklemle) ve Risale'nin müfessiri adıyla anması (gönderme: "Tefsir-i Keşşâf'ın müellifi
+  Zemahşerî'nin dediğine göre", İşârât › Bakara 23–24; "Fahreddinü'r-Râzî'nin tefsirinde", İşârât › Bakara 25;
+  "Tefsir-i Beyzâvî'de", Muhâkemat › Birinci Makale › Altıncı Mukaddeme; "keşşâf" kelimesi "açıcı" anlamında da sık
+  geçer, yalnız açık anmalar elle bakılarak alınır). Okuma isteyenler (aynı görüş, farklı görüş, itiraz) katkı
+  aşamasına kalır; ondan önce bir denetçiyle küçük, elle bir pilot kaydın biçimini sınar (Y1.8). Model adayı yalnız
+  istenirse, yerelde ve aday olarak.
+- **Risale – Risale** üç şeydir: gönderme (eski adlar, Aşama 13'ün numaralı göndermeleri; ikili bağ), aynı metin
+  (mecmua eşlemesi, Arapça asıl ve tercüme, Osmanlıca; bugün yapıda, `paragraph_sources` ve paralel kimlikler, bağ
+  dosyasına taşınmaz, ama bir bağ çeşidi olduğu bilinir) ve aynı konu.
+- **Konu ortak adrestir, ikili konu bağı kurulmaz.** "Bu konu başka nerede geçiyor" sorusunun sohbetteki cevabı bir
+  arama sonucudur, bağ değildir. Konu bağları gelince (Aşama 15) Kur'ân'daki âyet gibi bir düğüme bağlanır (`konu:`
+  ad alanı, ilişki bağı, denetimli); iki yer aynı konuya bağlanınca birbirine bulunur, ama ortak konu tek başına bağ
+  değildir. Bugün kurulmaz; yalnız bu karar yazılıdır. Konu listesinin nasıl kurulacağı Aşama 15'in başında kararlaşır
+  (öneri: müellifin Fihrist Risalesi'nden ve başlıklardan başlamak, düz liste, bölüm düzeyi; konu adı bir yorumdur,
+  meşrebe açık kapı olmasın).
+- **Hadis – hadis** (aynı hadisin rivayetleri) hadis sunucusunun ihtiyacıdır (Y2.1); hangi rivayetlerin aynı hadis
+  olduğu hadisçi işidir, ortak metin aday üretir. **Kur'ân – Kur'ân** acil değildir: mekanik kısmı (tekrar eden ve
+  benzeşen âyetler) güvenlidir; Kur'ân'ın Kur'ân'la tefsiri ve nesih hükümdür, ancak bir müfessir söylediğinde onun
+  cümlesinden kaydolur.
+- **Denetçinin alanı bağın cinsinden ve uçlarından okunur** (`docs/denetci-olcutu.md`): lafızda hedefin alanı, ilişkide
+  iki ucun alanı, göndermede gönderenin alanı.
+
 ## Yol haritası
 
 Kullanıcının dört adımı (2026-11-04):
@@ -191,7 +233,8 @@ insandır, model öneri hazırlar.
   aday bağın kim tarafından hangi yöntemle önerildiği (`proposed_by`: model okuması, kullanıcı, kural adayı).
 - Y1.3.2 Araçlar adayı ayrı gösterir (`proposed: true`), talimat adayı hüküm gibi sunmayı yasaklar; genel profile aday
   girer mi: kullanıcının kararı (varsayılan: girmez).
-- Y1.3.3 Hadis model okumaları (`reading_lead`) bu biçime geçer (bugün ayrı tablo).
+- Y1.3.3 Hadis model okumaları (`reading_lead`) bu biçime geçer (bugün ayrı dosya ve tablo): hadis bağlarıyla aynı
+  lafız bağı, durumu aday (Bağ şeması).
 - Y1.3.4 Denetçi kabulü adayı `accepted` yapar (denetim kaydıyla; bağ dosyası değil karar değişir).
 - Y1.3.5 Ölçüt: genel sunucuda fark yok; yerelde adaylar görünür ve ayrı.
 
@@ -225,7 +268,10 @@ insandır, model öneri hazırlar.
 - Y1.7.2 T5: yapı, Kur'ân alıntısı, hadis (Y1.5 sonrası), lemma (Y1.1 sonrası).
 - Y1.7.3 Metinden metne ilk bağlar: Beyzâvî → Keşşâf ortak uzun diziler (`same_words`, nakilse `transmits`;
   yöntem kelime dizisi, kanıt dizi); örneklem.
-- Y1.7.4 Ölçüt: Beyzâvî ile Keşşâf'ın aynı lemmadaki cümleleri yan yana; nakil bağı örnekleminde kullanıcının
+- Y1.7.4 Risale'nin müfessirleri adıyla anması: gönderme bağı (Risale → müfessirin eseri ya da o âyetteki birimi),
+  açık anmalardan (Tefsir-i Keşşâf, Zemahşerî, Beyzâvî, Râzî), elle bakılarak (Bağ şeması). Okuma isteyen ilişkiler
+  (aynı görüş, farklı görüş, itiraz) bu adımda kurulmaz, katkı aşamasına kalır.
+- Y1.7.5 Ölçüt: Beyzâvî ile Keşşâf'ın aynı lemmadaki cümleleri yan yana; nakil bağı örnekleminde kullanıcının
   kararı.
 
 **Y1.8 Âyet dosyası pilotu (erken)**
@@ -233,7 +279,9 @@ insandır, model öneri hazırlar.
   önce), müfessirler (kendi sözleri, atıflı), hadis (dayanak, hüküm yok), kayıtlı ilişkiler, açık sorular, yapay zekâ
   derlemesi (ayrı başlık, damgalı: "yapay zekâ derlemesidir, tefsir değildir").
 - Y1.8.2 Üretim: model, araçlarla, katı biçimde; her cümle atıflı (`cite` denetimi); Türkçe yardım Y0.4'e göre.
-- Y1.8.3 Pilot: Fâtiha'nın birkaç lafzı (Risale + İşârât + Beyzâvî, Y1.7 bittiyse Keşşâf).
+- Y1.8.3 Pilot: Fâtiha'nın birkaç lafzı (Risale + İşârât + Beyzâvî, Y1.7 bittiyse Keşşâf). Aynı pilotta bir
+  denetçiyle birkaç Risale – müfessir ilişkisi elle kaydedilir: amaç bağ toplamak değil, kaydın biçimini (tür, kanıt,
+  kapsam) katkı altyapısından önce sınamak.
 - Y1.8.4 Ölçüt: kullanıcı ve mümkünse bir denetçi değerlendirir: dosya heyetin işini kısaltıyor mu, yanlış
   yönlendiriyor mu; biçim karara bağlanır.
 
@@ -244,7 +292,7 @@ beklemeden.
 
 | # | İş | Çıktı | ← | Ölçüt |
 |---|---|---|---|---|
-| Y2.1 | Hadis sunucusu (HA5): `hadis` profili, talimatı, araçları (kitap ve bâb, rivayet arama, künyeden bölgeye, Risale'deki yerler kimlik ve atıfla, dereceler âlimin adıyla), adresi (`mcp.risalemcp.com/hadis`), gizlilik ve tanıtım sayfası | Sunucu, sayfalar | Y1.5, Y0.3 | Altın sorular; risale sunucusunun çıktısı değişmez |
+| Y2.1 | Hadis sunucusu (HA5): `hadis` profili, talimatı, araçları (kitap ve bâb, rivayet arama, künyeden bölgeye, Risale'deki yerler kimlik ve atıfla, dereceler âlimin adıyla; aynı hadisin rivayetleri arasında hadis – hadis bağı, ortak metinden aday, hadisçinin kararıyla), adresi (`mcp.risalemcp.com/hadis`), gizlilik ve tanıtım sayfası | Sunucu, sayfalar | Y1.5, Y0.3 | Altın sorular; risale sunucusunun çıktısı değişmez |
 | Y2.2 | Tefsir sunucusu: `tefsir` profili (Kur'ân + müfessirlerin eserleri), talimatı (müfessirin eseri tefsirdir, modelin yazdığı değildir; Risale'nin yerleri kimlik ve atıfla önce), araçları (âyetten ve lafızdan eserler, lemma hizası, metinden metne bağlar, âyet dosyası Y1.8'in biçimiyle) | Sunucu | Y1.1, Y1.3, Y1.7, Y1.8 | Altın sorular |
 | Y2.3 | Genel çıkış kararı: Beyzâvî ve Keşşâf'ın `private`'tan çıkması (OpenITI lisansı, kullanıcının kararı); bugün yerel profilin `CLASSICAL_INSTRUCTIONS`'ı tefsir sunucusuna taşınır | Karar, katalog değişikliği | Y2.2 | Kullanıcının kararı |
 | Y2.4 | Risale sunucusu: talimata öbür sunuculara gönderme ("hadis ve tefsir bağdaştırıcısı ekliyse kimliği orada sor"); kendi metni değişmez | Talimat değişikliği | Y2.1, Y2.2 | H0'da yalnız talimat farkı |

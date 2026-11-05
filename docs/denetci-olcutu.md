@@ -43,21 +43,41 @@ Plan beş alan sayıyordu (Kur'ân alıntısı, Arapça dil, hadis, tefsir, Risa
 girmez. Yine de aynı listede adla durması, tanıtımdaki "Arapça bilmeyenlerin de yapabileceği iş"in karşılığıdır.
 **[Karar 1]**
 
-### Bağ türü → gereken alan
+### Bağ → gereken alan
 
-Y1.2.2'nin eşlemesi. Bir kararın "denetlendi" sayılması için denetçi bu alanlardan **birinde** kayıtlı olmalı;
-öbürlerinin kararı kaydedilir, araçta görünür, ama `competent: false` taşır.
+Y1.2.2'nin eşlemesi. Bir kararın "denetlendi" sayılması için denetçi gereken alanda kayıtlı olmalı; öbürlerinin
+kararı kaydedilir, araçta görünür, ama `competent: false` taşır.
 
-| Bağ dosyası | Ne bağlar | Alan |
-|---|---|---|
-| `kuran/quote` | Risale'deki âyet alıntısı (kaynağın işareti, işaretsiz alıntı) | `kuran` |
-| `kuran/relation` | Risale'nin bir yeri ↔ âyet (işaret, açılış, izah, dayanak, risale) | `risale` **[Karar 2]** |
-| `tefsir/quran_text` | Müfessirin cümlesindeki Kur'ân alıntısı, lemma | `kuran` (lemma kelime aralığına inince `kuran` ya da `arapca`) |
-| `tefsir/structure` | Müfessirin âyet birimi → âyetleri | `kuran` ya da `tefsir` |
-| `hadis/*`, `tefsir/corpus` | Söz ↔ rivayet | `hadis` |
-| metinden metne `same_words` | İki Arapça metnin aynı sözü | `arapca` ya da `tefsir` |
-| metinden metne `transmits`, `same_view`, `different_view`, `objection` | İki müfessir ya da Risale ile müfessir | `tefsir`; bir ucu Risale ise `tefsir` **ve** `risale` (iki ayrı karar ya da iki alanlı bir denetçi) **[Karar 3]** |
-| `risale/reference` | Risale içi gönderme | `risale` |
+Bağlar üç cinstir (sade şema, 2026-11-05, `docs/tefsir-pilot-degerlendirme.md` "Bağ şeması"): **lafız** (söz geçiyor),
+**ilişki** (iki yer arasında anlamca bağ var), **gönderme** (metin oraya gönderiyor). Gereken alan dosyanın adından
+değil, bağın cinsinden ve iki ucundan okunur; yeni bir eser ya da alan eklenince kural kendiliğinden işler:
+
+- **Lafız bağı:** hedefin alanı. Hedef Kur'ân ise `kuran`, hadis ise `hadis`, bir Arapça metin ise `arapca`.
+- **İlişki bağı:** iki ucun alanı. Kur'ân ile Risale arasında `risale`, Kur'ân ile müfessir arasında `tefsir`, iki
+  müfessir arasında `tefsir`, Risale ile müfessir arasında `tefsir` ve `risale`.
+- **Gönderme bağı:** gönderen metnin alanı (Risale'de `risale`).
+
+Bugün elimizdeki ve ileride gelecek bağlar, bu kurala göre:
+
+| Bağ | Cinsi | Ne bağlar | Bugün | Alan |
+|---|---|---|---|---|
+| Kur'ân – Risale | lafız | Risale'deki âyet alıntısı (kaynağın işaretlediği ya da Kur'ân metninde bulunan) | 10.283 | `kuran` |
+| Kur'ân – Risale | ilişki | Risale'nin bir yerinin âyetle kurduğu bağ (işaret, açılış, izah, dayanak, Risale'ye işaret) | 961 | `risale` **[Karar 2]** |
+| Kur'ân – tefsir | lafız | Müfessirin cümlesindeki âyet alıntısı ve lemma (cümleyi âyetin sözüyle açması) | 330 (yerelde) | `kuran` |
+| Kur'ân – tefsir | ilişki | Müfessirin âyet birimi ve işlediği âyetler (eserin kendi yapısı söyler) | 39 (yerelde) | `tefsir` |
+| Hadis – Risale | lafız | Risale'deki sözün rivayette bulunması: derlemde kelimesi kelimesine, künyenin bölümünde, okumayla (mânen nakil de buradadır) | 3.380; ayrıca 1.446 model adayı | `hadis` |
+| Hadis – tefsir | lafız | Müfessirin naklettiği sözün rivayette bulunması | 10 (yerelde) | `hadis` |
+| Hadis – Risale, Hadis – tefsir | ilişki | Bir yerin hadisi aktarmadan onun konusunu işlemesi | yok (ileride) | `hadis` ve uçtaki metnin alanı |
+| Risale – Risale | gönderme | Eski adlar; ileride numaralı göndermeler (Aşama 13) | 15 | `risale` |
+| Risale – tefsir | gönderme | Risale'nin müfessiri adıyla anması ("Zemahşerî'nin dediğine göre") | yok (Y1.7) | `risale` ve `tefsir` |
+| Tefsir – tefsir | lafız | Bir müfessirin öbüründen aynı sözle naklettiği yer (Beyzâvî → Keşşâf) | yok (Y1.7) | `arapca` ya da `tefsir` |
+| Tefsir – tefsir | ilişki | Aynı görüş, farklı görüş, itiraz | yok (katkı aşaması) | `tefsir` |
+| Risale – tefsir | ilişki | Aynı görüş, farklı görüş, itiraz | yok (katkı aşaması) | `tefsir` ve `risale` (iki ayrı karar ya da iki alanlı bir denetçi) **[Karar 3]** |
+| Hadis – hadis | ilişki | Aynı hadisin başka rivayeti | yok (hadis sunucusu) | `hadis` |
+| Konu – Risale ve öbürleri | ilişki | Bir bölümün bir konuyu işlemesi (konu ortak adrestir, iki yer arasında konu bağı kurulmaz) | yok (Aşama 15) | uçtaki metnin alanı |
+
+Model adayları (bugün Hadis – Risale'deki 1.446 okuma) bağ değildir; Y1.3'te "aday" durumuyla aynı bağ kaydına
+girerler ve denetçi kabul edince bağ olurlar.
 
 ## 3. Davet ve kayıt usulü
 
@@ -131,7 +151,7 @@ Bugünkü kurallar sürer; eklenenler:
 ## Kararlar (kullanıcının)
 
 1. Alanlar: `kuran`, `arapca`, `hadis`, `tefsir`, `risale` ve ayrı `metin` mi? (`arapca` ile `kuran` birleşsin mi?)
-2. Âyet ilişkileri (`kuran/relation`) için gereken alan yalnız `risale` mi, `risale` ve `kuran` birlikte mi?
+2. Kur'ân – Risale ilişki bağları için gereken alan yalnız `risale` mi, `risale` ve `kuran` birlikte mi?
 3. Risale ile müfessir arasındaki ilişki iki alan mı ister (`tefsir` ve `risale`), biri yeter mi?
 4. İlk aşamada yalnız davetle mi, yoksa sayfadan yazan herkes deneme örneklemine girebilir mi?
 5. Deneme örneklemi: 10 satır, en çok 1 hata ve yanlışların hepsi yakalanmalı. Kabul mü, başka ölçü mü? Deneme
