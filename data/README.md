@@ -5,7 +5,7 @@ Bu klasörde yalnızca bu dosya git'tedir; `links/reviews/` (denetim kararları)
 ```
 data/
 ├── raw/<kaynak>/         Kaynaktan bir kez alınan ham veri; elle değiştirilmez. Kaynak başınadır: bir site birkaç alanı besleyebilir, izin de kaynağa bağlıdır
-│   └── kullanici/        Kullanıcının dosyaları: <kitap>/<kitap>.pdf
+│   └── kullanici/        Kullanıcının dosyaları: <kitap>/<kitap>.pdf, izinler/ (kaynakların yazılı izin cevapları)
 ├── library/              Asıl veri, alan ve koleksiyon başına (`catalog.Collection`)
 │   ├── risale/
 │   │   ├── kulliyat/     Bediüzzaman'ın eserleri ve mecmuaları: <eser>.json

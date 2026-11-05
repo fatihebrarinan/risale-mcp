@@ -7,19 +7,19 @@ izni orada kayıtlı olmayan eseri kurmaz. Yazışmalar ve taslaklar: `docs/kayn
 
 ## Açıkça izin verenler
 
-Kayıtlar kullanıcının bildirimine dayanır; iznin metni depoda yoktur.
+Kayıtlar kullanıcının bildirimine dayanır. Yazılı cevaplar depoda değil, yerelde durur: `data/raw/kullanici/izinler/` (git dışı).
 
 | Kaynak | Kapsam | Şart | Kayıt | Şu anki kullanım |
 |---|---|---|---|---|
-| **erisale.com** (e-Risale) | Sitedeki metinler; kullanıcının bu metinlerle yapacağı her iş (2026-11-05) | Kaynak gösterilecek (sitede belgelerde gösteriliyor) | Görüşme, 2026-10-30; kapsam kullanıcının bildirimi, 2026-11-05 | Birincil kaynak: 27 eser, genel sunucuda |
-| **risaleoku.com** | Bütün eserler, kullanıcının bunlarla yapacağı her iş (2026-11-05; başkasının telifli tercümeleri, ör. Kütüb-i Sitte, bu izne dayanılarak alınmadı) | Kazanç olmayacak, kaynak gösterilecek | Site sahibi, 2026-10-30; kapsam kullanıcının bildirimi, 2026-11-05 | 42 eser; 40'ı genel sunucuda, 2 sonradan derleme yalnız yerelde. Sikke'nin ikinci "Husrev'in Bir Fıkrası" da buradan (Sözler Neşriyat baskısı) |
+| **erisale.com** (e-Risale) | Sitedeki metinler; kullanıcının bu metinlerle yapacağı her iş (2026-11-05) | Kaynak gösterilecek (sitede belgelerde gösteriliyor) | Sözlü izin (görüşme, 2026-10-30), yazılı nüsha yok; kapsam kullanıcının bildirimi, 2026-11-05 | Birincil kaynak: 27 eser, genel sunucuda |
+| **risaleoku.com** | Bütün eserler, kullanıcının bunlarla yapacağı her iş (2026-11-05; başkasının telifli tercümeleri, ör. Kütüb-i Sitte, bu izne dayanılarak alınmadı) | Kazanç olmayacak, kaynak gösterilecek | Site sahibinin yazılı cevabı (ekran görüntüsü `risaleoku-cevap.png`): "Kaynaklarımızı herhangi bir maddi kazanç olmaması ve kaynak gösterilmesi şartıyla kullanabilirsiniz." | 42 eser; 40'ı genel sunucuda, 2 sonradan derleme yalnız yerelde. Sikke'nin ikinci "Husrev'in Bir Fıkrası" da buradan (Sözler Neşriyat baskısı) |
 | **kastamonur.com** | Kayıtlı değil | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 | Telif tarihleri (Aşama 13.2; sayfa "kaynaksız kopyalamaya rızamız yoktur" der, kaynak her kayıtta durur). Nutuk ve Makalat'ın ham verisi diskte; bu eserler risaleoku'dan gelir |
-| **nurpedia.org** | Elindeki her şey, kullanıcının bunlarla yapacağı her iş | Kaynak gösterilecek (2026-11-05) | Kullanıcının bildirimi, 2026-11-02 (istek 2026-10-29); şart ve kapsam 2026-11-05 | Rumuzat-ı Semaniye'nin metni, genel sunucuda (2026-11-04'ten; kullanıcının kararı). Hadis işaretleri ve künyeleri (Aşama 14): `Risale:Hadisler` ve 120 kadar `Ayet-Hadis Mealleri` sayfası yerelde. robots.txt yapay zekâ botlarını kapatır, `*` okuma sayfalarına açıktır |
+| **nurpedia.org** | Elindeki her şey, "uygun bulduğunuz şekilde" | Şart yok; kaynak gösterme ricası ("Kaynak göstermenizden memnun oluruz"); gösteriyoruz | Yazılı cevap (`nurpedia-cevap.txt`; istek 2026-10-29, cevap kullanıcının aktarımıyla 2026-11-05) | Rumuzat-ı Semaniye'nin metni, genel sunucuda (2026-11-04'ten; kullanıcının kararı). Hadis işaretleri ve künyeleri (Aşama 14): `Risale:Hadisler` ve 120 kadar `Ayet-Hadis Mealleri` sayfası yerelde. robots.txt yapay zekâ botlarını kapatır, `*` okuma sayfalarına açıktır |
 
 ### Kapsam (Y0.3, 2026-11-05)
 
-Kullanıcının bildirimi: e-Risale, risaleoku ve nurpedia, kullanıcının bu metinlerle yapacağı her işi kaynak
-gösterilmesi şartıyla kabul etti. Yol haritasının sorduğu üç kullanım bu kapsamdadır:
+Kullanıcının bildirimi ve yazılı cevaplar: e-Risale (sözlü) ve risaleoku kullanıcının bu metinlerle yapacağı her işi
+kaynak gösterilmesi (risaleoku: ve kazanç olmaması) şartıyla, nurpedia şartsız ("uygun bulduğunuz şekilde") kabul etti. Yol haritasının sorduğu üç kullanım bu kapsamdadır:
 
 - **Ayrı sunucular** (hadis, tefsir; Y2): aynı kullanım, aynı kaynak gösterme. Her sunucunun talimatı ve
   kaynakçası kaynağı adıyla anar (risale sunucusunun bugünkü kuralı gibi); bu Y2'nin ölçütüdür.
@@ -30,8 +30,8 @@ gösterilmesi şartıyla kabul etti. Yol haritasının sorduğu üç kullanım b
 - **Osmanlıca** (Aşama 19): izin meselesi değil; e-Risale'nin Osmanlıca metninin nereden alınacağı teknik bir
   sorudur, aşamanın başında ekipten sorulur.
 
-risaleoku'nun "kazanç olmayacak" şartı (2026-10-30) yerinde durur. İznin metni depoda yoktur; yazışmalar varsa
-kullanıcıda saklanır.
+risaleoku'nun "kazanç olmayacak" şartı yazılı cevapta da vardır, yerinde durur. Yazılı cevaplar yerelde
+(`data/raw/kullanici/izinler/`); e-Risale'ninki sözlüdür.
 
 ## Genel lisans ya da telif bildirimiyle serbest
 

@@ -37,14 +37,14 @@ class Permission:
 
 PERMISSIONS: dict[str, Permission] = {p.key: p for p in (
     Permission("erisale", "erisale.com (e-Risale)", Kind.GRANTED, "Kaynak gösterilecek",
-               "Görüşme, 2026-10-30; her kullanım, kullanıcının bildirimi 2026-11-05"),
+               "Sözlü izin, görüşme 2026-10-30; her kullanım, kullanıcının bildirimi 2026-11-05"),
     Permission("risaleoku", "risaleoku.com", Kind.GRANTED, "Kazanç olmayacak, kaynak gösterilecek",
-               "Site sahibi, 2026-10-30; her kullanım, kullanıcının bildirimi 2026-11-05"),
+               "Site sahibinin yazılı cevabı (data/raw/kullanici/izinler/); her kullanım, 2026-11-05"),
     Permission("kesif", "Keşif Yolculukları Risale-i Nur Eğitim Programı (Ediz Sözüer)", Kind.LICENCE,
                "Asliyetini korumak ve kaynak belirtmek", "Telif bildirimi"),
     Permission("kastamonur", "kastamonur.com", Kind.GRANTED, "Kayıtlı değil", "Kullanıcının bildirimi, 2026-11-02"),
-    Permission("nurpedia", "nurpedia.org", Kind.GRANTED, "Kaynak gösterilecek (elindeki her şey)",
-               "Kullanıcının bildirimi, 2026-11-02; şart 2026-11-05"),
+    Permission("nurpedia", "nurpedia.org", Kind.GRANTED, "Şart yok (\"uygun bulduğunuz şekilde\"); kaynak gösterme ricası",
+               "Yazılı cevap, 2026-11-05 (data/raw/kullanici/izinler/)"),
     Permission("kullanici", "Kullanıcının dosyası", Kind.UNRECORDED, "Hak sahibi kayıtlı değil", "Kayıt yok"),
     Permission("risale-online", "risale.online (Hayrat)", Kind.UNRECORDED, "Kayıtlı değil", "Kayıt yok"),
     Permission("rasaelalnour", "Hizmet Vakfı (rasaelalnour.com)", Kind.REFUSED, "İzin verilmedi", "2026-10-30"),
