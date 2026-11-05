@@ -66,6 +66,10 @@ _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 # Denetçinin ihtisas alanları (Y1.2, `docs/denetci-olcutu.md` 2). `metin` bağ alanı değildir (cümle bölmesi,
 # başlıklar: ayrıştırıcıya döner), kayıtta durur ama hiçbir bağın gerektirdiği alan olmaz.
 FIELDS = ("kuran", "hadis", "tefsir", "risale", "metin")
+# Katılım şartlarının yürürlükteki sürümü (`docs/katki-sartlari.md`). Denetçi kabul edince `reviewers.json`'a
+# `terms: {version, date}` yazılır; kabulden önceki kararı geçersizdir. Proje sahibi (`owner: true`) şartların
+# yazarıdır, kabul kaydı istemez (kullanıcının kararı, 2026-11-05).
+TERMS_VERSION = 1
 
 
 def end_field(value: str, namespace: str | None = None) -> str | None:
@@ -135,6 +139,13 @@ class Review:
         if self.link and (set(self.link) - {"source", "target", "type", "part"} or self.link.get("type") not in TYPES
                           or not self.link.get("source") or not self.link.get("target")):
             out.append(f"link {self.link!r}")
+        person = reviewers.get(self.reviewer) or {}
+        if self.reviewer in reviewers and not person.get("owner"):
+            terms = person.get("terms") or {}
+            if not terms.get("date"):
+                out.append(f"denetçi katılım şartlarını kabul etmemiş: {self.reviewer!r}")
+            elif (self.date or "") < terms["date"]:
+                out.append(f"karar şartların kabulünden önce ({terms['date']}): {self.reviewer!r}")
         if self.strength is not None and self.strength not in STRENGTHS:
             out.append(f"strength {self.strength!r}")
         if self.status == "disputed" and not self.reason:
@@ -201,6 +212,10 @@ def field_problems(people: dict) -> list[str]:
                 out.append(f"alanın tarihi geçersiz ({name}): {rid!r}")
         if person.get("until") and not _DATE.match(person["until"]):
             out.append(f"until geçersiz: {rid!r}")
+        if terms := person.get("terms"):
+            if not (isinstance(terms, dict) and _DATE.match(terms.get("date") or "")
+                    and terms.get("version") in range(1, TERMS_VERSION + 1)):
+                out.append(f"şartların kaydı geçersiz (version 1..{TERMS_VERSION}, date): {rid!r}")
     return out
 
 

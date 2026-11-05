@@ -42,7 +42,7 @@ def built(small_db, tmp_path_factory):
     conn = sqlite3.connect(small_db[0])
     write(links / "risale" / "scholar.jsonl", _links(conn), producer="test")
     (links / "reviews").mkdir()
-    (links / "reviews" / "reviewers.json").write_text(json.dumps({"reviewers": {"a": {"name": "Denetçi A", "number": 1}}}), "utf-8")
+    (links / "reviews" / "reviewers.json").write_text(json.dumps({"reviewers": {"a": {"name": "Denetçi A", "number": 1, "terms": {"version": 1, "date": "2026-11-01"}}}}), "utf-8")
     out = {}
     for profile in (KISISEL, GENEL):
         db = folder / f"{profile.name}.db"

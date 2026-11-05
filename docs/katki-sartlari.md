@@ -1,11 +1,12 @@
-# Katılım şartları ve lisans (Y0.5; taslak, 1. tur, 2026-11-05)
+# Katılım şartları ve lisans (Y0.5; kullanıcı onayladı, 2026-11-05)
 
 Yol haritasının Y0.5 adımı (`docs/tefsir-pilot-degerlendirme.md`): katkının lisansı, katkı verenin onayı, adının
 görünmesi, geri çekme hakkı, kötüye kullanım; gizlilik politikasına etkisi. Bugün yalnız davetli denetçiler içindir
 (Y0.2: kayıt bu şartları bekler); hesaplı katkı (Y3) açılınca aynı şartlar genişler.
 
-Taslak burada durur, `site/`'ye konmaz: oradaki her dosya bir sonraki deploy'la yayımlanır. Kullanıcı onaylayınca
-`site/katki-sartlari.html` (ve `en/`) olur, gizlilik politikası değişir. Kararı gereken yerler **[Karar n]**.
+**Şartlar sitede yayımlanmaz** (kullanıcının kararı): yalnız davetliye, tanıtım metniyle birlikte gönderilir
+(`docs/denetci-daveti.md`, adım 5). Bu yüzden `site/`'ye konmaz; oradaki her dosya bir sonraki deploy'la yayımlanır.
+Gizlilikle ilgili bilgiler de şartların içindedir (madde 11).
 
 ## 1. Lisans: seçenekler ve öneri
 
@@ -24,16 +25,17 @@ onun eseri bir yayınevinden çıkabilir; (d) projenin ilkesi kaynak gösterme v
 | CC BY-SA 4.0 | Türevler aynı lisansla kalır | "Aynı lisans" şartı ortak derlemlerin ve heyetin eserinin lisansını bağlar; numarayla atıf yine gerekir |
 | CC BY-NC-SA 4.0 | OpenITI ve hadis kitaplarıyla aynı; "kazanç yok" ilkesine yakın | Heyetin bir yayınevinden çıkacak eserinde kullanılmasını engelleyebilir; "ticari olmayan" sınırı belirsizdir |
 
-**Öneri: CC BY 4.0, toplu atıfla.** Atıf biçimi: "Risale-i Nur MCP denetçileri (Denetçi 3), risalemcp.com". Katkı
-veren adının atıfta anılmamasını kabul eder; adını heyet ve proje sahibi bilir (Y0.2'nin kararı). **[Karar 1]**
+**Karar: CC BY 4.0, toplu atıfla** (kullanıcı, 2026-11-05). Atıf biçimi: "Risale-i Nur MCP denetçileri (Denetçi 3),
+risalemcp.com". Katkı veren adının atıfta anılmamasını kabul eder; adını heyet ve proje sahibi bilir (Y0.2'nin
+kararı).
 
 **Projenin kullanım hakkı.** Lisans herkese açık olduğu için projenin bütün sunucularında, profillerinde ve ortak
 derlemlerinde kullanılması ayrıca izin istemez. Lisans geri alınamaz (CC lisanslarının hepsi böyledir): geri çekme
 kararın **geçerliliğini** kaldırır, kaydını değil (bkz. 2.5).
 
-## 2. Katılım şartları (metin; onaylanınca siteye)
+## 2. Katılım şartları (metin; davetliye gönderilir)
 
-> **Risale-i Nur MCP: Katılım Şartları** (sürüm 1, [tarih])
+> **Risale-i Nur MCP: Katılım Şartları** (sürüm 1, 5 Kasım 2026)
 >
 > Bu şartlar Risale-i Nur MCP'de bağları denetleyen ve ileride bağ öneren gönüllüler içindir. Denetçi olarak
 > kaydolmadan önce bu şartları kabul edersiniz; kabulünüz tarihiyle kaydedilir.
@@ -72,20 +74,27 @@ kararın **geçerliliğini** kaldırır, kaydını değil (bkz. 2.5).
 >
 > **10. Gönüllülük.** Katkı gönüllüdür ve karşılıksızdır. Proje kazanç amacı gütmez.
 >
-> **11. Gizlilik.** Hangi bilgilerinizin nerede saklandığı gizlilik politikasının "Denetçiler" bölümündedir.
+> **11. Gizlilik.** Sizin için şunlar saklanır: adınız, iletişim bilginiz, ihtisas alanlarınız ve kayıt tarihleri,
+> deneme örnekleminin sonucu, bu şartları kabul tarihiniz, kararlarınız ve gerekçeleriniz. Bunlar proje sahibinin
+> bilgisayarında ve GitHub'daki özel (herkese kapalı) bir depoda durur; GitHub (Microsoft) verileri ABD'de tutabilir.
+> Bağdaştırıcının sonuçlarında yalnız numaranız, alanınız, kararınız, tarihi ve gerekçeniz görünür; adınız ve
+> iletişim bilginiz sunucuya gitmez. Kararlarınız ve gerekçeleriniz lisanslı katkı olduğu için süresiz saklanır;
+> ayrılırsanız iletişim bilginiz isteğinizle silinir. Hakkınızda tutulan bilgileri isteyebilir, düzeltebilir,
+> iletişim bilginizi sildirebilirsiniz.
 >
 > **12. Değişiklik.** Bu şartlar değişirse yeni sürüm size bildirilir. Kabul etmezseniz ayrılabilirsiniz; o güne
 > kadarki katkılarınız kabul ettiğiniz sürümün şartlarında kalır.
 >
 > İletişim: destek@risalemcp.com
 
-**[Karar 2]** madde 4'teki yapay zekâ kuralı: yardımcı kullanım gerekçede belirtilerek serbest mi, yoksa hiç mi?
-(Öneri: belirtilerek serbest; yasak denetlenemez, beyan ise kaydı dürüst tutar.)
+Madde 4'teki yapay zekâ kuralı: yardımcı kullanım gerekçede belirtilerek serbesttir (kullanıcının kararı; yasak
+denetlenemez, beyan kaydı dürüst tutar).
 
-## 3. Gizlilik politikasına eklenecek bölüm (taslak)
+## 3. Gizlilik politikası (bugün değişmez)
 
-`site/gizlilik.html`'e "Hesaplar"dan sonra; "Paylaşım" ve "Haklarınız"a birer cümle. Bugünkü politika bağdaştırıcının
-kullanıcılarını anlatır; denetçiler ayrı bir ilişkidir.
+Şartlar yayımlanmadığı için denetçinin gizlilik bilgisi şartların 11. maddesindedir; sitedeki politika bugün
+değişmez (bağdaştırıcının kullanıcılarını anlatır, denetçi ayrı bir ilişkidir). Hesaplı katkı (Y3) açılınca, yani
+katkı herkese açık bir kapıdan yapılınca, politikaya aşağıdaki bölüm girer; ondan önce de istenirse girebilir.
 
 > **Denetçiler**
 >
@@ -109,18 +118,18 @@ kullanıcılarını anlatır; denetçiler ayrı bir ilişkidir.
 Hesaplı katkı (Y3) açılınca bölüm genişler: hesap, görünen ad, öneriler, oturum (OAuth kodu yerinde; o gün IP ve
 kullanım kaydı politikası yeniden yazılır).
 
-## 4. Kayıtta onay
+## 4. Kayıtta onay (uygulandı, 2026-11-05)
 
-`reviewers.json`'da kabul edilen sürüm ve tarih: `"terms": {"version": 1, "date": "2026-11-20"}`. Öneri:
-`link_reviews` kurulumda bunu da denetler: şartları kabul etmemiş denetçinin kararı kurulumu durdurur (proje sahibi
-hariç; o şartların yazarıdır). Kabul yolu bugün e-postayla ("şartların 1. sürümünü kabul ediyorum" cevabı; e-posta
-özel depoda saklanır), Y3'te girişte tek tıkla (Y3.6). **[Karar 3]**
+Denetçiden kabul alınınca `reviewers.json`'a sürüm ve tarih yazılır: `"terms": {"version": 1, "date": "2026-11-20"}`
+(kullanıcının kararı). `link_reviews` kurulumda denetler (`TERMS_VERSION`): şartları kabul etmemiş denetçinin
+kararı ve kabulden önceki kararı kurulumu durdurur; proje sahibi (`owner: true`) şartların yazarıdır, kabul kaydı
+istemez. Kabul bugün e-postayla ("şartların 1. sürümünü kabul ediyorum" cevabı; özel depoda saklanır), Y3'te girişte
+tek tıkla (Y3.6). Şartlar değişirse `TERMS_VERSION` artar; eski sürümü kabul etmiş denetçinin o güne kadarki
+kararları geçerli kalır.
 
-## 5. Kararlar (kullanıcının)
+## 5. Kararlar (kullanıcı, 2026-11-05)
 
-1. Lisans: CC BY 4.0 toplu atıfla mı, CC0 mı, başka mı?
-2. Yapay zekâ yardımı: gerekçede belirtilerek serbest mi?
-3. Şartların kabulü e-postayla ve `reviewers.json`'da `terms` alanıyla, kurulum denetimiyle mi?
-4. Şartlar ve gizlilik bölümü onaylanınca sitede yayımlansın mı (sayfa katkı sayfasından bağlanır), yoksa yalnız
-   davetliye mi gönderilsin? (Katkı sayfası ulu orta bilgi vermesin kararıyla birlikte düşünülmeli; gizlilik
-   politikasının kendisi açık olmak zorundadır.)
+1. Lisans CC BY 4.0, toplu atıfla.
+2. Yapay zekâ yardımı gerekçede belirtilerek serbest.
+3. Şartların kabulü denetçiden alınınca `reviewers.json`'a kaydedilir; kurulum denetler.
+4. Şartlar sitede yayımlanmaz, yalnız davetliye gönderilir; gizlilik bilgisi şartların içindedir.

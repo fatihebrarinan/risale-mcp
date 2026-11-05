@@ -11,8 +11,10 @@ from risale_mcp.build_db import build
 from risale_mcp.library import Library
 from risale_mcp.link_reviews import Review, current, validate
 
-PEOPLE = {"a": {"name": "Denetçi A", "number": 1, "fields": {"kuran": {"since": "2026-11-01"}, "risale": {"since": "2026-11-01"}}},
-          "b": {"name": "Denetçi B", "number": 2, "fields": {"risale": {"since": "2026-11-01"}}}}
+TERMS = {"version": 1, "date": "2026-11-01"}
+PEOPLE = {"a": {"name": "Denetçi A", "number": 1, "terms": TERMS,
+                "fields": {"kuran": {"since": "2026-11-01"}, "risale": {"since": "2026-11-01"}}},
+          "b": {"name": "Denetçi B", "number": 2, "terms": TERMS, "fields": {"risale": {"since": "2026-11-01"}}}}
 KEY = {"source": "lemalar/1", "target": "quran:2:255", "type": "relation"}
 
 
@@ -84,10 +86,20 @@ def test_a_decision_counts_only_in_the_fields_held_on_its_date():
     assert link_reviews.competence(review(date="2026-11-15"), {}, ("kuran",)) == ()      # alansız: competent false
 
 
+def test_a_decision_needs_the_terms_accepted_before_it():
+    """Katılım şartlarını kabul etmemiş denetçinin ya da kabulden önceki kararı geçersiz; proje sahibi hariç."""
+    no_terms = {"a": {**PEOPLE["a"], "terms": None}}
+    assert any("şartlarını kabul etmemiş" in p for p in review().problems(no_terms))
+    assert any("kabulünden önce" in p for p in review(date="2026-10-30").problems(PEOPLE))
+    owner = {"a": {**PEOPLE["a"], "terms": None, "owner": True}}
+    assert review(date="2026-10-30").problems(owner) == []
+
+
 def test_reviewer_fields_are_checked(tmp_path):
     for people, problem in [({"a": {"number": 1, "fields": {"arapca": {"since": "2026-11-01"}}}}, "bilinmeyen alan"),
                             ({"a": {"number": 1, "fields": {"kuran": {}}}}, "tarihi yok"),
-                            ({"a": {"number": 1, "fields": {"kuran": {"since": "2026-11-01", "trial": "dün"}}}}, "geçersiz")]:
+                            ({"a": {"number": 1, "fields": {"kuran": {"since": "2026-11-01", "trial": "dün"}}}}, "geçersiz"),
+                            ({"a": {"number": 1, "terms": {"version": 2, "date": "2026-11-01"}}}, "şartların kaydı")]:
         (tmp_path / "reviewers.json").write_text(json.dumps({"reviewers": people}), "utf-8")
         with pytest.raises(ValueError, match=problem):
             link_reviews.reviewers(tmp_path)

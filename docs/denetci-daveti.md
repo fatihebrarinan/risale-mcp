@@ -15,7 +15,7 @@ deposundadır (`data/links/reviews/adaylar.md`, `fatihebrarinan/risale-mcp-denet
 | 2 | Davet: kişiye özel mesaj (aşağıda) ve tanıtım metni (`docs/tefsir-tanitim.md`) | Kullanıcı gönderir | `davet edildi`, tarih, kanal |
 | 3 | Cevap: alanı ve kısa ehliyet beyanı (serbest metin, kayda girmez) | Aday | `kabul etti` / `istemedi` |
 | 4 | Deneme: alan başına 10 satır (bkz. 3) | Model hazırlar, aday karar verir, kullanıcı değerlendirir | `deneme`, sonuç (alan başına) |
-| 5 | Şartların kabulü: katılım şartları ve lisans (Y0.5; hazır olmadan kayıt yapılmaz) | Aday | `şartlar`, tarih |
+| 5 | Şartların kabulü: katılım şartları (`docs/katki-sartlari.md` 2, sürüm 1; e-postayla gönderilir, sitede yok) ve "kabul ediyorum" cevabı | Aday | `şartlar`, tarih; `reviewers.json`'da `terms` |
 | 6 | Kayıt: `reviewers.json`'a numarası ve alanlarıyla (`since`, `trial`) | Kullanıcı onaylar | `kayıtlı`, numara |
 | 7 | İlk tur: kendi alanından 40'lık örneklem | Aday | — |
 
