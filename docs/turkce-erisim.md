@@ -1,4 +1,4 @@
-# Türkçe erişim (Y0.4; taslak, 1. tur, 2026-11-05)
+# Türkçe erişim (Y0.4; kullanıcının kararlarıyla, 2026-11-05)
 
 Yol haritasının Y0.4 adımı (`docs/tefsir-pilot-degerlendirme.md`): müfessirlerin eserleri Arapça kaldıkça altyapı
 yalnız Arapça okuyana açık olur (pilotta kullanıcı B bölümünde Arapçayı ayırt edemedi; Türk kullanıcının çoğu da
@@ -45,9 +45,16 @@ Arama sonuçlarından; künyeler, tamlık ve hak sahibi izin istemeden önce do�
    (`Work.translation`, mütercim `translator`; Risale'deki aslı Arapça eserler gibi paralel kimlik), sunucu atıfla
    verir. HA4'ün usulü: izin gelmeden başlanmaz.
 
-## 4. Kararlar (kullanıcının)
+## 4. Kararlar (kullanıcı, 2026-11-05)
 
-1. Üç katman (sohbette damgalı model tercümesi; kütüphanede saklanmaz; uzun vadede izinli tercüme) kabul mü?
-2. Damganın sözü: "yapay zekâ tercümesi" mi, başka bir ifade mi?
-3. Denetim arayüzünde Arapçası sınırlı denetçiye geçici yardımcı tercüme gösterilsin mi?
-4. İzin isteği: Keşşâf için TYEK'e Y1.7 ile birlikte mi, şimdi mi; Beyzâvî'nin yayıncısı doğrulansın mı?
+1. Üç katman kabul: sohbette damgalı model tercümesi; kütüphanede model tercümesi saklanmaz; uzun vadede izinli
+   tercümeler.
+2. Damga: "yapay zekâ tercümesi".
+3. Denetim arayüzünde Arapçası sınırlı denetçiye geçici, damgalı yardımcı tercüme gösterilir (kütüphanede değil).
+4. İzinli tercümeler yalnız tefsirin değil bütün alanların meselesi (hadis kitapları, eklenecek tefsirler, aslı
+   Arapça eserler): hem Türk kullanıcı için hem denetçinin yanında ikinci bir güvence olarak. Ayrı bir tercüme
+   programıyla ele alınır (öneri sohbette, kullanıcının onayını bekliyor).
+
+Neden saklanmıyor: saklanan model tercümesi araç sonucunda Arapçanın yanında aynı yapıda gelir; model alanları
+karıştırabilir (nâşir mealleri için ayrı talimat gerekmişti), metin kopyalanıp dolaşınca kaynağı unutulur. Sohbetteki
+tercüme o sohbetle sınırlıdır. Bedeli: saklanan tercüme denetlenebilir ve tutarlı olurdu; bu bilerek bırakıldı.
