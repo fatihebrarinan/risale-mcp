@@ -472,9 +472,8 @@ def _load_reviews(conn: sqlite3.Connection, report: BuildReport, root: Path | No
         if r.key not in links:
             unmatched += 1
             continue
-        rows.append((*r.key, r.status, r.strength, r.reviewer, people[r.reviewer].get("name", r.reviewer), r.date,
-                     r.reason, r.file))
-    conn.executemany("INSERT INTO link_reviews VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+        rows.append((*r.key, r.status, r.strength, people[r.reviewer]["number"], r.date, r.reason, r.file))
+    conn.executemany("INSERT INTO link_reviews VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
     report.counts["link_reviews"] = len(rows)
     report.counts["reviews_unmatched"] = unmatched
 

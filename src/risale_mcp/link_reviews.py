@@ -14,7 +14,10 @@ yalnız eklenen dosyalardadır: `data/links/reviews/<alan>/<yöntem>.jsonl` (ba�
 `reviews/kuran/relation.jsonl` âyet ilişkilerinin kararları). Kararlar insan emeğidir, yeniden üretilemez; ama
 denetçilerin adları ve kararları herkese açık değildir (kullanıcının kararı, 2026-11-05): bu klasör açık depoda
 değil, kendi ayrı git deposundadır (`data/links/reviews/.git`), yedeği kullanıcıdadır. Denetçiler
-`reviewers.json`'dadır; listede olmayan denetçinin kararı kurulumu durdurur.
+`reviewers.json`'dadır; listede olmayan denetçinin kararı kurulumu durdurur. Her denetçinin sabit bir numarası
+vardır (`number`; bir kez verilir, başkasına geçmez): araçlar ve veritabanı yalnız onu taşır, ad ve kimlik
+yayımlanmaz (kullanıcının kararı, 2026-11-05). Okuyan kişiyi değil gerekçeyi tartar; aynı denetçinin kararlarının
+tutarlılığını numaradan görür.
 
 Bir satır bir karardır:
 
@@ -120,8 +123,27 @@ def link_key(link: Link) -> dict:
 
 
 def reviewers(root: Path = REVIEWS_DIR) -> dict:
+    """Denetçiler; her birinin sabit numarası olmalı (eksik ya da tekrarlanan numara hatadır)."""
     path = root / REVIEWERS
-    return json.loads(path.read_text(encoding="utf-8"))["reviewers"] if path.exists() else {}
+    people = json.loads(path.read_text(encoding="utf-8"))["reviewers"] if path.exists() else {}
+    if problems := number_problems(people):
+        raise ValueError(f"{path}: {'; '.join(problems)}")
+    return people
+
+
+def number_problems(people: dict) -> list[str]:
+    """Sabit numaralar: her denetçide 1'den büyük ya da eşit bir tamsayı, ikisi aynı olmaz. Numara bir kez verilir,
+    denetçi ayrılsa da başkasına verilmez (kayıt silinmediği için tekrar kendiliğinden yakalanır)."""
+    out, seen = [], {}
+    for rid, person in people.items():
+        n = person.get("number")
+        if not isinstance(n, int) or isinstance(n, bool) or n < 1:
+            out.append(f"denetçinin sabit numarası yok: {rid!r}")
+        elif n in seen:
+            out.append(f"aynı numara iki denetçide: {seen[n]!r}, {rid!r} ({n})")
+        else:
+            seen[n] = rid
+    return out
 
 
 def read(root: Path = REVIEWS_DIR) -> list[Review]:
@@ -166,9 +188,9 @@ def validate(reviews: list[Review], people: dict) -> list[tuple[Review, str]]:
 
 
 def summary(reviews: list[Review], people: dict) -> list[dict]:
-    """Araçların gösterdiği biçim: denetçinin adıyla, tarih sırasıyla."""
+    """Araçların gösterdiği biçim: denetçinin sabit numarasıyla (ad yayımlanmaz), tarih sırasıyla."""
     return [{"status": r.status, **({"strength": r.strength} if r.strength else {}),
-             "by": people.get(r.reviewer, {}).get("name", r.reviewer), "date": r.date,
+             "reviewer": people[r.reviewer]["number"], "date": r.date,
              **({"reason": r.reason} if r.reason else {})} for r in sorted(reviews, key=lambda r: r.date)]
 
 

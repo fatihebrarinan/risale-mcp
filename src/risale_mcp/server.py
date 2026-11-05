@@ -405,7 +405,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             """List the links recorded between this text and other texts (the Risale and classical works), both
             directions: the other end's id and citation (available false: its text is not on this server), the kind
             (quote: same_words, transmits; relation: same_view, different_view, objection), the method and strength,
-            and named reviewers' checks. A link is a recorded relation with its evidence, not a verdict."""
+            and reviewers' checks (each reviewer by a fixed number; names are not published). A link is a recorded relation with its evidence, not a verdict."""
             with _tool_errors():
                 return _json(library.text_links(id, limit))
 
@@ -433,8 +433,9 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         strong first, each with its evidence sentence. Link kinds: isaret (the text says it points to, alludes to
         or explains the verse), acilis (the section opens with it), izah (the author's "Yani…" explanation; in
         works he wrote in Arabic the Turkish wording is the translator's), dayanak (the text relies on it: "…
-        sırrınca"), risale (the verse's allusion to the Risale-i Nur). A link with reviews was checked by a named
-        reviewer (status reviewed or disputed, the reviewer's own strength, date, reason); a link without reviews
+        sırrınca"), risale (the verse's allusion to the Risale-i Nur). A link with reviews was checked by a human
+        reviewer, shown by a fixed number, not a name (status reviewed or disputed, the reviewer's own strength,
+        date, reason); a link without reviews
         was found by rules and nobody has checked it."""
         with _tool_errors():
             return _json(library.find_ayah(sura, ayah, limit, offset))

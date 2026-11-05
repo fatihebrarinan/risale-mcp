@@ -889,12 +889,12 @@ class Library:
         return out
 
     def _reviews(self, source: str, target: str, type_: str, part: str = "") -> list[dict]:
-        """Bağ üzerine isimli denetçilerin geçerli kararları (`link_reviews.py`); yoksa boş: bağı kural kurdu,
-        kimse bakmadı."""
-        return [{k: v for k, v in (("status", r["status"]), ("strength", r["strength"]), ("by", r["name"]),
+        """Bağ üzerine denetçilerin geçerli kararları (`link_reviews.py`), denetçinin sabit numarasıyla (ad
+        yayımlanmaz); yoksa boş: bağı kural kurdu, kimse bakmadı."""
+        return [{k: v for k, v in (("status", r["status"]), ("strength", r["strength"]), ("reviewer", r["reviewer"]),
                                    ("date", r["date"]), ("reason", r["reason"])) if v}
                 for r in self.conn.execute(
-                    "SELECT status, strength, name, date, reason FROM link_reviews WHERE source = ? AND target = ?"
+                    "SELECT status, strength, reviewer, date, reason FROM link_reviews WHERE source = ? AND target = ?"
                     " AND type = ? AND part = ? ORDER BY date, reviewer", (source, target, type_, part))]
 
     def ayahs(self, sura: str | int, ayah: int, end: int | None = None, context: int = 0) -> dict:

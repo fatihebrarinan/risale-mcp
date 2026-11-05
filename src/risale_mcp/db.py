@@ -23,7 +23,7 @@ from pathlib import Path
 
 from risale_mcp.paths import DB_PATH
 
-SCHEMA_VERSION = 19
+SCHEMA_VERSION = 20
 NORMALIZATION = "search_words-1"
 
 SCHEMA = """
@@ -251,8 +251,7 @@ CREATE TABLE link_reviews (
     part     TEXT NOT NULL,                        -- parçasız bağda ''
     status   TEXT NOT NULL,                        -- reviewed, disputed
     strength TEXT,                                 -- denetçinin hükmü
-    reviewer TEXT NOT NULL,
-    name     TEXT NOT NULL,                        -- denetçinin görünen adı (reviewers.json)
+    reviewer INTEGER NOT NULL,                     -- denetçinin sabit numarası (reviewers.json); ad ve kimlik girmez
     date     TEXT NOT NULL,
     reason   TEXT,
     file     TEXT NOT NULL                         -- karar dosyası (alan/yöntem.jsonl)

@@ -11,7 +11,7 @@ from risale_mcp.build_db import build
 from risale_mcp.library import Library
 from risale_mcp.link_reviews import Review, current, validate
 
-PEOPLE = {"a": {"name": "Denetçi A"}, "b": {"name": "Denetçi B"}}
+PEOPLE = {"a": {"name": "Denetçi A", "number": 1}, "b": {"name": "Denetçi B", "number": 2}}
 KEY = {"source": "lemalar/1", "target": "quran:2:255", "type": "relation"}
 
 
@@ -43,6 +43,16 @@ def test_reason_is_required_only_between_texts():
     old_name = {"source": "lemalar/18", "target": "risale:sikke-i-tasdik-i-gaybi/lema-18", "type": "reference"}
     assert review(link=old_name).problems(PEOPLE) == []
     assert review(link=text, status="withdrawn").problems(PEOPLE) == []
+
+
+def test_every_reviewer_has_a_fixed_number_of_their_own(tmp_path):
+    (tmp_path / "reviewers.json").write_text(json.dumps({"reviewers": PEOPLE}), "utf-8")
+    assert link_reviews.reviewers(tmp_path) == PEOPLE
+    for people, problem in [({"a": {"name": "A"}}, "numarası yok"),
+                            ({"a": {"number": 1}, "b": {"number": 1}}, "aynı numara")]:
+        (tmp_path / "reviewers.json").write_text(json.dumps({"reviewers": people}), "utf-8")
+        with pytest.raises(ValueError, match=problem):
+            link_reviews.reviewers(tmp_path)
 
 
 def test_current_keeps_the_last_word_of_each_reviewer_and_never_merges_reviewers():
@@ -98,16 +108,17 @@ def reviewed_db(tmp_path_factory):
 def test_build_loads_current_reviews_that_meet_a_link(reviewed_db):
     out, report, _ = reviewed_db
     assert report.counts["link_reviews"] == 2 and report.counts["reviews_unmatched"] == 1
-    rows = sqlite3.connect(out).execute("SELECT source, status, name FROM link_reviews ORDER BY name").fetchall()
-    assert rows == [("lemalar/1", "reviewed", "Denetçi A"), ("lemalar/1", "disputed", "Denetçi B")]
+    rows = sqlite3.connect(out).execute("SELECT source, status, reviewer FROM link_reviews ORDER BY reviewer").fetchall()
+    assert rows == [("lemalar/1", "reviewed", 1), ("lemalar/1", "disputed", 2)]       # ad veritabanına girmez
+    assert not any("Denetçi" in str(v) for row in sqlite3.connect(out).execute("SELECT * FROM link_reviews") for v in row)
 
 
 def test_find_ayah_shows_who_checked_a_link(reviewed_db):
     lib = Library(reviewed_db[0])
     links = {l["section"]: l for l in lib.find_ayah("2", 255)["links"]}
     assert links["lemalar/1"]["reviews"] == [
-        {"status": "reviewed", "strength": "strong", "by": "Denetçi A", "date": "2026-11-04", "reason": "metin söylüyor"},
-        {"status": "disputed", "strength": "strong", "by": "Denetçi B", "date": "2026-11-04", "reason": "yalnız bir cümle"}]
+        {"status": "reviewed", "strength": "strong", "reviewer": 1, "date": "2026-11-04", "reason": "metin söylüyor"},
+        {"status": "disputed", "strength": "strong", "reviewer": 2, "date": "2026-11-04", "reason": "yalnız bir cümle"}]
     assert "reviews" not in links["lemalar/2"]                          # kimse bakmadı: alan yok
     lib.close()
 
