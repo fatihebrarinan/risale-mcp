@@ -198,7 +198,7 @@ insandır, model öneri hazırlar.
 
 | # | İş | Çıktı | ← | Ölçüt |
 |---|---|---|---|---|
-| Y0.1 | Denetçi ölçütü: ihtisas alanları (Kur'ân alıntısı, Arapça dil, hadis, tefsir, Risale), alan başına asgari ehliyet, davet ve kayıt usulü, itiraz ve geri çekme kuralları, görünen ad ve gizlilik | `docs/denetci-olcutu.md` (model taslak, kullanıcı karar) | — | Kullanıcının onayı |
+| Y0.1 (bitti, 2026-11-05) | Denetçi ölçütü: ihtisas alanları (Kur'ân alıntısı, Arapça dil, hadis, tefsir, Risale), alan başına asgari ehliyet, davet ve kayıt usulü, itiraz ve geri çekme kuralları, görünen ad ve gizlilik | `docs/denetci-olcutu.md` (model taslak, kullanıcı karar) | — | Kullanıcının onayı |
 | Y0.2 | Denetçi adayları: her alandan en az bir isimli kişi; davet metni; kabul edenler `reviewers.json`'a alanlarıyla | Davet e-postası taslağı, kayıtlar | Y0.1, Y1.2 | Her alanda en az bir denetçi |
 | Y0.3 | İzin soruları: e-Risale ve risaleoku izinleri yerel indirilebilir paketi ve ayrı sunucuları (hadis, tefsir) kapsıyor mu; e-Risale'ye Osmanlıca sorusu (Aşama 19) aynı yazışmada; nurpedia bilgilendirme | E-posta taslakları, cevaplar `docs/izinler.md` ve `catalog/permissions.py`'de | — | Her kaynakta yazılı cevap |
 | Y0.4 | Türkçe erişim kararı: (a) izinli Türkçe tercümeler (Beyzâvî'nin yayımlanmış tercümeleri; yayıncı listesi, izin e-postası; HA4 ile aynı usul), (b) modelin tercümesi: işaretli ("yapay zekâ tercümesi"), metin yerine geçmez, alıntılanmaz, atfedilmez; hangisi, hangi şartla, hangi sunucuda | Karar kaydı (planda), e-posta taslakları | — | Kullanıcının kararı; Y1.8'den önce |
@@ -224,8 +224,8 @@ insandır, model öneri hazırlar.
 - Y1.2.1 `reviewers.json`'a `fields` (Y0.1'in alanları), `since`, isteğe bağlı açıklama.
 - Y1.2.2 Bağ türü → gereken alan eşlemesi (Kur'ân alıntısı: Arapça/Kur'ân; hadis: hadis; metinden metne ilişki:
   tefsir/Risale); alanı tutmayan denetçinin kararı kaydedilir ama "denetlendi" sayılmaz (`competent: false`).
-- Y1.2.3 Araçlarda karar denetçinin adı ve alanıyla; mevcut 94 kararın alanı (kullanıcı: Kur'ân alıntısı ve âyet
-  ilişkisi) kullanıcıya sorularak yazılır.
+- Y1.2.3 Araçlarda karar alanıyla (adın görünüp görünmeyeceği açık, `docs/denetci-olcutu.md` 5); kullanıcının
+  alanları `kuran`, `risale`, `metin` (2026-11-05).
 - Y1.2.4 Ölçüt: test; mevcut kararlar geçerli kalır.
 
 **Y1.3 Aday bağ (`proposed`)**
@@ -244,7 +244,7 @@ insandır, model öneri hazırlar.
 - Y1.4.2 Sunum kuralları kalıcı: tam âyet, bulunan kelime âyette vurgulu, Arapça tek yazı tipi ve büyük, bağlam,
   kesme yok (T7'nin dersleri); denetçinin alanına göre gösterim (hadisçiye rivayet, Arapça okumayana Türkçe yardım
   Y0.4'e göre).
-- Y1.4.3 Karar düğmeleri (✓, ✗, not) tarayıcıda; dışa aktarılan dosya `link_reviews add` ile toplu işlenir
+- Y1.4.3 Karar düğmeleri (✓, ✗, not) tarayıcıda; tefsir – tefsir ve Risale – tefsir bağlarında not (gerekçe) zorunlu, notsuz karar dışa aktarılmaz (`docs/denetci-olcutu.md`, 4); dışa aktarılan dosya `link_reviews add` ile toplu işlenir
   (kontrol arayüzündeki işaret akışı gibi); sonra Y3'te sunucudan.
 - Y1.4.4 Ölçüt: kullanıcı bir örneklemi yalnız arayüzle karara bağlar, elle numara yazmadan.
 
@@ -307,7 +307,7 @@ beklemeden.
 |---|---|---|---|---|
 | Y3.1 | Hesaplar: askıdaki OAuth katkı bağdaştırıcısı için açılır (okuma sunucuları açık kipte kalır); hesap, görünen ad, denetçi bağlantısı (`reviewers.json` ile) | Kimlik doğrulamalı katkı adresi | Y0.5, Y0.6 | Giriş, oturum, iptal testleri |
 | Y3.2 | Katkı araçları: `propose_link` (iki uç, tür, kanıt sözü, not; uç ve kanıt sözü sunucuda denetlenir), `report_error` (bölme, âyet bağı, metin hatası), `my_proposals` (durum); araç ek açıklamaları yazma aracı olarak | Katkı sunucusu | Y3.1, Y1.3 | Testler; geçersiz öneri reddedilir |
-| Y3.3 | Kuyruk: öneriler sunucuda ayrı veritabanında (auth.db gibi yeniden kurulmaz), yerele çekilir; kabul edilen `data/links/` ve `data/links/reviews/`'a (git) girer, model önerisi `proposed_by` ile işaretli | `contributions.db`, çekme komutu | Y3.2 | Kayıp yok, her öneri izlenebilir |
+| Y3.3 | Kuyruk: öneriler sunucuda ayrı veritabanında (auth.db gibi yeniden kurulmaz), yerele çekilir; kabul edilen `data/links/` ve `data/links/reviews/`'a (denetim deposu) girer, model önerisi `proposed_by` ile işaretli | `contributions.db`, çekme komutu | Y3.2 | Kayıp yok, her öneri izlenebilir |
 | Y3.4 | Denetim akışı: denetim arayüzü (Y1.4) kuyruğu okur; denetçi alanına uyan önerileri görür; karar → bağ ve denetim kaydı; öneriyi verene durum bildirimi | Akış | Y1.4, Y1.2, Y3.3 | Bir öneri uçtan uca kabul edilir |
 | Y3.5 | Kötüye kullanım: hız sınırı, hesap başına günlük öneri, tekrar önerinin birleşmesi, itirazın silinmemesi, meşrep tartışmasına karşı yalnız kanıtlı öneri | Sınırlar | Y3.2 | Deneme saldırısı |
 | Y3.6 | Lisans ve onay: ilk katkıda şartların kabulü (Y0.5), katkının lisansı kayıtta | Onay kaydı | Y0.5, Y3.1 | Onaysız katkı kabul edilmez |

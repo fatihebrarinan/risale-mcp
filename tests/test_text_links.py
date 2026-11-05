@@ -101,7 +101,10 @@ def test_add_appends_a_review_of_an_existing_link(built):
     conn = sqlite3.connect(out["kisisel"][0])
     root = links / "reviews"
     key = {"source": "risale:sozler/10/c001", "target": "risale:sozler/10/hakikat-01/c001", "type": "quote"}
-    review = link_reviews.add(conn, "risale/scholar.jsonl", key, "reviewed", "a", "2026-11-04", "strong", root=root)
+    with pytest.raises(ValueError, match="gerekçe"):                                 # metinden metne: gerekçe zorunlu
+        link_reviews.add(conn, "risale/scholar.jsonl", key, "reviewed", "a", "2026-11-04", "strong", root=root)
+    review = link_reviews.add(conn, "risale/scholar.jsonl", key, "reviewed", "a", "2026-11-04", "strong",
+                              reason="aynı söz", root=root)
     assert review.link["source"] == "sozler/10/c001"                                 # anahtar öneksiz
     assert review.seen == {"relation": "same_words", "strength": "strong", "scope": "sentence"}
     with pytest.raises(ValueError, match="bağ yok"):

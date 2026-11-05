@@ -11,8 +11,9 @@ kararına, itiraz yalnız gerekçeyle. Model denetçi değildir: komutu bir insa
 
 Bağlar kurallardan ya da üreten işlerden her kurulumda yeniden çıkar; karar bağın içine yazılamaz. Kararlar ayrı,
 yalnız eklenen dosyalardadır: `data/links/reviews/<alan>/<yöntem>.jsonl` (bağ dosyasının adıyla; ör.
-`reviews/kuran/relation.jsonl` âyet ilişkilerinin kararları). Bu klasör git'tedir (`data/` içinde tek istisna
-`README.md` ve burası): kararlar insan emeğidir, yeniden üretilemez, git'te gözden geçirilir. Denetçiler
+`reviews/kuran/relation.jsonl` âyet ilişkilerinin kararları). Kararlar insan emeğidir, yeniden üretilemez; ama
+denetçilerin adları ve kararları herkese açık değildir (kullanıcının kararı, 2026-11-05): bu klasör açık depoda
+değil, kendi ayrı git deposundadır (`data/links/reviews/.git`), yedeği kullanıcıdadır. Denetçiler
 `reviewers.json`'dadır; listede olmayan denetçinin kararı kurulumu durdurur.
 
 Bir satır bir karardır:
@@ -29,6 +30,8 @@ Bir satır bir karardır:
               gitmez, yalnız testi kilitler (kullanıcı bağı seçerse `link`'e çevrilir)
     status    reviewed  denetçi baktı; `strength` onun hükmüdür (kuralınkinden farklı olabilir; araç ikisini de verir)
               disputed  itiraz: bağ yanlış (olmamalı ya da türü yanlış); `reason` zorunlu
+              metinden metne lafız ve ilişki bağlarında (tefsir – tefsir, Risale – tefsir) `reason` her kararda
+              zorunludur: kararın değeri neden verildiğindedir (kullanıcının kararı, 2026-11-05)
               withdrawn denetçi aynı bağdaki önceki kararını geri çeker
     strength  denetçinin hükmü: strong | weak; weak "zayıf olmalı ya da hiç olmamalı" demektir
     seen      karar verildiğinde bağın hâli (tarih için; anahtar değil)
@@ -50,7 +53,7 @@ from collections import Counter
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-from risale_mcp.links import STRENGTHS, TYPES, Link, local_id
+from risale_mcp.links import STRENGTHS, TYPES, Link, local_id, text_endpoint
 from risale_mcp.paths import DB_PATH, LINKS_DIR
 
 REVIEWS_DIR = LINKS_DIR / "reviews"
@@ -95,10 +98,19 @@ class Review:
             out.append(f"strength {self.strength!r}")
         if self.status == "disputed" and not self.reason:
             out.append("itirazın gerekçesi yok")
+        elif self.status == "reviewed" and not self.reason and needs_reason(self.link):
+            out.append("metinden metne bağın kararı gerekçesiz olmaz")
         return out
 
     def to_json(self) -> dict:
         return {k: v for k, v in asdict(self).items() if v not in (None, "", {}) and k != "file"}
+
+
+def needs_reason(link: dict | None) -> bool:
+    """Gerekçe her kararda zorunlu mu: iki ucu da metin olan lafız ve ilişki bağları (tefsir – tefsir, Risale –
+    tefsir; kullanıcının kararı, 2026-11-05). Kur'ân ve hadis hedefli bağlarda kanıt veridedir; göndermede kanıt
+    metnin kendi sözüdür."""
+    return bool(link) and link.get("type") in ("quote", "relation") and text_endpoint(link.get("target", "")) is not None
 
 
 def link_key(link: Link) -> dict:

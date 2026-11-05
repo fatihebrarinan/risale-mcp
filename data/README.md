@@ -1,6 +1,6 @@
 # data/
 
-Bu klasörde yalnızca bu dosya ve `links/reviews/` (denetim kararları) git'tedir. Kod yollarını `src/risale_mcp/paths.py`'den alır.
+Bu klasörde yalnızca bu dosya git'tedir; `links/reviews/` (denetim kararları) açık depoda değil, kendi ayrı, yerel git deposundadır (yedeği kullanıcıda). Kod yollarını `src/risale_mcp/paths.py`'den alır.
 
 ```
 data/
@@ -14,7 +14,7 @@ data/
 │   ├── kuran/quran.json  Kur'ân katmanı
 │   └── hadis/matches.json  Risale'deki hadislerin rivayetlerle eşlemesi; `hadis.py` üretir. Tam derlem şimdilik `raw/`dedir; tefsir-beyzavi.json: Beyzâvî'nin hadis bağlarının rivayet metinleri (`links_tefsir.py`)
 ├── links/<alan>/<yöntem>.jsonl  Bağlar: Risale'nin âyet, hadis ve kendi içiyle bağları (`links.py`, `docs/bag-altyapisi-plani.md`); üreten iş yazar, her profil okur
-│   └── reviews/          Denetim kararları (`link_reviews.py`, git'te): isimli denetçilerin bağlar üzerine kararları, yalnız eklenir; silinmemeli
+│   └── reviews/          Denetim kararları (`link_reviews.py`, kendi yerel git deposunda): isimli denetçilerin bağlar üzerine kararları, yalnız eklenir; silinmemeli
 ├── dist/<profil>/        Kurulan çıktı (`profiles.py`); kişisel ve genel
 │   ├── risale.db         Veritabanı; library'den yeniden kurulur
 │   └── vectors/          Anlamsal arama vektörleri. kisisel/vectors asıl depodur (ücretli çıkarılır, silinmemeli); genel/vectors ondan süzülür

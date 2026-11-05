@@ -112,8 +112,11 @@ def test_real_links_keep_the_users_review():
     from risale_mcp.db import connect
     from risale_mcp.link_reviews import disagreements
     from risale_mcp.paths import DB_PATH
+    from risale_mcp.link_reviews import REVIEWS_DIR
     if not DB_PATH.exists():
         pytest.skip("risale.db yok")
+    if not (REVIEWS_DIR / "kuran" / "relation.jsonl").exists():
+        pytest.skip("denetim kararları yok (açık depoda değiller)")
     reviews = load_reviews()
     assert len(reviews) == 62
     assert disagreements(connect(), reviews) == []

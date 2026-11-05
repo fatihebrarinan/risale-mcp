@@ -28,9 +28,21 @@ def review(**kw) -> Review:
     ({"match": {"node_prefix": "lemalar", "verse": "quran:2:255"}}, "link ya da match"),
     ({"link": {**KEY, "strength": "strong"}}, "link"),               # güç anahtarda değil
     ({"strength": "maybe"}, "strength"),
+    ({"link": {"source": "beyzavi/1/1/c004", "target": "tefsir:kessaf/1/1/c002", "type": "quote"}}, "gerekçe"),
+    ({"link": {"source": "isaratul-icaz/1/c003", "target": "tefsir:beyzavi/1/1", "type": "relation"}}, "gerekçe"),
 ])
 def test_record_problems(kw, problem):
     assert any(problem in p for p in review(**kw).problems(PEOPLE))
+
+
+def test_reason_is_required_only_between_texts():
+    """Metinden metne lafız ve ilişki bağında gerekçe her kararda zorunlu; Kur'ân hedefinde ve göndermede değil."""
+    text = {"source": "beyzavi/1/1/c004", "target": "tefsir:kessaf/1/1/c002", "type": "quote"}
+    assert review(link=text, reason="aynı söz, Keşşâf'tan").problems(PEOPLE) == []
+    assert review().problems(PEOPLE) == []                                          # âyet ilişkisi: gerekçesiz olur
+    old_name = {"source": "lemalar/18", "target": "risale:sikke-i-tasdik-i-gaybi/lema-18", "type": "reference"}
+    assert review(link=old_name).problems(PEOPLE) == []
+    assert review(link=text, status="withdrawn").problems(PEOPLE) == []
 
 
 def test_current_keeps_the_last_word_of_each_reviewer_and_never_merges_reviewers():

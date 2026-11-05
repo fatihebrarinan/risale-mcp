@@ -1,68 +1,69 @@
-# Denetçi ölçütü (Y0.1; taslak, 1. tur, 2026-11-05)
+# Denetçi ölçütü (Y0.1; kullanıcı onayladı, 2026-11-05)
 
-Yol haritasının ilk adımı (`docs/tefsir-pilot-degerlendirme.md`, Y0.1). Taslak modelindir, kararlar kullanıcınındır;
-kullanıcının kararı gereken her yer **[Karar n]** diye işaretli ve sonda toplu. Onaylanınca Y1.2 (denetçinin ihtisası,
-`reviewers.json`'a `fields`) ve Y0.2 (davet) bu belgeye dayanır.
+Yol haritasının ilk adımı (`docs/tefsir-pilot-degerlendirme.md`, Y0.1). Taslak modelin, kararlar kullanıcınındır
+(2026-11-05; 1. turun soruları ve cevapları sonda). Y1.2 (denetçinin ihtisası, `reviewers.json`'a `fields`) ve Y0.2
+(davet) bu belgeye dayanır.
 
-Bugünkü durum: tek denetçi kullanıcı (`fatihebrarinan`, "proje sahibi", 2026-10-27'den); 94 karar (62 âyet ilişkisi,
-32 Beyzâvî'nin Kur'ân alıntısı). Kayıt düzeni H5'tir (`link_reviews.py`): yalnız eklenen satırlar, `reviewed` /
-`disputed` (gerekçeli) / `withdrawn`, denetçinin güç hükmü, denetçiler birbirini silmez, model denetçi değildir.
-Bu belge o düzenin **kim** ve **hangi alanda** sorusunu cevaplar; kayıt düzenini değiştirmez.
+Bugünkü durum: tek denetçi kullanıcı (`fatihebrarinan`, "proje sahibi", 2026-10-27'den); 94 karar (62 Kur'ân – Risale
+ilişkisi, 32 Beyzâvî'nin Kur'ân alıntısı). Kayıt düzeni H5'tir (`link_reviews.py`): yalnız eklenen satırlar,
+`reviewed` / `disputed` (gerekçeli) / `withdrawn`, denetçinin güç hükmü, denetçiler birbirini silmez, model denetçi
+değildir. Bu belge o düzenin **kim** ve **hangi alanda** sorusunu cevaplar.
 
 ## 1. İlkeler
 
 1. **Kapı ilim ve ihtisasa göre açılır, meşrebe göre değil.** Denetçiye cemaati, mensubiyeti, görüşü sorulmaz ve
    kayda girmez. Sorulan tek şey: bu alanda bu işi yapabiliyor mu.
-2. **Ehliyet alan başınadır.** Hadisçi olmak âyet ilişkisinde, Risale'yi iyi bilmek hadiste söz hakkı vermez. Bir
-   kişinin birden çok alanı olabilir.
+2. **Ehliyet alan başınadır.** Hadisçi olmak Kur'ân – Risale ilişkisinde, Risale'yi iyi bilmek hadiste söz hakkı
+   vermez. Bir kişinin birden çok alanı olabilir.
 3. **Ehliyet gösterilir, beyan yetmez.** Diploma ya da icazet bir işarettir, ama asıl ölçü işin kendisidir: her alanda
-   cevabı bilinen küçük bir deneme örneklemi (bkz. 4). Böylece belge doğrulamak gerekmez ve resmî eğitimi olmayan
+   cevabı bilinen küçük bir deneme örneklemi (bkz. 3). Böylece belge doğrulamak gerekmez ve resmî eğitimi olmayan
    ehil kişi de girebilir.
 4. **Denetçi hüküm vermez, bağı denetler.** Kararın konusu bağdır (bu iki yer arasında bu ilişki var mı, kanıtı
    doğru mu, ne kadar güçlü). Hadise sıhhat hükmü, bir yere "tefsir" hükmü denetçinin işi değildir; kayıt bunları
    almaz.
-5. **Her karar adla ve gerekçeyle kalır.** Kararlar silinmez; itiraz ve geri çekme yeni satırdır (H5).
+5. **Her karar adla ve gerekçeyle kalır.** Kararlar silinmez; itiraz ve geri çekme yeni satırdır (H5). Tefsir –
+   tefsir ve Risale – tefsir bağlarında gerekçe her kararda zorunludur (bkz. 4).
 6. **Denetçi insandır.** Model öneri hazırlar, örneklemi sunar, karar vermez; modelin hazırladığı satır denetçinin
    kararı sayılmaz. Komutu ya da düğmeyi bir insan çalıştırır.
 
 ## 2. Alanlar
 
-Plan beş alan sayıyordu (Kur'ân alıntısı, Arapça dil, hadis, tefsir, Risale), katkı sayfası dört nitelik
-(`site/katki.html`). Öneri, bağ türleriyle birebir eşlenen beş alan ve ayrı tutulan bir metin kontrolü:
+Dört bağ alanı ve ayrı tutulan bir metin kontrolü (kullanıcının kararı: Arapça dil ayrı alan değildir; Arapça okumak
+`kuran`, `hadis` ve `tefsir` alanlarının ehliyetinin içindedir):
 
-| Alan (`fields`) | İşi | Asgari ehliyet (öneri) |
+| Alan (`fields`) | İşi | Asgari ehliyet |
 |---|---|---|
-| `kuran` | Bir metindeki Arapçanın Kur'ân'dan alıntı olup olmadığı, hangi âyet ve hangi lafız; işaretsiz alıntı, iktibas, kalıp ifade ayrımı | Mushafı akıcı okumak, Arapça cümlenin sınırını görmek; hâfızlık ya da kıraat bilgisi artı |
-| `arapca` | Arapça metinde lafzın sınırı (lemma), iki Arapça metnin aynı söz olup olmadığı (`same_words`), Arapça eserlerin cümle bölmesi, tercümenin asla uyması | Klasik Arapça metni harekesiz okuyup anlamak (nahiv, sarf); ilahiyat ya da medrese eğitimi işaret |
-| `hadis` | Bir sözün rivayet olup olmadığı, künyenin gösterdiği yerde bulunması, lafız farkı, mânen nakil; tefsirlerdeki «» sözleri | Hadis usûlü ve kaynakları; kitapta bâb ve numara bulabilmek. Derece hükmü istenmez (ilke 4) |
-| `tefsir` | Müfessirlerin eserleri arasında ilişki: nakil (`transmits`), aynı görüş, farklı görüş, itiraz; müfessirin âyet birimi | Tefsir usûlü; en az bir klasik tefsiri (Beyzâvî, Keşşâf…) Arapçasından okumuş olmak |
-| `risale` | Risale'nin bir yerinin âyetle kurduğu bağın türü ve gücü (işaret, açılış, izah, dayanak); Risale içi göndermeler; Risale ile müfessir arasındaki ilişkide Risale tarafı | Külliyatı bütün olarak okumuş, bölümlerin yerini ve göndermelerini bilen; Arapça yalnız `kuran` ile birlikte gerekir |
-| `metin` (ayrı) | Risale metninin cümle bölmesi, başlıkları, mecmua eşlemesi (Aşama 16) | Risale'yi okuyabilmek; Arapça gerekmez |
+| `kuran` | Bir metindeki Arapçanın Kur'ân'dan alıntı olup olmadığı, hangi âyet ve hangi lafız; işaretsiz alıntı, iktibas, kalıp ifade ayrımı; müfessirin cümleyi âyetin sözüyle açması (lemma) ve lafzın sınırı | Mushafı akıcı okumak, Arapça cümlenin sınırını görmek; hâfızlık ya da kıraat bilgisi artı |
+| `hadis` | Bir sözün rivayet olup olmadığı, künyenin gösterdiği yerde bulunması, lafız farkı, mânen nakil; tefsirlerdeki «» sözleri | Arapça okumak; hadis usûlü ve kaynakları; kitapta bâb ve numara bulabilmek. Derece hükmü istenmez (ilke 4) |
+| `tefsir` | Müfessirlerin eserleri arasında ilişki: aynı sözle nakil, aynı görüş, farklı görüş, itiraz; müfessirin âyet birimi | Klasik Arapça metni harekesiz okuyup anlamak; tefsir usûlü; en az bir klasik tefsiri (Beyzâvî, Keşşâf…) Arapçasından okumuş olmak |
+| `risale` | Risale'nin bir yerinin âyetle kurduğu bağın türü ve gücü (işaret, açılış, izah, dayanak); Risale içi göndermeler; Risale ile müfessir arasındaki ilişkide Risale tarafı | Külliyatı bütün olarak okumuş, bölümlerin yerini ve göndermelerini bilen |
+| `metin` (ayrı) | Risale metninin cümle bölmesi, başlıkları, mecmua eşlemesi (Aşama 16) | Risale'yi okuyabilmek; Arapça gerekmez (aslı Arapça eserlerin metin kontrolünde gerekir) |
 
-`metin` bir bağ denetimi değildir: kararları kontrol arayüzünün işaretleri gibi ayrıştırıcıya döner, `link_reviews`'a
-girmez. Yine de aynı listede adla durması, tanıtımdaki "Arapça bilmeyenlerin de yapabileceği iş"in karşılığıdır.
-**[Karar 1]**
+`metin` bir bağ denetimi değildir: kararları kontrol arayüzünün işaretleri gibi ayrıştırıcıya döner, denetim kaydına
+girmez. Yine de aynı listede adla durur; tanıtımdaki "Arapça bilmeyenlerin de yapabileceği iş" budur.
 
 ### Bağ → gereken alan
 
 Y1.2.2'nin eşlemesi. Bir kararın "denetlendi" sayılması için denetçi gereken alanda kayıtlı olmalı; öbürlerinin
-kararı kaydedilir, araçta görünür, ama `competent: false` taşır.
+kararı kaydedilir, araçta görünür, ama `competent: false` taşır. İki alan gereken bağda (aşağıda "ve") bağ ya iki
+alanı birden taşıyan bir denetçinin kararıyla ya da her alandan birer denetçinin ayrı kararlarıyla "denetlendi" olur;
+tek alanlı denetçinin kararı o alanın payıdır.
 
-Bağlar üç cinstir (sade şema, 2026-11-05, `docs/tefsir-pilot-degerlendirme.md` "Bağ şeması"): **lafız** (söz geçiyor),
-**ilişki** (iki yer arasında anlamca bağ var), **gönderme** (metin oraya gönderiyor). Gereken alan dosyanın adından
-değil, bağın cinsinden ve iki ucundan okunur; yeni bir eser ya da alan eklenince kural kendiliğinden işler:
+Bağlar üç cinstir (sade şema, `docs/tefsir-pilot-degerlendirme.md` "Bağ şeması"): **lafız** (söz geçiyor), **ilişki**
+(iki yer arasında anlamca bağ var), **gönderme** (metin oraya gönderiyor). Gereken alan bağın cinsinden ve iki
+ucundan okunur; yeni bir eser ya da alan eklenince kural kendiliğinden işler:
 
-- **Lafız bağı:** hedefin alanı. Hedef Kur'ân ise `kuran`, hadis ise `hadis`, bir Arapça metin ise `arapca`.
-- **İlişki bağı:** iki ucun alanı. Kur'ân ile Risale arasında `risale`, Kur'ân ile müfessir arasında `tefsir`, iki
-  müfessir arasında `tefsir`, Risale ile müfessir arasında `tefsir` ve `risale`.
-- **Gönderme bağı:** gönderen metnin alanı (Risale'de `risale`).
+- **Lafız bağı:** hedefin alanı. Hedef Kur'ân ise `kuran`, hadis ise `hadis`, bir müfessirin metni ise `tefsir`.
+- **İlişki bağı:** iki ucun alanı. Kur'ân ile Risale arasında `kuran` ve `risale`, Kur'ân ile müfessir arasında
+  `tefsir`, iki müfessir arasında `tefsir`, Risale ile müfessir arasında `tefsir` ve `risale`.
+- **Gönderme bağı:** gönderen metnin alanı (Risale'de `risale`); hedef bir müfessirse `tefsir` de.
 
 Bugün elimizdeki ve ileride gelecek bağlar, bu kurala göre:
 
 | Bağ | Cinsi | Ne bağlar | Bugün | Alan |
 |---|---|---|---|---|
 | Kur'ân – Risale | lafız | Risale'deki âyet alıntısı (kaynağın işaretlediği ya da Kur'ân metninde bulunan) | 10.283 | `kuran` |
-| Kur'ân – Risale | ilişki | Risale'nin bir yerinin âyetle kurduğu bağ (işaret, açılış, izah, dayanak, Risale'ye işaret) | 961 | `risale` **[Karar 2]** |
+| Kur'ân – Risale | ilişki | Risale'nin bir yerinin âyetle kurduğu bağ (işaret, açılış, izah, dayanak, Risale'ye işaret) | 961 | `kuran` ve `risale` |
 | Kur'ân – tefsir | lafız | Müfessirin cümlesindeki âyet alıntısı ve lemma (cümleyi âyetin sözüyle açması) | 330 (yerelde) | `kuran` |
 | Kur'ân – tefsir | ilişki | Müfessirin âyet birimi ve işlediği âyetler (eserin kendi yapısı söyler) | 39 (yerelde) | `tefsir` |
 | Hadis – Risale | lafız | Risale'deki sözün rivayette bulunması: derlemde kelimesi kelimesine, künyenin bölümünde, okumayla (mânen nakil de buradadır) | 3.380; ayrıca 1.446 model adayı | `hadis` |
@@ -70,9 +71,9 @@ Bugün elimizdeki ve ileride gelecek bağlar, bu kurala göre:
 | Hadis – Risale, Hadis – tefsir | ilişki | Bir yerin hadisi aktarmadan onun konusunu işlemesi | yok (ileride) | `hadis` ve uçtaki metnin alanı |
 | Risale – Risale | gönderme | Eski adlar; ileride numaralı göndermeler (Aşama 13) | 15 | `risale` |
 | Risale – tefsir | gönderme | Risale'nin müfessiri adıyla anması ("Zemahşerî'nin dediğine göre") | yok (Y1.7) | `risale` ve `tefsir` |
-| Tefsir – tefsir | lafız | Bir müfessirin öbüründen aynı sözle naklettiği yer (Beyzâvî → Keşşâf) | yok (Y1.7) | `arapca` ya da `tefsir` |
-| Tefsir – tefsir | ilişki | Aynı görüş, farklı görüş, itiraz | yok (katkı aşaması) | `tefsir` |
-| Risale – tefsir | ilişki | Aynı görüş, farklı görüş, itiraz | yok (katkı aşaması) | `tefsir` ve `risale` (iki ayrı karar ya da iki alanlı bir denetçi) **[Karar 3]** |
+| Tefsir – tefsir | lafız | Bir müfessirin öbüründen aynı sözle naklettiği yer (Beyzâvî → Keşşâf) | yok (Y1.7) | `tefsir`; **gerekçe zorunlu** |
+| Tefsir – tefsir | ilişki | Aynı görüş, farklı görüş, itiraz | yok (katkı aşaması) | `tefsir`; **gerekçe zorunlu** |
+| Risale – tefsir | ilişki | Aynı görüş, farklı görüş, itiraz | yok (katkı aşaması) | `tefsir` ve `risale`; **gerekçe zorunlu** |
 | Hadis – hadis | ilişki | Aynı hadisin başka rivayeti | yok (hadis sunucusu) | `hadis` |
 | Konu – Risale ve öbürleri | ilişki | Bir bölümün bir konuyu işlemesi (konu ortak adrestir, iki yer arasında konu bağı kurulmaz) | yok (Aşama 15) | uçtaki metnin alanı |
 
@@ -81,83 +82,97 @@ girerler ve denetçi kabul edince bağ olurlar.
 
 ## 3. Davet ve kayıt usulü
 
-1. **Aday:** kullanıcının tanıdığı ya da tavsiye edilen kişi, ya da katkı sayfasından (`destek@risalemcp.com`) yazan.
-   İlk aşamada yalnız davetle **[Karar 4]**.
+1. **Yalnız davetle** (kullanıcının kararı). Aday kullanıcının tanıdığı ya da tavsiye edilen kişidir; katkı
+   sayfasından (`destek@risalemcp.com`) yazan biri de kullanıcı onu davet ederse aday olur. Sayfadan yazmak tek
+   başına adaylık vermez.
 2. **Tanışma:** tanıtım metni (`docs/tefsir-tanitim.md`) kişiye özel gider; aday hangi alanda katkı vereceğini ve
    kendi ehliyetini kısaca yazar (eğitim, okuduğu eserler; serbest metin, kayda girmez).
 3. **Deneme örneklemi:** her alan için cevabı bilinen 10 satır (kullanıcının kararlarından ve kurulumun bilinen
    hatalarından; en az 2'si yanlış bağ, 1'i tuzak: kelimesi benzeyen ama sözü farklı). Ölçü: en çok 1 hata ve
-   yanlışların hepsinin yakalanması. Tutmayan aday reddedilmez, o alanda kaydedilmez; gerekçe kendisine söylenir.
-   Deneme kararları `origin: {"trial": …}` ile ayrı dosyada durur, araçlara gitmez. **[Karar 5]**
+   yanlışların hepsinin yakalanması. Gerekçe zorunlu alanlarda (tefsir) denemenin gerekçeleri de okunur. Tutmayan aday
+   reddedilmez, o alanda kaydedilmez; gerekçe kendisine söylenir. Deneme kararları ayrı dosyada durur
+   (`origin: {"trial": …}`), araçlara gitmez. Deneme her davetli için ve her alan için ayrıdır; kullanıcının mevcut
+   alanları denemesizdir (94 kararı o alanlarda verildi).
 4. **Kabul:** kullanıcı onaylar; denetçi `reviewers.json`'a alanlarıyla yazılır (`fields`, `since`, alan başına
-   deneme tarihi). Kayıttan önce şartları kabul eder: kararların adıyla yayımlanacağı, silinmeyeceği, lisansı
-   (Y0.5).
+   deneme tarihi). Kayıttan önce şartları kabul eder: kararların adıyla kaydedileceği, silinmeyeceği, lisansı (Y0.5).
 5. **İlk tur:** kendi alanından 40'lık örneklem (T7 gibi); sonuçları kullanıcıyla birlikte gözden geçirilir.
 
-Kayıt alanları (Y1.2.1 için öneri; iletişim bilgisi bu dosyaya girmez):
+Kayıt alanları (Y1.2.1; iletişim bilgisi bu dosyaya girmez):
 
 ```json
 "ornek-kimlik": {
   "name": "Görünen ad",
-  "fields": {"kuran": {"since": "2026-11-20", "trial": "2026-11-18"}, "arapca": {"since": "2026-11-20"}},
+  "fields": {"kuran": {"since": "2026-11-20", "trial": "2026-11-18"}, "risale": {"since": "2026-11-20", "trial": "2026-11-19"}},
   "note": "isteğe bağlı kısa tanım (ör. 'ilahiyat, tefsir ABD')",
   "since": "2026-11-20"
 }
 ```
 
-Kullanıcının mevcut kaydı: `fields` kullanıcıya sorularak yazılır (Y1.2.3; öneri: `kuran`, `risale`; 94 karar bu iki
-alanda). Proje sahibi olmak alan vermez. **[Karar 6]**
+Kullanıcının kaydı: `kuran`, `risale`, `metin` (kullanıcının kararı). Proje sahibi olmak alan vermez.
 
-## 4. Kararların geçerliliği, itiraz, geri çekme
+## 4. Kararların geçerliliği, gerekçe, itiraz, geri çekme
 
-Bugünkü kurallar sürer; eklenenler:
-
+- **Gerekçe:** itirazda her zaman zorunludur. **Tefsir – tefsir ve Risale – tefsir bağlarında** (iki ucu da metin olan
+  lafız ve ilişki bağları) kabulde de zorunludur: bu bağlarda kararın değeri neden verildiğindedir (kullanıcının
+  kararı, 2026-11-05). Gerekçe kanıtı göstermelidir: hangi söz, hangi görüş, hangi farkla ("Beyzâvî 'الحمد' üzerine
+  Keşşâf'ın sözünü kısaltarak aktarıyor; Keşşâf'taki ikinci vecih düşmüş"). Kayıtta `reason` alanıdır; gerekçesiz
+  satır kurulumu durdurur (`link_reviews.needs_reason`). Denetim arayüzünde (Y1.4) ve katkı kapısında (Y3) bu bağların
+  not kutusu zorunludur. Kur'ân ve hadis hedefli bağlarda kanıt veridedir (bulunan söz), göndermede metnin kendi
+  sözüdür; orada gerekçe isteğe bağlıdır.
 - **Alanı tutmayan karar** kaydedilir, silinmez, `competent: false` ile görünür; bağı "denetlendi" yapmaz.
 - **İki ehil denetçi ayrılırsa** (biri `reviewed`, öbürü `disputed`): bağ "ihtilaflı" görünür, iki karar gerekçesiyle
-  yan yana; oylama yapılmaz, sayı üstünlük vermez. Araç ve talimat ihtilafı hüküm gibi değil ihtilaf olarak sunar.
-  Gerekirse üçüncü bir ehil denetçinin görüşü eklenir, ama o da yalnız bir karardır. **[Karar 7]**
+  yan yana; oylama yapılmaz, sayı üstünlük vermez (kullanıcının kararı). Araç ve talimat ihtilafı hüküm gibi değil
+  ihtilaf olarak sunar. Üçüncü bir ehil denetçinin görüşü eklenebilir, ama o da yalnız bir karardır.
 - **Güçte ayrılık** (biri `strong`, öbürü `weak`): ikisi de görünür; araç en temkinli olanı öne alır (`weak`).
-- **Geri çekme** yalnız denetçinin kendi kararınadır (bugün öyle).
+- **Geri çekme** yalnız denetçinin kendi kararınadır.
 - **Kurallar değişince** kararın verildiği hâl `seen`'de durur; bağ değişmişse karar "eski hâle verildi" diye
-  işaretlenir, yeniden bakılması için kuyruğa düşer (bugün `seen` var, işaretleme Y1.4'te).
-- **Denetçinin ayrılması:** isterse ya da ehliyeti sorgulanırsa kayıt `until` tarihi alır; geçmiş kararları durur,
-  ayrıldığı tarih görünür. Kararların silinmesini isterse: satırlar silinmez, ama görünen adı "ayrılan denetçi"ye
-  çevrilebilir (kimliği kayıtta kalır). **[Karar 8]**
+  işaretlenir, yeniden bakılması için kuyruğa düşer (işaretleme Y1.4'te).
+- **Denetçinin ayrılması:** kayıt `until` tarihi alır; geçmiş kararları durur. İsterse görünen adı "ayrılan denetçi"ye
+  çevrilir, kimliği kayıtta kalır (kullanıcının kararı).
 - **Kötüye kullanım** (bilerek yanlış karar, toplu itiraz, meşrep kavgası): kullanıcı kaydı `until` ile kapatır,
   kararları `competent: false` sayılır; gerekçe kayıtta.
-- **Çıkar çatışması:** denetçi kendi eserinin ya da önerdiği bağın kararını veremez (katkı açıldığında, Y3; öneriyi
-  verenle denetleyen ayrı kişi).
+- **Çıkar çatışması:** öneriyi verenle denetleyen ayrı kişidir (katkı açıldığında, Y3).
 
 ## 5. Görünen ad ve gizlilik
 
-- **İsimli denetim:** kararın değeri kimin verdiğine bağlıdır; bu yüzden varsayılan gerçek ad (unvanıyla ya da
-  unvansız, kişinin seçtiği biçimde). Takma ada izin verilir mi: **[Karar 9]** (öneri: hayır; ama ad kısaltması,
-  "M. Yılmaz" gibi, olabilir).
-- **Yayımlanan:** görünen ad, alanlar, kayıt tarihi, kararları (araç sonuçlarında ve depoda). Yayımlanmayan:
-  e-posta, telefon, eğitim beyanı, deneme sonuçlarının ayrıntısı; bunlar git'e girmez, kullanıcının kendi kaydında
-  durur.
-- **Depo:** `data/links/reviews/` git'tedir; depo açıksa (GitHub `fatihebrarinan/risale-mcp`) görünen ad ve kararlar
-  herkese açıktır. Davette bu açıkça söylenir. **[Karar 10]**
-- **Gizlilik politikası:** bugün denetçiden söz etmiyor. Denetçi kaydı sunucuda değil depoda tutulduğu sürece
-  değişmesi gerekmez; katkı sunucudan yapılınca (Y3) Y0.5 ile birlikte değişir.
+- **İsimli denetim:** görünen ad gerçek addır, kişinin seçtiği biçimde (unvanlı ya da unvansız); kısaltma olabilir
+  ("M. Yılmaz"), takma ad olmaz (kullanıcının kararı).
+- **Depo:** proje deposu açık kalır, ama denetçilerin adları ve kararları açık depoda durmaz (kullanıcının kararı,
+  2026-11-05). `data/links/reviews/` ana depodan çıkarıldı (`.gitignore`) ve kendi ayrı, yerel git deposundadır
+  (`data/links/reviews/.git`): kararlar yeniden üretilemez, geçmişi orada tutulur; yedeği (özel bir uzak depo ya da
+  başka bir yer) kullanıcıdadır. Ayrılmadan önceki 94 karar ve kullanıcının adı ana deponun geçmişinde durur; bunlar
+  kullanıcının kendi kararlarıdır.
+- **Saklanan ama yayımlanmayan:** e-posta, telefon, eğitim beyanı, deneme sonuçlarının ayrıntısı; denetim deposuna
+  da girmez, kullanıcının kendi kaydında durur.
+- **Açık soru, araç çıktısı:** genel sunucu bugün `find_ayah`'ta bağın yanında kararı denetçinin görünen adıyla
+  veriyor (bugün yalnız kullanıcının kararları). Kararların sunucuda adla görünmesi bağın güvenilirliğinin
+  kaynağıdır; ama "adlar ve kararlar herkese açık olmasın" kararı sunucuyu da kapsıyorsa araç adı vermemeli (ör.
+  yalnız "denetlendi", alan ve tarih). Kullanıcının kararı bekleniyor; davetten (Y0.2) önce verilmeli, çünkü davet
+  kararın nerede görüneceğini söyler.
+- **Gizlilik politikası:** denetçi kaydı sunucuda değil yerelde tutulduğu sürece değişmesi gerekmez; katkı sunucudan
+  yapılınca (Y3) Y0.5 ile birlikte değişir.
 
 ## 6. Bu belgenin bağladıkları
 
-- Y1.2: `reviewers.json` şeması (`fields`, `since`, `until`, `note`), bağ türü → alan eşlemesi (2), `competent`.
+- Y1.2: `reviewers.json` şeması (`fields`, `since`, `until`, `note`), bağ → alan kuralı (2), `competent`, iki alanlı
+  bağın payları.
 - Y0.2: davet metni ve deneme örneklemleri (3).
 - Y0.5: kayıtta kabul edilen şartlar, lisans.
-- Y1.4: arayüz denetçinin alanını bilir, alanı dışındaki bağı ona göstermez ya da işaretli gösterir.
+- Y1.4: arayüz denetçinin alanını bilir, alanı dışındaki bağı ona göstermez ya da işaretli gösterir; tefsir – tefsir
+  ve Risale – tefsir bağlarında not kutusu zorunlu.
 
-## Kararlar (kullanıcının)
+## Kararlar (kullanıcı, 2026-11-05)
 
-1. Alanlar: `kuran`, `arapca`, `hadis`, `tefsir`, `risale` ve ayrı `metin` mi? (`arapca` ile `kuran` birleşsin mi?)
-2. Kur'ân – Risale ilişki bağları için gereken alan yalnız `risale` mi, `risale` ve `kuran` birlikte mi?
-3. Risale ile müfessir arasındaki ilişki iki alan mı ister (`tefsir` ve `risale`), biri yeter mi?
-4. İlk aşamada yalnız davetle mi, yoksa sayfadan yazan herkes deneme örneklemine girebilir mi?
-5. Deneme örneklemi: 10 satır, en çok 1 hata ve yanlışların hepsi yakalanmalı. Kabul mü, başka ölçü mü? Deneme
-   olmadan, kullanıcının tanıdığı ehil kişi doğrudan kaydedilebilir mi?
-6. Kullanıcının kendi alanları: `kuran` ve `risale` mi?
-7. İhtilafta oylama yok, iki karar yan yana: kabul mü?
-8. Ayrılan denetçinin adı istenirse gizlenebilir mi?
-9. Takma ad olmaz, kısaltma olabilir: kabul mü?
-10. Depo açık mı kalacak; denetçilerin adları ve kararları herkese açık olacak mı?
+1. Alanlar: `kuran`, `hadis`, `tefsir`, `risale` ve ayrı `metin`; Arapça dil ayrı alan değil.
+2. Kur'ân – Risale ilişkisi: `kuran` ve `risale` birlikte.
+3. Risale – tefsir ilişkisi: `tefsir` ve `risale`.
+4. Yalnız davetle; sayfadan yazan biri davet edilirse sayılır.
+5. Deneme örneklemi (10 satır, en çok 1 hata, yanlışların hepsi yakalanmalı) uygun.
+6. Kullanıcının alanları: `kuran`, `risale`, `metin`.
+7. İhtilafta oylama yok, iki karar yan yana.
+8. Ayrılan denetçinin adı istenirse gizlenebilir.
+9. Takma ad olmaz, kısaltma olabilir.
+10. Depo açık kalır; denetçilerin adları ve kararları açık depoda durmaz.
+11. Tefsir – tefsir ve Risale – tefsir bağlarında gerekçe (not) her kararda zorunlu.
+
+Açık: kararların genel sunucunun araç çıktısında adla görünüp görünmeyeceği (5).
