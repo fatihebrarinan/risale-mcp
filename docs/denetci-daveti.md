@@ -1,4 +1,4 @@
-# Denetçi daveti (Y0.2; taslak, 1. tur, 2026-11-05)
+# Denetçi daveti (Y0.2; kullanıcının kararlarıyla, 2026-11-05)
 
 Yol haritasının Y0.2 adımı (`docs/tefsir-pilot-degerlendirme.md`): her alandan en az bir isimli denetçi. Usul ve
 ölçüt `docs/denetci-olcutu.md`'dedir; bu belge davetin kendisidir: adımlar, davet metni, deneme örneklemleri.
@@ -98,17 +98,17 @@ yanlışların hepsi yakalanmalı. Cevabın bilinmesi için kaynak gerekir; bug�
 |---|---|---|---|---|
 | `kuran` | Kullanıcının 30 güçlü kararı (Beyzâvî'nin Kur'ân alıntıları) ve 40 güçlü kararı (Kur'ân – Risale) | T7'de kural düzeltmesiyle kalkan 8 bağ ("قائل" kalıbı, "علم ما" kısa eşleşmesi); 2 zayıf karar | Kelimesi âyete benzeyen ama âyet olmayan söz (T7'nin kalıp ifadeleri) | Hazırlanabilir |
 | `risale` | Kullanıcının 57 kararı (Kur'ân – Risale ilişkisi) | 5 "zayıf olmalı ya da olmamalı" kararı; 1. turun kural düzeltmeleri (uzaktaki "işâret" kelimesi, sûre adı, risale adı) | Âyet ile "işâret" kelimesi aynı cümlede ama birbirine bağlı değil | Hazırlanabilir |
-| `hadis` | Yok: hiçbir hadis bağına ehil biri bakmadı | — | — | **Cevabı yapıdan bilinen satırlarla** (öneri): derlemde kelimesi kelimesine ve uzun bulunanlar doğru; aynı sözü başka bir rivayete, sayısı ya da bir kelimesi değiştirilmiş rivayete bağlayan kurgu satırlar yanlış (Adım 9'un tuzak kontrolleri gibi) |
-| `tefsir` | Yok: tefsir alanında bugün yalnız âyet birimi bağları var (eserin yapısı söyler, sınanacak bir şey yok) | — | — | **Keşşâf'tan sonra** (Y1.7): Beyzâvî'nin Keşşâf'tan kelimesi kelimesine uzun nakilleri doğru, kaydırılmış nakil yanlış; o zamana kadar ilk tefsir denetçisi denemesiz, kullanıcının onayıyla (öneri) |
+| `hadis` | Yok: hiçbir hadis bağına ehil biri bakmadı | — | — | **Cevabı yapıdan bilinen satırlarla** (kullanıcının kararı): derlemde kelimesi kelimesine ve uzun bulunanlar doğru; aynı sözü başka bir rivayete, sayısı ya da bir kelimesi değiştirilmiş rivayete bağlayan kurgu satırlar yanlış (Adım 9'un tuzak kontrolleri gibi) |
+| `tefsir` | Yok: tefsir alanında bugün yalnız âyet birimi bağları var (eserin yapısı söyler, sınanacak bir şey yok) | — | — | **Keşşâf'tan sonra** (Y1.7): Beyzâvî'nin Keşşâf'tan kelimesi kelimesine uzun nakilleri doğru, kaydırılmış nakil yanlış. Tefsir daveti Y1.7'yi bekler (kullanıcının kararı: bugün aday yok) |
 
 Deneme dosyası T7 örneklemi gibi bir HTML'dir (tam âyet, vurgu, büyük Arapça); kalıcı denetim arayüzü (Y1.4)
 gelince onunla. Deneme kararları ayrı dosyaya yazılır (`origin: {"trial": …}`), araçlara gitmez.
 
-## 4. Açık sorular (kullanıcının)
+## 4. Kararlar (kullanıcı, 2026-11-05)
 
-1. Her alan için aday kim? (Adları sohbette ya da doğrudan `adaylar.md`'ye; bu depoya yazılmaz.)
-2. Hadis alanının denemesi yapıdan bilinen satırlarla mı olsun?
-3. İlk tefsir denetçisi Keşşâf gelene kadar denemesiz, onayınızla kaydedilebilir mi; yoksa tefsir daveti Y1.7'yi mi
-   beklesin?
-4. Davet metninde "adınızı tefsiri yazacak heyet ve proje sahibi bilir" doğru mu, yoksa denetçiler birbirinin adını
-   da görecek mi (Y3'te karar verilecekti; davet bunu söyleyecekse şimdi)?
+1. Adaylar: kullanıcı bir adayla görüşüyor (Risale, Kur'ân ve hadis alanları); adı özel depoda, sonuç gelince
+   yazılır. Tefsir alanında bugün aday yok.
+2. Hadis denemesi cevabı yapıdan bilinen satırlarla.
+3. Tefsir daveti Keşşâf'ı (Y1.7) bekler.
+4. Denetçinin adını tefsiri yazacak heyet ve proje sahibi bilir; davet metni bunu söyler. Denetçilerin birbirinin
+   adını görmesi davette vaat edilmez (gerekirse Y3'te, denetçilerin onayıyla).

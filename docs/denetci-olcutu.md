@@ -150,8 +150,8 @@ Kullanıcının kaydı: `kuran`, `risale`, `metin` (kullanıcının kararı). Pr
   aynı denetçinin kararlarının tutarlılığını numaradan görür. Ad ve denetçi kimliği veritabanına da girmez (genel
   sunucuya giden dosyada yoktur). Bu bir takma ad değildir: kişi seçmez, sistem verir.
 - **Ad kime görünür:** veride her zaman durur (denetim deposu). Kişi kendi kayıtlarını ve önerilerinin durumunu
-  girişli katkı bağdaştırıcısında görür (Y3); denetçiler birbirinin adını orada görebilir (karar Y3'te); tefsiri
-  yazacak heyet ve araştırmacılar istek üzerine görür. Katılım şartları denetçinin buna onayını alır (Y0.5).
+  girişli katkı bağdaştırıcısında görür (Y3); adını proje sahibi ve tefsiri yazacak heyet bilir
+  (kullanıcının kararı, Y0.2); denetçilerin birbirinin adını görmesi vaat edilmez (gerekirse Y3'te, onaylarıyla). Katılım şartları denetçinin buna onayını alır (Y0.5).
 - **Lisansla uyum (Y0.5'e not):** katkılar CC BY-SA gibi atıf isteyen bir lisansla verilirse atıf açıkta adı
   ister. Ya katkı veren toplu atfı ("Risale-i Nur MCP denetçileri") ya da adının anılmamasını kabul eder (CC
   lisansları lisans verenin atfın biçimini belirlemesine izin verir), ya da katkılar atıf istemeyen bir lisansla
