@@ -16,7 +16,7 @@ Sunucu herkese açık bir bağdaştırıcı olarak çalışır:
 https://mcp.risalemcp.com/mcp
 ```
 
-- **claude.ai, Claude masaüstü ve mobil:** [bağdaştırıcıyı ekle](https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=Risale-i%20Nur&connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp) ya da elle *Özelleştirme › Bağdaştırıcılar › Ekle › Özel bağdaştırıcı ekle*. Hesap gerekmez. Her cevapta metnin okunması ve kaynakça için sitedeki [proje talimatını](https://risalemcp.com/#proje) bir Claude projesine yapıştırmanızı öneririz.
+- **claude.ai, Claude masaüstü ve mobil:** [bağdaştırıcıyı ekle](https://claude.ai/customize/connectors?modal=add-custom-connector&connectorName=Risale-i%20Nur&connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp) ya da elle *Özelleştirme › Bağdaştırıcılar › Ekle › Özel bağdaştırıcı ekle*. Hesap gerekmez. Her cevapta metnin okunması ve kaynakça için sitedeki [proje talimatını](https://risalemcp.com/claude.html#proje) bir Claude projesine yapıştırmanızı öneririz.
 - **Claude Code:** `claude mcp add --transport http risale https://mcp.risalemcp.com/mcp`
 - **ChatGPT:** *Eklentiler › Ekle › Özel MCP sunucusu ekle*, kimlik doğrulama yok.
 - **Gemini:** yakında.

@@ -8,10 +8,10 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css?v=6">
+<link rel="stylesheet" href="/style.css?v=8">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="alternate" hreflang="tr" href="/belgeler.html">
-<script src="/site.js?v=6" defer></script>
+<script src="/site.js?v=8" defer></script>
 </head>
 <body>
 <main>
@@ -39,14 +39,14 @@
   <li>Select <strong>Add</strong>. The connector works right away. You need to be signed in to claude.ai; no separate Risale-i Nur account is needed.</li>
   <li>Make sure the connector is enabled in the conversation (tools menu in the message box) and ask your question.</li>
 </ol>
-<p>Once added, the connector also appears in the desktop and mobile apps. For the text to be read, quotations checked and a bibliography added in every answer, we recommend a project with instructions: the steps and the instructions are on the <a href="/en/#project">home page</a>.</p>
+<p>Once added, the connector also appears in the desktop and mobile apps. For the text to be read, quotations checked and a bibliography added in every answer, we recommend a project with instructions: the steps and the instructions are on the <a href="/en/claude.html#project">Claude page</a>.</p>
 
 <h3>ChatGPT</h3>
 <ol>
   <li><a href="https://chatgpt.com/plugins">Open the plugins page</a> (or <em>Plugins</em> in the sidebar), select <em>Add</em> at the top right and choose <em>Add custom MCP server</em>; name "Risale-i Nur", server URL as above, authentication <em>No authentication</em>. Tick <em>I understand and want to continue</em> and select <em>Create as a plugin</em>. You need to be signed in to chatgpt.com (a free account works); no separate Risale-i Nur account is needed.</li>
   <li>The plugin can only be added on the web; once added, it works in the mobile app with the same account.</li>
 </ol>
-<p>ChatGPT has its own project instructions: the steps and the instructions are on the <a href="/en/#chatgpt-project">home page</a>.</p>
+<p>ChatGPT has its own project instructions: the steps and the instructions are on the <a href="/en/chatgpt.html#project">ChatGPT page</a>.</p>
 
 <h3>Claude Code</h3>
 <pre><code>claude mcp add --transport http risale https://mcp.risalemcp.com/mcp</code></pre>
@@ -113,6 +113,7 @@
 <p><a href="https://www.erisale.com">e-Risale</a>, <a href="https://www.risaleoku.com">risaleoku.com</a> (Risale-i Nur Kütüphanesi), the Keşif Yolculukları Risale-i Nur Education Program and <a href="https://tanzil.net">Tanzil Project</a>. Writing dates come from <a href="https://www.kastamonur.com/risale-i-nur-telif-tarihleri/">kastamonur.com</a>, <a href="https://risale.online/soru-cevap/risalelerin-telif-tarihleri">risale.online</a> and the works themselves.</p>
 
 <h2>Troubleshooting</h2>
+<p>Problems during setup, and a question that checks the setup, are on each platform's page: <a href="/en/claude.html#setup-problems">Claude</a>, <a href="/en/chatgpt.html#setup-problems">ChatGPT</a>.</p>
 <ul>
   <li><strong>The assistant does not use the connector:</strong> check that it is enabled in the conversation, and mention "Risale-i Nur" in your question.</li>
   <li><strong>Tools look outdated or a tool fails:</strong> Claude caches the tool list. Disconnect and reconnect the connector, or start a new conversation.</li>

@@ -8,10 +8,10 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css?v=6">
+<link rel="stylesheet" href="/style.css?v=8">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="alternate" hreflang="tr" href="/">
-<script src="/site.js?v=6" defer></script>
+<script src="/site.js?v=8" defer></script>
 </head>
 <body>
 <main>
@@ -27,11 +27,12 @@
 <section class="hero">
   <h1>Read the Risale-i Nur with AI, without leaving the text</h1>
   <p class="lead">AI assistants talk fluently about the Risale-i Nur, but often from memory: quotations are misremembered, references are invented, and the text gets mixed up with interpretation. Risale-i Nur MCP connects the assistant to the works of Bediüzzaman Said Nursî themselves. The assistant reads the text before it speaks; everything it says rests on a sentence, and the reader can find that sentence. It keeps what the text says apart from its own interpretation, and it says what it could not find instead of inventing it.</p>
+  <h2>Add It to the AI You Use</h2>
   <div class="actions">
-    <a class="button primary" href="#claude">Add to Claude</a>
-    <a class="button primary" href="#chatgpt">Add to ChatGPT</a>
+    <a class="button primary" href="/en/claude.html">Add to Claude</a>
+    <a class="button primary" href="/en/chatgpt.html">Add to ChatGPT</a>
   </div>
-  <p class="muted small">Each platform's section has the setup steps and project instructions written for that platform.</p>
+  <p class="muted small">Each platform has its own page with the setup steps, project instructions written for that platform, and troubleshooting. Gemini is coming soon.</p>
 </section>
 
 
@@ -136,93 +137,6 @@
   </div>
   <p>The answer on the left reads well, but compared with the Fourth Word:</p><ul><li>The opening sentence given as a quotation is not the text's own words.</li><li>The Word opens not with a verse but with the hadith “<span class="ar" lang="ar">اَلصَّلَاةُ عِمَادُ الدّ۪ينِ</span>”.</li><li>The fortunate servant does not spend one gold coin on a ticket and board a plane; in the text he makes such a good trade that his capital grows “from one to a thousand”.</li></ul><p>Every quotation in the answer on the right appears word for word in the text and can be found at the address in the bibliography.</p>
   <p class="muted small">Both answers were taken from claude.ai on 29 October 2026 with Claude Sonnet 5.5: the left one outside the project with the connector off (the model searched the web), the right one in the project with the instructions and the connector on. They are unshortened and unedited; the steps on the right are that conversation's tool calls. The marks are ours: both answers were compared with the text of the Fourth Word.</p>
-</section>
-
-<section id="claude">
-  <h2>Claude</h2>
-  <p class="muted">claude.ai and the Claude desktop and mobile apps.</p>
-  <p class="note"><strong>Sign in first:</strong> The connector is added to your Claude account, so you need to be signed in to claude.ai. You do not need a separate Risale-i Nur account.</p>
-
-<section id="setup">
-  <h3>Setup</h3>
-  <ol class="steps-list">
-    <li><strong>Add the connector.</strong> The button below opens the add-connector dialog on claude.ai with the name and URL filled in.</li>
-    <li><strong>Confirm.</strong> Select <em>Add</em>. The connector works right away.</li>
-    <li><strong>Ask.</strong> Check that the connector is enabled in the conversation (tools menu in the message box) and ask your question.</li>
-  </ol>
-  <div class="actions">
-    <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">Add the connector on claude.ai</a>
-  </div>
-  <h4>Adding it by hand</h4>
-  <p>Use the name "Risale-i Nur" and the URL <code>https://mcp.risalemcp.com/mcp</code>.</p>
-  <ul>
-    <li><strong>Web and desktop:</strong> <em>Customize › Connectors › Add › Add custom connector</em>. The same page is also under the profile at the bottom left: <em>Settings › Connectors</em>.</li>
-    <li><strong>Mobile:</strong> in the side menu, profile › <em>Connectors › Add custom connector</em>.</li>
-  </ul>
-  <!-- Once Anthropic lists it in the directory:
-       Web: Customize › Connectors › search "Risale-i Nur" › plus button.
-       Mobile: profile › Connectors › Browse connectors › search "Risale-i Nur" › Connect. -->
-  <p class="muted small">Once added, the connector appears on the web, desktop and mobile with the same account. Claude Code and other details are in the <a href="/en/docs.html">documentation</a>.</p>
-</section>
-
-<section id="project">
-  <h3>Project and instructions</h3>
-  <p>The connector works on its own too. For the assistant to read the text, check its quotations and add the bibliography in every answer, we recommend a project with instructions: every conversation in the project starts with them.</p>
-  <ol class="steps-list">
-    <li>On claude.ai, open <strong>Projects</strong> in the sidebar and create a project with <strong>New project</strong>, for example "Risale-i Nur".</li>
-    <li>On the project's page, open <strong>Instructions</strong>.</li>
-    <li>Copy the instructions below with <strong>Copy</strong>, paste them and save.</li>
-    <li>Ask your Risale-i Nur questions in a new conversation inside this project.</li>
-  </ol>
-  <div class="copybox" data-src="/en/instructions.md">
-    <button class="button" type="button" data-done="Copied ✓" hidden>Copy</button>
-    <pre><a href="/en/instructions.md">The instructions</a></pre>
-  </div>
-</section>
-</section>
-
-<section id="chatgpt">
-  <h2>ChatGPT</h2>
-  <p class="muted">chatgpt.com and the ChatGPT apps.</p>
-  <p class="note"><strong>Sign in first:</strong> The plugin is added to your ChatGPT account, so you need to be signed in to chatgpt.com. A free account works too. You do not need a separate Risale-i Nur account.</p>
-
-<section id="chatgpt-setup">
-  <h3>Setup</h3>
-  <ol class="steps-list">
-    <li><strong>Open the plugins page.</strong> The button below opens the plugins page on chatgpt.com (or choose <em>Plugins</em> in the sidebar). Select <em>Add</em> at the top right and choose <em>Add custom MCP server</em>.</li>
-    <li><strong>Enter the details.</strong> ChatGPT has no link that opens this dialog filled in; copy the values with the buttons next to them and paste them:
-      <div class="fields">
-        <span>Name</span><code>Risale-i Nur</code><button class="button" type="button" data-copy="Risale-i Nur" data-done="Copied ✓">Copy</button>
-        <span>Server URL</span><code>https://mcp.risalemcp.com/mcp</code><button class="button" type="button" data-copy="https://mcp.risalemcp.com/mcp" data-done="Copied ✓">Copy</button>
-      </div>
-      For <em>Authentication</em>, choose <em>No authentication</em>.</li>
-    <li><strong>Confirm.</strong> Tick <em>I understand and want to continue</em> and select <em>Create as a plugin</em>.</li>
-    <li><strong>Ask.</strong> Ask your question; if the assistant does not use the plugin on its own, pick Risale-i Nur from the menu in the message box.</li>
-  </ol>
-  <div class="actions">
-    <a class="button primary" href="https://chatgpt.com/plugins">Open the plugins page on ChatGPT</a>
-  </div>
-  <p class="note"><strong>Not from your phone:</strong> The plugin can only be added on the web (chatgpt.com); the mobile app has no <em>Add</em> button. Add it once on the web, and it appears and works in the mobile app signed in to the same account.</p>
-</section>
-
-<section id="chatgpt-project">
-  <h3>Project and instructions</h3>
-  <p>The plugin cites its sources on its own too, but in a project with instructions ChatGPT keeps the text and interpretation apart more neatly and gives the bibliography more faithfully. These instructions are written for ChatGPT and differ slightly from Claude's.</p>
-  <ol class="steps-list">
-    <li>Create a new project, for example "Risale-i Nur": on the web, the small plus button right next to <em>Projects</em> in the sidebar; in the app, the plus button at the top right of the <em>Projects</em> tab.</li>
-    <li>Once the project is created, copy the instructions below with <strong>Copy</strong>, paste them into its instructions field and save.</li>
-    <li>Ask your Risale-i Nur questions in a new conversation inside this project.</li>
-  </ol>
-  <div class="copybox" data-src="/en/chatgpt-instructions.md">
-    <button class="button" type="button" data-done="Copied ✓" hidden>Copy</button>
-    <pre><a href="/en/chatgpt-instructions.md">The instructions</a></pre>
-  </div>
-</section>
-</section>
-
-<section id="gemini">
-  <h2>Gemini</h2>
-  <p class="muted">Coming soon.</p>
 </section>
 
 <section>

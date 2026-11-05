@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add to Claude · Risale-i Nur MCP</title>
+<meta name="description" content="How to add the Risale-i Nur connector to claude.ai and the Claude desktop and mobile apps, with screenshots, project instructions and troubleshooting.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css?v=8">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="tr" href="/claude.html">
+<script src="/site.js?v=8" defer></script>
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/en/docs.html">Documentation</a>
+  <a href="/en/contribute.html">Contribute</a>
+  <a href="/en/privacy.html">Privacy</a>
+  <a href="/claude.html" lang="tr">Türkçe</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+</nav>
+
+<h1>Add to Claude</h1>
+<p class="lead">claude.ai and the Claude desktop and mobile apps.</p>
+<p class="muted small">Using ChatGPT? <a href="/en/chatgpt.html">Add it to ChatGPT</a>.</p>
+<p class="note"><strong>Sign in first:</strong> The connector is added to your Claude account, so you need to be signed in to claude.ai. You do not need a separate Risale-i Nur account.</p>
+
+<section id="setup">
+  <h2>Setup</h2>
+  <p>The easiest way is the button below; it works on a computer and in a phone's browser.</p>
+  <ol class="steps-list">
+    <li><strong>Add the connector.</strong> The button opens the <em>Add custom connector</em> dialog on claude.ai in a new tab with the name and URL filled in. Select <em>Continue</em>.
+      <div class="actions">
+        <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp" target="_blank" rel="noopener">Add the connector on claude.ai</a>
+      </div>
+      <a class="shot" href="/img/kurulum/claude-web-dugme-1-en.webp"><img src="/img/kurulum/claude-web-dugme-1-en.webp" width="630" height="590" loading="lazy" decoding="async" alt="Add custom connector dialog: name Risale-i Nur and URL https://mcp.risalemcp.com/mcp filled in; Continue is marked"></a>
+    </li>
+    <li><strong>Confirm.</strong> Under <em>Authentication</em>, <em>No sign-in</em> is selected on its own (marked <em>Detected</em>). Leave it and select <em>Add</em> at the bottom.
+      <a class="shot" href="/img/kurulum/claude-web-dugme-2-en.webp"><img src="/img/kurulum/claude-web-dugme-2-en.webp" width="540" height="803" loading="lazy" decoding="async" alt="Authentication: No sign-in selected, marked Detected; Add is marked"></a>
+      The connector's page opens next and says "You're not connected to Risale-i Nur yet". Select <em>Connect</em>.
+      <a class="shot" href="/img/kurulum/claude-web-dugme-3-en.webp"><img src="/img/kurulum/claude-web-dugme-3-en.webp" width="470" height="230" loading="lazy" decoding="async" alt="The connector's page: You're not connected to Risale-i Nur yet, Connect is marked"></a>
+    </li>
+    <li><strong>Start chatting.</strong> Refresh the page and start talking about the Risale-i Nur. The connector is enabled in conversations on its own. You can <a href="#check">check the setup with one question</a>.</li>
+  </ol>
+  <details class="shots">
+    <summary>The same steps in a phone's browser (Turkish interface)</summary>
+    <div class="phones"><a class="shot phone" href="/img/kurulum/claude-mobil-dugme-1.webp"><img src="/img/kurulum/claude-mobil-dugme-1.webp" width="540" height="924" loading="lazy" decoding="async" alt="Add custom connector dialog on a phone, Continue marked"></a><a class="shot phone" href="/img/kurulum/claude-mobil-dugme-2.webp"><img src="/img/kurulum/claude-mobil-dugme-2.webp" width="540" height="930" loading="lazy" decoding="async" alt="Authentication on a phone, No sign-in selected"></a><a class="shot phone" href="/img/kurulum/claude-mobil-dugme-3.webp"><img src="/img/kurulum/claude-mobil-dugme-3.webp" width="540" height="926" loading="lazy" decoding="async" alt="End of the dialog on a phone, Add marked"></a><a class="shot phone" href="/img/kurulum/claude-mobil-dugme-4.webp"><img src="/img/kurulum/claude-mobil-dugme-4.webp" width="540" height="922" loading="lazy" decoding="async" alt="The connector's page on a phone, Connect marked"></a></div>
+  </details>
+  <p class="muted small">Once added, the connector appears on the web, desktop and mobile with the same account. Claude Code and other details are in the <a href="/en/docs.html">documentation</a>. The screenshots were taken in November 2026; Claude's interface may look slightly different if it changes.</p>
+
+  <!-- Once Anthropic lists it in the directory:
+       Web: Customize › Connectors › search "Risale-i Nur" › plus button.
+       Mobile: profile › Connectors › Browse connectors › search "Risale-i Nur" › Connect. -->
+
+  <h3 id="by-hand">Adding it by hand</h3>
+  <p>If the button does not work, you can add the connector yourself. Use the name <code>Risale-i Nur</code> and the URL <code>https://mcp.risalemcp.com/mcp</code>.</p>
+  <h4>Web and desktop</h4>
+  <ol class="steps-list">
+    <li>Open <em>Customize</em> in the sidebar.
+      <a class="shot" href="/img/kurulum/claude-web-elle-1-en.webp"><img src="/img/kurulum/claude-web-elle-1-en.webp" width="960" height="450" loading="lazy" decoding="async" alt="Customize marked in the sidebar"></a>
+    </li>
+    <li>Switch to the <em>Connectors</em> tab at the top.
+      <a class="shot" href="/img/kurulum/claude-web-elle-2-en.webp"><img src="/img/kurulum/claude-web-elle-2-en.webp" width="1100" height="340" loading="lazy" decoding="async" alt="Connectors tab marked on the Customize page"></a>
+    </li>
+    <li>Select <em>Add</em> at the top right and choose <em>Add custom connector</em>.
+      <a class="shot" href="/img/kurulum/claude-web-elle-3-en.webp"><img src="/img/kurulum/claude-web-elle-3-en.webp" width="1100" height="340" loading="lazy" decoding="async" alt="Add button marked at the top right"></a>
+      <a class="shot" href="/img/kurulum/claude-web-elle-4-en.webp"><img src="/img/kurulum/claude-web-elle-4-en.webp" width="1100" height="340" loading="lazy" decoding="async" alt="Add custom connector marked in the Add menu"></a>
+    </li>
+    <li>Enter the name and URL and select <em>Continue</em>.
+      <a class="shot" href="/img/kurulum/claude-web-elle-5-en.webp"><img src="/img/kurulum/claude-web-elle-5-en.webp" width="630" height="590" loading="lazy" decoding="async" alt="Name and URL entered in the dialog, Continue marked"></a>
+    </li>
+    <li>The rest is as above: leave <em>No sign-in</em> selected, select <em>Add</em>, then select <em>Connect</em> on the page that opens.</li>
+  </ol>
+  <h4>Mobile app</h4>
+  <!-- TODO: English labels of the mobile app are guesses from the Turkish steps (2026-11-05); check them against the English interface. -->
+  <ol class="steps-list">
+    <li>Open the side menu and tap your profile icon at the bottom left.</li>
+    <li>In <em>Settings</em>, open <em>Connectors</em>.</li>
+    <li>Tap the <em>+</em> icon at the top right and choose <em>Add custom connector</em>.</li>
+    <li>Enter the name and URL and tap <em>Continue</em>.</li>
+    <li>Leave <em>No sign-in</em> selected, scroll down and tap <em>Add</em>.</li>
+  </ol>
+  <p class="muted small">The screenshots below show the Turkish interface.</p>
+  <div class="phones"><a class="shot phone" href="/img/kurulum/claude-mobil-elle-1.webp"><img src="/img/kurulum/claude-mobil-elle-1.webp" width="540" height="1059" loading="lazy" decoding="async" alt="The app's side menu, profile icon marked at the bottom left"></a><a class="shot phone" href="/img/kurulum/claude-mobil-elle-2.webp"><img src="/img/kurulum/claude-mobil-elle-2.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Settings, Connectors marked"></a><a class="shot phone" href="/img/kurulum/claude-mobil-elle-3.webp"><img src="/img/kurulum/claude-mobil-elle-3.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Connectors page, plus icon marked at the top right"></a><a class="shot phone" href="/img/kurulum/claude-mobil-elle-4.webp"><img src="/img/kurulum/claude-mobil-elle-4.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Add custom connector marked in the plus menu"></a><a class="shot phone" href="/img/kurulum/claude-mobil-elle-5.webp"><img src="/img/kurulum/claude-mobil-elle-5.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Name and URL entered, Continue marked"></a><a class="shot phone" href="/img/kurulum/claude-mobil-elle-6.webp"><img src="/img/kurulum/claude-mobil-elle-6.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Authentication, No sign-in selected"></a><a class="shot phone" href="/img/kurulum/claude-mobil-elle-7.webp"><img src="/img/kurulum/claude-mobil-elle-7.webp" width="540" height="1059" loading="lazy" decoding="async" alt="End of the page, Add marked"></a></div>
+</section>
+
+<section id="project">
+  <h2>Project and instructions</h2>
+  <p>The connector works on its own too. For the assistant to read the text, check its quotations and add the bibliography in every answer, we recommend a project with instructions: every conversation in the project starts with them.</p>
+  <h4>Web and desktop</h4>
+  <!-- TODO: English labels of the project screens are guesses from the Turkish steps (2026-11-05); check them against the English interface. -->
+  <p class="muted small">The screenshots in this section show the Turkish interface.</p>
+  <ol class="steps-list">
+    <li>Open <em>Projects</em> in the sidebar.
+      <a class="shot" href="/img/kurulum/claude-web-proje-1.webp"><img src="/img/kurulum/claude-web-proje-1.webp" width="960" height="450" loading="lazy" decoding="async" alt="Projects marked in the sidebar"></a>
+    </li>
+    <li>Select <em>New project</em> at the top right.
+      <a class="shot" href="/img/kurulum/claude-web-proje-2.webp"><img src="/img/kurulum/claude-web-proje-2.webp" width="1100" height="200" loading="lazy" decoding="async" alt="New project button marked on the Projects page"></a>
+    </li>
+    <li>Enter a name, for example "Risale-i Nur", and select <em>Create project</em>.
+      <a class="shot" href="/img/kurulum/claude-web-proje-3.webp"><img src="/img/kurulum/claude-web-proje-3.webp" width="595" height="450" loading="lazy" decoding="async" alt="Create project dialog with a name entered, Create project marked"></a>
+    </li>
+    <li>On the project's page, select <em>Add</em> next to <em>Instructions</em> on the right.
+      <a class="shot" href="/img/kurulum/claude-web-proje-4.webp"><img src="/img/kurulum/claude-web-proje-4.webp" width="1280" height="417" loading="lazy" decoding="async" alt="Project page, Add next to Instructions marked"></a>
+    </li>
+    <li>Copy the instructions below with <strong>Copy</strong>, paste them into the dialog and save.
+      <a class="shot" href="/img/kurulum/claude-web-proje-5.webp"><img src="/img/kurulum/claude-web-proje-5.webp" width="810" height="575" loading="lazy" decoding="async" alt="Project instructions dialog with the instructions pasted, save button marked"></a>
+    </li>
+    <li>Ask your Risale-i Nur questions in a new conversation inside this project.</li>
+  </ol>
+  <div class="copybox" data-src="/en/instructions.md">
+    <button class="button" type="button" data-done="Copied ✓" hidden>Copy</button>
+    <pre><a href="/en/instructions.md">The instructions</a></pre>
+  </div>
+  <details class="shots">
+    <summary>Making a project in the mobile app</summary>
+    <ol class="steps-list">
+      <li>Open <em>Projects</em> in the side menu.</li>
+      <li>Tap <em>New project</em> at the bottom right.</li>
+      <li>Enter a name and tap <em>Create project</em>.</li>
+      <li>Tap the add button under <em>Custom instructions</em>.</li>
+      <li>Paste the instructions and tap <em>Save</em>.</li>
+    </ol>
+    <div class="phones"><a class="shot phone" href="/img/kurulum/claude-mobil-proje-1.webp"><img src="/img/kurulum/claude-mobil-proje-1.webp" width="540" height="1059" loading="lazy" decoding="async" alt="The app's side menu, Projects marked"></a><a class="shot phone" href="/img/kurulum/claude-mobil-proje-2.webp"><img src="/img/kurulum/claude-mobil-proje-2.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Projects page, New project marked"></a><a class="shot phone" href="/img/kurulum/claude-mobil-proje-3.webp"><img src="/img/kurulum/claude-mobil-proje-3.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Create project with a name entered"></a><a class="shot phone" href="/img/kurulum/claude-mobil-proje-4.webp"><img src="/img/kurulum/claude-mobil-proje-4.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Project page, custom instructions box marked"></a><a class="shot phone" href="/img/kurulum/claude-mobil-proje-5.webp"><img src="/img/kurulum/claude-mobil-proje-5.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Custom instructions with the text pasted, Save marked"></a></div>
+  </details>
+</section>
+
+<section id="check">
+  <h2>Is it working?</h2>
+  <p>After setup, start a new conversation (inside the project, if you made one with the instructions) and ask:</p>
+  <div class="fields">
+    <code>Which parable does the First Word (Birinci Söz) use to explain Bismillah? Show it with a quotation.</code><button class="button" type="button" data-copy="Which parable does the First Word (Birinci Söz) use to explain Bismillah? Show it with a quotation." data-done="Copied ✓">Copy</button>
+  </div>
+  <p>The shape of the answer depends on the model and whether you use a project. If the connector works, you will see two things in the answer:</p>
+  <ul>
+    <li>A <strong>quotation</strong> from the Risale-i Nur, on its own line and in quotation marks, ending with a number such as <code>[1]</code>.</li>
+    <li>A <strong>Sources</strong> list (in Turkish, <em>Kaynaklar</em>) at the very end: lines numbered <code>[1]</code>, <code>[2]</code>, each naming the work and the section.</li>
+  </ul>
+  <p>If the answer has no quotation or no source list, the assistant most likely did not use the connector and answered from memory. See the problems below.</p>
+</section>
+
+<section id="setup-problems" class="faq">
+  <h2>Trouble setting it up?</h2>
+  <!-- Symptoms and fixes await the user's check (2026-11-05). -->
+  <details>
+    <summary>I pressed the button and the add dialog did not open, or a sign-in page appeared</summary>
+    <p>Sign in to claude.ai, come back to this page and press the button again. If the dialog still does not open, <a href="#by-hand">add the connector by hand</a>.</p>
+  </details>
+  <details>
+    <summary>There is no "Add custom connector" option</summary>
+    <p>Your plan may not allow custom connectors, or you may have reached the number it allows. Remove a custom connector you no longer use under <em>Customize › Connectors</em> and try again.</p>
+  </details>
+  <details>
+    <summary>A "could not connect" or similar error appears</summary>
+    <p>The URL must be exactly <code>https://mcp.risalemcp.com/mcp</code>, with no space before or after it. Try again a little later; if it persists, write to us.</p>
+  </details>
+  <details>
+    <summary>It is added, but Claude does not use it and answers from memory</summary>
+    <p>Refresh the page and start a new conversation. Check that Risale-i Nur is switched on under <em>+</em> › <em>Connectors</em> in the message box. Mention "Risale-i Nur" in your question; asking inside a <a href="#project">project</a> with the instructions largely solves this.</p>
+    <a class="shot" href="/img/kurulum/claude-web-sohbette.webp"><img src="/img/kurulum/claude-web-sohbette.webp" width="750" height="360" loading="lazy" decoding="async" alt="The plus menu in the message box, Risale-i Nur switched on under Connectors (Turkish interface)"></a>
+  </details>
+  <details>
+    <summary>The connector does not show on my phone</summary>
+    <p>Check that the app is signed in to the same account you added it with, then close and reopen the app.</p>
+  </details>
+  <details>
+    <summary>None of this helped</summary>
+    <p>Write to <a href="mailto:destek@risalemcp.com?subject=Setup%20(Claude)">destek@risalemcp.com</a>: which device you use, at which step you got stuck and what you saw on the screen, with a screenshot if you can. Problems other than setup (daily limit, a tool error) are in the <a href="/en/docs.html">documentation</a>.</p>
+  </details>
+</section>
+
+<footer>Nur Hadimleri: a volunteer, independent project, not an official service of any publisher or community. · <a href="/en/privacy.html">Privacy</a> · <a href="/en/terms.html">Terms of use</a> · <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
+</main>
+</body>
+</html>

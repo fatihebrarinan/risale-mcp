@@ -114,3 +114,20 @@ ol.steps-list li { margin: 8px 0; }
 .ar { font-family: "Amiri Hadis", "Amiri", "Scheherazade New", serif; font-size: 1.15em; }
 h4 { font-size: 1rem; margin: 20px 0 4px; }
 #claude h3 { font-size: 1.1rem; margin-top: 28px; }
+
+/* Kurulum sorunları: açılır sorular */
+.faq details { border-bottom: 1px solid var(--line); padding: 10px 0; }
+.faq details:first-of-type { border-top: 1px solid var(--line); }
+.faq summary { cursor: pointer; font-weight: 600; }
+.faq summary:hover { color: var(--accent); }
+.faq details p { margin: 8px 0 4px; }
+.fields:has(> code:first-child) { grid-template-columns: 1fr auto; }
+
+/* Kurulum ekran görüntüleri; tıklanınca tam boyu açılır */
+.shot { display: block; margin: 10px 0 14px; }
+.shot img { display: block; width: auto; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; }
+.phones { display: flex; gap: 10px; overflow-x: auto; padding: 4px 0 8px; margin: 10px 0; }
+.phones .shot { flex: 0 0 180px; margin: 0; }
+details.shots { margin: 12px 0; }
+details.shots > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+h4 { margin: 20px 0 4px; }

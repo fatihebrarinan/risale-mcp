@@ -1,6 +1,19 @@
 // Ana sayfa: talimat kutusu (metni ayrı dosyadan okur, kopyalar) ve iki cevabın yazılıyormuş gibi karşılaştırması.
 // Betik çalışmazsa sayfa yine okunur: talimatın bağlantısı durur, karşılaştırmada cevaplar baştan görünür.
 
+// Kurulum bölümleri ana sayfadan platform sayfalarına taşındı (2026-11-05): eski bağlantılar (/#proje…) yeni yere gider.
+{
+  const tr = { claude: "/claude.html", kurulum: "/claude.html#kurulum", proje: "/claude.html#proje",
+    chatgpt: "/chatgpt.html", "chatgpt-kurulum": "/chatgpt.html#kurulum", "chatgpt-proje": "/chatgpt.html#proje",
+    sinama: "/claude.html#sinama", "kurulum-sorunlari": "/claude.html#kurulum-sorunlari" };
+  const en = { claude: "/en/claude.html", setup: "/en/claude.html#setup", project: "/en/claude.html#project",
+    chatgpt: "/en/chatgpt.html", "chatgpt-setup": "/en/chatgpt.html#setup", "chatgpt-project": "/en/chatgpt.html#project",
+    check: "/en/claude.html#check", "setup-problems": "/en/claude.html#setup-problems" };
+  const map = { "/": tr, "/index.html": tr, "/en/": en, "/en/index.html": en }[location.pathname];
+  const target = map && map[location.hash.slice(1)];
+  if (target) location.replace(target);
+}
+
 // Görünüm: tarayıcının ayarına uyar; düğme öbürünü seçer ve hatırlanır (sayfa başındaki satır, çizimden önce uygular).
 for (const button of document.querySelectorAll("[data-theme-toggle]")) {
   button.addEventListener("click", () => {

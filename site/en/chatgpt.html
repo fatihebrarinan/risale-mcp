@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add to ChatGPT · Risale-i Nur MCP</title>
+<meta name="description" content="How to add the Risale-i Nur plugin to ChatGPT, with screenshots, project instructions written for ChatGPT and troubleshooting.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css?v=8">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="tr" href="/chatgpt.html">
+<script src="/site.js?v=8" defer></script>
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/en/docs.html">Documentation</a>
+  <a href="/en/contribute.html">Contribute</a>
+  <a href="/en/privacy.html">Privacy</a>
+  <a href="/chatgpt.html" lang="tr">Türkçe</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+</nav>
+
+<h1>Add to ChatGPT</h1>
+<p class="lead">chatgpt.com and the ChatGPT apps.</p>
+<p class="muted small">Using Claude? <a href="/en/claude.html">Add it to Claude</a>.</p>
+<p class="note"><strong>Sign in first:</strong> The plugin is added to your ChatGPT account, so you need to be signed in to chatgpt.com. A free account works too. You do not need a separate Risale-i Nur account.</p>
+
+<section id="setup">
+  <h2>Setup</h2>
+  <ol class="steps-list">
+    <li><strong>Open the plugins page.</strong> The button below opens the plugins page on chatgpt.com in a new tab (or choose <em>Plugins</em> in the sidebar). Select <em>Add</em> at the top right.
+      <div class="actions">
+        <a class="button primary" href="https://chatgpt.com/plugins" target="_blank" rel="noopener">Open the plugins page on ChatGPT</a>
+      </div>
+      <a class="shot" href="/img/kurulum/chatgpt-web-1-en.webp"><img src="/img/kurulum/chatgpt-web-1-en.webp" width="539" height="200" loading="lazy" decoding="async" alt="Plugins page, Add button marked at the top right"></a>
+    </li>
+    <li><strong>Choose Add custom MCP server.</strong>
+      <a class="shot" href="/img/kurulum/chatgpt-web-2-en.webp"><img src="/img/kurulum/chatgpt-web-2-en.webp" width="539" height="200" loading="lazy" decoding="async" alt="Add custom MCP server marked in the Add menu"></a>
+    </li>
+    <li><strong>Enter the details.</strong> ChatGPT has no link that opens this dialog filled in; copy the values with the buttons next to them and paste them:
+      <div class="fields">
+        <span>Name</span><code>Risale-i Nur</code><button class="button" type="button" data-copy="Risale-i Nur" data-done="Copied ✓">Copy</button>
+        <span>Connection</span><code>https://mcp.risalemcp.com/mcp</code><button class="button" type="button" data-copy="https://mcp.risalemcp.com/mcp" data-done="Copied ✓">Copy</button>
+      </div>
+      For <em>Authentication</em>, choose <em>No authentication</em>, tick <em>I understand and want to continue</em> and select <em>Create as a plugin</em>.
+      <a class="shot" href="/img/kurulum/chatgpt-web-3-en.webp"><img src="/img/kurulum/chatgpt-web-3-en.webp" width="540" height="600" loading="lazy" decoding="async" alt="Add custom MCP server dialog: Name, Connection, No authentication, the checkbox and Create as a plugin marked"></a>
+    </li>
+    <li><strong>Connect.</strong> In the dialog that opens, select <em>Connect Risale-i Nur</em>. (The button carries the name you gave; in the screenshot it is "Risale".)
+      <a class="shot" href="/img/kurulum/chatgpt-web-4-en.webp"><img src="/img/kurulum/chatgpt-web-4-en.webp" width="487" height="482" loading="lazy" decoding="async" alt="Connect dialog, the Connect button marked"></a>
+    </li>
+    <li><strong>Ask.</strong> Ask your question; if the assistant does not use the plugin on its own, pick Risale-i Nur from the menu in the message box. You can <a href="#check">check the setup with one question</a>.</li>
+  </ol>
+  <p class="note"><strong>From a phone:</strong> The plugin cannot be added in the ChatGPT app (the app has no <em>Add</em> button), but it can be added the same way at chatgpt.com in the phone's browser. Add it once, and it appears and works in the app signed in to the same account.</p>
+  <details class="shots">
+    <summary>The same steps in a phone's browser (Turkish interface)</summary>
+    <div class="phones"><a class="shot phone" href="/img/kurulum/chatgpt-mobil-1.webp"><img src="/img/kurulum/chatgpt-mobil-1.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Plugins page on a phone, Add marked"></a><a class="shot phone" href="/img/kurulum/chatgpt-mobil-2.webp"><img src="/img/kurulum/chatgpt-mobil-2.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Add custom MCP server marked in the Add menu"></a><a class="shot phone" href="/img/kurulum/chatgpt-mobil-3.webp"><img src="/img/kurulum/chatgpt-mobil-3.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Name, URL and No authentication marked"></a><a class="shot phone" href="/img/kurulum/chatgpt-mobil-4.webp"><img src="/img/kurulum/chatgpt-mobil-4.webp" width="540" height="1059" loading="lazy" decoding="async" alt="The checkbox and Create as a plugin marked"></a><a class="shot phone" href="/img/kurulum/chatgpt-mobil-5.webp"><img src="/img/kurulum/chatgpt-mobil-5.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Connect the app dialog, connect button marked"></a></div>
+  </details>
+  <p class="muted small">The screenshots were taken in November 2026; ChatGPT's interface may look slightly different if it changes.</p>
+</section>
+
+<section id="project">
+  <h2>Project and instructions</h2>
+  <p>The plugin cites its sources on its own too, but in a project with instructions ChatGPT keeps the text and interpretation apart more neatly and gives the bibliography more faithfully. These instructions are written for ChatGPT and differ slightly from Claude's.</p>
+  <ol class="steps-list">
+    <li>In the sidebar, select the <em>+</em> button right of <em>Projects</em>.
+      <a class="shot" href="/img/kurulum/chatgpt-web-proje-1-en.webp"><img src="/img/kurulum/chatgpt-web-proje-1-en.webp" width="720" height="500" loading="lazy" decoding="async" alt="Plus button next to Projects marked in the sidebar"></a>
+    </li>
+    <li>Enter a project name, for example "Risale-i Nur", and select <em>Create project</em>.
+      <a class="shot" href="/img/kurulum/chatgpt-web-proje-2-en.webp"><img src="/img/kurulum/chatgpt-web-proje-2-en.webp" width="520" height="270" loading="lazy" decoding="async" alt="Create project dialog with a name entered, Create project marked"></a>
+    </li>
+    <li>On the project's page, select the <em>⋯</em> button at the top right and choose <em>Project settings</em>.
+      <a class="shot" href="/img/kurulum/chatgpt-web-proje-3-en.webp"><img src="/img/kurulum/chatgpt-web-proje-3-en.webp" width="660" height="210" loading="lazy" decoding="async" alt="Project page, the three-dot button marked at the top right"></a>
+      <a class="shot" href="/img/kurulum/chatgpt-web-proje-4-en.webp"><img src="/img/kurulum/chatgpt-web-proje-4-en.webp" width="660" height="210" loading="lazy" decoding="async" alt="Project settings marked in the three-dot menu"></a>
+    </li>
+    <li>Copy the instructions below with <strong>Copy</strong>, paste them into the <em>Instructions</em> field and select <em>Save</em>.
+      <a class="shot" href="/img/kurulum/chatgpt-web-proje-5-en.webp"><img src="/img/kurulum/chatgpt-web-proje-5-en.webp" width="520" height="640" loading="lazy" decoding="async" alt="Project settings with the instructions pasted into Instructions, Save marked"></a>
+    </li>
+    <li>Ask your Risale-i Nur questions in a new conversation inside this project.</li>
+  </ol>
+  <div class="copybox" data-src="/en/chatgpt-instructions.md">
+    <button class="button" type="button" data-done="Copied ✓" hidden>Copy</button>
+    <pre><a href="/en/chatgpt-instructions.md">The instructions</a></pre>
+  </div>
+  <details class="shots">
+    <summary>Making a project in a phone's browser (Turkish interface)</summary>
+    <div class="phones"><a class="shot phone" href="/img/kurulum/chatgpt-mobil-proje-1.webp"><img src="/img/kurulum/chatgpt-mobil-proje-1.webp" width="540" height="862" loading="lazy" decoding="async" alt="Plus next to Projects marked in the sidebar"></a><a class="shot phone" href="/img/kurulum/chatgpt-mobil-proje-2.webp"><img src="/img/kurulum/chatgpt-mobil-proje-2.webp" width="540" height="847" loading="lazy" decoding="async" alt="Create project with a name entered"></a><a class="shot phone" href="/img/kurulum/chatgpt-mobil-proje-3.webp"><img src="/img/kurulum/chatgpt-mobil-proje-3.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Project page, three-dot button marked"></a><a class="shot phone" href="/img/kurulum/chatgpt-mobil-proje-4.webp"><img src="/img/kurulum/chatgpt-mobil-proje-4.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Project settings marked in the three-dot menu"></a><a class="shot phone" href="/img/kurulum/chatgpt-mobil-proje-5.webp"><img src="/img/kurulum/chatgpt-mobil-proje-5.webp" width="540" height="1059" loading="lazy" decoding="async" alt="Project settings, the Instructions field and Save marked"></a></div>
+  </details>
+</section>
+
+<section id="check">
+  <h2>Is it working?</h2>
+  <p>After setup, start a new conversation (inside the project, if you made one with the instructions) and ask:</p>
+  <div class="fields">
+    <code>Which parable does the First Word (Birinci Söz) use to explain Bismillah? Show it with a quotation.</code><button class="button" type="button" data-copy="Which parable does the First Word (Birinci Söz) use to explain Bismillah? Show it with a quotation." data-done="Copied ✓">Copy</button>
+  </div>
+  <p>The shape of the answer depends on the model and whether you use a project. If the plugin works, you will see two things in the answer:</p>
+  <ul>
+    <li>A <strong>quotation</strong> from the Risale-i Nur, on its own line and in quotation marks, ending with a number such as <code>[1]</code>.</li>
+    <li>A <strong>Sources</strong> list (in Turkish, <em>Kaynaklar</em>) at the very end: lines numbered <code>[1]</code>, <code>[2]</code>, each naming the work and the section.</li>
+  </ul>
+  <p>If the answer has no quotation or no source list, the assistant most likely did not use the plugin and answered from memory or from the web. See the problems below.</p>
+</section>
+
+<section id="setup-problems" class="faq">
+  <h2>Trouble setting it up?</h2>
+  <!-- Symptoms and fixes await the user's check (2026-11-05). -->
+  <details>
+    <summary>I pressed the button and a sign-in page appeared instead of the plugins page</summary>
+    <p>Sign in to chatgpt.com, come back to this page and press the button again, or open <em>Plugins</em> in the sidebar.</p>
+  </details>
+  <details>
+    <summary>There is no <em>Add</em> button or no "Add custom MCP server" option</summary>
+    <p>In the ChatGPT app the plugin cannot be added; open chatgpt.com on a computer or in the phone's browser.</p>
+  </details>
+  <details>
+    <summary>A "could not connect" or similar error appears</summary>
+    <p>Take the URL with the copy button: it must be exactly <code>https://mcp.risalemcp.com/mcp</code>, with no space before or after it. <em>No authentication</em> must be selected. Try again a little later; if it persists, write to us.</p>
+  </details>
+  <details>
+    <summary>It is added, but ChatGPT does not use it and answers from memory</summary>
+    <p>Pick Risale-i Nur from the plus menu in the message box. Start a new conversation and mention "Risale-i Nur" in your question. Asking inside a <a href="#project">project</a> with the instructions largely solves this.</p>
+  </details>
+  <details>
+    <summary>ChatGPT searches the web or writes the source list itself</summary>
+    <p>Ask with web search turned off, and use a project with the <a href="#project">instructions written for ChatGPT</a>.</p>
+  </details>
+  <details>
+    <summary>The plugin does not show on my phone</summary>
+    <p>Check that the app is signed in to the same account you added it with, then close and reopen the app.</p>
+  </details>
+  <details>
+    <summary>None of this helped</summary>
+    <p>Write to <a href="mailto:destek@risalemcp.com?subject=Setup%20(ChatGPT)">destek@risalemcp.com</a>: which device you use, at which step you got stuck and what you saw on the screen, with a screenshot if you can. Problems other than setup (daily limit, a tool error) are in the <a href="/en/docs.html">documentation</a>.</p>
+  </details>
+</section>
+
+<footer>Nur Hadimleri: a volunteer, independent project, not an official service of any publisher or community. · <a href="/en/privacy.html">Privacy</a> · <a href="/en/terms.html">Terms of use</a> · <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
+</main>
+</body>
+</html>

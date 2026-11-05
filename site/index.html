@@ -8,10 +8,10 @@
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css?v=6">
+<link rel="stylesheet" href="/style.css?v=8">
 <script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
 <link rel="alternate" hreflang="en" href="/en/">
-<script src="/site.js?v=6" defer></script>
+<script src="/site.js?v=8" defer></script>
 </head>
 <body>
 <main>
@@ -27,11 +27,12 @@
 <section class="hero">
   <h1>Risale-i Nur'u yapay zekâ ile, metinden ayrılmadan okuyun</h1>
   <p class="lead">Yapay zekâ asistanları Risale-i Nur hakkında akıcı konuşur ama çoğu zaman ezberinden: Alıntılar yanlış hatırlanır, adresler uydurulur, metin ile yorum birbirine karışır. Risale-i Nur MCP asistanı Bediüzzaman Said Nursî'nin eserlerinin kendisine bağlar. Asistan konuşmadan önce metni okur, söylediği her şey bir cümleye dayanır ve okuyan o cümleyi bulabilir. Metnin söylediğini kendi yorumundan ayırır, bulamadığını söyler ve uydurmaz.</p>
+  <h2>Hemen Kullandığınız Yapay Zekâya Ekleyin</h2>
   <div class="actions">
-    <a class="button primary" href="#claude">Claude'a ekle</a>
-    <a class="button primary" href="#chatgpt">ChatGPT'ye ekle</a>
+    <a class="button primary" href="/claude.html">Claude'a ekle</a>
+    <a class="button primary" href="/chatgpt.html">ChatGPT'ye ekle</a>
   </div>
-  <p class="muted small">Her platformun bölümünde kurulum adımları ve o platform için hazırlanmış proje talimatı var.</p>
+  <p class="muted small">Her platformun kendi sayfasında kurulum adımları, o platform için hazırlanmış proje talimatı ve sorun giderme var. Gemini yakında.</p>
 </section>
 
 
@@ -136,93 +137,6 @@
   </div>
   <p>Soldaki cevap akıcı ama Dördüncü Söz'le karşılaştırınca:</p><ul><li>Alıntı diye verilen açılış cümlesi metnin kendi sözü değil.</li><li>Söz bir âyetle değil, “<span class="ar" lang="ar">اَلصَّلَاةُ عِمَادُ الدّ۪ينِ</span>” hadisiyle açılır.</li><li>Talihli hizmetkâr bir altını bilete verip uçağa binmez; metinde öyle bir ticaret yapar ki “sermâyesi birden bine çıkar”.</li></ul><p>Sağdaki cevabın her alıntısı metinde aynen var ve kaynakçadaki adresle bulunabilir.</p>
   <p class="muted small">İki cevap da 29 Ekim 2026'da claude.ai'den, Claude Sonnet 5.5 ile alındı: soldaki proje dışında ve bağdaştırıcı kapalıyken (model web'de aradı), sağdaki talimatlı projede ve bağdaştırıcı açıkken. Cevaplar kısaltılmadı ve düzeltilmedi; sağdaki adımlar o sohbetin araç çağrılarıdır. İşaretler bizim: iki cevap da Dördüncü Söz'ün metniyle karşılaştırıldı.</p>
-</section>
-
-<section id="claude">
-  <h2>Claude</h2>
-  <p class="muted">claude.ai, Claude masaüstü ve mobil uygulamaları.</p>
-  <p class="note"><strong>Önce oturum açın:</strong> Bağdaştırıcı Claude hesabınıza eklenir, bu yüzden claude.ai'de hesabınızla oturum açmış olmalısınız. Risale-i Nur için ayrıca hesap açmanız gerekmez.</p>
-
-<section id="kurulum">
-  <h3>Kurulum</h3>
-  <ol class="steps-list">
-    <li><strong>Bağdaştırıcıyı ekleyin.</strong> Aşağıdaki düğme claude.ai'de bağdaştırıcı ekleme penceresini ad ve adres dolu olarak açar.</li>
-    <li><strong>Onaylayın.</strong> <em>Ekle</em> düğmesine basın. Bağdaştırıcı hemen çalışır.</li>
-    <li><strong>Sorun.</strong> Sohbette bağdaştırıcının açık olduğunu mesaj kutusundaki araçlar menüsünden kontrol edin ve sorunuzu sorun.</li>
-  </ol>
-  <div class="actions">
-    <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">claude.ai'de bağdaştırıcıyı ekle</a>
-  </div>
-  <h4>Elle eklemek</h4>
-  <p>Ad olarak "Risale-i Nur", adres olarak <code>https://mcp.risalemcp.com/mcp</code> yazın.</p>
-  <ul>
-    <li><strong>Web ve masaüstü:</strong> <em>Özelleştirme › Bağdaştırıcılar › Ekle › Özel bağdaştırıcı ekle</em>. Aynı yere sol alttaki profilden de ulaşılır: <em>Ayarlar › Bağdaştırıcılar</em>.</li>
-    <li><strong>Mobil:</strong> sol menüde profil › <em>Bağdaştırıcılar › Özel bağdaştırıcı ekle</em>.</li>
-  </ul>
-  <!-- Anthropic dizine kabul edince:
-       Web: Özelleştirme › Bağdaştırıcılar › "Risale-i Nur" diye ara › artı düğmesi.
-       Mobil: profil › Bağdaştırıcılar › Bağdaştırıcılara göz at › "Risale-i Nur" diye ara › Bağlan. -->
-  <p class="muted small">Bağdaştırıcı bir kez eklenince aynı hesapla web'de, masaüstünde ve mobilde görünür. Claude Code ve diğer ayrıntılar <a href="/belgeler.html">belgelerde</a>.</p>
-</section>
-
-<section id="proje">
-  <h3>Proje ve talimat</h3>
-  <p>Bağdaştırıcı tek başına da çalışır. Asistanın her cevapta metni okuması, alıntılarını denetlemesi ve kaynakçayı eklemesi için talimatlı bir proje açmanızı öneririz: projedeki her sohbet bu talimatla başlar.</p>
-  <ol class="steps-list">
-    <li>claude.ai'de sol menüden <strong>Projeler</strong>'i açın ve <strong>Yeni proje</strong> ile bir proje oluşturun, örneğin "Risale-i Nur".</li>
-    <li>Projenin sayfasında <strong>Talimatlar</strong> kısmını açın.</li>
-    <li>Aşağıdaki talimatı <strong>Kopyala</strong> ile kopyalayın, yapıştırın ve kaydedin.</li>
-    <li>Risale-i Nur sorularınızı bu projede yeni bir sohbet açarak sorun.</li>
-  </ol>
-  <div class="copybox" data-src="/talimat.md">
-    <button class="button" type="button" data-done="Kopyalandı ✓" hidden>Kopyala</button>
-    <pre><a href="/talimat.md">Talimatın metni</a></pre>
-  </div>
-</section>
-</section>
-
-<section id="chatgpt">
-  <h2>ChatGPT</h2>
-  <p class="muted">chatgpt.com ve ChatGPT uygulamaları.</p>
-  <p class="note"><strong>Önce oturum açın:</strong> Eklenti ChatGPT hesabınıza eklenir, bu yüzden chatgpt.com'da hesabınızla oturum açmış olmalısınız. Ücretsiz hesap da olur. Risale-i Nur için ayrıca hesap açmanız gerekmez.</p>
-
-<section id="chatgpt-kurulum">
-  <h3>Kurulum</h3>
-  <ol class="steps-list">
-    <li><strong>Eklentiler sayfasını açın.</strong> Aşağıdaki düğme chatgpt.com'da eklentiler sayfasını açar (ya da sol menüden <em>Eklentiler</em>). Sağ üstteki <em>Ekle</em> düğmesine basın ve <em>Özel MCP sunucusu ekle</em>'yi seçin.</li>
-    <li><strong>Bilgileri yazın.</strong> ChatGPT'de bu pencereyi dolu açan bir bağlantı yok; değerleri yanlarındaki düğmeyle kopyalayıp yapıştırın:
-      <div class="fields">
-        <span>Ad</span><code>Risale-i Nur</code><button class="button" type="button" data-copy="Risale-i Nur" data-done="Kopyalandı ✓">Kopyala</button>
-        <span>Sunucu URL'si</span><code>https://mcp.risalemcp.com/mcp</code><button class="button" type="button" data-copy="https://mcp.risalemcp.com/mcp" data-done="Kopyalandı ✓">Kopyala</button>
-      </div>
-      <em>Kimlik doğrulama</em> olarak <em>Kimlik doğrulama yok</em>'u seçin.</li>
-    <li><strong>Onaylayın.</strong> <em>Anladım ve devam etmek istiyorum</em> kutusunu işaretleyip <em>Eklenti olarak oluştur</em>'a basın.</li>
-    <li><strong>Sorun.</strong> Sorunuzu sorun; asistan eklentiyi kendiliğinden kullanmazsa mesaj kutusundaki menüden Risale-i Nur'u seçin.</li>
-  </ol>
-  <div class="actions">
-    <a class="button primary" href="https://chatgpt.com/plugins">ChatGPT'de eklentiler sayfasını aç</a>
-  </div>
-  <p class="note"><strong>Telefondan eklenemez:</strong> Eklenti yalnızca web'den (chatgpt.com) eklenebilir, mobil uygulamada <em>Ekle</em> düğmesi yok. Bir kez web'den ekleyin; aynı hesapla açtığınız mobil uygulamada da görünür ve kullanılır.</p>
-</section>
-
-<section id="chatgpt-proje">
-  <h3>Proje ve talimat</h3>
-  <p>Eklenti tek başına da kaynak gösterir ama talimatlı bir projede ChatGPT metni ve yorumu daha düzenli ayırır ve kaynakçayı daha düzgün verir. Bu talimat ChatGPT için hazırlandı; Claude'unkinden biraz farklıdır.</p>
-  <ol class="steps-list">
-    <li>Yeni bir proje oluşturun, örneğin "Risale-i Nur". Web'de sol menüde <em>Projeler</em> yazısının hemen sağındaki küçük artı düğmesi; uygulamada <em>Projeler</em> sekmesinde sağ üstteki artı düğmesi.</li>
-    <li>Proje oluşunca talimat alanına aşağıdaki talimatı <strong>Kopyala</strong> ile kopyalayıp yapıştırın ve kaydedin.</li>
-    <li>Risale-i Nur sorularınızı bu projede yeni bir sohbet açarak sorun.</li>
-  </ol>
-  <div class="copybox" data-src="/chatgpt-talimat.md">
-    <button class="button" type="button" data-done="Kopyalandı ✓" hidden>Kopyala</button>
-    <pre><a href="/chatgpt-talimat.md">Talimatın metni</a></pre>
-  </div>
-</section>
-</section>
-
-<section id="gemini">
-  <h2>Gemini</h2>
-  <p class="muted">Yakında eklenecek.</p>
 </section>
 
 <section>
