@@ -161,7 +161,7 @@ Kullanıcının kaydı: `kuran`, `risale`, `metin` (kullanıcının kararı). Pr
 
 ## 6. Bu belgenin bağladıkları
 
-- Y1.2: `reviewers.json` şeması (`fields`, `since`, `until`, `note`), bağ → alan kuralı (2), `competent`, iki alanlı
+- Y1.2 (bitti, 2026-11-05): `reviewers.json` şeması (`fields`, `since`, `until`, `note`), bağ → alan kuralı (2), `competent`, iki alanlı
   bağın payları.
 - Y0.2: davet metni ve deneme örneklemleri (3).
 - Y0.5: kayıtta kabul edilen şartlar, lisans.

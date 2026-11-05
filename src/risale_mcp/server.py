@@ -405,7 +405,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             """List the links recorded between this text and other texts (the Risale and classical works), both
             directions: the other end's id and citation (available false: its text is not on this server), the kind
             (quote: same_words, transmits; relation: same_view, different_view, objection), the method and strength,
-            and reviewers' checks (each reviewer by a fixed number; names are not published). A link is a recorded relation with its evidence, not a verdict."""
+            and reviewers' checks (each reviewer by a fixed number; names are not published; see find_ayah for
+            fields and review_fields). A link is a recorded relation with its evidence, not a verdict."""
             with _tool_errors():
                 return _json(library.text_links(id, limit))
 
@@ -435,8 +436,11 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         works he wrote in Arabic the Turkish wording is the translator's), dayanak (the text relies on it: "…
         sırrınca"), risale (the verse's allusion to the Risale-i Nur). A link with reviews was checked by a human
         reviewer, shown by a fixed number, not a name (status reviewed or disputed, the reviewer's own strength,
-        date, reason); a link without reviews
-        was found by rules and nobody has checked it."""
+        the reviewer's fields that the link needs, date, reason); competent false: the reviewer is not registered in
+        a field this link needs, so the decision is recorded but does not count as a check. review_fields: the
+        fields the link needs (kuran, hadis, tefsir, risale) and those covered by competent reviewers who accepted
+        it; call a link checked only when all are covered, and report a dispute as a dispute. A link without
+        reviews was found by rules and nobody has checked it."""
         with _tool_errors():
             return _json(library.find_ayah(sura, ayah, limit, offset))
 

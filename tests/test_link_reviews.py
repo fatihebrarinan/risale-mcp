@@ -11,7 +11,8 @@ from risale_mcp.build_db import build
 from risale_mcp.library import Library
 from risale_mcp.link_reviews import Review, current, validate
 
-PEOPLE = {"a": {"name": "Denetçi A", "number": 1}, "b": {"name": "Denetçi B", "number": 2}}
+PEOPLE = {"a": {"name": "Denetçi A", "number": 1, "fields": {"kuran": {"since": "2026-11-01"}, "risale": {"since": "2026-11-01"}}},
+          "b": {"name": "Denetçi B", "number": 2, "fields": {"risale": {"since": "2026-11-01"}}}}
 KEY = {"source": "lemalar/1", "target": "quran:2:255", "type": "relation"}
 
 
@@ -50,6 +51,43 @@ def test_every_reviewer_has_a_fixed_number_of_their_own(tmp_path):
     assert link_reviews.reviewers(tmp_path) == PEOPLE
     for people, problem in [({"a": {"name": "A"}}, "numarası yok"),
                             ({"a": {"number": 1}, "b": {"number": 1}}, "aynı numara")]:
+        (tmp_path / "reviewers.json").write_text(json.dumps({"reviewers": people}), "utf-8")
+        with pytest.raises(ValueError, match=problem):
+            link_reviews.reviewers(tmp_path)
+
+
+@pytest.mark.parametrize("type_,source,target,needs", [
+    ("quote", "sozler/10/c001", "quran:2:255", ("kuran",)),                   # Kur'ân – Risale lafız
+    ("relation", "sozler/10", "quran:2:255", ("kuran", "risale")),            # Kur'ân – Risale ilişki
+    ("quote", "beyzavi/1/1/c001", "quran:1:1", ("kuran",)),                   # Kur'ân – tefsir lafız
+    ("relation", "beyzavi/1/1", "quran:1:1", ("tefsir",)),                     # müfessirin âyet birimi
+    ("quote", "sozler/10/c001", "hadis-derlem:bukhari:1", ("hadis",)),        # hadis – Risale
+    ("quote", "beyzavi/1/1/c004", "hadis-derlem:sanadset:1", ("hadis",)),     # hadis – tefsir
+    ("quote", "beyzavi/1/1/c004", "tefsir:kessaf/1/1/c002", ("tefsir",)),     # tefsir – tefsir lafız
+    ("relation", "isaratul-icaz/1/c003", "tefsir:beyzavi/1/1", ("risale", "tefsir")),   # Risale – tefsir ilişki
+    ("reference", "lemalar/18", "risale:sikke-i-tasdik-i-gaybi/lema-18", ("risale",)),  # Risale – Risale gönderme
+    ("reference", "isaratul-icaz/1/c003", "tefsir:kessaf/1", ("risale", "tefsir")),     # müfessiri adıyla anma
+])
+def test_the_fields_a_link_needs_follow_its_kind_and_ends(type_, source, target, needs):
+    namespace = "tefsir" if source.startswith(("beyzavi", "kessaf")) else "risale"
+    got = link_reviews.needed_fields(type_, link_reviews.end_field(source, namespace), link_reviews.end_field(target))
+    assert got == needs
+
+
+def test_a_decision_counts_only_in_the_fields_held_on_its_date():
+    person = {"fields": {"kuran": {"since": "2026-11-01"}, "hadis": {"since": "2026-11-10", "until": "2026-12-01"}}}
+    assert link_reviews.fields_on(person, "2026-10-30") == set()
+    assert link_reviews.fields_on(person, "2026-11-15") == {"kuran", "hadis"}
+    assert link_reviews.fields_on(person, "2026-12-02") == {"kuran"}
+    assert link_reviews.fields_on({**person, "until": "2026-11-05"}, "2026-11-06") == set()
+    assert link_reviews.competence(review(date="2026-11-15"), person, ("kuran", "risale")) == ("kuran",)
+    assert link_reviews.competence(review(date="2026-11-15"), {}, ("kuran",)) == ()      # alansız: competent false
+
+
+def test_reviewer_fields_are_checked(tmp_path):
+    for people, problem in [({"a": {"number": 1, "fields": {"arapca": {"since": "2026-11-01"}}}}, "bilinmeyen alan"),
+                            ({"a": {"number": 1, "fields": {"kuran": {}}}}, "tarihi yok"),
+                            ({"a": {"number": 1, "fields": {"kuran": {"since": "2026-11-01", "trial": "dün"}}}}, "geçersiz")]:
         (tmp_path / "reviewers.json").write_text(json.dumps({"reviewers": people}), "utf-8")
         with pytest.raises(ValueError, match=problem):
             link_reviews.reviewers(tmp_path)
@@ -117,8 +155,11 @@ def test_find_ayah_shows_who_checked_a_link(reviewed_db):
     lib = Library(reviewed_db[0])
     links = {l["section"]: l for l in lib.find_ayah("2", 255)["links"]}
     assert links["lemalar/1"]["reviews"] == [
-        {"status": "reviewed", "strength": "strong", "reviewer": 1, "date": "2026-11-04", "reason": "metin söylüyor"},
-        {"status": "disputed", "strength": "strong", "reviewer": 2, "date": "2026-11-04", "reason": "yalnız bir cümle"}]
+        {"status": "reviewed", "strength": "strong", "reviewer": 1, "fields": ["kuran", "risale"], "date": "2026-11-04",
+         "reason": "metin söylüyor"},
+        {"status": "disputed", "strength": "strong", "reviewer": 2, "fields": ["risale"], "date": "2026-11-04",
+         "reason": "yalnız bir cümle"}]
+    assert links["lemalar/1"]["review_fields"] == {"needs": ["kuran", "risale"], "covered": ["kuran", "risale"]}
     assert "reviews" not in links["lemalar/2"]                          # kimse bakmadı: alan yok
     lib.close()
 

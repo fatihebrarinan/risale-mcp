@@ -63,6 +63,44 @@ REVIEWS_DIR = LINKS_DIR / "reviews"
 REVIEWERS = "reviewers.json"
 STATUSES = ("reviewed", "disputed", "withdrawn")
 _DATE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+# Denetçinin ihtisas alanları (Y1.2, `docs/denetci-olcutu.md` 2). `metin` bağ alanı değildir (cümle bölmesi,
+# başlıklar: ayrıştırıcıya döner), kayıtta durur ama hiçbir bağın gerektirdiği alan olmaz.
+FIELDS = ("kuran", "hadis", "tefsir", "risale", "metin")
+
+
+def end_field(value: str, namespace: str | None = None) -> str | None:
+    """Bağ ucunun alanı: Kur'ân `kuran`, hadis `hadis`, metin kendi ad alanı (`risale`, `tefsir`). Öneksiz yerel
+    kimliğin ad alanı veritabanından gelir (`namespace`); bilinmiyorsa None."""
+    if value.startswith("quran:"):
+        return "kuran"
+    if value.startswith(("hadis:", "hadis-derlem:")):
+        return "hadis"
+    end = text_endpoint(value)
+    return (end[0] or namespace) if end else None
+
+
+def needed_fields(type_: str, source: str | None, target: str | None) -> tuple[str, ...]:
+    """Bağın "denetlendi" sayılması için gereken alanlar (hepsi; `docs/denetci-olcutu.md` 2, kullanıcının kararları
+    2026-11-05). Lafız: hedefin alanı. İlişki: iki ucun alanı; ama Kur'ân ile müfessir arasında yalnız `tefsir` (tefsir
+    alanı Kur'ân'ı okumayı içerir; Risale alanı Arapça istemediği için Kur'ân – Risale ilişkisi `kuran` ve `risale`
+    ister). Gönderme: gönderenin alanı, hedef bir müfessirse `tefsir` de."""
+    if type_ == "quote":
+        need = {target}
+    elif type_ == "relation":
+        need = {source, target}
+        if need == {"kuran", "tefsir"}:
+            need = {"tefsir"}
+    else:
+        need = {source} | ({"tefsir"} if target == "tefsir" else set())
+    return tuple(sorted(f for f in need if f))
+
+
+def fields_on(person: dict, date: str) -> set[str]:
+    """Denetçinin o tarihte kayıtlı olduğu alanlar: alanın `since`'inden sonra, kaydın ve alanın `until`'inden önce."""
+    if (until := person.get("until")) and date > until:
+        return set()
+    return {f for f, d in (person.get("fields") or {}).items()
+            if d.get("since", "9999") <= date and not (d.get("until") and date > d["until"])}
 
 
 @dataclass(frozen=True)
@@ -126,7 +164,7 @@ def reviewers(root: Path = REVIEWS_DIR) -> dict:
     """Denetçiler; her birinin sabit numarası olmalı (eksik ya da tekrarlanan numara hatadır)."""
     path = root / REVIEWERS
     people = json.loads(path.read_text(encoding="utf-8"))["reviewers"] if path.exists() else {}
-    if problems := number_problems(people):
+    if problems := number_problems(people) + field_problems(people):
         raise ValueError(f"{path}: {'; '.join(problems)}")
     return people
 
@@ -144,6 +182,32 @@ def number_problems(people: dict) -> list[str]:
         else:
             seen[n] = rid
     return out
+
+
+def field_problems(people: dict) -> list[str]:
+    """Alanlar: bilinen adlar, her alanda `since` tarihi (`trial`, `until` isteğe bağlı, tarih)."""
+    out = []
+    for rid, person in people.items():
+        fields = person.get("fields") or {}
+        if not isinstance(fields, dict):
+            out.append(f"alanlar sözlük olmalı: {rid!r}")
+            continue
+        for name, d in fields.items():
+            if name not in FIELDS:
+                out.append(f"bilinmeyen alan {name!r}: {rid!r}")
+            elif not isinstance(d, dict) or not _DATE.match(d.get("since") or ""):
+                out.append(f"alanın tarihi yok ({name}): {rid!r}")
+            elif any(d.get(k) and not _DATE.match(d[k]) for k in ("trial", "until")):
+                out.append(f"alanın tarihi geçersiz ({name}): {rid!r}")
+        if person.get("until") and not _DATE.match(person["until"]):
+            out.append(f"until geçersiz: {rid!r}")
+    return out
+
+
+def competence(review: Review, person: dict, needs: tuple[str, ...]) -> tuple[str, ...]:
+    """Kararın bağın gerektirdiği alanlardan hangilerini karşıladığı (denetçinin karar tarihindeki alanlarıyla);
+    boşsa karar kaydedilir ama "denetlendi" saymaz (`competent: false`)."""
+    return tuple(sorted(fields_on(person, review.date) & set(needs)))
 
 
 def read(root: Path = REVIEWS_DIR) -> list[Review]:
@@ -269,7 +333,8 @@ def main() -> None:
     people, reviews = reviewers(), read()
     if args[0] == "list":
         for rid, person in people.items():
-            print(f"{rid}: {person.get('name')} ({person.get('role', '')})")
+            fields = ", ".join(f"{f} {d['since']}" for f, d in (person.get("fields") or {}).items()) or "alan yok"
+            print(f"{rid} [{person.get('number')}]: {person.get('name')} ({person.get('role', '')}; {fields})")
         for (name, status), n in sorted(Counter((r.file, r.status) for r in reviews).items()):
             print(f"  {name}: {status} {n}")
         return

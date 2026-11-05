@@ -220,7 +220,10 @@ insandır, model öneri hazırlar.
 - Y1.1.5 Ölçüt: T7'de onaylanan 114'e yakın lemma bağının hepsi doğru kelime aralığına iner (örneklemle); genel
   sunucuda beklenen fark yalnız `get_ayah`/`find_ayah`'ın yeni alanları.
 
-**Y1.2 Denetçinin ihtisası**
+**Y1.2 Denetçinin ihtisası** (bitti, 2026-11-05: `link_reviews.FIELDS`, `needed_fields`, `fields_on`,
+`competence`; şema 21, `link_reviews.needs`/`fields`; araçlarda kararın `fields` ya da `competent: false`, bağda
+`review_fields: {needs, covered}`; kullanıcının 89 eşleşen kararının hepsi ehil ve tam; genel sunucuda fark yalnız
+`find_ayah` açıklaması ve denetlenmiş bağların yeni alanları)
 - Y1.2.1 `reviewers.json`'a `fields` (Y0.1'in alanları), `since`, isteğe bağlı açıklama.
 - Y1.2.2 Bağ türü → gereken alan eşlemesi (Kur'ân alıntısı: Arapça/Kur'ân; hadis: hadis; metinden metne ilişki:
   tefsir/Risale); alanı tutmayan denetçinin kararı kaydedilir ama "denetlendi" sayılmaz (`competent: false`).

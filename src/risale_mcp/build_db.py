@@ -460,6 +460,7 @@ def _load_reviews(conn: sqlite3.Connection, report: BuildReport, root: Path | No
     """Denetim kararları (`link_reviews.py`): geçerli olanlar, bağı bu veritabanında bulunanlar. Geçersiz kayıt
     (listede olmayan denetçi, eksik gerekçe…) kurulumu durdurur."""
     from risale_mcp import link_reviews
+    from risale_mcp.links import resolve
     folder = (root / "reviews") if root else link_reviews.REVIEWS_DIR
     people, reviews = link_reviews.reviewers(folder), link_reviews.read(folder)
     if bad := link_reviews.validate(reviews, people):
@@ -472,8 +473,15 @@ def _load_reviews(conn: sqlite3.Connection, report: BuildReport, root: Path | No
         if r.key not in links:
             unmatched += 1
             continue
-        rows.append((*r.key, r.status, r.strength, people[r.reviewer]["number"], r.date, r.reason, r.file))
-    conn.executemany("INSERT INTO link_reviews VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
+        source, target, type_, _ = r.key
+        resolved = resolve(conn, source)
+        needs = link_reviews.needed_fields(type_, link_reviews.end_field(source, resolved and resolved["namespace"]),
+                                           link_reviews.end_field(target))
+        has = link_reviews.competence(r, people[r.reviewer], needs)
+        rows.append((*r.key, r.status, r.strength, people[r.reviewer]["number"], ",".join(needs), ",".join(has),
+                     r.date, r.reason, r.file))
+    conn.executemany("INSERT INTO link_reviews (source, target, type, part, status, strength, reviewer, needs, fields,"
+                     " date, reason, file) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", rows)
     report.counts["link_reviews"] = len(rows)
     report.counts["reviews_unmatched"] = unmatched
 

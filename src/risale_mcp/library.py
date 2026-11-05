@@ -865,7 +865,7 @@ class Library:
                 quote = {"id": s["id"], "cite_as": hit_cite(s["ref"], s["incipit"], s["text"]),
                          "relation": r["relation"], "strength": r["strength"], "method": r["method"]}
                 if reviews := self._reviews(r["source"], r["target"], r["type"], r["part"] or ""):
-                    quote["reviews"] = reviews
+                    quote.update(reviews)
                 entry["quotations"].append(quote)
         return list(out.values())
 
@@ -884,18 +884,31 @@ class Library:
             verse = f"quran:{sura}:{r['ayah_start']}" + (f"-{r['ayah_end']}" if r["ayah_end"] != r["ayah_start"] else "")
             source = r["node_id"] if r["scope"] == "section" else r["sid"]
             if reviews := self._reviews(source, verse, "relation"):
-                item["reviews"] = reviews
+                item.update(reviews)
             out.append(item)
         return out
 
-    def _reviews(self, source: str, target: str, type_: str, part: str = "") -> list[dict]:
+    def _reviews(self, source: str, target: str, type_: str, part: str = "") -> dict:
         """Bağ üzerine denetçilerin geçerli kararları (`link_reviews.py`), denetçinin sabit numarasıyla (ad
-        yayımlanmaz); yoksa boş: bağı kural kurdu, kimse bakmadı."""
-        return [{k: v for k, v in (("status", r["status"]), ("strength", r["strength"]), ("reviewer", r["reviewer"]),
-                                   ("date", r["date"]), ("reason", r["reason"])) if v}
-                for r in self.conn.execute(
-                    "SELECT status, strength, reviewer, date, reason FROM link_reviews WHERE source = ? AND target = ?"
-                    " AND type = ? AND part = ? ORDER BY date, reviewer", (source, target, type_, part))]
+        yayımlanmaz) ve karşıladığı alanlarla (alanı tutmayan karar `competent: false`); yoksa boş: bağı kural kurdu,
+        kimse bakmadı. `review_fields`: bağın gerektirdiği alanlar ve ehil denetçilerin kabulüyle karşılananlar
+        (hepsi karşılanmadıkça bağ "denetlendi" sayılmaz; itiraz kararlarda görünür)."""
+        rows = self.conn.execute(
+            "SELECT status, strength, reviewer, needs, fields, date, reason FROM link_reviews WHERE source = ?"
+            " AND target = ? AND type = ? AND part = ? ORDER BY date, reviewer", (source, target, type_, part)).fetchall()
+        if not rows:
+            return {}
+        reviews, covered = [], set()
+        for r in rows:
+            fields = [f for f in r["fields"].split(",") if f]
+            item = {"status": r["status"], **({"strength": r["strength"]} if r["strength"] else {}),
+                    "reviewer": r["reviewer"], **({"fields": fields} if fields else {"competent": False}),
+                    "date": r["date"], **({"reason": r["reason"]} if r["reason"] else {})}
+            reviews.append(item)
+            if r["status"] == "reviewed":
+                covered.update(fields)
+        needs = [f for f in rows[0]["needs"].split(",") if f]
+        return {"reviews": reviews, "review_fields": {"needs": needs, "covered": sorted(covered & set(needs))}}
 
     def ayahs(self, sura: str | int, ayah: int, end: int | None = None, context: int = 0) -> dict:
         """Kur'ân'dan âyet ya da âyet aralığı: harekeli metin (Medine Mushafı hattı) ve Diyanet mealleri."""
@@ -1100,7 +1113,7 @@ class Library:
             if r["evidence"]:
                 item["evidence"] = json.loads(r["evidence"])
             if reviews := self._reviews(r["source"], r["target"], r["type"], r["part"] or ""):
-                item["reviews"] = reviews
+                item.update(reviews)
             out.append(item)
         out.sort(key=lambda x: (x["strength"] == "weak", x["direction"], x["other"]))
         return {"text": text_id, "total": len(out), "links": out[:limit]}
