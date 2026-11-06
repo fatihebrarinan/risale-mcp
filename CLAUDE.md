@@ -635,3 +635,11 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   denetimi raporu yalnız Risale profillerinden. Y0.6 dizin politikaları `docs/dizin-politikalari.md`: okuma
   sunucuları açık kipte kalabilir, katkı ayrı OAuth'lu bağdaştırıcı, talimatlar başka bağdaştırıcıyı çağırmayı
   emretmez (bilgi kipine çevrildi); Claude başvurusu artık claude.ai/directory/manage portalında.
+- **Gece işi, sonuç (2026-11-07):** `docs/mvp-kitaplar.md` "Gece işi". Vektörler: hadis 169.137 rivayet (yalnız
+  metin, 15,8 M token, `hadis_vectors.py`), tefsir 546.329 cümle (45,1 M + Taberî düzeltmesinden sonra 6,1 M); tefsir
+  sunucusunun kopyası `embeddings export-public --profile tefsir`; iki sunucuda `semantic_search` çalışıyor. Altın
+  sorular kendi sunucusunda (`golden.py`, sorunun `profile`'ı); 12 yeni soru (TF1–TF6, HD1–HD6) onay bekliyor; hüküm
+  verilmedi, uydurma yok. Çalıştırmadan çıkan düzeltmeler: Kütüb-i Sitte ve Muvatta'ya kök düğüm (`get_outline`
+  kitap kimliğiyle), `in_risale` tekrarsız ve Türkçe önce, cildi bilinmeyen sayfa "(cilt bilinmiyor)", OpenITI'nin
+  `PageEnd` işareti (Taberî'nin 7.972 cümlesinde metinde kalmıştı; yerel, kabul edildi). Site taslakları
+  `docs/site-taslaklari.md` (yayımlanmadı). Push ve deploy yok.

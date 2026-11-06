@@ -373,3 +373,41 @@ Sorgu tarafında; dizin ve `db.NORMALIZATION` değişmedi (1,6 GB'lık yerel diz
   kitaplarda bâblar kesintisiz numaralanır: "Buharî, Ezân: 148"; numaralı kitapta numara; cilt:sayfada bu baskının
   sayfası, uyarıyla), get_ayah, cite. Anlamsal arama vektörlerden sonra. Keşfü'l-Hafâ sonuçları `book_note` taşır.
 - Testler `tests/test_hadis_server.py` (veritabanı varsa).
+
+## Gece işi: vektörler, altın sorular, düzeltmeler (2026-11-07, yerelde)
+
+- **Hadis vektörleri** (`hadis_vectors.py`): 169.137 rivayetin hepsi, 15,8 M token, ≈42 dk. Vektöre giren metin:
+  senedi baskıda ayrılmış metin (`matn`, 35.742), «…» içindeki söz (64.152), "قال رسول الله ﷺ"dan sonrası (4.784),
+  ayrılamayan bütün (64.459: Kenz, Keşfü'l-Hafâ, Feyzü'l-Kadîr, eş-Şifâ, Delâil). Hadis sunucusunda `semantic_search`
+  çalışıyor ("komşu hakkı" komşu bâblarının rivayetlerini getiriyor).
+- **Tefsir vektörleri:** 13 müfessirin 546.329 cümlesi, 45,1 M token, ≈2 sa (asıl depo `data/dist/kisisel/vectors`;
+  tefsir sunucusunun kopyası `embeddings export-public --profile tefsir` → `data/dist/tefsir/vectors`). Taberî'nin
+  düzeltmesinden sonra değişen bölümleri yeniden: 35.371 cümle, 6,1 M token. Gecenin toplamı ≈67 M token (sınır 150).
+  Tefsir sunucusunda `semantic_search` isabetli ("kalplerin mühürlenmesi mecaz mı" → Keşşâf 2:7'nin mecaz cümlesi;
+  "Âyetü'l-Kürsî'nin fazileti" → ed-Dürrü'l-Mensûr ve İbn Kesîr 2:255).
+- **Tefsir çalıştırması** (`20261107-015127`, TF5 yeniden `20261107-025439`): 6 soru, ortalama 59 sn, 0,43 $; atıflar
+  TF1 19/19, TF2 25/28, TF4 5/5, TF5 4/4. ✗'ların hepsi Risale'nin yerleri: denetim tefsir veritabanıyla yapıldığı için
+  Risale bölümlerini bulamıyor (yanlış alarm; atıflar `risale_refs`'ten). TF3'te önce Risale'nin üç yeri (tür, güç,
+  metin yok), sonra 13 müfessir vefat sırasıyla; TF5 itirazı uydurmadı, Taberî'nin adsız "iddia edenler"ine itirazını
+  gösterdi ve Mu'tezile tahminini yorum diye ayırdı; TF6 Elmalılı'nın metnini uydurmadı. TF4'teki "No such tool"
+  Claude Code'un araç yüklemesi (ikinci çağrı çalıştı).
+- **Taberî'nin sayfa işaretleri:** Shamela sürümü iki yazılışı iç içe kullanıyor (`PageV…` 23.166, `PageEndV…`
+  9.382); okuyucu ikincisini tanımadığı için 7.972 cümlenin metninde kalmıştı (TF5'in alıntısında görüldü) ve sayfalar
+  eksikti. `openiti.py` ikisini de okur; sıra yer yer geri gider, kaynağın verdiği gibi bırakıldı. Kimlikler aynı,
+  metni değişen cümleler yalnız Taberî'de (yerel, kabul edildi); bağlar `links_tefsir --mvp taberi` ile yenilendi
+  (sayı aynı, kanıt konumları yeni metne göre; öbür eserlerin bağları birebir aynı). Başka OpenITI dosyasında `PageEnd`
+  yok.
+- **Genel sunucu:** `tool_snapshot gece-son` son yayınla (`yayin-20261105-230221`) karşılaştırıldı: 5 çağrıda fark, hepsi
+  beklenen `search`, `find_hadith`, `get_hadith`; beklenmeyen yok. Deploy edilmedi.
+- **Altın sorular:** `golden.py` soruyu kendi sunucusunda sorar (`profile`: `tefsir`, `hadis`; yapılandırmada sunucu
+  adı profilin adı). Yeni 12 soru `tests/golden/questions.json`'da (TF1–TF6, HD1–HD6; kullanıcının onayını bekliyor).
+  Hadis sunucusunun atıfları rivayet kimliğidir, `citations.py` denetlemez; beklenen bölüm `read_chapter` ve
+  `get_hadith` ile okunmuş sayılır.
+- **Hadis çalıştırması** (`20261107-003612`, HD1 yeniden `20261107-004253`): altısında da hüküm verilmedi, derece yalnız
+  kaynağın sözüyle (İbn Hibbân'da Elbânî, Tirmizî'nin kendi sözü, Heysemî), tercümeler damgalı. HD5 sıra kimliğini
+  baskı numarası diye sunmadı; HD6 "hüküm yok" dedi. Ortalama 28 sn, 0,16 $.
+- **Çalıştırmadan çıkan düzeltmeler:** (1) `get_outline("bukhari")` hata veriyordu: Kütüb-i Sitte ve Muvatta'nın
+  ağacında kitap düğümü yoktu, kök eklendi; (2) `in_risale` aynı yeri iki kez veriyordu (Hadith API numarası ve
+  kütüphane kimliği iki yoldan; 147 kayıt), artık bir kez ve Türkçe ciltler Osmanlıcadan önce; (3) Müsned, Kenz,
+  Mecma, Dârimî, Müstedrek, Feyzü'l-Kadîr ve el-Mu'cemü's-Sağîr'in kaynağı cilt vermiyor (yalnız `[ص: n]`): atıf
+  "s. 22 (cilt bilinmiyor)" der, cilt:sayfa künyesinde `find_by_citation` bunu not eder.
