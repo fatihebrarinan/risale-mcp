@@ -31,7 +31,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from risale_mcp.ayah_links import find_links
-from risale_mcp.catalog import Site, WORKS, Work
+from risale_mcp.catalog import Collection, Site, WORKS, Work
 from risale_mcp.catalog.editions import edition
 from risale_mcp.catalog.permissions import PERMISSIONS
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
@@ -844,7 +844,7 @@ def main() -> None:
         sys.exit("Eser JSON'u yok; önce `uv run python -m risale_mcp.build --all`.")
     report = build_profile(profile, args.accept_id_changes)
     print("\n".join(report.lines()))
-    if report.counts["quran_ayahs"]:
+    if report.counts["quran_ayahs"] and Collection.KULLIYAT in profile.collections:   # Risale'nin âyet denetimi
         AYAH_REPORT.parent.mkdir(parents=True, exist_ok=True)
         AYAH_REPORT.write_text(report.ayah_report(), encoding="utf-8")
         print(f"  âyet denetimi: {AYAH_REPORT.relative_to(ROOT)}")
