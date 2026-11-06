@@ -162,6 +162,9 @@ class HadisLibrary(Library):
                              if (p := json.loads(r["printed"] or "null")) and p.get("page") == int(loc.page)
                              and (loc.volume is None or p.get("volume") in (None, loc.volume))]
                     note = PAGE_NOTE
+                    if loc.volume is not None and any(json.loads(r["printed"]).get("volume") is None for r in found):
+                        note += (" This edition's source gives pages without volumes: the reports listed are on that "
+                                 "page number in any volume.")
                 out.append({"citation": c.raw, "book": key, "found": bool(found), **({"note": note} if note else {}),
                             "reports": [self._unit(r, full=False) for r in found[:limit] if r is not None]})
         if not out:
@@ -242,5 +245,5 @@ def _cite(row) -> str:
     number = f"no. {row['number']}" if row["number"] is not None else f"sıra {row['id'].split('/', 1)[1]} (baskıda numara yok)"
     printed = json.loads(row["printed"] or "null")
     page = (f", {printed['volume']}/{printed['page']}" if printed and printed.get("volume")
-            else f", s. {printed['page']}" if printed else "")
+            else f", s. {printed['page']} (cilt bilinmiyor)" if printed else "")   # kaynak yalnız [ص: n] veriyor
     return f"{row['book_title']} ({row['author']}), {number}{page}"
