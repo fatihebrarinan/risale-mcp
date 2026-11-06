@@ -705,10 +705,15 @@ class Library:
         collection = _default_scope(work, group, include_related)
         limit = min(max(limit, 1), MAX_RESULTS)
         try:
-            hits = fts.search(self.conn, query, work=work, group=group, limit=limit, offset=max(offset, 0),
-                              collection=collection)
+            expanded = False
             by_work = fts.count_by_work(self.conn, query, group=group, collection=collection)
-            sections = fts.search_nodes(self.conn, query, work=work, limit=5, collection=collection)
+            if not by_work:            # Türkçe ek: "Beyzavi" dizinde "beyzavinin"; sonuçsuzsa kelime başı olarak bir kez daha
+                retry = fts.count_by_work(self.conn, query, group=group, collection=collection, prefix_all=True)
+                if retry:
+                    by_work, expanded = retry, True
+            hits = fts.search(self.conn, query, work=work, group=group, limit=limit, offset=max(offset, 0),
+                              collection=collection, prefix_all=expanded)
+            sections = fts.search_nodes(self.conn, query, work=work, limit=5, collection=collection, prefix_all=expanded)
         except fts.QueryError as error:
             raise LibraryError(str(error)) from None
         if work:
@@ -723,6 +728,9 @@ class Library:
         }
         if sections:
             result["matching_sections"] = [{"id": s.node_id, "ref": s.ref} for s in sections]
+        if expanded:
+            result["expanded"] = ("No exact word matched, so each unquoted word was searched as a word start "
+                                  "(Turkish suffixes: Beyzavi -> Beyzâvî'nin). Check that the hits are the word meant.")
         return result
 
     def semantic_search(self, query: str, work: str | None = None, group: str | None = None,

@@ -314,3 +314,14 @@ Hadis veritabanı ve araçları M5'te (hadis sunucusu).
   bulunamayan 150 → 164; 25 parça zayıflıyor, 9 güçleniyor. Kaybedilenlerin çoğu hadis kitabı olmayan eserlerden
   (Târîhu Dımaşk, Tabakât, mevzu tezkiresi); en az beşi eş-Şifâ ve Beyhakî'nin Delâil'inde. `matches.json` ve genel
   sunucu değişmedi.
+
+## M4: arama (2026-11-06)
+
+Sorgu tarafında; dizin ve `db.NORMALIZATION` değişmedi (1,6 GB'lık yerel dizin yeniden kurulmaz).
+- **Arapça önek** (`search.arabic_forms`): tırnaksız tek Arapça kelime, bitişik و ف ب ل ك (ve birleşimleri) ve harf-i
+  tarifle birlikte aranır ("الكتاب" → "والكتاب", "بالكتاب", "للكتاب", "كتاب"…). Tırnaklı ifade açılmaz.
+- **Türkçe ek** (`Library.search`): sorgu hiç sonuç vermezse tırnaksız kelimeler bir kez kelime başı olarak aranır,
+  sonuç `expanded` taşır ("Beyzavi" → Muhâkemat'taki "Tefsîr-i Beyzâvî'de": T4 altın sorusunun bulunamayan yeri).
+  Sonuç veren sorgular değişmez.
+- Genel sunucuda fark (`tool_snapshot` m4-arama2): yalnız `search` (Arapça sorgunun sonuçları ve aracın açıklaması);
+  deploy `DEPLOY_EXPECT="search"`. Arapça eserlerde anlamsal arama ölçümü vektörlerle birlikte (M5).

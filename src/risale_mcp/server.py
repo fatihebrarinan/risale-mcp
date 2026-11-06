@@ -339,8 +339,10 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         include_related: Annotated[bool, Field(description=RELATED_HELP)] = False,
     ) -> str:
         """Search the works sentence by sentence by the text's own words, best matches first: the total, matches
-        per work, matching section titles, and sentences (id, cite_as, text). Read a result in context before
-        relying on it."""
+        per work, matching section titles, and sentences (id, cite_as, text). An unquoted Arabic word also matches its
+        forms with attached و ف ب ل ك and the article (الكتاب: والكتاب, بالكتاب, كتاب). If no word matches exactly, each
+        unquoted word is retried once as a word start (Turkish suffixes) and the result carries expanded. Read a
+        result in context before relying on it."""
         with _tool_errors():
             return _json(library.search(query, work, group, limit, offset, include_related))
 
