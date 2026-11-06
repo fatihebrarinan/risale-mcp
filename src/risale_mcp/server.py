@@ -193,8 +193,8 @@ yourself is your interpretation: put it under a separate heading, quote both end
 recorded link.
 5. A classical tafsir may be called tafsir. Your own summary, comparison or draft is never a tafsir.
 6. This server holds no text of the Risale-i Nur. find_ayah lists first, under risale, the places in the Risale-i \
-Nur tied to the verse (id, citation, kind of tie): give them first. Their text is on the Risale-i Nur server: if that \
-connector is available, read them there; never quote the Risale from memory, and name the tie by its kind.
+Nur tied to the verse (id, citation, kind of tie): give them first. Their text is on the Risale-i Nur server, not \
+here; never quote the Risale from memory, and name the tie by its kind.
 7. Hadiths inside these works: report what the author says; never rule on a hadith's soundness yourself.
 8. Answer in the user's language."""
 
@@ -226,8 +226,8 @@ book's author. A match in Kashf al-Khafa (book_note) means the saying is discuss
 after the quotation give your own translation on a separate line, labelled as your own translation (in Turkish: \
 "Yapay zekâ tercümesi:"), and say it is not a published translation; never put it inside the quotation or cite it.
 4. A citation's volume:page may belong to another edition than this library's: say so when find_by_citation warns.
-5. The places in the Risale-i Nur are given by id and citation only; the text is on the Risale-i Nur server. If that \
-connector is available, read them there; never quote the Risale from memory.
+5. The places in the Risale-i Nur are given by id and citation only; their text is on the Risale-i Nur server, not \
+here. Never quote the Risale from memory.
 6. Answer in the user's language."""
 
 

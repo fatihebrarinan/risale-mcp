@@ -629,3 +629,9 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   (18 kitap, 169.137 hadis, Risale'den 2.981 bağ; Kur'ân tabloları genel profilden), `hadis_library.HadisLibrary`,
   `risale-mcp --profile hadis` (ad `hadis`, `HADIS_INSTRUCTIONS`, 8 araç). Kimlik: baskının numarası, tekrar eden
   numarada `-2`, numarasız kitapta sıra (`sifa/s00007`). `build_db --profile hadis` reddeder.
+- **Gece işi, devam (2026-11-07):** tefsir sunucusunda `find_ayah` önce Risale'nin yerlerini kimlik, atıf ve türle
+  verir (`risale_refs`, genel profilden; metin yok). Tefsirlerin ön metinleri envanteri `docs/tefsir-on-metinler.md`
+  (10 eserde müellifin mukaddimesi; Mâtürîdî ve Kurtubî'de muhakkik ve baskı kısmı; karar kullanıcıda). Âyet
+  denetimi raporu yalnız Risale profillerinden. Y0.6 dizin politikaları `docs/dizin-politikalari.md`: okuma
+  sunucuları açık kipte kalabilir, katkı ayrı OAuth'lu bağdaştırıcı, talimatlar başka bağdaştırıcıyı çağırmayı
+  emretmez (bilgi kipine çevrildi); Claude başvurusu artık claude.ai/directory/manage portalında.
