@@ -186,6 +186,45 @@ Modelin eklemeleri (kullanıcı hepsini kabul etti, 2026-11-04):
 - **Mevcut kullanıcıların güvencesi sürer.** Her adımda H0 (araç çıktısı) ve H1 (kimlik manifestosu): genel sunucunun
   gördüğü, beklenen fark dışında değişmez.
 
+## MVP (kullanıcının kararı, 2026-11-06)
+
+Kullanıcının görüşü: denetimli bağlar bütün sistemi güçlendirir, ama sunucuya bağlanan yapay zekâ metinler arası
+ilişkiyi, metin önündeyse, iyi bulur; altyapı denetçiyi beklemeden kullanılabilir olmalı. Bu yüzden önce bir MVP:
+**bütün metinler, adresleri ve yalnız net bağlar; hadis ve tefsir sunucuları; tercüme yok**. Ardından kullanıcının
+sırasıyla: Türkçe ve İngilizce desteği (izinli tercümeler), denetçi bulununca denetimli bağlar, katkı altyapısı, sonra
+eklenen özellikler.
+
+**İlkeler (MVP boyunca):**
+- **Bağ altyapısı tam kurulur, yeni bağ yalnız net olandan.** Net: eserin yapısının söylediği (müfessirin âyet birimi;
+  hadis kitabının kitap, bâb ve numarası bağ değil adrestir), ölçülmüş mekanik eşleşme (tefsirdeki Kur'ân alıntısı,
+  T5–T7'nin eşiğiyle; Risale'deki hadisin yeni kitaplardaki lafzı, bugünkü `found` kuralıyla). Mevcut bağların hepsi
+  kalır. Okuma isteyen ilişki (aynı görüş, farklı görüş, itiraz, nakil hükmü) kurulmaz.
+- **Tercüme eklenmez**, metinler aslının dilindedir (Risale'de bugün olanlar: aslı Arapça eserlerin Türkçesi kalır).
+  Kullanıcı Arapça konuşmuyorsa model alıntıyı kendisi çevirir ve bunun bir tercüme olmadığını, kendi çevirisi
+  olduğunu söyler (Y0.4: "yapay zekâ tercümesi" damgası; alıntı bloğunda Arapça asıl; `cite`'a ve kaynakçaya girmez).
+- **Modelin bulduğu ilişki yorumdur:** yorum başlığı altında, iki ucu alıntıyla, kayıtlı bağ diye sunulmaz, "tefsir"
+  diye anılmaz (müfessirin eseri tefsirdir, modelin yazdığı değildir). Bugünkü metin ve yorum ayrımının iki eser
+  arasına genişlemesi.
+- **Mevcut güvenceler sürer:** H0 (araç çıktısı), H1 (kimlik manifestosu) her profil için; risale sunucusunun
+  gördüğü yalnız beklenen yerde değişir.
+
+| # | İş | Çıktı | ← | Ölçüt |
+|---|---|---|---|---|
+| M0 | Kitap listesi: kullanıcının eklemek istediği hadis ve tefsir kitapları; her biri için OpenITI'de var mı, sürümleri, kelime sayısı, lisans; OpenITI'de olmayan için izin sorusu | `docs/mvp-kitaplar.md` | Kullanıcının listesi | Her kitabın kaynağı ve izni belli |
+| M1 | Kapasite ve maliyet hesabı (Y2.8 öne alındı): cümle sayısı tahmini, vektörlerin bellek ve Voyage ücreti, sunucu boyutu; seçenekler (büyük sunucu, vektör yalnız bir kısımda, kelime araması) | Hesap notu | M0 | Kullanıcının bütçe kararı |
+| M2 | Ortak ayrıştırıcılar: tefsir (âyet birimi, sûre, muhakkik katmanı, `printed`; `books/beyzavi.py`'den `books/tefsir_openiti.py`) ve hadis kitapları (kitap, bâb, hadis, senet ve metin, `printed`; `hadis_kutub.py` genelleşir); her eserde nüsha seçimi (T0'ın ölçütleri) ve kısa ham veri incelemesi, örnek kullanıcıya | Ayrıştırıcılar, eser JSON'ları | M0 | Her eserde âyet birimleri Tanzil'le tutar (tefsir), hadis sayıları kaynağın sayısıyla tutar |
+| M3 | Net bağlar: âyet birimi (`structure`), tefsirdeki Kur'ân alıntısı (`quran_text`, yeni eserde 30'luk örneklem kullanıcıya), Risale'nin hadislerinin yeni kitaplarda aranması (HA2–HA3: eşleşme kütüphane kitaplarından; geçişte kaybolanlar sayılır) | Bağ dosyaları, raporlar | M2 | Örneklem isabeti T7'deki gibi; Risale'nin hadis sayıları açıklanır |
+| M4 | Arama (Y1.6): Arapça önek (و ف ب ل ك ال), Türkçe ek; Arapça eserlerde anlamsal aramanın küçük bir soru setiyle ölçümü | `normalize`, `search_eval` | M2 | T4 altın sorusu; Risale'nin arama ölçümü düşmez |
+| M5 | Sunucular (Y2.1, Y2.2 sadeleşmiş, Y2.4): `hadis` ve `tefsir` profilleri, talimatları (yazarı söyle; müfessirin eseri tefsirdir; damgalı model tercümesi; modelin ilişkisi yorumdur; hadise hüküm yok, dereceler âlimin adıyla; öbür sunucunun kimliğini orada sor), araçları (kitap ve bâb ağacı, âyetten eserler, rivayet arama, künyeden bölgeye, metinden metne bağlar, Risale'deki yerler kimlik ve atıfla); risale sunucusunun talimatına gönderme | Sunucular | M3, M4, M1 | Her profilde H0 ve H1; risale sunucusunda yalnız talimat farkı |
+| M6 | Ölçüm (Y2.5): her sunucunun altın soruları ve üç bağdaştırıcı birlikte (kimlik öbür sunucuya soruluyor mu, atıflar doğru sunucudan mı, model tercümesi damgalı mı, ilişki yorum başlığında mı) | `golden` çoklu sunucu kipi, rapor | M5 | Kullanıcının belirlediği oran |
+| M7 | Yayın (Y2.3, Y2.6): genel çıkış kararı (OpenITI CC BY-NC-SA: ticari olmayan, kaynak, aynı lisans), adresler (`mcp.risalemcp.com/hadis`, `/tefsir`), gizlilik ve tanıtım sayfaları, kurulum sayfası üç bağdaştırıcıyla, dizin başvuruları (Y0.6 önce) | Deploy, site, başvurular | M6, Y0.6 | Kullanıcının denemesi |
+
+**MVP'den sonra** (kullanıcının sırası): (1) Türkçe ve İngilizce desteği: tercüme programı (`docs/tercume-programi.md`;
+TR1 envanteri hazır); (2) denetimli bağlar: denetçi bulununca (Y0.2 sürer), Y1.3 aday durumu, Y1.4 denetim
+arayüzü, hadis – hadis grubu, metinden metne okuma bağları; (3) katkı altyapısı (Y3); (4) sonra eklenenler: kelime
+düzeyinde Kur'ân adresi (Y1.1), âyet dosyaları (Y1.8), yerel paket (Y2.7), Y4. Aşağıdaki Y listesi bu sırayla
+okunur; MVP'ye alınan adımlar orada işaretlidir.
+
 ## Nihai adım listesi (Y)
 
 Kullanıcının dört adımı Y1–Y4'tür; Y0 hepsinin ön şartı olan kişiler, izinler ve kararlardır, teknik değildir ve
@@ -208,7 +247,7 @@ insandır, model öneri hazırlar.
 
 ### Y1. Planda yedi değişiklik ve âyet dosyası pilotu (kullanıcının 1. adımı)
 
-**Y1.1 Kur'ân'a kelime düzeyinde adres**
+**Y1.1 Kur'ân'a kelime düzeyinde adres** (MVP'den sonra)
 - Y1.1.1 Kelime listesi: Medine Mushafı hattının kelimeleri esas (vakıf işaretleri kelime değil, T7'de görüldü);
   imlâî metinle hizalama (Bakara 21 gibi kelime sayısı tutmayan âyetler listelenir, elle karar); `quran.json`'a
   kelimeler.
@@ -232,7 +271,7 @@ insandır, model öneri hazırlar.
   alanları `kuran`, `risale`, `metin` (2026-11-05).
 - Y1.2.4 Ölçüt: test; mevcut kararlar geçerli kalır.
 
-**Y1.3 Aday bağ (`proposed`)**
+**Y1.3 Aday bağ (`proposed`)** (MVP'den sonra, denetimli bağlarla)
 - Y1.3.1 Bağ kaydına durum: `status: proposed | accepted` (varsayılan accepted: bugünkü kural ve yapı bağları);
   aday bağın kim tarafından hangi yöntemle önerildiği (`proposed_by`: model okuması, kullanıcı, kural adayı).
 - Y1.3.2 Araçlar adayı ayrı gösterir (`proposed: true`), talimat adayı hüküm gibi sunmayı yasaklar; genel profile aday
@@ -242,7 +281,7 @@ insandır, model öneri hazırlar.
 - Y1.3.4 Denetçi kabulü adayı `accepted` yapar (denetim kaydıyla; bağ dosyası değil karar değişir).
 - Y1.3.5 Ölçüt: genel sunucuda fark yok; yerelde adaylar görünür ve ayrı.
 
-**Y1.4 Denetim arayüzü**
+**Y1.4 Denetim arayüzü** (MVP'den sonra, denetimli bağlarla)
 - Y1.4.1 T7 örneklem üreticisi genelleşir: herhangi bir bağ dosyası ve tür için tabakalı örneklem, önceki seçimi
   koruma, karar verilmişleri işaretleme (`links_tefsir --sample`'dan ortak modüle).
 - Y1.4.2 Sunum kuralları kalıcı: tam âyet, bulunan kelime âyette vurgulu, Arapça tek yazı tipi ve büyük, bağlam,
@@ -252,21 +291,21 @@ insandır, model öneri hazırlar.
   (kontrol arayüzündeki işaret akışı gibi); sonra Y3'te sunucudan.
 - Y1.4.4 Ölçüt: kullanıcı bir örneklemi yalnız arayüzle karara bağlar, elle numara yazmadan.
 
-**Y1.5 Hadis kaynakları (HA2–HA3, tefsirin ön şartı)**
+**Y1.5 Hadis kaynakları (HA2–HA3, tefsirin ön şartı)** (MVP'de: M2, M3)
 - Y1.5.1 HA3: Müsned, Müstedrek, Dârimî… OpenITI'den (H6 okuyucu, `printed`: Müsned künyelerinin cilt:sayfası);
   her kitapta künye ve bölge ölçümü.
 - Y1.5.2 HA2: eşleşme yalnız kütüphane kitaplarından; geçişte kaybolanlar sayılır.
 - Y1.5.3 Beyzâvî'nin hadis adayları yeni kütüphaneyle yeniden eşlenir; T5'teki 18 sözün sonucu karşılaştırılır.
 - Y1.5.4 Ölçüt: Risale'nin hadis sayıları geçişte açıklanır (kayıp yoksa aynı); hadisçi örneklemi (HA6) Y0.2'ye bağlı.
 
-**Y1.6 Arama**
+**Y1.6 Arama** (MVP'de: M4)
 - Y1.6.1 Türkçe ek: kelime aramasında tam kelime ekli biçimi de bulur ("Beyzavi" → "Beyzâvî'nin"); kesmeden sonra
   ek dizine ayrı girer ya da sorgu kelime başı aramaya genişler (ölçüme göre).
 - Y1.6.2 Arapça önek: و ف ب ل ك ال ayrıştırma (müfessirin eserlerinde ve Risale'nin Arapçasında).
 - Y1.6.3 `db.NORMALIZATION` artar; `search_eval` ve altın soru T4 yeniden; anlamsal arama etkilenmez.
 - Y1.6.4 Ölçüt: T4 altın sorusunda Muhâkemat'taki "Tefsîr-i Beyzâvî" bulunur; arama ölçümü düşmez.
 
-**Y1.7 Keşşâf (ikinci eser)**
+**Y1.7 Keşşâf (ikinci eser)** (MVP'de: kitaplardan biri, M2–M3; metinden metne nakil bağı MVP'den sonra)
 - Y1.7.1 T0–T3: nüsha (OpenITI `0538JarAllahZamakhshari.Kashshaf`), inceleme, kararlar, ayrıştırıcı (Beyzâvî'ninki
   ortaklaşır: `books/tefsir_openiti.py`), aralık Fâtiha ve Bakara 1–33.
 - Y1.7.2 T5: yapı, Kur'ân alıntısı, hadis (Y1.5 sonrası), lemma (Y1.1 sonrası).
@@ -278,7 +317,7 @@ insandır, model öneri hazırlar.
 - Y1.7.5 Ölçüt: Beyzâvî ile Keşşâf'ın aynı lemmadaki cümleleri yan yana; nakil bağı örnekleminde kullanıcının
   kararı.
 
-**Y1.8 Âyet dosyası pilotu (erken)**
+**Y1.8 Âyet dosyası pilotu (erken)** (MVP'den sonra)
 - Y1.8.1 Biçim: âyet ya da lafız başına bölümler: Kur'ân (metin, mealler), Risale (yerler, bağ türü ve kanıtıyla,
   önce), müfessirler (kendi sözleri, atıflı), hadis (dayanak, hüküm yok), kayıtlı ilişkiler, açık sorular, yapay zekâ
   derlemesi (ayrı başlık, damgalı: "yapay zekâ derlemesidir, tefsir değildir").
@@ -292,7 +331,7 @@ insandır, model öneri hazırlar.
 Önerilen sıra: Y1.1 ve Y1.3 (veri modeli) → Y1.2 → Y1.4 → Y1.6 → Y1.5 → Y1.7; Y1.8 Y1.1 ve Y0.4'ten sonra, Y1.7'yi
 beklemeden.
 
-### Y2. Tefsir ve Hadis sunucuları (kullanıcının 2. adımı)
+### Y2. Tefsir ve Hadis sunucuları (kullanıcının 2. adımı; MVP'de M1, M5–M7: Y2.2'nin Y1.1, Y1.3, Y1.7, Y1.8 bağımlılığı kalktı, Y2.1'in hadis – hadis bağı MVP'den sonra, Y2.7 sonra)
 
 | # | İş | Çıktı | ← | Ölçüt |
 |---|---|---|---|---|

@@ -62,6 +62,9 @@ taslağını bir insan mütercim düzeltirse metin kimin olur, nasıl işaretlen
 - Y1.8 (âyet dosyası): izinli tercüme yoksa Türkçe yardım damgalı.
 - HA3: yeni hadis kitapları eklendikçe envanter genişler.
 
+**MVP'den sonra** (kullanıcının kararı, 2026-11-06): MVP tercüme eklemez; program MVP bitince sürer, TR1'in 2.
+turu da o zaman.
+
 ## Durum
 
 | Adım | Durum |
