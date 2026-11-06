@@ -163,6 +163,41 @@ not: never call your summary, comparison or draft a tafsir. A Risale passage sta
 link's kind and evidence, not "tafsir"."""
 
 
+TEFSIR_INSTRUCTIONS = """\
+Read access to classical works of Qur'anic exegesis (tafsir) and to the Qur'an: al-Tabari, al-Maturidi, \
+al-Zamakhshari, al-Razi, al-Qurtubi, al-Baydawi, al-Nasafi, Ibn Kathir, al-Jalalayn, al-Suyuti (al-Durr al-Manthur), \
+Abu al-Su'ud, Isma'il Haqqi Bursawi and al-Alusi (list_works). Texts are in their original Arabic, split into \
+sentences with stable ids; each work is divided into verse units (the part that treats a verse or verses).
+
+Workflow:
+1. For a verse: find_ayah(sura, ayah) gives the verse and, for each work in the order of its author's death, the \
+unit that treats it and the sentences that quote it. Read the unit with read_section (its id), or a sentence or \
+range with get_passage. search finds the works' own words (an Arabic word also matches its forms with attached \
+و ف ب ل ك and the article); semantic_search finds meaning.
+2. Before writing the answer, call cite once with every sentence or range you quote or rely on and the exact words \
+you quote. End each quotation with its number [1] and finish with the "Kaynaklar" list cite returns, unchanged.
+
+Answering:
+1. Every statement about what a work says rests on text you read with these tools. Never invent a work, a reference \
+or a quotation; if the tools do not return it, say so.
+2. Quote the Arabic exactly as returned, in a block quote on its own line. If the user does not write in Arabic, \
+after the quotation give your own translation into the user's language on a separate line, labelled as your own \
+translation (in Turkish: "Yapay zekâ tercümesi:"), and say it is not a published translation. Never put your \
+translation inside the quotation, never cite it, never attribute it to the author; it does not replace the text.
+3. Each work belongs to its author: name the author (author). A section with layer is another person's text (the \
+editor's introduction); a unit opens with the edition's printed verse (kind ayah): that is the Qur'an, cite it with \
+get_ayah. printed is the edition's volume/page, secondary to the id.
+4. Keep what each work says apart, each with its own citation. Two works treating the same verse is not a relation: \
+never say one follows, quotes, agrees with or rejects another unless text_links records it. A relation you notice \
+yourself is your interpretation: put it under a separate heading, quote both ends, and do not present it as a \
+recorded link.
+5. A classical tafsir may be called tafsir. Your own summary, comparison or draft is never a tafsir.
+6. This server holds no text of the Risale-i Nur. For a verse, if the Risale-i Nur connector is also available, ask \
+its find_ayah first and give the Risale's places first, with its citations; never quote the Risale from memory.
+7. Hadiths inside these works: report what the author says; never rule on a hadith's soundness yourself.
+8. Answer in the user's language."""
+
+
 def read_only(title: str) -> ToolAnnotations:
     """Salt okunur aracın işaretleri; başlık dizin listesi için `annotations.title`'da da durur."""
     return ToolAnnotations(title=title, read_only_hint=True, destructive_hint=False, idempotent_hint=True,
@@ -256,7 +291,7 @@ def _warm(library: Library, citations: CitationChecker) -> None:
 
 def create_server(library: Library, public_url: str | None = None, store: AuthStore | None = None,
                   anonymous: bool = False, anonymous_semantic: int = ANON_SEMANTIC_PER_DAY,
-                  warm: bool = False, open_access: bool = False) -> MCPServer:
+                  warm: bool = False, open_access: bool = False, profile: str = "kisisel") -> MCPServer:
     """`public_url` verilirse sunucu OAuth ile korunur (giriş sayfası `/login`) ve her istek kaydedilir.
     `anonymous`: hesapsızlar da kullanır (`http_app` kapıyı kurar); anlamsal aramaları günde `anonymous_semantic`
     ile sınırlıdır, hesabı olan `sign_in` aracıyla giriş yapar."""
@@ -273,9 +308,16 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         classical = library.has_classical()
     except Exception:
         classical = False
-    server = MCPServer(NAME, title="Risale-i Nur", instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),
-                       description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
-                       icons=_icons(public_url), **protected)
+    tefsir = profile == "tefsir"                # tefsir sunucusu (MVP M5): kendi adı, talimatı ve araç seti
+    if tefsir:
+        server = MCPServer("tefsir", title="Tefsir (Risale-i Nur MCP)", instructions=TEFSIR_INSTRUCTIONS,
+                           description="Sentence-level, citable access to classical tafsir works and the Qur'an.",
+                           icons=_icons(public_url), **protected)
+    else:
+        server = MCPServer(NAME, title="Risale-i Nur",
+                           instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),
+                           description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
+                           icons=_icons(public_url), **protected)
     for path, (name, media) in STATIC.items():               # ikon: istemciler sunucu adresinden de alabilir
         server.custom_route(path, methods=["GET"], include_in_schema=False)(_static(name, media))
     if public_url and not open_access:
@@ -346,26 +388,27 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.search(query, work, group, limit, offset, include_related))
 
-    @server.tool(title="Find a hadith", annotations=read_only("Find a hadith"), structured_output=False)
-    def find_hadith(
-        text: Annotated[str, Field(description="Arabic words of the hadith, as the works quote them.")],
-        limit: Annotated[int, Field(ge=1, le=50)] = 20,
-    ) -> str:
-        """Where the works quote a hadith, the evidence for it (hadith_support), and the reports that carry it, with
+    if not tefsir:
+        @server.tool(title="Find a hadith", annotations=read_only("Find a hadith"), structured_output=False)
+        def find_hadith(
+            text: Annotated[str, Field(description="Arabic words of the hadith, as the works quote them.")],
+            limit: Annotated[int, Field(ge=1, le=50)] = 20,
+        ) -> str:
+            """Where the works quote a hadith, the evidence for it (hadith_support), and the reports that carry it, with
         their books, numbers and scholars' grades where held. Reports come from outside the works."""
-        with _tool_errors():
-            return _json(library.find_hadith(text, limit))
+            with _tool_errors():
+                return _json(library.find_hadith(text, limit))
 
-    @server.tool(title="Read a report", annotations=read_only("Read a report"), structured_output=False)
-    def get_hadith(
-        id: Annotated[str, Field(description="A report id from find_hadith.")],
-    ) -> str:
-        """The full Arabic text of a report, its book and number, scholars' grades where held, its source, and
+        @server.tool(title="Read a report", annotations=read_only("Read a report"), structured_output=False)
+        def get_hadith(
+            id: Annotated[str, Field(description="A report id from find_hadith.")],
+        ) -> str:
+            """The full Arabic text of a report, its book and number, scholars' grades where held, its source, and
         where the works quote it (linked_in_works: the sentence, how the link was made: corpus = the words occur in
         the report, cited_chapter = a short part in the cited chapter, reading = two blind readers in the cited
         region)."""
-        with _tool_errors():
-            return _json(library.hadith(id))
+            with _tool_errors():
+                return _json(library.hadith(id))
 
     @server.tool(title="Search by meaning", annotations=read_only("Search by meaning"), structured_output=False)
     def semantic_search(
@@ -480,84 +523,85 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                 result["corpus_version"] = version
             return _json(result)
 
-    # ------------------------------------------------------------ kaynaklar (kullanıcının eklediği bağlam)
+    if not tefsir:
+        # ------------------------------------------------------------ kaynaklar (kullanıcının eklediği bağlam)
 
-    @server.resource("risale://works", name="works", mime_type="text/markdown",
-                     description="All works with their ids.")
-    def works_resource() -> str:
-        return _works_markdown(library.works())
+        @server.resource("risale://works", name="works", mime_type="text/markdown",
+                         description="All works with their ids.")
+        def works_resource() -> str:
+            return _works_markdown(library.works())
 
-    @server.resource("risale://outline/{work}", name="outline", mime_type="text/markdown",
-                     description="The full heading tree of a work.")
-    def outline_resource(work: str) -> str:
-        outline = library.outline(work, depth=20)
-        return f"# {outline['ref']}\n\n" + "\n".join(_outline_markdown(outline)) + "\n"
+        @server.resource("risale://outline/{work}", name="outline", mime_type="text/markdown",
+                         description="The full heading tree of a work.")
+        def outline_resource(work: str) -> str:
+            outline = library.outline(work, depth=20)
+            return f"# {outline['ref']}\n\n" + "\n".join(_outline_markdown(outline)) + "\n"
 
-    @server.resource("risale://text/{+section}", name="text", mime_type="text/markdown",
-                     description="The text of a section with numbered sentences, e.g. risale://text/sozler/10.")
-    def text_resource(section: str) -> str:
-        return _section_markdown(library.read_section(section, max_words=RESOURCE_TEXT_WORDS))
+        @server.resource("risale://text/{+section}", name="text", mime_type="text/markdown",
+                         description="The text of a section with numbered sentences, e.g. risale://text/sozler/10.")
+        def text_resource(section: str) -> str:
+            return _section_markdown(library.read_section(section, max_words=RESOURCE_TEXT_WORDS))
 
-    # ------------------------------------------------------------ hazır komutlar
+        # ------------------------------------------------------------ hazır komutlar
 
-    @server.prompt(title="Topic survey")
-    def topic_survey(topic: str, scope: str = "") -> str:
-        """Where a topic is treated across the works, grouped by work, with citations."""
-        where = f" Limit the survey to {scope}." if scope else ""
-        return (
-            f"Survey where the topic “{topic}” is treated in the works.{where}\n"
-            "1. Find the passages with semantic_search (the topic as a concept and as a question; its sections show "
-            "where it concentrates) and with search for the text's own terms (Ottoman and modern spellings, word "
-            "beginnings with *; by_work shows the spread).\n"
-            "2. For the main passages, read enough context (get_passage with context, or read_section) to be sure "
-            "the passage is really about the topic.\n"
-            "3. Report the places grouped by work, in the works' order: for each, the reference with the incipit "
-            "and one sentence on what is said there. Mark the central treatments.\n"
-            "4. End with what you could not find or what remains uncertain."
-        )
+        @server.prompt(title="Topic survey")
+        def topic_survey(topic: str, scope: str = "") -> str:
+            """Where a topic is treated across the works, grouped by work, with citations."""
+            where = f" Limit the survey to {scope}." if scope else ""
+            return (
+                f"Survey where the topic “{topic}” is treated in the works.{where}\n"
+                "1. Find the passages with semantic_search (the topic as a concept and as a question; its sections show "
+                "where it concentrates) and with search for the text's own terms (Ottoman and modern spellings, word "
+                "beginnings with *; by_work shows the spread).\n"
+                "2. For the main passages, read enough context (get_passage with context, or read_section) to be sure "
+                "the passage is really about the topic.\n"
+                "3. Report the places grouped by work, in the works' order: for each, the reference with the incipit "
+                "and one sentence on what is said there. Mark the central treatments.\n"
+                "4. End with what you could not find or what remains uncertain."
+            )
 
-    @server.prompt(title="Text and commentary")
-    def text_and_commentary(question: str) -> str:
-        """Answer a question in two parts: what the text says, then interpretation."""
-        return (
-            f"Question: {question}\n"
-            "Answer under two headings.\n"
-            "## What the text says — only what the works say, as close quotations or paraphrases, each with its "
-            "reference (section path and incipit). Search and read the passages first.\n"
-            "## Commentary — your interpretation and synthesis, clearly marked as yours; tie each point to the "
-            "passages above. If perspectives differ, give each with the sentences it rests on."
-        )
+        @server.prompt(title="Text and commentary")
+        def text_and_commentary(question: str) -> str:
+            """Answer a question in two parts: what the text says, then interpretation."""
+            return (
+                f"Question: {question}\n"
+                "Answer under two headings.\n"
+                "## What the text says — only what the works say, as close quotations or paraphrases, each with its "
+                "reference (section path and incipit). Search and read the passages first.\n"
+                "## Commentary — your interpretation and synthesis, clearly marked as yours; tie each point to the "
+                "passages above. If perspectives differ, give each with the sentences it rests on."
+            )
 
-    @server.prompt(title="Discussion partner")
-    def discuss(topic: str) -> str:
-        """Think through a topic together, grounded in the text."""
-        return (
-            f"Let us think through “{topic}” together, as in a müzakere (study circle).\n"
-            "Find the relevant passages first and keep every step tied to them. Ask me questions, offer readings "
-            "of the text and test them against other passages; point out where the text is silent. Keep "
-            "quotations and your own views apart, and cite with section path and incipit."
-        )
+        @server.prompt(title="Discussion partner")
+        def discuss(topic: str) -> str:
+            """Think through a topic together, grounded in the text."""
+            return (
+                f"Let us think through “{topic}” together, as in a müzakere (study circle).\n"
+                "Find the relevant passages first and keep every step tied to them. Ask me questions, offer readings "
+                "of the text and test them against other passages; point out where the text is silent. Keep "
+                "quotations and your own views apart, and cite with section path and incipit."
+            )
 
-    @server.prompt(title="Self test")
-    def self_test(section: str) -> str:
-        """Quiz the user on a section and check the answers against the text."""
-        return (
-            f"Quiz me on the section {section}.\n"
-            "Read the section with read_section (all pages). Ask one question at a time about its arguments, "
-            "examples and terms, in order. After each answer, check it against the text, quote the relevant "
-            "sentence with its reference, then ask the next question. At the end, summarise what to reread."
-        )
+        @server.prompt(title="Self test")
+        def self_test(section: str) -> str:
+            """Quiz the user on a section and check the answers against the text."""
+            return (
+                f"Quiz me on the section {section}.\n"
+                "Read the section with read_section (all pages). Ask one question at a time about its arguments, "
+                "examples and terms, in order. After each answer, check it against the text, quote the relevant "
+                "sentence with its reference, then ask the next question. At the end, summarise what to reread."
+            )
 
-    @server.prompt(title="Lesson plan")
-    def lesson_plan(subject: str) -> str:
-        """Prepare a cited lesson plan on a topic or section."""
-        return (
-            f"Prepare a lesson (ders) on: {subject}.\n"
-            "If it is a section id, read it; if it is a topic, search for its main passages first. Give the plan as: "
-            "aim; the passages to read aloud (references with incipits, in order); the main points of each passage "
-            "with the sentences they rest on; difficult words and their meaning in context; questions for "
-            "discussion. Do not include anything the text does not support."
-        )
+        @server.prompt(title="Lesson plan")
+        def lesson_plan(subject: str) -> str:
+            """Prepare a cited lesson plan on a topic or section."""
+            return (
+                f"Prepare a lesson (ders) on: {subject}.\n"
+                "If it is a section id, read it; if it is a topic, search for its main passages first. Give the plan as: "
+                "aim; the passages to read aloud (references with incipits, in order); the main points of each passage "
+                "with the sentences they rest on; difficult words and their meaning in context; questions for "
+                "discussion. Do not include anything the text does not support."
+            )
 
     return server
 
@@ -612,7 +656,7 @@ def main() -> None:
     library = Library(args.db or profile.db, profile.vectors)
     library.conn                                  # veritabanı yoksa başlarken açık hata
     if args.transport == "stdio":
-        create_server(library, warm=True).run("stdio")
+        create_server(library, warm=True, profile=args.profile).run("stdio")
         return
     if not (args.public_url or args.no_auth):
         sys.exit("HTTP için --public-url https://… (OAuth) ya da --no-auth (yalnızca bu bilgisayar) verin.")
@@ -626,19 +670,19 @@ def main() -> None:
             sys.exit("Henüz hesap yok: önce `risale-mcp auth add-user <ad>`.")
         security = http_security(args.public_url)
     if args.no_auth:
-        create_server(library, warm=True).run("streamable-http", host=args.host, port=args.port, transport_security=security)
+        create_server(library, warm=True, profile=args.profile).run("streamable-http", host=args.host, port=args.port, transport_security=security)
         return
     if (args.anonymous or args.open) and not args.public_url:
         sys.exit("--anonymous ve --open yalnızca --public-url ile kullanılır.")
     if args.open:
         store = AuthStore()
         server = create_server(library, args.public_url, store, anonymous_semantic=args.anonymous_semantic,
-                               warm=True, open_access=True)
+                               warm=True, open_access=True, profile=args.profile)
         uvicorn.run(http_app(server, args.public_url, open_store=store), host=args.host, port=args.port,
                     access_log=False)
         return
     server = create_server(library, args.public_url, anonymous=args.anonymous,
-                           anonymous_semantic=args.anonymous_semantic, warm=True)
+                           anonymous_semantic=args.anonymous_semantic, warm=True, profile=args.profile)
     # Erişim günlüğü kapalı: istemcinin IP adresini sistem günlüğüne yazıyordu; kullanım kaydı (auth.py) yeter
     # (gizlilik politikası: IP adresi kaydedilmez).
     uvicorn.run(http_app(server, args.public_url, args.anonymous), host=args.host, port=args.port, access_log=False)

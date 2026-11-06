@@ -6,13 +6,14 @@ muhakkik`). Pilot bitene kadar hepsi `private`: genel sunucuya sonuçlar görül
 
 from risale_mcp.catalog.model import Collection, Group, Site, SourceRef, Work
 
-TEFSIR_WORKS: tuple[Work, ...] = (
+_BEYZAVI = (
     Work("beyzavi", "Envârü't-Tenzîl", Group.TEFSIR, SourceRef(Site.OPENITI, "beyzavi-shamela"),
          language="ar", private=True, collection=Collection.TEFSIR,
          author="Nâsırüddîn el-Beyzâvî", editor="Muhammed Abdurrahman el-Maraşlî",
          note="Envârü't-Tenzîl ve Esrârü't-Te'vîl. OpenITI Shamela0023588 (Maraşlî tahkiki, Dâru İhyâi't-Türâsi'l-Arabî, "
               "1418). Eserin tamamı (MVP; pilot T3'te Bakara 33'e kadardı)."),
-) + tuple(
+)
+_MVP = tuple(
     Work(slug, title, Group.TEFSIR, SourceRef(Site.OPENITI, f"{slug}-shamela"), language="ar", private=True,
          collection=Collection.TEFSIR, author=author, editor=editor,
          note=f"OpenITI {version} ({edition}); âyet birimleri altafsir.com sürümünden (MVP, `books/tefsir_openiti.py`).")
@@ -39,3 +40,8 @@ TEFSIR_WORKS: tuple[Work, ...] = (
          "Shamela0022835", "Dâru'l-Kütübi'l-İlmiyye, 1415"),
     )
 )
+
+# Katalog sırası müellifin vefatına göre (hicrî): araçlar müfessirleri bu sırayla verir (`find_ayah` classical_works).
+DIED = {"taberi": 310, "maturidi": 333, "kessaf": 538, "razi": 606, "kurtubi": 671, "beyzavi": 685, "nesefi": 710,
+        "ibnkesir": 774, "celaleyn": 864, "durr": 911, "ebussuud": 982, "bursevi": 1127, "alusi": 1270}
+TEFSIR_WORKS: tuple[Work, ...] = tuple(sorted(_BEYZAVI + _MVP, key=lambda w: DIED[w.slug]))

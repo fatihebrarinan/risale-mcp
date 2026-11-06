@@ -78,3 +78,15 @@ def test_the_editors_introduction_is_marked_as_his(local):
     hit = local.search("الكوفيون", work="beyzavi")["results"][0]
     assert hit["author"] == "Nâsırüddîn el-Beyzâvî" and "layer" not in hit
     assert json.dumps(local.works("tefsir"), ensure_ascii=False).count("Nâsırüddîn el-Beyzâvî") == 1
+
+
+def test_the_tefsir_server_has_its_own_name_instructions_and_tools(local):
+    """MVP M5: tefsir sunucusu kendi adı ve talimatıyla; hadis araçları, Risale'nin kaynakları ve hazır komutları yok;
+    talimat model tercümesini damgalatır ve Risale'yi kendi bağdaştırıcısına bırakır."""
+    from risale_mcp.server import TEFSIR_INSTRUCTIONS
+    server = create_server(local, profile="tefsir")
+    assert server.name == "tefsir" and server.instructions == TEFSIR_INSTRUCTIONS
+    tools = _tools(server)
+    assert {"find_ayah", "read_section", "cite", "text_links"} <= set(tools)
+    assert not {"find_hadith", "get_hadith"} & set(tools)
+    assert "Yapay zekâ tercümesi" in TEFSIR_INSTRUCTIONS and "holds no text of the Risale-i Nur" in TEFSIR_INSTRUCTIONS

@@ -325,3 +325,20 @@ Sorgu tarafında; dizin ve `db.NORMALIZATION` değişmedi (1,6 GB'lık yerel diz
   Sonuç veren sorgular değişmez.
 - Genel sunucuda fark (`tool_snapshot` m4-arama2): yalnız `search` (Arapça sorgunun sonuçları ve aracın açıklaması);
   deploy `DEPLOY_EXPECT="search"`. Arapça eserlerde anlamsal arama ölçümü vektörlerle birlikte (M5).
+
+## M5: tefsir sunucusu (2026-11-06, yerelde)
+
+- **Profil `tefsir`** (`profiles.py`): Kur'ân ve 13 müfessir; Risale'nin metni yok. `uv run python -m risale_mcp.build_db
+  --profile tefsir` → `data/dist/tefsir/risale.db` (1,3 GB, ≈3 dk, 546.521 cümle). Genel çıkış kararına (M7) kadar
+  yalnız yerelde.
+- **Sunucu:** `uv run risale-mcp --profile tefsir` (stdio) ya da HTTP. Adı `tefsir`, talimatı `TEFSIR_INSTRUCTIONS`:
+  müellifin adı, katmanlar, âyet satırı Kur'ân'dır; Arapça alıntıdan sonra kullanıcı Arapça bilmiyorsa modelin kendi
+  çevirisi "Yapay zekâ tercümesi:" damgasıyla, yayımlanmış tercüme değildir, alıntıya ve kaynakçaya girmez; aynı âyet
+  ilişki değildir, modelin fark ettiği ilişki yorum başlığında ve iki ucu alıntıyla; klasik tefsir "tefsir"dir,
+  modelinki değildir; bu sunucuda Risale yok: Risale bağdaştırıcısı ekliyse âyette önce oraya sorulur; hadise hüküm
+  yok. Araçlar: list_works, get_outline, read_section, get_passage, search, semantic_search, text_links,
+  find_sentence, find_ayah, get_ayah, cite (hadis araçları, Risale'nin kaynakları ve hazır komutları yok).
+- `find_ayah` müfessirleri vefat sırasıyla verir (Taberî → Âlûsî; katalog sırası `catalog/tefsir.DIED`).
+- **Eksik:** anlamsal arama için 546 bin cümlenin vektörü (Voyage; ücret büyük ihtimalle ücretsiz kotada; çıkarmadan
+  önce kullanıcıya sorulur); Risale'nin âyet bağlarını tefsir sunucusunda kimlik ve atıfla göstermek (bugün yalnız
+  Risale bağdaştırıcısından); altın sorular (M6); sunucu (M7).

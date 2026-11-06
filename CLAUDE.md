@@ -609,5 +609,10 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 - **M4 Arama (2026-11-06):** sorgu tarafında, dizin değişmedi: tırnaksız Arapça kelime önekli biçimleriyle
   (`search.arabic_forms`), sonuçsuz sorguda kelimeler bir kez kelime başı olarak (`expanded`; "Beyzavi" → "Beyzâvî'nin").
   Genel sunucuda fark yalnız `search` (deploy `DEPLOY_EXPECT="search"`, henüz gönderilmedi).
-- **Sırada:** M5 (hadis ve tefsir sunucuları: profiller, veritabanı, talimat, araçlar); HA2 kararı kullanıcıda;
-  Y0.6 (M7'den önce).
+- **M5 tefsir sunucusu (yerelde, 2026-11-06):** `docs/mvp-kitaplar.md` "M5". Profil `tefsir` (Kur'ân + 13 müfessir,
+  1,3 GB), `risale-mcp --profile tefsir`: ad `tefsir`, `TEFSIR_INSTRUCTIONS` (damgalı model tercümesi, ilişki yorumdur,
+  Risale kendi bağdaştırıcısında), 11 araç (hadis araçları, kaynaklar, hazır komutlar yok). `find_ayah` müfessirleri
+  vefat sırasıyla verir (`catalog/tefsir.DIED`). Genel sunucuda fark yalnız M4'ün `search`'ü. Eksik: vektörler (ücret
+  onayı), Risale bağlarının tefsir sunucusunda atıfla gösterimi, altın sorular.
+- **Sırada:** M5 hadis sunucusu (önce hadis biriminin şeması, kullanıcıya); HA2 kararı; vektör ücreti onayı; M4'ün
+  deploy'u (`DEPLOY_EXPECT="search"`); Y0.6 (M7'den önce).

@@ -875,7 +875,8 @@ class Library:
                 if reviews := self._reviews(r["source"], r["target"], r["type"], r["part"] or ""):
                     quote.update(reviews)
                 entry["quotations"].append(quote)
-        return list(out.values())
+        order = {slug: n for n, slug in enumerate(works)}            # katalog sırası: müellifin vefatına göre
+        return sorted(out.values(), key=lambda e: order[e["work"]])
 
     def _links(self, sura: int, ayah: int) -> list[dict]:
         """Âyetle bağ kuran yerler (güçlüler önce, kitap sırasıyla), kanıt cümleleriyle."""

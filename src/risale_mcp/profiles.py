@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from risale_mcp.catalog import Collection, Work
-from risale_mcp.paths import DB_PATH, LIBRARY_DIR, PUBLIC_DB_PATH, PUBLIC_VECTORS_DIR, VECTORS_DIR
+from risale_mcp.paths import DB_PATH, DIST_DIR, LIBRARY_DIR, PUBLIC_DB_PATH, PUBLIC_VECTORS_DIR, VECTORS_DIR
 
 
 @dataclass(frozen=True)
@@ -32,5 +32,9 @@ class Profile:
 # Müfessirlerin eserleri (`tefsir`) şimdilik yalnız yerel profilde: pilot `private`, genel profilin koleksiyonları değişmez.
 KISISEL = Profile("kisisel", (Collection.KULLIYAT, Collection.ILGILI, Collection.TEFSIR), DB_PATH, VECTORS_DIR, private=True)
 GENEL = Profile("genel", (Collection.KULLIYAT, Collection.ILGILI), PUBLIC_DB_PATH, PUBLIC_VECTORS_DIR)
+# Tefsir sunucusu (MVP M5): Kur'ân ve müfessirlerin eserleri; Risale'nin metni taşınmaz, bağları kimlik ve atıfla
+# gelir. Genel çıkış kararına (M7) kadar `private` eserleri de alır ve yalnız yerelde kurulur.
+TEFSIR = Profile("tefsir", (Collection.TEFSIR,), DIST_DIR / "tefsir" / "risale.db", DIST_DIR / "tefsir" / "vectors",
+                 private=True)
 
-PROFILES = {p.name: p for p in (KISISEL, GENEL)}
+PROFILES = {p.name: p for p in (KISISEL, GENEL, TEFSIR)}
