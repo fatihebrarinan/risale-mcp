@@ -51,7 +51,27 @@ OPENITI_BOOKS = {
     "malik": ("0200AH", "0179MalikIbnAnas/0179MalikIbnAnas.Muwatta/0179MalikIbnAnas.Muwatta.JK000466-ara1"),
 }
 OPENITI_TEXTS = {book: openiti.Text(repo, OPENITI_COMMITS[repo], path) for book, (repo, path) in OPENITI_BOOKS.items()}
+# MVP hadis kitapları (`docs/mvp-kitaplar.md`, M1): seçilen sürümler (Shamela; Keşfü'l-Hafâ JK). Kütüb-i Sitte
+# ayrıştırıcısı (`hadis_kutub.py`) bunları okumaz; Shamela biçimi `hadis_openiti.py`'dedir.
+MVP_COMMITS = {"0250AH": "0cc00c0646c81988c75a3815fe6d9a5fa65ce592", "0275AH": OPENITI_COMMITS["0275AH"],
+               "0375AH": "ab52219710c6bf15a93d6e39886f0ca602d27952", "0425AH": "3a3c829e55a1e4fb614aa857e0d85f51d6a9f0ee",
+               "0750AH": "7c9c84d9f98581470aa2b7f8bee00ae285c5c707", "0825AH": "bae1fba53712c020fe43e3e60b37dfe61f2b64a8",
+               "0975AH": "c47ff1c47a9108eab999d7fa68ef30be16bc0f85", "1050AH": "ab6ad0f2d84f53b4f87e6ca1fc53cafffaba0abf",
+               "1175AH": "2c367f78b779757652ee59df503fdc9312ec2f06"}
+MVP_BOOKS = {
+    "musned": ("0250AH", "0241IbnHanbal/0241IbnHanbal.Musnad/0241IbnHanbal.Musnad.Shamela0013157-ara1"),
+    "darimi": ("0275AH", "0255CabdAllahDarimi/0255CabdAllahDarimi.Sunan/0255CabdAllahDarimi.Sunan.Shamela0021795-ara3"),
+    "mucem-sagir": ("0375AH", "0360Tabarani/0360Tabarani.MucjamSaghir/0360Tabarani.MucjamSaghir.Shamela0013068-ara1"),
+    "mustedrek": ("0425AH", "0405HakimNaysaburi/0405HakimNaysaburi.Mustadrak/0405HakimNaysaburi.Mustadrak.Shamela0002266-ara1"),
+    "ihsan": ("0750AH", "0739CalaDinIbnBalban/0739CalaDinIbnBalban.Ihsan/0739CalaDinIbnBalban.Ihsan.Sham19Y0001734-ara1"),
+    "mecma": ("0825AH", "0807NurDinHaythami/0807NurDinHaythami.MajmacZawaid/0807NurDinHaythami.MajmacZawaid.Shamela0000061-ara1"),
+    "kenz": ("0975AH", "0975MuttaqiHindi/0975MuttaqiHindi.KanzCummal/0975MuttaqiHindi.KanzCummal.Shamela0002677-ara1"),
+    "feyz": ("1050AH", "1031CabdRaufMunawi/1031CabdRaufMunawi.FaydQadir/1031CabdRaufMunawi.FaydQadir.Shamela0021660-ara1"),
+    "kesfulhafa": ("1175AH", "1162IbnMuammadAbuFidaCajluni/1162IbnMuammadAbuFidaCajluni.KashfKhafa/1162IbnMuammadAbuFidaCajluni.KashfKhafa.JK000583-ara1"),
+}
+MVP_TEXTS = {book: openiti.Text(repo, MVP_COMMITS[repo], path) for book, (repo, path) in MVP_BOOKS.items()}
 
 
 def fetch_openiti(root: Path, client: PoliteClient, *, refresh: bool = False) -> None:
     openiti.fetch(OPENITI_TEXTS, root, client, refresh=refresh)
+    openiti.fetch(MVP_TEXTS, root, client, refresh=refresh)
