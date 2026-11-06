@@ -348,8 +348,9 @@ def _document_batches(docs: list[list[Unit]], model: Model) -> Iterator[list[lis
         yield batch
 
 
-def build(model: Model, variant: str, conn: sqlite3.Connection) -> VectorStore:
-    """Depoda olmayan birimlerin vektörlerini çıkarır; artık hiçbir birime ait olmayanları siler."""
+def build(model: Model, variant: str, conn: sqlite3.Connection, max_tokens: int | None = None) -> VectorStore:
+    """Depoda olmayan birimlerin vektörlerini çıkarır; artık hiçbir birime ait olmayanları siler. `max_tokens`:
+    harcanan token bu sınıra varınca depo kaydedilip durulur (kalan bir sonraki çalıştırmada; ücret sınırı)."""
     if (variant == "context") != model.contextual:
         raise EmbeddingError("`context` yalnızca bağlamlı modellerle, bağlamlı modeller yalnızca `context` ile.")
     store = VectorStore(model.name, variant, dtype=np.int8 if model.int8 else np.float16)
@@ -379,6 +380,11 @@ def build(model: Model, variant: str, conn: sqlite3.Connection) -> VectorStore:
             store.add(keys, vectors)
         spent += tokens
         done += len(batch)
+        if max_tokens and spent >= max_tokens:
+            store.save()
+            print(f"sınır: {spent / 1e6:.2f} M token harcandı (sınır {max_tokens / 1e6:.0f} M); {done}/{len(todo)} vektör,"
+                  " kalanı sonraki çalıştırmada", flush=True)
+            return store
         if n % SAVE_EVERY == 0:
             store.save()
             elapsed = time.monotonic() - started
@@ -416,6 +422,7 @@ def main() -> None:
     build_parser = commands.add_parser("build", help="eksik vektörleri çıkar")
     build_parser.add_argument("model", choices=sorted(MODELS))
     build_parser.add_argument("--variant", choices=VARIANTS)
+    build_parser.add_argument("--max-tokens", type=float, help="token sınırı (milyon); varınca kaydedip durur")
     commands.add_parser("status", help="depolar ve eksik vektörler")
     commands.add_parser("export-public", help="sunucuya gidecek kopya: private eserlerin vektörleri çıkarılır")
     parser.add_argument("--db", type=Path, default=DB_PATH)
@@ -433,7 +440,7 @@ def main() -> None:
         model = MODELS[args.model]
         variant = args.variant or ("context" if model.contextual else "sentence")
         try:
-            build(model, variant, conn)
+            build(model, variant, conn, int(args.max_tokens * 1e6) if args.max_tokens else None)
         except EmbeddingError as error:
             sys.exit(str(error))
     else:

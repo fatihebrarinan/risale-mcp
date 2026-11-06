@@ -8,6 +8,8 @@ Kütüb-i Sitte için) ve başkasının katmanı (`layers`: Zehebî, Elbânî, m
 import json
 from pathlib import Path
 
+import numpy as np
+
 from risale_mcp import search as fts
 from risale_mcp.hadis_kunye import parse as parse_citation
 from risale_mcp.library import Library, LibraryError
@@ -95,6 +97,43 @@ class HadisLibrary(Library):
         return {"total": total, "results": [self._unit(r, full=False) for r in rows],
                 "note": "Matches the report's text (the matn where the edition separates it). Read a report with "
                         "get_hadith before relying on it."}
+
+    def semantic(self, query: str, book: str | None = None, limit: int = 10, offset: int = 0) -> dict:
+        """Anlamca en yakın hadisler (`hadis_vectors.py`: hadis başına, yalnız metin)."""
+        from risale_mcp import semantic
+        from risale_mcp.embeddings import SEARCH_MODEL, EmbeddingError
+        from risale_mcp.hadis_vectors import store
+        if not query.strip():
+            raise LibraryError("Give a question or a concept to search for.")
+        if not hasattr(self, "_vectors"):
+            self._vectors = store()
+        vectors = self._vectors
+        if not vectors.keys:
+            raise LibraryError("Semantic search is not available on this server yet (no vectors); use search_hadith.")
+        try:
+            q = semantic._query_vector(SEARCH_MODEL, query.strip())
+        except EmbeddingError as error:
+            raise LibraryError(f"Semantic search failed ({error}); use search_hadith with Arabic words.") from None
+        scores = vectors.scores(q)
+        order = np.argsort(-scores)
+        out, skipped = [], 0
+        for i in order:
+            unit_id = vectors.keys[i].split("|", 1)[0]
+            if book and not unit_id.startswith(book + "/"):
+                continue
+            if skipped < offset:
+                skipped += 1
+                continue
+            row = self.conn.execute("SELECT * FROM lib_units WHERE id = ?", (unit_id,)).fetchone()
+            if row is None:
+                continue
+            out.append({**self._unit(row, full=False), "similarity": round(float(scores[i]), 3)})
+            if len(out) >= min(max(limit, 1), 30):
+                break
+        return {"results": out, "unindexed": max(0, self.conn.execute("SELECT count(*) FROM lib_units").fetchone()[0]
+                                                    - len(vectors.keys)),
+                "note": "Nearest reports by meaning (the text of each report, not its chain). Candidates: read with "
+                        "get_hadith before relying on one."}
 
     def by_citation(self, citation: str, limit: int = 20) -> dict:
         """Künyeden ("Buharî, Ezân: 148", "Müsned 14870", "Müstedrek, 4:123") kütüphanedeki yer."""

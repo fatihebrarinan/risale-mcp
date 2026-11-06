@@ -695,6 +695,18 @@ def _hadis_tools(server: MCPServer, library) -> None:
         with _tool_errors():
             return _json(library.search_reports(query, book, limit, offset))
 
+    @server.tool(title="Search by meaning", annotations=read_only("Search by meaning"), structured_output=False)
+    def semantic_search(
+        query: Annotated[str, Field(description="A question or concept, in any language (e.g. 'patience in hardship').")],
+        book: Annotated[str | None, Field(description="Only this book id.")] = None,
+        limit: Annotated[int, Field(ge=1, le=30)] = 10,
+        offset: Annotated[int, Field(ge=0)] = 0,
+    ) -> str:
+        """Reports nearest in meaning to the query (each report's text, not its chain), with similarity. Candidates:
+        read the report with get_hadith before relying on it."""
+        with _tool_errors():
+            return _json(library.semantic(query, book, limit, offset))
+
     @server.tool(title="Find by reference", annotations=read_only("Find by reference"), structured_output=False)
     def find_by_citation(
         citation: Annotated[str, Field(description="A reference, e.g. 'Buharî, Ezân: 148', 'Müsned 14870', 'Müstedrek, 4:123'.")],
