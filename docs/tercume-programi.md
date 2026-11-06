@@ -66,7 +66,7 @@ taslağını bir insan mütercim düzeltirse metin kimin olur, nasıl işaretlen
 
 | Adım | Durum |
 |---|---|
-| TR1 Envanter | Başlanmadı (kullanıcının onayını bekliyor) |
+| TR1 Envanter | 1. tur bitti (2026-11-06): `docs/tercumeler.md`; ikinci tur katalog doğrulaması |
 | TR2 Öncelik | — |
 | TR3 İzin dalgaları | — |
 | TR4 Tercüme katmanı | — |
