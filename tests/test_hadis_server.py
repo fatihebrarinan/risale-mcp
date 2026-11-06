@@ -53,3 +53,9 @@ def test_the_server_has_its_own_tools(lib):
     assert server.name == "hadis" and server.instructions == HADIS_INSTRUCTIONS
     assert {"get_hadith", "search_hadith", "find_by_citation", "cite", "get_ayah"} <= set(tools)
     assert "find_ayah" not in tools and "read_section" not in tools
+
+
+def test_every_book_id_opens_its_outline(lib):
+    for book in lib.books()["books"]:
+        tree = lib.tree(book["id"], 1)
+        assert tree["id"] == book["id"] and (tree.get("children") or tree.get("subsections") or tree["reports"])

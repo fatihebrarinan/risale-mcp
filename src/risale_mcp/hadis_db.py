@@ -117,9 +117,16 @@ def build(out: Path = HADIS_DB, source_db: Path = PUBLIC_DB_PATH) -> Counter:
         node_units: Counter = Counter()
         for h in book["hadiths"]:
             node_units[h["node_id"]] += 1
+        # Kütüb-i Sitte ve Muvatta'nın ağacında kitabın kendi düğümü yok: kök eklenir, en üst düğümler ona bağlanır
+        # (`get_outline("bukhari")` kitap kimliğiyle çalışsın).
+        rooted = any(n["id"] == key for n in book["outline"])
+        if not rooted:
+            conn.execute("INSERT INTO lib_nodes (id, book, parent_id, level, number, title, units) VALUES (?, ?, NULL, 'book', NULL, ?, 0)",
+                         (key, key, book["title"]))
         for n in book["outline"]:
+            parent = n.get("parent_id") or (None if rooted else key)
             conn.execute("INSERT INTO lib_nodes (id, book, parent_id, level, number, title, units) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                         (n["id"], key, n.get("parent_id"), n.get("level") or "bab", n.get("number"), n["title"],
+                         (n["id"], key, parent, n.get("level") or "bab", n.get("number"), n["title"],
                           node_units.get(n["id"], 0)))
         for h in book["hadiths"]:
             if not (h.get("text") or "").strip():
