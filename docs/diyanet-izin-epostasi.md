@@ -1,9 +1,14 @@
 # Diyanet'e izin e-postası (taslak, 2026-11-06)
 
 Konu: Kur'an Yolu tefsirinin ve Diyanet'in Hak Dini Kur'an Dili baskısının tefsir sunucusunda kullanılması (MVP,
-`docs/mvp-kitaplar.md` karar 2). E-postayı kullanıcı gönderir. Alıcı: Diyanet İşleri Başkanlığı Dinî Yayınlar Dairesi
-Başkanlığı (adresi kullanıcı bulur; kurumsal e-posta ya da resmî başvuru kanalı). Köşeli ayraçlı yerleri kullanıcı
-doldurur.
+`docs/mvp-kitaplar.md` karar 2). E-postayı kullanıcı gönderir. Köşeli ayraçlı yerleri kullanıcı doldurur.
+
+Alıcılar (Diyanet'in Dini Yayınlar sayfasından, 2026-11-06):
+- **Kime:** Dini Yayınlar Genel Müdürlüğü, `diniyayinlar@diyanet.gov.tr` (izin kararı genel müdürlüğün).
+- **Bilgi:** Basılı Yayınlar Daire Başkanlığı, `kitaplar@diyanet.gov.tr` (iki eserin basılı baskıları) ve Dijital
+  Yayınlar Daire Başkanlığı, `dijitalyayinlar@diyanet.gov.tr` (dijital nüsha ve çevrimiçi tefsir).
+- Döner Sermaye adresleri satış ve abonelik içindir, yazılmaz. Birkaç hafta cevap gelmezse genel müdürlüğün telefonu
+  (0312 294 41 16) ya da resmî başvuru kanalı (CİMER) denenir.
 
 Bilinmesi gerekenler (e-postaya girmez):
 - Kur'an Yolu (2003–) Diyanet'in telifli eseridir; sitesinde çevrimiçi okunur.
@@ -14,8 +19,12 @@ Bilinmesi gerekenler (e-postaya girmez):
 
 ---
 
+**Kime:** diniyayinlar@diyanet.gov.tr · **Bilgi:** kitaplar@diyanet.gov.tr, dijitalyayinlar@diyanet.gov.tr
+
 **Konu:** Kur'an Yolu ve Hak Dini Kur'an Dili tefsirlerinin kâr amacı gütmeyen bir yapay zekâ kaynak hizmetinde
 kullanılması hakkında izin talebi
+
+Dini Yayınlar Genel Müdürlüğü'ne,
 
 Sayın Yetkili,
 
