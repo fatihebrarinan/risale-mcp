@@ -142,3 +142,66 @@ Kenzü'l-Ummâl, Sahîh-i İbn Hibbân (el-İhsân), el-Câmiu's-Sağîr, el-Mu'
 
 **Boyut:** tefsirler ≈225 MB (≈24 milyon kelime, ≈820 bin cümle; Âlûsî ve Bursevî ikisi birlikte ≈62 MB), hadis
 ≈92 MB. Vektör ücreti birkaç dolar; sunucu belleği 8 GB'a çıkmalı (M1'de kesinleşir).
+
+## M1: nüsha seçimi ve kapasite (2026-11-06)
+
+Her sürümden `.yml`, üst bilgi ve ortadan 120 KB'lık bir parça alındı (Range isteğiyle; ham örnekler
+`data/interim/mvp/probe/`, özet `data/interim/mvp/probe.json`). Kelime sayısı sürümün `.yml`'indeki `LENGTH`'tir
+(kesin). Seçim T0'ın ölçütleriyle: muhakkiki ve baskısı adıyla bilinen, sayfa işaretleri tutarlı, başlığı olan.
+"Başlık" ve "sayfa" sütunları ortadaki 120 KB'taki `###` başlık ve `PageV` işareti sayısıdır.
+
+### Seçilen nüshalar (öneri)
+
+| Eser | Sürüm | Baskı | Kelime | Başlık | Sayfa | Not |
+|---|---|---|---|---|---|---|
+| Taberî | Shamela0007798 | Abdullah et-Türkî tahkiki, Dâru Hecr, 1422 | 2.910.593 | 42 | 83 | Tam tenkitli baskı (Ahmed Şâkir'inki de var) |
+| Mâtürîdî | Shamela0095590 | Mecdî Bâslûm, Dâru'l-Kütübi'l-İlmiyye, 1426 | 1.551.539 | **0** | 44 | Tek muhakkikli sürüm; başlık yok |
+| Keşşâf | Shamela0023627 | Dâru'l-Kitâbi'l-Arabî, 3. baskı 1407 | 774.802 | 78 | 44 | JK'da muhakkik adı var ama başlık yok |
+| Râzî | Shamela0023635 | Dâru İhyâi't-Türâs, 3. baskı 1420 | 2.963.162 | 27 | 26 | |
+| Kurtubî | Shamela0020855 | Berdûnî ve Atfeyyiş, Dâru'l-Kütübi'l-Mısriyye, 1384 | 2.062.344 | 47 | 46 | Standart baskı |
+| Beyzâvî | Shamela0023588 | Maraşlî (pilotta seçildi) | 575.644 | | | |
+| Nesefî | Shamela0001394 | Yûsuf Ali Bedîvî, Dâru'l-Kelimi't-Tayyib, 1419 | 557.956 | **1** | 186 | JK'da 571 âyet işareti var (denetim için) |
+| İbn Kesîr | Shamela0008473 | Sâmî Selâme, Dâru Tayyibe, 1420 | 1.568.356 | 15 | 37 | Standart baskı |
+| Celâleyn | Shamela0012876 | Dâru'l-Hadîs, Kahire | 192.776 | 366 | 439 | |
+| ed-Dürrü'l-Mensûr | Shamela0012884 | Dâru'l-Fikr | 1.654.267 | **1** | 65 | |
+| Ebüssuûd | Shamela0001429 | Dâru İhyâi't-Türâs | 1.035.898 | **4** | 71 | |
+| Bursevî | Shamela0023612 | Dâru'l-Fikr | 2.417.001 | **1** | 26 | |
+| Âlûsî | Shamela0022835 | Ali Abdülbârî Atıyye, Dâru'l-Kütübi'l-İlmiyye, 1415 | 3.492.777 | **0** | 21 | |
+| Müsned | Shamela0013157 | Şuayb el-Arnaût ve diğ., Müessesetü'r-Risâle, 1421 | 1.624.587 | 254 | 198 | Standart numara |
+| Dârimî | Shamela0021795 | Hüseyin Selîm Esed, Dâru'l-Muğnî, 1412 | 203.056 | 554 | 278 | |
+| el-Mu'cemü's-Sağîr | Shamela0013068 | M. Şekûr Emrîr, el-Mektebü'l-İslâmî, 1405 | 98.503 | 188 | 188 | |
+| el-Müstedrek | Shamela0002266 | Mustafa Abdülkādir Atâ, DKİ, 1411 | 874.871 | 211 | 115 | |
+| el-İhsân (İbn Hibbân) | Sham19Y0001734 | ? (üst bilgi boş) | 887.359 | 120 | 98 | Baskısı `.yml`'den ve metinden çıkarılmalı |
+| Mecmaü'z-Zevâid | Shamela0000061 | Hüsâmeddin el-Kudsî, 1414 | 1.216.420 | 100 | 35 | |
+| el-Câmiu's-Sağîr | Shia002261Vols | Dâru'l-Fikr? 1401 | 140.720 | **0** | 118 | **Tek sürüm**, muhakkiki yok; metni Feyzü'l-Kadîr'in içinde de var |
+| Kenzü'l-Ummâl | Shamela0002677 | Bekrî Hayyânî ve Safvet es-Sakkā, Risâle, 5. baskı 1401 | 1.592.223 | 570 | 115 | Atıflarda kullanılan numara |
+| Feyzü'l-Kadîr | Shamela0021660 | el-Mektebetü't-Ticâriyye, 1356 | 1.681.079 | 115 | 100 | |
+| Keşfü'l-Hafâ | JK000583 | Ahmed el-Kallâş, Risâle, 4. baskı 1405 | 258.926 | **0** | 55 | Çok atıf alan baskı; Shamela'daki iki baskı başlıklı |
+
+### İki risk (M2'nin ilk işi)
+
+1. **Başlıksız tefsirler.** Altı tefsirin (Mâtürîdî, Nesefî, ed-Dürrü'l-Mensûr, Ebüssuûd, Bursevî, Âlûsî) seçilen
+   sürümünde âyet başlığı yok ya da çok az. Beyzâvî'de âyet birimini başlık veriyordu; bunlarda birim metindeki âyet
+   alıntısından (cümle başında âyetin sözü, ya da ﴿ ﴾ işareti) çıkarılmalı. Önce her birinden bir parça kullanıcıya
+   gösterilir; olmazsa o eser için başlıklı başka bir sürüm denenir.
+2. **Kur'ân alıntısı aramasının hızı.** Pilotta Beyzâvî'nin 977 cümlesi ≈3,5 dakika sürdü. Bu hız 750 bin cümlede
+   günler eder: arama indeksli bir yönteme geçmeli (M3'ün başında ölçülür).
+
+### Kapasite
+
+Ölçü Risale'nin genel veritabanı: 242.758 cümle, dosya 342 MB (cümle başına ≈1,4 KB); sunucuda sürecin belleği
+≈465 MB (cümle başına ≈1,9 KB, vektörler ve atıf dizini dahil). Cümle başına ≈29 kelime (pilot).
+
+| Sunucu | Kelime | ≈ cümle | Veritabanı | Süreç belleği | Vektör (512 bayt) |
+|---|---|---|---|---|---|
+| risale (bugün) | — | 243 bin | 342 MB | 465 MB | ≈56 MB |
+| tefsir | 21,8 milyon | ≈750 bin | ≈1,1 GB | ≈1,4 GB | ≈385 MB |
+| hadis (+ Kütüb-i Sitte ve Muvatta) | ≈11,5 milyon | ≈400 bin | ≈0,6 GB | ≈0,8 GB | ≈205 MB |
+| **Toplam** | | | ≈2 GB | **≈2,7 GB** | |
+
+- **Bellek yetmez:** sunucunun 3,8 GB'ı var, takas alanı yok; üç süreç ≈2,7 GB ister, işletim sistemi ve Caddy ile
+  sınırda kalır, açılıştaki dizin kurulumunda taşabilir. **8 GB'lık sunucuya geçmek gerekir** (Hetzner'in aynı
+  serisi; aylık ücret aşağı yukarı iki katı). Disk yeter (33 GB boş).
+- **Vektör ücreti:** Arapçanın token oranı ölçülmedi; kelime başına 1,5–2,5 token ile ≈50–85 milyon token. Voyage
+  hesap başına ilk 200 milyon tokenı ücretsiz veriyor; büyük ihtimalle ücretsiz, en kötü hâlde ≈10 $.
+- Sayılar tahmindir: cümle sayısı bölücüye, bellek sunucunun dizinine bağlıdır; ilk birkaç eser kurulunca ölçülür.

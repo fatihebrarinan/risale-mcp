@@ -582,5 +582,9 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   kullanıcı gönderir), izin gelince eklenir. Abduh ve Menâr kaynak alınmaz: `catalog/excluded.py` (OpenITI'den
   indirilemez, katalogda yazar olamaz). Klasik eserler sunucusu (İhyâ, Miftâh, Cürcânî) MVP'den sonra. Liste son hâli
   değil; MVP şişirilmez. eş-Şifâ sorusu cevapsız (MVP'de değil).
-- **Sırada:** M1 (kapasite ve maliyet, nüsha seçimiyle), Y0.6 (dizin politikaları, M7'den önce); Diyanet e-postası
-  kullanıcıda.
+- **M1 Nüsha ve kapasite (2026-11-06):** `docs/mvp-kitaplar.md` "M1". 22 eserin ≈100 sürümü Range ile yoklandı
+  (`data/interim/mvp/probe/`); kelime sayısı `.yml`'deki `LENGTH`: tefsir 21,8 milyon, yeni hadis 8,6 milyon. Nüshalar
+  muhakkiki bilinen, başlıklı Shamela sürümleri (öneri, tabloda). Riskler: altı tefsirde âyet başlığı yok (birim
+  metindeki âyetten çıkarılmalı), Kur'ân alıntısı araması pilot hızında günler sürer (indeksli yöntem). Kapasite:
+  üç süreç ≈2,7 GB bellek, sunucu 3,8 GB: 8 GB'a geçilmeli; vektör ücreti büyük ihtimalle ücretsiz (200 milyon token).
+- **Sırada:** M1'in kararları (nüshalar, sunucu büyütme), M2; Y0.6 (M7'den önce); Diyanet e-postası kullanıcıda.
