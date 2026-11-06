@@ -184,8 +184,19 @@ Her sürümden `.yml`, üst bilgi ve ortadan 120 KB'lık bir parça alındı (Ra
    sürümünde âyet başlığı yok ya da çok az. Beyzâvî'de âyet birimini başlık veriyordu; bunlarda birim metindeki âyet
    alıntısından (cümle başında âyetin sözü, ya da ﴿ ﴾ işareti) çıkarılmalı. Önce her birinden bir parça kullanıcıya
    gösterilir; olmazsa o eser için başlıklı başka bir sürüm denenir.
-2. **Kur'ân alıntısı aramasının hızı.** Pilotta Beyzâvî'nin 977 cümlesi ≈3,5 dakika sürdü. Bu hız 750 bin cümlede
-   günler eder: arama indeksli bir yönteme geçmeli (M3'ün başında ölçülür).
+
+   Örneklere bakıldı (M2, 2026-11-06): Nesefî ve Mâtürîdî âyeti ayrı paragrafta, sonunda numarasıyla ("… إنسيا (26)")
+   veriyor: birim bu satırdan çıkar. Ebüssuûd ve ed-Dürrü'l-Mensûr lemmayı `{…}` içinde veriyor, Ebüssuûd'da ayrıca
+   seyrek "### | 5 - 6" başlıkları var. Âlûsî ve Bursevî'nin Shamela sürümünde işaret yok. Ama bu eserlerin
+   altafsir.com'dan alınmış sürümleri (`Tafsir…`) her birimin başında `### || [17.58]` taşıyor (sayfasız ve "eksik
+   metin" diye işaretli). Yol: metin, sayfa ve muhakkik Shamela sürümünden; âyet sınırları altafsir sürümünden, sınırın
+   Shamela metnindeki yeri ilk kelimelerden (aslı Arapça Risale eserlerinin şablon çapaları gibi). Altafsir sürümünde
+   eksik kalan yerde sınır yoksa birim metindeki âyet alıntısından bulunur, o da yoksa "adres belirsiz" kalır.
+2. **Kur'ân alıntısı aramasının hızı.** ~~Pilotta 977 cümle ≈3,5 dakika; 750 bin cümlede günler eder.~~ Ölçüldü
+   (M2, 2026-11-06): 3,5 dakika bütün `links_tefsir` işiydi (beş eşik denemesi, hadis ve İşârât karşılaştırması);
+   tek bir alıntı taraması Beyzâvî'nin pilot aralığında (≈28 bin kelime) 16,6 saniye, yani kelime başına ≈0,6 ms.
+   21,8 milyon kelime tek çekirdekte ≈3,5 saat, eser başına paralel çalışınca bu bilgisayarda ≈30 dakika. İndeksli
+   yönteme gerek yok; paralel çalıştırmak yeter.
 
 ### Kapasite
 
