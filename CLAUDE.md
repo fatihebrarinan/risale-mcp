@@ -587,4 +587,8 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   muhakkiki bilinen, başlıklı Shamela sürümleri (öneri, tabloda). Riskler: altı tefsirde âyet başlığı yok (birim
   metindeki âyetten çıkarılmalı), Kur'ân alıntısı araması pilot hızında günler sürer (indeksli yöntem). Kapasite:
   üç süreç ≈2,7 GB bellek, sunucu 3,8 GB: 8 GB'a geçilmeli; vektör ücreti büyük ihtimalle ücretsiz (200 milyon token).
-- **Sırada:** M1'in kararları (nüshalar, sunucu büyütme), M2; Y0.6 (M7'den önce); Diyanet e-postası kullanıcıda.
+- **M1 kararları (kullanıcı, 2026-11-06):** nüshalar uygun; el-Câmiu's-Sağîr MVP'den çıktı (listede kalır), MVP'nin
+  hadis kitapları dokuz; sunucu CAX21'e (8 GB) büyütülür (kullanıcı panelden). Diyanet e-postası gönderiliyor
+  (meallerin izni de istenir).
+- **Sırada:** M2 (başlıksız altı tefsirden örnek, Kur'ân alıntısı aramasının hızı); sunucu büyütülünce denetim;
+  Y0.6 (M7'den önce).

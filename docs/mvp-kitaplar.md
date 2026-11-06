@@ -205,3 +205,11 @@ Her sürümden `.yml`, üst bilgi ve ortadan 120 KB'lık bir parça alındı (Ra
 - **Vektör ücreti:** Arapçanın token oranı ölçülmedi; kelime başına 1,5–2,5 token ile ≈50–85 milyon token. Voyage
   hesap başına ilk 200 milyon tokenı ücretsiz veriyor; büyük ihtimalle ücretsiz, en kötü hâlde ≈10 $.
 - Sayılar tahmindir: cümle sayısı bölücüye, bellek sunucunun dizinine bağlıdır; ilk birkaç eser kurulunca ölçülür.
+
+### M1 kararları (kullanıcı, 2026-11-06)
+
+- Seçilen nüshalar uygun.
+- **el-Câmiu's-Sağîr MVP'den çıktı**, eser listesinde kalır (tek sürüm, muhakkiki belli değil; metni Feyzü'l-Kadîr'de).
+  MVP'nin hadis kitapları dokuz: Müsned, Dârimî, el-Mu'cemü's-Sağîr, el-Müstedrek, el-İhsân, Mecmaü'z-Zevâid,
+  Kenzü'l-Ummâl, Feyzü'l-Kadîr, Keşfü'l-Hafâ.
+- Sunucu 8 GB'a (CAX21) büyütülür; kullanıcı Hetzner panelinden yapar, sonra bellek ve servis denetlenir.

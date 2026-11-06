@@ -53,3 +53,6 @@ Projeyi ve hizmeti daha ayrıntılı anlatmaktan memnuniyet duyarım.
 Saygılarımla,
 [Ad Soyad]
 [İletişim]
+
+
+Not (2026-11-06): kullanıcının son metnine iki ekleme önerildi: meallerin (Diyanet İşleri ve TDV) kullanım izninin de teyidi ve "Başkanlığınız kaynak olarak gösterilir" ifadesi.
