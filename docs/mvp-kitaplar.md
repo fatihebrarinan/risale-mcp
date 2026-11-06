@@ -300,3 +300,17 @@ Feyzü'l-Kadîr iç içe şerhtir (parantez içi Câmiu's-Sağîr), notta yazıl
 | Keşfü'l-Hafâ | 3.255 | JK |
 
 Hadis veritabanı ve araçları M5'te (hadis sunucusu).
+
+## M3: net bağlar (2026-11-06)
+
+- **Tefsir:** `uv run python -m risale_mcp.links_tefsir --mvp` (13 eser paralel, ≈77 dakika: en uzunu Âlûsî tek
+  süreçte) → `data/links/tefsir/structure.jsonl` 43.115 âyet birimi bağı, `quran_text.jsonl` 402.479 Kur'ân alıntısı
+  (pilotun kuralları ve eşikleri; numarası verilemeyen, birden çok yerde geçen söz 22 bin kadar, bağ kurulmaz). Hepsi
+  `private`. Denetim kayıtlarının 94 kararının hepsi bağını buluyor (Beyzâvî'nin 32'si dahil). Yerel veritabanı
+  1.661 MB; genel profil ve araç çıktısı aynı (`tool_snapshot` m3-bag).
+- **Hadis (HA2 ölçümü, karar kullanıcıda):** `uv run python -m risale_mcp.hadis_kutuphane` → `data/interim/hadis/ha2-olcum.md`.
+  Risale'nin 370 tekil hadis parçası bugünkü derlemle (Sanadset, Hadith API) ve yalnız kütüphaneyle (160.237 hadis:
+  Kütüb-i Sitte, Muvatta, MVP'nin dokuzu) aynı eşleyicide: tam bulunan 83 → 73, kısmen 19 → 18, kısa ifade 42 → 39,
+  bulunamayan 150 → 164; 25 parça zayıflıyor, 9 güçleniyor. Kaybedilenlerin çoğu hadis kitabı olmayan eserlerden
+  (Târîhu Dımaşk, Tabakât, mevzu tezkiresi); en az beşi eş-Şifâ ve Beyhakî'nin Delâil'inde. `matches.json` ve genel
+  sunucu değişmedi.

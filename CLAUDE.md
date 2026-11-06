@@ -601,5 +601,9 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   (müellif mukaddimesi ile muhakkik girişi ayrılmamış; eser başına karar sonra). Yerel veritabanı 1,45 GB (+545 bin
   cümle), kimlikler kaymadı; genel profil ve araç çıktısı aynı. Sınır: noktalaması seyrek eserlerde cümleler uzun
   (Bursevî ortalama 97 kelime). Kur'ân alıntısı araması kelime başına ≈0,6 ms.
-- **Sırada:** M3 (net bağlar: âyet birimi, tefsirdeki Kur'ân alıntısı, Risale'nin hadislerinin yeni kitaplarda
-  aranması), M4 (arama); Y0.6 (M7'den önce).
+- **M3 (2026-11-06):** `docs/mvp-kitaplar.md` "M3". Tefsir: `links_tefsir --mvp` 43.115 âyet birimi ve 402.479 Kur'ân
+  alıntısı bağı (13 eser, private, ≈77 dk); 94 denetim kararı bağını buluyor; yerel veritabanı 1,66 GB, genel aynı.
+  Hadis: HA2 ölçümü (`hadis_kutuphane.py`, `data/interim/hadis/ha2-olcum.md`): yalnız kütüphaneyle tam bulunan 83 → 73,
+  bulunamayan 150 → 164; kaybedilenlerin çoğu hadis kitabı değil, beşi eş-Şifâ ve Delâil'de. Geçiş (ve eş-Şifâ,
+  Delâil'in eklenmesi) kullanıcının kararı; `matches.json` değişmedi.
+- **Sırada:** M4 (arama: Türkçe ek, Arapça önek); HA2 kararı kullanıcıda; Y0.6 (M7'den önce).
