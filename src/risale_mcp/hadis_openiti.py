@@ -48,6 +48,9 @@ class Spec:
     layer_sep: str | None = None               # bu satırdan sonraki paragraflar ayrı katman
     layer_by: str | None = None
     note: str | None = None
+    unit: str = "number"                       # number: baskının numarası; isnad: "أخبرنا/حدثنا" ile açılan rivayet;
+                                               # paragraph: kaynağın paragrafı (ikisinde kimlik bizim sıramız: s00001)
+    editor_head: str | None = None             # bu başlığın altı muhakkikin metnidir (sonraki başlığa kadar)
 
 
 SPECS = {
@@ -66,12 +69,19 @@ SPECS = {
     "feyz": Spec("Feyzü'l-Kadîr", "Abdürraûf el-Münâvî",
                  note="Münâvî'nin el-Câmiu's-Sağîr şerhi (iç içe): parantez içindeki sözler Suyûtî'nin metnidir, "
                       "gerisi Münâvî'nin; ayrılmadı."),
+    "sifa": Spec("eş-Şifâ bi-Ta'rîfi Hukūki'l-Mustafâ", "Kādî İyâz", unit="paragraph", editor_head="EDITOR",
+                 note="Hadis numarası yok: birim kaynağın paragrafıdır, kimlik bizim sıramızdır (sifa/s00001). "
+                      "«1» gibi işaretler muhakkikin dipnot işaretleridir; dipnotlar kaynakta yok."),
+    "delail": Spec("Delâilü'n-Nübüvve", "Ebû Bekr el-Beyhakī", unit="isnad",
+                   note="Hadis numarası yok: birim \"أخبرنا/حدثنا\" ile açılan rivayettir, kimlik bizim sıramızdır "
+                        "(delail/s00001). Bâb başlıkları ağaçtadır."),
     "kesfulhafa": Spec("Keşfü'l-Hafâ", "İsmâil b. Muhammed el-Aclûnî", inline=re.compile(r"^(\d{1,5})\s*\(")),
 }
 
 _NUMBER = re.compile(r"^(\d{1,5})\s*[-–]?\s*$")
 _PAGE = re.compile(r"^\[ص:\s*(\d+)\]$")
 _KITAB = re.compile(r"^(?:كتاب|أبواب|ابواب|كتب)\b")
+_ISNAD_START = re.compile(r"^(?:و|ف)?(?:أخبرنا|حدثنا|أخبرني|حدثني|أنبأنا|وأنبأنا)\b")
 
 
 @dataclass
@@ -120,7 +130,25 @@ def parse(key: str, raw_root: Path = RAW_DIR / "openiti") -> tuple[dict, Report]
         if text:
             current["paragraphs"].append(text)
 
+    seq = 0
+    editor = False
+
+    def start_seq(text: str, p: openiti.Paragraph) -> None:
+        nonlocal seq, current, layer
+        seq += 1
+        current = {"id": f"{key}/s{seq:05d}", "number": None, "seq": seq, "node_id": node_id(), "paragraphs": [],
+                   "printed": _printed(p, real, inline_page)}
+        if current["printed"] is None:
+            report.unpaged += 1
+        hadiths.append(current)
+        layer = False
+        if text:
+            current["paragraphs"].append(text)
+
     def add(text: str) -> None:
+        if editor:
+            report.before_first += 1             # muhakkikin metni: alınmaz, sayılır
+            return
         if current is None:
             report.before_first += 1
             return
@@ -143,6 +171,10 @@ def parse(key: str, raw_root: Path = RAW_DIR / "openiti") -> tuple[dict, Report]
             if spec.layer_head and text == spec.layer_head:
                 layer = True
                 continue
+            if spec.editor_head and text.strip("| ") == spec.editor_head:
+                editor = True
+                continue
+            editor = False
             title = re.sub(r"^AUTO\s+", "", text).strip("[] ")
             while stack and stack[-1][0] >= p.level:
                 stack.pop()
@@ -159,6 +191,12 @@ def parse(key: str, raw_root: Path = RAW_DIR / "openiti") -> tuple[dict, Report]
         if spec.layer_sep and text.startswith(spec.layer_sep):
             layer = True
             continue
+        if spec.unit == "paragraph" and not editor:
+            start_seq(text, p)
+            continue
+        if spec.unit == "isnad" and _ISNAD_START.match(text):
+            start_seq(text, p)
+            continue
         if spec.inline and (m := _inline(spec.inline, text)):
             pos, number, rest = m
             if pos:
@@ -167,7 +205,7 @@ def parse(key: str, raw_root: Path = RAW_DIR / "openiti") -> tuple[dict, Report]
             continue
         add(text)
 
-    numbers = [h["number"] for h in hadiths]
+    numbers = [h["number"] for h in hadiths if h["number"] is not None]
     report.hadiths = len(hadiths)
     report.layered = sum(1 for h in hadiths if h.get("layers"))
     report.gaps = [f"{a}→{b}" for a, b in zip(numbers, numbers[1:]) if b - a > 50 or b < a][:20]

@@ -57,7 +57,8 @@ MVP_COMMITS = {"0250AH": "0cc00c0646c81988c75a3815fe6d9a5fa65ce592", "0275AH": O
                "0375AH": "ab52219710c6bf15a93d6e39886f0ca602d27952", "0425AH": "3a3c829e55a1e4fb614aa857e0d85f51d6a9f0ee",
                "0750AH": "7c9c84d9f98581470aa2b7f8bee00ae285c5c707", "0825AH": "bae1fba53712c020fe43e3e60b37dfe61f2b64a8",
                "0975AH": "c47ff1c47a9108eab999d7fa68ef30be16bc0f85", "1050AH": "ab6ad0f2d84f53b4f87e6ca1fc53cafffaba0abf",
-               "1175AH": "2c367f78b779757652ee59df503fdc9312ec2f06"}
+               "1175AH": "2c367f78b779757652ee59df503fdc9312ec2f06",
+               "0475AH": "cc9beb0d9645e8cdce892556423b9926a127054f", "0550AH": "6c414b1e23f2646d30e4f7f08f4b07be9832367c"}
 MVP_BOOKS = {
     "musned": ("0250AH", "0241IbnHanbal/0241IbnHanbal.Musnad/0241IbnHanbal.Musnad.Shamela0013157-ara1"),
     "darimi": ("0275AH", "0255CabdAllahDarimi/0255CabdAllahDarimi.Sunan/0255CabdAllahDarimi.Sunan.Shamela0021795-ara3"),
@@ -67,6 +68,8 @@ MVP_BOOKS = {
     "mecma": ("0825AH", "0807NurDinHaythami/0807NurDinHaythami.MajmacZawaid/0807NurDinHaythami.MajmacZawaid.Shamela0000061-ara1"),
     "kenz": ("0975AH", "0975MuttaqiHindi/0975MuttaqiHindi.KanzCummal/0975MuttaqiHindi.KanzCummal.Shamela0002677-ara1"),
     "feyz": ("1050AH", "1031CabdRaufMunawi/1031CabdRaufMunawi.FaydQadir/1031CabdRaufMunawi.FaydQadir.Shamela0021660-ara1"),
+    "sifa": ("0550AH", "0544QadiCiyad/0544QadiCiyad.Shifa/0544QadiCiyad.Shifa.Shamela0023645-ara1.completed"),
+    "delail": ("0475AH", "0458Bayhaqi/0458Bayhaqi.DalailNubuwwa/0458Bayhaqi.DalailNubuwwa.Shamela0013115-ara1"),
     "kesfulhafa": ("1175AH", "1162IbnMuammadAbuFidaCajluni/1162IbnMuammadAbuFidaCajluni.KashfKhafa/1162IbnMuammadAbuFidaCajluni.KashfKhafa.JK000583-ara1"),
 }
 MVP_TEXTS = {book: openiti.Text(repo, MVP_COMMITS[repo], path) for book, (repo, path) in MVP_BOOKS.items()}
