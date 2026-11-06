@@ -1,10 +1,12 @@
 """Aşama 7: altın soru düzeneğinin döküm okuma ve atıf denetimi (Claude çağrılmaz)."""
 
 import json
+import re
 
 import pytest
 
-from risale_mcp.golden import Checker, ToolCall, Transcript, evaluate, load_questions, read_transcript, sandbox
+from risale_mcp.golden import (Checker, ToolCall, Transcript, evaluate, load_questions, read_transcript, sandbox,
+                               server_config)
 from risale_mcp.library import Library
 from risale_mcp.paths import ROOT
 
@@ -18,10 +20,26 @@ def checker(small_db):
 
 def test_questions_file_is_well_formed():
     questions = load_questions()
-    # Kullanıcının 25 sorusu (golden_questions.md) ve tefsir pilotunun 4 sorusu (T1–T4, T6)
-    assert len({q["id"] for q in questions}) == len(questions) == 29
-    assert sum(q["id"].startswith("T") for q in questions) == 4
+    # Kullanıcının 25 sorusu (golden_questions.md), tefsir pilotunun 4 sorusu (T1–T4) ve MVP sunucularının 12 sorusu
+    assert len({q["id"] for q in questions}) == len(questions) == 41
+    assert sum(re.fullmatch(r"T\d", q["id"]) is not None for q in questions) == 4
+    assert {q.get("profile") for q in questions} == {None, "tefsir", "hadis"}
     assert all({"id", "category", "question", "expected", "sections"} <= set(q) for q in questions)
+
+
+def test_server_config_per_profile():
+    assert server_config()["mcpServers"]["risale"]["args"][-1] == "risale-mcp"
+    tefsir = server_config("tefsir")["mcpServers"]["tefsir"]["args"]
+    assert tefsir[-2:] == ["--profile", "tefsir"]
+
+
+def test_transcript_strips_any_server_prefix(tmp_path):
+    events = [{"type": "assistant", "message": {"content": [
+        {"type": "tool_use", "id": "t1", "name": "mcp__hadis__get_hadith", "input": {"id": "bukhari/1"}}]}},
+        {"type": "result", "subtype": "success", "is_error": False, "result": "Cevap."}]
+    path = tmp_path / "HD4.jsonl"
+    path.write_text("\n".join(json.dumps(e) for e in events), encoding="utf-8")
+    assert [c.name for c in read_transcript(path).calls] == ["get_hadith"]
 
 
 def test_read_transcript_collects_calls_answer_and_cost(tmp_path):

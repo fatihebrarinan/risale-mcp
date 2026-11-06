@@ -53,10 +53,22 @@ def load_questions(path: Path = QUESTIONS) -> list[dict]:
     return json.loads(path.read_text(encoding="utf-8"))["questions"]
 
 
-def server_config() -> dict:
+def server_config(profile: str | None = None) -> dict:
+    """Sorunun sunucusu: varsayılan yerel profil; `profile` verilmişse (tefsir, hadis) o sunucu, kendi adıyla."""
     uv = shutil.which("uv") or "uv"
-    return {"mcpServers": {SERVER: {"type": "stdio", "command": uv,
-                                    "args": ["--directory", str(ROOT), "run", "risale-mcp"]}}}
+    args = ["--directory", str(ROOT), "run", "risale-mcp"] + (["--profile", profile] if profile else [])
+    return {"mcpServers": {profile or SERVER: {"type": "stdio", "command": uv, "args": args}}}
+
+
+def library_for(profile: str | None) -> Library:
+    """Raporun denetim kütüphanesi: sorunun sunucusunun veritabanı."""
+    if not profile:
+        return Library()
+    from risale_mcp.profiles import PROFILES
+    if profile == "hadis":
+        from risale_mcp.hadis_library import HadisLibrary
+        return HadisLibrary(PROFILES[profile].db)
+    return Library(PROFILES[profile].db)
 
 
 # ---------------------------------------------------------------- çalıştırma
@@ -65,7 +77,7 @@ def run_question(question: dict, out_dir: Path, workdir: Path, config: Path) -> 
     """Soruyu temiz bir Claude Code oturumunda sorar; dökümü `<soru>.jsonl`'e yazar."""
     command = ["claude", "-p", question["question"], "--output-format", "stream-json", "--verbose",
                "--mcp-config", str(config), "--strict-mcp-config", "--tools", "",
-               "--allowedTools", f"mcp__{SERVER}", "--no-session-persistence"]
+               "--allowedTools", f"mcp__{question.get('profile') or SERVER}", "--no-session-persistence"]
     env = {k: v for k, v in os.environ.items() if k not in PARENT_ENV}
     out = out_dir / f"{question['id']}.jsonl"
     started = time.monotonic()
@@ -88,11 +100,13 @@ def run(ids: list[str]) -> Path:
     out_dir.mkdir(parents=True)
     with tempfile.TemporaryDirectory(prefix="risale-golden-") as tmp:
         workdir = Path(tmp)
-        config = workdir / "mcp.json"
-        config.write_text(json.dumps(server_config()), encoding="utf-8")
+        configs = {}
+        for profile in {q.get("profile") for q in chosen}:
+            configs[profile] = workdir / f"mcp-{profile or SERVER}.json"
+            configs[profile].write_text(json.dumps(server_config(profile)), encoding="utf-8")
         print(f"{len(chosen)} soru; döküm: {out_dir.relative_to(ROOT)}", flush=True)
         for question in chosen:
-            run_question(question, out_dir, workdir, config)
+            run_question(question, out_dir, workdir, configs[question.get("profile")])
     report(out_dir)
     return out_dir
 
@@ -139,7 +153,7 @@ def read_transcript(path: Path) -> Transcript:
         elif kind in ("assistant", "user"):
             for block in event.get("message", {}).get("content", []):
                 if block.get("type") == "tool_use":
-                    name = block["name"].removeprefix(f"mcp__{SERVER}__")
+                    name = re.sub(r"^mcp__[^_]+__", "", block["name"])
                     by_id[block["id"]] = call = ToolCall(name, block.get("input", {}))
                     transcript.calls.append(call)
                 elif block.get("type") == "tool_result" and block.get("tool_use_id") in by_id:
@@ -182,6 +196,8 @@ class Checker:
                 continue
             if call.name == "read_section":
                 read.add(call.arguments.get("section", ""))
+            elif call.name in ("read_chapter", "get_hadith"):
+                read.add(call.arguments.get("id") or "")
             elif call.name == "get_passage":
                 first = call.arguments.get("id", "").split("..")[0]
                 read.add(re.sub(r"/c\d+(/.*)?$", "", first))
@@ -190,7 +206,10 @@ class Checker:
         return read - {""}
 
     def title(self, node_id: str) -> str:
-        return self.library.conn.execute("SELECT title FROM nodes WHERE id = ?", (node_id,)).fetchone()[0]
+        row = self.library.conn.execute("SELECT title FROM nodes WHERE id = ?", (node_id,)).fetchone()
+        if row is None:          # hadis sunucusu: bölüm kitap ağacındadır
+            row = self.library.conn.execute("SELECT title FROM lib_nodes WHERE id = ?", (node_id,)).fetchone()
+        return row[0] if row else node_id
 
 
 def _within(node: str, section: str) -> bool:
@@ -198,7 +217,8 @@ def _within(node: str, section: str) -> bool:
 
 
 def evaluate(question: dict, transcript: Transcript, checker: Checker) -> dict:
-    citations = checker.citations(transcript.answer)
+    # Hadis sunucusunun atıfları eser yolu değil rivayet kimliğidir; `citations.py` onları denetlemez.
+    citations = [] if question.get("profile") == "hadis" else checker.citations(transcript.answer)
     read = checker.read_sections(transcript.calls)
     answer_key = _key(transcript.answer)
     sections = [{"id": s, "read": any(_within(r, s) for r in read), "named": _key(checker.title(s)) in answer_key}
@@ -226,10 +246,12 @@ def _call_line(call: ToolCall) -> str:
 
 def report(run_dir: Path) -> Path:
     questions = {q["id"]: q for q in load_questions()}
-    checker = Checker(Library())
+    checkers: dict[str | None, Checker] = {}
     rows, sections, totals = [], [], []
     for path in sorted(run_dir.glob("*.jsonl"), key=lambda p: list(questions).index(p.stem)):
         q = questions[path.stem]
+        profile = q.get("profile")
+        checker = checkers.get(profile) or checkers.setdefault(profile, Checker(library_for(profile)))
         t = read_transcript(path)
         e = evaluate(q, t, checker)
         ok = sum(c.verified for c in e["citations"])
