@@ -90,3 +90,16 @@ def test_the_tefsir_server_has_its_own_name_instructions_and_tools(local):
     assert {"find_ayah", "read_section", "cite", "text_links"} <= set(tools)
     assert not {"find_hadith", "get_hadith"} & set(tools)
     assert "Yapay zekâ tercümesi" in TEFSIR_INSTRUCTIONS and "holds no text of the Risale-i Nur" in TEFSIR_INSTRUCTIONS
+
+
+def test_the_tefsir_profile_lists_the_risales_places_first():
+    """MVP: tefsir sunucusu bir âyette önce Risale'nin yerlerini kimlik ve atıfla verir (metin yok)."""
+    from risale_mcp.profiles import PROFILES
+    p = PROFILES["tefsir"]
+    if not p.db.exists():
+        pytest.skip("tefsir veritabanı yok")
+    lib = Library(p.db, p.vectors)
+    result = lib.find_ayah("45", 3)
+    assert list(result).index("risale") < list(result).index("classical_works")
+    first = result["risale"][0]
+    assert first["id"] == "sozler/33/pencere-17" and first["cite_as"].startswith("Sözler") and "text" not in first

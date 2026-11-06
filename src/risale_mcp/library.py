@@ -126,6 +126,10 @@ def _default_scope(work: str | None, group: str | None, include_related: bool) -
     return None if work or group or include_related else Collection.KULLIYAT
 
 
+RISALE_REFS_NOTE = ("Places in the Risale-i Nur tied to this verse (kind: isaret, acilis, izah, dayanak, risale; strong "
+                    "first), given by id and citation only: the text is on the Risale-i Nur server. Give them first. A "
+                    "Risale passage is not called a tafsir of the verse: name the kind of tie.")
+
 class LibraryError(ValueError):
     """Modelin düzeltebileceği hata: bilinmeyen kimlik, geçersiz sorgu…"""
 
@@ -821,9 +825,25 @@ class Library:
         if ayah is not None and self._has_quran():
             result["quran"] = self.ayahs(number, ayah)["ayahs"][0]
             result["links"] = self._links(number, ayah)
+            if refs := self._risale_refs(number, ayah):            # tefsir sunucusu: Risale önce, metni olmadan
+                result["risale"] = refs
+                result["risale_note"] = RISALE_REFS_NOTE
             if self.has_classical() and (classical := self._classical(number, ayah)):
                 result["classical_works"] = classical          # Risale'nin yerlerinden sonra (eksen görünümde, T6)
         return result
+
+    def _risale_refs(self, sura: int, ayah: int) -> list[dict]:
+        """Risale'nin bu âyetle kurduğu ilişkiler, kimlik ve atıfla (metin yok): yalnız tefsir profilinde
+        (`build_db._risale_refs` genel profilden kurar; tablo öbür profillerde yoktur)."""
+        if not hasattr(self, "_has_refs") or self._has_refs[0] is not self.conn:
+            self._has_refs = (self.conn, bool(self.conn.execute(
+                "SELECT 1 FROM sqlite_master WHERE name = 'risale_refs'").fetchone()))
+        if not self._has_refs[1]:
+            return []
+        rows = self.conn.execute("SELECT id, cite_as, kind, strength, scope FROM risale_refs WHERE sura = ? AND"
+                                 " ? BETWEEN ayah_start AND ayah_end ORDER BY strength = 'weak', rowid", (sura, ayah))
+        return [{"id": r["id"], "cite_as": r["cite_as"], "kind": r["kind"], "strength": r["strength"], "scope": r["scope"]}
+                for r in rows]
 
     def _sentence_layer(self, work: str, sentence_id: str) -> dict:
         """Arama sonucunda: cümle eser içi bir katmandaysa (muhakkikin girişi) onu söyler; yalnız müfessir eserinde."""

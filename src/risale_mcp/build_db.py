@@ -456,6 +456,27 @@ def _computed_links(conn: sqlite3.Connection, profile: Profile, report: BuildRep
             write((root or LINKS_DIR) / name, kept, computed=COMPUTED, producer="build_db")
 
 
+def _risale_refs(conn: sqlite3.Connection) -> int:
+    """Tefsir profili (MVP): Risale'nin âyet ilişkileri genel profilin veritabanından, kimlik ve atıfla (metin yok).
+    Tablo ortak şemada değildir (yalnız bu profilde); genel veritabanı yoksa boş kalır."""
+    from risale_mcp.links import cite_as
+    from risale_mcp.paths import PUBLIC_DB_PATH
+    conn.execute("CREATE TABLE risale_refs (sura INTEGER, ayah_start INTEGER, ayah_end INTEGER, kind TEXT,"
+                 " strength TEXT, scope TEXT, id TEXT, cite_as TEXT)")
+    conn.execute("CREATE INDEX risale_refs_ayah ON risale_refs(sura, ayah_start)")
+    if not PUBLIC_DB_PATH.exists():
+        return 0
+    src = sqlite3.connect(f"{PUBLIC_DB_PATH.resolve().as_uri()}?mode=ro", uri=True)
+    rows = []
+    for sura, a, b, kind, strength, node, scope, evidence in src.execute(
+            "SELECT sura, ayah_start, ayah_end, kind, strength, node_id, scope, evidence_id FROM ayah_links ORDER BY rowid"):
+        target = node if scope == "section" else evidence
+        rows.append((sura, a, b, kind, strength, scope, target, cite_as(src, target, "section" if scope == "section" else None)))
+    src.close()
+    conn.executemany("INSERT INTO risale_refs VALUES (?, ?, ?, ?, ?, ?, ?, ?)", rows)
+    return len(rows)
+
+
 def _load_reviews(conn: sqlite3.Connection, report: BuildReport, root: Path | None = None) -> None:
     """Denetim kararları (`link_reviews.py`): geçerli olanlar, bağı bu veritabanında bulunanlar. Geçersiz kayıt
     (listede olmayan denetçi, eksik gerekçe…) kurulumu durdurur."""
@@ -790,6 +811,8 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
                 ("built_at", datetime.now(timezone.utc).isoformat(timespec="seconds")),
             ])
         _verify(conn, report)
+        if profile.name == "tefsir":
+            report.counts["risale_refs"] = _risale_refs(conn)
         if manifest_check:
             from risale_mcp import manifest
             report.id_changes = manifest.check_build(conn, profile.name, accept_id_changes)

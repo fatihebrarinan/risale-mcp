@@ -192,8 +192,9 @@ never say one follows, quotes, agrees with or rejects another unless text_links 
 yourself is your interpretation: put it under a separate heading, quote both ends, and do not present it as a \
 recorded link.
 5. A classical tafsir may be called tafsir. Your own summary, comparison or draft is never a tafsir.
-6. This server holds no text of the Risale-i Nur. For a verse, if the Risale-i Nur connector is also available, ask \
-its find_ayah first and give the Risale's places first, with its citations; never quote the Risale from memory.
+6. This server holds no text of the Risale-i Nur. find_ayah lists first, under risale, the places in the Risale-i \
+Nur tied to the verse (id, citation, kind of tie): give them first. Their text is on the Risale-i Nur server: if that \
+connector is available, read them there; never quote the Risale from memory, and name the tie by its kind.
 7. Hadiths inside these works: report what the author says; never rule on a hadith's soundness yourself.
 8. Answer in the user's language."""
 
