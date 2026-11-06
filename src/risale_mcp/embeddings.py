@@ -42,7 +42,7 @@ import numpy as np
 
 from risale_mcp.db import connect
 from risale_mcp.env import load_env
-from risale_mcp.paths import DB_PATH, PUBLIC_DB_PATH, PUBLIC_VECTORS_DIR, ROOT, VECTORS_DIR
+from risale_mcp.paths import DB_PATH, ROOT, VECTORS_DIR
 
 DIMENSIONS = 1024
 CHARS_PER_TOKEN = 1.6      # token tahmini için temkinli oran (ölçülen ortalama ≈2,05; Arapça daha yoğun)
@@ -424,16 +424,22 @@ def main() -> None:
     build_parser.add_argument("--variant", choices=VARIANTS)
     build_parser.add_argument("--max-tokens", type=float, help="token sınırı (milyon); varınca kaydedip durur")
     commands.add_parser("status", help="depolar ve eksik vektörler")
-    commands.add_parser("export-public", help="sunucuya gidecek kopya: private eserlerin vektörleri çıkarılır")
+    export_parser = commands.add_parser("export-public",
+                                        help="sunucuya gidecek kopya: yalnız profilin cümlelerinin vektörleri")
+    export_parser.add_argument("--profile", default="genel", help="genel (varsayılan) ya da tefsir")
     parser.add_argument("--db", type=Path, default=DB_PATH)
     args = parser.parse_args()
     load_env()
     if args.command == "export-public":
+        from risale_mcp.profiles import PROFILES
+        profile = PROFILES[args.profile]
+        if profile.vectors == VECTORS_DIR or not profile.db.exists():
+            sys.exit(f"{args.profile}: süzülmüş kopya istenmez ya da veritabanı yok")
         try:
-            kept, dropped = export_public(connect(PUBLIC_DB_PATH), PUBLIC_VECTORS_DIR)
+            kept, dropped = export_public(connect(profile.db), profile.vectors)
         except EmbeddingError as error:
             sys.exit(str(error))
-        print(f"{PUBLIC_VECTORS_DIR.relative_to(ROOT)}: {kept} vektör, {dropped} yalnız yerelde kaldı")
+        print(f"{profile.vectors.relative_to(ROOT)}: {kept} vektör, {dropped} bu profilin dışında kaldı")
         return
     conn = connect(args.db)
     if args.command == "build":
