@@ -54,7 +54,7 @@ künyelerinin hangi kitaplara gittiği (`data/interim/hadis/kunye.md`, 1.054 ge�
 |---|---|---|---|---|
 | Müsned (Ahmed b. Hanbel) | 384 | `0241IbnHanbal.Musnad` | 18,9 MB | En çok anılan kitap |
 | (Kütüb-i Sitte, Muvatta) | 1.655 | var | — | Zaten yerelde |
-| Keşfü'l-Hafâ (Aclûnî) | 190 | `1162…Cajluni.KashfKhafa` | 2,6 MB | Halk arasında dolaşan sözler; `CAUTION_BOOKS`'ta (bulunmak sağlam demek değil) |
+| Keşfü'l-Hafâ (Aclûnî) | 190 | `1162…Cajluni.KashfKhafa` | 2,6 MB | Halk arasında dolaşan sözler; `CAUTION_BOOKS`'a adıyla eklendi (HA2, 2026-11-06; önceki "listede" ifadesi yanlıştı: liste Arapça addaki "mevzu, zayıf" kelimelerinden tanıyordu) |
 | el-Müstedrek (Hâkim) | 176 | `0405HakimNaysaburi.Mustadrak` | 8,5 MB | |
 | Mecmaü'z-Zevâid (Heysemî) | 140 | `0807NurDinHaythami.MajmacZawaid` | 11,9 MB | Heysemî'nin senet değerlendirmeleriyle |
 | Feyzü'l-Kadîr (Münâvî) | 131 | `1031CabdRaufMunawi.FaydQadir` | 16,3 MB | Câmiu's-Sağîr'in şerhi: hadislerin dereceleri ve âlimlerin ihtilafı |
@@ -342,3 +342,19 @@ Sorgu tarafında; dizin ve `db.NORMALIZATION` değişmedi (1,6 GB'lık yerel diz
 - **Eksik:** anlamsal arama için 546 bin cümlenin vektörü (Voyage; ücret büyük ihtimalle ücretsiz kotada; çıkarmadan
   önce kullanıcıya sorulur); Risale'nin âyet bağlarını tefsir sunucusunda kimlik ve atıfla göstermek (bugün yalnız
   Risale bağdaştırıcısından); altın sorular (M6); sunucu (M7).
+
+## HA2: Risale'nin hadisleri yalnız kütüphaneyle (2026-11-06, yerelde; genel sunucuya sabah onayıyla)
+
+- **eş-Şifâ** (`sifa`, Shamela0023645, Dâru'l-Fîhâ 2. baskı 1407; muhakkiklerin `|EDITOR|` kısımları alınmaz) ve
+  **Delâilü'n-Nübüvve** (`delail`, Shamela0013115, Kal'acî tahkiki) kütüphaneye eklendi. Hadis numarası olmadığı için
+  birimleri kaynağın paragrafı (Şifâ, 5.952) ve "أخبرنا/حدثنا" ile açılan rivayet (Delâil, 2.948); kimlikleri bizim
+  sıramız (`sifa/s00007`).
+- **Eşleme** (`hadis.py` varsayılanı; `--sanadset` eskisini kurar): Hadith API'nin Kütüb-i Sitte ve Muvatta'sı
+  (kimlikleri ve dereceleri; okuma bağları bu kimliklere bağlı) + `kutub/`'taki 11 kitap. Nevevî, Kudsî ve Dihlevî
+  derlemleri ve Sanadset çıktı. Sonuç (370 parça): tam bulunan 83 → **90**, kısmen 19 → 21, kısa ifade 42 → 43,
+  bulunamayan 150 → **140**; 24 parça güçlendi, 15 zayıfladı (`data/interim/hadis/ha2-gecis.md`). Künye bölümü (434)
+  ve okuma (209) bağları aynı; model okumaları (1.446, yerel) aynı.
+- Keşfü'l-Hafâ dikkat listesine adıyla eklendi (`CAUTION_BOOKS`). Eski Sanadset kimliğiyle `get_hadith` açıklamalı
+  hata verir. Rivayet numaraları artık baskınındır (Müsned Arnaût numarası).
+- **Genel sunucuda fark** (`tool_snapshot` ha2b): `find_hadith`, `get_hadith` (ve M4'ün `search`'ü); deploy
+  `DEPLOY_EXPECT="search find_hadith get_hadith"`, sabah onayıyla.

@@ -621,3 +621,7 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   için serbest; push, deploy, dışarıya ileti yok. Sıra: eş-Şifâ ve Delâil, HA2, hadis sunucusu, vektörler, altın
   sorular, Risale'nin âyet bağlarının tefsir sunucusunda adres ve türle gösterimi (metin yok), tefsir ön metinleri
   envanteri, küçük düzeltmeler, Y0.6 araştırması, site sayfası taslakları (`docs/`).
+- **HA2 (yerelde, 2026-11-06):** `docs/mvp-kitaplar.md` "HA2". eş-Şifâ ve Delâil kütüphanede (sıra kimlikli birim);
+  Risale'nin hadisleri yalnız kütüphaneyle eşlenir (`hadis.py` varsayılanı): tam bulunan 83 → 90, bulunamayan 150 → 140.
+  Sanadset rivayet kaynağı değil; numaralar baskının. Genel sunucuya `DEPLOY_EXPECT="search find_hadith get_hadith"`
+  ile, kullanıcının onayıyla.

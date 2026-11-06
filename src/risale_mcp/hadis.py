@@ -67,12 +67,20 @@ IN_HADITH_API = {"صحيح البخاري", "صحيح مسلم", "سنن أبي 
 # Önce gelen büyük hadis kitapları; adı zayıf ya da mevzu rivayet derlediğini söyleyenler en sonda (`CAUTION_BOOKS`).
 MAIN_BOOKS = ("مسند أحمد بن حنبل", "صحيح ابن حبان", "المستدرك على الصحيحين", "صحيح ابن خزيمة", "السنن الكبرى للبيهقي",
               "السنن الكبرى للنسائي", "المعجم الكبير للطبراني", "المعجم الأوسط للطبراني", "مصنف ابن أبي شيبة",
-              "مصنف عبد الرزاق", "شعب الإيمان للبيهقي", "مسند أبي يعلى الموصلي")
-CAUTION_BOOKS = re.compile(r"موضوع|الضعفاء|الضعيف|المجروحين|الأباطيل|تنزيه الشريعة|اللآلئ")
+              "مصنف عبد الرزاق", "شعب الإيمان للبيهقي", "مسند أبي يعلى الموصلي",
+              # kütüphanenin kitapları (HA2): Türkçe başlıklarıyla
+              "Müsned", "el-Müstedrek ale's-Sahîhayn", "el-İhsân fî Takrîbi Sahîhi İbn Hibbân", "Sünen-i Dârimî",
+              "el-Mu'cemü's-Sağîr")
+CAUTION_BOOKS = re.compile(r"موضوع|الضعفاء|الضعيف|المجروحين|الأباطيل|تنزيه الشريعة|اللآلئ|Keşfü'l-Hafâ")
 _ETC = skeleton("الخ")
 ATTRIBUTION = {"hadith_api": "Hadith API (github.com/fawazahmed0/hadith-api), Unlicense",
                "openiti": "OpenITI (KITAB project), JK editions, CC BY-NC-SA 4.0",
-               "sanadset": "Sanadset 650K (Mghari, Bouras, El Hibaoui, Data in Brief 2022), CC BY 4.0"}
+               "sanadset": "Sanadset 650K (Mghari, Bouras, El Hibaoui, Data in Brief 2022), CC BY 4.0",
+               "kutuphane": "OpenITI (KITAB project), CC BY-NC-SA 4.0; the edition is in the book's record"}
+# HA2 (kullanıcının kararı, 2026-11-06): eşleşme yalnız kütüphanedeki kitaplardan. Kütüb-i Sitte ve Muvatta Hadith
+# API'den gelir (kimlikleri ve âlimlerin dereceleri onda; okuma bağları bu kimliklere bağlı), öbür kitaplar
+# `data/library/hadis/kutub/`'tan (`hadis_openiti.py`). Sanadset rivayet kaynağı değildir (`--sanadset` eskisini kurar).
+LIBRARY_COLLECTIONS = ("bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah", "malik")
 
 
 @dataclass(frozen=True)
@@ -86,14 +94,32 @@ class Report:
     section: int | None = None      # Hadith API bölümü
 
 
-def read_reports(raw: Path = RAW_DIR) -> Iterator[Report]:
-    """Önce dereceli derlemler; eşleşmeler bu sırayla seçilir."""
-    for name in COLLECTIONS:
+def library_reports() -> Iterator[Report]:
+    """Kütüphanenin Hadith API dışındaki kitapları (`hadis_openiti.SPECS`): kimlik `musned:14870`, numarasızda
+    `sifa:s00007`; metin senet ve metin birlikte, başkasının katmanları (`layers`) hariç."""
+    from risale_mcp.hadis_openiti import KUTUB_DIR, SPECS
+    for key in SPECS:
+        path = KUTUB_DIR / f"{key}.json"
+        if not path.exists():
+            continue
+        book = json.loads(path.read_text(encoding="utf-8"))
+        for h in book["hadiths"]:
+            if text := (h.get("text") or "").strip():
+                number = str(h["number"]) if h.get("number") is not None else f"s{h['seq']:05d}"
+                yield Report(f"{key}:{number}", book["title"], number, text, "kutuphane")
+
+
+def read_reports(raw: Path = RAW_DIR, library: bool = True) -> Iterator[Report]:
+    """Önce dereceli derlemler; eşleşmeler bu sırayla seçilir. `library`: yalnız kütüphanedeki kitaplar (HA2)."""
+    for name in (LIBRARY_COLLECTIONS if library else COLLECTIONS):
         for h in json.loads((raw / "hadith_api" / f"ara-{name}.json").read_text(encoding="utf-8"))["hadiths"]:
             if (text := (h.get("text") or "").strip()):
                 yield Report(f"{name}:{h['hadithnumber']}", TITLES[name], str(h["hadithnumber"]), text, "hadith_api",
                              tuple((g["name"], g["grade"]) for g in h.get("grades") or ()),
                              (h.get("reference") or {}).get("book"))
+    if library:
+        yield from library_reports()
+        return
     csv.field_size_limit(10 ** 9)
     with open(raw / "sanadset" / "sanadset.csv", encoding="utf-8", errors="replace", newline="") as f:
         for i, row in enumerate(csv.DictReader(f)):
@@ -230,7 +256,7 @@ def book_titles(citations: Iterable[Citation]) -> set[str]:
     return {t for b in known for t in ([TITLES[b.api]] if b.api else b.sanadset)}
 
 
-def build(db: Path = DB_PATH, raw: Path = RAW_DIR, out: Path = HADIS_PATH) -> Counter:
+def build(db: Path = DB_PATH, raw: Path = RAW_DIR, out: Path = HADIS_PATH, library: bool = True) -> Counter:
     """Veritabanındaki hadis parçalarını rivayetlerle eşler; anahtar parçanın harf iskeletidir."""
     conn = connect(db)
     parts: dict[str, list] = {}
@@ -242,7 +268,7 @@ def build(db: Path = DB_PATH, raw: Path = RAW_DIR, out: Path = HADIS_PATH) -> Co
         part[1] = part[1] or row_cited(row["source"], row["meal"])
         if row["source"] and row["source"] != "REF-TODO":
             sources[skeleton(row["text"])].add(row["source"])
-    corpus = Corpus(list(read_reports(raw)))
+    corpus = Corpus(list(read_reports(raw, library)))
     reports = corpus.reports
     citations = nurpedia_citations(raw / "nurpedia")
     entries, used, counts = {}, {}, Counter()
@@ -297,7 +323,8 @@ def _located(corpus: Corpus, text: str, match: str, parsed: dict[str, list[Citat
 
 
 def main() -> None:
-    counts = build()
+    import sys
+    counts = build(library="--sanadset" not in sys.argv)
     print(dict(counts))
     from risale_mcp.links_hadis import export
     print(f"yazıldı: {HADIS_PATH.relative_to(ROOT)}; bağlar {export()}; şimdi `uv run python -m risale_mcp.build_db`")

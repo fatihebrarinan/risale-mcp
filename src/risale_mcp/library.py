@@ -1050,6 +1050,10 @@ class Library:
         """Bir rivayetin metni, kitabı, âlimlerin dereceleri ve kaynağı."""
         row = self.conn.execute("SELECT * FROM hadith_reports WHERE id = ?", (report_id,)).fetchone()
         if row is None:
+            if report_id.startswith("sanadset:"):
+                raise LibraryError(f"No report with id {report_id!r}: reports now come only from the books of the "
+                                   "library (with their editions), Sanadset ids are no longer used. Call find_hadith "
+                                   "again with the Arabic words and use the ids it returns.")
             raise LibraryError(f"No report with id {report_id!r}; use the ids find_hadith returns.")
         return _report_summary(row) | {"text": row["text"], "source": ATTRIBUTION[row["source"]],
                                        **({"linked_in_works": places} if (places := self._report_places(report_id)) else {}),
