@@ -66,7 +66,7 @@ TEXT_RELATIONS = {"quote": ("same_words", "transmits"), "relation": ("same_view"
                   "reference": ("old_name",)}
 _TEXT_ID = r"[a-z0-9][a-z0-9/._-]*"
 _TARGET = re.compile(r"^(?:quran:(\d{1,3}):(\d{1,3})(?:-(\d{1,3}))?|hadis:[a-z0-9-]+/[0-9]+(?:-\d+)?"
-                     r"|hadis-derlem:[a-z_-]+:s?[0-9]+(?:\.[0-9]+)?"
+                     r"|hadis-derlem:[a-z_-]+:s?[0-9]+(?:\.[0-9]+)?(?:-\d+)?"
                      rf"|(?:{'|'.join(TEXT_NAMESPACES)}):{_TEXT_ID})$")
 _SOURCE = re.compile(rf"^(?:(?:{'|'.join(TEXT_NAMESPACES)}):)?{_TEXT_ID}$")
 

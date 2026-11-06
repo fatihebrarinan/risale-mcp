@@ -37,4 +37,7 @@ GENEL = Profile("genel", (Collection.KULLIYAT, Collection.ILGILI), PUBLIC_DB_PAT
 TEFSIR = Profile("tefsir", (Collection.TEFSIR,), DIST_DIR / "tefsir" / "risale.db", DIST_DIR / "tefsir" / "vectors",
                  private=True)
 
-PROFILES = {p.name: p for p in (KISISEL, GENEL, TEFSIR)}
+# Hadis sunucusu (MVP M5): kitaplar hadis biriminde (`hadis_db.py` kurar, `build_db` değil); Kur'ân ve Risale'den bağlar.
+HADIS = Profile("hadis", (), DIST_DIR / "hadis" / "hadis.db", DIST_DIR / "hadis" / "vectors", private=True)
+
+PROFILES = {p.name: p for p in (KISISEL, GENEL, TEFSIR, HADIS)}

@@ -198,6 +198,38 @@ its find_ayah first and give the Risale's places first, with its citations; neve
 8. Answer in the user's language."""
 
 
+HADIS_INSTRUCTIONS = """\
+Read access to hadith collections and to the Qur'an: the Six Books and the Muwatta (with scholars' grades where the \
+source holds them), Ahmad's Musnad, al-Darimi, al-Tabarani's al-Mu'jam al-Saghir, al-Hakim's al-Mustadrak (with \
+al-Dhahabi's notes), Ibn Hibban (al-Ihsan, with al-Albani's grading as the edition's notes), al-Haythami's Majma' \
+al-Zawa'id, Kanz al-'Ummal, al-Munawi's Fayd al-Qadir, al-'Ajluni's Kashf al-Khafa, Qadi 'Iyad's al-Shifa and \
+al-Bayhaqi's Dala'il al-Nubuwwa (list_books). The unit is the report: its id is the edition's number \
+(musned/14870) or, where the edition has none, this library's sequence (sifa/s00007).
+
+Workflow:
+1. Find: search_hadith for Arabic words (an Arabic word also matches its forms with attached و ف ب ل ك and the \
+article), semantic_search for a meaning or a question in any language, find_by_citation for a reference such as \
+"Buharî, Ezân: 148" or "Müsned 14870". Results are candidates. Browse with list_books, get_outline, read_chapter.
+2. Read the report with get_hadith before relying on it: its text, chain (isnad) and text (matn) where the edition \
+separates them, printed page, other scholars' layers, and the places in the Risale-i Nur linked to it.
+3. Before writing the answer, call cite once with every report you quote or rely on; end each quotation with its \
+number [1] and finish with the "Kaynaklar" list cite returns, unchanged.
+
+Answering:
+1. Every statement about a report rests on what you read with these tools; never invent a report, a number or a \
+wording. If the tools do not return it, say you could not find it in these books.
+2. Never rule on a report's soundness yourself. Give grades only as the tools hold them, with the scholar's name; \
+layers are other scholars' notes (al-Dhahabi, al-Albani, the editor), name them and never attribute them to the \
+book's author. A match in Kashf al-Khafa (book_note) means the saying is discussed there, not that it is sound.
+3. Quote the Arabic exactly as returned, in a block quote on its own line. If the user does not write in Arabic, \
+after the quotation give your own translation on a separate line, labelled as your own translation (in Turkish: \
+"Yapay zekâ tercümesi:"), and say it is not a published translation; never put it inside the quotation or cite it.
+4. A citation's volume:page may belong to another edition than this library's: say so when find_by_citation warns.
+5. The places in the Risale-i Nur are given by id and citation only; the text is on the Risale-i Nur server. If that \
+connector is available, read them there; never quote the Risale from memory.
+6. Answer in the user's language."""
+
+
 def read_only(title: str) -> ToolAnnotations:
     """Salt okunur aracın işaretleri; başlık dizin listesi için `annotations.title`'da da durur."""
     return ToolAnnotations(title=title, read_only_hint=True, destructive_hint=False, idempotent_hint=True,
@@ -309,7 +341,12 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     except Exception:
         classical = False
     tefsir = profile == "tefsir"                # tefsir sunucusu (MVP M5): kendi adı, talimatı ve araç seti
-    if tefsir:
+    hadis = profile == "hadis"                  # hadis sunucusu (MVP M5): birimi hadis, kendi araçları
+    if hadis:
+        server = MCPServer("hadis", title="Hadis (Risale-i Nur MCP)", instructions=HADIS_INSTRUCTIONS,
+                           description="Report-level, citable access to hadith collections and the Qur'an.",
+                           icons=_icons(public_url), **protected)
+    elif tefsir:
         server = MCPServer("tefsir", title="Tefsir (Risale-i Nur MCP)", instructions=TEFSIR_INSTRUCTIONS,
                            description="Sentence-level, citable access to classical tafsir works and the Qur'an.",
                            icons=_icons(public_url), **protected)
@@ -322,6 +359,9 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         server.custom_route(path, methods=["GET"], include_in_schema=False)(_static(name, media))
     if public_url and not open_access:
         server.custom_route("/login", methods=["GET", "POST"], include_in_schema=False)(login_endpoint(provider))
+    if hadis:
+        _hadis_tools(server, library)
+        return server
     citations = CitationChecker(library)
     if warm:
         threading.Thread(target=_warm, args=(library, citations), daemon=True).start()
@@ -606,6 +646,83 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     return server
 
 
+def _hadis_tools(server: MCPServer, library) -> None:
+    """Hadis sunucusunun araçları (`hadis_library.HadisLibrary`); Kur'ân araçları ortak `Library`'den."""
+
+    @server.tool(title="List books", annotations=read_only("List books"), structured_output=False)
+    def list_books() -> str:
+        """The hadith books with their ids, authors, number of reports and editions."""
+        with _tool_errors():
+            return _json(library.books())
+
+    @server.tool(title="Show outline", annotations=read_only("Show outline"), structured_output=False)
+    def get_outline(
+        id: Annotated[str, Field(description="A book id (from list_books) or a chapter id.")],
+        depth: Annotated[int, Field(ge=0, le=4)] = 2,
+    ) -> str:
+        """The tree of a book or chapter (books, chapters, companions' musnads) with the number of reports in each."""
+        with _tool_errors():
+            return _json(library.tree(id, depth))
+
+    @server.tool(title="Read chapter", annotations=read_only("Read chapter"), structured_output=False)
+    def read_chapter(
+        id: Annotated[str, Field(description="A chapter id from get_outline.")],
+        cursor: Annotated[int, Field(ge=0)] = 0,
+    ) -> str:
+        """The reports of a chapter in order, with their full text, printed page and other scholars' layers;
+        next_cursor continues."""
+        with _tool_errors():
+            return _json(library.chapter(id, cursor))
+
+    @server.tool(title="Read a report", annotations=read_only("Read a report"), structured_output=False)
+    def get_hadith(
+        id: Annotated[str, Field(description="A report id, e.g. musned/14870 or sifa/s00007.")],
+    ) -> str:
+        """A report: its book, number, text (isnad and matn where the edition separates them), printed page, other
+        scholars' layers (by), and the places in the Risale-i Nur linked to it (in_risale: id and citation)."""
+        with _tool_errors():
+            return _json(library.report(id))
+
+    @server.tool(title="Search the reports", annotations=read_only("Search the reports"), structured_output=False)
+    def search_hadith(
+        query: Annotated[str, Field(description="Arabic words; quote an exact phrase; OR, -word as in search.")],
+        book: Annotated[str | None, Field(description="Only this book id.")] = None,
+        limit: Annotated[int, Field(ge=1, le=50)] = 20,
+        offset: Annotated[int, Field(ge=0)] = 0,
+    ) -> str:
+        """Search the reports by their own Arabic words, best matches first. An unquoted Arabic word also matches its
+        forms with attached و ف ب ل ك and the article."""
+        with _tool_errors():
+            return _json(library.search_reports(query, book, limit, offset))
+
+    @server.tool(title="Find by reference", annotations=read_only("Find by reference"), structured_output=False)
+    def find_by_citation(
+        citation: Annotated[str, Field(description="A reference, e.g. 'Buharî, Ezân: 148', 'Müsned 14870', 'Müstedrek, 4:123'.")],
+    ) -> str:
+        """The reports a reference points to in this library: a chapter's region in the Six Books, a report by its
+        number, or the reports on a printed page (another edition's page may differ: see note)."""
+        with _tool_errors():
+            return _json(library.by_citation(citation))
+
+    @server.tool(title="Get Qur'an verse", annotations=read_only("Get Qur'an verse"), structured_output=False)
+    def get_ayah(
+        sura: Annotated[str, Field(description="Sura number (1–114) or name, e.g. '2' or 'Bakara'.")],
+        ayah: Annotated[int, Field(description="Verse number.", ge=1)],
+        end: Annotated[int | None, Field(description="Last verse of a range.")] = None,
+    ) -> str:
+        """A verse or range of the Qur'an: the Arabic text (Medina mushaf), two Diyanet translations and its citation."""
+        with _tool_errors():
+            return _json(library.ayahs(sura, ayah, end))
+
+    @server.tool(title="Build references", annotations=read_only("Build references"), structured_output=False)
+    def cite(
+        ids: Annotated[list[str], Field(description="The report ids you quote or rely on, in the order of their numbers.")],
+    ) -> str:
+        """Before answering, once: the bibliography lines for the reports, to copy unchanged under Kaynaklar."""
+        with _tool_errors():
+            return _json(library.cite_reports(ids))
+
+
 def http_security(public_url: str) -> TransportSecuritySettings:
     """DNS rebinding koruması: tünel isteği dış adresin Host başlığıyla iletir, o da izinlidir."""
     host = urlparse(public_url).netloc
@@ -653,7 +770,11 @@ def main() -> None:
     args = parser.parse_args()
     load_env()                                    # VOYAGE_API_KEY: proje klasöründeki .env
     profile = PROFILES[args.profile]
-    library = Library(args.db or profile.db, profile.vectors)
+    if profile.name == "hadis":
+        from risale_mcp.hadis_library import HadisLibrary
+        library = HadisLibrary(args.db or profile.db, profile.vectors)
+    else:
+        library = Library(args.db or profile.db, profile.vectors)
     library.conn                                  # veritabanı yoksa başlarken açık hata
     if args.transport == "stdio":
         create_server(library, warm=True, profile=args.profile).run("stdio")

@@ -112,6 +112,7 @@ def parse(key: str, raw_root: Path = RAW_DIR / "openiti") -> tuple[dict, Report]
     layer = False
     inline_page: int | None = None
     seen: set[int] = set()
+    occurrences: Counter = Counter()
 
     def node_id() -> str:
         return stack[-1][1] if stack else key
@@ -121,7 +122,9 @@ def parse(key: str, raw_root: Path = RAW_DIR / "openiti") -> tuple[dict, Report]
         if number in seen:
             report.repeats += 1
         seen.add(number)
-        current = {"id": f"{key}/{number}", "number": number, "node_id": node_id(), "paragraphs": [],
+        occurrences[number] += 1                 # kaynakta tekrar eden numara (yazım hatası): ikinci geçiş "-2" alır
+        suffix = f"-{occurrences[number]}" if occurrences[number] > 1 else ""
+        current = {"id": f"{key}/{number}{suffix}", "number": number, "node_id": node_id(), "paragraphs": [],
                    "printed": _printed(p, real, inline_page)}
         if current["printed"] is None:
             report.unpaged += 1

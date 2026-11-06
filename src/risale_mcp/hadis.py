@@ -105,8 +105,9 @@ def library_reports() -> Iterator[Report]:
         book = json.loads(path.read_text(encoding="utf-8"))
         for h in book["hadiths"]:
             if text := (h.get("text") or "").strip():
-                number = str(h["number"]) if h.get("number") is not None else f"s{h['seq']:05d}"
-                yield Report(f"{key}:{number}", book["title"], number, text, "kutuphane")
+                local = h["id"].split("/", 1)[1]             # baskının numarası ("-2": kaynakta tekrar) ya da sıra
+                number = str(h["number"]) if h.get("number") is not None else local
+                yield Report(f"{key}:{local}", book["title"], number, text, "kutuphane")
 
 
 def read_reports(raw: Path = RAW_DIR, library: bool = True) -> Iterator[Report]:

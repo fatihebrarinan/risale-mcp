@@ -814,6 +814,8 @@ def main() -> None:
     parser.add_argument("--accept-id-changes", action="store_true",
                         help="var olan kimliklerin değişmesini kabul et (kasıtlı ayrıştırma değişikliği; bkz. manifest.py)")
     args = parser.parse_args()
+    if args.profile == "hadis":
+        sys.exit("hadis profili `uv run python -m risale_mcp.hadis_db` ile kurulur (birimi hadistir, eser modeli değil).")
     profile = PROFILES[args.profile]
     if not any(path for books_dir in profile.book_dirs for path in books_dir.glob("*.json")):
         sys.exit("Eser JSON'u yok; önce `uv run python -m risale_mcp.build --all`.")

@@ -358,3 +358,18 @@ Sorgu tarafında; dizin ve `db.NORMALIZATION` değişmedi (1,6 GB'lık yerel diz
   hata verir. Rivayet numaraları artık baskınındır (Müsned Arnaût numarası).
 - **Genel sunucuda fark** (`tool_snapshot` ha2b): `find_hadith`, `get_hadith` (ve M4'ün `search`'ü); deploy
   `DEPLOY_EXPECT="search find_hadith get_hadith"`, sabah onayıyla.
+
+## M5: hadis sunucusu (2026-11-06, yerelde)
+
+- **Veritabanı:** `uv run python -m risale_mcp.hadis_db` → `data/dist/hadis/hadis.db` (≈50 sn, 318 MB): ortak şema
+  (Kur'ân tabloları genel profilden kopya) + `lib_books`, `lib_nodes`, `lib_units`, `lib_fts`, `lib_risale`. 18 kitap,
+  169.137 hadis (birim), 32.836 düğüm; Risale'den 2.981 bağ (Risale'nin kimliği ve atfı, metin yok; ≈60 bağ, JK'da
+  karşılığı olmayan Hadith API numarası olduğu için çözülemedi). Kaynakta tekrar eden numaranın ikinci geçişi `-2` alır
+  (`mecma/1045-2`; Mecmaü'z-Zevâid'de 345, el-İhsân'da 56, Kenz'de 51).
+- **Sunucu:** `uv run risale-mcp --profile hadis`; ad `hadis`, `HADIS_INSTRUCTIONS` (hüküm yok, dereceler kaynağın,
+  katmanlar başkasının ve adıyla, damgalı model tercümesi, künyenin cilt:sayfası başka baskının olabilir, Risale'nin
+  yerleri yalnız kimlik ve atıfla). Araçlar: list_books, get_outline, read_chapter, get_hadith (`in_risale`),
+  search_hadith (Arapça önekli biçimler), find_by_citation (Kütüb-i Sitte'de künyenin bölgesi; JK'nın böldüğü
+  kitaplarda bâblar kesintisiz numaralanır: "Buharî, Ezân: 148"; numaralı kitapta numara; cilt:sayfada bu baskının
+  sayfası, uyarıyla), get_ayah, cite. Anlamsal arama vektörlerden sonra. Keşfü'l-Hafâ sonuçları `book_note` taşır.
+- Testler `tests/test_hadis_server.py` (veritabanı varsa).

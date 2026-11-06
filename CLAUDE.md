@@ -625,3 +625,7 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   Risale'nin hadisleri yalnız kütüphaneyle eşlenir (`hadis.py` varsayılanı): tam bulunan 83 → 90, bulunamayan 150 → 140.
   Sanadset rivayet kaynağı değil; numaralar baskının. Genel sunucuya `DEPLOY_EXPECT="search find_hadith get_hadith"`
   ile, kullanıcının onayıyla.
+- **M5 hadis sunucusu (yerelde, 2026-11-06):** `docs/mvp-kitaplar.md` "M5: hadis". `hadis_db.py` → `data/dist/hadis/hadis.db`
+  (18 kitap, 169.137 hadis, Risale'den 2.981 bağ; Kur'ân tabloları genel profilden), `hadis_library.HadisLibrary`,
+  `risale-mcp --profile hadis` (ad `hadis`, `HADIS_INSTRUCTIONS`, 8 araç). Kimlik: baskının numarası, tekrar eden
+  numarada `-2`, numarasız kitapta sıra (`sifa/s00007`). `build_db --profile hadis` reddeder.
