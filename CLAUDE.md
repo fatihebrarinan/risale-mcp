@@ -590,5 +590,11 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 - **M1 kararları (kullanıcı, 2026-11-06):** nüshalar uygun; el-Câmiu's-Sağîr MVP'den çıktı (listede kalır), MVP'nin
   hadis kitapları dokuz; sunucu CAX21'e (8 GB) büyütülür (kullanıcı panelden). Diyanet e-postası gönderiliyor
   (meallerin izni de istenir).
-- **Sırada:** M2 (başlıksız altı tefsirden örnek, Kur'ân alıntısı aramasının hızı); sunucu büyütülünce denetim;
-  Y0.6 (M7'den önce).
+- **Sunucu (2026-11-06):** Helsinki'de ARM serisinde kapasite yok, rescale olmadı. Karar M7'de; öneri hadis ve
+  tefsir için ayrı sunucu (risale sunucusu taşınmaz, Caddy Tailscale üzerinden yönlendirir). Rescale için kapatılınca
+  sunucu birkaç dakika kapalı kaldı: sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
+- **M2 (sürüyor, 2026-11-06):** Kur'ân alıntısı araması kelime başına ≈0,6 ms (21,8 milyon kelime paralel ≈30 dk;
+  indeksli yönteme gerek yok). Başlıksız tefsirlerde birim: Nesefî ve Mâtürîdî numaralı âyet satırı, Ebüssuûd ve
+  ed-Dürrü'l-Mensûr `{lemma}`, Âlûsî ve Bursevî altafsir sürümünün `[sûre.âyet]` başlıkları çapa olarak (metin
+  Shamela'dan).
+- **Sırada:** M2 (ortak tefsir ayrıştırıcısı; ilk deneme Keşşâf ve Nesefî); Y0.6 (M7'den önce).

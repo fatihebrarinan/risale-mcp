@@ -224,3 +224,12 @@ Her sürümden `.yml`, üst bilgi ve ortadan 120 KB'lık bir parça alındı (Ra
   MVP'nin hadis kitapları dokuz: Müsned, Dârimî, el-Mu'cemü's-Sağîr, el-Müstedrek, el-İhsân, Mecmaü'z-Zevâid,
   Kenzü'l-Ummâl, Feyzü'l-Kadîr, Keşfü'l-Hafâ.
 - Sunucu 8 GB'a (CAX21) büyütülür; kullanıcı Hetzner panelinden yapar, sonra bellek ve servis denetlenir.
+
+### Sunucu (2026-11-06)
+
+Rescale denendi: Hetzner'in Helsinki veri merkezinde ARM (CAX) serisinin hiçbir boyutunda kapasite yoktu ("not
+available"); rescale yalnız aynı yerde ve aynı mimaride yapılabildiği için büyütme olmadı (sunucu bu sırada birkaç
+dakika kapalı kaldı, açıldı). Karar (kullanıcı): acele yok, M7'de değerlendirilir. Öneri: **hadis ve tefsir için ayrı
+bir sunucu** (Nürnberg ya da Falkenstein), risale sunucusu taşınmaz; adresler yine `mcp.risalemcp.com/tefsir` ve
+`/hadis`, bugünkü Caddy istekleri Tailscale üzerinden yeni sunucuya yönlendirir. Öbür seçenekler: Helsinki'de
+yeniden denemek; vektörleri diskten okuyup takas alanıyla 4 GB'a sığdırmak (sınırda).
