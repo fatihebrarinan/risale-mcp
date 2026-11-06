@@ -91,3 +91,10 @@ def test_hadith_books_get_their_printed_page():
                        "bukhari/3": None, "bukhari/4": None}
     assert data["source"]["edition"]["editor"] == "د. مصطفى ديب البغا" and stats["sayfasiz"] == 2
     assert openiti.RAW_ROOT.name == "openiti"
+
+
+def test_page_end_marks_are_page_marks_too():
+    # Taberî'nin Shamela sürümü iki yazılışı iç içe kullanır; ikisi de metinden atılır, ikisi de sayfadır.
+    text, _, breaks = clean("حدثنا أبو PageEndV01P113 روق، عن الضحاك PageV01P114 قال")
+    assert "Page" not in text and text == "حدثنا أبو روق، عن الضحاك قال"
+    assert [p for _, p in breaks] == [Page(1, 113), Page(1, 114)]
