@@ -14,6 +14,8 @@ Biçim (OpenITI mARkdown):
     ### $ başlık                     kişi ya da madde başlığı: seviyesiz (`Paragraph.entity`)
     PageV01P003                     sayfa işareti: 1. cildin 3. sayfasının SONU. İşaretten önceki metin o sayfadadır,
                                     sonraki metin bir sonraki işaretin sayfasındadır (OpenITI'nin kuralı)
+    PageEndV01P023                  aynı işaretin yeni yazılışı (Taberî'nin Shamela sürümünde ikisi iç içe; sıra yer
+                                    yer geri gider, kaynağın verdiği gibi bırakılır)
     @QB@ … @QE@                     âyet alıntısı: metinde "﴿ … ﴾" olur, yeri `quran` aralıklarındadır
     ms0001                          kilometre taşı (OpenITI'nin bölme işareti), atılır
     \\ 1 \\                         dipnot işareti (dipnotlar OpenITI temizliğinde atılmıştır), atılır; içine düşmüş
@@ -39,7 +41,7 @@ from risale_mcp.paths import RAW_DIR
 RAW_ROOT = RAW_DIR / "openiti"
 HEADER_END = "#META#Header#End#"
 
-_MARK = re.compile(r"(?P<page>PageV(?P<vol>\d+)P(?P<num>\d+))|(?P<ms>\bms\d+\b)|(?P<note>\\\s*\d+\s*(?:ms\d+\s*)?\\)"
+_MARK = re.compile(r"(?P<page>Page(?:End)?V(?P<vol>\d+)P(?P<num>\d+))|(?P<ms>\bms\d+\b)|(?P<note>\\\s*\d+\s*(?:ms\d+\s*)?\\)"
                    r"|(?P<qb>@QB@)|(?P<qe>@QE@)")
 _META = re.compile(r"^#META#\s*\d+\.(\w+)\s*::\s*(.*)$")
 _YML = re.compile(r"^\d+#(\w+)#(\w+)#*:\s?(.*)$")

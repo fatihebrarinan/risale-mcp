@@ -38,7 +38,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from risale_mcp import openiti
-from risale_mcp.links import Link, cite_as, part_key, write
+from risale_mcp.links import Link, cite_as, part_key, read, write
 from risale_mcp.paths import DB_PATH, INTERIM_DIR, LIBRARY_DIR, LINKS_DIR
 from risale_mcp.quran import Quran, skeleton
 
@@ -552,21 +552,26 @@ def _work_links(args: tuple[str, str]) -> tuple[str, list[Link], list[Link], int
     return work, structure_links(conn, book), quote_links(conn, book, quotes), ambiguous, len(quotes)
 
 
-def mvp_links(db: Path = DB_PATH, processes: int = 8) -> dict:
+def mvp_links(db: Path = DB_PATH, processes: int = 8, only: list[str] | None = None) -> dict:
     """MVP'nin net tefsir bağları (`docs/mvp-kitaplar.md`, M3): katalogdaki bütün müfessir eserleri için âyet birimi
     (`structure`) ve şerhteki işaretsiz Kur'ân alıntısı (`quran_text`), pilotun kuralları ve eşikleriyle (T5–T7). Aynı
     iki dosyaya yazılır (Beyzâvî'nin denetim kararları aynı anahtarlarla yerinde kalır); eser başına paralel."""
     from multiprocessing import Pool
     from risale_mcp.catalog import WORKS, Collection
-    works = [w.slug for w in WORKS if w.collection is Collection.TEFSIR and w.book_path.exists()]
+    all_works = [w.slug for w in WORKS if w.collection is Collection.TEFSIR and w.book_path.exists()]
+    works = [w for w in all_works if w in only] if only else all_works
     structure, quotes, stats = [], [], {}
+    if only:                    # öbür eserlerin bağları dosyada olduğu gibi kalır
+        keep = lambda link: link.source.split("/")[0] not in works      # noqa: E731
+        structure += filter(keep, read(OUT / "structure.jsonl")[1])
+        quotes += filter(keep, read(OUT / "quran_text.jsonl")[1])
     with Pool(min(processes, len(works))) as pool:
         for work, s_links, q_links, ambiguous, n in pool.imap_unordered(_work_links, [(w, str(db)) for w in works]):
             structure += s_links
             quotes += q_links
             stats[work] = {"units": len(s_links), "quotes": n, "ambiguous": ambiguous}
             print(f"  {work}: birim {len(s_links)}, alıntı {n}, numarası verilemeyen {ambiguous}", flush=True)
-    order = {w: i for i, w in enumerate(works)}
+    order = {w: i for i, w in enumerate(all_works)}
     structure.sort(key=lambda l: (order[l.source.split("/")[0]], l.source))
     quotes.sort(key=lambda l: (order[l.source.split("/")[0]], l.source))
     meta = {**META, "note": "MVP: müfessirlerin eserleri; yalnız yerel profil (genel çıkış M7)"}
@@ -576,7 +581,7 @@ def mvp_links(db: Path = DB_PATH, processes: int = 8) -> dict:
 
 if __name__ == "__main__":
     import sys
-    if "--mvp" in sys.argv:
-        print(mvp_links())
+    if "--mvp" in sys.argv:              # --mvp [eser…]: yalnız verilen eserlerin bağları yenilenir
+        print(mvp_links(only=[a for a in sys.argv[1:] if not a.startswith("--")] or None))
     else:
         main()
