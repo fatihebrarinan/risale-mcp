@@ -75,6 +75,8 @@ class HadisLibrary(Library):
         places = self.conn.execute("SELECT sentence, display, method, relation FROM lib_risale WHERE unit_id = ?",
                                    (unit_id,)).fetchall()
         if places:
+            # Türkçe metin önce, Osmanlıca ciltler (Türkçeyle eşlenmemiş ayrı baskı) sonra.
+            places = sorted(places, key=lambda p: "-osmanlica/" in p["sentence"])
             out["in_risale"] = [{"id": p["sentence"], "cite_as": p["display"], "method": p["method"],
                                  "relation": p["relation"]} for p in places]
             out["in_risale_note"] = ("Places in the Risale-i Nur linked to this report (id and citation only; the text "

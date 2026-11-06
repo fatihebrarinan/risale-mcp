@@ -138,6 +138,7 @@ def build(out: Path = HADIS_DB, source_db: Path = PUBLIC_DB_PATH) -> Counter:
         conn.execute("INSERT INTO lib_books VALUES (?, ?, ?, ?, ?, ?)",
                      (key, ord_, book["title"], author, json.dumps(source, ensure_ascii=False), len(book["hadiths"])))
         counts["books"] += 1
+    seen: set[tuple[str, str]] = set()     # aynı yer iki yoldan (Hadith API numarası, kütüphane kimliği) gelebilir
     for name in ("corpus", "cited_chapter", "reading"):
         path = LINKS_DIR / "hadis" / f"{name}.jsonl"
         if not path.exists():
@@ -150,6 +151,10 @@ def build(out: Path = HADIS_DB, source_db: Path = PUBLIC_DB_PATH) -> Counter:
             if unit is None:
                 counts["risale_unresolved"] += 1
                 continue
+            if (unit, rec["source"]) in seen:
+                counts["risale_duplicate"] += 1
+                continue
+            seen.add((unit, rec["source"]))
             conn.execute("INSERT INTO lib_risale VALUES (?, ?, ?, ?, ?, ?)",
                          (unit, rec["source"], rec.get("display"), rec["method"], rec.get("relation"), rec.get("strength")))
             counts["risale_links"] += 1

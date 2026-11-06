@@ -339,9 +339,9 @@ Sorgu tarafında; dizin ve `db.NORMALIZATION` değişmedi (1,6 GB'lık yerel diz
   yok. Araçlar: list_works, get_outline, read_section, get_passage, search, semantic_search, text_links,
   find_sentence, find_ayah, get_ayah, cite (hadis araçları, Risale'nin kaynakları ve hazır komutları yok).
 - `find_ayah` müfessirleri vefat sırasıyla verir (Taberî → Âlûsî; katalog sırası `catalog/tefsir.DIED`).
-- **Eksik:** anlamsal arama için 546 bin cümlenin vektörü (Voyage; ücret büyük ihtimalle ücretsiz kotada; çıkarmadan
-  önce kullanıcıya sorulur); Risale'nin âyet bağlarını tefsir sunucusunda kimlik ve atıfla göstermek (bugün yalnız
-  Risale bağdaştırıcısından); altın sorular (M6); sunucu (M7).
+- **Sonradan (2026-11-07):** `find_ayah` önce Risale'nin yerlerini kimlik, atıf ve türle verir (`risale`, genel
+  profilin `ayah_links`'inden kurulan `risale_refs`; metin yok). Vektörler ve altın sorular aşağıda ("Gece işi").
+  Sunucu M7.
 
 ## HA2: Risale'nin hadisleri yalnız kütüphaneyle (2026-11-06, yerelde; genel sunucuya sabah onayıyla)
 
