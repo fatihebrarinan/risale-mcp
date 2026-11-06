@@ -593,8 +593,13 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 - **Sunucu (2026-11-06):** Helsinki'de ARM serisinde kapasite yok, rescale olmadı. Karar M7'de; öneri hadis ve
   tefsir için ayrı sunucu (risale sunucusu taşınmaz, Caddy Tailscale üzerinden yönlendirir). Rescale için kapatılınca
   sunucu birkaç dakika kapalı kaldı: sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
-- **M2 (sürüyor, 2026-11-06):** Kur'ân alıntısı araması kelime başına ≈0,6 ms (21,8 milyon kelime paralel ≈30 dk;
-  indeksli yönteme gerek yok). Başlıksız tefsirlerde birim: Nesefî ve Mâtürîdî numaralı âyet satırı, Ebüssuûd ve
-  ed-Dürrü'l-Mensûr `{lemma}`, Âlûsî ve Bursevî altafsir sürümünün `[sûre.âyet]` başlıkları çapa olarak (metin
-  Shamela'dan).
-- **Sırada:** M2 (ortak tefsir ayrıştırıcısı; ilk deneme Keşşâf ve Nesefî); Y0.6 (M7'den önce).
+- **M2 (bitti, 2026-11-06):** `docs/mvp-kitaplar.md` "M2". 13 tefsir (Beyzâvî tamamı kendi ayrıştırıcısıyla; öbür
+  12'si `books/tefsir_openiti.py`: metin Shamela'dan, âyet sınırları altafsir.com sürümünden, harf iskeleti ve
+  sıklıkla tartılmış dizilerle küresel tutarlı zincir; satır çapadan bölünür; âyetin sözü birime alınır) ve 9 hadis
+  kitabı (`hadis_openiti.py`; Zehebî, Esed ve Elbânî katmanları ayrı `layers`). 43.115 âyet biriminin %0,9'u
+  denetimden geçmiyor (`data/interim/tefsir/mvp-denetim.md`, çoğu yanlış alarm). İlk birimden önceki ön metin alınmadı
+  (müellif mukaddimesi ile muhakkik girişi ayrılmamış; eser başına karar sonra). Yerel veritabanı 1,45 GB (+545 bin
+  cümle), kimlikler kaymadı; genel profil ve araç çıktısı aynı. Sınır: noktalaması seyrek eserlerde cümleler uzun
+  (Bursevî ortalama 97 kelime). Kur'ân alıntısı araması kelime başına ≈0,6 ms.
+- **Sırada:** M3 (net bağlar: âyet birimi, tefsirdeki Kur'ân alıntısı, Risale'nin hadislerinin yeni kitaplarda
+  aranması), M4 (arama); Y0.6 (M7'den önce).

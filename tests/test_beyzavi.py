@@ -81,7 +81,7 @@ def test_outline_ids_titles_and_layers(parsed):
     nodes = {n["id"]: n for n in data["outline"]}
     assert list(nodes) == ["beyzavi", "beyzavi/mukaddime-tahkik", "beyzavi/mukaddime-tahkik/1",
                            "beyzavi/mukaddime-tahkik/2", "beyzavi/hutbe", "beyzavi/1", "beyzavi/1/1", "beyzavi/1/3-4",
-                           "beyzavi/2", "beyzavi/2/1"]                     # Bakara 34'te durur
+                           "beyzavi/2", "beyzavi/2/1", "beyzavi/2/34"]     # eserin tamamı (MVP): pilot sınırı yok
     intro = nodes["beyzavi/mukaddime-tahkik"]
     assert intro["authority"] == "muhakkik" and intro["by"] == "Muhammed Abdurrahman el-Maraşlî"
     assert nodes["beyzavi/1"]["title"] == "سورة الفاتحة" and nodes["beyzavi/1"]["number"] == 1
@@ -89,7 +89,7 @@ def test_outline_ids_titles_and_layers(parsed):
     assert nodes["beyzavi/1/3-4"]["verses"] == {"sura": 1, "start": 3, "end": 4}
     assert nodes["beyzavi/2/1"]["ref"] == "Envârü't-Tenzîl › سورة البقرة › آية 1"
     assert nodes["beyzavi/hutbe"]["subtitle"] == beyzavi.EDITION_HEADING
-    assert report.units == 3 and report.unknown_pages == 0
+    assert report.units == 4 and report.unknown_pages == 2           # örneğin son iki paragrafı son sayfa işaretinden sonra
 
 
 def test_verse_lines_head_each_unit_and_are_not_sentences(parsed):
@@ -147,16 +147,21 @@ def test_a_verse_line_that_does_not_match_its_heading_stops_the_parse(tmp_path):
         beyzavi.parse(get_work("beyzavi"), raw_root=tmp_path)
 
 
-def test_real_book_covers_the_pilot_range():
+def test_real_book_covers_every_verse_once_in_order():
+    """MVP: eserin tamamı; âyet birimleri 6.236 âyetin her birini bir kez, sırasıyla kapsar (pilot Bakara 33'te
+    bitiyordu; pilotun kimlikleri aynı kaldı, kimlik manifestosu kayma görmedi)."""
+    from risale_mcp.quran import Quran
     path = get_work("beyzavi").book_path
-    if not path.exists():
-        pytest.skip("beyzavi.json yok")
+    quran = Quran.load()
+    if not path.exists() or quran is None:
+        pytest.skip("beyzavi.json ya da quran.json yok")
     data = json.loads(path.read_text("utf-8"))
     units = [n["verses"] for n in data["outline"] if n.get("verses")]
     covered = [(u["sura"], a) for u in units for a in range(u["start"], u["end"] + 1)]
-    assert covered == [(1, a) for a in range(1, 8)] + [(2, a) for a in range(1, 34)]
+    assert covered == [(s, a) for s in range(1, 115) for a in range(1, quran.counts[s] + 1)]
     assert all(s.get("printed") for s in data["sentences"])
-    assert sum(p["kind"] == "ayah" for p in data["paragraphs"]) == 40
+    ids = {n["id"] for n in data["outline"]}
+    assert {"beyzavi/1/3-4", "beyzavi/2/6", "beyzavi/2/33"} <= ids             # pilotun kimlikleri
 
 
 def test_users_long_sentence_decision_holds():

@@ -2,6 +2,7 @@
 
     uv run python -m risale_mcp.links_tefsir            # yerel veritabanından -> data/links/tefsir/*.jsonl, rapor
     uv run python -m risale_mcp.links_tefsir --measure  # yalnız Kur'ân alıntısı ölçümü (JK'nın işaretleriyle)
+    uv run python -m risale_mcp.links_tefsir --mvp      # MVP (M3): bütün müfessirlerin yapı ve Kur'ân alıntısı bağları
 
 Bütün dosyalar `private`'tır (pilot): yalnız yerel profil okur; genel profile bağın hedefi de girmez (T4).
 
@@ -142,9 +143,9 @@ def find_quotes(qw: QuranWords, sid: str, text: str, own: tuple[int, int, int] |
 
 # ---------------------------------------------------------------- eser
 
-def _book() -> dict:
+def _book(work: str = WORK) -> dict:
     from risale_mcp.catalog import get_work
-    return json.loads(get_work(WORK).book_path.read_text(encoding="utf-8"))
+    return json.loads(get_work(work).book_path.read_text(encoding="utf-8"))
 
 
 def _units(book: dict) -> dict[str, tuple[int, int, int]]:
@@ -183,12 +184,12 @@ def quote_links(conn: sqlite3.Connection, book: dict, quotes: list[Quote]) -> li
 
 
 def all_quotes(conn: sqlite3.Connection, book: dict, qw: QuranWords, muellif_only: bool = False,
-               **thresholds) -> tuple[list[Quote], int]:
+               work: str = WORK, **thresholds) -> tuple[list[Quote], int]:
     """`muellif_only`: muhakkikin girişi atlanır (ölçüm: JK'da giriş yok)."""
     units = _units(book)
     quotes, ambiguous = [], 0
-    for sid, node, text in conn.execute("SELECT id, node_id, text FROM sentences WHERE work = ? ORDER BY seq", (WORK,)):
-        if muellif_only and node.startswith(f"{WORK}/mukaddime-tahkik"):
+    for sid, node, text in conn.execute("SELECT id, node_id, text FROM sentences WHERE work = ? ORDER BY seq", (work,)):
+        if muellif_only and node.startswith(f"{work}/mukaddime-tahkik"):
             continue
         found, amb = find_quotes(qw, sid, text, _unit_of(node, units), **thresholds)
         quotes += found
@@ -533,13 +534,49 @@ def main() -> None:
         return
     hadith, rows, used = hadith_links(conn, hadith_candidates(conn), qw)
     isarat = isarat_candidates(conn, book, qw)
-    counts = {"structure": write(OUT / "structure.jsonl", structure_links(conn, book), **META),
-              "quran_text": write(OUT / "quran_text.jsonl", quote_links(conn, book, quotes), **META),
-              "corpus": write(OUT / "corpus.jsonl", hadith, **META)}
+    counts = {"corpus": write(OUT / "corpus.jsonl", hadith, **META)}     # yapı ve alıntı bağları: --mvp (bütün eserler)
     HADITH_STORE.write_text(json.dumps({"reports": used}, ensure_ascii=False), encoding="utf-8")
     _write_reports({"grid": grid, "ambiguous": ambiguous}, quotes, rows, isarat)
     print(f"  bağlar: {counts}; rapor: {REPORT_DIR}")
 
 
+# ---------------------------------------------------------------- MVP: bütün müfessirler (M3)
+
+def _work_links(args: tuple[str, str]) -> tuple[str, list[Link], list[Link], int, int]:
+    """Bir eserin yapı ve Kur'ân alıntısı bağları (ayrı süreçte: kendi bağlantısı ve Kur'ân dizini)."""
+    work, db = args
+    conn = sqlite3.connect(db)
+    book = _book(work)
+    qw = QuranWords(Quran.load())
+    quotes, ambiguous = all_quotes(conn, book, qw, work=work)
+    return work, structure_links(conn, book), quote_links(conn, book, quotes), ambiguous, len(quotes)
+
+
+def mvp_links(db: Path = DB_PATH, processes: int = 8) -> dict:
+    """MVP'nin net tefsir bağları (`docs/mvp-kitaplar.md`, M3): katalogdaki bütün müfessir eserleri için âyet birimi
+    (`structure`) ve şerhteki işaretsiz Kur'ân alıntısı (`quran_text`), pilotun kuralları ve eşikleriyle (T5–T7). Aynı
+    iki dosyaya yazılır (Beyzâvî'nin denetim kararları aynı anahtarlarla yerinde kalır); eser başına paralel."""
+    from multiprocessing import Pool
+    from risale_mcp.catalog import WORKS, Collection
+    works = [w.slug for w in WORKS if w.collection is Collection.TEFSIR and w.book_path.exists()]
+    structure, quotes, stats = [], [], {}
+    with Pool(min(processes, len(works))) as pool:
+        for work, s_links, q_links, ambiguous, n in pool.imap_unordered(_work_links, [(w, str(db)) for w in works]):
+            structure += s_links
+            quotes += q_links
+            stats[work] = {"units": len(s_links), "quotes": n, "ambiguous": ambiguous}
+            print(f"  {work}: birim {len(s_links)}, alıntı {n}, numarası verilemeyen {ambiguous}", flush=True)
+    order = {w: i for i, w in enumerate(works)}
+    structure.sort(key=lambda l: (order[l.source.split("/")[0]], l.source))
+    quotes.sort(key=lambda l: (order[l.source.split("/")[0]], l.source))
+    meta = {**META, "note": "MVP: müfessirlerin eserleri; yalnız yerel profil (genel çıkış M7)"}
+    return {"structure": write(OUT / "structure.jsonl", structure, **meta),
+            "quran_text": write(OUT / "quran_text.jsonl", quotes, **meta), "works": stats}
+
+
 if __name__ == "__main__":
-    main()
+    import sys
+    if "--mvp" in sys.argv:
+        print(mvp_links())
+    else:
+        main()

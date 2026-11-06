@@ -28,7 +28,7 @@ from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
 from risale_mcp.books import risaleoku_app as risaleoku_app_parser
 from risale_mcp.books import nurpedia as nurpedia_parser
-from risale_mcp.books import beyzavi, printed, rumuzat, saykal, telif
+from risale_mcp.books import beyzavi, printed, rumuzat, saykal, tefsir_openiti, telif
 from risale_mcp.books import yeniasya as yeniasya_parser
 from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
 from risale_mcp.books.model import Book
@@ -181,6 +181,17 @@ def parse(work: Work) -> tuple[Book, list[str]]:
                       f" işareti bulunamayan metin {report.unmatched_texts[:3]}",
                       f"  Arapça               : harfe çevrilemeyen {len(report.pdf.unresolved)}"
                       f" {report.pdf.unresolved[:5]}, bağlanamayan hareke {report.pdf.stray_marks}"]
+    if work.source.site is Site.OPENITI and work.source.book != "beyzavi-shamela":
+        book, report = tefsir_openiti.parse(work)
+        a = report.alignment
+        return book, [f"  âyet birimi          : altafsir {a.units}, çapalanan {a.anchored}, öncekine katılan {len(a.merged)}"
+                      f" {a.merged[:8]}",
+                      f"  satır → paragraf     : {report.lines} → {report.paragraphs - report.ayah_lines} (+{report.ayah_lines} âyet)",
+                      f"  sayfası bilinmeyen paragraf: {report.unknown_pages}; aynı satırda birleşen birim "
+                      f"{getattr(report, 'joined_units', 0)}; kaynağın paragrafları korundu: "
+                      f"{getattr(report, 'keep_source_paragraphs', False)}",
+                      f"  alınmayan            : ilk birimden önceki ön metin {report.front_words} kelime, baskının birim"
+                      f" başlıkları {report.heading_words} kelime (düğümde); kaydırılan birim {getattr(report, 'moved_units', 0)}"]
     if work.source.site is Site.OPENITI:
         book, report = beyzavi.parse(work)
         return book, [f"  âyet birimi          : {report.units}, âyet satırı {report.ayah_lines}",

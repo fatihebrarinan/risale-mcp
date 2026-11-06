@@ -20,8 +20,11 @@ def test_every_listed_work_is_present():
     risale = [w for w in WORKS if w.collection is not Collection.TEFSIR]
     assert len(risale) == 74
     assert sum(w.group == "osmanlica" for w in WORKS) == 16
-    # Müfessirlerin eserleri (tefsir pilotu) ayrı sayılır; pilot bitene kadar hepsi yalnız yerelde.
-    assert {w.slug for w in WORKS if w.collection is Collection.TEFSIR} == {"beyzavi"}
+    # Müfessirlerin eserleri ayrı sayılır: MVP'nin 13 tefsiri (`docs/mvp-kitaplar.md`); genel çıkış kararına (M7)
+    # kadar hepsi yalnız yerelde.
+    assert {w.slug for w in WORKS if w.collection is Collection.TEFSIR} == {
+        "beyzavi", "taberi", "maturidi", "kessaf", "razi", "kurtubi", "nesefi", "ibnkesir", "celaleyn", "durr",
+        "ebussuud", "bursevi", "alusi"}
     assert all(w.private for w in WORKS if w.collection is Collection.TEFSIR)
     assert {w.slug for w in risale if w.private} == {"el-mesnevi-el-arabi-harekeli", "esasat-i-nuriye", "siracun-nur-hayrat",
                                                     "hizmet-rehberi-ve-dusturlari"}

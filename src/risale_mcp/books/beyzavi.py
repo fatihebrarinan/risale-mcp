@@ -29,19 +29,20 @@ sonunda (. ؟ !, ardından kapanış işaretleri olabilir) biter; öbür satırl
 satır boşluksuz. Girişte başlık satırı yeni paragraf açar. Her paragraf `printed` ve `page_breaks` taşır
 (`books/printed.py` cümlelere dağıtır).
 
-Kapsam: Bakara 34'ün başlığında durulur (pilot); kaynakta öncesinde "[الجزء الاول]" cilt etiketi `notes`'tadır.
+Kapsam: eserin tamamı (MVP; pilotta Bakara 34'te durulurdu). Muhakkikin cilt sonu içindekiler listeleri ("محتوى
+الجزء …") atlanır; kaynakta girişin önündeki "[الجزء الاول]" cilt etiketi `notes`'tadır.
 Muhakkikin dipnot işaretleri («1») metinde kalır, dipnotlar kaynakta yoktur (`notes`).
 """
 
 import re
-from dataclasses import dataclass, field
 
 from risale_mcp import openiti
-from risale_mcp.books.model import Book, Node, Text
+from risale_mcp.books.model import Book
+from risale_mcp.books.openiti_writer import Report, Writer as _Writer
 from risale_mcp.catalog import Work
 from risale_mcp.paths import RAW_DIR
 
-STOP = (2, 34)                                   # pilotun sonu: bu birimin başlığında durulur
+TOC = "محتوى الجزء"                               # muhakkikin cilt sonu içindekiler listesi: metin değil, atlanır
 INTRO = "مقدمة التحقيق"
 KHUTBA = "خطبة الكتاب"
 VOLUME_LABEL = "[الجزء الاول]"
@@ -49,103 +50,14 @@ EDITION_HEADING = "Başlık baskının (Maraşlî)"
 INTRO_SUBTITLE = "Muhakkikin girişi (Muhammed Abdurrahman el-Maraşlî, 1418): müellifin metni değil"
 INTRO_PARTS = {"أولا": "1", "ثانيا": "2"}         # girişin kendi içindekiler listesindeki iki ana kısım
 FOOTNOTES_NOTE = "Muhakkikin dipnot işaretleri («1») metinde kalır; dipnotların kendisi kaynakta yok (OpenITI temizliği)."
-SCOPE_NOTE = ("Pilot aralığı (T3): muhakkikin girişi, hutbe, Fâtiha ve Bakara 1–33. Bakara 34'ten sonrası "
-              "ayrıştırılmadı.")
+SCOPE_NOTE = ("Eserin tamamı (MVP, 2026-11-06; pilot T3'te Bakara 33'e kadardı). Muhakkikin cilt sonlarındaki "
+              "içindekiler listeleri (\"محتوى الجزء …\") metin değildir, alınmadı.")
 BESMELE = "بسم الله الرحمن الرحيم"
 
-_UNIT = re.compile(r"\[سورة (.+?) \((\d+)\) : (آية|الآيات)\s*#?\s*(\d+)(?:\s*(?:الى|إلى)\s*(\d+))?\s*\]")
+_UNIT = re.compile(r"\[سورة (.+?) \((\d+)\) : (آية|الآيات)\s*#?\s*(\d+)(?:\s*(?:الى|إلى|إلي)\s*(\d+))?\s*\]")
 _SURA = re.compile(r"^\((\d+)\)\s*(سورة .+?)\s*$")
 _VERSE_NO = re.compile(r"\((\d+)\)")
 _VERSE_LINE = re.compile(r"\(\d+\)\s*$")
-_ENDS = ".؟!"
-_CLOSERS = "»”\")]' "
-_LEADING_PUNCT = ".،:؛"
-
-
-@dataclass
-class Report:
-    units: int = 0
-    lines: int = 0                               # kaynağın metin satırları
-    paragraphs: int = 0                          # birleştirilmiş paragraflar
-    ayah_lines: int = 0
-    pages: list[str] = field(default_factory=list)
-    unknown_pages: int = 0
-
-
-class _Para:
-    """Açık paragraf: satırlar birleştikçe sayfa sonları kaydırılır."""
-
-    def __init__(self, line: openiti.Paragraph) -> None:
-        self.text = line.text
-        self.page, self.end_page = line.page, line.end_page
-        self.breaks = [(at, str(page)) for at, page in line.breaks]
-
-    def ends_sentence(self) -> bool:
-        tail = self.text.rstrip(_CLOSERS)
-        return bool(tail) and tail[-1] in _ENDS
-
-    def add(self, line: openiti.Paragraph) -> None:
-        sep = "" if line.text[:1] in _LEADING_PUNCT else " "
-        shift = len(self.text) + len(sep)
-        self.text += sep + line.text
-        self.breaks += [(shift + at, str(page)) for at, page in line.breaks]
-        self.end_page = line.end_page or self.end_page
-
-    def add_break(self, line: openiti.Paragraph) -> None:
-        """Yalnız sayfa işaretinden oluşan satır: sayfa açık paragrafın şu anki sonunda biter."""
-        self.breaks += [(len(self.text), str(page)) for _, page in line.breaks]
-
-
-def _printed(page: openiti.Page | None, end: openiti.Page | None) -> dict | None:
-    if page is None:
-        return None
-    return {"volume": page.volume, "page": page.page, **({"end": str(end)} if end and end != page else {})}
-
-
-class _Writer:
-    def __init__(self, book: Book, report: Report) -> None:
-        self.book, self.report = book, report
-        self.node: Node | None = None
-        self.open: _Para | None = None
-
-    def flush(self) -> None:
-        if self.open is not None:
-            self._emit("paragraph", self.open)
-            self.open = None
-
-    def _emit(self, kind: str, para: _Para, **extra) -> dict:
-        printed = _printed(para.page, para.end_page)
-        if printed is None:
-            self.report.unknown_pages += 1
-        record = self.book.add_paragraph(self.node, kind, Text(para.text), **extra,
-                                         **({"printed": printed} if printed else {}),
-                                         **({"page_breaks": [list(b) for b in para.breaks]} if para.breaks else {}))
-        self.report.paragraphs += 1
-        return record
-
-    def start(self, node: Node) -> None:
-        self.flush()
-        self.node = node
-
-    def line(self, line: openiti.Paragraph, force_new: bool = False) -> None:
-        if not line.text:
-            if self.open is not None:
-                self.open.add_break(line)
-            return
-        self.report.lines += 1
-        if self.open is not None and not force_new and not self.open.ends_sentence():
-            self.open.add(line)
-            return
-        self.flush()
-        self.open = _Para(line)
-
-    def ayah(self, lines: list[openiti.Paragraph], verses: str | None, note: str | None = None) -> None:
-        self.flush()
-        para = _Para(lines[0])
-        for line in lines[1:]:
-            para.add(line)
-        self._emit("ayah", para, **({"verses": verses} if verses else {}), **({"note": note} if note else {}))
-        self.report.ayah_lines += len(lines)
 
 
 def _heading_text(paragraphs: list[openiti.Paragraph], i: int) -> tuple[str, int]:
@@ -188,8 +100,6 @@ def parse(work: Work, key: str | None = None, raw_root=RAW_DIR / "openiti") -> t
                 continue
             if m := _UNIT.search(text):
                 sura, start, end = int(m[2]), int(m[4]), int(m[5] or m[4])
-                if (sura, start) >= STOP:
-                    break
                 if sura_node is None or sura_node.number != sura:
                     raise ValueError(f"âyet birimi {sura}:{start} sûre başlığından önce")
                 local = f"{start}" + (f"-{end}" if end != start else "")
@@ -197,6 +107,7 @@ def parse(work: Work, key: str | None = None, raw_root=RAW_DIR / "openiti") -> t
                 unit = book.add_node(sura_node, local, title, subtitle=EDITION_HEADING)
                 unit.extra["verses"] = {"sura": sura, "start": start, "end": end}
                 w.start(unit)
+                region = "text"
                 i = _verse_lines(P, i, w, sura, start, end)
                 report.units += 1
                 continue
@@ -204,6 +115,9 @@ def parse(work: Work, key: str | None = None, raw_root=RAW_DIR / "openiti") -> t
                 sura_node = book.add_node(book.root, m[1], m[2], subtitle=EDITION_HEADING, number=int(m[1]))
                 w.start(sura_node)
                 region = "text"
+                continue
+            if text.startswith(TOC):                  # içindekiler: sonraki sûre ya da birim başlığına kadar atlanır
+                region = "toc"
                 continue
             if text == KHUTBA:
                 w.start(book.add_node(book.root, "hutbe", KHUTBA, subtitle=EDITION_HEADING))
@@ -219,6 +133,9 @@ def parse(work: Work, key: str | None = None, raw_root=RAW_DIR / "openiti") -> t
                 w.line(openiti.Paragraph(p.raw, text, None, [], p.breaks, p.page, p.end_page), force_new=True)
                 continue
             raise ValueError(f"tanınmayan başlık: {text!r}")
+        if region == "toc":
+            i += 1
+            continue
         if region == "front" and p.text == VOLUME_LABEL:
             book.notes.append({"node_id": intro.id, "after": None, "text": f"Kaynakta girişin önünde cilt etiketi: {VOLUME_LABEL}"})
         else:

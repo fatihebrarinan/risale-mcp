@@ -233,3 +233,70 @@ dakika kapalı kaldı, açıldı). Karar (kullanıcı): acele yok, M7'de değerl
 bir sunucu** (Nürnberg ya da Falkenstein), risale sunucusu taşınmaz; adresler yine `mcp.risalemcp.com/tefsir` ve
 `/hadis`, bugünkü Caddy istekleri Tailscale üzerinden yeni sunucuya yönlendirir. Öbür seçenekler: Helsinki'de
 yeniden denemek; vektörleri diskten okuyup takas alanıyla 4 GB'a sığdırmak (sınırda).
+
+## M2: tefsirler ayrıştırıldı (2026-11-06)
+
+`books/tefsir_openiti.py` (ortak ayrıştırıcı; kurallar başında), `books/openiti_writer.py` (Beyzâvî ile ortak
+paragraf yazıcısı). Beyzâvî kendi ayrıştırıcısıyla tamamına genişledi (pilotun kimlikleri ve 32 denetim kararı
+yerinde; muhakkikin cilt sonu içindekiler listeleri atlanır). Hepsi `private`, yalnız yerel profilde.
+
+**Yöntem:** metin, sayfa ve muhakkik seçilen Shamela sürümünden; âyet birimi sınırları altafsir.com sürümünden. İki
+metin harf iskeletine indirilir; birimin ilk kelimelerinin 5'li (kısa birimde 3'lü) dizileri sıklıklarıyla tartılır,
+bütün birimler için kitap sırasıyla tutarlı en güçlü zincir seçilir (tek bir yanlış aday sonrakileri sürükleyemez).
+Birim satırın ortasında başlıyorsa satır oradan bölünür; birimin kendi âyetinin sözü çapanın önündeyse (numaralı ya
+da numarasız âyet satırı, aynı satırdaki âyet sözü) birime alınır; baskının numaralı birim başlığı varsa çapadan
+güçlü kanıttır. Çapası bulunamayan birim öncekine katılır, aralığı genişler (adres tahmin edilmez). Noktalaması seyrek
+eserde (Nesefî, Celâleyn, ed-Dürrü'l-Mensûr, Ebüssuûd) kaynağın paragrafları korunur.
+
+**Alınmayan:** ilk âyet biriminden önceki metin (muhakkikin girişi ile müellifin mukaddimesi ayrı işaretli değil;
+müellife mal edilmesin diye; Mâtürîdî'de 86 bin, Kurtubî'de 40 bin, İbn Kesîr'de 36 bin kelime). Eser başına karar
+sonra. Baskıların birim başlıkları ("[سورة البقرة (2) : آية 6]") metinden atılır, bilgisi düğümdedir.
+
+**Denetim** (`verify`: birimin ilk 60 kelimesinde kendi âyetinin kelimelerinden en az ikisi; rapor
+`data/interim/tefsir/mvp-denetim.md`): 43.115 birimin 367'si (%0,9) geçmiyor; çoğu yanlış alarm (rivayet tefsirinin
+senetle açılan birimleri, kısa âyetler). Beyzâvî ve Nesefî'de 0.
+
+| Eser | Birim | Denetimden geçmeyen | Cümle | Kelime/cümle |
+|---|---|---|---|---|
+| Beyzâvî | 3.328 | 0 | 24.283 | 23 |
+| Taberî | 3.881 | 19 | 39.630 | 76 |
+| Mâtürîdî | 1.111 | 2 | 51.442 | 29 |
+| Keşşâf | 2.948 | 3 | 33.853 | 21 |
+| Râzî | 3.356 | 37 | 52.097 | 56 |
+| Kurtubî | 3.243 | 21 | 110.380 | 18 |
+| Nesefî | 951 | 0 | 16.189 | 34 |
+| İbn Kesîr | 1.886 | 5 | 54.175 | 29 |
+| Celâleyn | 6.116 | 2 | 12.324 | 16 |
+| ed-Dürrü'l-Mensûr | 2.073 | 62 | 61.124 | 27 |
+| Ebüssuûd | 2.280 | 14 | 18.591 | 56 |
+| Bursevî | 5.908 | 99 | 25.101 | 97 |
+| Âlûsî | 6.034 | 103 | 47.375 | 74 |
+
+**Bilinen sınır:** cümleler kaynağın noktalamasıyla bölünür; Bursevî, Taberî, Âlûsî'de noktalama seyrek olduğu için
+cümleler uzun (ortalama 74–97 kelime). Bölme kuralı değişirse bütün Arapça eserlerin numaraları kayar; MVP'de
+olduğu gibi kalır, sonra ayrı karar.
+
+**Veritabanı:** yerel profil 376 MB → 1.453 MB, 545.587 cümle ve 44.568 bölüm eklendi, kimlik manifestosu kayma
+görmedi, kurulum ≈3 dakika. Genel profil ve araç çıktısı aynı (`tool_snapshot` m2-tefsir: fark yok).
+
+## M2: hadis kitapları (2026-11-06)
+
+`hadis_openiti.py` (`uv run python -m risale_mcp.hadis_openiti`, rapor `data/interim/hadis/mvp-kutub.md`) →
+`data/library/hadis/kutub/<kitap>.json`, Kütüb-i Sitte ile aynı biçim (Kütüb-i Sitte yükleyicisi okumaz).
+Başkasının katmanı hadisin `layers`'ında, müellife mal edilmez: Müstedrek'te Zehebî'nin Telhîs'i (5.719 hadiste),
+Dârimî'de muhakkik Hüseyin Selîm Esed'in hükmü (3.414), el-İhsân'da Elbânî'nin hükmü ve nâşirin notları (7.517).
+Feyzü'l-Kadîr iç içe şerhtir (parantez içi Câmiu's-Sağîr), notta yazılı.
+
+| Kitap | Hadis | Not |
+|---|---|---|
+| Müsned | 27.583 | sayfa "[ص: n]" işaretinden |
+| Dârimî | 3.542 | |
+| el-Mu'cemü's-Sağîr | 1.192 | |
+| el-Müstedrek | 8.811 | |
+| el-İhsân | 7.527 | numara paragrafta |
+| Mecmaü'z-Zevâid | 19.035 | sayfa yok |
+| Kenzü'l-Ummâl | 44.088 | numaranın bir kısmı paragrafta; sayfa yok; kaynaktaki numara yazım hataları atlama olarak raporda |
+| Feyzü'l-Kadîr | 9.426 | |
+| Keşfü'l-Hafâ | 3.255 | JK |
+
+Hadis veritabanı ve araçları M5'te (hadis sunucusu).

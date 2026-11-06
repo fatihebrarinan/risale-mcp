@@ -36,7 +36,7 @@ class Text:
     @property
     def version(self) -> str:
         """Sürüm adı (`0256Bukhari.Sahih.JK000110-ara1`): `.yml`'nin adı, `.completed` ya da `.mARkdown` eki olmadan."""
-        return self.path.rsplit("/", 1)[1].removesuffix(".completed").removesuffix(".mARkdown")
+        return self.path.rsplit("/", 1)[1].removesuffix(".completed").removesuffix(".mARkdown").removesuffix(".inProgress")
 
     @property
     def file(self) -> str:
