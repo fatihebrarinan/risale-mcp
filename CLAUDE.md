@@ -614,5 +614,10 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   Risale kendi bağdaştırıcısında), 11 araç (hadis araçları, kaynaklar, hazır komutlar yok). `find_ayah` müfessirleri
   vefat sırasıyla verir (`catalog/tefsir.DIED`). Genel sunucuda fark yalnız M4'ün `search`'ü. Eksik: vektörler (ücret
   onayı), Risale bağlarının tefsir sunucusunda atıfla gösterimi, altın sorular.
-- **Sırada:** M5 hadis sunucusu (önce hadis biriminin şeması, kullanıcıya); HA2 kararı; vektör ücreti onayı; M4'ün
-  deploy'u (`DEPLOY_EXPECT="search"`); Y0.6 (M7'den önce).
+- **Gece işi kararları (kullanıcı, 2026-11-06):** hadis birimi şeması onaylandı (atıf birimi hadis `musned/14870`,
+  kitap/bâb/sahâbî ağacı adres, katmanlar ayrı; uzun şerhte cümle); eş-Şifâ ve Delâil eklenir; HA2: Risale'nin
+  hadisleri yalnız kütüphaneyle eşlenir (genel sunucuya sabah onayıyla); vektörler tefsir ve hadis, üst sınır 150
+  milyon token, hadiste hadis başına ve yalnız metin (matn; senet ve katmanlar girmez); `claude -p` altın sorular
+  için serbest; push, deploy, dışarıya ileti yok. Sıra: eş-Şifâ ve Delâil, HA2, hadis sunucusu, vektörler, altın
+  sorular, Risale'nin âyet bağlarının tefsir sunucusunda adres ve türle gösterimi (metin yok), tefsir ön metinleri
+  envanteri, küçük düzeltmeler, Y0.6 araştırması, site sayfası taslakları (`docs/`).
