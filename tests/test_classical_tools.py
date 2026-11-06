@@ -53,8 +53,10 @@ def test_local_server_adds_the_instructions_and_the_tool(local):
 def test_find_ayah_lists_the_risale_first_then_the_classical_work(local):
     result = local.find_ayah("2", 6)
     assert list(result).index("results") < list(result).index("classical_works")
-    work, = result["classical_works"]
-    assert (work["work"], work["author"]) == ("beyzavi", "Nâsırüddîn el-Beyzâvî")
+    works = {w["work"]: w for w in result["classical_works"]}                 # MVP: 13 müfessirin hepsi
+    assert {"beyzavi", "kessaf", "razi", "taberi"} <= set(works)
+    work = works["beyzavi"]
+    assert work["author"] == "Nâsırüddîn el-Beyzâvî"
     assert [u["section"] for u in work["units"]] == ["beyzavi/2/6"] and work["units"][0]["method"] == "structure"
     ids = [q["id"] for q in work["quotations"]]
     assert len(ids) == len(set(ids)) == work["quotations_total"]               # cümle başına tek kayıt
