@@ -1,4 +1,4 @@
-# MVP kitapları (M0; 1. tur, 2026-11-06)
+# MVP kitapları (M0; kullanıcının kararlarıyla, 2026-11-06)
 
 Kullanıcının listesi (tefsir), danıştığı kişilerin önerisi (hadis) ve modelin önerileri; her biri için OpenITI'de
 olup olmadığı, sürüm sayısı, boyut ve izin durumu. OpenITI depoları GitHub API'siyle listelendi (dosya indirilmedi).
@@ -114,3 +114,31 @@ OpenITI'de: İhyâu Ulûmi'd-Dîn (`0505Ghazali.IhyaCulumDin`, 9,5 MB; Risale'de
    belâğat, kelâm, tasavvuf, siyer). Her alan için ayrı sunucu açılmaz (araç listesi ve kurulum çoğalır). Seçim
    ölçütü Risale'nin adıyla andığı eserler olabilir: o zaman Risale'den o eserlere giden "adıyla anma" bağları
    mekaniktir ve nettir.
+
+## Kararlar (kullanıcı, 2026-11-06)
+
+1. **Fî Zılâl** şimdilik eklenmez; listede kalır (hak 2036'ya kadar, OpenITI dosyası eksik görünüyor).
+2. **Elmalılı ve Kur'an Yolu:** izin MVP sürerken istenir (Diyanet; taslak `docs/diyanet-izin-epostasi.md`), izin
+   gelince eklenir.
+3. **Tefsîru'l-Menâr** hariç; Abduh'un eserleriyle birlikte yasak listesinde (`catalog/excluded.py`: OpenITI'den
+   indirilemez, katalogda yazar olarak geçemez; test `tests/test_excluded.py`).
+4. "Mucmelussair" = **el-Mu'cemü's-Sağîr** (Taberânî).
+5. Ek tefsirlerden **Nesefî, Âlûsî, ed-Dürrü'l-Mensûr (Suyûtî), Bursevî** MVP'ye girer.
+6. **İlk hadis dilimi** uygun.
+7. **Klasik eserler sunucusu** (İhyâ, Miftâh, Cürcânî…) MVP'den sonra.
+8. Liste son hâli değildir; sonra eklenir, ama MVP şişirilmez.
+
+Açık: eş-Şifâ ve Şerhu'ş-Şifâ'nın hadis sunucusuna girip girmeyeceği (Soru 6) cevaplanmadı; MVP'de değil, klasik
+eserler sunucusuyla birlikte düşünülebilir.
+
+## MVP listesi
+
+**Tefsir (13):** Taberî, Mâtürîdî, Zemahşerî (Keşşâf), Râzî, Kurtubî, Beyzâvî (tamamı), Nesefî, İbn Kesîr, Celâleyn,
+Suyûtî (ed-Dürrü'l-Mensûr), Ebüssuûd, Bursevî (Rûhu'l-Beyân), Âlûsî (Rûhu'l-Meânî). Hepsi OpenITI'de. İzin gelince:
+Elmalılı (Hak Dini Kur'an Dili), Kur'an Yolu.
+
+**Hadis (10 yeni + 7 mevcut):** Müsned, Keşfü'l-Hafâ, el-Müstedrek, Mecmaü'z-Zevâid, Feyzü'l-Kadîr, Dârimî,
+Kenzü'l-Ummâl, Sahîh-i İbn Hibbân (el-İhsân), el-Câmiu's-Sağîr, el-Mu'cemü's-Sağîr; mevcut Kütüb-i Sitte ve Muvatta.
+
+**Boyut:** tefsirler ≈225 MB (≈24 milyon kelime, ≈820 bin cümle; Âlûsî ve Bursevî ikisi birlikte ≈62 MB), hadis
+≈92 MB. Vektör ücreti birkaç dolar; sunucu belleği 8 GB'a çıkmalı (M1'de kesinleşir).

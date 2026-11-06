@@ -13,6 +13,7 @@ import json
 from dataclasses import dataclass
 from pathlib import Path
 
+from risale_mcp.catalog.excluded import openiti_reason
 from risale_mcp.sources.archive import fetch_cached, read_raw, write_manifest
 from risale_mcp.sources.http import PoliteClient
 
@@ -27,6 +28,10 @@ class Text:
     repo: str
     commit: str
     path: str
+
+    def __post_init__(self):
+        if reason := openiti_reason(self.path):
+            raise ValueError(f"kaynak alınmaz ({reason}): {self.path}")
 
     @property
     def version(self) -> str:

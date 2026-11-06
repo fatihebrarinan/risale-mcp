@@ -16,6 +16,21 @@ if len(_BY_SLUG) != len(WORKS):
     raise ValueError("Katalogda aynı kimlikle iki eser var.")
 
 
+def _excluded_problems(works) -> list[str]:
+    """Kaynak alınmayacak yazarın eseri katalogda olamaz (`catalog/excluded.py`)."""
+    from risale_mcp.catalog.excluded import AUTHORS
+    from risale_mcp.normalize import search_words
+    out = []
+    for work in works:
+        text = " ".join(search_words(" ".join(filter(None, (work.author, work.title, work.slug)))))
+        out += [f"{work.slug}: {reason}" for name, reason in AUTHORS.items() if name in text]
+    return out
+
+
+if _bad := _excluded_problems(WORKS):
+    raise ValueError("Katalogda kaynak alınmayacak eser: " + "; ".join(_bad))
+
+
 def get_work(slug: str) -> Work:
     try:
         return _BY_SLUG[slug]

@@ -76,4 +76,5 @@ nurpedia'dan gelir; yalnız nurpedia'nın resim verdiği tablolar PDF'ten, kulla
 | Kaynak | İstek | Durum |
 |---|---|---|
 | Prof. Dr. Ahmed Akgündüz | Kızıl İcaz tercümesi: izin ve dijital nüsha, Ta'likat tercümesi de | Cevap bekleniyor (Aşama 17) |
+| Diyanet İşleri Başkanlığı | Kur'an Yolu ve Hak Dini Kur'an Dili'nin (Diyanet baskısı) tefsir sunucusunda kullanımı, dijital nüsha (`docs/diyanet-izin-epostasi.md`) | Taslak hazır, kullanıcı gönderecek (2026-11-06) |
 | Yeni Asya | Ortak proje, izinli PDF'ler | Planda; mevcut veri kullanılmıyor |

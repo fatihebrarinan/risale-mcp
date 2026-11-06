@@ -574,5 +574,13 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   Muhammed Abduh'tan kaynak alınmaz (Menâr'ın da hariç tutulması soruldu). Hadis önerileri Risale'nin künye
   sıklığından (`data/interim/hadis/kunye.md`): Müsned, Keşfü'l-Hafâ, Müstedrek, Mecmaü'z-Zevâid, Feyzü'l-Kadîr,
   Dârimî, Kenzü'l-Ummâl, İbn Hibbân, Câmiu's-Sağîr, Mu'cemü's-Sağîr (kitap anmalarının %39'u → %71). İlk kapasite
-  tahmini: vektör ücreti küçük (birkaç $), belirleyici sunucu belleği (8 GB öneri). Yedi soru kullanıcıda.
-- **Sırada:** M0'ın soruları, Y0.6 (dizin politikaları, M7'den önce).
+  tahmini: vektör ücreti küçük (birkaç $), belirleyici sunucu belleği (8 GB öneri).
+- **M0 kararları (kullanıcı, 2026-11-06):** MVP tefsirleri 13 (Taberî, Mâtürîdî, Keşşâf, Râzî, Kurtubî, Beyzâvî
+  tamamı, Nesefî, İbn Kesîr, Celâleyn, Suyûtî ed-Dürrü'l-Mensûr, Ebüssuûd, Bursevî, Âlûsî; hepsi OpenITI), hadiste
+  önerilen ilk dilim (10 kitap + mevcut Kütüb-i Sitte ve Muvatta; "Mucmelussair" = el-Mu'cemü's-Sağîr). Fî Zılâl
+  eklenmez, listede kalır. Elmalılı ve Kur'an Yolu için izin MVP sürerken Diyanet'ten (`docs/diyanet-izin-epostasi.md`,
+  kullanıcı gönderir), izin gelince eklenir. Abduh ve Menâr kaynak alınmaz: `catalog/excluded.py` (OpenITI'den
+  indirilemez, katalogda yazar olamaz). Klasik eserler sunucusu (İhyâ, Miftâh, Cürcânî) MVP'den sonra. Liste son hâli
+  değil; MVP şişirilmez. eş-Şifâ sorusu cevapsız (MVP'de değil).
+- **Sırada:** M1 (kapasite ve maliyet, nüsha seçimiyle), Y0.6 (dizin politikaları, M7'den önce); Diyanet e-postası
+  kullanıcıda.
