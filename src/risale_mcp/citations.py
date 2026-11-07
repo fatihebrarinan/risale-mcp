@@ -73,8 +73,13 @@ _ENTRY = re.compile(r"^\s*(?:[-*]\s*)?\[(\d+)\]")          # kaynakça satırı:
 _MARKERS = re.compile(r"((?:\s*\[\d+(?:\s*[,–-]\s*\d+)*\])+)\s*$")   # bloğun sonundaki "[1]", "[1][2]", "[1, 2]"
 
 
+# Baskının dipnot işaretleri ("المنارة (9) الشرقية", "بباب لد «2»", "[44]كذا"): karşılaştırmada iki tarafta da yok
+# sayılır; model alıntıda onları atlayınca alıntı bulunamıyordu (İbn Kesîr, 2026-11-07). Metin değişmez.
+_NOTE_MARK = re.compile(r"[(«\[]\s*[0-9٠-٩]{1,3}\s*[)»\]]")
+
+
 def _key(text: str) -> str:
-    return " ".join(search_words(text))
+    return " ".join(search_words(_NOTE_MARK.sub(" ", text)))
 
 
 def _clean(text: str) -> str:

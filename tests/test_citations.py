@@ -286,3 +286,12 @@ def test_find_hadith_gives_model_readings_as_leads_on_the_personal_server():
         assert "tirmidhi:2687" in same                                     # künyedeki Tirmizî, İlim: 19'da
     finally:
         lib.close()
+
+
+def test_edition_note_marks_are_ignored_in_quotes():
+    # İbn Kesîr'in baskısı: "(9)" dipnot işareti; model alıntıda atlar (2026-11-07)
+    from risale_mcp.citations import _block_parts, _key
+    text = _key("وفيها دلالة على صفة نزوله ومكانه، عند المنارة (9) الشرقية، كقوله [تعالى] (3) {وإنه لعلم للساعة} بباب لد «2» فيقتله")
+    for quote in ("عند المنارة الشرقية", "كقوله [تعالى] {وإنه لعلم للساعة}", "بباب لد فيقتله", "عند المنارة (9) الشرقية"):
+        assert all(p in text for p in _block_parts(quote)), quote
+    assert _key("Sözler (asm)") == _key("Sözler (asm)") and "32" in _key("32. cümle")
