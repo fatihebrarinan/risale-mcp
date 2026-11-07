@@ -101,6 +101,8 @@ CHATGPT_CALLBACK_PREFIX = "https://chatgpt.com/connector/oauth/"
 
 USAGE_DAYS = 90                        # kullanım kaydının saklama süresi (gizlilik politikasında yazılı)
 DEBUG_DAYS = 7                         # ayrıntılı kayıttaki parametrelerin saklama süresi (gizlilik politikasında yazılı)
+# Dışarıdan görünen yol: Caddy /hadis/<anahtar> ve /tefsir/<anahtar>'ı ilgili sürecin /mcp/<anahtar>'ına çevirir.
+DEBUG_PATHS = {"genel": "mcp", "hadis": "hadis", "tefsir": "tefsir"}
 DEBUG_USER = "(debug)"                 # açık kipte hata ayıklama adresinden gelen isteklerin kayıttaki kullanıcısı
 DEBUG_HEADER = b"x-risale-debug"       # OpenGate'in hata ayıklama isteğine eklediği başlık (dışarıdan geleni siler)
 
@@ -154,10 +156,11 @@ CREATE TABLE IF NOT EXISTS usage (
     error     TEXT
 );
 CREATE INDEX IF NOT EXISTS usage_ts ON usage(ts);
--- açık kipin gizli hata ayıklama adresi (/mcp/<anahtar>); anahtarın yalnızca SHA-256 özeti
+-- açık kipin gizli hata ayıklama adresi (/mcp/<anahtar>); anahtarın yalnızca SHA-256 özeti, sunucu başına bir tane
 CREATE TABLE IF NOT EXISTS debug_keys (
     hash      TEXT PRIMARY KEY,
-    created   REAL NOT NULL
+    created   REAL NOT NULL,
+    server    TEXT NOT NULL DEFAULT 'genel'
 );
 """
 
@@ -219,6 +222,8 @@ class AuthStore:
             self.conn.execute("ALTER TABLE users ADD COLUMN debug INTEGER NOT NULL DEFAULT 0")
         if "server" not in {row["name"] for row in self.conn.execute("PRAGMA table_info(usage)")}:
             self.conn.execute("ALTER TABLE usage ADD COLUMN server TEXT")      # eski kayıtlar: genel
+        if "server" not in {row["name"] for row in self.conn.execute("PRAGMA table_info(debug_keys)")}:
+            self.conn.execute("ALTER TABLE debug_keys ADD COLUMN server TEXT NOT NULL DEFAULT 'genel'")
         self._clear_params(time.time())
         self._pruned = 0.0
 
@@ -269,20 +274,26 @@ class AuthStore:
 
     # ------------------------------------------------------------ açık kipin hata ayıklama adresi
 
+    # Anahtar sunucu başınadır (`self.server`): aynı makinedeki genel ve hadis sunucusu tek auth.db'yi paylaşır,
+    # birinin adresini yenilemek ya da kapatmak öbürününkine dokunmaz.
+
     def new_debug_key(self) -> str:
-        """Yeni anahtar; eskileri geçersiz olur. Anahtarın kendisi yalnızca bir kez gösterilir."""
+        """Bu sunucuya yeni anahtar; eskisi geçersiz olur. Anahtarın kendisi yalnızca bir kez gösterilir."""
         key = secrets.token_urlsafe(24)
-        self._run("DELETE FROM debug_keys")
-        self._run("INSERT INTO debug_keys VALUES (?, ?)", (_digest(key), time.time()))
+        self._run("DELETE FROM debug_keys WHERE server = ?", (self.server,))
+        self._run("INSERT INTO debug_keys (hash, created, server) VALUES (?, ?, ?)",
+                  (_digest(key), time.time(), self.server))
         return key
 
     def revoke_debug_key(self) -> None:
-        """Adresi kapatır, o adresten kaydedilmiş parametreleri siler."""
-        self._run("DELETE FROM debug_keys")
-        self._run("UPDATE usage SET params = NULL WHERE user = ?", (DEBUG_USER,))
+        """Bu sunucunun adresini kapatır, o adresten kaydedilmiş parametreleri siler."""
+        self._run("DELETE FROM debug_keys WHERE server = ?", (self.server,))
+        self._run("UPDATE usage SET params = NULL WHERE user = ? AND coalesce(server, 'genel') = ?",
+                  (DEBUG_USER, self.server))
 
     def is_debug_key(self, key: str) -> bool:
-        return bool(key) and bool(self._run("SELECT 1 FROM debug_keys WHERE hash = ?", (_digest(key),)))
+        return bool(key) and bool(self._run("SELECT 1 FROM debug_keys WHERE hash = ? AND server = ?",
+                                            (_digest(key), self.server)))
 
     def login(self, name: str, password: str, now: float | None = None) -> tuple[bool, str | None]:
         """(başarılı mı, hata iletisi). Yanlış denemeler sayılır, sınırı aşan hesap kilitlenir."""
@@ -343,9 +354,14 @@ class AuthStore:
         return self._run("SELECT count(*) FROM usage WHERE user IS NULL AND method = 'tools/call' AND name = ?"
                          " AND ts >= ? AND COALESCE(server, 'genel') = ?", (tool, since, self.server))[0][0]
 
-    def usage(self, user: str | None = None, limit: int = 50) -> list[sqlite3.Row]:
-        sql = "SELECT * FROM usage" + (" WHERE user = ?" if user else "") + " ORDER BY ts DESC LIMIT ?"
-        return self._run(sql, (user, limit) if user else (limit,))
+    def usage(self, user: str | None = None, limit: int = 50, server: str | None = None) -> list[sqlite3.Row]:
+        where, params = [], []
+        if user:
+            where.append("user = ?"); params.append(user)
+        if server:
+            where.append("coalesce(server, 'genel') = ?"); params.append(server)
+        sql = "SELECT * FROM usage" + (" WHERE " + " AND ".join(where) if where else "") + " ORDER BY ts DESC LIMIT ?"
+        return self._run(sql, (*params, limit))
 
 
 class Provider:
@@ -733,6 +749,8 @@ def _when(ts: float) -> str:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="risale-mcp auth", description="Hesaplar, oturumlar ve kullanım kaydı.")
     parser.add_argument("--db", type=Path, default=AUTH_DB)
+    parser.add_argument("--server", choices=sorted(DEBUG_PATHS), default="genel",
+                        help="hangi sunucunun hata ayıklama adresi (genel ve hadis aynı auth.db'de, anahtarları ayrı)")
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("add-user", "passwd", "remove-user"):
         p = sub.add_parser(name)
@@ -751,6 +769,7 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--user")
     p.add_argument("--limit", type=int, default=50)
     p.add_argument("--params", action="store_true", help="ayrıntılı kayıttaki parametreleri de göster")
+    p.add_argument("--only", metavar="SUNUCU", help="yalnız bu sunucunun kaydı (genel, hadis, tefsir)")
     p = sub.add_parser("debug-url", help="açık kipin gizli hata ayıklama adresi: yeni anahtar ya da kapatma")
     group = p.add_mutually_exclusive_group(required=True)
     group.add_argument("--new", action="store_true")
@@ -760,7 +779,7 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("user")
     p.add_argument("state", choices=["on", "off"])
     args = parser.parse_args(argv)
-    store = AuthStore(args.db)
+    store = AuthStore(args.db, server=args.server)
     try:
         if args.command == "add-user":
             password = secrets.token_urlsafe(15) if args.generate else _ask_password()
@@ -785,17 +804,18 @@ def main(argv: list[str] | None = None) -> None:
             count = store.revoke(user=args.user, session=args.session) if not args.all else store.revoke()
             print(f"{count} jeton silindi.")
         elif args.command == "usage":
-            for u in reversed(store.usage(args.user, args.limit)):
+            for u in reversed(store.usage(args.user, args.limit, args.only)):
                 status = f"HATA {u['error']}" if u["error"] else f"{u['ms']} ms"
-                print(f"{_when(u['ts'])} {u['user'] or '-':12} {u['method']:16} {u['name'] or '':18} {status}")
+                print(f"{_when(u['ts'])} {u['server'] or 'genel':6} {u['user'] or '-':12} {u['method']:16} "
+                      f"{u['name'] or '':18} {status}")
                 if args.params and u["params"]:
                     print(f"    {u['params']}")
         elif args.command == "debug-url":
             if args.revoke:
                 store.revoke_debug_key()
-                print("Hata ayıklama adresi kapatıldı, kayıtlı parametreleri silindi.")
+                print(f"{args.server}: hata ayıklama adresi kapatıldı, kayıtlı parametreleri silindi.")
             else:
-                print(f"{args.base.rstrip('/')}/mcp/{store.new_debug_key()}\n"
+                print(f"{args.base.rstrip('/')}/{DEBUG_PATHS[args.server]}/{store.new_debug_key()}\n"
                       f"(eski adres geçersiz; bu adrese gelen istekler girdileriyle {DEBUG_DAYS} gün saklanır)")
         elif args.command == "debug":
             store.set_debug(args.user, args.state == "on")

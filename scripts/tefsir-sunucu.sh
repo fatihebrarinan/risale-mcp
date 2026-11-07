@@ -8,6 +8,9 @@
 #
 #   TEFSIR_HOST=root@<tailscale adresi> scripts/tefsir-sunucu.sh kur      # ilk kurulum: kullanıcı, uv, güvenlik duvarı
 #   TEFSIR_HOST=root@<tailscale adresi> scripts/tefsir-sunucu.sh gonder   # kod, tefsir profilinin verisi, servis
+#   scripts/tefsir-sunucu.sh auth debug-url --new | --revoke   # gizli hata ayıklama adresi (/tefsir/<anahtar>)
+#   scripts/tefsir-sunucu.sh auth usage --user '(debug)' --params   # o adresten gelen isteklerin kaydı
+#   scripts/tefsir-sunucu.sh status | restart | logs
 #
 # Sonra ana makinede docs/Caddyfile'a /tefsir bloğu (adresle) eklenir ve scripts/deploy.sh --code çalışır.
 # Kullanım kaydı (auth.db) bu makinede ayrı tutulur.
@@ -53,6 +56,14 @@ gonder)
         && sleep 5 && systemctl is-active risale-mcp-tefsir && free -m | head -2"
     mv "$SNAPSHOTS/tefsir-aday-$STAMP" "$SNAPSHOTS/tefsir-yayin-$STAMP"
     ;;
+auth)
+    shift
+    args=$(printf ' %q' "$@")
+    ssh -i "$KEY" -t "$HOST" "su - risale -c 'cd risale-mcp && .venv/bin/risale-mcp auth --server tefsir$args'" ;;
+status|restart)
+    "${SSH[@]}" "$HOST" "systemctl $1 risale-mcp-tefsir; systemctl --no-pager status risale-mcp-tefsir | head -5" ;;
+logs)
+    ssh -i "$KEY" -t "$HOST" "journalctl -u risale-mcp-tefsir -f" ;;
 *)
-    echo "kullanım: TEFSIR_HOST=root@<adres> $0 kur|gonder"; exit 2 ;;
+    echo "kullanım: TEFSIR_HOST=root@<adres> $0 kur|gonder|auth …|status|restart|logs"; exit 2 ;;
 esac

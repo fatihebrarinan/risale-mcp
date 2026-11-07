@@ -407,6 +407,15 @@ def test_debug_address_logs_parameters_and_is_not_limited(opened, store):
     assert opened.post(f"/mcp/{key}", headers=MCP_HEADERS, json={"jsonrpc": "2.0", "id": 1, "method": "ping"}).status_code == 404
 
 
+def test_debug_keys_are_per_server(store):
+    hadis = AuthStore(store.path, server="hadis")
+    genel_key, hadis_key = store.new_debug_key(), hadis.new_debug_key()
+    assert store.is_debug_key(genel_key) and not store.is_debug_key(hadis_key)
+    assert hadis.is_debug_key(hadis_key) and not hadis.is_debug_key(genel_key)
+    hadis.revoke_debug_key()                               # öbür sunucunun adresi açık kalır
+    assert store.is_debug_key(genel_key) and not hadis.is_debug_key(hadis_key)
+
+
 def test_debug_header_from_outside_is_ignored(opened, store):
     session = open_path_session(opened, extra={"X-Risale-Debug": "1"})
     open_call(opened, session, "search", {"query": "kiyamet"})
