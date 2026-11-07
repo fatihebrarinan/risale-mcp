@@ -612,8 +612,8 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 - **M5 tefsir sunucusu (yerelde, 2026-11-06):** `docs/mvp-kitaplar.md` "M5". Profil `tefsir` (Kur'ân + 13 müfessir,
   1,3 GB), `risale-mcp --profile tefsir`: ad `tefsir`, `TEFSIR_INSTRUCTIONS` (damgalı model tercümesi, ilişki yorumdur,
   Risale kendi bağdaştırıcısında), 11 araç (hadis araçları, kaynaklar, hazır komutlar yok). `find_ayah` müfessirleri
-  vefat sırasıyla verir (`catalog/tefsir.DIED`). Genel sunucuda fark yalnız M4'ün `search`'ü. Eksik: vektörler (ücret
-  onayı), Risale bağlarının tefsir sunucusunda atıfla gösterimi, altın sorular.
+  vefat sırasıyla verir (`catalog/tefsir.DIED`). Genel sunucuda fark yalnız M4'ün `search`'ü. O gün eksik olan
+  vektörler, Risale bağlarının atıfla gösterimi ve altın sorular 2026-11-07'de tamamlandı (aşağıda).
 - **Gece işi kararları (kullanıcı, 2026-11-06):** hadis birimi şeması onaylandı (atıf birimi hadis `musned/14870`,
   kitap/bâb/sahâbî ağacı adres, katmanlar ayrı; uzun şerhte cümle); eş-Şifâ ve Delâil eklenir; HA2: Risale'nin
   hadisleri yalnız kütüphaneyle eşlenir (genel sunucuya sabah onayıyla); vektörler tefsir ve hadis, üst sınır 150
@@ -650,4 +650,10 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   tefsiri birimine döndü, ed-Dürrü'l-Mensûr'un kayık Fâtiha birimleri 1:1 ve 2–7 oldu (`docs/mvp-kitaplar.md` "Sabah").
   Sunucular: risale ve hadis aynı makinede, tefsir ayrı makinede (kullanıcının kararı; ölçüm hadis ≈250 MB, tefsir
   ≈1,2 GB); hadis için `scripts/deploy.sh --hadis` ve `/hadis` yolu, tefsir için `scripts/tefsir-sunucu.sh` hazır;
-  kullanım kaydı `server` sütunu taşır. Dizin başvurusu kullanıcıda, acelesi yok.
+  kullanım kaydı `server` sütunu taşır. Dizin başvurusu kullanıcıda, acelesi yok. Ön metinlerden sonra tefsir bağları
+  yenilendi (43.112 âyet birimi, 403.526 Kur'ân alıntısı; 94 denetim kararının hepsi bağını buluyor), yeni cümlelerin
+  vektörleri 5.943 (0,45 M token); yerel ve tefsir profilinde kimlik değişikliği kabul edildi, genel profil aynı.
+- **MVP'nin kalanı (2026-11-07 denetimi, `docs/tefsir-pilot-degerlendirme.md` "Kalan"):** M5'te risale talimatının
+  öbür bağdaştırıcılara gönderme cümlesi (yayınla) ve tefsir/hadis sunucuları için H0 (kendi araç çağrı seti) ile
+  hadis profili için H1 (kimlik manifestosu); M6'da üç bağdaştırıcı birlikte ölçüm; M7'de genel çıkış kararı
+  (müfessirler `private`'tan çıkar), hadis sunucusunu açma onayı, tefsir makinesi, site sayfaları ve gizlilik eki.
