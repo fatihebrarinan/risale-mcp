@@ -667,6 +667,10 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   bağdaştırıcının kaynakları da varsa tek Kaynaklar listesi, numara sürer" der; tefsir talimatı 13 eserin kimliğini
   yazarıyla listeler (katalogdan). Araç çıktısında fark yalnız `cite` ve talimat; genel sunucuya
   `DEPLOY_EXPECT="cite instructions"` ile.
+- **Yayın (2026-11-07):** genel sunucu (`yayin-20261107-224059`: `cite` `first`, tek kaynakça kuralı) ve **hadis
+  sunucusu** `https://mcp.risalemcp.com/hadis` (aynı makine, servis `risale-mcp-hadis`, 127.0.0.1:8001; ilk kayıt
+  `hadis-yayin-20261107-224059`, sürüm `2026-11-07`). Bellek: genel 376 MB, hadis 87 MB (ısınınca ≈250 MB), makine
+  3,8 GB. Uzaktan denendi: 9 araç, kelime ve anlamsal arama, künye. Sitede sayfası ve gizlilik eki henüz yok.
 - **MVP'nin kalanı (2026-11-07 denetimi, `docs/tefsir-pilot-degerlendirme.md` "Kalan"):** M5'te risale talimatının
   öbür bağdaştırıcılara gönderme cümlesi (yayınla; tek kaynakça kuralı bilgi kipinde öbür bağdaştırıcıları anıyor); M7'de genel çıkış kararı
   (müfessirler `private`'tan çıkar), hadis sunucusunu açma onayı, tefsir makinesi, site sayfaları ve gizlilik eki.

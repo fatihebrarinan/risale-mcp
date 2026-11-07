@@ -45,7 +45,7 @@ if [[ $HADIS == 1 ]]; then
     # Hadis sunucusunun kendi H0/H1'i: sürüm etiketi ve kendi çağrı setiyle (tests/golden/tool_calls_hadis.json)
     # son `hadis-yayin-*` kaydına karşı araç çıktısı; beklenen fark HADIS_EXPECT ile
     [[ $CODE_ONLY == 1 ]] || uv run python -m risale_mcp.manifest release --profile hadis
-    HPREV=$(ls -d "$SNAPSHOTS"/hadis-yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename)
+    HPREV=$(ls -d "$SNAPSHOTS"/hadis-yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename || true)
     uv run python -m risale_mcp.tool_snapshot record "hadis-aday-$STAMP" --profile hadis
     if [[ -n "$HPREV" ]]; then
         # shellcheck disable=SC2086

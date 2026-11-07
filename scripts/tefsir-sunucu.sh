@@ -35,7 +35,7 @@ gonder)
     SNAPSHOTS=data/interim/tool_snapshot
     STAMP=$(date +%Y%m%d-%H%M%S)
     uv run python -m risale_mcp.manifest release --profile tefsir
-    PREV=$(ls -d "$SNAPSHOTS"/tefsir-yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename)
+    PREV=$(ls -d "$SNAPSHOTS"/tefsir-yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename || true)
     uv run python -m risale_mcp.tool_snapshot record "tefsir-aday-$STAMP" --profile tefsir
     if [[ -n "$PREV" ]]; then
         # shellcheck disable=SC2086
