@@ -670,7 +670,18 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 - **Yayın (2026-11-07):** genel sunucu (`yayin-20261107-224059`: `cite` `first`, tek kaynakça kuralı) ve **hadis
   sunucusu** `https://mcp.risalemcp.com/hadis` (aynı makine, servis `risale-mcp-hadis`, 127.0.0.1:8001; ilk kayıt
   `hadis-yayin-20261107-224059`, sürüm `2026-11-07`). Bellek: genel 376 MB, hadis 87 MB (ısınınca ≈250 MB), makine
-  3,8 GB. Uzaktan denendi: 9 araç, kelime ve anlamsal arama, künye. Sitede sayfası ve gizlilik eki henüz yok.
+  3,8 GB. Uzaktan denendi: 9 araç, kelime ve anlamsal arama, künye.
+- **Tefsir makinesi (2026-11-07):** `tefsir-mcp`, Hetzner CAX21 (ARM, 8 GB, Falkenstein `fsn1`), Tailscale
+  `100.98.98.62`, güvenlik duvarı yalnız `tailscale0`; `scripts/tefsir-sunucu.sh kur|gonder` (varsayılan bu adres),
+  servis `risale-mcp-tefsir` 0.0.0.0:8002 (1,3 GB bellek), ilk kayıt `tefsir-yayin-20261107-230200`, sürüm
+  `2026-11-07`. Ana makinenin Caddy'si `/tefsir` ve `/tefsir/<anahtar>` yollarını Tailscale üzerinden ona yönlendirir
+  (`docs/Caddyfile`; ana makineden 200 döndü). Kullanım kaydı o makinede ayrı. Tailscale anahtarlarının süresi
+  dolmamalı (mevcut makinede 2027-04-26): kullanıcıya iki makinede "Disable key expiry" önerildi.
+- **Site (2026-11-07):** `site/hadis.html`, `site/tefsir.html` ve `en/hadith.html`, `en/tafsir.html` (taslaklardan);
+  bütün sayfaların menüsünde Hadis ve Tefsir; ana sayfada ve kurulum sayfalarında bağdaştırıcılar bölümü; belgelerde
+  adresler ve kaynaklar (OpenITI, nurpedia); gizlilik ve kullanım şartları üç bağdaştırıcı ve iki veri merkeziyle (7
+  Kasım 2026); Sanadset kaynak listesinden çıktı (HA2); proje talimatlarına tek kaynakça ve yapay zekâ tercümesi
+  bölümü. Yayın `scripts/deploy.sh --code` ile (Caddy'nin `/tefsir` yolu da onunla gider).
 - **MVP'nin kalanı (2026-11-07 denetimi, `docs/tefsir-pilot-degerlendirme.md` "Kalan"):** M5'te risale talimatının
   öbür bağdaştırıcılara gönderme cümlesi (yayınla; tek kaynakça kuralı bilgi kipinde öbür bağdaştırıcıları anıyor); M7'de genel çıkış kararı
   (müfessirler `private`'tan çıkar), hadis sunucusunu açma onayı, tefsir makinesi, site sayfaları ve gizlilik eki.

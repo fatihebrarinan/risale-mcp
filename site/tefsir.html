@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tefsir · Risale-i Nur MCP</title>
+<meta name="description" content="On üç klasik tefsiri yapay zekâ asistanlarına cümle cümle ve kaynağıyla açan bağdaştırıcı.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css?v=8">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="en" href="/en/tafsir.html">
+<script src="/site.js?v=8" defer></script>
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/belgeler.html">Belgeler</a>
+  <a href="/hadis.html">Hadis</a>
+  <a href="/tefsir.html" aria-current="page">Tefsir</a>
+  <a href="/katki.html">Katkı</a>
+  <a href="/gizlilik.html">Gizlilik</a>
+  <a href="/en/tafsir.html" lang="en">English</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Açık ve koyu görünüm arasında geç" title="Açık ve koyu görünüm arasında geç"></button>
+</nav>
+
+<h1>Tefsir</h1>
+<p class="lead">Tefsir bağdaştırıcısı, yapay zekâ asistanlarına on üç klasik tefsiri açar. Bir âyeti sorduğunuzda asistan her müfessirin o âyetle ilgili sözünü kendi metninden, eserin adı ve âyet birimiyle gösterir.</p>
+
+<h2>Eserler</h2>
+<p>Müelliflerin vefat sırasıyla: Taberî, <em>Câmiu'l-Beyân</em> · Mâtürîdî, <em>Te'vîlâtü'l-Kur'ân</em> · Zemahşerî, <em>el-Keşşâf</em> · Fahreddîn Râzî, <em>Mefâtîhu'l-Gayb</em> · Kurtubî, <em>el-Câmi' li-Ahkâmi'l-Kur'ân</em> · Beyzâvî, <em>Envârü't-Tenzîl</em> · Nesefî, <em>Medâriku't-Tenzîl</em> · İbn Kesîr, <em>Tefsîru'l-Kur'âni'l-Azîm</em> · Celâleyn · Suyûtî, <em>ed-Dürrü'l-Mensûr</em> · Ebüssuûd, <em>İrşâdü'l-Akli's-Selîm</em> · İsmâil Hakkı Bursevî, <em>Rûhu'l-Beyân</em> · Âlûsî, <em>Rûhu'l-Meânî</em>.</p>
+
+<h2>Nasıl çalışır</h2>
+<ul>
+  <li>Her tefsir âyet birimlerine ayrılmıştır; atıf birimi cümledir. Asistan bir âyette önce Risale-i Nur'un o âyete bağlanan yerlerini adı ve bağın türüyle, sonra müfessirleri vefat sırasıyla verir.</li>
+  <li>Metinler Arapça aslıyladır. Arapça bilmiyorsanız asistan alıntının ardından kendi çevirisini verir ve bunun yayımlanmış bir tercüme değil, yapay zekâ tercümesi olduğunu söyler.</li>
+  <li>Muhakkiklerin ve baskıların girişleri (Mâtürîdî ve Kurtubî baskılarında) ayrı katmandır; müellife mal edilmez.</li>
+  <li>İki müfessirin aynı âyetten bahsetmesi aralarında bir ilişki olduğu anlamına gelmez. Asistanın fark ettiği ilişki yorumdur ve ayrı başlıkta durur. Asistanın yazdığı hiçbir şey "tefsir" diye anılmaz; tefsir müfessirin eseridir.</li>
+  <li>Risale-i Nur'un metni bu bağdaştırıcıda yoktur. Risale-i Nur bağdaştırıcısını da eklerseniz asistan metni oradan okur.</li>
+</ul>
+
+<h2>Sınama sorusu</h2>
+<div class="card">Fâtiha'daki "iyyâke na'büdü" âyetini İşârâtü'l-İ'câz ve Beyzâvî nasıl ele alıyor? Kaynaklarıyla.</div>
+
+<h2>Ekleyin</h2>
+<div class="card">
+  <strong>Bağdaştırıcı adresi</strong><br>
+  <code>https://mcp.risalemcp.com/tefsir</code>
+</div>
+<div class="actions">
+  <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Tefsir&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Ftefsir">Claude'a ekle</a>
+</div>
+<ul>
+  <li><strong>Claude</strong> (claude.ai, masaüstü, mobil): düğme ekleme penceresini ad ve adres dolu olarak açar. Elle: <em>Özelleştirme › Bağdaştırıcılar › Ekle › Özel bağdaştırıcı ekle</em>, ad "Tefsir", adres yukarıdaki. Adımlar ve ekran görüntüleri <a href="/claude.html">Claude sayfasında</a>; yalnız ad ve adres farklıdır.</li>
+  <li><strong>ChatGPT</strong>: <em>Eklentiler › Ekle › Özel MCP sunucusu ekle</em>, ad "Tefsir", sunucu URL'si yukarıdaki, <em>Kimlik doğrulama yok</em>. Adımlar <a href="/chatgpt.html">ChatGPT sayfasında</a>.</li>
+  <li><strong>Claude Code</strong>: <code>claude mcp add --transport http tefsir https://mcp.risalemcp.com/tefsir</code></li>
+</ul>
+<p>Hesap gerekmez, ücretsizdir. Risale-i Nur, Hadis ve Tefsir bağdaştırıcıları birbirinden bağımsızdır; üçünü birlikte eklerseniz asistan bir soruda her birinin kaynağını kendi adıyla verir ve hepsini tek bir kaynakça listesinde toplar.</p>
+
+<h2>Kaynaklar ve lisans</h2>
+<p>Metinler <a href="https://openiti.org">OpenITI</a> (KITAB projesi) sürümlerinden, her eserin seçilen baskısıyla gelir; muhakkik ve yayınevi her eserin kaydındadır. Lisans <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.tr">CC BY-NC-SA 4.0</a>: ticari olmayan kullanım, kaynak gösterme, aynı lisansla paylaşma. Âyet birimlerinin sınırları altafsir.com kaynaklı OpenITI sürümünden alınmıştır; metin her zaman seçilen baskınındır. Kur'ân metni <a href="https://tanzil.net">Tanzil</a>'den.</p>
+
+<footer>Risale-i Nur MCP · Nur Hadimleri · <a href="/belgeler.html">Belgeler</a> · <a href="/gizlilik.html">Gizlilik</a> · <a href="/kullanim-sartlari.html">Kullanım şartları</a> · <a href="/en/tafsir.html" lang="en">English</a></footer>
+</main>
+</body>
+</html>

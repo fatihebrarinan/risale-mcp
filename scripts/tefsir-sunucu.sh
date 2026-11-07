@@ -13,7 +13,7 @@
 # Kullanım kaydı (auth.db) bu makinede ayrı tutulur.
 set -euo pipefail
 
-HOST="${TEFSIR_HOST:?TEFSIR_HOST=root@<tailscale adresi> verin}"
+HOST="${TEFSIR_HOST:-root@100.98.98.62}"   # tefsir-mcp (Hetzner CAX21, 8 GB; Tailscale)
 KEY="${RISALE_KEY:-$HOME/.ssh/risale_hetzner}"
 DEST=/home/risale/risale-mcp
 SSH=(ssh -i "$KEY" -o BatchMode=yes)

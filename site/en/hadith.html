@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hadith · Risale-i Nur MCP</title>
+<meta name="description" content="A connector that opens eighteen hadith collections to AI assistants, report by report, with edition and number.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css?v=8">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="tr" href="/hadis.html">
+<script src="/site.js?v=8" defer></script>
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/en/docs.html">Documentation</a>
+  <a href="/en/hadith.html" aria-current="page">Hadith</a>
+  <a href="/en/tafsir.html">Tafsir</a>
+  <a href="/en/contribute.html">Contribute</a>
+  <a href="/en/privacy.html">Privacy</a>
+  <a href="/hadis.html" lang="tr">Türkçe</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+</nav>
+
+<h1>Hadith</h1>
+<p class="lead">The Hadith connector opens eighteen hadith collections to AI assistants. The unit of citation is the report: the assistant shows a report with its book, the edition's number and the printed page.</p>
+
+<h2>Books</h2>
+<p>The Six Books (al-Bukhari, Muslim, Abu Dawud, al-Tirmidhi, al-Nasa'i, Ibn Majah) and the Muwatta · Ahmad b. Hanbal, <em>al-Musnad</em> · al-Darimi, <em>al-Sunan</em> · al-Tabarani, <em>al-Mu'jam al-Saghir</em> · al-Hakim, <em>al-Mustadrak</em> (with al-Dhahabi's notes) · Ibn Hibban, <em>al-Ihsan</em> · al-Haythami, <em>Majma' al-Zawa'id</em> · <em>Kanz al-'Ummal</em> · al-Munawi, <em>Fayd al-Qadir</em> · al-'Ajluni, <em>Kashf al-Khafa</em> · Qadi 'Iyad, <em>al-Shifa</em> · al-Bayhaqi, <em>Dala'il al-Nubuwwa</em>.</p>
+
+<h2>How it works</h2>
+<ul>
+  <li>Search by Arabic words or by meaning (in any language); go from a reference such as "Buharî, Ezân: 148" or "Müsned 14870" to the report; browse the books and chapters.</li>
+  <li><strong>No rulings:</strong> the assistant never decides whether a report is sound or weak. Grades are shown only as the source gives them, with the scholar's name. Notes by al-Dhahabi, al-Albani and the editors are a separate layer, never attributed to the book's author.</li>
+  <li>A reference's volume and page may belong to another edition; the assistant says so. In books without numbers (al-Shifa, Dala'il) the id is this library's sequence and is marked as such.</li>
+  <li>The places in the Risale-i Nur where a report occurs are given by name and citation; their text is on the Risale-i Nur connector.</li>
+  <li>Texts are in their original Arabic; the assistant's translation is labelled an AI translation.</li>
+</ul>
+
+<h2>Test question</h2>
+<div class="card">In which books does the saying "the disagreement of my community is a mercy" occur, and what is said about it? With sources, without a ruling.</div>
+
+<h2>Add it</h2>
+<div class="card">
+  <strong>Connector address</strong><br>
+  <code>https://mcp.risalemcp.com/hadis</code>
+</div>
+<div class="actions">
+  <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Hadis&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fhadis">Add to Claude</a>
+</div>
+<ul>
+  <li><strong>Claude</strong> (claude.ai, desktop, mobile): the button opens the add dialog with the name and address filled in. By hand: <em>Customize › Connectors › Add › Add custom connector</em>, name "Hadis", the address above. Steps and screenshots on the <a href="/en/claude.html">Claude page</a>; only the name and address differ.</li>
+  <li><strong>ChatGPT</strong>: <em>Apps › Add › Add custom MCP server</em>, name "Hadis", the server URL above, <em>No authentication</em>. Steps on the <a href="/en/chatgpt.html">ChatGPT page</a>.</li>
+  <li><strong>Claude Code</strong>: <code>claude mcp add --transport http hadis https://mcp.risalemcp.com/hadis</code></li>
+</ul>
+<p>No account, free of charge. The Risale-i Nur, Hadith and Tafsir connectors are independent; add all three and the assistant gives each one's sources under its own name, in a single bibliography.</p>
+
+<h2>Sources and licence</h2>
+<p>The books come from <a href="https://openiti.org">OpenITI</a> versions (<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>: non-commercial use, attribution, share alike); each book's edition is in its record. The international numbers of the Six Books and the Muwatta and the scholars' grades come from <a href="https://github.com/fawazahmed0/hadith-api">Hadith API</a> (Unlicense). The Qur'an text is from <a href="https://tanzil.net">Tanzil</a>.</p>
+
+<footer>Risale-i Nur MCP · Nur Hadimleri · <a href="/en/docs.html">Documentation</a> · <a href="/en/privacy.html">Privacy</a> · <a href="/en/terms.html">Terms of use</a> · <a href="/hadis.html" lang="tr">Türkçe</a></footer>
+</main>
+</body>
+</html>

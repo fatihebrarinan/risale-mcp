@@ -18,6 +18,8 @@
 <nav>
   <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
   <a href="/en/docs.html">Documentation</a>
+  <a href="/en/hadith.html">Hadith</a>
+  <a href="/en/tafsir.html">Tafsir</a>
   <a href="/en/contribute.html">Contribute</a>
   <a href="/en/privacy.html" aria-current="page">Privacy</a>
   <a href="/gizlilik.html" lang="tr">Türkçe</a>
@@ -25,9 +27,9 @@
 </nav>
 
 <h1>Privacy Policy</h1>
-<p class="lead">Last updated: 29 October 2026</p>
+<p class="lead">Last updated: 7 November 2026</p>
 
-<p>Risale-i Nur MCP is a connector (MCP server) that gives AI assistants such as Claude and ChatGPT access to the works of Bediüzzaman Said Nursî. This page describes what data the connector (<code>mcp.risalemcp.com</code>) and this website (<code>risalemcp.com</code>) process. Our principle: collect nothing we do not need to do the job.</p>
+<p>Risale-i Nur MCP is a connector (MCP server) that gives AI assistants such as Claude and ChatGPT access to the works of Bediüzzaman Said Nursî. This page describes what data the three connectors, Risale-i Nur (<code>mcp.risalemcp.com/mcp</code>), Hadith (<code>/hadis</code>) and Tafsir (<code>/tefsir</code>), and this website (<code>risalemcp.com</code>) process. The same rules apply to all three. Our principle: collect nothing we do not need to do the job.</p>
 
 <h2>Who is responsible</h2>
 <p>Nur Hadimleri, a volunteer, independent project. Contact: <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></p>
@@ -40,14 +42,14 @@
 <p>To keep the service running and to limit abuse, the following is logged for each request:</p>
 <ul>
   <li>the time,</li>
-  <li>the tool or request type,</li>
+  <li>which connector, and the tool or request type,</li>
   <li>how long the request took and, if it failed, the type of error.</li>
 </ul>
 <p>Search phrases, quotations and conversation content are <strong>not</strong> logged. Log entries are deleted after <strong>90 days</strong>.</p>
 <p>The one exception is debugging: the people who run the service use a secret address of their own to see how the connector is used in chat applications. Only for requests to that address are the tool inputs, result sizes and error messages kept, for <strong>7 days</strong>. Your requests go to the public address and never enter this record.</p>
 
 <h3>IP addresses and cookies</h3>
-<p>The server keeps no access log; your IP address is not recorded. Usage limits apply to all use together, not per person. Neither this website nor the connector uses cookies, analytics or advertising tools. If you choose the light or dark theme with the button, that choice is stored only in your own browser and never sent to the server.</p>
+<p>The server keeps no access log; your IP address is not recorded. Usage limits apply to all use of each connector together, not per person. Neither this website nor the connector uses cookies, analytics or advertising tools. If you choose the light or dark theme with the button, that choice is stored only in your own browser and never sent to the server.</p>
 
 <h3>Search by meaning</h3>
 <p>For search by meaning (<code>semantic_search</code>), the search phrase is sent to <a href="https://www.voyageai.com">Voyage AI</a>, which turns its meaning into numbers. Only the phrase is sent, not your conversation. The server keeps the result in memory while it runs and never writes it to disk. How Voyage AI handles data is described in <a href="https://www.voyageai.com/privacy">its privacy policy</a>.</p>
@@ -59,7 +61,7 @@
 <p>Data is not sold and not used for advertising or profiling. It is shared with no one other than Voyage AI as described above. The chat application you use (e.g. Claude, ChatGPT) processes your conversation under its own policy: for Claude, <a href="https://www.anthropic.com/legal/privacy">Anthropic's privacy policy</a> applies, for ChatGPT, <a href="https://openai.com/policies/privacy-policy/">OpenAI's</a>.</p>
 
 <h2>Hosting</h2>
-<p>The server runs in Hetzner Online's Helsinki data center (Finland, EU) (<a href="https://www.hetzner.com/legal/privacy-policy/">Hetzner privacy policy</a>). The domain's DNS records are at Cloudflare; traffic does not pass through Cloudflare.</p>
+<p>The Risale-i Nur and Hadith connectors and this website run in Hetzner Online's Helsinki data center (Finland, EU), the Tafsir connector in its Falkenstein data center (Germany, EU) (<a href="https://www.hetzner.com/legal/privacy-policy/">Hetzner privacy policy</a>). Tafsir requests are passed from the Helsinki server to Falkenstein over our own encrypted network (Tailscale, WireGuard); only the tool's input and result are passed. The domain's DNS records are at Cloudflare; traffic does not pass through Cloudflare.</p>
 
 <h2>Your rights</h2>
 <p>To learn what data is held about you, or to have it corrected or deleted, write to <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a>. The record cannot be linked to a person, so there is no personal data to give.</p>

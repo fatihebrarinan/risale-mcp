@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Hadis · Risale-i Nur MCP</title>
+<meta name="description" content="On sekiz hadis kitabını yapay zekâ asistanlarına rivayet rivayet, baskısı ve numarasıyla açan bağdaştırıcı.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css?v=8">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="en" href="/en/hadith.html">
+<script src="/site.js?v=8" defer></script>
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/belgeler.html">Belgeler</a>
+  <a href="/hadis.html" aria-current="page">Hadis</a>
+  <a href="/tefsir.html">Tefsir</a>
+  <a href="/katki.html">Katkı</a>
+  <a href="/gizlilik.html">Gizlilik</a>
+  <a href="/en/hadith.html" lang="en">English</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Açık ve koyu görünüm arasında geç" title="Açık ve koyu görünüm arasında geç"></button>
+</nav>
+
+<h1>Hadis</h1>
+<p class="lead">Hadis bağdaştırıcısı, yapay zekâ asistanlarına on sekiz hadis kitabını açar. Atıf birimi hadistir: asistan bir rivayeti kitabı, baskının numarası ve basılı sayfasıyla gösterir.</p>
+
+<h2>Kitaplar</h2>
+<p>Kütüb-i Sitte (Buhârî, Müslim, Ebû Dâvûd, Tirmizî, Nesâî, İbn Mâce) ve Muvatta · Ahmed b. Hanbel, <em>Müsned</em> · Dârimî, <em>Sünen</em> · Taberânî, <em>el-Mu'cemü's-Sağîr</em> · Hâkim, <em>el-Müstedrek</em> (Zehebî'nin notlarıyla) · İbn Hibbân, <em>el-İhsân</em> · Heysemî, <em>Mecmaü'z-Zevâid</em> · <em>Kenzü'l-Ummâl</em> · Münâvî, <em>Feyzü'l-Kadîr</em> · Aclûnî, <em>Keşfü'l-Hafâ</em> · Kādî İyâz, <em>eş-Şifâ</em> · Beyhakî, <em>Delâilü'n-Nübüvve</em>.</p>
+
+<h2>Nasıl çalışır</h2>
+<ul>
+  <li>Arapça kelimeyle ya da anlamla (Türkçe soruyla da) arama; "Buharî, Ezân: 148" ya da "Müsned 14870" gibi bir künyeden rivayete gitme; kitap ve bâb ağacında gezinme.</li>
+  <li><strong>Hüküm verilmez:</strong> asistan bir hadisin sahih ya da zayıf olduğuna kendisi karar vermez. Dereceler yalnız kaynağın verdiği gibi ve âlimin adıyla gösterilir. Zehebî'nin, Elbânî'nin ve muhakkiklerin notları ayrı katmandır, kitabın müellifine mal edilmez.</li>
+  <li>Künyedeki cilt ve sayfa başka bir baskıya ait olabilir; asistan bunu söyler. Numarası olmayan kitaplarda (eş-Şifâ, Delâil) kimlik bu kütüphanenin sırasıdır ve öyle belirtilir.</li>
+  <li>Bir rivayetin Risale-i Nur'da geçtiği yerler adı ve atfıyla verilir; metni Risale-i Nur bağdaştırıcısındadır.</li>
+  <li>Metinler Arapça aslıyladır; asistanın çevirisi "yapay zekâ tercümesi" diye belirtilir.</li>
+</ul>
+
+<h2>Sınama sorusu</h2>
+<div class="card">"Ümmetimin ihtilafı rahmettir" sözü hangi kitaplarda geçiyor, hakkında ne deniyor? Hüküm vermeden, kaynaklarıyla.</div>
+
+<h2>Ekleyin</h2>
+<div class="card">
+  <strong>Bağdaştırıcı adresi</strong><br>
+  <code>https://mcp.risalemcp.com/hadis</code>
+</div>
+<div class="actions">
+  <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Hadis&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fhadis">Claude'a ekle</a>
+</div>
+<ul>
+  <li><strong>Claude</strong> (claude.ai, masaüstü, mobil): düğme ekleme penceresini ad ve adres dolu olarak açar. Elle: <em>Özelleştirme › Bağdaştırıcılar › Ekle › Özel bağdaştırıcı ekle</em>, ad "Hadis", adres yukarıdaki. Adımlar ve ekran görüntüleri <a href="/claude.html">Claude sayfasında</a>; yalnız ad ve adres farklıdır.</li>
+  <li><strong>ChatGPT</strong>: <em>Eklentiler › Ekle › Özel MCP sunucusu ekle</em>, ad "Hadis", sunucu URL'si yukarıdaki, <em>Kimlik doğrulama yok</em>. Adımlar <a href="/chatgpt.html">ChatGPT sayfasında</a>.</li>
+  <li><strong>Claude Code</strong>: <code>claude mcp add --transport http hadis https://mcp.risalemcp.com/hadis</code></li>
+</ul>
+<p>Hesap gerekmez, ücretsizdir. Risale-i Nur, Hadis ve Tefsir bağdaştırıcıları birbirinden bağımsızdır; üçünü birlikte eklerseniz asistan bir soruda her birinin kaynağını kendi adıyla verir ve hepsini tek bir kaynakça listesinde toplar.</p>
+
+<h2>Kaynaklar ve lisans</h2>
+<p>Kitaplar <a href="https://openiti.org">OpenITI</a> sürümlerinden (<a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.tr">CC BY-NC-SA 4.0</a>: ticari olmayan kullanım, kaynak gösterme, aynı lisansla paylaşma); her kitabın baskısı kaydındadır. Kütüb-i Sitte ve Muvatta'nın uluslararası numaraları ve âlimlerin dereceleri <a href="https://github.com/fawazahmed0/hadith-api">Hadith API</a>'den (Unlicense). Kur'ân metni <a href="https://tanzil.net">Tanzil</a>'den.</p>
+
+<footer>Risale-i Nur MCP · Nur Hadimleri · <a href="/belgeler.html">Belgeler</a> · <a href="/gizlilik.html">Gizlilik</a> · <a href="/kullanim-sartlari.html">Kullanım şartları</a> · <a href="/en/hadith.html" lang="en">English</a></footer>
+</main>
+</body>
+</html>

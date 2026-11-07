@@ -23,6 +23,16 @@ mcp.risalemcp.com {
 		rewrite * /mcp{path}
 		reverse_proxy 127.0.0.1:8001
 	}
+	# Tefsir bağdaştırıcısı: ayrı makine (tefsir-mcp, Tailscale 100.98.98.62; docs/risale-mcp-tefsir.server.service,
+	# scripts/tefsir-sunucu.sh), yalnız Tailscale'den erişilir; o da /mcp'de dinler, Host başlığı korunur.
+	handle /tefsir {
+		rewrite * /mcp
+		reverse_proxy 100.98.98.62:8002
+	}
+	handle_path /tefsir/* {
+		rewrite * /mcp{path}
+		reverse_proxy 100.98.98.62:8002
+	}
 	reverse_proxy 127.0.0.1:8000
 }
 

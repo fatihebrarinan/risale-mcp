@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tafsir · Risale-i Nur MCP</title>
+<meta name="description" content="A connector that opens thirteen classical tafsir works to AI assistants, sentence by sentence and with sources.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css?v=8">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="tr" href="/tefsir.html">
+<script src="/site.js?v=8" defer></script>
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/en/docs.html">Documentation</a>
+  <a href="/en/hadith.html">Hadith</a>
+  <a href="/en/tafsir.html" aria-current="page">Tafsir</a>
+  <a href="/en/contribute.html">Contribute</a>
+  <a href="/en/privacy.html">Privacy</a>
+  <a href="/tefsir.html" lang="tr">Türkçe</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+</nav>
+
+<h1>Tafsir</h1>
+<p class="lead">The Tafsir connector opens thirteen classical works of Qur'anic exegesis to AI assistants. Ask about a verse and the assistant shows what each exegete says about it, from the work's own text, with the work and the verse unit.</p>
+
+<h2>Works</h2>
+<p>In order of their authors' deaths: al-Tabari, <em>Jami' al-Bayan</em> · al-Maturidi, <em>Ta'wilat al-Qur'an</em> · al-Zamakhshari, <em>al-Kashshaf</em> · Fakhr al-Din al-Razi, <em>Mafatih al-Ghayb</em> · al-Qurtubi, <em>al-Jami' li-Ahkam al-Qur'an</em> · al-Baydawi, <em>Anwar al-Tanzil</em> · al-Nasafi, <em>Madarik al-Tanzil</em> · Ibn Kathir, <em>Tafsir al-Qur'an al-'Azim</em> · al-Jalalayn · al-Suyuti, <em>al-Durr al-Manthur</em> · Abu al-Su'ud, <em>Irshad al-'Aql al-Salim</em> · Isma'il Haqqi Bursawi, <em>Ruh al-Bayan</em> · al-Alusi, <em>Ruh al-Ma'ani</em>.</p>
+
+<h2>How it works</h2>
+<ul>
+  <li>Each work is divided into verse units; the unit of citation is the sentence. For a verse the assistant first gives the places in the Risale-i Nur tied to it, by name and kind of tie, then the exegetes in order of death.</li>
+  <li>Texts are in their original Arabic. If you do not read Arabic, the assistant adds its own translation after the quotation and says it is an AI translation, not a published one.</li>
+  <li>Editors' and editions' introductions (in the al-Maturidi and al-Qurtubi editions) are a separate layer, never attributed to the author.</li>
+  <li>Two exegetes treating the same verse is not a relation between them. A relation the assistant notices is its interpretation and stands under its own heading. Nothing the assistant writes is called tafsir; tafsir is the exegete's work.</li>
+  <li>The text of the Risale-i Nur is not on this connector. Add the Risale-i Nur connector too and the assistant reads it there.</li>
+</ul>
+
+<h2>Test question</h2>
+<div class="card">How do the Isharat al-I'jaz and al-Baydawi treat "iyyaka na'budu" in al-Fatiha? With sources.</div>
+
+<h2>Add it</h2>
+<div class="card">
+  <strong>Connector address</strong><br>
+  <code>https://mcp.risalemcp.com/tefsir</code>
+</div>
+<div class="actions">
+  <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Tefsir&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Ftefsir">Add to Claude</a>
+</div>
+<ul>
+  <li><strong>Claude</strong> (claude.ai, desktop, mobile): the button opens the add dialog with the name and address filled in. By hand: <em>Customize › Connectors › Add › Add custom connector</em>, name "Tefsir", the address above. Steps and screenshots on the <a href="/en/claude.html">Claude page</a>; only the name and address differ.</li>
+  <li><strong>ChatGPT</strong>: <em>Apps › Add › Add custom MCP server</em>, name "Tefsir", the server URL above, <em>No authentication</em>. Steps on the <a href="/en/chatgpt.html">ChatGPT page</a>.</li>
+  <li><strong>Claude Code</strong>: <code>claude mcp add --transport http tefsir https://mcp.risalemcp.com/tefsir</code></li>
+</ul>
+<p>No account, free of charge. The Risale-i Nur, Hadith and Tafsir connectors are independent; add all three and the assistant gives each one's sources under its own name, in a single bibliography.</p>
+
+<h2>Sources and licence</h2>
+<p>The texts come from <a href="https://openiti.org">OpenITI</a> (KITAB project) versions, each in the chosen edition; editor and publisher are in each work's record. Licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>: non-commercial use, attribution, share alike. Verse-unit boundaries come from the altafsir.com-based OpenITI version; the text is always the chosen edition's. The Qur'an text is from <a href="https://tanzil.net">Tanzil</a>.</p>
+
+<footer>Risale-i Nur MCP · Nur Hadimleri · <a href="/en/docs.html">Documentation</a> · <a href="/en/privacy.html">Privacy</a> · <a href="/en/terms.html">Terms of use</a> · <a href="/tefsir.html" lang="tr">Türkçe</a></footer>
+</main>
+</body>
+</html>

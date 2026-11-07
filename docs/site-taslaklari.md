@@ -1,4 +1,6 @@
-# Tefsir ve hadis bağdaştırıcılarının site sayfaları (taslak, 2026-11-07)
+# Tefsir ve hadis bağdaştırıcılarının site sayfaları (taslak, 2026-11-07; yayına alındı)
+
+**2026-11-07:** taslaklar `site/hadis.html`, `site/tefsir.html`, `site/en/hadith.html`, `site/en/tafsir.html`, kurulum sayfalarındaki bölüm ve gizlilik ekiyle siteye geçti; asıl metin artık oradadır, bu dosya yalnız kayıttır. Tefsir sunucusu ayrı makinededir (Falkenstein), gizlilik sayfası bunu söyler.
 
 Yayımlanmaz, `site/`'ye konmaz (oradaki her dosya deploy'la yayına çıkar). M7'de genel çıkış kararı verilince
 `site/tefsir.html`, `site/hadis.html` (ve `en/`), kurulum sayfalarına birer bölüm ve gizlilik politikasına ek olur.
