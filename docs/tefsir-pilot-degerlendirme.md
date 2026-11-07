@@ -222,9 +222,13 @@ eklenen özellikler.
 **Kalan (2026-11-07 denetimi):**
 - **M5:** risale sunucusunun talimatına öbür bağdaştırıcılara bilgi kipinde gönderme yapılmadı (Y0.6: talimat başka
   bağdaştırıcıyı çağırmayı emretmez); yayınla birlikte, genel talimat değiştiği için `DEPLOY_EXPECT="instructions"` ile.
-  Ölçütün "her profilde H0 ve H1"i eksik: araç çıktısı kaydı (`tool_snapshot`) yalnız genel profilin çağrı setiyle
-  var, tefsir ve hadis sunucusunun kendi çağrı seti yok; kimlik manifestosu tefsir profilinde var, hadis profilinde
-  (`hadis_db.py`) yok. İkisi yayından önce yapılmalı (yayından sonraki her deploy bunlarla denetlenir).
+  H0 ve H1 her profilde var (2026-11-07): tefsir ve hadis sunucusunun kendi çağrı setleri
+  (`tests/golden/tool_calls_tefsir.json` 28, `tool_calls_hadis.json` 23; `tool_snapshot record --profile …`), hadis
+  profilinin kimlik manifestosu (`hadis_db.py`, birim hadis, bölüm kitap ve bâb; `data/manifest/hadis/`); `deploy.sh
+  --hadis` ve `tefsir-sunucu.sh gonder` göndermeden önce sürüm etiketi alır ve son `hadis-yayin-*` /
+  `tefsir-yayin-*` kaydıyla karşılaştırır (ilk yayında taban yok). İlk kayıt bir hata buldu: tefsir sunucusunda eser
+  süzgeçsiz kelime araması hiç sonuç vermiyordu (varsayılan süzgeç yalnız külliyattı, tefsir veritabanında külliyat
+  yok); düzeldi (`Library._scope`), genel sunucu aynı.
 - **M6:** üç bağdaştırıcı birlikte altın sorular (`golden` çoklu sunucu kipi): kimlik öbür sunucuya soruluyor mu,
   atıflar doğru sunucudan mı. Bugünkü çalıştırmalar sunucu başınadır; tefsir sorularındaki Risale atıflarının ✗'ları
   bu yüzden yanlış alarmdı.

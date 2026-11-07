@@ -1,0 +1,178 @@
+{
+ "note": "H0: hadis sunucusunun sabit çağrı seti (risale_mcp.tool_snapshot --profile hadis). Çağrı eklenebilir; var olan çağrı değiştirilirse eski kayıtlarla karşılaştırma o çağrıda fark verir.",
+ "calls": [
+  {
+   "name": "list_books",
+   "tool": "list_books"
+  },
+  {
+   "name": "outline_bukhari",
+   "tool": "get_outline",
+   "args": {
+    "id": "bukhari"
+   }
+  },
+  {
+   "name": "outline_musned",
+   "tool": "get_outline",
+   "args": {
+    "id": "musned",
+    "depth": 1
+   }
+  },
+  {
+   "name": "outline_bad",
+   "tool": "get_outline",
+   "args": {
+    "id": "yok"
+   }
+  },
+  {
+   "name": "read_chapter_bukhari_k01_b001",
+   "tool": "read_chapter",
+   "args": {
+    "id": "bukhari/k01/b001"
+   }
+  },
+  {
+   "name": "read_chapter_bad",
+   "tool": "read_chapter",
+   "args": {
+    "id": "bukhari/k999"
+   }
+  },
+  {
+   "name": "hadith_bukhari_1",
+   "tool": "get_hadith",
+   "args": {
+    "id": "bukhari/1"
+   }
+  },
+  {
+   "name": "hadith_musned_6496",
+   "tool": "get_hadith",
+   "args": {
+    "id": "musned/6496"
+   }
+  },
+  {
+   "name": "hadith_kesfulhafa_153",
+   "tool": "get_hadith",
+   "args": {
+    "id": "kesfulhafa/153"
+   }
+  },
+  {
+   "name": "hadith_sifa_seq",
+   "tool": "get_hadith",
+   "args": {
+    "id": "sifa/s00007"
+   }
+  },
+  {
+   "name": "hadith_delail_seq",
+   "tool": "get_hadith",
+   "args": {
+    "id": "delail/s01500"
+   }
+  },
+  {
+   "name": "hadith_bad",
+   "tool": "get_hadith",
+   "args": {
+    "id": "bukhari/99999999"
+   }
+  },
+  {
+   "name": "search_jar",
+   "tool": "search_hadith",
+   "args": {
+    "query": "يوصيني بالجار",
+    "limit": 5
+   }
+  },
+  {
+   "name": "search_book",
+   "tool": "search_hadith",
+   "args": {
+    "query": "انما الاعمال بالنيات",
+    "book": "bukhari",
+    "limit": 3
+   }
+  },
+  {
+   "name": "search_bad",
+   "tool": "search_hadith",
+   "args": {
+    "query": "NEAR("
+   }
+  },
+  {
+   "name": "semantic_neighbour",
+   "tool": "semantic_search",
+   "args": {
+    "query": "komşu hakkı",
+    "limit": 5
+   },
+   "semantic": true
+  },
+  {
+   "name": "semantic_book",
+   "tool": "semantic_search",
+   "args": {
+    "query": "patience in hardship",
+    "book": "muslim",
+    "limit": 3
+   },
+   "semantic": true
+  },
+  {
+   "name": "citation_bukhari",
+   "tool": "find_by_citation",
+   "args": {
+    "citation": "Buharî, Ezân: 148"
+   }
+  },
+  {
+   "name": "citation_musned",
+   "tool": "find_by_citation",
+   "args": {
+    "citation": "Müsned 14870"
+   }
+  },
+  {
+   "name": "citation_bad",
+   "tool": "find_by_citation",
+   "args": {
+    "citation": "yok böyle kitap 5"
+   }
+  },
+  {
+   "name": "get_ayah_2_255",
+   "tool": "get_ayah",
+   "args": {
+    "sura": "2",
+    "ayah": 255
+   }
+  },
+  {
+   "name": "cite_ok",
+   "tool": "cite",
+   "args": {
+    "ids": [
+     "bukhari/1",
+     "musned/6496"
+    ]
+   }
+  },
+  {
+   "name": "cite_bad",
+   "tool": "cite",
+   "args": {
+    "ids": [
+     "yok/1"
+    ]
+   }
+  }
+ ]
+}

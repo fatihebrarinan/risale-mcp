@@ -1,0 +1,229 @@
+{
+ "note": "H0: tefsir sunucusunun sabit çağrı seti (risale_mcp.tool_snapshot --profile tefsir). Çağrı eklenebilir; var olan çağrı değiştirilirse eski kayıtlarla karşılaştırma o çağrıda fark verir.",
+ "calls": [
+  {
+   "name": "list_works",
+   "tool": "list_works"
+  },
+  {
+   "name": "outline_kurtubi",
+   "tool": "get_outline",
+   "args": {
+    "section": "kurtubi"
+   }
+  },
+  {
+   "name": "outline_ibnkesir_2_deep",
+   "tool": "get_outline",
+   "args": {
+    "section": "ibnkesir/2",
+    "depth": 1
+   }
+  },
+  {
+   "name": "outline_bad",
+   "tool": "get_outline",
+   "args": {
+    "section": "yok/boyle"
+   }
+  },
+  {
+   "name": "read_beyzavi_2_6",
+   "tool": "read_section",
+   "args": {
+    "section": "beyzavi/2/6"
+   }
+  },
+  {
+   "name": "read_razi_1_1",
+   "tool": "read_section",
+   "args": {
+    "section": "razi/1/1",
+    "max_words": 400
+   }
+  },
+  {
+   "name": "read_durr_1_2_7",
+   "tool": "read_section",
+   "args": {
+    "section": "durr/1/2-7",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "read_kurtubi_tabi_layer",
+   "tool": "read_section",
+   "args": {
+    "section": "kurtubi/mukaddime-tabi",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "read_maturidi_tahkik_layer",
+   "tool": "read_section",
+   "args": {
+    "section": "maturidi/mukaddime-tahkik",
+    "max_words": 200
+   }
+  },
+  {
+   "name": "passage_ibnkesir_255",
+   "tool": "get_passage",
+   "args": {
+    "id": "ibnkesir/2/255/c001"
+   }
+  },
+  {
+   "name": "passage_range",
+   "tool": "get_passage",
+   "args": {
+    "id": "ibnkesir/2/255/c001..c003",
+    "context": 1
+   }
+  },
+  {
+   "name": "passage_layer",
+   "tool": "get_passage",
+   "args": {
+    "id": "kurtubi/mukaddime-tabi/c001"
+   }
+  },
+  {
+   "name": "passage_bad",
+   "tool": "get_passage",
+   "args": {
+    "id": "kessaf/2/7/c9999"
+   }
+  },
+  {
+   "name": "search_khatm",
+   "tool": "search",
+   "args": {
+    "query": "الختم",
+    "limit": 5
+   }
+  },
+  {
+   "name": "search_prefix_forms",
+   "tool": "search",
+   "args": {
+    "query": "والقلوب",
+    "work": "kessaf",
+    "limit": 5
+   }
+  },
+  {
+   "name": "search_bad",
+   "tool": "search",
+   "args": {
+    "query": "NEAR("
+   }
+  },
+  {
+   "name": "semantic_khatm",
+   "tool": "semantic_search",
+   "args": {
+    "query": "kalplerin mühürlenmesi mecaz mı",
+    "limit": 5
+   },
+   "semantic": true
+  },
+  {
+   "name": "semantic_kursi",
+   "tool": "semantic_search",
+   "args": {
+    "query": "Âyetü'l-Kürsî'nin fazileti",
+    "work": "ibnkesir",
+    "limit": 5
+   },
+   "semantic": true
+  },
+  {
+   "name": "find_sentence",
+   "tool": "find_sentence",
+   "args": {
+    "incipit": "إن الذين كفروا لما",
+    "scope": "beyzavi/2/6"
+   }
+  },
+  {
+   "name": "find_ayah_2_7",
+   "tool": "find_ayah",
+   "args": {
+    "sura": "2",
+    "ayah": 7
+   }
+  },
+  {
+   "name": "find_ayah_2_255",
+   "tool": "find_ayah",
+   "args": {
+    "sura": "Bakara",
+    "ayah": 255
+   }
+  },
+  {
+   "name": "find_ayah_1_1",
+   "tool": "find_ayah",
+   "args": {
+    "sura": "1",
+    "ayah": 1
+   }
+  },
+  {
+   "name": "find_ayah_bad",
+   "tool": "find_ayah",
+   "args": {
+    "sura": "115"
+   }
+  },
+  {
+   "name": "get_ayah_2_255",
+   "tool": "get_ayah",
+   "args": {
+    "sura": "2",
+    "ayah": 255
+   }
+  },
+  {
+   "name": "get_ayah_bad",
+   "tool": "get_ayah",
+   "args": {
+    "sura": "1",
+    "ayah": 99
+   }
+  },
+  {
+   "name": "text_links_unit",
+   "tool": "text_links",
+   "args": {
+    "id": "beyzavi/2/6"
+   }
+  },
+  {
+   "name": "cite_ok",
+   "tool": "cite",
+   "args": {
+    "sources": [
+     {
+      "id": "ibnkesir/2/255/c001"
+     },
+     {
+      "id": "kessaf/2/7/c001"
+     }
+    ]
+   }
+  },
+  {
+   "name": "cite_bad",
+   "tool": "cite",
+   "args": {
+    "sources": [
+     {
+      "id": "yok/c001"
+     }
+    ]
+   }
+  }
+ ]
+}

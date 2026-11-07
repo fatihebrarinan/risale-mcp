@@ -22,6 +22,7 @@ from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
 
+from risale_mcp import manifest
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
 from risale_mcp.normalize import search_words
 from risale_mcp.paths import DIST_DIR, LIBRARY_DIR, LINKS_DIR, PUBLIC_DB_PATH
@@ -93,7 +94,8 @@ def _books() -> list[dict]:
     return out
 
 
-def build(out: Path = HADIS_DB, source_db: Path = PUBLIC_DB_PATH) -> Counter:
+def build(out: Path = HADIS_DB, source_db: Path = PUBLIC_DB_PATH, manifest_check: bool = True,
+          accept_id_changes: bool = False) -> Counter:
     counts: Counter = Counter()
     out.parent.mkdir(parents=True, exist_ok=True)
     tmp = out.with_suffix(".tmp")
@@ -169,6 +171,15 @@ def build(out: Path = HADIS_DB, source_db: Path = PUBLIC_DB_PATH) -> Counter:
         ("schema_version", str(SCHEMA_VERSION)), ("normalization", NORMALIZATION),
         ("built_at", datetime.now(timezone.utc).isoformat(timespec="seconds")), ("profile", "hadis")])
     conn.commit()
+    if manifest_check:                  # H1: hadis kimlikleri de kabul edilmiş manifestoyla karşılaştırılır
+        try:
+            changes = manifest.check_build(conn, "hadis", accept_id_changes)
+        except manifest.IdChangesError:
+            conn.close()
+            tmp.unlink(missing_ok=True)
+            raise
+        counts["id_changes"] = 0 if changes.empty else 1
+        conn.commit()
     conn.close()
     tmp.replace(out)
     return counts
@@ -187,7 +198,7 @@ def resolve_target(target: str, api_index: dict[tuple[str, int], str]) -> str | 
 
 
 def main() -> None:
-    counts = build()
+    counts = build(accept_id_changes="--accept-id-changes" in sys.argv)
     print(dict(counts), HADIS_DB, f"{HADIS_DB.stat().st_size // 1_000_000} MB", file=sys.stdout)
 
 

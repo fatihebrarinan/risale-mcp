@@ -30,6 +30,9 @@ from pathlib import Path
 from risale_mcp.paths import INTERIM_DIR, ROOT
 
 CALLS_PATH = ROOT / "tests" / "golden" / "tool_calls.json"
+# Her sunucunun kendi çağrı seti (araçları farklı): genel ve yerel profil `tool_calls.json`, öbürleri kendi dosyası.
+PROFILE_CALLS = {"tefsir": ROOT / "tests" / "golden" / "tool_calls_tefsir.json",
+                 "hadis": ROOT / "tests" / "golden" / "tool_calls_hadis.json"}
 SNAPSHOT_DIR = INTERIM_DIR / "tool_snapshot"
 MAX_LINES = 400                  # raporda en çok bu kadar fark satırı
 
@@ -46,12 +49,12 @@ def _text(content: list) -> str:
     return "\n".join(getattr(part, "text", "") or "" for part in content)
 
 
-async def _record(library, calls: list[dict], semantic: bool) -> dict:
+async def _record(library, calls: list[dict], semantic: bool, profile: str = "kisisel") -> dict:
     from mcp import Client
 
     from risale_mcp.server import create_server
 
-    server = create_server(library)
+    server = create_server(library, profile=profile)
     out: dict = {"calls": {}}
     async with Client(server) as client:
         out["instructions"] = server.instructions
@@ -110,7 +113,7 @@ def _fixed_query_vectors(path: Path | None = None) -> None:
     semantic._query_vector = cached
 
 
-def record(name: str, profile_name: str, semantic: bool = True, calls_path: Path = CALLS_PATH,
+def record(name: str, profile_name: str, semantic: bool = True, calls_path: Path | None = None,
            db: Path | None = None) -> Path:
     from risale_mcp.env import load_env
     from risale_mcp.library import Library
@@ -118,11 +121,17 @@ def record(name: str, profile_name: str, semantic: bool = True, calls_path: Path
 
     load_env()
     profile = PROFILES[profile_name]
-    library = Library(db or profile.db, profile.vectors)
-    calls = load_calls(calls_path)
+    if profile.name == "hadis":
+        from risale_mcp.hadis_library import HadisLibrary
+        library = HadisLibrary(db or profile.db, profile.vectors)
+    else:
+        library = Library(db or profile.db, profile.vectors)
+    calls = load_calls(calls_path or PROFILE_CALLS.get(profile.name, CALLS_PATH))
     if semantic:
         _fixed_query_vectors()
-    data = asyncio.run(_record(library, calls, semantic))
+    # yerel ve genel profil bugüne kadar varsayılan sunucuyla kaydedildi; adı ve talimatı profil seçer
+    server_profile = profile.name if profile.name in ("tefsir", "hadis") else "kisisel"
+    data = asyncio.run(_record(library, calls, semantic, server_profile))
     built = library.conn.execute("SELECT value FROM meta WHERE key = 'built_at'").fetchone()
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
     dirty = bool(subprocess.run(["git", "status", "--porcelain"], cwd=ROOT, capture_output=True, text=True).stdout.strip())

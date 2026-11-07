@@ -62,6 +62,13 @@ class Manifest:
 
     @classmethod
     def from_db(cls, conn: sqlite3.Connection) -> "Manifest":
+        tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type = 'table'")}
+        if "lib_units" in tables:
+            # hadis sunucusu (`hadis_db.py`): atıf birimi hadistir, bölüm kitap ve bâb ağacıdır; özet metnin kendisinden
+            sentences = [(id_, node, hashlib.sha1(text.encode("utf-8")).hexdigest()[:12])
+                         for id_, node, text in conn.execute("SELECT id, node_id, text FROM lib_units ORDER BY seq")]
+            nodes = [tuple(r) for r in conn.execute("SELECT id, title FROM lib_nodes ORDER BY seq")]
+            return cls(sentences, nodes)
         sentences = [tuple(r) for r in conn.execute("SELECT id, node_id, hash FROM sentences ORDER BY seq")]
         nodes = [tuple(r) for r in conn.execute("SELECT id, ref FROM nodes ORDER BY seq")]
         return cls(sentences, nodes)

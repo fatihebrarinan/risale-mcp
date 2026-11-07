@@ -702,11 +702,19 @@ class Library:
     def _work_status(self, work: str) -> dict:
         return self._status().get(work, {})
 
+    def _scope(self, work: str | None, group: str | None, include_related: bool) -> str | None:
+        """Varsayılan süzgeç yalnız külliyatı olan veritabanında: tefsir sunucusunda külliyat yoktur, süzgeç bütün
+        sonuçları siliyordu (2026-11-07, H0 kaydında görüldü)."""
+        if not hasattr(self, "_has_kulliyat"):
+            self._has_kulliyat = self.conn.execute(
+                "SELECT 1 FROM works WHERE collection = ? AND built = 1 LIMIT 1", (Collection.KULLIYAT,)).fetchone() is not None
+        return _default_scope(work, group, include_related) if self._has_kulliyat else None
+
     def search(self, query: str, work: str | None = None, group: str | None = None,
                limit: int = 20, offset: int = 0, include_related: bool = False) -> dict:
         if work:
             self._node(work)
-        collection = _default_scope(work, group, include_related)
+        collection = self._scope(work, group, include_related)
         limit = min(max(limit, 1), MAX_RESULTS)
         try:
             expanded = False
@@ -750,7 +758,7 @@ class Library:
             works = {r[0] for r in self.conn.execute("SELECT slug FROM works WHERE group_name = ?", (group,))}
             if not works:
                 raise LibraryError(f"Unknown group {group!r}; groups are: eski-said, ana-cilt, mecmua, hizb, osmanlica.")
-        elif collection := _default_scope(work, group, include_related):
+        elif collection := self._scope(work, group, include_related):
             works = {r[0] for r in self.conn.execute("SELECT slug FROM works WHERE collection = ?", (collection,))}
         try:
             hits, sections = self._semantic_index().search(query, works, min(max(limit, 1), MAX_RESULTS), max(offset, 0))

@@ -52,3 +52,29 @@ def test_usage_is_tagged_with_server(tmp_path):
     hadis.log(None, None, "tools/call", "semantic_search", 5, None)
     assert genel.anonymous_calls("semantic_search", 0) == 1
     assert hadis.anonymous_calls("semantic_search", 0) == 2
+
+
+def test_hadis_units_enter_the_manifest():
+    import sqlite3
+
+    from risale_mcp.manifest import Manifest, diff
+
+    def db(text):
+        conn = sqlite3.connect(":memory:")
+        conn.executescript("CREATE TABLE lib_units (seq INTEGER PRIMARY KEY, id TEXT, node_id TEXT, text TEXT);"
+                           "CREATE TABLE lib_nodes (seq INTEGER PRIMARY KEY, id TEXT, title TEXT);"
+                           "INSERT INTO lib_nodes VALUES (1, 'bukhari/k01', 'كتاب');")
+        conn.execute("INSERT INTO lib_units VALUES (1, 'bukhari/1', 'bukhari/k01', ?)", (text,))
+        return Manifest.from_db(conn)
+
+    assert [s[0] for s in db("إنما الأعمال").sentences] == ["bukhari/1"]
+    assert diff(db("إنما الأعمال"), db("إنما الأعمال بالنيات")).breaking      # metni değişen hadis durdurur
+
+
+def test_default_scope_only_where_the_corpus_is():
+    from risale_mcp.library import Library
+    from risale_mcp.profiles import TEFSIR
+
+    if not TEFSIR.db.exists():
+        pytest.skip("tefsir veritabanı yok")
+    assert Library(TEFSIR.db, TEFSIR.vectors).search("الختم", limit=1)["total"] > 0

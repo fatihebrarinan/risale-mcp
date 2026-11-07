@@ -31,6 +31,17 @@ kur)
         echo kuruldu; ufw status | head -5"
     ;;
 gonder)
+    # H0/H1: tefsir profilinin sürüm etiketi ve kendi çağrı setiyle son `tefsir-yayin-*` kaydına karşı araç çıktısı
+    SNAPSHOTS=data/interim/tool_snapshot
+    STAMP=$(date +%Y%m%d-%H%M%S)
+    uv run python -m risale_mcp.manifest release --profile tefsir
+    PREV=$(ls -d "$SNAPSHOTS"/tefsir-yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename)
+    uv run python -m risale_mcp.tool_snapshot record "tefsir-aday-$STAMP" --profile tefsir
+    if [[ -n "$PREV" ]]; then
+        # shellcheck disable=SC2086
+        uv run python -m risale_mcp.tool_snapshot compare "$PREV" "tefsir-aday-$STAMP" --expect ${TEFSIR_EXPECT:-} \
+            || { echo "tefsir araç çıktısında beklenmeyen fark: gönderilmedi"; exit 1; }
+    fi
     git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DEST/"
     rsync -az --info=progress2 -e "${SSH[*]}" data/dist/tefsir/risale.db "$HOST:$DEST/data/dist/tefsir/risale.db"
     rsync -az --delete -e "${SSH[*]}" data/dist/tefsir/vectors/ "$HOST:$DEST/data/dist/tefsir/vectors/"
@@ -40,6 +51,7 @@ gonder)
     "${SSH[@]}" "$HOST" "chown -R risale:risale $DEST && su - risale -c 'cd $DEST && ~/.local/bin/uv sync --no-dev --frozen -q' \
         && systemctl daemon-reload && systemctl enable -q risale-mcp-tefsir && systemctl restart risale-mcp-tefsir \
         && sleep 5 && systemctl is-active risale-mcp-tefsir && free -m | head -2"
+    mv "$SNAPSHOTS/tefsir-aday-$STAMP" "$SNAPSHOTS/tefsir-yayin-$STAMP"
     ;;
 *)
     echo "kullanım: TEFSIR_HOST=root@<adres> $0 kur|gonder"; exit 2 ;;

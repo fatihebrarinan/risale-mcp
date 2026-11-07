@@ -653,7 +653,12 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   kullanım kaydı `server` sütunu taşır. Dizin başvurusu kullanıcıda, acelesi yok. Ön metinlerden sonra tefsir bağları
   yenilendi (43.112 âyet birimi, 403.526 Kur'ân alıntısı; 94 denetim kararının hepsi bağını buluyor), yeni cümlelerin
   vektörleri 5.943 (0,45 M token); yerel ve tefsir profilinde kimlik değişikliği kabul edildi, genel profil aynı.
+- **H0 ve H1 her profilde (2026-11-07):** tefsir ve hadis sunucusunun kendi çağrı setleri (`tests/golden/tool_calls_tefsir.json`,
+  `tool_calls_hadis.json`; `tool_snapshot record <ad> --profile tefsir|hadis`), hadis profilinin kimlik manifestosu
+  (`hadis_db.py`; birim hadis, `--accept-id-changes`); `deploy.sh --hadis` ve `tefsir-sunucu.sh gonder` sürüm etiketi
+  alır, son `hadis-yayin-*` / `tefsir-yayin-*` kaydıyla karşılaştırır (`HADIS_EXPECT`, `TEFSIR_EXPECT`). İlk kayıtta
+  bulunan hata düzeldi: tefsir sunucusunda eser süzgeçsiz kelime araması boş dönüyordu (varsayılan süzgeç yalnız
+  külliyat; `Library._scope` artık yalnız külliyatı olan veritabanında süzer).
 - **MVP'nin kalanı (2026-11-07 denetimi, `docs/tefsir-pilot-degerlendirme.md` "Kalan"):** M5'te risale talimatının
-  öbür bağdaştırıcılara gönderme cümlesi (yayınla) ve tefsir/hadis sunucuları için H0 (kendi araç çağrı seti) ile
-  hadis profili için H1 (kimlik manifestosu); M6'da üç bağdaştırıcı birlikte ölçüm; M7'de genel çıkış kararı
+  öbür bağdaştırıcılara gönderme cümlesi (yayınla); M6'da üç bağdaştırıcı birlikte ölçüm; M7'de genel çıkış kararı
   (müfessirler `private`'tan çıkar), hadis sunucusunu açma onayı, tefsir makinesi, site sayfaları ve gizlilik eki.

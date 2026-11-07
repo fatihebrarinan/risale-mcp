@@ -41,6 +41,21 @@ else
     echo "önceki yayın kaydı yok: karşılaştırılmadı"
 fi
 
+if [[ $HADIS == 1 ]]; then
+    # Hadis sunucusunun kendi H0/H1'i: sürüm etiketi ve kendi çağrı setiyle (tests/golden/tool_calls_hadis.json)
+    # son `hadis-yayin-*` kaydına karşı araç çıktısı; beklenen fark HADIS_EXPECT ile
+    [[ $CODE_ONLY == 1 ]] || uv run python -m risale_mcp.manifest release --profile hadis
+    HPREV=$(ls -d "$SNAPSHOTS"/hadis-yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename)
+    uv run python -m risale_mcp.tool_snapshot record "hadis-aday-$STAMP" --profile hadis
+    if [[ -n "$HPREV" ]]; then
+        # shellcheck disable=SC2086
+        uv run python -m risale_mcp.tool_snapshot compare "$HPREV" "hadis-aday-$STAMP" --expect ${HADIS_EXPECT:-} \
+            || { echo "hadis araç çıktısında beklenmeyen fark: gönderilmedi"; exit 1; }
+    else
+        echo "hadis: önceki yayın kaydı yok (ilk yayın)"
+    fi
+fi
+
 echo "kod gönderiliyor…"
 git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DEST/"
 # Tanıtım sitesi (risalemcp.com; Caddy /var/www/risalemcp'den sunar, bkz. docs/Caddyfile)
@@ -96,4 +111,5 @@ fi
 
 # Gönderilen hâl bir sonraki deploy'un karşılaştırma tabanıdır
 mv "$SNAPSHOTS/aday-$STAMP" "$SNAPSHOTS/yayin-$STAMP"
+[[ $HADIS == 1 ]] && mv "$SNAPSHOTS/hadis-aday-$STAMP" "$SNAPSHOTS/hadis-yayin-$STAMP"
 echo "araç çıktısı kaydı: $SNAPSHOTS/yayin-$STAMP"
