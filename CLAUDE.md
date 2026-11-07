@@ -659,6 +659,12 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   alır, son `hadis-yayin-*` / `tefsir-yayin-*` kaydıyla karşılaştırır (`HADIS_EXPECT`, `TEFSIR_EXPECT`). İlk kayıtta
   bulunan hata düzeldi: tefsir sunucusunda eser süzgeçsiz kelime araması boş dönüyordu (varsayılan süzgeç yalnız
   külliyat; `Library._scope` artık yalnız külliyatı olan veritabanında süzer).
+- **M6 ilk ölçüm (2026-11-07):** üç bağdaştırıcı kipi `golden run --servers risale,hadis,tefsir` (risale genel
+  profille; atıf iki veritabanında aranır, rapor sunucu başına çağrı, başka sunucunun kimliği, `cite`'ın sunucuları ve
+  Arapça alıntının damgasını sayar) ve elle deneme klasörü `golden sandbox ~/risale-deneme --servers … --risale-profile
+  genel`. 41 soru: başka sunucunun kimliğiyle çağrı 0, atıf 233/252 (17'si ölçüm artığı, 2'si model hatası). Açık:
+  birden çok sunucunun `cite`'ı ayrı ayrı [1]'den numaralıyor (tek kaynakça için başlangıç numarası ve talimat),
+  tefsir talimatında eser kimlikleri yok (model `zamakhshari`, `qurtubi` tahmin etti).
 - **MVP'nin kalanı (2026-11-07 denetimi, `docs/tefsir-pilot-degerlendirme.md` "Kalan"):** M5'te risale talimatının
-  öbür bağdaştırıcılara gönderme cümlesi (yayınla); M6'da üç bağdaştırıcı birlikte ölçüm; M7'de genel çıkış kararı
+  öbür bağdaştırıcılara gönderme cümlesi (yayınla); M6'da kaynakça numarası ve eser kimlikleri; M7'de genel çıkış kararı
   (müfessirler `private`'tan çıkar), hadis sunucusunu açma onayı, tefsir makinesi, site sayfaları ve gizlilik eki.

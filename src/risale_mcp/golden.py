@@ -246,11 +246,25 @@ class MultiChecker(Checker):
 
     def citations(self, answer: str) -> list[Citation]:
         # iki denetçi aynı metni ayrı ayrı okur; bir atıf hangisinde doğrulanırsa o sayılır, ikisi de tanırsa birinde
-        merged: dict[str, Citation] = {}
-        for c in self.verifier.check(answer) + self.tefsir.verifier.check(answer):
-            if c.written not in merged or (c.verified and not merged[c.written].verified):
-                merged[c.written] = c
-        return list(merged.values())
+        # Tefsir denetçisi Risale atıflarını da başka yazımla okuyup "bölüm yok" der: onun doğrulayamadığı atıf
+        # ancak yolu bir müfessirin eserinin adıyla başlıyorsa sayılır; risale denetçisi de tefsir yolunu tanımaz.
+        risale = self.verifier.check(answer)
+        tefsir = self.tefsir.verifier.check(answer)
+        verified_t = {c.written: c for c in tefsir if c.verified}
+        # risale denetçisi Arapça birim adını ("الآيات 252 الى 257") yolun başı sanabilir: aynı alıntıyı taşıyan
+        # doğrulanmış tefsir atfı varsa onun parçasıdır
+        quotes_t = {c.written.rsplit("›", 1)[-1].strip() for c in verified_t.values()}
+        out = [verified_t.pop(c.written, c) if not c.verified else c for c in risale
+               if c.verified or c.written in verified_t
+               or not (self._tefsir_path(c.written) or c.written.rsplit("›", 1)[-1].strip() in quotes_t)]
+        seen = {c.written for c in out}
+        out += [c for c in tefsir if c.written not in seen and (c.verified or self._tefsir_path(c.written))]
+        return out
+
+    def _tefsir_path(self, written: str) -> bool:
+        if not hasattr(self, "_tefsir_titles"):
+            self._tefsir_titles = [r[0] for r in self.tefsir.library.conn.execute("SELECT title FROM works")]
+        return any(written.lstrip("[]0-9 ").startswith(t) for t in self._tefsir_titles)
 
     def title(self, node_id: str) -> str:
         for checker in (super(), self.tefsir, self.hadis):

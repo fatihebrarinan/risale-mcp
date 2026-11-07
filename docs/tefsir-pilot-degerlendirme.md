@@ -229,9 +229,13 @@ eklenen özellikler.
   `tefsir-yayin-*` kaydıyla karşılaştırır (ilk yayında taban yok). İlk kayıt bir hata buldu: tefsir sunucusunda eser
   süzgeçsiz kelime araması hiç sonuç vermiyordu (varsayılan süzgeç yalnız külliyattı, tefsir veritabanında külliyat
   yok); düzeldi (`Library._scope`), genel sunucu aynı.
-- **M6:** üç bağdaştırıcı birlikte altın sorular (`golden` çoklu sunucu kipi): kimlik öbür sunucuya soruluyor mu,
-  atıflar doğru sunucudan mı. Bugünkü çalıştırmalar sunucu başınadır; tefsir sorularındaki Risale atıflarının ✗'ları
-  bu yüzden yanlış alarmdı.
+- **M6 (ilk ölçüm 2026-11-07, `data/interim/golden/20261107-180914-coklu/`):** `golden run --all --servers
+  risale,hadis,tefsir` (risale genel profille). 41 soru, ortalama 44 sn ve 0,31 $. Başka sunucunun kimliğiyle çağrı
+  0; risale soruları yalnız risale'yi kullandı, tefsir ve hadis soruları kendi sunucularını, kesişen sorular (T2, TF3,
+  HD2) birden çoğunu. Atıf 233/252 doğrulandı; kalan 19'un 17'si ölçüm artığı (çoğu iki sunucunun `cite`'ı ayrı ayrı
+  [1]'den numaraladığı için alıntı bloğunun yanlış kaynakçaya bağlanması), gerçek model hatası 2 (K5 aralık bölümü
+  aşıyor; K1 alıntı bloğu). Açık: birden çok bağdaştırıcıda tek kaynakça (`cite`'a başlangıç numarası ve talimat),
+  tefsir eserlerinin kimliklerinin tefsir talimatında listelenmesi (iki soruda `zamakhshari`, `qurtubi` diye tahmin).
 - **M7:** genel çıkış kararı (Y2.3: müfessirlerin eserleri `private`'tan çıkar; OpenITI CC BY-NC-SA şartları sitede
   ve sonuçlarda); hadis sunucusunu aynı makinede açmak (onay); tefsir makinesini açmak (kullanıcı, Hetzner ve
   Tailscale); `site/hadis.html`, `site/tefsir.html`, kurulum sayfaları ve gizlilik eki taslaklardan yayına; dizin
