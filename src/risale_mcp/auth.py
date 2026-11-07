@@ -207,15 +207,18 @@ class Client(OAuthClientInformationFull):
 class AuthStore:
     """`data/auth.db`: kullanıcılar, istemciler, kodlar, jetonlar, kullanım kaydı."""
 
-    def __init__(self, path: Path = AUTH_DB) -> None:
+    def __init__(self, path: Path = AUTH_DB, server: str = "genel") -> None:
         path.parent.mkdir(parents=True, exist_ok=True)
         self.path = path
+        self.server = server              # aynı makinedeki sunucular (genel, hadis) tek kaydı paylaşır
         self._lock = threading.Lock()
         self.conn = sqlite3.connect(path, check_same_thread=False, isolation_level=None)
         self.conn.row_factory = sqlite3.Row
         self.conn.executescript(SCHEMA)
         if "debug" not in {row["name"] for row in self.conn.execute("PRAGMA table_info(users)")}:
             self.conn.execute("ALTER TABLE users ADD COLUMN debug INTEGER NOT NULL DEFAULT 0")
+        if "server" not in {row["name"] for row in self.conn.execute("PRAGMA table_info(usage)")}:
+            self.conn.execute("ALTER TABLE usage ADD COLUMN server TEXT")      # eski kayıtlar: genel
         self._clear_params(time.time())
         self._pruned = 0.0
 
@@ -332,12 +335,13 @@ class AuthStore:
             with self._lock:
                 self._clear_params(now)
         params = json.dumps(detail, ensure_ascii=False) if detail is not None and self.debugged(user) else None
-        self._run("INSERT INTO usage VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-                  (now, user, client_id, method, name, params, ms, error))
+        self._run("INSERT INTO usage (ts, user, client_id, method, name, params, ms, error, server)"
+                  " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", (now, user, client_id, method, name, params, ms, error,
+                                                          self.server))
 
     def anonymous_calls(self, tool: str, since: float) -> int:
         return self._run("SELECT count(*) FROM usage WHERE user IS NULL AND method = 'tools/call' AND name = ?"
-                         " AND ts >= ?", (tool, since))[0][0]
+                         " AND ts >= ? AND COALESCE(server, 'genel') = ?", (tool, since, self.server))[0][0]
 
     def usage(self, user: str | None = None, limit: int = 50) -> list[sqlite3.Row]:
         sql = "SELECT * FROM usage" + (" WHERE user = ?" if user else "") + " ORDER BY ts DESC LIMIT ?"

@@ -643,3 +643,11 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   kitap kimliğiyle), `in_risale` tekrarsız ve Türkçe önce, cildi bilinmeyen sayfa "(cilt bilinmiyor)", OpenITI'nin
   `PageEnd` işareti (Taberî'nin 7.972 cümlesinde metinde kalmıştı; yerel, kabul edildi). Site taslakları
   `docs/site-taslaklari.md` (yayımlanmadı). Push ve deploy yok.
+- **Sabah işleri (kullanıcı, 2026-11-07):** genel sunucu deploy edildi (`yayin-20261107-091207`: M4 arama, HA2
+  hadisleri), push. Altın sorular (T1–T4, TF1–TF6, HD1–HD6) onaylandı (`golden_questions.md` 3. bölüm). Tefsirlerin
+  ön metinleri alındı (`books/tefsir_openiti.FRONT`): müellifin mukaddimesi `<eser>/mukaddime`, muhakkikin ve baskının
+  girişleri ayrı katman (Mâtürîdî, Kurtubî); bu sırada Râzî'nin, Kurtubî'nin ve Mâtürîdî'nin ön metne düşmüş besmele
+  tefsiri birimine döndü, ed-Dürrü'l-Mensûr'un kayık Fâtiha birimleri 1:1 ve 2–7 oldu (`docs/mvp-kitaplar.md` "Sabah").
+  Sunucular: risale ve hadis aynı makinede, tefsir ayrı makinede (kullanıcının kararı; ölçüm hadis ≈250 MB, tefsir
+  ≈1,2 GB); hadis için `scripts/deploy.sh --hadis` ve `/hadis` yolu, tefsir için `scripts/tefsir-sunucu.sh` hazır;
+  kullanım kaydı `server` sütunu taşır. Dizin başvurusu kullanıcıda, acelesi yok.

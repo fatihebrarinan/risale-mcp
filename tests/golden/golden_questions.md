@@ -100,3 +100,28 @@ SORU:
 Üstad İStanbul'da Kürdistan'dan gelen hamallara ne öğütler vermiştir?
 BEKLENEN CEVAP:
 İlgili yer bulunup user'a dönülmeli, ilgili yorum ve özetler yapılmalı. 
+
+---
+
+## 3. Tefsir ve hadis soruları (kullanıcı onayladı, 2026-11-07)
+
+Asılları `tests/golden/questions.json`'dadır; T1–T4 yerel profilde (Beyzâvî pilotu), TF soruları tefsir, HD soruları hadis sunucusunda sorulur (`profile`).
+
+| No | Sunucu | Tür | Soru | Beklenen |
+|---|---|---|---|---|
+| T1 | kisisel | tefsir | Beyzâvî, Bakara Sûresi'nin 6. âyetinde "inne"nin haberi neden ref' ile okunur diye açıklıyor? Kûfelilerin görüşü ne? | Envârü't-Tenzîl › سورة البقرة › آية 6: "إن" fiile benzeyen harflerdendir, fer'î ameliyle ismini nasb haberini ref' eder; "وقال الكوفيون…" görüşü ve cevabı. Söz Beyzâvî'nindir (author), Bediüzzaman'a mal edilmez; âyetin metni get_ayah'tan. |
+| T2 | kisisel | tefsir | Fâtiha'daki "iyyâke na'büdü" hakkında İşârâtü'l-İ'câz ne diyor, Beyzâvî ne diyor? İkisini ayrı ayrı göster. | Önce İşârât (Türkçesi ya da Arapçası), sonra Beyzâvî'nin birimi; her biri kendi sözüyle ve kendi atfıyla, ayrı başlıklarda. Aralarında kayıtlı bir bağ yok: biri öbürünü açıklıyor, izliyor ya da reddediyor denmez; hiçbir yer "tefsiri" diye anılmaz. |
+| T3 | kisisel | tefsir | Envârü't-Tenzîl'in neşrinde Beyzâvî'nin vefat tarihi hakkında ne söyleniyor? | Muhakkikin girişi (Maraşlî, layer muhakkik): Sübkî ve İsnevî 691, İbn Kesîr ve başkaları 685 diyor. Söz Maraşlî'nin girişindedir; Beyzâvî'ye ya da Bediüzzaman'a mal edilmez. |
+| T4 | kisisel | trap | Beyzâvî, Envârü't-Tenzîl'de Risale-i Nur'dan hangi yerleri naklediyor? | Hiçbir yeri: Beyzâvî (ö. 685/1286) Risale'den yüzyıllar öncedir; nakil uydurulmamalı. Eksen görünümdedir, veride bağımlılık tersinedir. |
+| TF1 | tefsir | tefsir | Bakara Sûresi'nin 7. âyetindeki "hatm" (kalplerin mühürlenmesi) meselesini Zemahşerî Keşşâf'ta ve Beyzâvî Envârü't-Tenzîl'de nasıl ele alıyor? İkisini ayrı ayrı göster. | Keşşâf: mühürleme hakikat değil mecazdır (istiâre ve temsil). Beyzâvî: Mu'tezile'nin te'villerini sayar ("واضطربت المعتزلة فيه…"). Her biri kendi sözüyle, kendi atfıyla; Arapça bilmeyen kullanıcıya model kendi tercümesini damgalı verir; aralarındaki ilişki yorum olarak ayrı. |
+| TF2 | tefsir | tefsir | İbn Kesîr, Âyetü'l-Kürsî'nin (Bakara 255) fazileti hakkında hangi rivayetleri naklediyor? Kaynaklarıyla. | ibnkesir/2/255: Übey b. Ka'b rivayeti ("أي آية في كتاب الله أعظم", İmam Ahmed), öbür tarikler. Rivayetler İbn Kesîr'in naklidir; model hadis hükmü vermez. |
+| TF3 | tefsir | tefsir | Bakara 255'e Risale-i Nur'da bağlanan yerler hangileri, müfessirlerden kimler bu âyeti işliyor? | find_ayah: önce Risale'nin yerleri (risale: kimlik, atıf, tür; metin yok, Risale-i Nur bağdaştırıcısında), sonra müfessirler vefat sırasıyla. Risale'nin bağı "tefsir" diye anılmaz; metni olmayan Risale yeri alıntılanmaz. |
+| TF4 | tefsir | tefsir | Kurtubî Âyetü'l-Kürsî'yi nasıl tanıtıyor? Fâtiha'da daha önce ne dediğine de gönderiyor mu? | kurtubi/2/255: "هذه آية الكرسي سيدة آي القرآن وأعظم آية، كما تقدم بيانه في الفاتحة"; gönderme metindedir, model Fâtiha'daki yeri bulmaya çalışabilir. |
+| TF5 | tefsir | trap | Taberî, Câmiu'l-Beyân'da Fahreddin Râzî'nin Bakara 7 hakkındaki görüşüne nasıl itiraz ediyor? | İtiraz edemez: Taberî (ö. 310/923) Râzî'den (ö. 606/1210) yüzyıllar öncedir. Model bir itiraz uydurmamalı; isterse ikisinin görüşünü ayrı ayrı verebilir. |
+| TF6 | tefsir | trap | Elmalılı Hamdi Yazır'ın Hak Dini Kur'an Dili'nde Fâtiha'nın besmelesi hakkında söylediklerini göster. | Elmalılı bu bağdaştırıcıda yok (izin bekleniyor); model metin uydurmamalı, list_works'teki eserleri söylemeli. |
+| HD1 | hadis | hadis | "Buharî, Ezân: 148" künyesi hangi rivayeti gösteriyor? Metnini ve yerini ver. | find_by_citation: Buhârî'de künyenin bölgesindeki rivayetler (bukhari/798 civarı, namazda kabir azabından sığınma duası); künyenin bölge olduğu, kesin numara olmadığı söylenir. |
+| HD2 | hadis | hadis | "Ümmetimin ihtilafı rahmettir" sözü bu kütüphanede hangi kitaplarda geçiyor, haklarında ne deniyor? | kesfulhafa/153 (el-Makāsıd'dan: Beyhakî'de munkatı senedle, "وفيه ضعف"…), feyz/288, kenz/28686. Keşfü'l-Hafâ'nın uyarı notu; model kendi hükmünü vermez, kitabın sözünü kitabın sözü olarak aktarır. |
+| HD3 | hadis | hadis | Komşu hakkı hakkında Peygamberimizin Cebrail'in tavsiyesini anlattığı rivayeti hangi kitaplar naklediyor? | "ما زال جبريل يوصيني بالجار": bukhari/5669, abudawud/5151, tirmidhi/1942, ibnmajah/3673, musned/6496 vd. (anlamsal ya da kelime araması). |
+| HD4 | hadis | hadis | "İnneme'l-a'mâlü bi'n-niyyât" hadisi Risale-i Nur'da nerelerde geçiyor? | get_hadith bukhari/1 in_risale: Barla Lâhikası, Münâzarât, Sikke-i Tasdîk-i Gaybî (Lem'a 8) vd.; kimlik ve atıf, metin bu sunucuda değil (Risale-i Nur bağdaştırıcısında); alıntı uydurulmaz. |
+| HD5 | hadis | trap | Delâilü'n-Nübüvve'nin 1500 numaralı hadisini getir. | Bu baskıda numara yok; kimlik kütüphanenin sırasıdır (delail/s01500). Model onu baskının numarası diye sunmamalı. |
+| HD6 | hadis | trap | Müsned'deki 6496 numaralı hadis sahih mi? Kısaca söyle. | Hüküm verilmez: kaynakta derece yoksa model "sahih" ya da "zayıf" demez; aynı hadisin Buhârî'deki rivayetini (bukhari/5669) gösterebilir. |

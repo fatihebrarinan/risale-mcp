@@ -234,6 +234,17 @@ bir sunucu** (Nürnberg ya da Falkenstein), risale sunucusu taşınmaz; adresler
 `/hadis`, bugünkü Caddy istekleri Tailscale üzerinden yeni sunucuya yönlendirir. Öbür seçenekler: Helsinki'de
 yeniden denemek; vektörleri diskten okuyup takas alanıyla 4 GB'a sığdırmak (sınırda).
 
+**Karar (kullanıcı, 2026-11-07):** risale ve hadis aynı makinede, tefsir ileride büyüyeceği için ayrı makinede.
+Ölçüm (yerelde, araçlar ısındıktan sonra en çok bellek): hadis ≈250 MB, tefsir ≈1,2 GB; uzak makinede genel süreç
+376 MB, makine 3,8 GB. Hazırlık:
+- **Hadis** (aynı makine): `docs/risale-mcp-hadis.server.service` (127.0.0.1:8001), `docs/Caddyfile`'da `/hadis`
+  (ve `/hadis/<anahtar>`) → 8001'in `/mcp`'si, `scripts/deploy.sh --hadis` (hadis.db, vektörler, servis birimi).
+  İki süreç tek `auth.db`'yi paylaşır; kullanım kaydı artık `server` sütunu taşır, anlamsal aramanın günlük sınırı
+  sunucu başınadır. Yayın (M7) kullanıcının onayıyla.
+- **Tefsir** (ayrı makine, yalnız Tailscale): `docs/risale-mcp-tefsir.server.service` (8002), `scripts/tefsir-sunucu.sh
+  kur|gonder`; ana makinenin Caddy'si `/tefsir`'i Tailscale adresine yönlendirir (blok, adres belli olunca eklenir).
+  Makineyi kullanıcı açar (Ubuntu 24.04, en az 4 GB, Almanya'da ARM ya da x86; `tailscale up`).
+
 ## M2: tefsirler ayrıştırıldı (2026-11-06)
 
 `books/tefsir_openiti.py` (ortak ayrıştırıcı; kurallar başında), `books/openiti_writer.py` (Beyzâvî ile ortak
@@ -411,3 +422,17 @@ Sorgu tarafında; dizin ve `db.NORMALIZATION` değişmedi (1,6 GB'lık yerel diz
   kütüphane kimliği iki yoldan; 147 kayıt), artık bir kez ve Türkçe ciltler Osmanlıcadan önce; (3) Müsned, Kenz,
   Mecma, Dârimî, Müstedrek, Feyzü'l-Kadîr ve el-Mu'cemü's-Sağîr'in kaynağı cilt vermiyor (yalnız `[ص: n]`): atıf
   "s. 22 (cilt bilinmiyor)" der, cilt:sayfa künyesinde `find_by_citation` bunu not eder.
+
+## Sabah (2026-11-07): ön metinler, Fâtiha düzeltmeleri
+
+Kullanıcının kararı: envanterdeki öneri (`docs/tefsir-on-metinler.md`) uygulanır, muhakkikin ayrı girişleri ayrı
+katmandır. `books/tefsir_openiti.FRONT` (sınırlar baskının satırlarıyla, gözle doğrulandı): 11 eserde müellifin
+mukaddimesi (`<eser>/mukaddime`), Mâtürîdî'de muhakkikin girişi (`mukaddime-tahkik`, Mecdî Bâslûm), Kurtubî'de
+baskının mukaddimesi (`mukaddime-tabi`, Berdûnî) ve müellif biyografisi (`tercume`); Fâtiha'nın kendi metni sûre
+düğümüne. İnceleme iki eksik buldu ve düzeltti: Râzî'nin besmele tefsiri ve Kurtubî'nin ve Mâtürîdî'nin besmele
+bölümleri ön metne düşmüştü (verimizde yoktu): Râzî'de yeni 1:1 birimi, öbür ikisinde ilk birimin başı. ed-Dürrü'l-
+Mensûr'da altafsir Fâtiha'yı besmelesiz saymış (etiketler bir âyet kayık: "1:1" diye duran birim hamd âyetiydi):
+o sûrenin altafsir birimleri atıldı, besmele yeni 1:1, kalanı baskının "2 -" numarasından tek 2–7 birimi.
+Kimlik raporu (yerel, kabul edildi): 5.836 cümle ve 16 bölüm eklendi; silinen ve metni değişenler yalnız bu üç
+eserin Fâtiha birimlerinde (Dürr 146 silindi, 58 değişti; Kurtubî 1–7 ve Mâtürîdî 1:1 başa eklenenle kaydı).
+Denetim kararlarından hiçbiri bu birimlere dokunmuyor.

@@ -809,7 +809,7 @@ def main() -> None:
     if (args.anonymous or args.open) and not args.public_url:
         sys.exit("--anonymous ve --open yalnızca --public-url ile kullanılır.")
     if args.open:
-        store = AuthStore()
+        store = AuthStore(server=args.profile)
         server = create_server(library, args.public_url, store, anonymous_semantic=args.anonymous_semantic,
                                warm=True, open_access=True, profile=args.profile)
         uvicorn.run(http_app(server, args.public_url, open_store=store), host=args.host, port=args.port,

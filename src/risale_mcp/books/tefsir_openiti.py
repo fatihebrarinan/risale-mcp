@@ -31,8 +31,14 @@ Sûre: altafsir'in sûre başlıkları (`### | [2 - سورة البقرة]`) sû
 "سورة" geçen bir başlık varsa sûrenin kendi metni (mekkî/medenî, fazîleti) oradan başlar, yoksa önceki birime
 kalır (ayıran işaret yoksa ayrılmaz).
 
-Kapsam: ilk birimden (1:1) önceki metin alınmaz (muhakkikin girişi ile müellifin mukaddimesi bu sürümlerde ayrı
-işaretli değil; müellife mal edilmesin diye). Eser başına karar sonra (`notes`'ta).
+Ön metin (ilk birimden önceki kısım; envanter `docs/tefsir-on-metinler.md`, kullanıcının kararı 2026-11-07): sınırlar
+eser başına gözle doğrulandı ve `FRONT`'ta baskının kendi satırlarıyla yazılıdır, tahmin edilmez. Müellifin mukaddimesi
+`<eser>/mukaddime` düğümüdür; muhakkikin ve baskının girişleri ayrı katmandır (`authority: muhakkik`, `by`; Beyzâvî'deki
+gibi), müellife mal edilmez. Fâtiha'nın kendi metni (mekkî/medenî, fazîleti) sûre düğümüne gider; ön metne düşmüş
+âyet tefsiri birimine döner: Râzî'nin ve ed-Dürrü'l-Mensûr'un besmelesi yeni 1:1 birimi, Mâtürîdî'ninki 1:1'in,
+Kurtubî'ninki 1–7 biriminin başı. ed-Dürrü'l-Mensûr'da altafsir Fâtiha'yı besmelesiz sayıyor (etiketleri bir âyet kayık): o sûrenin altafsir
+birimleri atılır, besmeleden sonrası baskının "2 -" numarasından tek 2–7 birimi olur (adres geniş ama doğru). İlk
+satırlardaki Shamela künyesi (yazar, muhakkik, yayınevi) ve baskının harfli sayfa satırları ("- ط -") alınmaz.
 """
 
 import bisect
@@ -54,6 +60,80 @@ MAX_PLACES = 200              # bundan sık geçen dizi aday üretmez (puanı za
 UNIT_SUBTITLE = "Birim sınırı OpenITI'nin altafsir.com sürümünden; metin ve sayfa {edition}"
 FRONT_NOTE = ("İlk âyet biriminden önceki metin (muhakkikin girişi ve müellifin mukaddimesi bu sürümde ayrı işaretli "
               "değil) alınmadı.")
+FRONT_TAKEN_NOTE = ("İlk âyet biriminden önceki metnin sınırları gözle doğrulandı (`FRONT`): müellifin mukaddimesi "
+                    "`mukaddime`, muhakkikin ve baskının girişleri ayrı katman. Baştaki Shamela künyesi alınmadı.")
+NO_TITLE = "Başlık kaynakta yok: müellifin ilk âyet biriminden önceki metni"
+FRONT_UNIT_SUBTITLE = "Birim sınırı baskının kendi satırından (\"{line}\"); metin ve sayfa {edition}"
+
+
+@dataclass(frozen=True)
+class Front:
+    """Ön metnin bir kısmı. `at`: kısmın başladığı satır (önceki kısımdan sonra ilk eşleşen; "=" ile başlıyorsa tam
+    eşit, değilse satır onunla başlar; None: ön metnin ilk satırı). `kind`: `mukaddime` (müellifin), `tahkik`
+    (muhakkikin ya da baskının katmanı, `local` ve `by` ile), `sura` (sûrenin kendi metni), `unit` (yeni âyet birimi,
+    `verses`), `prepend` (ilk birim buradan başlar)."""
+    kind: str
+    at: str | None = None
+    title: str | None = None
+    printed: bool = True
+    local: str | None = None
+    by: str | None = None
+    subtitle: str | None = None
+    verses: tuple[int, int, int] | None = None
+    nth: int = 1                     # `at`'in kaçıncı eşleşmesi
+
+
+_TABI = "Baskının mukaddimesi (Ahmed Abdülalîm el-Berdûnî, 1372/1952): müellifin metni değil"
+FRONT: dict[str, list[Front]] = {
+    "taberi": [Front("mukaddime", None, "مقدمة المصنف"), Front("sura", "سورة الفاتحة")],
+    "maturidi": [Front("tahkik", "* مقدمة التحقيق", "مقدمة التحقيق", local="mukaddime-tahkik"),
+                 Front("mukaddime", "مقدمة المصنف", "مقدمة المصنف"), Front("prepend", "=بسم الله الرحمن الرحيم (1)")],
+    "kessaf": [Front("mukaddime", "مقدمة التفسير للعلامة الزمخشري", "مقدمة التفسير للعلامة الزمخشري"),
+               Front("sura", "سورة فاتحة الكتاب")],
+    "razi": [Front("mukaddime", None, "مقدمة المؤلف", printed=False), Front("sura", "سورة الفاتحة"),
+             Front("unit", "تفسير البسملة", verses=(1, 1, 1))],
+    "kurtubi": [Front("tahkik", "مقدمة الطبعة الثانية", "مقدمة الطبعة الثانية", local="mukaddime-tabi",
+                      by="Ahmed Abdülalîm el-Berdûnî", subtitle=_TABI),
+                Front("tahkik", "ترجمة أبي عبد الله القرطبي", "ترجمة أبي عبد الله القرطبي مؤلف هذا التفسير",
+                      local="tercume", subtitle="Baskının müellif biyografisi: müellifin metni değil"),
+                Front("mukaddime", "=المدخل", "المدخل"), Front("prepend", "[الكلام في] البسملة")],
+    "nesefi": [Front("mukaddime", None, "مقدمة المؤلف", printed=False),
+               Front("sura", "=بسم الله الرحمن الرحيم", nth=2)],
+    "ibnkesir": [Front("mukaddime", None, "مقدمة ابن كثير")],
+    "celaleyn": [Front("sura", None)],
+    "durr": [Front("mukaddime", "مقدمة المؤلف", "مقدمة المؤلف"), Front("sura", "مقدمة سورة الفاتحة"),
+             Front("unit", "قوله تعالى: بسم الله الرحمن الرحيم", verses=(1, 1, 1)),
+             Front("unit", "=2 -", verses=(1, 2, 7))],
+    "ebussuud": [Front("mukaddime", "=مقدمة", "مقدمة"), Front("sura", "سورة الفاتحة")],
+    "bursevi": [Front("mukaddime", None, "مقدمة المؤلف", printed=False), Front("sura", "سورة فاتحة الكتاب")],
+    "alusi": [Front("mukaddime", None, "خطبة المفسر"), Front("sura", "سورة الفاتحة")],
+}
+DROP_UNITS = {"durr": {1}}          # altafsir birimleri güvenilmeyen sûreler (yerine `FRONT`'taki birimler)
+_FRONT_JUNK = re.compile(r"^(?:-\s*\S{1,3}\s*-|\.{3,}|الجزء ال\S+|EDITOR\|?)$")
+
+
+def _front_segments(P: list[openiti.Paragraph], plan: list[Front]) -> list[tuple[Front, int]]:
+    """`FRONT` kısımlarının ön metindeki başlangıç satırları; bulunamayan kısım kurulumu durdurur (sınır tahmin
+    edilmez)."""
+    out, at = [], 0
+    for f in plan:
+        if f.at is None:
+            idx = 0 if not out else None
+        else:
+            exact, want = f.at.startswith("="), f.at.lstrip("=")
+            hits = (i for i in range(at, len(P)) if P[i].text and
+                    (P[i].text.strip() == want if exact else P[i].text.strip().startswith(want)))
+            idx = next((i for k, i in enumerate(hits, 1) if k == f.nth), None)
+        if idx is None:
+            raise ValueError(f"ön metinde kısım bulunamadı: {f.kind} {f.at!r}")
+        out.append((f, idx))
+        at = idx + 1
+    return out
+
+
+def _title_line(p: openiti.Paragraph, title: str) -> bool:
+    text = re.sub(r"\s*\(\d+\)\s*$", "", (p.text or "").strip().lstrip("* ").strip())
+    return text == title
 
 _UNIT_HEAD = re.compile(r"^### \|+ \[(\d+)\.(\d+)(?:-(\d+))?\]\s*$")
 _SURA_HEAD = re.compile(r"^### \|+ \[(\d+) - (سورة .+?)\]\s*$")
@@ -255,7 +335,8 @@ def parse(work: Work, key: str | None = None, raw_root=RAW_DIR / "openiti") -> t
     report.alignment = align
     book = Book(work.slug, work.title, {"group": str(work.group), "language": work.language,
                                         "source": {"site": str(work.source.site), "book": work.source.book}})
-    book.notes.append({"node_id": book.root.id, "after": None, "text": FRONT_NOTE})
+    book.notes.append({"node_id": book.root.id, "after": None,
+                       "text": FRONT_TAKEN_NOTE if work.slug in FRONT else FRONT_NOTE})
     if align.merged:
         book.notes.append({"node_id": book.root.id, "after": None,
                            "text": f"altafsir sürümünde olup Shamela metninde başı bulunamayan {len(align.merged)} birim "
@@ -283,6 +364,21 @@ def parse(work: Work, key: str | None = None, raw_root=RAW_DIR / "openiti") -> t
             if own is not None:
                 starts[n] = own
                 report.moved_units = getattr(report, "moved_units", 0) + 1
+    # ön metin (`FRONT`): kısımlar, yeni birimler, ilk birimin erken başı
+    front_end = starts[0] if starts else 0
+    segs = _front_segments(P[:front_end], FRONT.get(work.slug, []))
+    if drop := DROP_UNITS.get(work.slug):
+        kept = [k for k, u in enumerate(spans) if u.sura not in drop]
+        spans, starts = [spans[k] for k in kept], [starts[k] for k in kept]
+    front_units = {}
+    for f, idx in reversed([(f, i) for f, i in segs if f.kind == "unit"]):
+        u = Unit(*f.verses, [])
+        spans.insert(0, u)
+        starts.insert(0, idx)
+        front_units[id(u)] = P[idx].text.strip()
+    for f, idx in segs:
+        if f.kind == "prepend":
+            starts[0] = idx
     # iki birimin başı aynı satıra düştüyse satır bölünmez: birimler tek aralıkta birleşir
     merged_spans, merged_starts = [], []
     for u, st in zip(spans, starts):
@@ -315,10 +411,34 @@ def parse(work: Work, key: str | None = None, raw_root=RAW_DIR / "openiti") -> t
                                                                             max(_verse_numbers(P[i])) + 1)), None)
             starts[n] = own if own is not None else head + 1
             report.moved_units = getattr(report, "moved_units", 0) + 1
-    report.front_words = sum(len(p.text.split()) for p in P[:starts[0]] if p.text) if starts else 0
+    first_seg = segs[0][1] if segs else (starts[0] if starts else 0)
+    report.front_words = sum(len(p.text.split()) for p in P[:first_seg] if p.text)
+    report.front = P[:starts[0]] if starts else []
+    report.front_parts = [(f.kind, f.local or f.kind, i) for f, i in segs]
     report.heading_words = sum(len(" ".join(m.group(0) for m in _EDITION_HEAD.finditer(p.text)).split())
                                for p in P if p.text)
     w = Writer(book, report)
+    bounds = [i for _, i in segs] + [starts[0] if starts else len(P)]
+    sura_text = None
+    for k, (f, idx) in enumerate(segs):
+        end = min(bounds[k + 1], starts[0]) if starts else bounds[k + 1]
+        if f.kind == "sura":
+            sura_text = (idx, end)
+        if f.kind not in ("mukaddime", "tahkik"):
+            continue
+        node = book.add_node(book.root, f.local or "mukaddime", f.title,
+                             **({"subtitle": f.subtitle} if f.subtitle else
+                                {"subtitle": f"Muhakkikin girişi ({f.by or work.editor}): müellifin metni değil"}
+                                if f.kind == "tahkik" else {"subtitle": NO_TITLE} if not f.printed else {}))
+        if f.kind == "tahkik":
+            node.extra.update({"authority": "muhakkik", "by": f.by or work.editor})
+        w.start(node)
+        for i in range(idx, end):
+            text = (P[i].text or "").strip()
+            if (i - idx < 3 and _title_line(P[i], f.title) or _FRONT_JUNK.match(text)
+                    or text.startswith("سورة") and len(text.split()) <= 3):
+                continue
+            _write(w, P[i], keep_source)
     sura_node = None
     for n, unit in enumerate(spans):
         last = len(P) if n + 1 == len(spans) else (heads.get(n + 1) or starts[n + 1])
@@ -329,9 +449,23 @@ def parse(work: Work, key: str | None = None, raw_root=RAW_DIR / "openiti") -> t
             if heads.get(n) is not None:                 # sûrenin kendi metni: başlıktan ilk birime
                 for i in range(heads[n] + 1, starts[n]):
                     _write(w, P[i], keep_source)
+            elif n == 0 and sura_text:                   # Fâtiha'nın ön metindeki kendi metni
+                a, b = sura_text
+                fatiha = _verse_words(quran, Unit(unit.sura, 1, counts[unit.sura], []))
+                for i in range(a, b):
+                    p, text = P[i], (P[i].text or "").strip()
+                    if (i == a and text.startswith("سورة") and len(text.split()) <= 6
+                            or text.startswith("سورة") and len(text.split()) <= 3 or _FRONT_JUNK.match(text)):
+                        continue
+                    if _verse_numbers(p) and not p.level and _is_own_verse_text(p, fatiha):
+                        w.ayah([p], _verse_range(unit.sura, p))
+                    else:
+                        _write(w, p, keep_source)
         local = f"{unit.start}" + (f"-{unit.end}" if unit.end != unit.start else "")
         title = f"آية {unit.start}" if unit.end == unit.start else f"الآيات {unit.start} الى {unit.end}"
-        node = book.add_node(sura_node, local, title, subtitle=subtitle)
+        own = front_units.get(id(unit))
+        node = book.add_node(sura_node, local, title, subtitle=FRONT_UNIT_SUBTITLE.format(
+            line=own, edition=subtitle.split("metin ve sayfa ", 1)[1]) if own else subtitle)
         node.extra["verses"] = {"sura": unit.sura, "start": unit.start, "end": unit.end}
         w.start(node)
         opening = True                                   # âyet satırı yalnız birimin başında `ayah` olur

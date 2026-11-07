@@ -3,6 +3,29 @@
 İlk âyet biriminden önceki metin (MVP'de alınmadı: muhakkikin girişi ile müellifin mukaddimesi bu sürümlerde ayrı işaretli değil). Aşağıda her eserin bu kısmındaki başlıklar ve ilk satırlar; işaretler kelime ipucudur ("muhakkik": مقدمة التحقيق, ترجمة المؤلف…; "müellif": مقدمة المؤلف, خطبة الكتاب…), hüküm değildir. Karar kullanıcının: hangi kısım müellifin mukaddimesi olarak alınır.
 
 
+## Karar ve uygulama (kullanıcı, 2026-11-07)
+
+Öneri uygulandı; muhakkikin ve baskının ayrı girişleri ayrı katmandır (kullanıcının eki). Sınırlar
+`books/tefsir_openiti.FRONT`'ta baskının kendi satırlarıyla yazılı, her biri gözle doğrulandı:
+
+| Eser | Müellifin (`mukaddime`) | Ayrı katman (`authority: muhakkik`) | Fâtiha |
+|---|---|---|---|
+| Taberî | مقدمة المصنف (istiâze dahil) | — | "مكية وآياتها سبع" sûreye |
+| Mâtürîdî | مقدمة المصنف | `mukaddime-tahkik`: Mecdî Bâslûm'un girişi (≈86 bin kelime) | besmele 1:1 biriminin başına |
+| Keşşâf | مقدمة التفسير | — | sûrenin kendi metni |
+| Râzî | hutbe (başlıksız, alt başlıkta işaretli) | — | âyet satırları, Fâtiha'nın fasılları ve istiâze sûreye; besmele yeni **1:1** birimi (önceden yoktu) |
+| Kurtubî | المدخل (bâblar, istiâze) | `mukaddime-tabi`: baskının mukaddimesi (Berdûnî, 1372/1952); `tercume`: baskının müellif biyografisi | besmele 1–7 biriminin başına (önceden düşmüştü) |
+| Nesefî | hutbe (başlıksız) | — | sûrenin kendi metni |
+| İbn Kesîr | مقدمة ابن كثير (Fezâilü'l-Kur'ân dahil) | — | — |
+| Celâleyn | — | — | sûrenin künyesi sûreye |
+| ed-Dürrü'l-Mensûr | مقدمة المؤلف | — | fazîletler sûreye; besmele yeni **1:1**; altafsir'in besmelesiz (kayık) Fâtiha birimleri atıldı, baskının "2 -"sinden tek **2–7** birimi |
+| Ebüssuûd | مقدمة | — | sûrenin kendi metni |
+| Bursevî | hutbe ve istiâze (başlıksız) | — | — |
+| Âlûsî | خطبة المفسر | — | fazîletler ve adları sûreye |
+
+Alınmayanlar: Shamela'nın künye satırları (yazar, muhakkik, yayınevi), baskının harfli sayfa satırları ("- ط -"),
+"الجزء الأول" gibi cilt satırları.
+
 ## Özet ve öneri
 
 | Eser | Ön metin | Görünen | Öneri |

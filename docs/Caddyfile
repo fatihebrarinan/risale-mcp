@@ -13,6 +13,16 @@ mcp.risalemcp.com {
 		header Content-Type "text/plain; charset=utf-8"
 		file_server
 	}
+	# Hadis bağdaştırıcısı: aynı makinede ayrı süreç (docs/risale-mcp-hadis.server.service, 127.0.0.1:8001), o da
+	# /mcp'de dinler. /hadis/<anahtar> onun gizli hata ayıklama adresidir (/mcp/<anahtar>).
+	handle /hadis {
+		rewrite * /mcp
+		reverse_proxy 127.0.0.1:8001
+	}
+	handle_path /hadis/* {
+		rewrite * /mcp{path}
+		reverse_proxy 127.0.0.1:8001
+	}
 	reverse_proxy 127.0.0.1:8000
 }
 
