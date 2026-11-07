@@ -662,9 +662,11 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 - **M6 ilk ölçüm (2026-11-07):** üç bağdaştırıcı kipi `golden run --servers risale,hadis,tefsir` (risale genel
   profille; atıf iki veritabanında aranır, rapor sunucu başına çağrı, başka sunucunun kimliği, `cite`'ın sunucuları ve
   Arapça alıntının damgasını sayar) ve elle deneme klasörü `golden sandbox ~/risale-deneme --servers … --risale-profile
-  genel`. 41 soru: başka sunucunun kimliğiyle çağrı 0, atıf 233/252 (17'si ölçüm artığı, 2'si model hatası). Açık:
-  birden çok sunucunun `cite`'ı ayrı ayrı [1]'den numaralıyor (tek kaynakça için başlangıç numarası ve talimat),
-  tefsir talimatında eser kimlikleri yok (model `zamakhshari`, `qurtubi` tahmin etti).
+  genel`. 41 soru: başka sunucunun kimliğiyle çağrı 0, atıf 233/252 (17'si ölçüm artığı, 2'si model hatası). Çıkan iki
+  düzeltme yapıldı (kullanıcı onayladı, yeniden ölçülmedi): üç sunucunun `cite`'ı `first` alır ve üç talimat "başka
+  bağdaştırıcının kaynakları da varsa tek Kaynaklar listesi, numara sürer" der; tefsir talimatı 13 eserin kimliğini
+  yazarıyla listeler (katalogdan). Araç çıktısında fark yalnız `cite` ve talimat; genel sunucuya
+  `DEPLOY_EXPECT="cite instructions"` ile.
 - **MVP'nin kalanı (2026-11-07 denetimi, `docs/tefsir-pilot-degerlendirme.md` "Kalan"):** M5'te risale talimatının
-  öbür bağdaştırıcılara gönderme cümlesi (yayınla); M6'da kaynakça numarası ve eser kimlikleri; M7'de genel çıkış kararı
+  öbür bağdaştırıcılara gönderme cümlesi (yayınla; tek kaynakça kuralı bilgi kipinde öbür bağdaştırıcıları anıyor); M7'de genel çıkış kararı
   (müfessirler `private`'tan çıkar), hadis sunucusunu açma onayı, tefsir makinesi, site sayfaları ve gizlilik eki.

@@ -593,11 +593,12 @@ class CitationChecker:
 
     # ------------------------------------------------------------ cite aracı
 
-    def sources(self, items: list[dict]) -> dict:
+    def sources(self, items: list[dict], first: int = 1) -> dict:
         """`cite` aracı: her kaynak (`id`: cümle ya da "ilk..son" aralığı, isteğe bağlı `quote`) için
-        kullanıcıya gösterilecek atıf ve kaynakça. Kaynakların sırası kaynakça numaralarıdır."""
+        kullanıcıya gösterilecek atıf ve kaynakça. Kaynakların sırası kaynakça numaralarıdır; `first` ilk numaradır
+        (cevap başka bağdaştırıcının kaynaklarını da veriyorsa numara tek listede sürer)."""
         self.refresh()
-        out = [{"n": n, **self._source(item.get("id", ""), item.get("quote"))} for n, item in enumerate(items, 1)]
+        out = [{"n": n, **self._source(item.get("id", ""), item.get("quote"))} for n, item in enumerate(items, first)]
         return {"problems": sum("problem" in o for o in out),
                 "sources": out,
                 "bibliography": "\n".join(f"[{o['n']}] {o['cite_as']}" + "".join(f"\n  - {e['line']}" for e in o.get("embedded", ()))

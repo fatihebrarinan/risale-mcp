@@ -171,9 +171,9 @@ class HadisLibrary(Library):
             raise LibraryError("No book recognised in the citation; give it as e.g. 'Buharî, Ezân: 148' or 'Müsned 14870'.")
         return {"citations": out}
 
-    def cite_reports(self, ids: list[str]) -> dict:
+    def cite_reports(self, ids: list[str], first: int = 1) -> dict:
         lines, problems = [], []
-        for n, unit_id in enumerate(ids, 1):
+        for n, unit_id in enumerate(ids, first):
             row = self.conn.execute("SELECT u.*, b.title AS book_title, b.author, b.source FROM lib_units u"
                                     " JOIN lib_books b ON b.key = u.book WHERE u.id = ?", (unit_id,)).fetchone()
             if row is None:

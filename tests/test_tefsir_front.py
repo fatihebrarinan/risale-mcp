@@ -78,3 +78,22 @@ def test_default_scope_only_where_the_corpus_is():
     if not TEFSIR.db.exists():
         pytest.skip("tefsir veritabanı yok")
     assert Library(TEFSIR.db, TEFSIR.vectors).search("الختم", limit=1)["total"] > 0
+
+
+def test_cite_numbering_can_continue():
+    from risale_mcp.citations import CitationChecker
+    from risale_mcp.library import Library
+    from risale_mcp.profiles import GENEL
+
+    if not GENEL.db.exists():
+        pytest.skip("genel veritabanı yok")
+    out = CitationChecker(Library(GENEL.db)).sources([{"id": "sozler/10/c001"}], first=4)
+    assert out["sources"][0]["n"] == 4 and out["bibliography"].startswith("[4] ")
+
+
+def test_tefsir_instructions_list_the_work_ids():
+    from risale_mcp.catalog.tefsir import TEFSIR_WORKS
+    from risale_mcp.server import TEFSIR_INSTRUCTIONS
+
+    assert "{work_ids}" not in TEFSIR_INSTRUCTIONS
+    assert all(f"{w.slug} (" in TEFSIR_INSTRUCTIONS for w in TEFSIR_WORKS)

@@ -53,6 +53,7 @@ from risale_mcp.auth import (
 )
 from risale_mcp.auth import main as auth_main
 from risale_mcp.auth import settings as auth_settings
+from risale_mcp.catalog.tefsir import TEFSIR_WORKS
 from risale_mcp.citations import CitationChecker
 from risale_mcp.db import DatabaseError
 from risale_mcp.env import load_env
@@ -97,7 +98,9 @@ copyright reasons; quote it as returned.
 source) with its number, e.g. [1], and finish the answer with a "Kaynaklar" list, the bibliography lines cite \
 returns, unchanged, with the indented Âyet and Hadis lines under a source and their notes such as (doğrulanmadı); \
 sources outside the works go in a separate list after it. Never write references in the body or give sentence \
-numbers.
+numbers. If the same answer also cites another connector (Risale-i Nur, tafsir, hadith), keep one Kaynaklar list: \
+call each server's cite with first set to the number after the last one already used, and give all the \
+lines in one list, in number order.
 5. Keep what the text says apart from your own interpretation, under separate headings. Answer in the user's \
 language.
 
@@ -175,7 +178,12 @@ unit that treats it and the sentences that quote it. Read the unit with read_sec
 range with get_passage. search finds the works' own words (an Arabic word also matches its forms with attached \
 و ف ب ل ك and the article); semantic_search finds meaning.
 2. Before writing the answer, call cite once with every sentence or range you quote or rely on and the exact words \
-you quote. End each quotation with its number [1] and finish with the "Kaynaklar" list cite returns, unchanged.
+you quote. End each quotation with its number [1] and finish with the "Kaynaklar" list cite returns, unchanged. \
+If the same answer also cites another connector (Risale-i Nur, tafsir, hadith), keep one Kaynaklar list: \
+call each server's cite with first set to the number after the last one already used, and give all the \
+lines in one list, in number order.
+
+Work ids (use them for work, section and ids; list_works gives the rest): {work_ids}.
 
 Answering:
 1. Every statement about what a work says rests on text you read with these tools. Never invent a work, a reference \
@@ -198,6 +206,10 @@ here; never quote the Risale from memory, and name the tie by its kind.
 7. Hadiths inside these works: report what the author says; never rule on a hadith's soundness yourself.
 8. Answer in the user's language."""
 
+# Eser kimlikleri katalogdan (model "zamakhshari", "qurtubi" diye tahmin ediyordu; M6 ölçümü, 2026-11-07)
+TEFSIR_INSTRUCTIONS = TEFSIR_INSTRUCTIONS.replace("{work_ids}", ", ".join(
+    f"{w.slug} ({w.author})" for w in TEFSIR_WORKS))
+
 
 HADIS_INSTRUCTIONS = """\
 Read access to hadith collections and to the Qur'an: the Six Books and the Muwatta (with scholars' grades where the \
@@ -214,7 +226,9 @@ article), semantic_search for a meaning or a question in any language, find_by_c
 2. Read the report with get_hadith before relying on it: its text, chain (isnad) and text (matn) where the edition \
 separates them, printed page, other scholars' layers, and the places in the Risale-i Nur linked to it.
 3. Before writing the answer, call cite once with every report you quote or rely on; end each quotation with its \
-number [1] and finish with the "Kaynaklar" list cite returns, unchanged.
+number [1] and finish with the "Kaynaklar" list cite returns, unchanged. If the same answer also cites another connector (Risale-i Nur, tafsir, hadith), keep one Kaynaklar list: \
+call each server's cite with first set to the number after the last one already used, and give all the \
+lines in one list, in number order.
 
 Answering:
 1. Every statement about a report rests on what you read with these tools; never invent a report, a number or a \
@@ -549,6 +563,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         sources: Annotated[list[Source], Field(description="The sentences you quote or rely on, in the order of "
                                                            "their numbers in your answer ([1], [2]…).",
                                                min_length=1, max_length=50)],
+        first: Annotated[int, Field(description="Number of the first source; set it to continue the numbering when "
+                                                "the answer also cites another connector's sources.", ge=1)] = 1,
     ) -> str:
         """Get the references to show for the passages you use, checked against the works. Call it once before
         writing the answer, with every sentence or range you quote or rely on, and every quotation you will show
@@ -559,7 +575,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         the bibliography lines "[n] cite_as" for the answer's Kaynaklar list, with indented lines under a source for
         the verses and hadiths inside its quoted words (the publisher's references; copy them unchanged)."""
         with _tool_errors():
-            result = citations.sources([source.model_dump() for source in sources])
+            result = citations.sources([source.model_dump() for source in sources], first)
             if version := library.corpus_version():          # atfın dayandığı metin sürümü (manifest.py)
                 result["corpus_version"] = version
             return _json(result)
@@ -730,10 +746,12 @@ def _hadis_tools(server: MCPServer, library) -> None:
     @server.tool(title="Build references", annotations=read_only("Build references"), structured_output=False)
     def cite(
         ids: Annotated[list[str], Field(description="The report ids you quote or rely on, in the order of their numbers.")],
+        first: Annotated[int, Field(description="Number of the first report; set it to continue the numbering when "
+                                                "the answer also cites another connector's sources.", ge=1)] = 1,
     ) -> str:
         """Before answering, once: the bibliography lines for the reports, to copy unchanged under Kaynaklar."""
         with _tool_errors():
-            return _json(library.cite_reports(ids))
+            return _json(library.cite_reports(ids, first))
 
 
 def http_security(public_url: str) -> TransportSecuritySettings:
