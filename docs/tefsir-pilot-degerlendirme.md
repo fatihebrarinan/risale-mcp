@@ -236,7 +236,7 @@ eklenen özellikler.
   [1]'den numaraladığı için alıntı bloğunun yanlış kaynakçaya bağlanması), gerçek model hatası 2 (K5 aralık bölümü
   aşıyor; K1 alıntı bloğu). İki düzeltme yapıldı (2026-11-07, yeniden ölçülmedi): `cite(…, first)` ve üç talimatta tek
   kaynakça kuralı; tefsir talimatında 13 eserin kimliği (önce `zamakhshari`, `qurtubi` diye tahmin ediliyordu).
-- **M7 (2026-11-07):** hadis sunucusu yayında (`mcp.risalemcp.com/hadis`), tefsir sunucusu ayrı makinede kuruldu ve çalışıyor (`/tefsir` yolu sonraki `deploy.sh --code` ile açılır), site sayfaları, kurulum bölümleri ve gizlilik eki hazır (aynı deploy'la). Kalan: dizin başvuruları (kullanıcı). Önceki liste: genel çıkış kararı (Y2.3: müfessirlerin eserleri `private`'tan çıkar; OpenITI CC BY-NC-SA şartları sitede
+- **M7 (2026-11-07):** hadis sunucusu yayında (`mcp.risalemcp.com/hadis`), tefsir sunucusu ayrı makinede yayında (`mcp.risalemcp.com/tefsir`), site sayfaları, kurulum bölümleri ve gizlilik eki yayında. Kalan: dizin başvuruları (kullanıcı). Önceki liste: genel çıkış kararı (Y2.3: müfessirlerin eserleri `private`'tan çıkar; OpenITI CC BY-NC-SA şartları sitede
   ve sonuçlarda); hadis sunucusunu aynı makinede açmak (onay); tefsir makinesini açmak (kullanıcı, Hetzner ve
   Tailscale); `site/hadis.html`, `site/tefsir.html`, kurulum sayfaları ve gizlilik eki taslaklardan yayına; dizin
   başvuruları (kullanıcı, acelesi yok).
