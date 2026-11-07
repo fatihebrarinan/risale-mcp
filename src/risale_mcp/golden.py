@@ -26,6 +26,7 @@ import json
 import os
 import re
 import shutil
+import sqlite3
 import subprocess
 import sys
 import tempfile
@@ -73,11 +74,13 @@ def library_for(profile: str | None) -> Library:
 
 # ---------------------------------------------------------------- çalıştırma
 
-def run_question(question: dict, out_dir: Path, workdir: Path, config: Path) -> Path:
-    """Soruyu temiz bir Claude Code oturumunda sorar; dökümü `<soru>.jsonl`'e yazar."""
+def run_question(question: dict, out_dir: Path, workdir: Path, config: Path, servers: list[str] | None = None) -> Path:
+    """Soruyu temiz bir Claude Code oturumunda sorar; dökümü `<soru>.jsonl`'e yazar. `servers` verilirse (M6) üç
+    bağdaştırıcı birlikte açıktır, sorunun kendi sunucusu değil."""
+    allowed = ",".join(f"mcp__{n}" for n in servers) if servers else f"mcp__{question.get('profile') or SERVER}"
     command = ["claude", "-p", question["question"], "--output-format", "stream-json", "--verbose",
                "--mcp-config", str(config), "--strict-mcp-config", "--tools", "",
-               "--allowedTools", f"mcp__{question.get('profile') or SERVER}", "--no-session-persistence"]
+               "--allowedTools", allowed, "--no-session-persistence"]
     env = {k: v for k, v in os.environ.items() if k not in PARENT_ENV}
     out = out_dir / f"{question['id']}.jsonl"
     started = time.monotonic()
@@ -90,23 +93,34 @@ def run_question(question: dict, out_dir: Path, workdir: Path, config: Path) -> 
     return out
 
 
-def run(ids: list[str]) -> Path:
+MULTI_RISALE_PROFILE = "genel"          # üç bağdaştırıcı kipinde risale yayındaki hâliyle (müfessirler tefsirde)
+
+
+def run(ids: list[str], servers: list[str] | None = None) -> Path:
     questions = load_questions()
     chosen = questions if not ids else [q for q in questions if q["id"] in ids]
     unknown = set(ids) - {q["id"] for q in questions}
     if unknown:
         sys.exit(f"Bilinmeyen soru: {sorted(unknown)}")
-    out_dir = RUNS_DIR / datetime.now().strftime("%Y%m%d-%H%M%S")
+    out_dir = RUNS_DIR / (datetime.now().strftime("%Y%m%d-%H%M%S") + ("-coklu" if servers else ""))
     out_dir.mkdir(parents=True)
+    if servers:
+        (out_dir / "servers.json").write_text(json.dumps({"servers": servers, "risale_profile": MULTI_RISALE_PROFILE}),
+                                              encoding="utf-8")
     with tempfile.TemporaryDirectory(prefix="risale-golden-") as tmp:
         workdir = Path(tmp)
         configs = {}
-        for profile in {q.get("profile") for q in chosen}:
-            configs[profile] = workdir / f"mcp-{profile or SERVER}.json"
-            configs[profile].write_text(json.dumps(server_config(profile)), encoding="utf-8")
+        if servers:
+            multi = workdir / "mcp-coklu.json"
+            multi.write_text(json.dumps(servers_config(servers, MULTI_RISALE_PROFILE)), encoding="utf-8")
+            configs = {q.get("profile"): multi for q in chosen}
+        else:
+            for profile in {q.get("profile") for q in chosen}:
+                configs[profile] = workdir / f"mcp-{profile or SERVER}.json"
+                configs[profile].write_text(json.dumps(server_config(profile)), encoding="utf-8")
         print(f"{len(chosen)} soru; döküm: {out_dir.relative_to(ROOT)}", flush=True)
         for question in chosen:
-            run_question(question, out_dir, workdir, configs[question.get("profile")])
+            run_question(question, out_dir, workdir, configs[question.get("profile")], servers)
     report(out_dir)
     return out_dir
 
@@ -119,6 +133,7 @@ class ToolCall:
     arguments: dict
     result: str = ""
     error: bool = False
+    server: str = SERVER                                     # çağrının gittiği sunucu (mcp__<sunucu>__araç)
 
 
 @dataclass
@@ -153,8 +168,9 @@ def read_transcript(path: Path) -> Transcript:
         elif kind in ("assistant", "user"):
             for block in event.get("message", {}).get("content", []):
                 if block.get("type") == "tool_use":
+                    server = m.group(1) if (m := re.match(r"^mcp__([^_]+)__", block["name"])) else ""
                     name = re.sub(r"^mcp__[^_]+__", "", block["name"])
-                    by_id[block["id"]] = call = ToolCall(name, block.get("input", {}))
+                    by_id[block["id"]] = call = ToolCall(name, block.get("input", {}), server=server)
                     transcript.calls.append(call)
                 elif block.get("type") == "tool_result" and block.get("tool_use_id") in by_id:
                     call = by_id[block["tool_use_id"]]
@@ -208,8 +224,66 @@ class Checker:
     def title(self, node_id: str) -> str:
         row = self.library.conn.execute("SELECT title FROM nodes WHERE id = ?", (node_id,)).fetchone()
         if row is None:          # hadis sunucusu: bölüm kitap ağacındadır
-            row = self.library.conn.execute("SELECT title FROM lib_nodes WHERE id = ?", (node_id,)).fetchone()
+            try:
+                row = self.library.conn.execute("SELECT title FROM lib_nodes WHERE id = ?", (node_id,)).fetchone()
+            except sqlite3.OperationalError:
+                row = None
         return row[0] if row else node_id
+
+
+class MultiChecker(Checker):
+    """Üç bağdaştırıcı kipi (M6): atıf önce risale (genel) veritabanında, bulunamazsa tefsir veritabanında aranır;
+    başlık üçünde. Araç çağrısının kimliği başka sunucunun ise (`cross_server`) sayılır."""
+
+    def __init__(self) -> None:
+        from risale_mcp.profiles import GENEL, TEFSIR
+        super().__init__(Library(GENEL.db))
+        self.tefsir = Checker(Library(TEFSIR.db))
+        self.hadis = Checker(library_for("hadis"))
+        self.risale_works = {r[0] for r in self.library.conn.execute("SELECT slug FROM works")}
+        self.tefsir_works = {r[0] for r in self.tefsir.library.conn.execute("SELECT slug FROM works")}
+        self.hadis_books = {r[0] for r in self.hadis.library.conn.execute("SELECT key FROM lib_books")}
+
+    def citations(self, answer: str) -> list[Citation]:
+        # iki denetçi aynı metni ayrı ayrı okur; bir atıf hangisinde doğrulanırsa o sayılır, ikisi de tanırsa birinde
+        merged: dict[str, Citation] = {}
+        for c in self.verifier.check(answer) + self.tefsir.verifier.check(answer):
+            if c.written not in merged or (c.verified and not merged[c.written].verified):
+                merged[c.written] = c
+        return list(merged.values())
+
+    def title(self, node_id: str) -> str:
+        for checker in (super(), self.tefsir, self.hadis):
+            title = checker.title(node_id)
+            if title != node_id:
+                return title
+        return node_id
+
+    def owner(self, ident: str) -> str | None:
+        work = ident.split("/", 1)[0].split("..")[0]
+        if work in self.risale_works:
+            return "risale"
+        if work in self.tefsir_works:
+            return "tefsir"
+        if work in self.hadis_books:
+            return "hadis"
+        return None
+
+    def cross_server(self, calls: list[ToolCall]) -> list[ToolCall]:
+        """Kimliği başka sunucunun eserine ait çağrılar (ör. risale'nin `get_passage`'ına tefsir kimliği)."""
+        out = []
+        for call in calls:
+            ids = [v for k, v in call.arguments.items() if k in ("id", "section", "work", "book") and isinstance(v, str)]
+            ids += [x.get("id") if isinstance(x, dict) else x for x in call.arguments.get("sources", [])
+                    + call.arguments.get("ids", []) if x]
+            owners = {self.owner(i) for i in ids if i} - {None}
+            if owners and call.server not in owners:
+                out.append(call)
+        return out
+
+
+_ARABIC_BLOCK = re.compile(r"^>\s*\"?[^\n]*[\u0600-\u06FF]{3,}", re.M)
+_STAMP = re.compile(r"yapay zek[âa] (tercüme|çeviri)|kendi (tercüme|çeviri)|AI translation|my (own )?translation", re.I)
 
 
 def _within(node: str, section: str) -> bool:
@@ -223,7 +297,16 @@ def evaluate(question: dict, transcript: Transcript, checker: Checker) -> dict:
     answer_key = _key(transcript.answer)
     sections = [{"id": s, "read": any(_within(r, s) for r in read), "named": _key(checker.title(s)) in answer_key}
                 for s in question["sections"]]
+    multi = {}
+    if isinstance(checker, MultiChecker):
+        cites = [c for c in transcript.calls if c.name == "cite" and not c.error]
+        arabic = len(_ARABIC_BLOCK.findall(transcript.answer))
+        multi = {"cross": checker.cross_server(transcript.calls),
+                 "by_server": {n: sum(c.server == n for c in transcript.calls) for n in ("risale", "hadis", "tefsir")},
+                 "cite_servers": sorted({c.server for c in cites}),
+                 "arabic_blocks": arabic, "stamped": bool(_STAMP.search(transcript.answer))}
     return {
+        **multi,
         "tools": len(transcript.calls),
         "verify_calls": sum(c.name in ("cite", "verify_citations") for c in transcript.calls),
         "tool_errors": sum(c.error for c in transcript.calls),
@@ -241,19 +324,27 @@ def _mark(ok: bool) -> str:
 
 def _call_line(call: ToolCall) -> str:
     args = json.dumps(call.arguments, ensure_ascii=False)
-    return f"- `{call.name}` {args}" + (" — **hata:** " + call.result[:200] if call.error else "")
+    return f"- `{call.server + '.' if call.server != SERVER else ''}{call.name}` {args}" + (" — **hata:** " + call.result[:200] if call.error else "")
 
 
 def report(run_dir: Path) -> Path:
     questions = {q["id"]: q for q in load_questions()}
     checkers: dict[str | None, Checker] = {}
+    multi = (run_dir / "servers.json").exists()
+    multi_checker = MultiChecker() if multi else None
+    multi_rows = []
     rows, sections, totals = [], [], []
     for path in sorted(run_dir.glob("*.jsonl"), key=lambda p: list(questions).index(p.stem)):
         q = questions[path.stem]
         profile = q.get("profile")
-        checker = checkers.get(profile) or checkers.setdefault(profile, Checker(library_for(profile)))
+        checker = multi_checker or checkers.get(profile) or checkers.setdefault(profile, Checker(library_for(profile)))
         t = read_transcript(path)
         e = evaluate(q, t, checker)
+        if multi:
+            by = e["by_server"]
+            stamp = "—" if not e["arabic_blocks"] else _mark(e["stamped"])
+            multi_rows.append(f"| {q['id']} | {q.get('profile') or 'risale'} | {by['risale']} / {by['hadis']} / {by['tefsir']} "
+                              f"| {len(e['cross'])} | {', '.join(e['cite_servers']) or '—'} | {e['arabic_blocks']} | {stamp} |")
         ok = sum(c.verified for c in e["citations"])
         short = sum(c.verified and not c.exact for c in e["citations"])
         ranges = sum(c.verified and c.count > 1 for c in e["citations"])
@@ -270,6 +361,8 @@ def report(run_dir: Path) -> Path:
             lines += [f"**Sunucu bağlanamadı:** {t.servers}", ""]
         lines += ["**Cevap:**", "", t.answer.strip() or f"*(cevap yok: {t.failure})*", "",
                   f"**Araç çağrıları ({len(t.calls)}):**", "", *(map(_call_line, t.calls)), ""]
+        if multi and e["cross"]:
+            lines += ["**Başka sunucunun kimliğiyle çağrı:**", "", *map(_call_line, e["cross"]), ""]
         if e["sections"]:
             lines += ["**Beklenen bölümler** (okundu / cevapta adı geçiyor):", "",
                       *(f"- `{s['id']}` {checker.title(s['id'])}: {_mark(s['read'])} {_mark(s['named'])}"
@@ -287,10 +380,17 @@ def report(run_dir: Path) -> Path:
         n = len(totals)
         header += [f"| **ortalama** | | | {sum(t[3] for t in totals) / n:.1f} | | | {sum(t[0] for t in totals) / n:.0f} sn "
                    f"| {sum(t[1] for t in totals) / n:,.0f} | {sum(t[2] for t in totals) / n:.2f} $ | |"]
+    if multi:
+        header += ["", "## Üç bağdaştırıcı (M6)", "",
+                   "Çağrılar sunucu başına (risale / hadis / tefsir); başka sunucunun kimliğiyle yapılan çağrı; `cite` "
+                   "hangi sunucularda çağrıldı (birden çoksa kaynakça numaraları çakışabilir); Arapça alıntı bloğu ve "
+                   "\"yapay zekâ tercümesi\" damgası (otomatik, kaba; elle bakılır).", "",
+                   "| Soru | Sorunun sunucusu | Çağrılar r / h / t | Başka sunucunun kimliği | cite | Arapça blok | Damga |",
+                   "|---|---|---|---|---|---|---|", *multi_rows]
     header += ["", ""]
     out = run_dir / "report.md"
     out.write_text("\n".join(header + sections), encoding="utf-8")
-    print(f"rapor: {out.relative_to(ROOT)}")
+    print(f"rapor: {out.relative_to(ROOT) if out.is_relative_to(ROOT) else out}")
     return out
 
 
@@ -350,6 +450,7 @@ def main() -> None:
     run_parser = commands.add_parser("run", help="soruları sor ve raporla")
     run_parser.add_argument("ids", nargs="*", help="soru kimlikleri (A1, D14, K2…)")
     run_parser.add_argument("--all", action="store_true", help="bütün sorular")
+    run_parser.add_argument("--servers", help="üç bağdaştırıcı kipi (M6): virgülle, ör. risale,hadis,tefsir")
     report_parser = commands.add_parser("report", help="bir çalıştırmanın raporunu yeniden üret")
     report_parser.add_argument("run_dir", nargs="?", type=Path, help="varsayılan: son çalıştırma")
     sandbox_parser = commands.add_parser("sandbox", help="elle deneme klasörü hazırla")
@@ -361,7 +462,7 @@ def main() -> None:
     if args.command == "run":
         if not (args.all or args.ids):
             sys.exit("Soru kimliği ya da --all verin.")
-        run([] if args.all else args.ids)
+        run([] if args.all else args.ids, args.servers.split(",") if args.servers else None)
     elif args.command == "report":
         runs = sorted(p for p in RUNS_DIR.iterdir() if p.is_dir()) if RUNS_DIR.exists() else []
         if not (args.run_dir or runs):
