@@ -319,15 +319,27 @@ def _citation_line(c: Citation) -> str:
 
 # ---------------------------------------------------------------- elle deneme klasörü
 
-def sandbox(path: Path) -> None:
-    """Elle sohbet için klasör: bu sunucu açık, yerleşik dosya/kabuk/web araçları kapalı."""
+def servers_config(names: list[str], risale_profile: str | None = None) -> dict:
+    """Birden çok bağdaştırıcı (M6): `risale` (profili `risale_profile`, yoksa yerel), `hadis`, `tefsir`, her biri
+    kendi adıyla; kullanıcının claude.ai'de ekleyeceği gibi ayrı sunucular."""
+    out = {}
+    for name in names:
+        profile = risale_profile if name == SERVER else name
+        config = server_config(profile)["mcpServers"]
+        out[name] = next(iter(config.values()))
+    return {"mcpServers": out}
+
+
+def sandbox(path: Path, names: list[str] | None = None, risale_profile: str | None = None) -> None:
+    """Elle sohbet için klasör: seçilen sunucular açık, yerleşik dosya/kabuk/web araçları kapalı."""
+    names = names or [SERVER]
     path = path.expanduser().resolve()
     if path == ROOT or ROOT in path.parents:
         sys.exit("Deneme klasörü proje klasörünün dışında olmalı (Claude Code üst klasörlerdeki CLAUDE.md'yi okur).")
     (path / ".claude").mkdir(parents=True, exist_ok=True)
-    (path / ".mcp.json").write_text(json.dumps(server_config(), indent=2), encoding="utf-8")
-    settings = {"enabledMcpjsonServers": [SERVER],
-                "permissions": {"allow": [f"mcp__{SERVER}"], "deny": list(BUILTIN_TOOLS)}}
+    (path / ".mcp.json").write_text(json.dumps(servers_config(names, risale_profile), indent=2), encoding="utf-8")
+    settings = {"enabledMcpjsonServers": names,
+                "permissions": {"allow": [f"mcp__{n}" for n in names], "deny": list(BUILTIN_TOOLS)}}
     (path / ".claude" / "settings.json").write_text(json.dumps(settings, indent=2), encoding="utf-8")
     print(f"hazır: {path}\n  cd {path} && claude")
 
@@ -342,6 +354,8 @@ def main() -> None:
     report_parser.add_argument("run_dir", nargs="?", type=Path, help="varsayılan: son çalıştırma")
     sandbox_parser = commands.add_parser("sandbox", help="elle deneme klasörü hazırla")
     sandbox_parser.add_argument("path", type=Path)
+    sandbox_parser.add_argument("--servers", default=SERVER, help="virgülle: risale,hadis,tefsir")
+    sandbox_parser.add_argument("--risale-profile", help="risale sunucusunun profili (genel: yayındaki hâli)")
     args = parser.parse_args()
 
     if args.command == "run":
@@ -354,7 +368,7 @@ def main() -> None:
             sys.exit("Henüz çalıştırma yok.")
         report((args.run_dir or runs[-1]).resolve())
     else:
-        sandbox(args.path)
+        sandbox(args.path, args.servers.split(","), args.risale_profile)
 
 
 if __name__ == "__main__":
