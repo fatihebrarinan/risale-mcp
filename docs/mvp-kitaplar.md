@@ -436,3 +436,8 @@ o sûrenin altafsir birimleri atıldı, besmele yeni 1:1, kalanı baskının "2 
 Kimlik raporu (yerel, kabul edildi): 5.836 cümle ve 16 bölüm eklendi; silinen ve metni değişenler yalnız bu üç
 eserin Fâtiha birimlerinde (Dürr 146 silindi, 58 değişti; Kurtubî 1–7 ve Mâtürîdî 1:1 başa eklenenle kaydı).
 Denetim kararlarından hiçbiri bu birimlere dokunmuyor.
+Sonra: bağlar 12 eser için yenilendi (`links_tefsir --mvp …`): âyet birimi 43.112 (Dürr'de 5 birim gitti, 2 geldi),
+Kur'ân alıntısı 402.479 → 403.526 (yeni mukaddimelerden); 94 denetim kararının 94'ü bağını buluyor. Yeni cümlelerin
+vektörleri 5.943 (0,45 M token); tefsir sunucusunun kopyası 552.019 vektör. Testler geçti; genel sunucunun araç
+çıktısı aynı (`sabah-kod`).
+
