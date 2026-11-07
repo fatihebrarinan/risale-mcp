@@ -684,6 +684,8 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   bölümü. Yayında (`yayin-20261107-232006`, araç çıktısında fark yok). **Tefsir bağdaştırıcısı yayında:**
   `https://mcp.risalemcp.com/tefsir`, uzaktan denendi (11 araç, kelime ve anlamsal arama, `find_ayah`). MVP'de kalan
   yalnız dizin başvuruları (kullanıcı).
+- **MVP bitti (kullanıcı, 2026-11-07).** Dizin başvuruları sonra; sıradaki iş MVP'den sonraki sıra (Türkçe ve
+  İngilizce desteği, denetimli bağlar, katkı altyapısı; `docs/tefsir-pilot-degerlendirme.md` "MVP'den sonra").
 - **MVP'nin kalanı (2026-11-07 denetimi, `docs/tefsir-pilot-degerlendirme.md` "Kalan"):** M5'te risale talimatının
   öbür bağdaştırıcılara gönderme cümlesi (yayınla; tek kaynakça kuralı bilgi kipinde öbür bağdaştırıcıları anıyor); M7'de genel çıkış kararı
   (müfessirler `private`'tan çıkar), hadis sunucusunu açma onayı, tefsir makinesi, site sayfaları ve gizlilik eki.
