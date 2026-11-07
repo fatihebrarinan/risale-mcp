@@ -689,3 +689,20 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 - **MVP'nin kalanı (2026-11-07 denetimi, `docs/tefsir-pilot-degerlendirme.md` "Kalan"):** M5'te risale talimatının
   öbür bağdaştırıcılara gönderme cümlesi (yayınla; tek kaynakça kuralı bilgi kipinde öbür bağdaştırıcıları anıyor); M7'de genel çıkış kararı
   (müfessirler `private`'tan çıkar), hadis sunucusunu açma onayı, tefsir makinesi, site sayfaları ve gizlilik eki.
+- **Hata ayıklama adresleri ve ilk inceleme (2026-11-07):** anahtar sunucu başına (`auth --server hadis`,
+  `tefsir-sunucu.sh auth`). ChatGPT'yle Deccal/Hz. İsa sohbetinin kaydı yerelde yeniden çalıştırıldı (kayıtta sonuç
+  yok, yalnız girdi ve boy). Bulgular: (1) tefsirde `cite` baskının dipnot işaretlerini (`(9)`, `«2»`) atlayan alıntıyı
+  reddediyordu, model alıntıyı bıraktı: `citations._NOTE_MARK` ile düzeldi (`dcc0d5c`), henüz yayında değil
+  (`DEPLOY_EXPECT="cite" scripts/deploy.sh --code`, `TEFSIR_EXPECT="cite" scripts/tefsir-sunucu.sh gonder`);
+  (2) risale ve hadis `cite`'ı aynı cevapta ikisi de [1]'den başlamış olabilir (hadiste `first` yok), cevaplar
+  görülmedi; (3) aşağıdaki sıradaki adım.
+- **Sıradaki adım (kullanıcının kararı, 2026-11-07): hadis aramasında râvi ve `ibn` farkı.** Bulgu: Müslim'in Nevvâs
+  hadisi (`muslim/2937`) kütüphanede olduğu hâlde modelin hiçbir aramasında çıkmadı, model Nevvâs hadisi diye
+  `musned/17629`'u verdi. Sebepler: `search_hadith` yalnız metinde (matn) arar, isnadda aramaz (sahâbî ya da râvi adıyla
+  bulunamıyor); `بن` ile `ابن` eşleşmez (metin `المسيح بن مريم`, model `ابن مريم` aradı); uzun ve çok konulu rivayette
+  anlamsal benzerlik düşük (0,44). Öneri: `search_hadith`'e isnadda arayan `narrator` parametresi (isnad ayrı FTS
+  sütunu; metin araması bugünkü gibi yalnız matn kalır), aramada `ابن`/`بن` farkının iki tarafta yok sayılması
+  (normalizasyon değişirse sürüm artar), araç açıklamasına "sahâbî ya da râvi adıyla `narrator`" ve kelime araması
+  sonuçsuzsa lafız farkı uyarısı. `hadis_db` yeniden kurulur (kimlikler değişmez, H1 manifestosu denetler), hadis
+  çağrı setine bu örnekler eklenir (`tool_calls_hadis.json`: Nevvâs, `ابن مريم`), `HADIS_EXPECT="search_hadith"`
+  ile `deploy.sh --hadis`. Ölçüt: "النواس بن سمعان" + "الدجال" `muslim/2937`'yi ilk sonuçlarda verir.
