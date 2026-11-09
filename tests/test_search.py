@@ -13,3 +13,11 @@ def test_turkish_words_become_word_starts_only_when_asked():
     assert to_fts("beyzavi") == '("beyzavi")'
     assert to_fts("beyzavi", prefix_all=True) == '("beyzavi"*)'
     assert to_fts('"beyzavi"', prefix_all=True) == '("beyzavi")'
+
+
+def test_hadith_word_folds_ibn_into_bin():
+    from risale_mcp.search import hadith_word, to_fts
+    assert [hadith_word(w) for w in ("ابن", "وابن", "فابن", "لابن", "ابنة", "بن")] == ["بن", "وبن", "فبن", "لابن", "ابنة", "بن"]
+    assert '"بن مريم"' in to_fts('"ابن مريم"', canon=hadith_word)
+    assert '"ابن مريم"' in to_fts('"ابن مريم"')            # Risale'nin araması değişmez
+    assert '"لبن"' not in to_fts("ابن", canon=hadith_word)  # süt değil

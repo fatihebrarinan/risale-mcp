@@ -85,20 +85,40 @@ class HadisLibrary(Library):
         out["note"] = UNIT_NOTE
         return out
 
-    def search_reports(self, query: str, book: str | None = None, limit: int = 20, offset: int = 0) -> dict:
+    def search_reports(self, query: str | None = None, book: str | None = None, limit: int = 20, offset: int = 0,
+                       narrator: str | None = None) -> dict:
+        """Metinde (`query`) ve senette (`narrator`) kelime araması; ikisi birlikte verilirse ikisi de tutmalı.
+        "ابن" ile "بن" aynı sayılır (`search.hadith_word`). Senedi ayrılmamış baskıda râvi bütün metinde aranır."""
+        query, narrator = (query or "").strip(), (narrator or "").strip()
+        if not query and not narrator:
+            raise LibraryError("Give Arabic words of the report (query), a narrator's name (narrator), or both.")
         try:
-            expr = fts.to_fts(query)
+            text_expr = fts.to_fts(query, canon=fts.hadith_word) if query else None
+            chain_expr = fts.to_fts(narrator, canon=fts.hadith_word) if narrator else None
         except fts.QueryError as error:
             raise LibraryError(str(error)) from None
-        where, params = (" AND u.book = ?", [book]) if book else ("", [])
-        total = self.conn.execute(f"SELECT count(*) FROM lib_fts JOIN lib_units u ON u.seq = lib_fts.rowid"
-                                  f" WHERE lib_fts MATCH ?{where}", [expr, *params]).fetchone()[0]
-        rows = self.conn.execute(f"SELECT u.* FROM lib_fts JOIN lib_units u ON u.seq = lib_fts.rowid WHERE lib_fts MATCH ?"
-                                 f"{where} ORDER BY bm25(lib_fts) LIMIT ? OFFSET ?",
-                                 [expr, *params, min(max(limit, 1), 50), max(offset, 0)]).fetchall()
-        return {"total": total, "results": [self._unit(r, full=False) for r in rows],
-                "note": "Matches the report's text (the matn where the edition separates it). Read a report with "
-                        "get_hadith before relying on it."}
+        table = "lib_fts" if text_expr else "lib_isnad_fts"
+        where, params = f" WHERE {table} MATCH ?", [text_expr or chain_expr]
+        if text_expr and chain_expr:
+            where += " AND u.seq IN (SELECT rowid FROM lib_isnad_fts WHERE lib_isnad_fts MATCH ?)"
+            params.append(chain_expr)
+        if book:
+            where += " AND u.book = ?"
+            params.append(book)
+        base = f"FROM {table} JOIN lib_units u ON u.seq = {table}.rowid{where}"
+        total = self.conn.execute(f"SELECT count(*) {base}", params).fetchone()[0]
+        rows = self.conn.execute(f"SELECT u.* {base} ORDER BY bm25({table}) LIMIT ? OFFSET ?",
+                                 [*params, min(max(limit, 1), 50), max(offset, 0)]).fetchall()
+        note = ("Matches the report's text (the matn where the edition separates it)" if text_expr else
+                "Matches the narrator in the chain (in books whose edition does not separate the chain, anywhere in "
+                "the report)")
+        if text_expr and chain_expr:
+            note += " and the narrator in the chain (anywhere in the report where the chain is not separated)"
+        note += ". Read a report with get_hadith before relying on it."
+        if not total and text_expr:
+            note += (" No match: a report is often worded differently from how it is remembered (كذلك / على ذلك); "
+                     "search fewer, more distinctive words, add narrator, or use semantic_search.")
+        return {"total": total, "results": [self._unit(r, full=False) for r in rows], "note": note}
 
     def semantic(self, query: str, book: str | None = None, limit: int = 10, offset: int = 0) -> dict:
         """Anlamca en yakın hadisler (`hadis_vectors.py`: hadis başına, yalnız metin)."""

@@ -67,22 +67,39 @@ def arabic_forms(word: str) -> list[str]:
     return sorted(forms, key=lambda f: (f != word, len(f), f))
 
 
-def _term(raw: str, prefix_all: bool = False) -> str | None:
+# Hadis metinlerinde "ابن" ile "بن" aynı yerde ikisi de yazılır ("المسيح بن مريم" / "ابن مريم"): hadis dizini ve
+# sorgusu ikisini "بن"e indirir (2026-11-09; Risale'nin dizini değişmez). Yalnız yalın ve و/ف'li biçim: "لابن",
+# "بابن" "لبن" (süt) gibi başka kelimelere düşmesin diye olduğu gibi kalır.
+_IBN = re.compile(r"([وف]?)ابن")
+_BIN_FORMS = ("بن", "وبن", "فبن", "لابن", "بابن", "كابن", "ولابن", "وبابن")
+
+
+def hadith_word(word: str) -> str:
+    """Hadis dizininin kelimesi: "ابن"/"وابن"/"فابن" -> "بن"/"وبن"/"فبن"."""
+    m = _IBN.fullmatch(word)
+    return m[1] + "بن" if m else word
+
+
+def _term(raw: str, prefix_all: bool = False, canon=None) -> str | None:
     """Bir kelime ya da tırnaklı ifade -> FTS5 ifadesi; aranacak harf yoksa None. Tırnaksız tek Arapça kelime
-    önekli biçimleriyle aranır; `prefix_all`: tırnaksız tek kelime kelime başı olarak aranır (Türkçe ek)."""
+    önekli biçimleriyle aranır; `prefix_all`: tırnaksız tek kelime kelime başı olarak aranır (Türkçe ek). `canon`:
+    dizinin kelime biçimi (hadis dizini: `hadith_word`)."""
     prefix = raw.endswith("*")
     quoted = raw.startswith('"')
     words = search_words(raw.rstrip("*").strip('"'))
+    if canon:
+        words = [canon(w) for w in words]
     if not words:
         return None
     if len(words) == 1 and not quoted and _ARABIC.search(words[0]):
-        return "(" + " OR ".join(f'"{f}"' + ("*" if prefix else "") for f in arabic_forms(words[0])) + ")"
+        forms = _BIN_FORMS if canon and words[0] in _BIN_FORMS[:3] else arabic_forms(words[0])
+        return "(" + " OR ".join(f'"{f}"' + ("*" if prefix else "") for f in forms) + ")"
     if prefix_all and len(words) == 1 and not quoted:
         prefix = True
     return f'"{" ".join(words)}"' + ("*" if prefix else "")
 
 
-def _near(tokens: list[str], i: int) -> tuple[str | None, int]:
+def _near(tokens: list[str], i: int, canon=None) -> tuple[str | None, int]:
     """`NEAR(` sonrasını okur: (ifade, kapanıştan sonraki konum)."""
     terms, distance = [], DEFAULT_NEAR
     while i < len(tokens) and tokens[i] != ")":
@@ -93,7 +110,7 @@ def _near(tokens: list[str], i: int) -> tuple[str | None, int]:
             distance = int(tokens[i + 1])
             i += 2
             continue
-        if term := _term(token):
+        if term := _term(token, canon=canon):
             terms.append(term)
         i += 1
     if i >= len(tokens):
@@ -103,9 +120,10 @@ def _near(tokens: list[str], i: int) -> tuple[str | None, int]:
     return f"NEAR({' '.join(terms)}, {distance})", i + 1
 
 
-def to_fts(query: str, prefix_all: bool = False) -> str:
+def to_fts(query: str, prefix_all: bool = False, canon=None) -> str:
     """Sorgu dilini FTS5 MATCH ifadesine çevirir. Geçersiz ya da boş sorguda `QueryError`. `prefix_all`: dışlanmayan
-    tırnaksız kelimeler kelime başı olarak aranır (sonuçsuz sorguda Türkçe ek için ikinci deneme)."""
+    tırnaksız kelimeler kelime başı olarak aranır (sonuçsuz sorguda Türkçe ek için ikinci deneme). `canon`: dizinin
+    kelime biçimi (`_term`)."""
     tokens = _TOKEN.findall(query)
     clauses: list[list[str]] = [[]]
     excluded: list[str] = []
@@ -119,18 +137,18 @@ def to_fts(query: str, prefix_all: bool = False) -> str:
         if token in ("AND", "(", ")", ","):
             continue
         if token == "NEAR(":
-            term, i = _near(tokens, i)
+            term, i = _near(tokens, i, canon)
         elif token == "NOT" or token == "-":
-            if i < len(tokens) and (term := _term(tokens[i])):
+            if i < len(tokens) and (term := _term(tokens[i], canon=canon)):
                 excluded.append(term)
             i += 1
             continue
         elif token.startswith("-") and len(token) > 1:
-            if term := _term(token[1:]):
+            if term := _term(token[1:], canon=canon):
                 excluded.append(term)
             continue
         else:
-            term = _term(token, prefix_all)
+            term = _term(token, prefix_all, canon)
         if term:
             clauses[-1].append(term)
 

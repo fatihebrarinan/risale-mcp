@@ -2,6 +2,7 @@
 
 import pytest
 
+from risale_mcp.library import LibraryError
 from risale_mcp.profiles import PROFILES
 
 
@@ -59,3 +60,20 @@ def test_every_book_id_opens_its_outline(lib):
     for book in lib.books()["books"]:
         tree = lib.tree(book["id"], 1)
         assert tree["id"] == book["id"] and (tree.get("children") or tree.get("subsections") or tree["reports"])
+
+
+def test_narrator_search_finds_the_report_in_its_chain(lib):
+    # Nevvâs b. Sem'ân'ın Deccal hadisi: senet ayrı (Müslim) ve ayrı değil (Müsned) baskılarda (2026-11-09)
+    ids = [r["id"] for r in lib.search_reports("الدجال", narrator="النواس بن سمعان", limit=20)["results"]]
+    assert "muslim/2937" in ids and "musned/17629" in ids
+    only = lib.search_reports(narrator="النواس بن سمعان", book="muslim")
+    assert only["total"] and all(r["id"].startswith("muslim/") for r in only["results"])
+    with pytest.raises(LibraryError):
+        lib.search_reports("")
+
+
+def test_ibn_and_bin_are_the_same_word(lib):
+    # metin "المسيح بن مريم", sorgu "ابن مريم"
+    assert "muslim/2937" in [r["id"] for r in lib.search_reports('"المسيح ابن مريم فينزل عند المنارة البيضاء"')["results"]]
+    missed = lib.search_reports('"فبينما هو على ذلك إذ بعث الله المسيح ابن مريم"')
+    assert missed["total"] == 0 and "narrator" in missed["note"]

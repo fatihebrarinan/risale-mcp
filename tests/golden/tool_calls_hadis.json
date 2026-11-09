@@ -108,6 +108,45 @@
    }
   },
   {
+   "name": "search_narrator",
+   "tool": "search_hadith",
+   "args": {
+    "query": "الدجال",
+    "narrator": "النواس بن سمعان",
+    "limit": 10
+   }
+  },
+  {
+   "name": "search_narrator_only",
+   "tool": "search_hadith",
+   "args": {
+    "narrator": "النواس بن سمعان",
+    "book": "muslim",
+    "limit": 5
+   }
+  },
+  {
+   "name": "search_ibn_bin",
+   "tool": "search_hadith",
+   "args": {
+    "query": "\"المسيح ابن مريم فينزل عند المنارة البيضاء\"",
+    "limit": 5
+   }
+  },
+  {
+   "name": "search_misremembered",
+   "tool": "search_hadith",
+   "args": {
+    "query": "\"فبينما هو على ذلك إذ بعث الله المسيح ابن مريم\"",
+    "limit": 5
+   }
+  },
+  {
+   "name": "search_empty",
+   "tool": "search_hadith",
+   "args": {}
+  },
+  {
    "name": "semantic_neighbour",
    "tool": "semantic_search",
    "args": {

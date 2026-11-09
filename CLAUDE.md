@@ -706,3 +706,12 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   sonuçsuzsa lafız farkı uyarısı. `hadis_db` yeniden kurulur (kimlikler değişmez, H1 manifestosu denetler), hadis
   çağrı setine bu örnekler eklenir (`tool_calls_hadis.json`: Nevvâs, `ابن مريم`), `HADIS_EXPECT="search_hadith"`
   ile `deploy.sh --hadis`. Ölçüt: "النواس بن سمعان" + "الدجال" `muslim/2937`'yi ilk sonuçlarda verir.
+- **Râvi araması ve `ibn` (yerelde bitti, 2026-11-09):** `search_hadith(query?, narrator?)`: `narrator` senette aranır
+  (`hadis_db` yeni `lib_isnad_fts`: baskı senedi ayırdıysa senet, ayırmadıysa bütün metin; senedi ayrı olan 35.721
+  hadis, çoğu Kütüb-i Sitte ve Muvatta), ikisi verilirse ikisi de tutmalı. `ابن`/`وابن`/`فابن` hadis dizininde ve
+  sorgusunda `بن`'e iner (`search.hadith_word`, `to_fts(canon=…)`; `لابن` gibiler "لبن"e düşmesin diye kalır; Risale'nin
+  araması değişmez, genel sunucuda fark yok). Sonuçsuz metin aramasında lafız farkı notu. Ölçüt tuttu: "الدجال" +
+  `narrator` Nevvâs 9 sonuç, `muslim/2937`, `abudawud/4321`, `ibnmajah/4075`, `tirmidhi/2240` aralarında; "… باب لد"
+  araması 10 → 16. Hadis çağrı setine 5 çağrı; `tool_snapshot compare` artık beklenen aracın sete yeni eklenen
+  çağrısını beklenen sayar ve her profilin çağrı setinden aracı bulur. Kimlik değişikliği yok. Yayın:
+  `HADIS_EXPECT="search_hadith instructions" scripts/deploy.sh --code --hadis`.

@@ -25,6 +25,7 @@ from pathlib import Path
 from risale_mcp import manifest
 from risale_mcp.db import NORMALIZATION, SCHEMA, SCHEMA_VERSION
 from risale_mcp.normalize import search_words
+from risale_mcp.search import hadith_word
 from risale_mcp.paths import DIST_DIR, LIBRARY_DIR, LINKS_DIR, PUBLIC_DB_PATH
 
 KUTUB_DIR = LIBRARY_DIR / "hadis" / "kutub"
@@ -71,6 +72,8 @@ CREATE TABLE lib_units (
 CREATE INDEX lib_units_node ON lib_units(node_id);
 CREATE INDEX lib_units_api ON lib_units(book, api);
 CREATE VIRTUAL TABLE lib_fts USING fts5(words, tokenize = "unicode61 remove_diacritics 0");
+-- râvi araması: baskı senedi ayırdıysa senet, ayırmadıysa bütün metin (senet orada metnin içindedir)
+CREATE VIRTUAL TABLE lib_isnad_fts USING fts5(words, tokenize = "unicode61 remove_diacritics 0");
 CREATE TABLE lib_risale (                     -- Risale'den bağlar: Risale'nin metni değil, kimliği ve atfı
     unit_id   TEXT NOT NULL,
     sentence  TEXT NOT NULL,
@@ -83,6 +86,11 @@ CREATE INDEX lib_risale_unit ON lib_risale(unit_id);
 """
 
 COPIED = ("quran_suras", "quran_ayahs", "quran_translators", "quran_translations", "sura_names")
+
+
+def _words(text: str) -> str:
+    """Dizinin kelimeleri: aramanın biçimi, "ابن" -> "بن" (`search.hadith_word`)."""
+    return " ".join(hadith_word(w) for w in search_words(text))
 
 
 def _books() -> list[dict]:
@@ -139,8 +147,10 @@ def build(out: Path = HADIS_DB, source_db: Path = PUBLIC_DB_PATH, manifest_check
                 (h["id"], key, h["node_id"], h.get("number"), h.get("api"), h["text"], h.get("isnad"), h.get("matn"),
                  json.dumps(h["printed"]) if h.get("printed") else None,
                  json.dumps(h["layers"], ensure_ascii=False) if h.get("layers") else None))
-            conn.execute("INSERT INTO lib_fts (rowid, words) VALUES (?, ?)",
-                         (cur.lastrowid, " ".join(search_words(h.get("matn") or h["text"]))))
+            conn.execute("INSERT INTO lib_fts (rowid, words) VALUES (?, ?)", (cur.lastrowid, _words(h.get("matn") or h["text"])))
+            separated = bool(h.get("isnad") and h.get("matn"))
+            conn.execute("INSERT INTO lib_isnad_fts (rowid, words) VALUES (?, ?)",
+                         (cur.lastrowid, _words(h["isnad"] if separated else h["text"])))
             if h.get("api") is not None:
                 api_index[(key, int(h["api"]))] = h["id"]
             counts["units"] += 1

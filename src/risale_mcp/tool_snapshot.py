@@ -191,7 +191,9 @@ def json_diff(old, new, path: str = "") -> list[str]:
 def compare(before: str, after: str, expect: tuple[str, ...] = ()) -> int:
     old = json.loads((SNAPSHOT_DIR / before / "calls.json").read_text(encoding="utf-8"))
     new = json.loads((SNAPSHOT_DIR / after / "calls.json").read_text(encoding="utf-8"))
-    tool_of = {c["name"]: c.get("tool") or c.get("prompt") or c.get("uri") for c in load_calls()}
+    # Her profilin çağrı seti (genel, hadis, tefsir): çağrının aracı adından bulunur.
+    tool_of = {c["name"]: c.get("tool") or c.get("prompt") or c.get("uri")
+               for path in {CALLS_PATH, *PROFILE_CALLS.values()} if path.exists() for c in load_calls(path)}
     sections: list[tuple[str, list[str], bool]] = []     # (başlık, farklar, beklenen mi)
     for key in ("instructions", "tools", "resources", "prompts"):
         diff = json_diff(old.get(key), new.get(key))
@@ -203,7 +205,9 @@ def compare(before: str, after: str, expect: tuple[str, ...] = ()) -> int:
     for name in sorted(old["calls"].keys() | new["calls"].keys()):
         a, b = old["calls"].get(name), new["calls"].get(name)
         if a is None or b is None:
-            sections.append((name, ["çağrı yalnız " + ("öncekinde" if b is None else "sonrakinde")], False))
+            # Beklenen aracın sete yeni eklenen çağrısı da beklenendir; silinen çağrı hiçbir zaman değil.
+            sections.append((name, ["çağrı yalnız " + ("öncekinde" if b is None else "sonrakinde")],
+                             a is None and tool_of.get(name) in expect))
             continue
         if a.get("skipped") or b.get("skipped"):
             continue

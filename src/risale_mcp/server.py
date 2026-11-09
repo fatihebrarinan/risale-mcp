@@ -221,7 +221,7 @@ al-Bayhaqi's Dala'il al-Nubuwwa (list_books). The unit is the report: its id is 
 
 Workflow:
 1. Find: search_hadith for Arabic words (an Arabic word also matches its forms with attached و ف ب ل ك and the \
-article), semantic_search for a meaning or a question in any language, find_by_citation for a reference such as \
+article; ابن and بن count as one) or a Companion's or narrator's name in the chain (narrator), semantic_search for a meaning or a question in any language, find_by_citation for a reference such as \
 "Buharî, Ezân: 148" or "Müsned 14870". Results are candidates. Browse with list_books, get_outline, read_chapter.
 2. Read the report with get_hadith before relying on it: its text, chain (isnad) and text (matn) where the edition \
 separates them, printed page, other scholars' layers, and the places in the Risale-i Nur linked to it.
@@ -702,15 +702,20 @@ def _hadis_tools(server: MCPServer, library) -> None:
 
     @server.tool(title="Search the reports", annotations=read_only("Search the reports"), structured_output=False)
     def search_hadith(
-        query: Annotated[str, Field(description="Arabic words; quote an exact phrase; OR, -word as in search.")],
+        query: Annotated[str | None, Field(description="Arabic words of the report; quote an exact phrase; OR, -word "
+                                                       "as in search.")] = None,
         book: Annotated[str | None, Field(description="Only this book id.")] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 20,
         offset: Annotated[int, Field(ge=0)] = 0,
+        narrator: Annotated[str | None, Field(description="A Companion's or narrator's name in Arabic, searched in the "
+                                                          "chain, e.g. 'النواس بن سمعان'.")] = None,
     ) -> str:
-        """Search the reports by their own Arabic words, best matches first. An unquoted Arabic word also matches its
-        forms with attached و ف ب ل ك and the article."""
+        """Search the reports by their own Arabic words (query), by a narrator in the chain (narrator), or both, best
+        matches first. An unquoted Arabic word also matches its forms with attached و ف ب ل ك and the article; ابن and
+        بن count as the same word. A report is often worded differently from how it is remembered: if nothing
+        matches, search fewer and more distinctive words, add the narrator, or use semantic_search."""
         with _tool_errors():
-            return _json(library.search_reports(query, book, limit, offset))
+            return _json(library.search_reports(query, book, limit, offset, narrator))
 
     @server.tool(title="Search by meaning", annotations=read_only("Search by meaning"), structured_output=False)
     def semantic_search(
