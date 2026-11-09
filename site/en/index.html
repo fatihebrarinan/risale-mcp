@@ -8,7 +8,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Risale-i Nur MCP">
 <meta property="og:title" content="Risale-i Nur MCP">
-<meta property="og:description" content="A connector that ties AI assistants to the text of the Risale-i Nur: every quotation from the works themselves, every reference down to the sentence.">
+<meta property="og:description" content="Qur&#x27;an, hadith and tafsir around the Risale-i Nur: three connectors for AI assistants. Every quotation from the works themselves, every reference down to the sentence.">
 <meta property="og:url" content="https://risalemcp.com/en/">
 <meta property="og:image" content="https://risalemcp.com/img/paylasim.png">
 <meta property="og:image:width" content="1200">
@@ -17,7 +17,7 @@
 <meta property="og:locale" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <!-- /og -->
-<meta name="description" content="A connector that ties AI assistants to the text of the Risale-i Nur: every quotation from the works themselves, every reference down to the sentence.">
+<meta name="description" content="Qur'an, hadith and tafsir around the Risale-i Nur: three connectors for AI assistants. Every quotation from the works themselves, every reference down to the sentence.">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
 <link rel="apple-touch-icon" href="/icon.png">
@@ -30,26 +30,135 @@
 <main>
 <nav>
   <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/en/#connectors">Connectors</a>
+  <a href="/en/#add">Setup</a>
   <a href="/en/docs.html">Documentation</a>
-  <a href="/en/hadith.html">Hadith</a>
-  <a href="/en/tafsir.html">Tafsir</a>
-  <a href="/en/contribute.html">Contribute</a>
-  <a href="/en/privacy.html">Privacy</a>
   <a href="/" lang="tr">Türkçe</a>
   <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
 </nav>
 
 <section class="hero">
-  <h1>Read the Risale-i Nur with AI, without leaving the text</h1>
-  <p class="lead">AI assistants talk fluently about the Risale-i Nur, but often from memory: quotations are misremembered, references are invented, and the text gets mixed up with interpretation. Risale-i Nur MCP connects the assistant to the works of Bediüzzaman Said Nursî themselves. The assistant reads the text before it speaks; everything it says rests on a sentence, and the reader can find that sentence. It keeps what the text says apart from its own interpretation, and it says what it could not find instead of inventing it.</p>
-  <h2>Add It to the AI You Use</h2>
+  <img class="hero-logo" src="/icon.png" alt="" width="88" height="88">
+  <h1>Qur'an, hadith and tafsir around the Risale-i Nur: with AI, from the sources, with exact references</h1>
+  <p class="lead">Add three connectors to the AI you use. On any subject you ask about, it reads the Risale-i Nur, the hadith collections and the classical tafsirs in their own text, and shows where every word it quotes comes from, down to the sentence. It does not answer from memory, says when it cannot find something, and does not invent.</p>
   <div class="actions">
     <a class="button primary" href="/en/claude.html">Add to Claude</a>
     <a class="button primary" href="/en/chatgpt.html">Add to ChatGPT</a>
   </div>
-  <p class="muted small">Each platform has its own page with the setup steps, project instructions written for that platform, and troubleshooting. Gemini is coming soon.</p>
+  <p class="muted small">Three connectors, free, no account needed. Gemini coming soon.</p>
 </section>
 
+<section class="stats" aria-label="What the library holds">
+  <div class="stat"><strong><!-- sayi:risale_eser_en -->53<!-- /sayi --> works</strong><span>Risale-i Nur, about <!-- sayi:risale_cumle_en -->131,000<!-- /sayi --> sentences</span></div>
+  <div class="stat"><strong><!-- sayi:hadis_kitap_en -->18<!-- /sayi --> books</strong><span>Hadith, about <!-- sayi:hadis_sayi_en -->169,000<!-- /sayi --> reports</span></div>
+  <div class="stat"><strong><!-- sayi:tefsir_eser_en -->13<!-- /sayi --> tafsirs</strong><span>From Tabari to Alusi, about <!-- sayi:tefsir_cumle_en -->552,000<!-- /sayi --> sentences</span></div>
+  <div class="stat"><strong><!-- sayi:ayet_en -->6,236<!-- /sayi --> verses</strong><span>The Qur'an, with two Diyanet translations (Turkish)</span></div>
+</section>
+
+<section id="connectors">
+  <h2>Three connectors, one library</h2>
+  <p>The three are independent; add whichever you need. With all three, the AI brings the Risale-i Nur, the hadith and the tafsirs side by side in one answer and gathers every source into a single list.</p>
+  <div class="plugins">
+    <article class="plugin">
+      <svg class="plugin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 6.5C9.5 5 6.5 4.6 3 5v13c3.5-.4 6.5 0 9 1.5 2.5-1.5 5.5-1.9 9-1.5V5c-3.5-.4-6.5 0-9 1.5Zm0 0v13"/></svg>
+      <h3>Risale-i Nur</h3>
+      <p>All the works of Bediüzzaman Said Nursî: from the Words to the Letters of the later years, from the early works to the Hizbs. The AI quotes each passage from the work itself and shows its place down to the sentence.</p>
+      <p class="try">Try: "Where is the parable of the man given twenty-four gold coins, and what does it teach?"</p>
+      <a href="/en/risale.html">Details and setup →</a>
+    </article>
+    <article class="plugin">
+      <svg class="plugin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h9l4 4v14H6zM15 3v4h4M9 11h7M9 14.5h7M9 18h4"/></svg>
+      <h3>Hadith</h3>
+      <p>The Six Books, the Musnad, the Mustadrak and more. Find a hadith by its words, its meaning or the name of the Companion who narrated it. The AI shows the report from its book with its number, and never grades a hadith itself.</p>
+      <p class="try">Try: "In which books does 'the disagreement of my community is a mercy' appear?"</p>
+      <a href="/en/hadith.html">Details and setup →</a>
+    </article>
+    <article class="plugin">
+      <svg class="plugin-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 3 7.5l9 4.5 9-4.5zM3 12l9 4.5 9-4.5M3 16.5 12 21l9-4.5"/></svg>
+      <h3>Tafsir</h3>
+      <p>Thirteen classical tafsirs, from Tabari to Alusi. Ask about a verse: the AI first brings the places in the Risale-i Nur connected to it, then each exegete's own words from his work.</p>
+      <p class="try">Try: "How does Baydawi explain 'iyyaka na'budu'?"</p>
+      <a href="/en/tafsir.html">Details and setup →</a>
+    </article>
+  </div>
+</section>
+
+<section id="together">
+  <h2>All three together: one question, three sources</h2>
+  <p>The answer below was taken from claude.ai with all three connectors on, and is not shortened. It is in Turkish, as given. We checked every quotation against the text in the library: all thirteen sources are in place, and the quotations marked in green appear word for word in the text.</p>
+  <article class="example" lang="tr">
+    <header><span class="dot"></span>Risale-i Nur, Hadis ve Tefsir ile</header>
+    <div class="cmp-body">
+          <div class="msg user">Fâtiha'daki "iyyâke na'büdü" âyeti Risale-i Nur'da nasıl ele alınıyor, Beyzâvî ne diyor, ilgili bir hadis var mı?</div>
+          <div class="answer">
+<p>Risale-i Nur, Tefsir ve Hadis eklentilerinin araçları henüz yüklü değil; önce şemalarını yüklüyorum, sonra aramaya başlayacağım.</p>
+<h3>Metin ne diyor</h3>
+<h4>Risale-i Nur'da</h4>
+<p><strong>İşârâtü'l-İ'câz (Fâtiha tefsiri).</strong> Âyet burada ayrı bir başlık olarak ele alınıyor. Bediüzzaman «كَ» zamîrinde iki nükte görüyor. Birincisi, önceki sıfatlar sayılırken hâsıl olan şevkle gaybetten hitâba geçilmesidir. İkincisi, lafızlar okunurken mânâlarının düşünülmesinin vâcib olmasıdır. Bu ikinci nükteyi şöyle bağlıyor:</p>
+<blockquote class="ok"><p>"Hattâ اِيَّاكَ نَعْبُدُ’yu okuyan adam, sanki اُعْبُدْ رَبَّكَ كَاَنَّكَ تَرَاهُ cümlesindeki emre imtisalen okuyor gibi olur." [1]</p></blockquote>
+<p><em>Na'büdü</em>'deki çoğul zamîr üç tâifeye işaret ediyor: insanın vücûdundaki a'zâ ve zerreler, ehl-i tevhid cemâatleri ve kâinâtın mevcûdâtı. Metin her birine ayrı bir ibâdet nisbet ediyor: şükr-ü örfî, Şerîat'a itâat ve fıtrî şerîata tâbi olarak secde [2].</p>
+<p><em>İyyâke</em>'nin öne alınmasını şöyle açıklıyor:</p>
+<blockquote class="ok"><p>"İhtar: اِيَّاكَ’nin takdimi, ihlâsı vikàye etmek içindir; ve zamîr‑i hitâb da, ibâdetin sebeb ve illetine işârettir." [3]</p></blockquote>
+<p><em>Nesteîn</em> bölümünde <em>iyyâke</em>'nin tekrarı için dört hikmet sayılıyor. Bunlar hitâb lezzetinin artması, ayân makamının bürhân makamından yüksek olması, huzurda kizb ihtimalinin bulunmaması ve ibâdetle istiânenin ayrı maksadlar olmasıdır [4]. Aynı bölüm esbâb konusunda bir denge kuruyor:</p>
+<blockquote class="ok"><p>"Lâkin, esbâbı tamamen ihmal ve terketmek iyi değildir." [5]</p></blockquote>
+<p><strong>Sözler.</strong> Birinci Söz'de âyet, kesret içinde hitâbın nasıl mümkün olduğu bağlamında geçiyor:</p>
+<blockquote class="ok"><p>"Hadsiz kesret içinde Vâhidiyet tecellîsi, hitâb‑ı اِيَّاكَ نَعْبُدُ demekle herkese kâfî gelmiyor. Fikir dağılıyor." [6]</p></blockquote>
+<p>Devamında Ehadiyet sikkesinin, herkesin her mertebede doğrudan Zât-ı Akdes'e yönelebilmesi için konduğu anlatılıyor [6]. Otuzikinci Söz'de ise âyet, "kalbde bırakılmış hususî telefon" temsilinde geçiyor:</p>
+<blockquote class="ok"><p>"Öyle de: Sultan‑ı Ezel ve Ebed olan Hàlık-ı Kâinât, çendan vesâit ve esbâbı, icraatına perde yapmış, haşmet-i Rubûbiyet’ini göstermiş; fakat ibâdının kalbinde hususî bir telefon bırakmış ki; esbâbı arkada bırakıp doğrudan doğruya O’na teveccüh etmek için, ubûdiyet-i hàssa ile mükellef edip: “İyyâke na'büdü ve iyyâke nestaîn” deyiniz diye, kâinâttan, yüzlerini kendine çevirir." [7]</p></blockquote>
+<p><strong>Şualar, Onbeşinci Şuâ.</strong> Bediüzzaman burada neden "ben" değil de "biz" denildiğini soruyor, yani <em>na'büdü</em>'deki «ن»'u [8]. Cevabı bir hayâl seyahati olarak anlatıyor. Önce Bayezid Câmii'ndeki cemâat, sonra bütün İstanbul mescidleri, sonra şöyle genişliyor:</p>
+<blockquote class="ok"><p>"Gördüm ki; Âlem‑i İslâm, büyük bir mescid sûretini aldı. Mekke, Kâbe mihrab hükmüne geçti." [9]</p></blockquote>
+<p>Seyahat kâinâtın bir cemâat olmasına ve bedendeki zerrelerin de aynı sözü söylemesine kadar uzanıyor. Âyetin bu "biz"i, yani üç cemâat, İşârâtü'l-İ'câz'daki üç tâifeyle aynı yapıyı taşıyor [2][8].</p>
+<h4>Beyzâvî'de</h4>
+<p>Envârü't-Tenzîl'e göre geçişin sebebi şudur: Allah, övgüye lâyık ve büyük sıfatlarla vasfedilip ma'lûm olunca O'na doğrudan hitâb edilir. Böylece gaybetten huzura ve bürhândan ayâna geçilmiş olur:</p>
+<blockquote class="ok ar" dir="rtl" lang="ar"><p>"وللترقي من البرهان إلى العيان والانتقال من الغيبة إلى الشهود" [10]</p></blockquote>
+<p>Yapay zekâ tercümesi: "…delilden gözle görmeye yükselmek ve gaybetten huzura/şühûda geçmek için…" (yayımlanmış bir çeviri değildir).</p>
+<p>Beyzâvî ibâdeti en uç derecede huzû ve tezellül olarak tanımlıyor, isti'âneyi de yardım istemek olarak. Fiillerdeki zamîri okuyan kişiyle birlikte diğer muvahhidlere bağlıyor ve cemâatin sebebini şöyle açıklıyor: kişi ibâdetini ve ihtiyâcını onların ibâdet ve ihtiyâcına karıştırır ki kabûl edilsin [11]. Hasr için şunu yazıyor:</p>
+<blockquote class="ok ar" dir="rtl" lang="ar"><p>"وقدم المفعول للتعظيم والاهتمام به والدلالة على الحصر ولذلك قال ابن عباس رضي الله عنهما (معناه نعبدك ولا نعبد غيرك)" [11]</p></blockquote>
+<p>Yapay zekâ tercümesi: "Mef'ûl, tazîm ve ihtimam için ve hasra delâlet etmek için öne alındı; bu yüzden İbn Abbâs (ra) 'anlamı: sana ibâdet ederiz, senden başkasına ibâdet etmeyiz' demiştir." (yayımlanmış bir çeviri değildir).</p>
+<p>Âyetteki sıra için de şunu söylüyor:</p>
+<blockquote class="ok ar" dir="rtl" lang="ar"><p>"ويعلم منه أن تقديم الوسيلة على طلب الحاجة أدعى إلى الإجابة" [12]</p></blockquote>
+<p>Yapay zekâ tercümesi: "Bundan, vesîlenin ihtiyâç istemekten önce gelmesinin kabûle daha yakın olduğu anlaşılır." (yayımlanmış bir çeviri değildir).</p>
+<p>Kendi görüşünü bildirdiği "وأقول" bölümünde ise <em>ve iyyâke nestaîn</em>'in ibâdetin de ancak Allah'ın yardım ve tevfîkiyle tamam olacağını göstermek için geldiğini söylüyor [12].</p>
+<h4>İlgili hadis</h4>
+<p>Âyetin geçtiği hadis, Müslim'in rivâyet ettiği kudsî hadistir. Namaz Allah ile kulu arasında ikiye bölünür ve bu âyet için şu söylenir:</p>
+<blockquote class="ok ar" dir="rtl" lang="ar"><p>قسمت الصلاة بيني وبين عبدي نصفين ولعبدي ما سأل ... قال هذا بيني وبين عبدي ولعبدي ما سأل [13]</p></blockquote>
+<p>Yapay zekâ tercümesi: "Namazı kulumla aramda ikiye böldüm; kuluma istediği vardır. … (Kul 'iyyâke na'büdü ve iyyâke nestaîn' deyince) 'Bu, benimle kulum arasındadır; kuluma istediği vardır' der." (yayımlanmış bir çeviri değildir).</p>
+<p>Bu hadisin derecesi hakkında araçta bir âlim notu bulamadım ve hüküm vermiyorum. Risale-i Nur'da bu hadisin sözlerini aradığımda eşleşme çıkmadı; yani eserlerde bu rivâyete atıf bulamadım.</p>
+<h3>Yorum</h3>
+<p>Bu bölüm benim değerlendirmemdir, metin değildir.</p>
+<ul>
+<li><strong>Ortak çizgi:</strong> Risale-i Nur ile Beyzâvî arasında bir bağ kayıtlı değil, ben bir benzerlik görüyorum. İkisi de âyeti gaybetten hitâba geçiş olarak okuyor ve ayân/şühûdu bürhândan üstün tutuyor. İşârâtü'l-İ'câz'daki "ayân makamı bürhân makamından daha yüksek" ifadesi [4], Beyzâvî'nin "bürhândan ayâna" sözüyle [10] aynı konuyu işliyor.</li>
+<li><strong>Hasr ve ihlâs:</strong> İki metin de <em>iyyâke</em>'nin takdimini hasr ve ihlâsla ilişkilendiriyor [3][11].</li>
+<li><strong>Çoğul zamîr:</strong> Beyzâvî "biz"i okuyan kişiyle birlikte diğer muvahhidler olarak anlıyor ve cemâat hikmetine bağlıyor [11]. Bediüzzaman bunu ayrıca bedendeki zerreleri ve kâinâtı da kapsayacak biçimde genişletiyor [2][8]. Beyzâvî'nin okumasında bu genişleme bulunmuyor.</li>
+<li><strong>Hadis:</strong> Müslim'deki kudsî hadis, bu âyetin "bölüşüm"deki yerini gösteriyor. Âyetin ibâdet ve isti'âne ikiliği, hadisteki "benimle kulum arasında" ifadesiyle uyuşuyor. Bunu Risale metninden değil, kendi okumamdan söylüyorum.</li>
+</ul>
+<p>İsterseniz İbn Kesîr ve Râzî'nin aynı âyetteki izahlarını da okuyup karşılaştırabilirim; bu cevapta onları okumadım.</p>
+<h3>Kaynaklar</h3>
+<ol class="sources">
+<li>İşaratü'l-İ'caz › Sûre‑i Fâtiha › İyyâke Na'büdü «اِيَّاكَ نَعْبُدُ» › “İkincisi: Elfâz okunurken mânâlarını…” ile başlayan 3 cümle
+<ul><li>Hadis: Buhari, Tefsîru Sûre 31:2, İmân: 31; Müslim, İmân: 1,5,1; Ebu Dâvud, Sünne: 16; Tirmizî, İmân: 4; İbni Mâce, Mukaddime: 9; Neseî, İmân: 5, 6; Müsned, 1:27, 51, 53, 319, 2:107, 462, 4:129, 164 (mânen, okumayla bulundu)</li></ul></li>
+<li>İşaratü'l-İ'caz › Sûre‑i Fâtiha › İyyâke Na'büdü «اِيَّاكَ نَعْبُدُ» › “Cem' sîgasıyla zikredilen نَعْبُدُ’deki…” ile başlayan 4 cümle
+<ul><li>Âyet: Fâtiha Sûresi, 1:5</li></ul></li>
+<li>İşaratü'l-İ'caz › Sûre‑i Fâtiha › İyyâke Na'büdü «اِيَّاكَ نَعْبُدُ» › “Bu cümlenin mâkabliyle vech‑i…” ile başlayan 3 cümle</li>
+<li>İşaratü'l-İ'caz › Sûre‑i Fâtiha › Ve İyyâke Nesteîn «وَاِيَّاكَ نَسْتَع۪ينُ» › “اِيَّاكَ kelimesinin tekrarlanmasındaki hikmetin;” ile başlayan 5 cümle
+<ul><li>Âyet: Fâtiha Sûresi, 1:5</li></ul></li>
+<li>İşaratü'l-İ'caz › Sûre‑i Fâtiha › Ve İyyâke Nesteîn «وَاِيَّاكَ نَسْتَع۪ينُ» › “اِيَّاكَ kelimesinin takdiminden doğan…” ile başlayan 4 cümle</li>
+<li>Sözler › Birinci Söz › Ondördüncü Lem'a’nın İkinci Makamı › Dördüncü Sır › “Hadsiz kesret içinde Vâhidiyet…” ile başlayan 4 cümle
+<ul><li>Âyet: Fâtiha Sûresi, 1:5</li></ul></li>
+<li>Sözler › Otuzikinci Söz › İkinci Mevkıf › Üçüncü Maksad › Birinci Şık Suâl ve Cevabı › Beşinci İşâret › “Meselâ; nasıl bir pâdişahın…” ile başlayan 4 cümle</li>
+<li>Şualar › Onbeşinci Şuâ › Birinci Makam › Fâtiha‑i Şerîfe’nin Bir Muhtasar Hülâsası › Beşinci Kelime › “Bir zaman, Kur'ânın mu'cizelerini…” ile başlayan 2 cümle
+<ul><li>Âyet: Yûnus Sûresi, 10:92</li></ul></li>
+<li>Şualar › Onbeşinci Şuâ › Birinci Makam › Fâtiha‑i Şerîfe’nin Bir Muhtasar Hülâsası › Beşinci Kelime › “Gördüm ki; Âlem‑i İslâm,…” ile başlayan 4 cümle</li>
+<li>Envârü't-Tenzîl › سورة الفاتحة › آية 5 › “إياك نعبد وإياك نستعين…”</li>
+<li>Envârü't-Tenzîl › سورة الفاتحة › آية 5 › “والعبادة: أقصى غاية الخضوع…” ile başlayan 6 cümle</li>
+<li>Envârü't-Tenzîl › سورة الفاتحة › آية 5 › “وكرر الضمير للتنصيص على…” ile başlayan 2 cümle</li>
+<li>Sahîh-i Müslim (Müslim b. Haccâc), no. 395, 1/296</li>
+</ol>
+          </div>
+    </div>
+  </article>
+  <p class="muted small">claude.ai, 9 November 2026. The lines marked "Yapay zekâ tercümesi" are the AI's own translation, not a published one.</p>
+</section>
 
 <section id="comparison">
   <h2>One question, two answers</h2>
@@ -154,21 +263,63 @@
   <p class="muted small">Both answers were taken from claude.ai on 29 October 2026 with Claude Sonnet 5.5: the left one outside the project with the connector off (the model searched the web), the right one in the project with the instructions and the connector on. They are unshortened and unedited; the steps on the right are that conversation's tool calls. The marks are ours: both answers were compared with the text of the Fourth Word.</p>
 </section>
 
-<section id="connectors">
-  <h2>Hadith and Tafsir connectors</h2>
-  <p>Two more connectors can be added next to the Risale-i Nur connector. The three are independent; added together, the assistant gives the Risale-i Nur, the hadith collections and the tafsir works with their own sources, in a single bibliography.</p>
-  <div class="actions">
-    <a class="button" href="/en/hadith.html">Hadith: 18 collections</a>
-    <a class="button" href="/en/tafsir.html">Tafsir: 13 classical works</a>
+<section id="who">
+  <h2>Who it is for</h2>
+  <div class="audience">
+    <article>
+      <h3>Readers</h3>
+      <p>Ask about a word you stopped at, how a parable continues or where a hadith comes from. The answer comes with the text and its place, and you can go on reading from there.</p>
+      <p class="try">"Where does the Risale-i Nur discuss the resurrection at greatest length?"</p>
+    </article>
+    <article>
+      <h3>Teachers</h3>
+      <p>Collect the places where a subject comes up and build your lesson notes on quotations with references. The AI keeps what the text says apart from its own interpretation.</p>
+      <p class="try">"Prepare a lesson plan on reliance on God from the Risale-i Nur, with the place of every quotation."</p>
+    </article>
+    <article>
+      <h3>Researchers</h3>
+      <p>Compare how a verse is treated in the Risale-i Nur and in the classical tafsirs, or in which book and under which number a hadith appears. Every quotation is referenced to the sentence and the bibliography comes ready.</p>
+      <p class="try">"How do Isharat al-I'jaz, Razi and Alusi explain 'belief in the unseen' in Baqara 3?"</p>
+    </article>
   </div>
 </section>
 
-<section>
-  <h2>Coverage</h2>
-  <p>53 works, about 131,000 sentences: the Risale-i Nur Collection, the early works (with both the Arabic and the Turkish of those originally written in Arabic), the compilations, the Hizbs, 16 Ottoman volumes and the Qur'an (vowelled text and two Diyanet translations into Turkish). The texts are taken from their sources unchanged; sources, tools and troubleshooting are in the <a href="/en/docs.html">documentation</a>.</p>
+<section id="trust">
+  <h2>What you can rely on</h2>
+  <ul class="checks">
+    <li><strong>Every word rests on its source.</strong> The AI reads the text first, then speaks. The place of each quotation is known down to the sentence, and you can find that sentence yourself.</li>
+    <li><strong>Text and interpretation are kept apart.</strong> What the work says is under one heading, the AI's interpretation under another.</li>
+    <li><strong>It says when it cannot find something.</strong> It does not invent what is not in the works.</li>
+    <li><strong>It does not grade hadith.</strong> It shows scholars' verdicts with the scholar's name.</li>
+    <li><strong>Its translations are labelled.</strong> Every translation the AI makes is marked as an AI translation. Nothing the AI writes is called "tafsir".</li>
+    <li><strong>Your questions are not stored.</strong> The connectors do not see your conversation and do not record your searches. Details on the <a href="/en/privacy.html">Privacy</a> page.</li>
+  </ul>
 </section>
 
-<footer>Nur Hadimleri: a volunteer, independent project, not an official service of any publisher or community. · <a href="/en/privacy.html">Privacy</a> · <a href="/en/terms.html">Terms of use</a> · <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
+<section id="add">
+  <h2>Add them now</h2>
+  <p>Choose the AI you use. Each page has step-by-step instructions, screenshots and project instructions prepared for that AI.</p>
+  <div class="actions">
+    <a class="button primary" href="/en/claude.html">Add to Claude</a>
+    <a class="button primary" href="/en/chatgpt.html">Add to ChatGPT</a>
+  </div>
+  <div class="card addresses">
+    <strong>Connector addresses</strong>
+    <div class="fields">
+      <span>Risale-i Nur</span><code>https://mcp.risalemcp.com/mcp</code><button class="button" type="button" data-copy="https://mcp.risalemcp.com/mcp" data-done="✓">Copy</button>
+      <span>Hadith</span><code>https://mcp.risalemcp.com/hadis</code><button class="button" type="button" data-copy="https://mcp.risalemcp.com/hadis" data-done="✓">Copy</button>
+      <span>Tafsir</span><code>https://mcp.risalemcp.com/tefsir</code><button class="button" type="button" data-copy="https://mcp.risalemcp.com/tefsir" data-done="✓">Copy</button>
+    </div>
+  </div>
+  <p class="muted small">Free, no account needed. Gemini coming soon.</p>
+</section>
+
+<section id="sources">
+  <h2>Sources and thanks</h2>
+  <p>The texts are taken unchanged from sources that gave their permission. We thank all of them, above all e-Risale and risaleoku.com for the Risale-i Nur, OpenITI for the hadith collections and tafsirs, and Tanzil for the Qur'an text. The full list of sources and licences is in the <a href="/en/docs.html#sources">documentation</a>.</p>
+</section>
+
+<footer>Nur Hadimleri: a volunteer, independent project, not an official service of any publisher or community.<br><a href="/en/privacy.html">Privacy</a> · <a href="/en/terms.html">Terms of use</a> · <a href="/en/contribute.html">Report a mistake</a> · <a href="/yenilikler.html" lang="tr">News (Turkish)</a> · <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
 </main>
 </body>
 </html>

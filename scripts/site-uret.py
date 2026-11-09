@@ -16,10 +16,10 @@ Sonra: scripts/deploy.sh --code
   WhatsApp önizlemeyi adres başına önbelleğe alır: etiket değişince eski paylaşımlar bir süre eski görünür.
 - Ana sayfa (`site/index.html`): `<!-- son-yenilik -->` arasında son yazıya şerit, `<!-- son-yenilikler -->` arasında
   son üç yazı.
-- Menü ve alt bilgi: Türkçe sayfaların `<nav>` ve `<footer>` blokları her seferinde buradan yazılır (`nav_html`,
-  `FOOTER`); İngilizce sayfalarınki elle. Menüdeki "English" bağlantısı sayfanın `hreflang="en"` adresidir.
+- Menü ve alt bilgi: sayfaların `<nav>` ve `<footer>` blokları her seferinde buradan yazılır (`nav_html`, `FOOTER`;
+  İngilizcede `nav_en`, `FOOTER_EN`). Öbür dile giden bağlantı sayfanın `hreflang` adresidir.
 - Sayılar: sayfalardaki `<!-- sayi:ad -->…<!-- /sayi -->` arası yerel veritabanlarından (`data/dist/`) yazılır
-  (`numbers`); veritabanı yoksa olduğu gibi kalır.
+  (`numbers`; İngilizce sayfalarda `ad_en`: "131,000"); veritabanı yoksa olduğu gibi kalır.
 - `site/sitemap.xml`: bütün sayfalar ve yazılar.
 - Dışarıya istek yok kuralı sürer: "WhatsApp'ta paylaş" yalnız tıklanınca açılan bir bağlantıdır.
 """
@@ -152,6 +152,26 @@ FOOTER = ("<footer>Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhan
           "<a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a></footer>")
 
 
+NAV_EN = [("/en/#connectors", "Connectors"), ("/en/#add", "Setup"), ("/en/docs.html", "Documentation")]
+CURRENT_EN = {"risale.html": "/en/#connectors", "hadith.html": "/en/#connectors", "tafsir.html": "/en/#connectors",
+              "claude.html": "/en/#add", "chatgpt.html": "/en/#add", "docs.html": "/en/docs.html"}
+FOOTER_EN = ("<footer>Nur Hadimleri: a volunteer, independent project, not an official service of any publisher or "
+             "community.<br><a href=\"/en/privacy.html\">Privacy</a> · <a href=\"/en/terms.html\">Terms of use</a> · "
+             "<a href=\"/en/contribute.html\">Report a mistake</a> · <a href=\"/yenilikler.html\" lang=\"tr\">News "
+             "(Turkish)</a> · <a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a></footer>")
+
+
+def nav_en(current: str = "", tr: str = "/") -> str:
+    links = "\n".join(f'  <a href="{href}"' + (' aria-current="page"' if href == current else "") + f">{name}</a>"
+                      for href, name in NAV_EN)
+    return f"""<nav>
+  <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+{links}
+  <a href="{tr}" lang="tr">Türkçe</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+</nav>"""
+
+
 def nav_html(current: str = "", en: str = "/en/") -> str:
     links = "\n".join(f'  <a href="{href}"' + (' aria-current="page"' if href == current else "") + f">{name}</a>"
                       for href, name in NAV)
@@ -282,10 +302,14 @@ def add_og(path: Path) -> bool:
 def frame(path: Path) -> bool:
     """Türkçe elle yazılmış sayfanın menüsünü ve alt bilgisini ortak biçimle yeniden yazar."""
     text = path.read_text(encoding="utf-8")
-    en = re.search(r'<link rel="alternate" hreflang="en" href="([^"]+)">', text)
-    new = re.sub(r"<nav>.*?</nav>", lambda _: nav_html(CURRENT.get(path.name, ""), en.group(1) if en else "/en/"),
-                 text, count=1, flags=re.S)
-    new = re.sub(r"<footer>.*?</footer>", lambda _: FOOTER, new, count=1, flags=re.S)
+    if path.parent.name == "en":
+        tr = re.search(r'<link rel="alternate" hreflang="tr" href="([^"]+)">', text)
+        nav, footer = nav_en(CURRENT_EN.get(path.name, ""), tr.group(1) if tr else "/"), FOOTER_EN
+    else:
+        en = re.search(r'<link rel="alternate" hreflang="en" href="([^"]+)">', text)
+        nav, footer = nav_html(CURRENT.get(path.name, ""), en.group(1) if en else "/en/"), FOOTER
+    new = re.sub(r"<nav>.*?</nav>", lambda _: nav, text, count=1, flags=re.S)
+    new = re.sub(r"<footer>.*?</footer>", lambda _: footer, new, count=1, flags=re.S)
     if new != text:
         path.write_text(new, encoding="utf-8")
     return new != text
@@ -316,6 +340,8 @@ def numbers() -> dict[str, str]:
         c = sqlite3.connect(db)
         out |= {"hadis_kitap": str(c.execute("select count(*) from lib_books").fetchone()[0]),
                 "hadis_sayi": _about(c.execute("select count(*) from lib_units").fetchone()[0])}
+    for key, value in list(out.items()):         # İngilizce: "131 bin" -> "131,000", "6.236" -> "6,236"
+        out[key + "_en"] = value.replace(" bin", ",000").replace(".", ",")
     return out
 
 
@@ -400,10 +426,9 @@ def main() -> None:
                 if p.name != "yenilikler.html"]
     changed = sum(add_og(p) for p in handmade)
     print(f"Open Graph: {len(handmade)} sayfa, {changed} değişti")
-    turkish = [p for p in handmade if p.parent == SITE]
-    print(f"menü ve alt bilgi: {sum(frame(p) for p in turkish)} sayfa değişti")
+    print(f"menü ve alt bilgi: {sum(frame(p) for p in handmade)} sayfa değişti")
     values = numbers()
-    print(f"sayılar: {values}; {sum(fill_numbers(p, values) for p in turkish)} sayfa değişti")
+    print(f"sayılar: {sum(fill_numbers(p, values) for p in handmade)} sayfa değişti")
     (SITE / "sitemap.xml").write_text(sitemap(handmade, posts), encoding="utf-8")
 
     index = SITE / "index.html"

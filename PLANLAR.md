@@ -50,16 +50,15 @@ Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S2 | Sitenin yenilenmesi (Türkçe hazır, 2026-11-09; yayın kullanıcının bakışından sonra; İngilizce S2.4) | — |
-| 2 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
-| 3 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
-| 4 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 5 | S3 | Gemini | Aşama 18 |
-| 6 | B1 | Kontrol kuyruğu ve işaretlerin işlenmesi | Aşama 16 |
-| 7 | A2 | Osmanlıca–Türkçe eşleme | Aşama 19 |
-| 8 | A3 | Kaynak seçimi | Aşama 13.3 |
-| 9 | B2–B5 | Küçük açıklar | MVP "Kalan" |
-| 10 | E3 | Sorularla Risale (izin; isteğe bağlı) | — |
+| 1 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
+| 2 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
+| 3 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 4 | S3 | Gemini | Aşama 18 |
+| 5 | B1 | Kontrol kuyruğu ve işaretlerin işlenmesi | Aşama 16 |
+| 6 | A2 | Osmanlıca–Türkçe eşleme | Aşama 19 |
+| 7 | A3 | Kaynak seçimi | Aşama 13.3 |
+| 8 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 9 | E3 | Sorularla Risale (izin; isteğe bağlı) | — |
 
 **S1. Yenilikler sayfası.** Sitede tarihli kısa yazılar (ilki: hadis ve tefsir bağdaştırıcıları), her yazının
 sonunda WhatsApp'a kopyalanacak metin; paylaşılınca önizleme çıksın diye bütün sayfalara Open Graph etiketleri.
@@ -74,8 +73,8 @@ hazırlayan).
 - S2.1 Ana sayfa (bitti): giriş, sayılar, üç eklenti kartı, üç eklentili örnek cevap (kullanıcının claude.ai sohbeti, 9 Kasım 22.15; 13 kaynağın alıntıları veritabanıyla birebir; soru metni sohbette yoktu, önerilen soru yazıldı), karşılaştırma, kimin için, güvence, ekleme ve adresler, son yenilikler, kaynaklar.
 - S2.2 `risale.html` (bitti), `katki.html` "Hata bildirin" (bitti).
 - S2.3 Betik `scripts/site-uret.py` (eski adı site-yenilikler.py): menü ve alt bilgi ortak, sayılar veritabanından, son üç yazı, `sitemap.xml`; `robots.txt` (bitti).
-- S2.4 İngilizce sayfalar: Türkçeye göre (`en/contribute.html` hâlâ denetçi arıyor).
-- S2.5 Yayın: `scripts/deploy.sh --code`.
+- S2.4 İngilizce sayfalar (bitti): ana sayfa, `en/risale.html`, `en/contribute.html` "Report a mistake"; menü ve alt bilgi betikten.
+- S2.5 Yayın (2026-11-09).
 
 **D1. İşârât usulüyle yapay zekâ taslağı** (kullanıcının yola çıkarkenki fikri; "Fikirler"den alındı, 2026-11-09).
 Model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Taslak "yapay zekâ taslağı" diye
@@ -193,6 +192,7 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   HA2, hadis ve tefsir bağdaştırıcıları yayında.
 - E1 Eser listeleri (2026-11-09): `docs/eserler/tefsir.md`, `hadis.md` (yeni; kütüphanedeki 18 kitaptan üretilir), `klasik.md` (yeni) üç bölümlü; `checklist` elle tutulan (b) ve (c)'yi korur, OpenITI indirmelerini görür ("ham veri 0/13" düzeldi). (b) ve (c) `docs/mvp-kitaplar.md`'deki önerilerden ve künye sayılarından dolduruldu; "?" işaretli şartlar E2.1'de sayılacak.
 - S1 Yenilikler ve Open Graph (2026-11-09, yayında): `scripts/site-uret.py`, `docs/yenilikler/`, yazım kılavuzu `docs/yenilikler-kilavuzu.md`; bütün Türkçe sitede "eklenti".
+- S2 Sitenin yenilenmesi (2026-11-09, yayında): üç eklentiyi anlatan ana sayfa, `risale.html`, "Hata bildirin", İngilizcesi; ayrıntı yukarıda S2.
 - MVP sonrası düzeltmeler (2026-11-07/09): hata ayıklama adresleri, râvi araması ve `ibn`, hadis `cite`'ında alıntı
   denetimi, tercüme damgası, ChatGPT önbelleği, kesik kaynakça, web içeriği kuralı.
 

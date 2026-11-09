@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Risale-i Nur · Risale-i Nur MCP</title>
+<!-- og -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Risale-i Nur MCP">
+<meta property="og:title" content="Risale-i Nur · Risale-i Nur MCP">
+<meta property="og:description" content="The connector that opens all the works of Bediüzzaman Said Nursî to AI assistants, referenced down to the sentence.">
+<meta property="og:url" content="https://risalemcp.com/en/risale.html">
+<meta property="og:image" content="https://risalemcp.com/img/paylasim.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Risale-i Nur MCP: the Risale-i Nur, hadith and tafsir connectors">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /og -->
+<meta name="description" content="The connector that opens all the works of Bediüzzaman Said Nursî to AI assistants, referenced down to the sentence.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css?v=10">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="tr" href="/risale.html">
+<script src="/site.js?v=10" defer></script>
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/en/#connectors" aria-current="page">Connectors</a>
+  <a href="/en/#add">Setup</a>
+  <a href="/en/docs.html">Documentation</a>
+  <a href="/risale.html" lang="tr">Türkçe</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+</nav>
+
+<h1>Risale-i Nur</h1>
+<p class="lead">The Risale-i Nur connector opens all the works of Bediüzzaman Said Nursî to the AI you use. The AI reads the text before it speaks, quotes each passage from the work itself and shows its place down to the sentence. The texts are in Turkish (Ottoman Turkish), with the works written in Arabic in both languages.</p>
+
+<h2>Works</h2>
+<p>The Risale-i Nur Collection (the Words, the Letters, the Flashes, the Rays, the Supplements, the Biography and others), the early works (those written in Arabic in both Arabic and Turkish), the compilations (Asâ-yı Mûsâ, Zülfikâr, Sirâcü'n-Nûr and others) and the Hizbs: <!-- sayi:risale_eser_en -->53<!-- /sayi --> works, about <!-- sayi:risale_cumle_en -->131,000<!-- /sayi --> sentences. In addition, <!-- sayi:osmanlica_cilt_en -->16<!-- /sayi --> volumes in Ottoman script and the Qur'an with its vocalised text and two Diyanet translations. The full list is in the <a href="/en/docs.html">documentation</a>.</p>
+
+<h2>How it works</h2>
+<ul>
+  <li><strong>Ask in today's words.</strong> Ask about "despair" and the AI also finds the place where the text says "ye's". Searching for an exact word, name or term works too.</li>
+  <li><strong>Every quotation rests on a sentence.</strong> The answer ends with a list of sources: work, section and the first words of the quoted sentence. You can find that sentence in the book yourself.</li>
+  <li><strong>Text and interpretation are kept apart.</strong> What the work says is under one heading, the AI's interpretation under another.</li>
+  <li><strong>Translations of verses and hadith belong to the publishers.</strong> They were added later; the AI does not present them as Bediüzzaman's words.</li>
+  <li><strong>Together with the other connectors.</strong> Add the <a href="/en/hadith.html">Hadith</a> and <a href="/en/tafsir.html">Tafsir</a> connectors too and you see a hadith's source or a verse's place in the classical tafsirs in the same conversation.</li>
+</ul>
+
+<h2>Test question</h2>
+<div class="card">Where in the Risale-i Nur is the parable of the man given twenty-four gold coins, explaining the value of the prayer, and what does it teach?</div>
+<p>The answer should come with quotations from the Fourth Word and end with a list of sources. The difference between an answer with and without the connector is shown on the <a href="/en/#comparison">home page</a>.</p>
+
+<h2>Add it</h2>
+<div class="card">
+  <strong>Connector address</strong><br>
+  <code>https://mcp.risalemcp.com/mcp</code>
+</div>
+<div class="actions">
+  <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Risale-i%20Nur&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fmcp">Add to Claude</a>
+</div>
+<ul>
+  <li><strong>Claude</strong> (claude.ai, desktop, mobile): the button opens the add dialog with the name and address filled in. By hand: <em>Customize › Connectors › Add › Add custom connector</em>, name "Risale-i Nur", the address above. Steps, screenshots and project instructions on the <a href="/en/claude.html">Claude page</a>.</li>
+  <li><strong>ChatGPT</strong>: <em>Apps › Add › Add custom MCP server</em>, name "Risale-i Nur", the server URL above, <em>No authentication</em>. Steps and project instructions on the <a href="/en/chatgpt.html">ChatGPT page</a>.</li>
+  <li><strong>Claude Code</strong>: <code>claude mcp add --transport http risale https://mcp.risalemcp.com/mcp</code></li>
+</ul>
+<p>No account, free of charge.</p>
+
+<h2>Sources</h2>
+<p>The texts are taken unchanged from sources that gave their permission: e-Risale, risaleoku.com (Risale-i Nur Library), the Keşif Yolculukları Risale-i Nur education programme and nurpedia.org. The Qur'an text comes from <a href="https://tanzil.net">Tanzil</a>, the translations from the Presidency of Religious Affairs (Diyanet) and the Türkiye Diyanet Foundation. Details in the <a href="/en/docs.html#sources">documentation</a>.</p>
+
+<footer>Nur Hadimleri: a volunteer, independent project, not an official service of any publisher or community.<br><a href="/en/privacy.html">Privacy</a> · <a href="/en/terms.html">Terms of use</a> · <a href="/en/contribute.html">Report a mistake</a> · <a href="/yenilikler.html" lang="tr">News (Turkish)</a> · <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
+</main>
+</body>
+</html>
