@@ -193,7 +193,7 @@ class HadisLibrary(Library):
             raise LibraryError("No book recognised in the citation; give it as e.g. 'Buharî, Ezân: 148' or 'Müsned 14870'.")
         return {"citations": out}
 
-    def cite_reports(self, sources: list[dict], first: int = 1) -> dict:
+    def cite_reports(self, sources: list[dict], first: int = 1, legacy: bool = False) -> dict:
         """Kaynakça satırları ve alıntı denetimi (2026-11-09; Risale'nin `cite`'ı gibi): her alıntı o rivayetin
         metninde aranır. Hareke, "ابن"/"بن" ve baskının dipnot işaretleri yok sayılır, "…" atlanan yerdir. Söz yalnız
         başkasının katmanındaysa (Zehebî, Elbânî) ya da başka rivayetteyse problem o yeri söyler."""
@@ -228,8 +228,10 @@ class HadisLibrary(Library):
             else:
                 record["status"] = "ok"
             out.append(record)
-        return {"problems": len(issues), "sources": out, "bibliography": "\n".join(lines),
-                "note": CITE_NOTE}
+        result = {"problems": len(issues), "sources": out, "bibliography": "\n".join(lines), "note": CITE_NOTE}
+        if legacy:
+            result["note"] += LEGACY_NOTE
+        return result
 
     def _quote_elsewhere(self, parts: list[str], skip: str, limit: int = 3) -> list[str]:
         """Alıntının en uzun parçasının geçtiği başka rivayetler (metin dizininde tam ifade)."""
@@ -302,6 +304,14 @@ CITE_NOTE = ("Finish the answer with a Kaynaklar list made of these bibliography
              "grade or a note belongs to the report it comes from. List only reports you use in the answer. Quote "
              "only words checked here, exactly as get_hadith returned them (no vowel marks you add): a quotation added "
              "after this call needs cite again. If a source has a problem, fix it and call cite again.")
+
+
+# Eski biçim (`ids`): ChatGPT araç tanımlarını bağdaştırıcı eklendiğinde önbelleğe alıyor, yenilenmedikçe yeni şemayı ve
+# talimatı görmüyor (2026-11-09 kaydı); sonuçtaki not her istemciye ulaşır.
+LEGACY_NOTE = (" These ids came in the older form, so no quotation was checked. This connector has been updated "
+               "(cite now takes sources: [{id, quote}] and checks each quotation). If your tool list has no sources "
+               "parameter, check every quotation against get_hadith yourself, and tell the user once that refreshing "
+               "the connector in their settings brings the current version.")
 
 
 def _quote_key(text: str) -> str:

@@ -141,9 +141,16 @@ def _preview(text: str) -> str:
 REF_SEP = " › "
 
 
+# Shamela baskıları âyeti { } içine alır ("تعالى: {وإن…"); ChatGPT kaynakçayı tam bu işarette kesti (2026-11-09: yedi
+# satırdan yalnız birinin yarısı yazıldı). Gösterilen ilk kelimelerde âyetin kendi işareti ﴿ ﴾ olur; metin değişmez,
+# atıf denetimi ikisini de yok sayar.
+_BRACES = str.maketrans({"{": "\uFD3F", "}": "\uFD3E"})
+
+
 def opening(incipit: str, text: str) -> str:
     """Kullanıcıya gösterilen ilk kelimeler; cümle daha uzunsa "…" ile."""
-    return incipit if len(incipit) >= len(text.rstrip()) else incipit + "…"
+    words = incipit if len(incipit) >= len(text.rstrip()) else incipit + "…"
+    return words.translate(_BRACES)
 
 
 def cite(section_ref: str, opening_words: str, count: int = 1) -> str:

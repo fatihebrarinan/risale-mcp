@@ -224,6 +224,17 @@
      }
     ]
    }
+  },
+  {
+   "name": "cite_braces",
+   "tool": "cite",
+   "args": {
+    "sources": [
+     {
+      "id": "taberi/4/159/c001"
+     }
+    ]
+   }
   }
  ]
 }

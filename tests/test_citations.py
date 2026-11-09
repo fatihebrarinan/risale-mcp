@@ -295,3 +295,10 @@ def test_edition_note_marks_are_ignored_in_quotes():
     for quote in ("عند المنارة الشرقية", "كقوله [تعالى] {وإنه لعلم للساعة}", "بباب لد فيقتله", "عند المنارة (9) الشرقية"):
         assert all(p in text for p in _block_parts(quote)), quote
     assert _key("Sözler (asm)") == _key("Sözler (asm)") and "32" in _key("32. cümle")
+
+
+def test_braces_in_the_opening_words_become_the_verse_marks():
+    # Taberî'nin birim başı: ChatGPT kaynakçayı "{" işaretinde kesti (2026-11-09)
+    from risale_mcp.library import opening
+    assert opening("القول في تأويل قوله تعالى: {وإن", "القول في تأويل قوله تعالى: {وإن من أهل} الآية") == \
+        "القول في تأويل قوله تعالى: ﴿وإن…"

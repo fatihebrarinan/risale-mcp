@@ -731,3 +731,17 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   hadis ve tefsirde alıntıya hareke eklenmez, râvinin izahı Peygamber'in sözü değildir. Yayın:
   `DEPLOY_EXPECT="instructions" HADIS_EXPECT="cite instructions" scripts/deploy.sh --code --hadis` ve
   `TEFSIR_EXPECT="instructions" scripts/tefsir-sunucu.sh gonder`.
+- **ChatGPT önbelleği ve kesik kaynakça (2026-11-09):** iki ChatGPT denemesinin kaydı (10.05–10.10, 10.27): ChatGPT
+  araç tanımlarını ve talimatı bağdaştırıcı eklenince önbelleğe alıyor; hata ayıklama adresli hadis bağdaştırıcısı
+  2026-11-07 23:36'dan beri `tools/list` istemedi, `cite` hep eski `ids` biçimiyle geldi (yeni talimat, `narrator` ve
+  alıntı denetimi görülmedi). Kullanıcının yenilemesi o bağdaştırıcıya ulaşmadı (10:26'da genel adrese hesapsız bir
+  `tools/list` geldi). Araç sonuçları önbelleğe girmez: yeni `cite` notu ve sunucu tarafındaki arama düzeltmeleri
+  modele ulaştı (opening-words aramasıyla Nevvâs'ın dört rivayeti bulundu). Cevaplar denetlendi: alıntıların harfleri
+  hepsi metinde (hareke model ekliyor), Tirmizî numarası düzeldi, Beşinci Şuâ'dan doğru atıf. Tefsir cevabının
+  kaynakçası ilk satırın ilk kelimelerindeki `{` işaretinde kesildi (Taberî birim başı "تعالى: {وإن…"; tefsirde 55.606
+  cümlenin ilk kelimelerinde `{` var). Düzeltmeler (yerelde): `library.opening` gösterilen ilk kelimelerde `{ }`
+  yerine ﴿ ﴾ (U+FD3F/U+FD3E, verideki âyet işaretiyle aynı; metin değişmez, atıf denetimi ikisini de yok sayar);
+  hadis `cite`'ı eski `ids` biçimiyle çağrılınca nota "alıntı denetlenmedi, bağdaştırıcı güncellendi, kullanıcıya
+  yenilemesini söyle" eklenir (`LEGACY_NOTE`). Genel sunucuda fark yok. Yayın: `HADIS_EXPECT="cite"
+  scripts/deploy.sh --code --hadis` ve `TEFSIR_EXPECT="cite get_passage search semantic_search find_ayah"
+  scripts/tefsir-sunucu.sh gonder`.

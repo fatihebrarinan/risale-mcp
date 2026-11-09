@@ -100,3 +100,8 @@ def test_cite_names_a_scholars_note(lib):
     out = lib.cite_reports([{"id": row["id"], "quote": words}])
     if out["sources"][0]["status"] == "problem":           # söz rivayetin metninde de geçebilir
         assert "note on this report" in out["sources"][0]["problem"]
+
+
+def test_the_older_ids_form_says_nothing_was_checked(lib):
+    assert "no quotation was checked" in lib.cite_reports(["muslim/2937"], legacy=True)["note"]
+    assert "no quotation was checked" not in lib.cite_reports([{"id": "muslim/2937", "quote": "ذات غداة"}])["note"]

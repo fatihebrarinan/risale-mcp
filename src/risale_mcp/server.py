@@ -785,7 +785,7 @@ def _hadis_tools(server: MCPServer, library) -> None:
             items = [s.model_dump() for s in sources or []] + [{"id": i} for i in ids or []]
             if not items:
                 raise LibraryError("Give sources: [{id, quote}] for every report you use.")
-            return _json(library.cite_reports(items, first))
+            return _json(library.cite_reports(items, first, legacy=bool(ids)))
 
 
 def http_security(public_url: str) -> TransportSecuritySettings:
