@@ -482,4 +482,5 @@ Adımların geçmişi `PLANLAR.md` "Kayıt"tadır; burada her oturumda gereken k
 
 Bütün planlar, sıra, bekleyen ve dondurulan işler ve adım kaydı **`PLANLAR.md`**'dedir. Yeni plan, karar ve biten
 adım oraya tarihli yazılır; buraya yalnız kalıcı bağlam (ilke, veri modeli, komut, kural) girer. `docs/` altındaki
-plan belgeleri ayrıntı ve geçmiştir.
+plan belgeleri ayrıntı ve geçmiştir. İşler kimlikle anılır: alan harfi (E eserler, S sunum, A araç ve veri, D deneme,
+B bakım) ve artan numara (`E2`, alt adım `E2.1`); kimlik değişmez, sıra ayrı tablodadır (`PLANLAR.md` "Adlandırma").

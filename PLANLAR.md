@@ -8,7 +8,7 @@ Projenin bütün planları, sırası, bekleyen ve dondurulan işleri ve adım ka
 - Bir işin ayrıntılı planı gerekirse `docs/` altında ayrı belge olabilir, ama durumu ve sırası burada tutulur.
   `docs/` altındaki eski plan belgeleri (`tefsir-altyapi-plani.md`, `tefsir-pilot-degerlendirme.md`,
   `tercume-programi.md`, `mvp-kitaplar.md`, `bag-altyapisi-plani.md`, `hadis-plani.md`…) ayrıntı ve geçmiştir.
-- Biten iş "Biten" bölümüne tek satır olarak taşınır, ayrıntısı "Kayıt" bölümüne ya da belgesine gider.
+- İşler kimlikle anılır ("Adlandırma"). Biten iş "Biten" bölümüne tek satır olarak taşınır, ayrıntısı "Kayıt" bölümüne ya da belgesine gider.
 
 ## Yön (kullanıcının kararları, 2026-11-09)
 
@@ -26,52 +26,118 @@ konuşuldu:
    sohbeti); kullanıcı yayımlanmış tercümeyi açıkça sorarsa model web'e bakabilir, bulduğunu yayıncısıyla ve
    Kaynaklar'ın dışında verir. Diyanet'ten izin gelirse (Elmalılı, Kur'an Yolu, mealler) eklenir, peşine düşülmez.
 3. **Planlar tek belgede:** bu belge.
-4. **Eser ekleme ölçütü** (aşağıda K): her tavsiye edilen eser eklenmez; ölçütle seçilir.
+4. **Eser ekleme ölçütü** (aşağıda E2): her tavsiye edilen eser eklenmez; ölçütle seçilir.
 5. **Kendi model ve üyelik:** konuşuldu, karar yok (aşağıda "Fikirler").
 
-## Sıradaki (önerilen sıra; kullanıcı değiştirir)
+## Adlandırma (kullanıcının kararı, 2026-11-09)
 
-1. **K. Klasik eserler ve eser ekleme ölçütü.** Ölçüt (kullanıcı onayladı, 2026-11-09): bir eser şu üç şarttan en
-   az ikisini tutarsa girer:
-   1. Risale onu ya da müellifini adıyla anıyor, ya da Risale'deki bir hadisin künyesi o kitabı gösteriyor (veriden
-      sayılır: `search` ile adlar, `data/interim/hadis/kunye.md` künyeler).
-   2. Muhakkiki bilinen bir dijital nüshası ve açık izni ya da lisansı var (önce OpenITI).
-   3. Gerçekçi bir sohbette ona soru gelir (medrese ders kitaplarının çoğu bunu tutmaz).
+Her iş bir **kimlik** alır: alan harfi ve o alanda artan numara (`E2`), alt adım noktayla (`E2.1`). Kimlik verilince
+değişmez, biten ya da bırakılan işin kimliği yeniden kullanılmaz. **Sıra** ayrıdır: aşağıdaki tablonun satır
+sırasıdır; sıra değişince yalnız satırlar yer değiştirir. Eski adlar (Aşama 20, HA7, Y1.1…) "Eski adı" sütununda
+durur, "Kayıt"taki geçmiş onlarla okunur.
 
-   Gerekçe: her eser anlamsal aramayı sulandırır ve bellek ister (tefsir makinesi 8 GB, 1,3 GB kullanılıyor).
-   "Bediüzzaman'ın ezberlediği 90 kitap" bir liste değil, bir rivayettir; çoğu ders kitabıdır. Beklenen sonuç 15–30
-   eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded.py`).
-   - K1 Aday listesi: Risale'de anılma sıklığı, künye sıklığı ve gelen tavsiyeler, her aday üç şartla ve OpenITI
-     nüshasıyla (`docs/klasik-eserler.md`).
-   - K2 Kullanıcı seçer.
-   - K3 Ayrıştırma: OpenITI ortak ayrıştırıcılarıyla (`books/tefsir_openiti.py`, `hadis_openiti.py` örnek).
-   - K4 Nerede durur: yeni "klasik eserler" bağdaştırıcısı mı, tefsir makinesinde ayrı profil mi (karar). Önceki
-     adaylar: İhyâ, Miftâhu'l-Ulûm, Cürcânî; eş-Şifâ ve Delâil hadis kütüphanesinde.
-2. **Aşama 20. Kaynakçada doğrudan bağlantı** (e-Risale'nin önerisi; ayrıntı aşağıda Kayıt'ta).
-3. **Aşama 18. Gemini.**
-4. **Aşama 16. Kontrol kuyruğu ve işaretlerin işlenmesi.**
-5. **Aşama 19. Osmanlıca–Türkçe eşleme** (önce e-Risale'den Osmanlıcanın kaynağı sorulur).
-6. **Aşama 13.3. Kaynak seçimi.**
-7. **Küçük açıklar:**
-   - Risale talimatının öbür bağdaştırıcılara bilgi kipinde gönderme cümlesi (MVP'nin "Kalan"ı; tek kaynakça kuralı
-     onları anıyor, yeterli mi bakılır).
-   - Tefsirde noktalaması seyrek eserlerin uzun cümleleri (Bursevî ortalama 97 kelime) ve âyet birimlerinin %0,9'unun
-     denetimden geçmemesi (`data/interim/tefsir/mvp-denetim.md`, çoğu yanlış alarm): ölçüldü, düzeltilmedi.
-   - Nutuk'ta "birinci kılıç" başlığının altındaki paragraf (Aşama 16 kuyruğu).
-   - Üç âyet dizgi şüphesi (`docs/ayet-duzeltmeleri.md`), kullanıcının kararı.
+| Harf | Alan |
+|---|---|
+| **E** | Eserler: listeler, ekleme, nüsha |
+| **S** | Sunum ve erişim: site, yenilikler, dizinler, yeni platformlar |
+| **A** | Araç ve veri: Risale tarafındaki yetenekler |
+| **D** | Deneme ve araştırma |
+| **B** | Bakım: kontrol ve küçük açıklar |
+
+Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
+
+## Sıradaki
+
+| Sıra | Kimlik | İş | Eski adı |
+|---:|---|---|---|
+| 1 | E1 | Eser listeleri, üç bölümlü (tefsir, hadis, klasik) | — |
+| 2 | S1 | Yenilikler sayfası ve Open Graph etiketleri | — |
+| 3 | S2 | Sitenin yenilenmesi | — |
+| 4 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
+| 5 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
+| 6 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 7 | S3 | Gemini | Aşama 18 |
+| 8 | B1 | Kontrol kuyruğu ve işaretlerin işlenmesi | Aşama 16 |
+| 9 | A2 | Osmanlıca–Türkçe eşleme | Aşama 19 |
+| 10 | A3 | Kaynak seçimi | Aşama 13.3 |
+| 11 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 12 | E3 | Sorularla Risale (izin; isteğe bağlı) | — |
+
+**E1. Eser listeleri.** `docs/eserler/` alan başına bir dosya (`tefsir.md`, `hadis.md`, `klasik.md`), üç bölüm:
+(a) eklenenler (katalogdan üretilir, `checklist`), (b) eklenmesi çok iyi olacaklar (elle: nüsha, E2 ölçütünün üç
+şartı, gerekçe), (c) aklımızda bulunsun (elle). Elle tutulan kısım üretimde korunur. Kontrol listesi OpenITI
+indirmelerini görmüyor ("ham veri 0/13"): düzelir.
+
+**S1. Yenilikler sayfası.** Sitede tarihli kısa yazılar (ilki: hadis ve tefsir bağdaştırıcıları), her yazının
+sonunda WhatsApp'a kopyalanacak metin; paylaşılınca önizleme çıksın diye bütün sayfalara Open Graph etiketleri.
+Dışarıya istek yok kuralı sürer.
+
+**S2. Sitenin yenilenmesi.** Site üç bağdaştırıcılı ağı anlatır: Risale eksende; Kur'ân, hadis kitapları ve
+tefsirler etrafında; her söz cümle düzeyinde adresli. Ana sayfada üç sunucuyu birlikte kullanan gerçek bir cevap
+(kısaltılmadan, işaretleri veritabanıyla denetlenmiş), sayılar, "kimin için" (araştırmacı, akademisyen, ders
+hazırlayan).
+
+**D1. İşârât usulüyle yapay zekâ taslağı** (kullanıcının yola çıkarkenki fikri; "Fikirler"den alındı, 2026-11-09).
+Model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Taslak "yapay zekâ taslağı" diye
+damgalanır, "tefsir" denmez, yayımlanmaz; her iddia kaynağa bağlıdır, dil ve belâgat iddiaları ayrı işaretlidir.
+Önce bugünkü kaynaklarla, E2'de belâgat eserleri (Cürcânî, Miftâh) eklenince aynı âyetlerle yeniden: fark,
+eklemenin bu işe katkısını ölçer.
+- D1.1 Ezber yoklaması: model araçsız "bu âyette İşârât ne der" diye sorulur, cevap gerçek metinle (kelime
+  dizileri) karşılaştırılır. Ezberliyorsa İşârât'ın aralığındaki deneme ölçüm sayılmaz, deneme Bakara 34 sonrasına
+  kayar.
+- D1.2 Sızıntısız profil: sınanan âyetlerin İşârât metnini (Türkçe ve Arapça) dışarıda bırakan deneme profili
+  (`find_ayah`, arama, `read_section` onu vermesin).
+- D1.3 Usul özeti: İşârât'ın usulü kendi metninden, atıflı (Mukaddemat; münasebet, nazm, kelime seçimi üzerine
+  söyledikleri). Modelin talimatı bu özettir.
+- D1.4 Âyet seçimi: farklı türden 4–5 âyet (hurûf-u mukattaa, hüküm, temsil, öncesiyle bağı ince olan…).
+- D1.5 Değerlendirme ölçütü: münasebet, nazm, kelime seçimi, i'râb ve belâgat doğruluğu, uydurma; mütehassıs
+  kaynağı bilmeden okur.
+- D1.6 Taslak şablonu: bölümler ve damga.
+- D1.7 Mütehassıs: en az bir Arapça ve belâgat bilen (kullanıcı).
+- D1.8 Deneme (bugünkü kaynaklar), D1.9 E2'den sonra yeniden.
+
+**E2. Klasik eserler ve eser ekleme ölçütü.** Ölçüt (kullanıcı onayladı, 2026-11-09): bir eser şu üç şarttan en
+az ikisini tutarsa girer:
+1. Risale onu ya da müellifini adıyla anıyor, ya da Risale'deki bir hadisin künyesi o kitabı gösteriyor (veriden
+   sayılır: `search` ile adlar, `data/interim/hadis/kunye.md` künyeler).
+2. Muhakkiki bilinen bir dijital nüshası ve açık izni ya da lisansı var (önce OpenITI).
+3. Gerçekçi bir sohbette ona soru gelir (medrese ders kitaplarının çoğu bunu tutmaz).
+
+Gerekçe: her eser anlamsal aramayı sulandırır ve bellek ister (tefsir makinesi 8 GB, 1,3 GB kullanılıyor).
+"Bediüzzaman'ın ezberlediği 90 kitap" bir liste değil, bir rivayettir; çoğu ders kitabıdır. Beklenen sonuç 15–30
+eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded.py`).
+- E2.1 Aday listesi: Risale'de anılma sıklığı, künye sıklığı ve gelen tavsiyeler, her aday üç şartla ve OpenITI
+  nüshasıyla (`docs/eserler/klasik.md` (b) ve (c)).
+- E2.2 Kullanıcı seçer.
+- E2.3 Ayrıştırma: OpenITI ortak ayrıştırıcılarıyla (`books/tefsir_openiti.py`, `hadis_openiti.py` örnek).
+- E2.4 Nerede durur: yeni "klasik eserler" bağdaştırıcısı mı, tefsir makinesinde ayrı profil mi (karar). Önceki
+  adaylar: İhyâ, Miftâhu'l-Ulûm, Cürcânî; eş-Şifâ ve Delâil hadis kütüphanesinde.
+
+**A1 – A3, S3, B1:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 18, 16, 19, 13.3).
+
+**Küçük açıklar:**
+- B2 Risale talimatının öbür bağdaştırıcılara bilgi kipinde gönderme cümlesi (MVP'nin "Kalan"ı; tek kaynakça kuralı
+  onları anıyor, yeterli mi bakılır).
+- B3 Tefsirde noktalaması seyrek eserlerin uzun cümleleri (Bursevî ortalama 97 kelime) ve âyet birimlerinin %0,9'unun
+  denetimden geçmemesi (`data/interim/tefsir/mvp-denetim.md`, çoğu yanlış alarm): ölçüldü, düzeltilmedi.
+- B4 Nutuk'ta "birinci kılıç" başlığının altındaki paragraf (B1 kuyruğu).
+- B5 Üç âyet dizgi şüphesi (`docs/ayet-duzeltmeleri.md`), kullanıcının kararı.
+
+**E3. Sorularla Risale:** web araması değil; izin alınırsa `risale/ilgili` koleksiyonuna (`authority: modern`,
+varsayılan aramaya girmez). İzin yoksa eklenmez. Bkz. "Fikirler".
 
 ## Bekleyen (başkasının cevabı)
 
-- **Dizin başvuruları** (Claude, ChatGPT; hadis ve tefsir için ayrı): kullanıcı, acelesi yok. `docs/dizin-basvurusu.md`,
-  `docs/chatgpt-dizin-basvurusu.md`, `docs/dizin-politikalari.md`.
-- **Diyanet:** Elmalılı, Kur'an Yolu, mealler (`docs/diyanet-izin-epostasi.md`). Gelirse eklenir.
-- **Akgündüz:** Kızıl İcaz'ın Türkçesi ve Ta'likat (Aşama 17, `docs/akgunduz-izin-epostasi.md`). Cevap gelmeden PDF
-  okunmaz.
-- **e-Risale:** Osmanlıcanın kaynağı (Aşama 19'un ön şartı).
+| Kimlik | İş | Kimde | Eski adı |
+|---|---|---|---|
+| S4 | Dizin başvuruları (Claude, ChatGPT; hadis ve tefsir için ayrı). Claude başvurusu artık claude.ai/directory/manage portalında; Risale başvurusunun orada görünüp görünmediğine bakılır. `docs/dizin-basvurusu.md`, `docs/chatgpt-dizin-basvurusu.md`, `docs/dizin-politikalari.md` | Kullanıcı | M7 |
+| E4 | Kızıl İcaz'ın Türkçesi ve Ta'likat (`docs/akgunduz-izin-epostasi.md`); cevap gelmeden PDF okunmaz | Akgündüz | Aşama 17 |
+| — | Diyanet: Elmalılı, Kur'an Yolu, mealler (`docs/diyanet-izin-epostasi.md`); gelirse E listesine girer | Diyanet | — |
+| — | Osmanlıcanın kaynağı (A2'nin ön şartı) | e-Risale | Aşama 19 |
 
-## Sonra (sırası belli değil)
+## Sonra (sırası belli değil; sıraya girince kimlik alır)
 
-- **Aşama 15. Konu fihristi:** dondurulması önerildi (anlamsal arama bu işi büyük ölçüde görüyor); karar kullanıcıda.
+- **Konu fihristi** (Aşama 15): dondurulması önerildi (anlamsal arama bu işi büyük ölçüde görüyor); karar kullanıcıda.
 - **Kur'ân'a kelime düzeyinde adres** (Y1.1): mekanik; bir ihtiyaç doğarsa.
 - **Hadis – hadis rivayet grupları** (Y2.1'in kalanı): aynı hadisin rivayetleri, lafızla (mekanik).
 - **Risale'nin müfessiri adıyla anması** (Y1.7'nin mekanik kısmı).
@@ -103,7 +169,7 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   "kazanç olmaması", OpenITI CC BY-NC-SA, Tanzil'in Diyanet mealleri ticari olmayan kullanım; ücretli üyelik bunlarla
   çatışır, önce her kaynaktan yeni izin gerekir. Öneri: düşünülecekse ücretsiz ve bağış destekli, kaynaklara sorarak.
 
-- **İşârâtü'l-İ'câz usulüyle yapay zekâ taslağı (yeniden değerlendirme, 2026-11-09):** kullanıcının yola çıkarkenki
+- **İşârâtü'l-İ'câz usulüyle yapay zekâ taslağı (yeniden değerlendirme, 2026-11-09; D1 olarak sıraya alındı):** kullanıcının yola çıkarkenki
   asıl fikri: model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Bilgili kişilerin
   geri dönütü: model İşârât'ın şeklini ve usulünü iyi takip edip tatbik edebilir, bu kullanılmalı. 2026-11-04
   değerlendirmesi (`docs/tefsir-pilot-degerlendirme.md` "4") taslağa karşıydı (akıcılık eksiği gizler, heyeti
