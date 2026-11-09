@@ -745,3 +745,11 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   yenilemesini söyle" eklenir (`LEGACY_NOTE`). Genel sunucuda fark yok. Yayın: `HADIS_EXPECT="cite"
   scripts/deploy.sh --code --hadis` ve `TEFSIR_EXPECT="cite get_passage search semantic_search find_ayah"
   scripts/tefsir-sunucu.sh gonder`.
+- **10.37 sohbeti ve araç sonuçlarındaki hatırlatmalar (2026-11-09):** bağdaştırıcı yenilenince ChatGPT `tools/list`
+  istedi, `narrator` ve `sources` kullandı. Hatalar: uzun tercüme yeni talimata rağmen damgasız; gösterilen alıntı
+  `cite`'a sözsüz verildi; 10.27'de senet "Velîd → Müslim" diye kısaltılıp Ebû Hayseme ve ikinci tarik atlandı; yalnız
+  râviyle aramada `muslim/2937` 72'de 20. sıradaydı. Talimat yetmediği için kurallar modelin her seferinde okuduğu
+  sonuçlara kondu: `get_hadith` notu tercüme damgasını ve senedi `isnad`'daki gibi, her tarikiyle vermeyi söyler;
+  `cite` alıntısız gönderilen kaynakları sayar ve söz gösterilecekse yeniden çağırmayı söyler; yalnız râviyle arama
+  kitap sırasıyla (Kütüb-i Sitte ve Muvatta önce; `muslim/2937` 4.). Web'den resim eklemesi kullanıcıya göre sorun
+  değil. Yayın: `HADIS_EXPECT="cite get_hadith search_hadith"`.

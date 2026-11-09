@@ -105,3 +105,15 @@ def test_cite_names_a_scholars_note(lib):
 def test_the_older_ids_form_says_nothing_was_checked(lib):
     assert "no quotation was checked" in lib.cite_reports(["muslim/2937"], legacy=True)["note"]
     assert "no quotation was checked" not in lib.cite_reports([{"id": "muslim/2937", "quote": "ذات غداة"}])["note"]
+
+
+def test_narrator_only_search_lists_the_six_books_first(lib):
+    r = lib.search_reports(narrator="النواس بن سمعان", limit=20)
+    ids = [x["id"] for x in r["results"]]
+    assert "muslim/2937" in ids[:10] and not ids[0].startswith(("kenz/", "kesfulhafa/", "mecma/"))
+
+
+def test_notes_remind_the_label_the_chain_and_unquoted_sources(lib):
+    assert "Yapay zekâ tercümesi" in lib.report("muslim/2937")["note"]
+    note = lib.cite_reports([{"id": "muslim/2937"}, {"id": "tirmidhi/2244", "quote": "بباب لد"}])["note"]
+    assert "Sent without a quotation: muslim/2937." in note

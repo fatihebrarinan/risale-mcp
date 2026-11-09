@@ -27,7 +27,11 @@ CAUTION = {"kesfulhafa": "This book collects sayings current among people, many 
 MAX_UNITS = 20
 PREVIEW = 300
 UNIT_NOTE = ("A report is evidence, not a verdict: never rule on its soundness yourself. layers are other scholars' "
-             "notes (by), not the book author's. Grades are given only as the source holds them.")
+             "notes (by), not the book author's. Grades are given only as the source holds them. If you translate "
+             "this report yourself, short or long, in one piece or part by part, begin your translation with "
+             "\"Yapay zekâ tercümesi:\" (in Turkish; the same label in the user's language). If you give the chain, "
+             "give it as isnad holds it, with every route (ح) and its names in order; never shorten it into a chain "
+             "it does not hold.")
 PAGE_NOTE = ("The citation's volume:page belongs to the edition the citing author used; this library's edition may "
              "differ, so these are the reports printed on that page of this edition, not necessarily the cited one.")
 
@@ -109,7 +113,10 @@ class HadisLibrary(Library):
             params.append(book)
         base = f"FROM {table} JOIN lib_units u ON u.seq = {table}.rowid{where}"
         total = self.conn.execute(f"SELECT count(*) {base}", params).fetchone()[0]
-        rows = self.conn.execute(f"SELECT u.* {base} ORDER BY bm25({table}) LIMIT ? OFFSET ?",
+        # Yalnız râviyle aramada BM25 kısa kayıtları (Kenz) öne çıkarıyordu (`muslim/2937` 72'de 20.): kitap sırası
+        # (Kütüb-i Sitte ve Muvatta önce), kitap içinde okuma sırası.
+        order = f"bm25({table})" if text_expr else "(SELECT ord FROM lib_books WHERE key = u.book), u.seq"
+        rows = self.conn.execute(f"SELECT u.* {base} ORDER BY {order} LIMIT ? OFFSET ?",
                                  [*params, min(max(limit, 1), 50), max(offset, 0)]).fetchall()
         note = ("Matches the report's text (the matn where the edition separates it)" if text_expr else
                 "Matches the narrator in the chain (in books whose edition does not separate the chain, anywhere in "
@@ -231,6 +238,10 @@ class HadisLibrary(Library):
         result = {"problems": len(issues), "sources": out, "bibliography": "\n".join(lines), "note": CITE_NOTE}
         if legacy:
             result["note"] += LEGACY_NOTE
+        elif unquoted := [r["id"] for r, src in zip(out, sources) if r.get("status") == "ok"
+                          and not (isinstance(src, dict) and src.get("quote"))]:
+            result["note"] += (" Sent without a quotation: " + ", ".join(unquoted) + ". If the answer shows any words "
+                               "of these reports, call cite again with them (sources: [{id, quote}]).")
         return result
 
     def _quote_elsewhere(self, parts: list[str], skip: str, limit: int = 3) -> list[str]:
