@@ -50,17 +50,16 @@ Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S1 | Yenilikler sayfası ve Open Graph etiketleri (yayında, 2026-11-09) | — |
-| 2 | S2 | Sitenin yenilenmesi (Türkçe hazır, 2026-11-09; yayın kullanıcının bakışından sonra; İngilizce S2.4) | — |
-| 3 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
-| 4 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
-| 5 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 6 | S3 | Gemini | Aşama 18 |
-| 7 | B1 | Kontrol kuyruğu ve işaretlerin işlenmesi | Aşama 16 |
-| 8 | A2 | Osmanlıca–Türkçe eşleme | Aşama 19 |
-| 9 | A3 | Kaynak seçimi | Aşama 13.3 |
-| 10 | B2–B5 | Küçük açıklar | MVP "Kalan" |
-| 11 | E3 | Sorularla Risale (izin; isteğe bağlı) | — |
+| 1 | S2 | Sitenin yenilenmesi (Türkçe hazır, 2026-11-09; yayın kullanıcının bakışından sonra; İngilizce S2.4) | — |
+| 2 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
+| 3 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
+| 4 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 5 | S3 | Gemini | Aşama 18 |
+| 6 | B1 | Kontrol kuyruğu ve işaretlerin işlenmesi | Aşama 16 |
+| 7 | A2 | Osmanlıca–Türkçe eşleme | Aşama 19 |
+| 8 | A3 | Kaynak seçimi | Aşama 13.3 |
+| 9 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 10 | E3 | Sorularla Risale (izin; isteğe bağlı) | — |
 
 **S1. Yenilikler sayfası.** Sitede tarihli kısa yazılar (ilki: hadis ve tefsir bağdaştırıcıları), her yazının
 sonunda WhatsApp'a kopyalanacak metin; paylaşılınca önizleme çıksın diye bütün sayfalara Open Graph etiketleri.
@@ -193,6 +192,7 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - MVP M0–M7 (2026-11-06/07): 13 tefsir, hadis kütüphanesi (Kütüb-i Sitte, Muvatta, 9 kitap, eş-Şifâ, Delâil),
   HA2, hadis ve tefsir bağdaştırıcıları yayında.
 - E1 Eser listeleri (2026-11-09): `docs/eserler/tefsir.md`, `hadis.md` (yeni; kütüphanedeki 18 kitaptan üretilir), `klasik.md` (yeni) üç bölümlü; `checklist` elle tutulan (b) ve (c)'yi korur, OpenITI indirmelerini görür ("ham veri 0/13" düzeldi). (b) ve (c) `docs/mvp-kitaplar.md`'deki önerilerden ve künye sayılarından dolduruldu; "?" işaretli şartlar E2.1'de sayılacak.
+- S1 Yenilikler ve Open Graph (2026-11-09, yayında): `scripts/site-uret.py`, `docs/yenilikler/`, yazım kılavuzu `docs/yenilikler-kilavuzu.md`; bütün Türkçe sitede "eklenti".
 - MVP sonrası düzeltmeler (2026-11-07/09): hata ayıklama adresleri, râvi araması ve `ibn`, hadis `cite`'ında alıntı
   denetimi, tercüme damgası, ChatGPT önbelleği, kesik kaynakça, web içeriği kuralı.
 
