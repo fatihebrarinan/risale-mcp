@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+<channel>
+  <title>Risale-i Nur MCP: Yenilikler</title>
+  <link>https://risalemcp.com/yenilikler.html</link>
+  <description>Risale-i Nur, hadis ve tefsir bağdaştırıcılarında yeni olanlar.</description>
+  <language>tr</language>
+  <item>
+    <title>İlk günlerin düzeltmeleri</title>
+    <link>https://risalemcp.com/yenilikler/2026-11-09-ilk-duzeltmeler.html</link>
+    <guid>https://risalemcp.com/yenilikler/2026-11-09-ilk-duzeltmeler.html</guid>
+    <pubDate>Mon, 09 Nov 2026 12:00:00 +0000</pubDate>
+    <description>Râvinin adıyla hadis arama, alıntıların rivayetin metninde denetlenmesi, yapay zekâ tercümelerinin damgası ve ChatGPT kullanıcıları için bir hatırlatma.</description>
+  </item>
+  <item>
+    <title>Hadis ve tefsir bağdaştırıcıları açıldı</title>
+    <link>https://risalemcp.com/yenilikler/2026-11-07-hadis-ve-tefsir.html</link>
+    <guid>https://risalemcp.com/yenilikler/2026-11-07-hadis-ve-tefsir.html</guid>
+    <pubDate>Sat, 07 Nov 2026 12:00:00 +0000</pubDate>
+    <description>Risale-i Nur bağdaştırıcısının yanına iki yeni bağdaştırıcı geldi: on sekiz hadis kitabı ve on üç klasik tefsir, Arapça asıllarıyla ve adresleriyle.</description>
+  </item>
+</channel>
+</rss>

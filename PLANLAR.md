@@ -50,7 +50,7 @@ Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S1 | Yenilikler sayfası ve Open Graph etiketleri | — |
+| 1 | S1 | Yenilikler sayfası ve Open Graph etiketleri (hazır, 2026-11-09; kullanıcı yazıları elden geçirince yayın) | — |
 | 2 | S2 | Sitenin yenilenmesi | — |
 | 3 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
 | 4 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
@@ -65,6 +65,7 @@ Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
 **S1. Yenilikler sayfası.** Sitede tarihli kısa yazılar (ilki: hadis ve tefsir bağdaştırıcıları), her yazının
 sonunda WhatsApp'a kopyalanacak metin; paylaşılınca önizleme çıksın diye bütün sayfalara Open Graph etiketleri.
 Dışarıya istek yok kuralı sürer.
+ Durum (2026-11-09): kullanıcının kararları betik, yalnız Türkçe, sade kart. `scripts/site-yenilikler.py`, yazılar `docs/yenilikler/` (iki taslak: hadis ve tefsir bağdaştırıcıları, ilk düzeltmeler), 18 sayfada Open Graph, menüde Yenilikler, RSS. Yayın: `scripts/deploy.sh --code`; sonra telefonda bir bağlantı paylaşılarak önizleme denenir.
 
 **S2. Sitenin yenilenmesi.** Site üç bağdaştırıcılı ağı anlatır: Risale eksende; Kur'ân, hadis kitapları ve
 tefsirler etrafında; her söz cümle düzeyinde adresli. Ana sayfada üç sunucuyu birlikte kullanan gerçek bir cevap

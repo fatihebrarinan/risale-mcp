@@ -131,3 +131,11 @@ h4 { font-size: 1rem; margin: 20px 0 4px; }
 details.shots { margin: 12px 0; }
 details.shots > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
 h4 { margin: 20px 0 4px; }
+/* Yenilikler (scripts/site-yenilikler.py) */
+.post-item { border-bottom: 1px solid var(--line); padding: 4px 0 12px; }
+.post-item h2 { margin: 0 0 4px; }
+.post-item h2 a { text-decoration: none; }
+.post-item p { margin: 4px 0; }
+.post blockquote { margin: 16px 0; padding: 4px 0 4px 14px; border-left: 3px solid var(--accent); color: var(--fg); }
+.share h2 { margin-top: 0; }
+.share pre { white-space: pre-wrap; font: inherit; font-size: 0.95rem; }
