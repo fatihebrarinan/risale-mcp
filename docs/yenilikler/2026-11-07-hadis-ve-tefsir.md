@@ -1,12 +1,14 @@
 ---
 baslik: Hadis ve Tefsir eklentileri açıldı
 tarih: 2026-11-07
-ozet: Risale-i Nur eklentisinin yanına iki yeni eklenti geldi: on sekiz hadis kitabı ve on üç klasik tefsir, hepsi Arapça asıllarıyla ve tam adresleriyle.
+ozet: Risale-i Nur'da geçen hadislerin ve âyetlerin izini artık asıl kaynaklarında sürebilirsiniz: on sekiz hadis kitabı ve on üç klasik tefsir, Arapça asıllarıyla ve adresleriyle iki yeni eklentide.
 whatsapp: |
   Risale-i Nur eklentisinin iki kardeşi geldi: Hadis ve Tefsir eklentileri.
   Kullandığınız yapay zekâya (Claude ya da ChatGPT) ekleyince hadisleri kitabından, müfessirlerin sözlerini kendi eserlerinden, adresleriyle gösteriyor. Ücretsiz, üyelik de gerekmiyor.
 ---
-Şimdiye kadar Risale-i Nur eklentisiyle yapay zekâya eserleri metinden ayrılmadan sorabiliyordunuz. Artık yanında iki eklenti daha var: Hadis ve Tefsir. İsterseniz birini, isterseniz üçünü birden ekleyebilirsiniz.
+Risale-i Nur okurken bir hadisin aslını ya da bir âyetin müfessirlerce nasıl anlaşıldığını merak ettiğiniz oldu mu? Artık bunun için kitapları tek tek açmanız gerekmiyor. Hadis ve Tefsir eklentileriyle kullandığınız yapay zekâ, Risale-i Nur'da geçen bir hadisi asıl kitabında bulup gösterebiliyor, bir âyetin klasik tefsirlerde nasıl açıklandığını müfessirin kendi sözüyle aktarabiliyor. Böylece bir konuyu Risale-i Nur'dan hadis kitaplarına ve tefsirlere uzanarak daha ayrıntılı öğrenebilir, ders ya da akademik bir çalışma hazırlarken her bilgiyi adresiyle gösterebilirsiniz.
+
+İki yeni eklenti Risale-i Nur eklentisinin yanına geldi. İsterseniz birini, isterseniz üçünü birden ekleyebilirsiniz.
 
 ## Hadis eklentisi
 

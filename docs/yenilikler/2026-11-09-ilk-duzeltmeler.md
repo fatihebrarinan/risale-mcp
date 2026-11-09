@@ -1,12 +1,14 @@
 ---
 baslik: Hadis ve Tefsir eklentilerinde ilk iyileştirmeler
 tarih: 2026-11-09
-ozet: Artık bir hadisi onu rivayet eden sahâbînin adıyla bulabilirsiniz, yapay zekâ hadis alıntılarını rivayetle karşılaştırıyor ve kendi tercümelerini açıkça belirtiyor.
+ozet: Hadis cevapları artık daha güvenilir ve daha kolay: bir hadisi sahâbînin adıyla bulabilir, neyin kitabın kendisi, neyin yapay zekânın çevirisi olduğunu her zaman görebilirsiniz.
 whatsapp: |
   Hadis ve Tefsir eklentilerinde ilk iyileştirmeler geldi: artık bir hadisi sahâbînin adıyla bulabiliyorsunuz, yapay zekâ da kendi tercümesini her seferinde açıkça belirtiyor.
   ChatGPT kullanıyorsanız eklentileri bir kez yenilemeniz gerekiyor, nasıl yapılacağı yazıda.
 ---
-Eklentiler açıldıktan sonra sizden gelen sohbetleri kaynaklarla tek tek karşılaştırdık. Fark ettiklerimizi düzelttik. İşte sizin göreceğiniz değişiklikler.
+Bu iyileştirmelerle yapay zekânın hadis cevapları hem daha güvenilir hem daha kolay: aradığınız hadisi sahâbînin adıyla bulabiliyor, neyin kitabın kendisi, neyin yapay zekânın çevirisi olduğunu her zaman görebiliyorsunuz.
+
+Eklentiler açıldıktan sonra sizden gelen sohbetleri kaynaklarla tek tek karşılaştırdık ve fark ettiklerimizi düzelttik. İşte göreceğiniz değişiklikler.
 
 ## Hadisi sahâbînin adıyla bulun
 

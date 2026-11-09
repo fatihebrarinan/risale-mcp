@@ -21,6 +21,20 @@ bakışta anlaşılmalı.
 | Râvi adıyla arama desteği eklendi. | Artık bir hadisi, onu rivayet eden sahâbînin adıyla da bulabilirsiniz. |
 | Asistanın tercümeleri damgalanır. | Yapay zekâ bir metni sizin için tercüme ettiğinde bunu açıkça söyler: tercümenin başında "Yapay zekâ tercümesi" yazar. |
 
+## Önce katkı
+
+Her yazı, yeniliğin kullanıcıya ne kazandırdığıyla başlar. Okuyan ilk paragrafta "bu benim ne işime yarar" sorusunun
+cevabını bulmalı. Ne yapıldığı, ardından gelir.
+
+- Yeni bir eklenti ya da kitap: hangi kapıyı açtığı. Örneğin Hadis ve Tefsir eklentileri, Risale-i Nur'da geçen bir
+  hadisin ya da âyetin izini asıl kaynaklarında sürmeyi, bir konuyu Risale-i Nur'dan hadis kitaplarına ve klasik
+  tefsirlere uzanarak daha ayrıntılı öğrenmeyi, ders ve akademik çalışmalar için adresli bir zemin kurmayı mümkün
+  kılar.
+- Bir iyileştirme: cevaplarda neyin daha güvenilir ya da kolay olduğu. Örneğin "Artık neyin kitabın kendisi, neyin
+  yapay zekânın çevirisi olduğunu her zaman bileceksiniz."
+- Katkı abartılmaz: yalnız eklentinin gerçekten yaptığı söylenir. Yapay zekânın yazdığı şey "tefsir" ya da "hüküm"
+  diye sunulmaz.
+
 ## Ne yazılır, ne yazılmaz
 
 Yalnız kullanıcıyı ilgilendiren şey yazılır: artık ne yapabiliyor, ne değişti, bir şey yapması gerekiyor mu.
@@ -57,6 +71,9 @@ Yalnız kullanıcıyı ilgilendiren şey yazılır: artık ne yapabiliyor, ne de
 
 ## Yazım ve noktalama
 
+- **Devrik cümle kurulmaz.** Yüklem cümlenin sonundadır. "Geldi iki yeni eklenti" değil, "İki yeni eklenti geldi".
+  "Bilmenizi isteriz bir şeyi" değil, "Bir şeyi bilmenizi isteriz".
+
 Türk Dil Kurumunun yazım kurallarına uyulur. Özellikle:
 
 - **Virgül:** "ve", "ile", "veya", "ya da" bağlaçlarından önce virgül konmaz. Uzun cümlede özneden sonra
@@ -73,7 +90,7 @@ Türk Dil Kurumunun yazım kurallarına uyulur. Özellikle:
 ## Yazının yapısı
 
 1. **Başlık:** haberi söyler, kısa: "Hadis ve Tefsir eklentileri açıldı".
-2. **Giriş:** bir iki cümle; ne oldu, okuyana ne kazandırıyor.
+2. **Giriş:** önce okuyana ne kazandırdığı ("Önce katkı"), sonra ne olduğu; iki üç cümle.
 3. **Yenilikler:** her biri kısa bir başlık ya da madde, ardından ne işe yaradığı ve örnek soru.
 4. **Sizin yapmanız gereken** (varsa): adım adım, menü adlarıyla.
 5. **Kapanış:** nereden eklenir ya da nereden okunur (site sayfasına bağlantı).
@@ -100,5 +117,6 @@ whatsapp: |
 
 1. `python3 scripts/site-yenilikler.py`, sonra `python3 -m http.server -d site 8080` ile
    `http://localhost:8080/yenilikler.html` adresinde bakın.
-2. Kontrol: kılavuzdaki kelimeler (eklenti), yalnız kullanıcıyı ilgilendirenler, her örnek soru denenmiş, noktalama.
+2. Kontrol: ilk paragraf katkıyı söylüyor mu, kılavuzdaki kelimeler (eklenti), yalnız kullanıcıyı ilgilendirenler,
+   her örnek soru denenmiş, devrik cümle yok, noktalama.
 3. Kullanıcı okuyup onaylar; yayın `scripts/deploy.sh --code`.
