@@ -241,7 +241,7 @@ CITE_NOTE = ("Finish the answer with a Kaynaklar list made of these bibliography
              "order: do not reword, shorten or renumber them, their opening words are each sentence's address. The "
              "indented lines under a source (Âyet: …, Hadis: …) give the verses and hadiths inside the quoted words "
              "with the publisher's references; copy them too, unchanged, with their notes such as (doğrulanmadı). End "
-             "every quotation with its source's number, e.g. [1]. Sources outside the works (web pages, other books) "
+             "every quotation with its source's number, e.g. [1]. List only sources the answer uses. Sources outside the works (web pages, other books) "
              "go in a separate list after Kaynaklar, never in it. Quote only words checked here: a quotation from a "
              "sentence outside these sources, or one you add after this call, needs cite again. If a source has a "
              "problem, fix it and call cite again.")

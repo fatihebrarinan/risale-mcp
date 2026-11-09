@@ -753,3 +753,10 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   `cite` alıntısız gönderilen kaynakları sayar ve söz gösterilecekse yeniden çağırmayı söyler; yalnız râviyle arama
   kitap sırasıyla (Kütüb-i Sitte ve Muvatta önce; `muslim/2937` 4.). Web'den resim eklemesi kullanıcıya göre sorun
   değil. Yayın: `HADIS_EXPECT="cite get_hadith search_hadith"`.
+- **10.59 sohbeti (2026-11-09):** araç tarafı temiz (73 çağrı, hata yok; tek kaynakça risale [1]–[10] → hadis
+  `first: 11`; 16 alıntının hepsi birebir, hareke yok, damgalar tam). Hatalar: web'den (islamweb, et-Temhîd) gelen söz
+  "veritabanı taraması"nın bulgusu gibi sunuldu, Arapçası denetimsiz ve tercümesi damgasız; kullanılmayan Risale
+  kaynağı kaynakçada; Müsned 11130'daki "ehl-i beytimden bir adam" Mehdî diye verildi. Düzeltmeler: risale
+  `CITE_NOTE` "yalnız cevabın kullandığı kaynakları listele"; hadis ve tefsir talimatı: web'den gelen her şey bu
+  kitapların dışındadır, öyle söylenir, Kaynaklar'dan ayrı verilir, tercümesi damgalanır, kütüphanenin bulgusu gibi
+  sunulmaz.
