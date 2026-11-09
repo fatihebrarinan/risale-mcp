@@ -1,28 +1,35 @@
 ---
-baslik: İlk günlerin düzeltmeleri
+baslik: Hadis ve Tefsir eklentilerinde ilk iyileştirmeler
 tarih: 2026-11-09
-ozet: Râvinin adıyla hadis arama, alıntıların rivayetin metninde denetlenmesi, yapay zekâ tercümelerinin damgası ve ChatGPT kullanıcıları için bir hatırlatma.
+ozet: Artık bir hadisi onu rivayet eden sahâbînin adıyla bulabilirsiniz, yapay zekâ hadis alıntılarını rivayetle karşılaştırıyor ve kendi tercümelerini açıkça belirtiyor.
 whatsapp: |
-  Risale-i Nur MCP'nin hadis ve tefsir bağdaştırıcılarında ilk düzeltmeler: râvinin adıyla arama, alıntı denetimi, yapay zekâ tercümelerinin açıkça belirtilmesi.
-  ChatGPT kullanıyorsanız bağdaştırıcıları bir kez yenilemeniz gerekiyor.
+  Hadis ve Tefsir eklentilerinde ilk iyileştirmeler geldi: artık bir hadisi sahâbînin adıyla bulabiliyorsunuz, yapay zekâ da kendi tercümesini her seferinde açıkça belirtiyor.
+  ChatGPT kullanıyorsanız eklentileri bir kez yenilemeniz gerekiyor, nasıl yapılacağı yazıda.
 ---
-Hadis ve tefsir bağdaştırıcıları açıldıktan sonra gelen sohbetleri kaynaklarla tek tek karşılaştırdık. Çıkan düzeltmeler:
+Eklentiler açıldıktan sonra sizden gelen sohbetleri kaynaklarla tek tek karşılaştırdık. Fark ettiklerimizi düzelttik. İşte sizin göreceğiniz değişiklikler.
 
-## Hadis
+## Hadisi sahâbînin adıyla bulun
 
-- **Râvinin adıyla arama.** Bir hadisi sahâbînin ya da râvinin adıyla aramak artık mümkün: "Nevvâs b. Sem'ân'ın Deccâl hadisi" gibi bir soruda asistan rivayetleri senette arar. Yalnız râvinin adıyla aramada önce Kütüb-i Sitte ve Muvatta gelir.
-- **"İbn" ve "bin" aynı sayılır.** "ابن مريم" diye arayan "بن مريم" geçen rivayeti de bulur.
-- **Alıntı denetimi.** Asistan bir rivayetten söz aktardığında bu söz rivayetin metninde aranır. Söz râvinin izahıysa ya da başka bir rivayetteyse asistan uyarılır.
-- **Senet eksiksiz.** Senet kısaltılmadan, her tarikiyle verilir.
+Bir hadisin sözünü tam hatırlamıyor ama kimin rivayet ettiğini biliyorsanız artık onun adıyla da sorabilirsiniz:
 
-## Tercümeler
+> Nevvâs b. Sem'ân'ın rivayet ettiği Deccâl hadisini bul.
 
-Asistanın her tercümesi, tek bir cümle de olsa rivayetin tamamı da olsa, başında "Yapay zekâ tercümesi" diye belirtilir. Arapça alıntıya asistan hareke eklemez; metin kaynakta nasılsa öyle gösterilir.
+Yapay zekâ bu durumda önce Kütüb-i Sitte ve Muvatta'daki rivayetleri getirir.
 
-## Web'den gelenler
+## Alıntılar rivayetle karşılaştırılıyor
 
-Asistan web'de arama yaptıysa oradan gelen bilgi bu kitapların dışındadır ve öyle söylenir; kaynakçadan ayrı verilir.
+Yapay zekâ bir hadisten söz aktardığında artık o sözün rivayette gerçekten geçtiğine bakıyor. Söz hadisin kendisi değil de onu nakleden râvinin açıklamasıysa, bunu size ayrıca belirtiyor. Hadisi nakledenlerin zincirini (senedi) de kısaltmadan, eksiksiz veriyor.
 
-## ChatGPT kullanıyorsanız
+## Yapay zekânın tercümesi her zaman belli
 
-ChatGPT bağdaştırıcının talimatını eklendiği gün kaydediyor. Yeni kuralları görmesi için Ayarlar'da Hadis ve Tefsir bağdaştırıcılarını bir kez yenileyin (ya da kaldırıp yeniden ekleyin). Claude'da bir şey yapmanız gerekmez.
+Yapay zekâ bir metni sizin için tercüme ettiğinde, tek bir cümle de olsa bir hadisin tamamı da olsa, tercümenin başına "Yapay zekâ tercümesi" yazıyor. Böylece neyin kitabın kendisi, neyin yapay zekânın çevirisi olduğunu her zaman bilirsiniz. Arapça metne kendisi hareke de eklemiyor, metni kitaptaki gibi gösteriyor.
+
+## İnternetten gelen bilgi ayrı duruyor
+
+Yapay zekâ cevap verirken internette de arama yaptıysa, oradan bulduğu bilgiyi kitaplardan gelenle karıştırmıyor. Size bunun internetten geldiğini söylüyor ve kaynak listesinde ayrı gösteriyor.
+
+## ChatGPT kullanıyorsanız: eklentileri bir kez yenileyin
+
+ChatGPT, eklentinizin talimatını sizin eklediğiniz gün hafızasına kaydediyor. Yeni kuralları görebilmesi için Hadis ve Tefsir eklentilerini ayarlardan bir kez yenileyin. Yenileme seçeneğini bulamazsanız eklentiyi kaldırıp yeniden eklemeniz de aynı işi görür.
+
+Claude kullanıyorsanız bir şey yapmanıza gerek yok, değişiklikler kendiliğinden geliyor.

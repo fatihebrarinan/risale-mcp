@@ -126,7 +126,7 @@ def og_block(title: str, description: str, path: str, lang: str = "tr", kind: st
     tags = [("og:type", kind), ("og:site_name", "Risale-i Nur MCP"), ("og:title", title),
             ("og:description", description), ("og:url", BASE + path), ("og:image", BASE + IMAGE),
             ("og:image:width", "1200"), ("og:image:height", "630"),
-            ("og:image:alt", "Risale-i Nur MCP: Risale-i Nur, hadis ve tefsir bağdaştırıcıları" if lang == "tr"
+            ("og:image:alt", "Risale-i Nur MCP: Risale-i Nur, Hadis ve Tefsir eklentileri" if lang == "tr"
              else "Risale-i Nur MCP: the Risale-i Nur, hadith and tafsir connectors"),
             ("og:locale", "tr_TR" if lang == "tr" else "en_US")]
     lines = [f'<meta property="{k}" content="{html.escape(v)}">' for k, v in tags]
@@ -203,11 +203,11 @@ def index_page(posts: list[Post]) -> str:
   <p>{inline(p.summary)}</p>
 </article>""" for p in posts)
     body = f"""<h1>Yenilikler</h1>
-<p class="lead">Bağdaştırıcılarda yeni olanlar, düzeltmeler ve duyurular. Her yazının sonunda paylaşmak için kısa bir metin var. <a href="/yenilikler.xml">RSS</a> ile de takip edebilirsiniz.</p>
+<p class="lead">Eklentilerde yeni olanlar, iyileştirmeler ve duyurular. Her yazının sonunda paylaşmak için kısa bir metin var. <a href="/yenilikler.xml">RSS</a> ile de takip edebilirsiniz.</p>
 
 {items}"""
-    return page("Yenilikler · Risale-i Nur MCP", "Risale-i Nur, hadis ve tefsir bağdaştırıcılarında yeni olanlar, "
-                "düzeltmeler ve duyurular.", "/yenilikler.html", body, current="/yenilikler.html")
+    return page("Yenilikler · Risale-i Nur MCP", "Risale-i Nur, Hadis ve Tefsir eklentilerinde yeni olanlar, "
+                "iyileştirmeler ve duyurular.", "/yenilikler.html", body, current="/yenilikler.html")
 
 
 def rss(posts: list[Post]) -> str:
@@ -225,7 +225,7 @@ def rss(posts: list[Post]) -> str:
 <channel>
   <title>Risale-i Nur MCP: Yenilikler</title>
   <link>{BASE}/yenilikler.html</link>
-  <description>Risale-i Nur, hadis ve tefsir bağdaştırıcılarında yeni olanlar.</description>
+  <description>Risale-i Nur, Hadis ve Tefsir eklentilerinde yeni olanlar.</description>
   <language>tr</language>
 {items}
 </channel>

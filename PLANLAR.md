@@ -67,7 +67,7 @@ sonunda WhatsApp'a kopyalanacak metin; paylaşılınca önizleme çıksın diye 
 Dışarıya istek yok kuralı sürer.
  Durum (2026-11-09): kullanıcının kararları betik, yalnız Türkçe, sade kart. `scripts/site-yenilikler.py`, yazılar `docs/yenilikler/` (iki taslak: hadis ve tefsir bağdaştırıcıları, ilk düzeltmeler), 18 sayfada Open Graph, menüde Yenilikler, RSS. Yayın: `scripts/deploy.sh --code`; sonra telefonda bir bağlantı paylaşılarak önizleme denenir.
 
-**S2. Sitenin yenilenmesi.** Site üç bağdaştırıcılı ağı anlatır: Risale eksende; Kur'ân, hadis kitapları ve
+**S2. Sitenin yenilenmesi.** Açık soru (2026-11-09): Yenilikler "eklenti" diyor (kullanıcının isteği); sitenin geri kalanı Claude'un menüsündeki "bağdaştırıcı"yı kullanıyor. S2'de bütün sitede "eklenti"ye geçilip menü adı yalnız kurulum adımlarında mı kalsın, karar. Site üç bağdaştırıcılı ağı anlatır: Risale eksende; Kur'ân, hadis kitapları ve
 tefsirler etrafında; her söz cümle düzeyinde adresli. Ana sayfada üç sunucuyu birlikte kullanan gerçek bir cevap
 (kısaltılmadan, işaretleri veritabanıyla denetlenmiş), sayılar, "kimin için" (araştırmacı, akademisyen, ders
 hazırlayan).
