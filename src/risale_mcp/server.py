@@ -119,6 +119,9 @@ is text.
 - Qur'an: copy the vowelled Arabic from get_ayah (or as the works quote it), never from memory. Cite a verse as \
 get_ayah's ref ("Bakara Sûresi, 2:255", no ›), name the Diyanet translation you use and mention covers_verses. \
 A translation aids the meaning; it does not replace the Arabic.
+- Your own translation (of Arabic the tools return without a translation: a hadith, a passage of the Arabic works, \
+another connector's text) is labelled where it begins, in Turkish "Yapay zekâ tercümesi:", a phrase or a long \
+passage alike; it is never a quotation, never cited, never attributed to the author.
 - Writing dates (written, in list_works, get_outline and read_section): state when, where and in which language a \
 work was written only from this field, never from memory. Dates come from secondary lists: name its source, say \
 "estimated" when estimated is set, mention what note says when the sources differ, and say the date is not known if \
@@ -137,6 +140,12 @@ another author's text; nakil: a memoir or report; serh: a commentary; modern: a 
 never present it as his words; reported sayings stay reports. translation: true marks a work that is a translation \
 of the original (the work's note names the translator where known): say so when it matters.
 """.replace("{old_names}", old_names_note())
+
+
+class ReportSource(BaseModel):
+    id: str = Field(description="A report id as the tools return it, e.g. 'muslim/2937'.")
+    quote: str | None = Field(default=None, description="The words you quote from it, exactly as get_hadith returns "
+                                                         "them (… for omitted parts); leave out if you only paraphrase.")
 
 
 class Source(BaseModel):
@@ -191,7 +200,10 @@ or a quotation; if the tools do not return it, say so.
 2. Quote the Arabic exactly as returned, in a block quote on its own line. If the user does not write in Arabic, \
 after the quotation give your own translation into the user's language on a separate line, labelled as your own \
 translation (in Turkish: "Yapay zekâ tercümesi:"), and say it is not a published translation. Never put your \
-translation inside the quotation, never cite it, never attribute it to the author; it does not replace the text.
+translation inside the quotation, never cite it, never attribute it to the author; it does not replace the text. \
+Every translation you make yourself carries that label where it begins, a phrase or a long passage alike. Add no \
+vowel marks to the quoted Arabic, and under "what the text says" give only what the work says (a name or a source \
+you add yourself is yours).
 3. Each work belongs to its author: name the author (author). A section with layer is another person's text (the \
 editor's introduction); a unit opens with the edition's printed verse (kind ayah): that is the Qur'an, cite it with \
 get_ayah. printed is the edition's volume/page, secondary to the id.
@@ -202,7 +214,9 @@ recorded link.
 5. A classical tafsir may be called tafsir. Your own summary, comparison or draft is never a tafsir.
 6. This server holds no text of the Risale-i Nur. find_ayah lists first, under risale, the places in the Risale-i \
 Nur tied to the verse (id, citation, kind of tie): give them first. Their text is on the Risale-i Nur server, not \
-here; never quote the Risale from memory, and name the tie by its kind.
+here; never quote the Risale from memory, and name the tie by its kind. Say what the Risale-i Nur says (beyond \
+these ties) only after reading it with the Risale-i Nur connector in this conversation, and cite it there; otherwise \
+say you have not checked it there.
 7. Hadiths inside these works: report what the author says; never rule on a hadith's soundness yourself.
 8. Answer in the user's language."""
 
@@ -225,8 +239,9 @@ article; ابن and بن count as one) or a Companion's or narrator's name in th
 "Buharî, Ezân: 148" or "Müsned 14870". Results are candidates. Browse with list_books, get_outline, read_chapter.
 2. Read the report with get_hadith before relying on it: its text, chain (isnad) and text (matn) where the edition \
 separates them, printed page, other scholars' layers, and the places in the Risale-i Nur linked to it.
-3. Before writing the answer, call cite once with every report you quote or rely on; end each quotation with its \
-number [1] and finish with the "Kaynaklar" list cite returns, unchanged. If the same answer also cites another connector (Risale-i Nur, tafsir, hadith), keep one Kaynaklar list: \
+3. Before writing the answer, call cite once with every report you quote or rely on and the exact words of every \
+quotation you will show (sources: [{id, quote}]); fix what it flags. End each quotation and each claim drawn from a \
+report (a grade, a remark) with that report's number [1], and finish with the "Kaynaklar" list cite returns, unchanged. If the same answer also cites another connector (Risale-i Nur, tafsir, hadith), keep one Kaynaklar list: \
 call each server's cite with first set to the number after the last one already used, and give all the \
 lines in one list, in number order.
 
@@ -236,12 +251,16 @@ wording. If the tools do not return it, say you could not find it in these books
 2. Never rule on a report's soundness yourself. Give grades only as the tools hold them, with the scholar's name; \
 layers are other scholars' notes (al-Dhahabi, al-Albani, the editor), name them and never attribute them to the \
 book's author. A match in Kashf al-Khafa (book_note) means the saying is discussed there, not that it is sound.
-3. Quote the Arabic exactly as returned, in a block quote on its own line. If the user does not write in Arabic, \
-after the quotation give your own translation on a separate line, labelled as your own translation (in Turkish: \
-"Yapay zekâ tercümesi:"), and say it is not a published translation; never put it inside the quotation or cite it.
+3. Quote the Arabic exactly as returned (add no vowel marks), in a block quote on its own line. If the user does not \
+write in Arabic, after the quotation give your own translation on a separate line, labelled as your own translation \
+(in Turkish: "Yapay zekâ tercümesi:"), and say it is not a published translation; never put it inside the quotation \
+or cite it. Every translation you make yourself carries that label where it begins: a phrase, a whole report, or a \
+report retold part by part. A narrator's or scholar's explanation inside a report is theirs, not the Prophet's words.
 4. A citation's volume:page may belong to another edition than this library's: say so when find_by_citation warns.
 5. The places in the Risale-i Nur are given by id and citation only; their text is on the Risale-i Nur server, not \
-here. Never quote the Risale from memory.
+here. Never quote the Risale from memory. Say what the Risale-i Nur says about a report or a topic (where it treats \
+it, how it reads it) only after reading it with the Risale-i Nur connector in this conversation, and cite it there; \
+otherwise say you have not checked it there.
 6. Answer in the user's language."""
 
 
@@ -750,13 +769,23 @@ def _hadis_tools(server: MCPServer, library) -> None:
 
     @server.tool(title="Build references", annotations=read_only("Build references"), structured_output=False)
     def cite(
-        ids: Annotated[list[str], Field(description="The report ids you quote or rely on, in the order of their numbers.")],
+        sources: Annotated[list[ReportSource] | None, Field(
+            description="Every report you quote or rely on, in the order of their numbers, each with the words you "
+                        "quote from it.")] = None,
         first: Annotated[int, Field(description="Number of the first report; set it to continue the numbering when "
                                                 "the answer also cites another connector's sources.", ge=1)] = 1,
+        ids: Annotated[list[str] | None, Field(description="Older form: report ids without quotations; use sources.")] = None,
     ) -> str:
-        """Before answering, once: the bibliography lines for the reports, to copy unchanged under Kaynaklar."""
+        """Get the references for the reports you use, checked against the books. Call it once before writing the
+        answer, with every report you quote or rely on and every quotation you will show with its exact words (a
+        quotation left out is not checked). Returns, for each report, cite_as and a problem to fix if any (quoted
+        words that are not in the report, with where they occur, or that are another scholar's note), and the
+        bibliography lines "[n] cite_as" for the answer's Kaynaklar list."""
         with _tool_errors():
-            return _json(library.cite_reports(ids, first))
+            items = [s.model_dump() for s in sources or []] + [{"id": i} for i in ids or []]
+            if not items:
+                raise LibraryError("Give sources: [{id, quote}] for every report you use.")
+            return _json(library.cite_reports(items, first))
 
 
 def http_security(public_url: str) -> TransportSecuritySettings:

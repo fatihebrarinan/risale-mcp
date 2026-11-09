@@ -77,3 +77,26 @@ def test_ibn_and_bin_are_the_same_word(lib):
     assert "muslim/2937" in [r["id"] for r in lib.search_reports('"المسيح ابن مريم فينزل عند المنارة البيضاء"')["results"]]
     missed = lib.search_reports('"فبينما هو على ذلك إذ بعث الله المسيح ابن مريم"')
     assert missed["total"] == 0 and "narrator" in missed["note"]
+
+
+def test_cite_checks_quotes_against_the_report(lib):
+    # ChatGPT'nin 2026-11-07 cevabından: harekeli alıntı tutar, hafızadan lafız tutmaz ve asıl yeri gösterilir
+    out = lib.cite_reports([
+        {"id": "musned/17629", "quote": "فَبَيْنَا هُوَ عَلَى ذَلِكَ إِذْ بَعَثَ اللَّهُ الْمَسِيحَ ابْنَ مَرْيَمَ … فَيَقْتُلُهُ عِنْدَ بَابِ لُدٍّ الشَّرْقِيِّ"},
+        {"id": "muslim/2937", "quote": "فبينا هو على ذلك إذ بعث الله المسيح ابن مريم"},
+        {"id": "tirmidhi/2233"},
+        {"id": "bukhari/99999999"}], first=3)
+    status = {s["id"]: s["status"] for s in out["sources"]}
+    assert status == {"musned/17629": "ok", "muslim/2937": "problem", "tirmidhi/2233": "ok", "bukhari/99999999": "problem"}
+    assert "musned/17629" in out["sources"][1]["problem"]
+    assert out["bibliography"].startswith("[3] Müsned") and "[5] Sünen-i Tirmizî" in out["bibliography"]
+
+
+def test_cite_names_a_scholars_note(lib):
+    row = lib.conn.execute("SELECT id, layers FROM lib_units WHERE book = 'mustedrek' AND layers IS NOT NULL LIMIT 1").fetchone()
+    import json
+    layer = json.loads(row["layers"])[0]
+    words = " ".join(layer["text"].split()[:6])
+    out = lib.cite_reports([{"id": row["id"], "quote": words}])
+    if out["sources"][0]["status"] == "problem":           # söz rivayetin metninde de geçebilir
+        assert "note on this report" in out["sources"][0]["problem"]

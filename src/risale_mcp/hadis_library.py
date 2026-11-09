@@ -6,6 +6,7 @@ Kütüb-i Sitte için) ve başkasının katmanı (`layers`: Zehebî, Elbânî, m
 """
 
 import json
+import re
 from pathlib import Path
 
 import numpy as np
@@ -13,6 +14,7 @@ import numpy as np
 from risale_mcp import search as fts
 from risale_mcp.hadis_kunye import parse as parse_citation
 from risale_mcp.library import Library, LibraryError
+from risale_mcp.normalize import search_words
 
 # künye kitap kimliği (`hadis_kitaplar`) -> kütüphanedeki kitap
 CITED_BOOK = {"bukhari": "bukhari", "muslim": "muslim", "abudawud": "abudawud", "tirmidhi": "tirmidhi",
@@ -191,18 +193,52 @@ class HadisLibrary(Library):
             raise LibraryError("No book recognised in the citation; give it as e.g. 'Buharî, Ezân: 148' or 'Müsned 14870'.")
         return {"citations": out}
 
-    def cite_reports(self, ids: list[str], first: int = 1) -> dict:
-        lines, problems = [], []
-        for n, unit_id in enumerate(ids, first):
+    def cite_reports(self, sources: list[dict], first: int = 1) -> dict:
+        """Kaynakça satırları ve alıntı denetimi (2026-11-09; Risale'nin `cite`'ı gibi): her alıntı o rivayetin
+        metninde aranır. Hareke, "ابن"/"بن" ve baskının dipnot işaretleri yok sayılır, "…" atlanan yerdir. Söz yalnız
+        başkasının katmanındaysa (Zehebî, Elbânî) ya da başka rivayetteyse problem o yeri söyler."""
+        lines, issues, out = [], [], []
+        for n, source in enumerate(sources, first):
+            source = {"id": source} if isinstance(source, str) else source
+            unit_id, quote = (source.get("id") or "").strip(), (source.get("quote") or "").strip()
             row = self.conn.execute("SELECT u.*, b.title AS book_title, b.author, b.source FROM lib_units u"
                                     " JOIN lib_books b ON b.key = u.book WHERE u.id = ?", (unit_id,)).fetchone()
+            record = {"n": n, "id": unit_id}
             if row is None:
-                problems.append({"id": unit_id, "problem": "unknown report id"})
+                record.update(status="problem", problem="Unknown report id; use the ids the tools return.")
+                issues.append(record)
+                out.append(record)
                 continue
-            lines.append(f"[{n}] {_cite(row)}")
-        return {"problems": len(problems), "issues": problems, "bibliography": "\n".join(lines),
-                "note": "Copy the bibliography unchanged under the heading Kaynaklar; sources outside the books go in "
-                        "a separate list."}
+            record["cite_as"] = _cite(row)
+            lines.append(f"[{n}] {record['cite_as']}")
+            if quote and (parts := _quote_parts(quote)) and not all(p in _quote_key(row["text"]) for p in parts):
+                layers = [layer for layer in json.loads(row["layers"] or "[]")
+                          if all(p in _quote_key(layer.get("text") or "") for p in parts)]
+                if layers:
+                    problem = (f"The quoted words are {layers[0].get('by') or 'another scholar'}'s note on this report, "
+                               "not the report: say whose they are, or quote the report itself.")
+                else:
+                    problem = ("The quoted words are not in this report; quote them exactly as get_hadith returns them "
+                               "(no words from memory)")
+                    if where := self._quote_elsewhere(parts, unit_id):
+                        problem += ". They occur in: " + ", ".join(where)
+                    problem += "."
+                record.update(status="problem", problem=problem)
+                issues.append(record)
+            else:
+                record["status"] = "ok"
+            out.append(record)
+        return {"problems": len(issues), "sources": out, "bibliography": "\n".join(lines),
+                "note": CITE_NOTE}
+
+    def _quote_elsewhere(self, parts: list[str], skip: str, limit: int = 3) -> list[str]:
+        """Alıntının en uzun parçasının geçtiği başka rivayetler (metin dizininde tam ifade)."""
+        longest = max(parts, key=len)
+        if len(longest.split()) < 3:
+            return []
+        rows = self.conn.execute("SELECT u.id, u.text FROM lib_fts JOIN lib_units u ON u.seq = lib_fts.rowid"
+                                 " WHERE lib_fts MATCH ? LIMIT 20", (f'"{longest}"',)).fetchall()
+        return [r["id"] for r in rows if r["id"] != skip and all(p in _quote_key(r["text"]) for p in parts)][:limit]
 
     # ------------------------------------------------------------ yardımcılar
 
@@ -259,6 +295,24 @@ def _edition(source: dict) -> str | None:
     ed = source.get("edition") or {}
     parts = [ed.get(k) for k in ("editor", "publisher", "edition") if ed.get(k)]
     return ", ".join(parts) or None
+
+
+CITE_NOTE = ("Finish the answer with a Kaynaklar list made of these bibliography lines, copied unchanged and in this "
+             "order. End every quotation, and every claim drawn from a report, with that report's number, e.g. [1]: a "
+             "grade or a note belongs to the report it comes from. List only reports you use in the answer. Quote "
+             "only words checked here, exactly as get_hadith returned them (no vowel marks you add): a quotation added "
+             "after this call needs cite again. If a source has a problem, fix it and call cite again.")
+
+
+def _quote_key(text: str) -> str:
+    """Alıntı karşılaştırmasının biçimi: aramanın kelimeleri, "ابن" -> "بن", baskının dipnot işaretleri yok."""
+    from risale_mcp.citations import _NOTE_MARK
+    return " ".join(fts.hadith_word(w) for w in search_words(_NOTE_MARK.sub(" ", text)))
+
+
+def _quote_parts(quote: str) -> list[str]:
+    text = quote.strip().strip('"“”«»').strip()
+    return [k for part in re.split(r"…|\.\.\.", text) if (k := _quote_key(part))]
 
 
 def _cite(row) -> str:

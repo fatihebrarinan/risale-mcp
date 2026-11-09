@@ -715,3 +715,19 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   araması 10 → 16. Hadis çağrı setine 5 çağrı; `tool_snapshot compare` artık beklenen aracın sete yeni eklenen
   çağrısını beklenen sayar ve her profilin çağrı setinden aracı bulur. Kimlik değişikliği yok. Yayın:
   `HADIS_EXPECT="search_hadith instructions" scripts/deploy.sh --code --hadis`.
+- **ChatGPT cevaplarının incelemesi ve hadis `cite`'ı (2026-11-09):** râvi araması yayında
+  (`hadis-yayin-20261109-094358`), `cite`'ın dipnot düzeltmesi risale ve tefsirde yayında. Dört cevap veritabanıyla
+  denetlendi: Risale cevabının 7 alıntısı birebir; kaynakçalar ayrı cevaplarda olduğu için çakışma yok (önceki 2. bulgu
+  kapandı). Hadis cevabında Arapça doğru ama model hareke eklemiş, Tirmizî'nin "hasen-sahih"i Buhârî'nin numarasına
+  bağlanmış, kullanılmayan kaynak kaynakçada, râvinin izahı ("فأمكم بكتاب ربكم") hadisin sözü gibi sunulmuş, ve
+  Risale araçları çağrılmadan "Bediüzzaman bu hadisi Kastamonu Lâhikası'nda ele alır" denmiş (yanlış: Beşinci Şuâ,
+  rivayet adı verilmeden). Nevvâs hadisinin tam tercümesi damgasız. Tefsir cevabı iyi (Beyzâvî'ye hareke, Kurtubî'nin
+  anmadığı Nevvâs adı). Kullanıcının kabul ettiği üç düzeltme (yerelde, yayında değil): (1) hadis `cite`'ı
+  `sources: [{id, quote}]` alır ve alıntıyı rivayetin metninde denetler (hareke, `ابن`/`بن`, dipnot işareti yok
+  sayılır, "…" atlanır; söz başkasının katmanındaysa onu, başka rivayetteyse oranın kimliğini söyler; eski `ids`
+  biçimi de kabul edilir; risale ve tefsir `cite`'ı zaten denetliyordu); (2) hadis ve tefsir talimatı: Risale'nin ne
+  dediğini yalnız Risale bağdaştırıcısında okuyup oradan atıfla söyle, okumadıysan söyleme; (3) tercüme damgası üç
+  talimatta: modelin her tercümesi (cümle, rivayetin tamamı, bölüm bölüm aktarım) başında "Yapay zekâ tercümesi:";
+  hadis ve tefsirde alıntıya hareke eklenmez, râvinin izahı Peygamber'in sözü değildir. Yayın:
+  `DEPLOY_EXPECT="instructions" HADIS_EXPECT="cite instructions" scripts/deploy.sh --code --hadis` ve
+  `TEFSIR_EXPECT="instructions" scripts/tefsir-sunucu.sh gonder`.

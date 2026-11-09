@@ -212,6 +212,39 @@
      "yok/1"
     ]
    }
+  },
+  {
+   "name": "cite_quote_ok",
+   "tool": "cite",
+   "args": {
+    "sources": [
+     {
+      "id": "musned/17629",
+      "quote": "فَبَيْنَا هُوَ عَلَى ذَلِكَ إِذْ بَعَثَ اللَّهُ الْمَسِيحَ ابْنَ مَرْيَمَ"
+     },
+     {
+      "id": "tirmidhi/2233"
+     }
+    ],
+    "first": 4
+   }
+  },
+  {
+   "name": "cite_quote_wrong",
+   "tool": "cite",
+   "args": {
+    "sources": [
+     {
+      "id": "muslim/2937",
+      "quote": "فبينا هو على ذلك إذ بعث الله المسيح ابن مريم"
+     }
+    ]
+   }
+  },
+  {
+   "name": "cite_empty",
+   "tool": "cite",
+   "args": {}
   }
  ]
 }
