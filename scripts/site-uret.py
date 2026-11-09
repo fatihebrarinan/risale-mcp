@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Sitenin üretilen parçaları (PLANLAR.md S1): Yenilikler sayfaları ve Open Graph etiketleri.
+"""Sitenin üretilen parçaları (PLANLAR.md S1, S2): Yenilikler, Open Graph, menü ve alt bilgi, sayılar, site haritası.
 
-    python3 scripts/site-yenilikler.py           # yazılar, dizin, RSS, Open Graph, ana sayfadaki şerit
-    python3 scripts/site-yenilikler.py --resim   # bir de paylaşım resmi (site/img/paylasim.png; uvx cairosvg)
+    python3 scripts/site-uret.py           # hepsi
+    python3 scripts/site-uret.py --resim   # bir de paylaşım resmi (site/img/paylasim.png; uvx cairosvg)
 
 Sonra: scripts/deploy.sh --code
 
@@ -14,7 +14,13 @@ Sonra: scripts/deploy.sh --code
 - Open Graph: `site/` ve `site/en/` altındaki her sayfada `<!-- og -->` ile `<!-- /og -->` arası her seferinde
   yeniden yazılır (yoksa `</title>` satırından sonra eklenir); başlık `<title>`'dan, açıklama `description`'dan.
   WhatsApp önizlemeyi adres başına önbelleğe alır: etiket değişince eski paylaşımlar bir süre eski görünür.
-- Ana sayfa (`site/index.html`): `<!-- son-yenilik -->` ile `<!-- /son-yenilik -->` arasında son yazıya şerit.
+- Ana sayfa (`site/index.html`): `<!-- son-yenilik -->` arasında son yazıya şerit, `<!-- son-yenilikler -->` arasında
+  son üç yazı.
+- Menü ve alt bilgi: Türkçe sayfaların `<nav>` ve `<footer>` blokları her seferinde buradan yazılır (`nav_html`,
+  `FOOTER`); İngilizce sayfalarınki elle. Menüdeki "English" bağlantısı sayfanın `hreflang="en"` adresidir.
+- Sayılar: sayfalardaki `<!-- sayi:ad -->…<!-- /sayi -->` arası yerel veritabanlarından (`data/dist/`) yazılır
+  (`numbers`); veritabanı yoksa olduğu gibi kalır.
+- `site/sitemap.xml`: bütün sayfalar ve yazılar.
 - Dışarıya istek yok kuralı sürer: "WhatsApp'ta paylaş" yalnız tıklanınca açılan bir bağlantıdır.
 """
 
@@ -36,7 +42,7 @@ POSTS = ROOT / "docs" / "yenilikler"
 OUT = SITE / "yenilikler"
 BASE = "https://risalemcp.com"
 IMAGE = "/img/paylasim.png"
-ASSET_VERSION = 9                       # style.css ve site.js sürümü (sayfalardaki ?v=N ile aynı tutulur)
+ASSET_VERSION = 10                      # style.css ve site.js sürümü (sayfalardaki ?v=N ile aynı tutulur)
 MONTHS = ("Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık")
 
 
@@ -134,14 +140,31 @@ def og_block(title: str, description: str, path: str, lang: str = "tr", kind: st
     return "<!-- og -->\n" + "\n".join(lines) + "\n<!-- /og -->"
 
 
-NAV = [("/belgeler.html", "Belgeler"), ("/hadis.html", "Hadis"), ("/tefsir.html", "Tefsir"),
-       ("/yenilikler.html", "Yenilikler"), ("/katki.html", "Katkı"), ("/gizlilik.html", "Gizlilik")]
+NAV = [("/#eklentiler", "Eklentiler"), ("/#ekle", "Kurulum"), ("/yenilikler.html", "Yenilikler"),
+       ("/belgeler.html", "Belgeler")]
+# Sayfa -> menüde işaretli olan (sayfa adı; yazılar "yenilikler")
+CURRENT = {"risale.html": "/#eklentiler", "hadis.html": "/#eklentiler", "tefsir.html": "/#eklentiler",
+           "claude.html": "/#ekle", "chatgpt.html": "/#ekle", "yenilikler.html": "/yenilikler.html",
+           "belgeler.html": "/belgeler.html"}
+FOOTER = ("<footer>Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti "
+          "değildir.<br><a href=\"/gizlilik.html\">Gizlilik</a> · <a href=\"/kullanim-sartlari.html\">Kullanım "
+          "şartları</a> · <a href=\"/katki.html\">Hata bildirin</a> · <a href=\"/yenilikler.xml\">RSS</a> · "
+          "<a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a></footer>")
+
+
+def nav_html(current: str = "", en: str = "/en/") -> str:
+    links = "\n".join(f'  <a href="{href}"' + (' aria-current="page"' if href == current else "") + f">{name}</a>"
+                      for href, name in NAV)
+    return f"""<nav>
+  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+{links}
+  <a href="{en}" lang="en">English</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Açık ve koyu görünüm arasında geç" title="Açık ve koyu görünüm arasında geç"></button>
+</nav>"""
 
 
 def page(title: str, description: str, path: str, body: str, kind: str = "website", current: str = "",
          extra_head: str = "") -> str:
-    nav = "\n".join(f'  <a href="{href}"{" aria-current=\"page\"" if href == current else ""}>{name}</a>'
-                    for href, name in NAV)
     return f"""<!doctype html>
 <html lang="tr">
 <head>
@@ -160,16 +183,11 @@ def page(title: str, description: str, path: str, body: str, kind: str = "websit
 </head>
 <body>
 <main>
-<nav>
-  <a class="brand" href="/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
-{nav}
-  <a href="/en/" lang="en">English</a>
-  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Açık ve koyu görünüm arasında geç" title="Açık ve koyu görünüm arasında geç"></button>
-</nav>
+{nav_html(current)}
 
 {body}
 
-<footer>Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir. · <a href="/gizlilik.html">Gizlilik</a> · <a href="/kullanim-sartlari.html">Kullanım şartları</a> · <a href="/yenilikler.xml">RSS</a> · <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
+{FOOTER}
 </main>
 </body>
 </html>
@@ -261,6 +279,73 @@ def add_og(path: Path) -> bool:
     return new != text
 
 
+def frame(path: Path) -> bool:
+    """Türkçe elle yazılmış sayfanın menüsünü ve alt bilgisini ortak biçimle yeniden yazar."""
+    text = path.read_text(encoding="utf-8")
+    en = re.search(r'<link rel="alternate" hreflang="en" href="([^"]+)">', text)
+    new = re.sub(r"<nav>.*?</nav>", lambda _: nav_html(CURRENT.get(path.name, ""), en.group(1) if en else "/en/"),
+                 text, count=1, flags=re.S)
+    new = re.sub(r"<footer>.*?</footer>", lambda _: FOOTER, new, count=1, flags=re.S)
+    if new != text:
+        path.write_text(new, encoding="utf-8")
+    return new != text
+
+
+def _about(n: int) -> str:
+    """Yuvarlak sayı: 131.224 -> "131 bin", 6.236 -> "6.236"."""
+    return f"{round(n / 1000)} bin" if n >= 20000 else f"{n:,}".replace(",", ".")
+
+
+def numbers() -> dict[str, str]:
+    import sqlite3
+    out: dict[str, str] = {}
+    dist = ROOT / "data" / "dist"
+    if (db := dist / "genel" / "risale.db").exists():
+        c = sqlite3.connect(db)
+        rows = dict(((o, (w, s)) for o, w, s in c.execute(
+            "select w.group_name = 'osmanlica', count(distinct w.slug), count(s.id) from works w "
+            "left join sentences s on s.work = w.slug where w.built = 1 group by 1")))
+        out |= {"risale_eser": str(rows[0][0]), "risale_cumle": _about(rows[0][1]),
+                "osmanlica_cilt": str(rows[1][0]),
+                "ayet": _about(c.execute("select count(*) from quran_ayahs").fetchone()[0])}
+    if (db := dist / "tefsir" / "risale.db").exists():
+        c = sqlite3.connect(db)
+        out |= {"tefsir_eser": str(c.execute("select count(*) from works where built = 1").fetchone()[0]),
+                "tefsir_cumle": _about(c.execute("select count(*) from sentences").fetchone()[0])}
+    if (db := dist / "hadis" / "hadis.db").exists():
+        c = sqlite3.connect(db)
+        out |= {"hadis_kitap": str(c.execute("select count(*) from lib_books").fetchone()[0]),
+                "hadis_sayi": _about(c.execute("select count(*) from lib_units").fetchone()[0])}
+    return out
+
+
+def fill_numbers(path: Path, values: dict[str, str]) -> bool:
+    text = path.read_text(encoding="utf-8")
+    def put(m: re.Match) -> str:
+        return f"<!-- sayi:{m.group(1)} -->{values.get(m.group(1), m.group(2))}<!-- /sayi -->"
+    new = re.sub(r"<!-- sayi:(\w+) -->(.*?)<!-- /sayi -->", put, text)
+    if new != text:
+        path.write_text(new, encoding="utf-8")
+    return new != text
+
+
+def latest_list(posts: list[Post]) -> str:
+    items = "\n".join(f'  <li><a href="{p.path}">{inline(p.title)}</a> <span class="muted small">· {p.date_tr}</span>'
+                      f"<br><span class=\"small\">{inline(p.summary)}</span></li>" for p in posts[:3])
+    return f'<!-- son-yenilikler -->\n<ul class="news">\n{items}\n</ul>\n<!-- /son-yenilikler -->'
+
+
+def sitemap(pages: list[Path], posts: list[Post]) -> str:
+    urls = []
+    for page_path in pages:
+        rel = "/" + page_path.relative_to(SITE).as_posix()
+        urls.append(rel[: -len("index.html")] if rel.endswith("index.html") else rel)
+    urls += ["/yenilikler.html"] + [p.path for p in posts]
+    body = "\n".join(f"  <url><loc>{BASE}{u}</loc></url>" for u in urls)
+    return (f'<?xml version="1.0" encoding="utf-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            f"{body}\n</urlset>\n")
+
+
 def latest_strip(post: Post) -> str:
     return (f'<!-- son-yenilik -->\n<p class="note small"><strong>Yeni:</strong> <a href="{post.path}">'
             f"{inline(post.title)}</a> · {post.date_tr}</p>\n<!-- /son-yenilik -->")
@@ -315,15 +400,22 @@ def main() -> None:
                 if p.name != "yenilikler.html"]
     changed = sum(add_og(p) for p in handmade)
     print(f"Open Graph: {len(handmade)} sayfa, {changed} değişti")
+    turkish = [p for p in handmade if p.parent == SITE]
+    print(f"menü ve alt bilgi: {sum(frame(p) for p in turkish)} sayfa değişti")
+    values = numbers()
+    print(f"sayılar: {values}; {sum(fill_numbers(p, values) for p in turkish)} sayfa değişti")
+    (SITE / "sitemap.xml").write_text(sitemap(handmade, posts), encoding="utf-8")
 
     index = SITE / "index.html"
     if posts:
         text = index.read_text(encoding="utf-8")
         new = _between(text, "<!-- son-yenilik -->", "<!-- /son-yenilik -->", latest_strip(posts[0]),
                        '<section class="hero">')
+        if "<!-- son-yenilikler -->" in new:
+            new = _between(new, "<!-- son-yenilikler -->", "<!-- /son-yenilikler -->", latest_list(posts), "")
         if new != text:
             index.write_text(new, encoding="utf-8")
-            print("ana sayfadaki şerit güncellendi")
+            print("ana sayfadaki yenilikler güncellendi")
 
 
 if __name__ == "__main__":

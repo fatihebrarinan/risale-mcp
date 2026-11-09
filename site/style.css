@@ -131,7 +131,7 @@ h4 { font-size: 1rem; margin: 20px 0 4px; }
 details.shots { margin: 12px 0; }
 details.shots > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
 h4 { margin: 20px 0 4px; }
-/* Yenilikler (scripts/site-yenilikler.py) */
+/* Yenilikler (scripts/site-uret.py) */
 .post-item { border-bottom: 1px solid var(--line); padding: 4px 0 12px; }
 .post-item h2 { margin: 0 0 4px; }
 .post-item h2 a { text-decoration: none; }
@@ -139,3 +139,42 @@ h4 { margin: 20px 0 4px; }
 .post blockquote { margin: 16px 0; padding: 4px 0 4px 14px; border-left: 3px solid var(--accent); color: var(--fg); }
 .share h2 { margin-top: 0; }
 .share pre { white-space: pre-wrap; font: inherit; font-size: 0.95rem; }
+/* Ana sayfa (S2) */
+.hero { padding: 8px 0 4px; }
+.hero-logo { display: block; width: 88px; height: 88px; border-radius: 20px; margin: 12px 0 18px; }
+.hero h1 { font-size: clamp(1.6rem, 4.4vw, 2.3rem); line-height: 1.2; letter-spacing: -0.01em; }
+.hero .lead { font-size: 1.08rem; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 28px 0 8px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 12px; padding: 14px 14px 12px; }
+.stat strong { display: block; font-size: 1.35rem; line-height: 1.2; color: var(--fg); }
+.stat span { display: block; margin-top: 4px; font-size: 0.86rem; line-height: 1.4; color: var(--muted); }
+.plugins, .audience { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
+.plugins, .audience { width: min(1000px, calc(100vw - 32px)); position: relative; left: 50%; transform: translateX(-50%); }
+.plugin, .audience article { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.plugin h3, .audience h3 { margin: 6px 0 6px; font-size: 1.12rem; }
+.plugin p, .audience p { margin: 0 0 10px; font-size: 0.95rem; }
+.plugin > a { margin-top: auto; font-weight: 600; text-decoration: none; }
+.plugin-icon { width: 34px; height: 34px; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.try { color: var(--muted); font-style: italic; }
+.example { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin: 16px 0 8px; }
+.example > header { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 0.95rem; }
+.example .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); }
+.example .answer h4 { font-size: 0.98rem; margin: 14px 0 4px; color: var(--accent); }
+.example blockquote.ok { border-left-color: var(--ok); background: var(--okbg); border-radius: 0 8px 8px 0; padding: 4px 10px 4px 12px; }
+.example blockquote.ok::after { content: "✓ metinde var"; display: inline-block; margin: 2px 0 4px; padding: 0 6px; border-radius: 6px; font: 600 0.72rem system-ui, sans-serif; background: var(--ok); color: var(--card); }
+.example blockquote.ar { font-family: "Amiri Hadis", "Amiri", "Scheherazade New", serif; font-size: 1.12em; border-left: 0; border-right: 3px solid var(--ok); border-radius: 8px 0 0 8px; }
+.example .answer ol.sources ul { padding-left: 1.1em; color: var(--muted); }
+.audience .try { margin-top: auto; }
+ul.checks { list-style: none; padding: 0; }
+ul.checks li { position: relative; padding-left: 28px; margin: 10px 0; }
+ul.checks li::before { content: "✓"; position: absolute; left: 4px; top: 0; color: var(--ok); font-weight: 700; }
+.addresses .fields span { font-weight: 600; font-size: 0.92rem; }
+ul.news { list-style: none; padding: 0; }
+ul.news li { padding: 8px 0; border-bottom: 1px solid var(--line); }
+footer br + a { margin-top: 4px; }
+@media (max-width: 760px) {
+  .stats { grid-template-columns: 1fr 1fr; }
+  .plugins, .audience { grid-template-columns: 1fr; width: auto; left: auto; transform: none; }
+  .addresses .fields { grid-template-columns: 1fr auto; }
+  .addresses .fields span { grid-column: 1 / -1; margin-top: 6px; }
+}

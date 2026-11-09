@@ -51,7 +51,7 @@ Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
 | 1 | S1 | Yenilikler sayfası ve Open Graph etiketleri (yayında, 2026-11-09) | — |
-| 2 | S2 | Sitenin yenilenmesi | — |
+| 2 | S2 | Sitenin yenilenmesi (Türkçe hazır, 2026-11-09; yayın kullanıcının bakışından sonra; İngilizce S2.4) | — |
 | 3 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
 | 4 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
 | 5 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
@@ -65,12 +65,18 @@ Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
 **S1. Yenilikler sayfası.** Sitede tarihli kısa yazılar (ilki: hadis ve tefsir bağdaştırıcıları), her yazının
 sonunda WhatsApp'a kopyalanacak metin; paylaşılınca önizleme çıksın diye bütün sayfalara Open Graph etiketleri.
 Dışarıya istek yok kuralı sürer.
- Durum (2026-11-09): kullanıcının kararları betik, yalnız Türkçe, sade kart. `scripts/site-yenilikler.py`, yazılar `docs/yenilikler/` (iki taslak: hadis ve tefsir bağdaştırıcıları, ilk düzeltmeler), 18 sayfada Open Graph, menüde Yenilikler, RSS. Yayın: `scripts/deploy.sh --code`; sonra telefonda bir bağlantı paylaşılarak önizleme denenir.
+ Durum (2026-11-09): kullanıcının kararları betik, yalnız Türkçe, sade kart. `scripts/site-uret.py`, yazılar `docs/yenilikler/` (iki taslak: hadis ve tefsir bağdaştırıcıları, ilk düzeltmeler), 18 sayfada Open Graph, menüde Yenilikler, RSS. Yayın: `scripts/deploy.sh --code`; sonra telefonda bir bağlantı paylaşılarak önizleme denenir.
 
 **S2. Sitenin yenilenmesi.** Karar (2026-11-09): bütün Türkçe sitede "eklenti" (yapıldı); Claude'un menü adları kurulum adımlarında kalır. Site üç bağdaştırıcılı ağı anlatır: Risale eksende; Kur'ân, hadis kitapları ve
 tefsirler etrafında; her söz cümle düzeyinde adresli. Ana sayfada üç sunucuyu birlikte kullanan gerçek bir cevap
 (kısaltılmadan, işaretleri veritabanıyla denetlenmiş), sayılar, "kimin için" (araştırmacı, akademisyen, ders
 hazırlayan).
+ Kararlar (kullanıcı, 2026-11-09): plan ve öneriler onaylandı; Katkı sayfası "Hata bildirin" oldu (D1'in mütehassısı ilanla değil davetle), girişte süs âyet yok, İngilizce sonra.
+- S2.1 Ana sayfa (bitti): giriş, sayılar, üç eklenti kartı, üç eklentili örnek cevap (kullanıcının claude.ai sohbeti, 9 Kasım 22.15; 13 kaynağın alıntıları veritabanıyla birebir; soru metni sohbette yoktu, önerilen soru yazıldı), karşılaştırma, kimin için, güvence, ekleme ve adresler, son yenilikler, kaynaklar.
+- S2.2 `risale.html` (bitti), `katki.html` "Hata bildirin" (bitti).
+- S2.3 Betik `scripts/site-uret.py` (eski adı site-yenilikler.py): menü ve alt bilgi ortak, sayılar veritabanından, son üç yazı, `sitemap.xml`; `robots.txt` (bitti).
+- S2.4 İngilizce sayfalar: Türkçeye göre (`en/contribute.html` hâlâ denetçi arıyor).
+- S2.5 Yayın: `scripts/deploy.sh --code`.
 
 **D1. İşârât usulüyle yapay zekâ taslağı** (kullanıcının yola çıkarkenki fikri; "Fikirler"den alındı, 2026-11-09).
 Model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Taslak "yapay zekâ taslağı" diye

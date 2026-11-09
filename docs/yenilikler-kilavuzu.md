@@ -1,6 +1,6 @@
 # Yenilikler yazma kılavuzu
 
-Sitedeki Yenilikler yazıları (`docs/yenilikler/`, `scripts/site-yenilikler.py`) bu kılavuza göre yazılır. Kurallar
+Sitedeki Yenilikler yazıları (`docs/yenilikler/`, `scripts/site-uret.py`) bu kılavuza göre yazılır. Kurallar
 kullanıcının isteğidir (2026-11-09); yeni bir istek gelince buraya eklenir.
 
 ## Kime yazıyoruz
@@ -115,7 +115,7 @@ whatsapp: |
 
 ## Yazdıktan sonra
 
-1. `python3 scripts/site-yenilikler.py`, sonra `python3 -m http.server -d site 8080` ile
+1. `python3 scripts/site-uret.py`, sonra `python3 -m http.server -d site 8080` ile
    `http://localhost:8080/yenilikler.html` adresinde bakın.
 2. Kontrol: ilk paragraf katkıyı söylüyor mu, kılavuzdaki kelimeler (eklenti), yalnız kullanıcıyı ilgilendirenler,
    her örnek soru denenmiş, devrik cümle yok, noktalama.
