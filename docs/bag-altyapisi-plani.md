@@ -1,5 +1,7 @@
 # Bağ altyapısı (HA1)
 
+> **Donduruldu (2026-11-09).** Bu belge ayrıntı ve geçmiştir; güncel durum ve sıra `PLANLAR.md`'de.
+
 Hadis aşamalarının ilki (CLAUDE.md, "Hadis aşamaları"). Risale'nin âyet ve hadislerle, ileride kendi içinde ve
 tefsirlerle kurduğu bağlar tek biçimde, tek yerde tutulur. Risale sunucusu ve hadis sunucusu (HA5) aynı bağları
 okur: biri "bu cümle şu rivayete bağlı", öbürü "bu rivayet Risale'de şuralarda" der.

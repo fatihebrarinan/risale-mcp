@@ -1,5 +1,7 @@
 # Hadis katmanı: eşleme ve doğrulama planı
 
+> Güncel plan, durum ve sıra `PLANLAR.md`'dedir (2026-11-09); bu belge ayrıntı ve geçmiştir.
+
 Hedef: Risale'deki hadisleri rivayetlere bağlamak, bağları doğrulamak, bilinen ve olası hataları en aza indirmek.
 Yöntemin ayrıntısı `src/risale_mcp/hadis.py` başında, sayılar `uv run python -m risale_mcp.hadis_eval run`
 raporundadır. Son güncelleme: 2026-11-02.

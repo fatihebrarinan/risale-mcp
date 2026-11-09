@@ -1,5 +1,7 @@
 # Türkçe erişim (Y0.4; kullanıcının kararlarıyla, 2026-11-05)
 
+> **Donduruldu (2026-11-09).** Bu belge ayrıntı ve geçmiştir; güncel durum ve sıra `PLANLAR.md`'de.
+
 Yol haritasının Y0.4 adımı (`docs/tefsir-pilot-degerlendirme.md`): müfessirlerin eserleri Arapça kaldıkça altyapı
 yalnız Arapça okuyana açık olur (pilotta kullanıcı B bölümünde Arapçayı ayırt edemedi; Türk kullanıcının çoğu da
 öyle). Karar: hangi yol, hangi şartla, hangi sunucuda. Âyet dosyası pilotundan (Y1.8) önce verilmeli.

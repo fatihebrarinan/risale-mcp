@@ -1,5 +1,7 @@
 # Denetçi daveti (Y0.2; kullanıcının kararlarıyla, 2026-11-05)
 
+> **Donduruldu (2026-11-09).** Bu belge ayrıntı ve geçmiştir; güncel durum ve sıra `PLANLAR.md`'de.
+
 Yol haritasının Y0.2 adımı (`docs/tefsir-pilot-degerlendirme.md`): her alandan en az bir isimli denetçi. Usul ve
 ölçüt `docs/denetci-olcutu.md`'dedir; bu belge davetin kendisidir: adımlar, davet metni, deneme örneklemleri.
 

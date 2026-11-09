@@ -1,5 +1,7 @@
 # Katılım şartları ve lisans (Y0.5; kullanıcı onayladı, 2026-11-05)
 
+> **Donduruldu (2026-11-09).** Bu belge ayrıntı ve geçmiştir; güncel durum ve sıra `PLANLAR.md`'de.
+
 Yol haritasının Y0.5 adımı (`docs/tefsir-pilot-degerlendirme.md`): katkının lisansı, katkı verenin onayı, adının
 görünmesi, geri çekme hakkı, kötüye kullanım; gizlilik politikasına etkisi. Bugün yalnız davetli denetçiler içindir
 (Y0.2: kayıt bu şartları bekler); hesaplı katkı (Y3) açılınca aynı şartlar genişler.

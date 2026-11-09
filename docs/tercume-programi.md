@@ -1,5 +1,7 @@
 # Tercüme programı (TR; kullanıcı onayladı, 2026-11-06)
 
+> **Donduruldu (2026-11-09).** Bu belge ayrıntı ve geçmiştir; güncel durum ve sıra `PLANLAR.md`'de.
+
 Y0.4'ün (`docs/turkce-erisim.md`) dördüncü kararından çıktı: izinli Türkçe tercümeler yalnız tefsirin değil bütün
 alanların meselesidir (hadis kitapları, eklenecek tefsirler, aslı Arapça eserler). İki işi vardır: Türk kullanıcıya
 (bugün kullanıcıların hepsi) metnin insan elinden tercümesini vermek, denetçinin yanında ikinci bir güvence olmak.

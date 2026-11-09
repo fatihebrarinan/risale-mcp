@@ -1,5 +1,7 @@
 ## Ek: Projenin kısa tanıtımı (gönüllü denetçiler için; taslak, 2. tur, 2026-11-05)
 
+> **Donduruldu (2026-11-09).** Bu belge ayrıntı ve geçmiştir; güncel durum ve sıra `PLANLAR.md`'de.
+
 Kullanıcının doğaçlama metninden (2026-11-05) düzenlendi. Amaç: Y0.2'deki davet için günlük dilde kısa bir tanıtım ve
 proje uzasa da yerinde duracak temel taşlar. Birkaç turda son hâlini alacak; düzeltme notları metnin altında.
 

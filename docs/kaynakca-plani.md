@@ -1,5 +1,7 @@
 # Kaynakçada âyet ve hadis; hadis adaylarının araçlara girmesi
 
+> Güncel plan, durum ve sıra `PLANLAR.md`'dedir (2026-11-09); bu belge ayrıntı ve geçmiştir.
+
 Genel sıranın 2. adımı ve kullanıcının isteği (2026-11-03): Risale'den yapılan bir alıntı âyet ya da hadis
 içeriyorsa kaynakçada onun adresi de verilir. Hadiste kaynağın (nâşirin) künyesi derlemde doğrulanamasa da verilir,
 "(doğrulanmadı)" notuyla; Risale'yi yayına hazırlayanların künyesi değerli bir kanıttır.

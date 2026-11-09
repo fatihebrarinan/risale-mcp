@@ -1,5 +1,7 @@
 # Denetçi ölçütü (Y0.1; kullanıcı onayladı, 2026-11-05)
 
+> **Donduruldu (2026-11-09).** Bu belge ayrıntı ve geçmiştir; güncel durum ve sıra `PLANLAR.md`'de.
+
 Yol haritasının ilk adımı (`docs/tefsir-pilot-degerlendirme.md`, Y0.1). Taslak modelin, kararlar kullanıcınındır
 (2026-11-05; 1. turun soruları ve cevapları sonda). Y1.2 (denetçinin ihtisası, `reviewers.json`'a `fields`) ve Y0.2
 (davet) bu belgeye dayanır.

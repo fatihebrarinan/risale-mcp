@@ -1,5 +1,7 @@
 # Türkçe tercümeler envanteri (TR1; 1. tur, 2026-11-06)
 
+> **Donduruldu (2026-11-09).** Bu belge ayrıntı ve geçmiştir; güncel durum ve sıra `PLANLAR.md`'de.
+
 Tercüme programının ilk adımı (`docs/tercume-programi.md`): kütüphanedeki ve sıradaki Arapça eserlerin yayımlanmış
 Türkçe tercümeleri. Yalnız web araması yapıldı; hiçbir yere bir şey gönderilmedi.
 

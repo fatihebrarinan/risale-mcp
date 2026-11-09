@@ -1,5 +1,7 @@
 # MVP kitapları (M0; kullanıcının kararlarıyla, 2026-11-06)
 
+> Güncel plan, durum ve sıra `PLANLAR.md`'dedir (2026-11-09); bu belge ayrıntı ve geçmiştir.
+
 Kullanıcının listesi (tefsir), danıştığı kişilerin önerisi (hadis) ve modelin önerileri; her biri için OpenITI'de
 olup olmadığı, sürüm sayısı, boyut ve izin durumu. OpenITI depoları GitHub API'siyle listelendi (dosya indirilmedi).
 

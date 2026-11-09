@@ -1,5 +1,7 @@
 # Hadis kitapları: ilk dilim (Kütüb-i Sitte ve Muvatta)
 
+> Güncel plan, durum ve sıra `PLANLAR.md`'dedir (2026-11-09); bu belge ayrıntı ve geçmiştir.
+
 Genel sıranın 2b adımı (kullanıcı, 2026-11-03). Hadis kitapları Risale'deki eserler gibi kitap başına ayrı dosyada,
 kitap ve bâb ağacıyla tutulur; `hadis` profilinin temelidir. Bu dilim yalnız yedi kitaptır; sonraki kitaplar bu
 dilimin sonuçlarına göre seçilir.

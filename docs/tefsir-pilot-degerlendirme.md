@@ -1,5 +1,7 @@
 # Tefsir pilotunun değerlendirmesi ve sonraki adımlar (2026-11-04)
 
+> Güncel plan, durum ve sıra `PLANLAR.md`'dedir (2026-11-09); bu belge ayrıntı ve geçmiştir.
+
 `docs/tefsir-altyapi-plani.md`'deki hazırlık (H0–H6) ve Beyzâvî pilotu (T0–T7) bitti. Bu belge sonuçların
 değerlendirmesi, kullanıcının beş sorusuna cevap ve bundan sonraki yol haritasıdır. Değerlendirme modelindir
 (Claude); kararlar kullanıcınındır. Yol haritası kullanıcının dört adımı, modelin kabul edilen eklemeleri ve bunların açılımı olan nihai adım

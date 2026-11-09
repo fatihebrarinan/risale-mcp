@@ -1,5 +1,7 @@
 # Tefsir altyapısı planı
 
+> Güncel plan, durum ve sıra `PLANLAR.md`'dedir (2026-11-09); bu belge ayrıntı ve geçmiştir.
+
 Kullanıcının kararıyla açıldı (2026-11-04). Uzun vadeli bir iştir; birkaç yıl sürebilir. Hız değil sağlamlık
 ölçüttür: her adres veriden gelir, her bağın kanıtı ve yöntemi vardır, her karar geri izlenebilir.
 
