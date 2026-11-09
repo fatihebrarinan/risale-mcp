@@ -50,23 +50,17 @@ Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | E1 | Eser listeleri, üç bölümlü (tefsir, hadis, klasik) | — |
-| 2 | S1 | Yenilikler sayfası ve Open Graph etiketleri | — |
-| 3 | S2 | Sitenin yenilenmesi | — |
-| 4 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
-| 5 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
-| 6 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 7 | S3 | Gemini | Aşama 18 |
-| 8 | B1 | Kontrol kuyruğu ve işaretlerin işlenmesi | Aşama 16 |
-| 9 | A2 | Osmanlıca–Türkçe eşleme | Aşama 19 |
-| 10 | A3 | Kaynak seçimi | Aşama 13.3 |
-| 11 | B2–B5 | Küçük açıklar | MVP "Kalan" |
-| 12 | E3 | Sorularla Risale (izin; isteğe bağlı) | — |
-
-**E1. Eser listeleri.** `docs/eserler/` alan başına bir dosya (`tefsir.md`, `hadis.md`, `klasik.md`), üç bölüm:
-(a) eklenenler (katalogdan üretilir, `checklist`), (b) eklenmesi çok iyi olacaklar (elle: nüsha, E2 ölçütünün üç
-şartı, gerekçe), (c) aklımızda bulunsun (elle). Elle tutulan kısım üretimde korunur. Kontrol listesi OpenITI
-indirmelerini görmüyor ("ham veri 0/13"): düzelir.
+| 1 | S1 | Yenilikler sayfası ve Open Graph etiketleri | — |
+| 2 | S2 | Sitenin yenilenmesi | — |
+| 3 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
+| 4 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
+| 5 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 6 | S3 | Gemini | Aşama 18 |
+| 7 | B1 | Kontrol kuyruğu ve işaretlerin işlenmesi | Aşama 16 |
+| 8 | A2 | Osmanlıca–Türkçe eşleme | Aşama 19 |
+| 9 | A3 | Kaynak seçimi | Aşama 13.3 |
+| 10 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 11 | E3 | Sorularla Risale (izin; isteğe bağlı) | — |
 
 **S1. Yenilikler sayfası.** Sitede tarihli kısa yazılar (ilki: hadis ve tefsir bağdaştırıcıları), her yazının
 sonunda WhatsApp'a kopyalanacak metin; paylaşılınca önizleme çıksın diye bütün sayfalara Open Graph etiketleri.
@@ -191,6 +185,7 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - Y0.1, Y0.3, Y0.5, Y0.6, Y1.2 (2026-11-05/07).
 - MVP M0–M7 (2026-11-06/07): 13 tefsir, hadis kütüphanesi (Kütüb-i Sitte, Muvatta, 9 kitap, eş-Şifâ, Delâil),
   HA2, hadis ve tefsir bağdaştırıcıları yayında.
+- E1 Eser listeleri (2026-11-09): `docs/eserler/tefsir.md`, `hadis.md` (yeni; kütüphanedeki 18 kitaptan üretilir), `klasik.md` (yeni) üç bölümlü; `checklist` elle tutulan (b) ve (c)'yi korur, OpenITI indirmelerini görür ("ham veri 0/13" düzeldi). (b) ve (c) `docs/mvp-kitaplar.md`'deki önerilerden ve künye sayılarından dolduruldu; "?" işaretli şartlar E2.1'de sayılacak.
 - MVP sonrası düzeltmeler (2026-11-07/09): hata ayıklama adresleri, râvi araması ve `ibn`, hadis `cite`'ında alıntı
   denetimi, tercüme damgası, ChatGPT önbelleği, kesik kaynakça, web içeriği kuralı.
 
