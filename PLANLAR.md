@@ -103,6 +103,21 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   "kazanç olmaması", OpenITI CC BY-NC-SA, Tanzil'in Diyanet mealleri ticari olmayan kullanım; ücretli üyelik bunlarla
   çatışır, önce her kaynaktan yeni izin gerekir. Öneri: düşünülecekse ücretsiz ve bağış destekli, kaynaklara sorarak.
 
+- **İşârâtü'l-İ'câz usulüyle yapay zekâ taslağı (yeniden değerlendirme, 2026-11-09):** kullanıcının yola çıkarkenki
+  asıl fikri: model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Bilgili kişilerin
+  geri dönütü: model İşârât'ın şeklini ve usulünü iyi takip edip tatbik edebilir, bu kullanılmalı. 2026-11-04
+  değerlendirmesi (`docs/tefsir-pilot-degerlendirme.md` "4") taslağa karşıydı (akıcılık eksiği gizler, heyeti
+  düzeltmeye bağlar, sorumluluk). Yeni öneri: kör denemeyle sınamak. İşârât'ın kapsadığı aralıkta (Fâtiha, Bakara
+  1–33) model İşârât'ın usulünü (kendi Mukaddemat'ı ve önceki âyetler) görür, sınanan âyetin İşârât metnini görmez;
+  taslak İşârât'ın kendi metniyle ve mütehassısların gözüyle karşılaştırılır. Tutarsa asıl hedef: İşârât'ın
+  bittiği yerden (Bakara 34) sonrası. Şartlar: "yapay zekâ taslağı" damgası, "tefsir" denmez; her iddia kaynağa
+  bağlı (âyet, tefsir sunucusundaki müfessirler, Risale); dil ve belâgat iddiaları ayrı işaretli; taslak kapalı
+  kalır, yayımlanmaz. Bağ altyapısı gerekmez (dosya ve mütehassıs notu yeter). Karar kullanıcıda.
+- **Sorularla Risale (öneri, 2026-11-09):** modelin Risale'yi okurken web'deki kaynaklara (Sorularla Risale) bakması
+  önerildi. Kullanıcı web aramasına sıcak bakmıyor (belirsizlik, kanıtsızlık). Doğru yol web araması değil, izin
+  alınıp `risale/ilgili` koleksiyonuna (`authority: modern`, varsayılan aramaya girmez) eklemek; izin yoksa
+  eklenmez, talimata web araması konmaz.
+
 ## Biten (özet)
 
 - Aşamalar 1–12, 13 (küçültülmüş), 13.2, 14; veri düzeni (2026-11-02); risaleoku geçişi (2026-10-30).
