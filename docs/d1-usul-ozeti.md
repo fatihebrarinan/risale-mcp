@@ -781,9 +781,9 @@ Kullanıcının kararları (2026-11-09 ve 2026-11-10; `PLANLAR.md` D1). Bu böl�
 ## 9. Açık sorular
 
 1. Bu belgedeki Arapça okuma bir yapay zekânındır; Arapça ve belâgat bilen biri çizelgedeki "şu cümle şu vechin başlangıcıdır" tespitlerini ve derleyenin tercümelerini denetlemelidir.
-2. Bakara 1–8 ile sonrasının farkı (4. bölüm) usulün gelişmesi midir, yoksa o âyetlerin gereği mi? Taslak hangi düzeni esas almalı? (Öneri: Bakara 9'dan sonraki sabit düzen.)
+2. Bakara 1–8 ile sonrasının farkı (4. bölüm) usulün gelişmesi midir, yoksa o âyetlerin gereği mi? Taslak hangi düzeni esas almalı? **Karar (kullanıcı, 2026-11-10):** Bakara 9'dan sonraki sabit düzen (V1 → V2 → V3); öbür türlü usul sabit olmaz.
 3. Arapça taslağın üslûbu eserin îcâzlı üslûbunu mu izlemeli, yoksa daha açık mı yazılmalı? Müellif kısalığın sebeplerini zamanın şartlarına ve talebelerinin zekâsına bağlar (Tenbih).
-4. Türkçe tercümenin dili: Abdülmecid Nursî tercümesinin diline mi yakın olmalı, bugünkü Türkçeye mi?
+4. Türkçe tercümenin dili: Abdülmecid Nursî tercümesinin diline mi yakın olmalı, bugünkü Türkçeye mi? **Karar (kullanıcı, 2026-11-10):** Abdülmecid Nursî tercümesinin diline yakın; o tercüme Arapça asla muvafık bir tarzdadır, taslağın tercümesi de o yoldan gider.
 
 ## Denetim
 

@@ -140,6 +140,9 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   ölçüsü), açık sorular (9). 112 alıntı ve 148 kimlik veritabanıyla denetlendi, 0 sorun. Okur sayfası ve PDF aynı
   adreste yenilendi (`scripts/d1-okur.py`: Arapça sağdan sola, altında tercümedeki karşılığı; 23 sayfa); yayına
   gitmesi için `scripts/deploy.sh --code` gerekir. Model tercümeleri ve Arapça–Türkçe eşlemeleri ehli görmedi.
+- D1.2c Açık sorulardan ikisi karara bağlandı (kullanıcı, 2026-11-10): **düzen** Bakara 9'dan sonraki sabit sıra
+  (V1 → V2 → V3), öbür türlü usul sabit olmaz; **Türkçe tercümenin dili** Abdülmecid Nursî tercümesine yakın (Arapça
+  asla muvafık tarz). Açık kalanlar: Arapça okumanın ehlince denetimi (1), taslağın üslûbu îcâzlı mı açık mı (3).
 - D1.3 Prova düzeni: sınanan âyetin İşârât metnini (Türkçe ve Arapça) dışarıda bırakan deneme profili, taslak
   şablonu ve damgası, farklı türden 4–5 âyet (hurûf-u mukattaa, hüküm, temsil, öncesiyle bağı ince olan…).
 - D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
