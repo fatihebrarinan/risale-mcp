@@ -100,7 +100,28 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   scripts/d1-okur.py` → `site/taslak/isarat-usulu.html` ve `.pdf` (kimlik yerine eser, bölüm ve ilk kelimeler;
   "Derleyenin notu"; yalnız bağlantıyla: menüde ve site haritasında yok, `noindex`; açık olması sorun değil).
   Adres: https://risalemcp.com/taslak/isarat-usulu.html
-- D1.2 Kullanıcı ve mütehassıs özeti okur, düzeltir.
+- D1.2 Kullanıcı okudu ve bildiği uygun kişilere gönderdi (2026-11-10). **Kararlar (kullanıcı, 2026-11-10):**
+  - Özetin mütehassısa sorduğu ilk üç soruyu (üç vecih her birimde var mı, mukaddimeler, terimlerin Arapça asıldaki
+    dağılımı) model metnin tamamını okuyarak cevaplar: **birim çizelgesi** (D1.2a). Sınırlar: "taslakta ne zaman
+    mukaddime yazılır" kuralını model bulgudan önerir, kullanıcı karara bağlar; Arapça belâgat inceliklerinde model
+    yanılabilir, her hücre adresli kalır.
+  - **Dört maksat kuralı:** asıl maksat her zaman söylenir; öbürleri yalnız âyetin bir kelimesine ya da hey'etine
+    dayandırılabiliyorsa, derecesiyle (sarih, işaret, remiz) söylenir; dördü her âyette zorla gösterilmez.
+    Dayanak: Fâtiha girişi ("sarâhaten veya işâreten veya remzen") ve Bakara girişinin Arapça aslı (çoğu sûrede biri
+    asıl, kalanı tebeî).
+  - **Dil:** tefsir Arapça yazılmalıdır (kullanıcının görüşü; müellifin sözü değil, onun üç tespitinden çıkardığı
+    sonuç: tercüme cezâleti koruyamamış, Arapça tefsir ayrıca neşredilecek, Arapçasındaki tevâfuklar korunmalı).
+    Usul Arapça asıldan öğretilir, Türkçe tercüme destek olur. Taslak **Arapça asıl ve onun Türkçe tercümesidir**
+    (iki ayrı taslak değil): tercüme Arapçadan paragraf paragraf, damgalı; kullanıcı Türkçesini okur, Arapça bilen
+    aynı paragrafın aslını denetler; provada Arapça taslak İşârât'ın gizlenen Arapça kısmıyla yan yana okunur.
+  - **Mütehassıs** bu iş için: Arapça ve belâgat bilen, İşârât'ı okumuş biri (Arapça taslağı kullanıcı denetleyemez).
+- D1.2a **Tam okuma ve birim çizelgesi** (sürüyor, 2026-11-10): Arapça asıl esas (`isaratul-icaz-arabi`, 3.264
+  cümle, ≈57.700 kelime; 15 Fâtiha ve 21 Bakara birimi), Türkçe yanında. Her birim için bir satır: üç vecihten
+  hangileri var ve hangi sırayla, mukaddime var mı ve neyi konu ediyor, asıl maksat, bakılan nükte türleri; her
+  hücre adresiyle. Notlar `data/interim/d1/okuma/`, çizelge `docs/d1-birim-cizelgesi.md`.
+- D1.2b Özetin ikinci sürümü: Arapça dayanaklı (her Arapça alıntının yanında Abdülmecid Nursî tercümesindeki
+  karşılığı, yoksa damgalı model tercümesi), dört maksat kuralı, mukaddime bulgusu; okur sayfası aynı adreste
+  güncellenir.
 - D1.3 Prova düzeni: sınanan âyetin İşârât metnini (Türkçe ve Arapça) dışarıda bırakan deneme profili, taslak
   şablonu ve damgası, farklı türden 4–5 âyet (hurûf-u mukattaa, hüküm, temsil, öncesiyle bağı ince olan…).
 - D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
