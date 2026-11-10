@@ -96,6 +96,10 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   mütehassısın taslağı ölçeceği ölçü olur; modele neye bakacağını söyler. Alıntılar `python3
   scripts/d1-usul-denetim.py` ile veritabanıyla denetlenir (48 alıntı, hepsi birebir). Türkçe tercümeden
   derlendi; Arapça asılla karşılaştırma ve "usul hangi dilden öğretilir" sorusu mütehassısa ve kullanıcıya açık.
+  Okur sürümü (2026-11-10, kullanıcının isteği: paylaşılacak, programcı ayrıntısı olmadan): `python3
+  scripts/d1-okur.py` → `site/taslak/isarat-usulu.html` ve `.pdf` (kimlik yerine eser, bölüm ve ilk kelimeler;
+  "Derleyenin notu"; yalnız bağlantıyla: menüde ve site haritasında yok, `noindex`; açık olması sorun değil).
+  Adres: https://risalemcp.com/taslak/isarat-usulu.html
 - D1.2 Kullanıcı ve mütehassıs özeti okur, düzeltir.
 - D1.3 Prova düzeni: sınanan âyetin İşârât metnini (Türkçe ve Arapça) dışarıda bırakan deneme profili, taslak
   şablonu ve damgası, farklı türden 4–5 âyet (hurûf-u mukattaa, hüküm, temsil, öncesiyle bağı ince olan…).

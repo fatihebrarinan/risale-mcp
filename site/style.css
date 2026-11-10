@@ -162,7 +162,7 @@ h4 { margin: 20px 0 4px; }
 .example .answer h4 { font-size: 0.98rem; margin: 14px 0 4px; color: var(--accent); }
 .example blockquote.ok { border-left-color: var(--ok); background: var(--okbg); border-radius: 0 8px 8px 0; padding: 4px 10px 4px 12px; }
 .example blockquote.ok::after { content: "✓ metinde var"; display: inline-block; margin: 2px 0 4px; padding: 0 6px; border-radius: 6px; font: 600 0.72rem system-ui, sans-serif; background: var(--ok); color: var(--card); }
-.example blockquote.ar { font-family: "Amiri Hadis", "Amiri", "Scheherazade New", serif; font-size: 1.12em; border-left: 0; border-right: 3px solid var(--ok); border-radius: 8px 0 0 8px; }
+.example blockquote.ar { font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", "Geeza Pro", serif; font-size: 1.12em; border-left: 0; border-right: 3px solid var(--ok); border-radius: 8px 0 0 8px; }
 .example .answer ol.sources ul { padding-left: 1.1em; color: var(--muted); }
 .audience .try { margin-top: auto; }
 ul.checks { list-style: none; padding: 0; }
@@ -178,3 +178,13 @@ footer br + a { margin-top: 4px; }
   .addresses .fields { grid-template-columns: 1fr auto; }
   .addresses .fields span { grid-column: 1 / -1; margin-top: 6px; }
 }
+/* Okur sürümü: İşârât'ın usul özeti (scripts/d1-okur.py) */
+/* Arapça: sitedeki amiri-hadis.woff2 yalnız ana sayfadaki bir hadisin harflerini taşır (alt küme); burada cihazın
+   Arapça yazı tipi kullanılır (dışarıdan yazı tipi yüklenmez) */
+.reader blockquote.quote p { line-height: 1.9; }
+.reader h2 { margin-top: 44px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.reader blockquote.quote { margin: 14px 0 18px; padding: 10px 14px; border-left: 3px solid var(--accent); background: var(--card); border-radius: 0 10px 10px 0; }
+.reader blockquote.quote p { margin: 0 0 6px; }
+.reader blockquote.quote footer { margin: 0; padding: 0; border: 0; font-size: 0.85rem; color: var(--muted); }
+.reader .mine { display: inline-block; padding: 0 7px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; background: var(--badbg); color: var(--bad); vertical-align: 1px; }
+.reader .note p { margin: 8px 0; }
