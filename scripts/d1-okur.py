@@ -9,6 +9,8 @@
 Kaynak `docs/d1-usul-ozeti.md`'dir (programcı sürümü: kimlikler, denetim komutu). Okur sürümünde:
 - cümle kimlikleri görünmez; her adres eser, bölüm ve cümlenin ilk kelimeleriyle yazılır (veritabanından: `ref`,
   `incipit`; aralık "… ile başlayan N cümle"), cümle numarası yazılmaz;
+- Arapça alıntı sağdan sola, altında "Tercümede" etiketiyle Türkçe karşılığı; derleyenin tercümesi "Yapay zekâ
+  tercümesi" damgasıyla (ikinci sürüm, D1.2b);
 - baştaki teknik not yerine okura yazılmış giriş (`INTRO`), "Denetim" bölümü yerine tek cümle gelir;
 - "[Çıkarım]" "Derleyenin notu" olur.
 Sayfa yalnız bağlantıyla bulunur: menüde ve site haritasında yoktur, `noindex` taşır. Depo açık olduğu için gizli
@@ -35,12 +37,18 @@ ASSET_VERSION = 11
 
 INTRO = """<div class="note">
 <p><strong>Bu belge nedir?</strong> İşârâtü'l-İ'câz'ın bir âyeti ele alırken ne yaptığını ve hangi sırayla yaptığını, eserin kendi cümleleriyle gösteren bir dökümdür. Tefsir değildir. Bir yapay zekâ derlemesidir ve ehlinin tashihine sunulmuş bir taslaktır.</p>
-<p><strong>Nasıl okunur?</strong> Çerçeveli sözler İşârâtü'l-İ'câz'dan aynen alınmıştır ve e-Risale'deki metinle birebir karşılaştırılmıştır. Her alıntının altında eserdeki yeri ve cümlenin ilk kelimeleri yazar; o cümleyi kitapta siz de bulabilirsiniz. Eserin sözü olmayan, derleyenin kendi tespiti olan yerler <span class="mine">Derleyenin notu</span> diye işaretlidir.</p>
-<p><strong>Hangi metin?</strong> Alıntılar Türkçe İşârâtü'l-İ'câz'dandır (Abdülmecid Nursî tercümesi, e-Risale metni). Eserin aslı Arapçadır ve usulün son sözü oradadır. Tercümenin asıldan iki farkı usulü ilgilendirir: Türkçede her âyetin ardından gelen "Yani: …" meali Arapça asılda yoktur, asıl doğrudan nazım bahsiyle başlar. Müellifin kendi ifadesiyle de tercüme Arapçanın cezâletini koruyamamış, yer yer kısaltmıştır (aşağıda 1.4).</p>
-<p><strong>Sınırı nedir?</strong> Mukaddemât'ın tamamı, Fâtiha'nın ve Bakara'nın girişleri ve usulü açıkça söyleyen cümleler okundu. Âyet bahislerinin (Fâtiha, Bakara 1–33) tamamı okunmadı; yapıları ve tekrar eden kalıpları tarandı. Sayılar bir kelime taramasından gelir, yaklaşık okunmalıdır.</p>
+<p><strong>Nasıl okunur?</strong> Çerçeveli sözler İşârâtü'l-İ'câz'dan aynen alınmıştır ve kaynak metinle birebir karşılaştırılmıştır. Dayanak eserin Arapça aslıdır; Arapça cümlenin altında, "Tercümede" diye, Abdülmecid Nursî tercümesindeki karşılığı durur. Her alıntının altında eserdeki yeri ve cümlenin ilk kelimeleri yazar; o cümleyi kitapta siz de bulabilirsiniz.</p>
+<p><strong>İki işarete dikkat edin.</strong> <span class="mine">Yapay zekâ tercümesi</span> diye başlayan satırlar eserin sözü değildir: Arapça cümlenin tercümede karşılığı bulunmadığı yerde derleyenin yaptığı tercümedir, yanlış olabilir. <span class="mine">Derleyenin notu</span> diye başlayan yerler de derleyenin kendi tespitidir.</p>
+<p><strong>Hangi metin?</strong> Arapça asıl risaleoku.com'daki metinden, Türkçe tercüme e-Risale'deki metinden alınmıştır. Tenbih'i ve Hâşiye'yi müellif sonradan Türkçe yazmıştır; onlarda asıl Türkçedir. Tercüme asıldan üç noktada ayrılır: âyetlerin ardındaki "Yani: …" mealleri asılda yoktur; tercüme yer yer kısaltır (1.4); Bakara 17–20'nin başındaki belâgat bahsi tercümede hiç yoktur (2. bölüm). Arapça asıl 31. âyetin ortasında biter.</p>
+<p><strong>İkinci sürümde ne değişti?</strong> İlk sürüm Türkçe tercümenin taranmasına dayanıyordu. Bu sürüm için Arapça asıl baştan sona okundu (Fâtiha, Bakara 1–33). Eklenenler: usulün belâgat temeli (2), her âyette izlenen sıranın çizelgesi (4), mukaddimelerin ne zaman geldiği (5) ve taslak için kurallar (8).</p>
+<p><strong>Sınırı nedir?</strong> Okuma bir yapay zekâ okumasıdır; Arapça belâgat inceliklerinde yanılmış olabilir. Sayılar bir kelime taramasından gelir, yaklaşık okunmalıdır.</p>
 <p><strong>Düzeltmeleriniz</strong> için: <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></p>
 </div>"""
-OUTRO = "<p class=\"muted small\">Bu belgedeki bütün alıntılar e-Risale'deki metinle birebir karşılaştırılmıştır.</p>"
+OUTRO = "<p class=\"muted small\">Bu belgedeki bütün alıntılar kaynak metinlerle (risaleoku.com, e-Risale) birebir karşılaştırılmıştır.</p>"
+PAGE_CSS = """<style>
+.reader blockquote.quote p.ar { direction: rtl; text-align: right; font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; font-size: 1.25rem; line-height: 2.1; }
+.reader p.label { margin: 0 0 -8px; font-size: 0.85rem; color: var(--muted); }
+</style>"""
 
 db = sqlite3.connect(ROOT / "data" / "dist" / "genel" / "risale.db")
 
@@ -90,7 +98,9 @@ def body() -> str:
             ident = re.search(rf"\(`({_ID})`\)", cite or "")
             if not ident:
                 sys.exit(f"alıntının adresi yok: {block[:60]}")
-            out.append(f'<blockquote class="quote"><p>"{html.escape(q.group(1), quote=False)}"</p>'
+            arabic = ident.group(1).startswith("isaratul-icaz-arabi/")
+            attrs = ' class="ar" dir="rtl" lang="ar"' if arabic else ""
+            out.append(f'<blockquote class="quote"><p{attrs}>"{html.escape(q.group(1), quote=False)}"</p>'
                        f"<footer>{html.escape(place(ident.group(1)), quote=False)}</footer></blockquote>")
             i += 1
         elif (h := re.fullmatch(r"(#{2,3}) (.+)", block)):
@@ -107,6 +117,10 @@ def body() -> str:
         elif all(re.match(r"\d+\. |   ", l) for l in lines):
             items = _items(lines, r"\d+\. ")
             out.append("<ol>" + "".join(f"<li>{inline(x)}</li>" for x in items) + "</ol>")
+        elif block == "Tercümede:":
+            out.append('<p class="label">Tercümede (Abdülmecid Nursî):</p>')
+        elif block.startswith("Yapay zekâ tercümesi: "):
+            out.append(f'<p><span class="mine">Yapay zekâ tercümesi:</span> {inline(block.split(": ", 1)[1])}</p>')
         else:
             out.append(f"<p>{inline(' '.join(l.strip() for l in lines))}</p>")
         i += 1
@@ -143,6 +157,7 @@ def page(content: str) -> str:
 <link rel="stylesheet" href="/style.css?v={ASSET_VERSION}">
 <script>try{{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 <script src="/site.js?v={ASSET_VERSION}" defer></script>
+{PAGE_CSS}
 </head>
 <body>
 <main class="reader">
@@ -173,6 +188,8 @@ h3 { font-size: 11.5pt; margin: 14pt 0 4pt; break-after: avoid; }
 blockquote.quote { margin: 8pt 0 10pt; padding: 5pt 10pt; border-left: 3pt solid #1f5c3f; background: #f3f1ea; break-inside: avoid; }
 blockquote.quote p { margin: 0 0 3pt; }
 blockquote.quote footer { font-size: 8.5pt; color: #555; }
+blockquote.quote p.ar { direction: rtl; text-align: right; font-family: "Noto Naskh Arabic", serif; font-size: 12.5pt; line-height: 1.9; }
+p.label { margin: 0 0 -4pt; font-size: 8.5pt; color: #555; }
 .mine { font-size: 8.5pt; font-weight: bold; color: #8a4b00; border: 0.5pt solid #8a4b00; border-radius: 3pt; padding: 0 3pt; }
 table { width: 100%%; border-collapse: collapse; font-size: 9.5pt; margin: 8pt 0; }
 th, td { text-align: left; vertical-align: top; padding: 3pt 5pt; border-bottom: 0.5pt solid #bbb; }

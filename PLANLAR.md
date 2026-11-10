@@ -127,12 +127,19 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   hususî nükte, toplayış. (4) Okumayla çıkanlar: nazarî temel Bakara 17–20'deki on iki mesele; dayanak Cürcânî
   ("ونحن على مذهبه"); adıyla anılan kaynaklar (Cürcânî, Sekkâkî ve Miftâh, Zemahşerî ve Keşşâf, Râzî, Câhız,
   Teftâzânî, Sîbeveyh…; bir yerde Abduh'tan nakil); bir nüktenin kabul ölçüleri (üçüncü şart Arapçada
-  "makàsıd-ı şeriat usulü"); Arapça asıl 31. âyetin ortasında biter. **Kullanıcının kararını bekleyen:** taslakta
-  mukaddime kuralı (öneri: yalnız dört durumdan biri varsa, kısa, lafza bağlı, işlenmiş meseleye atıfla hülâsa).
+  "makàsıd-ı şeriat usulü"); Arapça asıl 31. âyetin ortasında biter. **Mukaddime kuralı (kullanıcı onayladı,
+  2026-11-10):** taslakta mukaddime yalnız dört durumdan biri varsa yazılır, kısa tutulur, her iddiası âyetin bir
+  lafzına bağlanır, mesele İşârât'ta ya da Risale-i Nur'da işlenmişse oraya atıfla hülâsa edilir.
   E2 için not: Miftâh, Delâilü'l-İ'câz, Esrârü'l-Belâga ve Keşşâf eserin adıyla dayandığı kaynaklar.
-- D1.2b Özetin ikinci sürümü: Arapça dayanaklı (her Arapça alıntının yanında Abdülmecid Nursî tercümesindeki
-  karşılığı, yoksa damgalı model tercümesi), dört maksat kuralı, mukaddime bulgusu; okur sayfası aynı adreste
-  güncellenir.
+- D1.2b **Özetin ikinci sürümü** (bitti, 2026-11-10): `docs/d1-usul-ozeti.md` Arapça asla dayanır. 55 Arapça
+  alıntı; 40'ının yanında Abdülmecid Nursî tercümesindeki karşılığı, 15'inde "Yapay zekâ tercümesi" damgalı model
+  tercümesi (11'i Bakara 17–20'nin tercümede bulunmayan nazarî girişinden). Yeni bölümler: usulün nazarî temeli (2:
+  i'câzın esası nazmın belâgati, nazm-ı meânî, mânâ tabakaları ve delâlet dereceleri, her kayıt mukadder suale
+  cevap, hayalde hakikat çekirdeği, Cürcânî'nin mezhebi), âyet âyet sıra çizelgesi (4), mukaddimelerin dört durumu
+  ve gerekçe cümleleri (5), taslak için kurallar (8: ad ve damga, dil, me'haz, sıra, dört maksat, mukaddime, kabul
+  ölçüsü), açık sorular (9). 112 alıntı ve 148 kimlik veritabanıyla denetlendi, 0 sorun. Okur sayfası ve PDF aynı
+  adreste yenilendi (`scripts/d1-okur.py`: Arapça sağdan sola, altında tercümedeki karşılığı; 23 sayfa); yayına
+  gitmesi için `scripts/deploy.sh --code` gerekir. Model tercümeleri ve Arapça–Türkçe eşlemeleri ehli görmedi.
 - D1.3 Prova düzeni: sınanan âyetin İşârât metnini (Türkçe ve Arapça) dışarıda bırakan deneme profili, taslak
   şablonu ve damgası, farklı türden 4–5 âyet (hurûf-u mukattaa, hüküm, temsil, öncesiyle bağı ince olan…).
 - D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
