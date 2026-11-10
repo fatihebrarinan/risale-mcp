@@ -115,10 +115,21 @@ dizileri), içerik hatırlamasını mütehassıs görür.
     (iki ayrı taslak değil): tercüme Arapçadan paragraf paragraf, damgalı; kullanıcı Türkçesini okur, Arapça bilen
     aynı paragrafın aslını denetler; provada Arapça taslak İşârât'ın gizlenen Arapça kısmıyla yan yana okunur.
   - **Mütehassıs** bu iş için: Arapça ve belâgat bilen, İşârât'ı okumuş biri (Arapça taslağı kullanıcı denetleyemez).
-- D1.2a **Tam okuma ve birim çizelgesi** (sürüyor, 2026-11-10): Arapça asıl esas (`isaratul-icaz-arabi`, 3.264
-  cümle, ≈57.700 kelime; 15 Fâtiha ve 21 Bakara birimi), Türkçe yanında. Her birim için bir satır: üç vecihten
-  hangileri var ve hangi sırayla, mukaddime var mı ve neyi konu ediyor, asıl maksat, bakılan nükte türleri; her
-  hücre adresiyle. Notlar `data/interim/d1/okuma/`, çizelge `docs/d1-birim-cizelgesi.md`.
+- D1.2a **Tam okuma ve birim çizelgesi** (bitti, 2026-11-10): Arapça asıl baştan sona okundu (3.264 cümle;
+  15 Fâtiha kelime bahsi, 23 Bakara âyet bahsi). Çizelge `docs/d1-birim-cizelgesi.md` (239 adres, `python3
+  scripts/d1-usul-denetim.py docs/d1-birim-cizelgesi.md` ile denetlenir), okuma notları `docs/d1-okuma-notlari.md`.
+  Bulgular: (1) eser üç vechi dokuz yerde adıyla sayar; Bakara 9'dan sonra sıra sabit (V1 → V2 → V3, 15/15 birim),
+  1–8'de düzen henüz oturmamış, Fâtiha'da birim kelime. (2) Mukaddime sabit basamak değil; dört durumda gelir:
+  âyetin meâli dört maksattan ya da iman rükünlerinden biri, âyetin altında büyük kelâm ihtilafı, bir üslûp türünün
+  ilk kez toplu gelmesi, tahkik isteyen lafız; çoğu "başka kitapta tafsil ettik, burada hülâsa" diye gelir, her
+  delil âyetin bir lafzına bağlanır. (3) Üçüncü vecihte yapılan işler: bakılacak yerlerin sayılması, tercih sorusu
+  ("neden şu lafız, şu değil"), beklenenle muvazene, mukadder cümleler, sâmiin zihni, karşılıklı eşleme, genel ve
+  hususî nükte, toplayış. (4) Okumayla çıkanlar: nazarî temel Bakara 17–20'deki on iki mesele; dayanak Cürcânî
+  ("ونحن على مذهبه"); adıyla anılan kaynaklar (Cürcânî, Sekkâkî ve Miftâh, Zemahşerî ve Keşşâf, Râzî, Câhız,
+  Teftâzânî, Sîbeveyh…; bir yerde Abduh'tan nakil); bir nüktenin kabul ölçüleri (üçüncü şart Arapçada
+  "makàsıd-ı şeriat usulü"); Arapça asıl 31. âyetin ortasında biter. **Kullanıcının kararını bekleyen:** taslakta
+  mukaddime kuralı (öneri: yalnız dört durumdan biri varsa, kısa, lafza bağlı, işlenmiş meseleye atıfla hülâsa).
+  E2 için not: Miftâh, Delâilü'l-İ'câz, Esrârü'l-Belâga ve Keşşâf eserin adıyla dayandığı kaynaklar.
 - D1.2b Özetin ikinci sürümü: Arapça dayanaklı (her Arapça alıntının yanında Abdülmecid Nursî tercümesindeki
   karşılığı, yoksa damgalı model tercümesi), dört maksat kuralı, mukaddime bulgusu; okur sayfası aynı adreste
   güncellenir.
