@@ -50,7 +50,7 @@ Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D1 | İşârât usulüyle yapay zekâ taslağı: hazırlık, kör deneme | — |
+| 1 | D1 | İşârât usulüyle yapay zekâ taslağı: usul özeti (taslak hazır), prova, asıl iş | — |
 | 2 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
 | 3 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
 | 4 | S3 | Gemini | Aşama 18 |
@@ -79,21 +79,33 @@ hazırlayan).
 **D1. İşârât usulüyle yapay zekâ taslağı** (kullanıcının yola çıkarkenki fikri; "Fikirler"den alındı, 2026-11-09).
 Model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Taslak "yapay zekâ taslağı" diye
 damgalanır, "tefsir" denmez, yayımlanmaz; her iddia kaynağa bağlıdır, dil ve belâgat iddiaları ayrı işaretlidir.
-Önce bugünkü kaynaklarla, E2'de belâgat eserleri (Cürcânî, Miftâh) eklenince aynı âyetlerle yeniden: fark,
-eklemenin bu işe katkısını ölçer.
-- D1.1 Ezber yoklaması: model araçsız "bu âyette İşârât ne der" diye sorulur, cevap gerçek metinle (kelime
-  dizileri) karşılaştırılır. Ezberliyorsa İşârât'ın aralığındaki deneme ölçüm sayılmaz, deneme Bakara 34 sonrasına
-  kayar.
-- D1.2 Sızıntısız profil: sınanan âyetlerin İşârât metnini (Türkçe ve Arapça) dışarıda bırakan deneme profili
-  (`find_ayah`, arama, `read_section` onu vermesin).
-- D1.3 Usul özeti: İşârât'ın usulü kendi metninden, atıflı (Mukaddemat; münasebet, nazm, kelime seçimi üzerine
-  söyledikleri). Modelin talimatı bu özettir.
-- D1.4 Âyet seçimi: farklı türden 4–5 âyet (hurûf-u mukattaa, hüküm, temsil, öncesiyle bağı ince olan…).
-- D1.5 Değerlendirme ölçütü: münasebet, nazm, kelime seçimi, i'râb ve belâgat doğruluğu, uydurma; mütehassıs
-  kaynağı bilmeden okur.
-- D1.6 Taslak şablonu: bölümler ve damga.
-- D1.7 Mütehassıs: en az bir Arapça ve belâgat bilen (kullanıcı).
-- D1.8 Deneme (bugünkü kaynaklar), D1.9 E2'den sonra yeniden.
+Asıl iş Bakara 34 ve sonrasıdır; me'haz İşârât'ın tamamı, Risale-i Nur ve Tefsir ile Hadis eklentileridir.
+
+Sadeleştirme (2026-11-09/10, kullanıcının sorusu üzerine): **prova** asıl işin aynısıdır, yalnız cevabı bilinen bir
+âyette yapılır. Model usulü hafızasından değil verilen me'hazdan öğrenir: İşârât'ın tamamı verilir, yalnız sınanan
+âyetin İşârât'taki kısmı gizlenir; taslak İşârât'ın o âyetteki kendi metniyle yan yana okunur. Ayrı bir ezber
+yoklaması deneyi yapılmaz: ezber provanın değerlendirmesinde ölçülür (taslak ile gizlenen metnin ortak kelime
+dizileri), içerik hatırlamasını mütehassıs görür.
+- D1.1 **Usul özeti** (taslak hazır, 2026-11-10: `docs/d1-usul-ozeti.md`). İşârât'ın bir âyeti ele alırken ne
+  yaptığının ve hangi sırayla yaptığının dökümü; tefsir değildir. Her madde İşârât'ın kendi cümlesine dayanır,
+  adresi ve kimliğiyle; derleyenin çıkarımı "[Çıkarım]" diye işaretlidir. İçeriği: eserin kendini tanımlaması
+  (maksat nazımdaki i'câz, sınır lafzın delâleti ve işârâtı, niyet bir heyetin tefsirine örnek ve me'haz), ilkeler
+  (dört maksat, havuz ilkesi, saat milleri, birden çok mânânın şartı), bir âyette izlenen sıra (âyet, gerekirse
+  mukaddime, mâkabliyle irtibat, cümleler arası intizam, hey'etler ve kelimeler), üçüncü vecihte bakılanlar,
+  anlatım biçimi, kaynaklarla ilişkisi, mütehassısa sorular. Üç işi var: usulü önce kullanıcı ve mütehassıs onaylar;
+  mütehassısın taslağı ölçeceği ölçü olur; modele neye bakacağını söyler. Alıntılar `python3
+  scripts/d1-usul-denetim.py` ile veritabanıyla denetlenir (48 alıntı, hepsi birebir). Türkçe tercümeden
+  derlendi; Arapça asılla karşılaştırma ve "usul hangi dilden öğretilir" sorusu mütehassısa ve kullanıcıya açık.
+- D1.2 Kullanıcı ve mütehassıs özeti okur, düzeltir.
+- D1.3 Prova düzeni: sınanan âyetin İşârât metnini (Türkçe ve Arapça) dışarıda bırakan deneme profili, taslak
+  şablonu ve damgası, farklı türden 4–5 âyet (hurûf-u mukattaa, hüküm, temsil, öncesiyle bağı ince olan…).
+- D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
+  nükteleri), i'râb ve belâgat doğruluğu, uydurma; mütehassıs taslağı İşârât'ın kendi metniyle yan yana okur; ezber
+  otomatik ölçülür.
+- D1.5 Mütehassıs: en az bir Arapça ve belâgat bilen (kullanıcı; ilanla değil davetle).
+- D1.6 Prova (bugünkü kaynaklar); D1.7 E2'de belâgat eserleri (Cürcânî, Miftâh) eklenince aynı âyetlerle yeniden:
+  fark, eklemenin katkısını ölçer.
+- D1.8 Prova tutarsa asıl iş: Bakara 34 ve sonrası.
 
 **E2. Klasik eserler ve eser ekleme ölçütü.** Ölçüt (kullanıcı onayladı, 2026-11-09): bir eser şu üç şarttan en
 az ikisini tutarsa girer:
