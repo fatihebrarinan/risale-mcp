@@ -449,7 +449,7 @@ def hidden_sections(cfg: dict, work: str) -> dict[str, list[str]]:
     return dict(out)
 
 
-ARABIC_RUN = re.compile(r"[\u0600-\u06ff\ufb50-\ufdff\ufe70-\ufeff][\u0600-\u06ff\ufb50-\ufdff\ufe70-\ufeff\s«»\-]*")
+ARABIC_RUN = re.compile(r"[\u0600-\u06ff\ufb50-\ufdff\ufe70-\ufeff][\u0600-\u06ff\ufb50-\ufdff\ufe70-\ufeff\s\-]*")
 
 
 def _inline(text: str, sources: dict, lang: str = "ar") -> str:
