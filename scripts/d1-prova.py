@@ -3,6 +3,7 @@
     uv run python scripts/d1-prova.py hazirla 11-12        # veritabanları, ekler, istem, sızıntı testi
     uv run python scripts/d1-prova.py yazdir 11-12 [--kez 2] [--model claude-fable-5-2] [--effort high]
     uv run python scripts/d1-prova.py karsilastir 11-12    # taslaklar gizlenen metinle yan yana, ortak diziler
+    uv run python scripts/d1-prova.py okuma 11-12          # okuma sayfası: Arapça ve Türkçe ayrı, vecih vecih yan yana
 
 Gizleme kurulumda yapılır (çalışma anında süzgeç değil): yayındaki `genel` ve `tefsir` veritabanlarının kopyasından
 sınanan birimin düğümleri (Türkçe ve Arapça İşârât) ve onlara bağlı her satır silinir; Osmanlıca İşârât bütünüyle
@@ -29,7 +30,7 @@ from collections import Counter, defaultdict
 from datetime import datetime
 from pathlib import Path
 
-from risale_mcp.normalize import search_words
+from risale_mcp.normalize import search_words, tr_lower
 from risale_mcp.paths import DIST_DIR, INTERIM_DIR, ROOT
 
 GENEL_DB = DIST_DIR / "genel" / "risale.db"
@@ -61,6 +62,11 @@ UNITS = {
             ("İkincisi dinleyenin zihnidir: her cümleden", "Ana aracı dinleyenin zihnidir: her cümleden"),
             ("| 9–10, 11–12, 13, 14–15, 16 |", "| 9–10, 13, 14–15, 16 |"),
         ],
+        # okuma sayfası: gizlenen metnin vecihleri (ilk cümle; `son` sonrası sonraki âyetin satırıdır)
+        "sections": {
+            "isaratul-icaz-arabi": {"V1": "c001", "V2": "c004", "V3": "c014", "son": "c051"},
+            "isaratul-icaz": {"Âyet": "c001", "V1": "c002", "V2": "c011", "V3": "c023", "son": "c080"},
+        },
         "cizelge": [
             (None, "| 11–12 |"),                                                       # çizelge satırı
             ("(`B/11-12-ayetlerin-tefsiri/c037`..`c050`; `B/14-15-ayetlerin-tefsiri/c035`..`c036`)",
@@ -361,6 +367,242 @@ def karsilastir(unit: str) -> None:
     print((out / "karsilastirma.md").relative_to(ROOT))
 
 
+# ---------------------------------------------------------------- okuma sayfası
+
+SECTION_TITLES = {"Âyet": "Âyet", "Mukaddime": "Mukaddime", "V1": "Birinci vecih: öncesiyle nazım",
+                  "V2": "İkinci vecih: cümleler arasındaki nazım", "V3": "Üçüncü vecih: hey'etler ve kelimeler"}
+DRAFT_HEADINGS = {"âyet": "Âyet", "mukaddime": "Mukaddime", "birinci vecih": "V1", "ikinci vecih": "V2",
+                  "üçüncü vecih": "V3"}
+
+
+def _arabic_ratio(text: str) -> float:
+    letters = [c for c in text if c.isalpha()]
+    return sum("\u0600" <= c <= "\u06ff" for c in letters) / max(1, len(letters))
+
+
+def parse_draft(text: str) -> tuple[dict, dict]:
+    """Taslak: başlık başına bloklar [(dil, tür, metin)] ve kaynakça {n: satır}."""
+    sections: dict[str, list] = defaultdict(list)
+    sources: dict[str, str] = {}
+    current = None
+    for block in re.split(r"\n\s*\n", text):
+        block = block.strip()
+        if not block:
+            continue
+        lines = block.split("\n")
+        if lines[0].startswith("## "):
+            name = lines[0][3:].strip()
+            key = tr_lower(name)
+            current = DRAFT_HEADINGS.get(key, "Kaynaklar" if key == "kaynaklar" else name)
+            block = "\n".join(lines[1:]).strip()
+            if not block:
+                continue
+        if current is None:
+            continue
+        if current == "Kaynaklar":
+            last = None
+            for line in block.split("\n"):
+                if m := re.match(r"\[(\d+)\]\s*(.*)", line):
+                    last = m.group(1)
+                    sources[last] = m.group(2)
+                elif last and line.strip():
+                    sources[last] += " · " + line.strip().lstrip("- ")
+            continue
+        kind = "quote" if block.startswith(">") else "para"
+        body = re.sub(r"^>\s?", "", block, flags=re.M) if kind == "quote" else block
+        if body.startswith("Yapay zekâ tercümesi:"):
+            sections[current].append(("tr", kind, body.removeprefix("Yapay zekâ tercümesi:").strip()))
+        else:
+            sections[current].append(("ar" if _arabic_ratio(body) > 0.5 else "tr", kind, body))
+    # alıntının tercümesi alıntı gibi görünsün
+    for blocks in sections.values():
+        for i in range(1, len(blocks)):
+            if blocks[i][0] == "tr" and blocks[i - 1][1] == "quote" and blocks[i - 1][0] == "ar":
+                blocks[i] = ("tr", "quote", blocks[i][2])
+    return dict(sections), sources
+
+
+def hidden_sections(cfg: dict, work: str) -> dict[str, list[str]]:
+    """Gizlenen metnin vecihleri: {vecih: [paragraf metni]}."""
+    conn = sqlite3.connect(GENEL_DB)
+    node = next(n for n in cfg["nodes"] if n.startswith(work + "/"))
+    bounds = cfg["sections"][work]
+    order = [(k, v) for k, v in bounds.items() if k != "son"]
+    out: dict[str, list] = defaultdict(list)
+    current, para, last = None, None, None
+    for sid, pid, text in conn.execute("SELECT id, paragraph_id, text FROM sentences WHERE node_id = ? ORDER BY seq",
+                                       (node,)):
+        local = sid[len(node) + 1:]
+        if last == bounds["son"]:
+            break
+        for key, first in order:
+            if local == first:
+                current, para = key, None
+        last = local
+        if current is None:
+            continue
+        if pid != para:
+            out[current].append(text)
+            para = pid
+        else:
+            out[current][-1] += " " + text
+    return dict(out)
+
+
+ARABIC_RUN = re.compile(r"[\u0600-\u06ff\ufb50-\ufdff\ufe70-\ufeff][\u0600-\u06ff\ufb50-\ufdff\ufe70-\ufeff\s«»\-]*")
+
+
+def _inline(text: str, sources: dict, lang: str = "ar") -> str:
+    import html
+    s = html.escape(text)
+    s = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", s)
+    if lang == "tr":            # Türkçe içindeki Arapça: sağdan sola yalıtılır (ayraçlar ters dönmesin)
+        s = ARABIC_RUN.sub(lambda m: f'<bdi class="arw" dir="rtl">{m.group(0).strip()}</bdi>'
+                           + (" " if m.group(0).endswith(" ") else ""), s)
+
+    def mark(m: re.Match) -> str:
+        inner = m.group(1)
+        if re.fullmatch(r"[\d,\s]+", inner):
+            nums = [n.strip() for n in inner.split(",")]
+            title = html.escape(" | ".join(f"[{n}] {sources.get(n, '')}" for n in nums), quote=True)
+            return f'<span class="ref" title="{title}">[{inner}]</span>'
+        cls = "own" if "kendi tespiti" in inner else "src"
+        nums = re.findall(r"\b\d+\b", inner)
+        title = html.escape(" | ".join(f"[{n}] {sources.get(n, '')}" for n in nums), quote=True)
+        return f'<span class="mk {cls}" title="{title}">[{inner}]</span>'
+    return re.sub(r"\[([^\]\n]{1,80})\]", mark, s).replace("\n", "<br>")
+
+
+def _blocks_html(blocks: list, lang: str, sources: dict) -> str:
+    out = []
+    for blang, kind, text in blocks:
+        if blang != lang:
+            continue
+        cls = ("ar" if lang == "ar" else "tr") + (" q" if kind == "quote" else "")
+        out.append(f'<p class="{cls}">{_inline(text, sources, lang)}</p>')
+    return "\n".join(out) or '<p class="empty">—</p>'
+
+
+def _hidden_html(paras: list[str], lang: str) -> str:
+    import html
+    if not paras:
+        return '<p class="empty">—</p>'
+    cls = "ar" if lang == "ar" else "tr"
+    return "\n".join(f'<p class="{cls}">{_inline(p, {}, lang) if lang == "tr" else html.escape(p)}</p>' for p in paras)
+
+
+def okuma(unit: str) -> None:
+    import html
+    cfg = UNITS[unit]
+    out = OUT / unit
+    drafts = []
+    for path in sorted(out.glob("taslak-*.md"), key=lambda p: int(p.stem.split("-")[1])):
+        meta = json.loads((out / f"{path.stem}.json").read_text())
+        sections, sources = parse_draft(path.read_text(encoding="utf-8"))
+        ar_chars = sum(len(t) for blocks in sections.values() for lang, kind, t in blocks
+                       if lang == "ar" and kind == "para" and blocks is not sections.get("Âyet"))
+        drafts.append((path.stem, meta, sections, sources, ar_chars))
+    hidden = {"ar": hidden_sections(cfg, "isaratul-icaz-arabi"), "tr": hidden_sections(cfg, "isaratul-icaz")}
+    hidden_ar_chars = sum(len(p) for p in sum(hidden["ar"].values(), []))
+    keys = ["Âyet", "Mukaddime", "V1", "V2", "V3"]
+    ayahs = "–".join(map(str, cfg["ayahs"]))
+    tabs, panes = [], []
+    for d_i, (name, meta, sections, sources, ar_chars) in enumerate(drafts):
+        for lang, label, right in (("ar", "Arapça", "İşârâtü'l-İ'câz (Arapça asıl)"),
+                                   ("tr", "Türkçe", "Abdülmecid Nursî tercümesi")):
+            pane_id = f"{name}-{lang}"
+            tabs.append(f'<button role="tab" data-pane="{pane_id}">{name.replace("taslak-", "Taslak ")} · {label}</button>')
+            rows = []
+            for key in keys:
+                left = sections.get(key, [])
+                right_paras = hidden[lang].get(key, [])
+                if not left and not right_paras:
+                    continue
+                rows.append(f'<h2>{SECTION_TITLES[key]}</h2><div class="row">'
+                            f'<div class="col">{_blocks_html(left, lang, sources)}</div>'
+                            f'<div class="col">{_hidden_html(right_paras, lang)}</div></div>')
+            src_html = "".join(f"<li><b>[{n}]</b> {html.escape(s)}</li>" for n, s in sources.items())
+            heads = (f'<div class="row heads"><div class="col"><h3>Yapay zekâ taslağı ({name.split("-")[1]})</h3></div>'
+                     f'<div class="col"><h3>{right} <span class="muted">gizlenen metin</span></h3></div></div>')
+            info = (f'<p class="meta">{meta["model"]}, {meta["effort"]}, {meta["seconds"] // 60} dk, '
+                    f'{sum(meta["calls"].values())} araç çağrısı. Taslağın Arapçası {ar_chars:,} karakter, '
+                    f'İşârât\'ın bu birimi {hidden_ar_chars:,} karakter.</p>').replace(",", ".")
+            panes.append(f'<section class="pane" id="{pane_id}" hidden>{info}{heads}{"".join(rows)}'
+                         f'<details><summary>Taslağın kaynakçası ({len(sources)})</summary><ol class="src">{src_html}'
+                         f'</ol></details></section>')
+    page = PAGE.replace("{title}", f"Prova {unit}").replace("{h1}", f"Prova: {cfg['sura_name']} {ayahs}") \
+        .replace("{tabs}", "".join(tabs)).replace("{panes}", "".join(panes))
+    (out / "okuma.html").write_text(page, encoding="utf-8")
+    print((out / "okuma.html").relative_to(ROOT))
+
+
+PAGE = """<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{title}</title>
+<style>
+:root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #ffffff; --accent: #1f5c3f;
+        --own: #8a4b00; --own-bg: #fdf0dc; --src: #1f4f7a; --src-bg: #e3eef8; --quote: #f2efe8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --accent: #7cc49d;
+  --own: #f0b46a; --own-bg: #3a2a14; --src: #8cc0ef; --src-bg: #18293a; --quote: #26251f; } }
+:root[data-theme="dark"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b;
+  --accent: #7cc49d; --own: #f0b46a; --own-bg: #3a2a14; --src: #8cc0ef; --src-bg: #18293a; --quote: #26251f; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.65 "Noto Serif", "DejaVu Serif", Georgia, serif; }
+header { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); padding: 10px 16px; }
+h1 { font-size: 1.15rem; margin: 0 0 6px; }
+.stamp { color: var(--muted); font-size: .85rem; margin: 0 0 8px; }
+[role=tablist] { display: flex; flex-wrap: wrap; gap: 6px; }
+[role=tab] { font: inherit; font-size: .9rem; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px;
+             background: var(--card); color: var(--fg); cursor: pointer; }
+[role=tab][aria-selected=true] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+main { max-width: 1500px; margin: 0 auto; padding: 8px 16px 60px; }
+.meta { color: var(--muted); font-size: .85rem; }
+h2 { font-size: 1rem; margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--accent); }
+h3 { font-size: .9rem; margin: 0; color: var(--muted); font-weight: 600; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.heads { position: sticky; top: 86px; background: var(--bg); padding: 6px 0; border-bottom: 1px solid var(--line); z-index: 1; }
+.col { min-width: 0; }
+.col + .col { border-left: 1px solid var(--line); padding-left: 24px; }
+p { margin: 0 0 12px; }
+p.ar { direction: rtl; text-align: right; font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif;
+       font-size: 1.3rem; line-height: 2.05; }
+p.q { background: var(--quote); padding: 6px 12px; border-radius: 4px; font-size: .95em; }
+p.ar.q { border-right: 3px solid var(--muted); font-size: 1.2rem; } p.tr.q { border-left: 3px solid var(--muted); }
+p.empty { color: var(--muted); }
+.arw { font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; font-size: 1.12em; }
+.muted { color: var(--muted); font-weight: 400; }
+.mk { font-family: system-ui, sans-serif; font-size: .72rem; padding: 0 4px; border-radius: 3px; white-space: nowrap;
+      direction: ltr; unicode-bidi: isolate; cursor: help; }
+.mk.own { color: var(--own); background: var(--own-bg); } .mk.src { color: var(--src); background: var(--src-bg); }
+.ref { font-family: system-ui, sans-serif; font-size: .72rem; color: var(--src); cursor: help; direction: ltr; unicode-bidi: isolate; }
+details { margin-top: 32px; } summary { cursor: pointer; color: var(--muted); }
+ol.src { list-style: none; padding: 0; font-size: .85rem; } ol.src li { margin: 4px 0; }
+.legend { font-size: .8rem; color: var(--muted); margin: 6px 0 0; }
+@media (max-width: 800px) { .row { grid-template-columns: 1fr; } .col + .col { border-left: 0; padding-left: 0;
+  border-top: 1px dashed var(--line); padding-top: 12px; } .heads { display: none; } }
+</style></head><body>
+<header><h1>{h1}</h1>
+<p class="stamp">Yapay zekâ taslağı, tefsir değildir; yayımlanmaz. Sağ sütun İşârâtü'l-İ'câz'ın taslağı yazan modelden gizlenen metnidir.</p>
+<div role="tablist">{tabs}</div>
+<p class="legend"><span class="mk own">[kendi tespiti]</span> modelin kendi tespiti ·
+<span class="mk src">[belâgat; 14]</span> kaynağa dayanan iddia · <span class="ref">[14]</span> kaynak (üzerine gelince adı)</p>
+</header>
+<main>{panes}</main>
+<script>
+const tabs = [...document.querySelectorAll('[role=tab]')];
+function show(id) {
+  tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.pane === id));
+  document.querySelectorAll('.pane').forEach(p => p.hidden = p.id !== id);
+  try { localStorage.setItem('prova-tab', id); } catch (e) {}
+}
+tabs.forEach(t => t.addEventListener('click', () => show(t.dataset.pane)));
+let saved = null; try { saved = localStorage.getItem('prova-tab'); } catch (e) {}
+show(tabs.some(t => t.dataset.pane === saved) ? saved : tabs[0].dataset.pane);
+</script></body></html>
+"""
+
+
 def _has(conn: sqlite3.Connection, table: str) -> bool:
     return bool(conn.execute("SELECT 1 FROM sqlite_master WHERE name = ?", (table,)).fetchone())
 
@@ -377,11 +619,15 @@ def main() -> None:
     p.add_argument("--effort", default="high")
     p = sub.add_parser("karsilastir")
     p.add_argument("unit", choices=UNITS)
+    p = sub.add_parser("okuma")
+    p.add_argument("unit", choices=UNITS)
     args = parser.parse_args()
     if args.command == "hazirla":
         hazirla(args.unit)
     elif args.command == "yazdir":
         yazdir(args.unit, args.kez, args.model, args.effort)
+    elif args.command == "okuma":
+        okuma(args.unit)
     else:
         karsilastir(args.unit)
 
