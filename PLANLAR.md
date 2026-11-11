@@ -151,6 +151,16 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   model Fable 5.2, yüksek düşünme, prova boyunca ve asıl işte aynı; gizleme birim başına prova profiliyle (yalnız
   sınanan birim çıkar, İşârât'ın kalanı görünür; asıl işte profil gerekmez); istem sürümlü tek dosya, düzeltmeler
   yalnız genel usule, âyete özgü ipucu girmez.
+  **Kurulum (2026-11-11):** `scripts/d1-prova.py` (`hazirla`, `yazdir`, `karsilastir`), istem `docs/d1-prova-istemi.md`
+  (v1). Gizleme kurulumda: yayındaki `genel` ve `tefsir` veritabanlarının kopyasından sınanan birimin Türkçe ve Arapça
+  düğümleri ve onlara bağlı her satır silinir (cümle, paragraf, Arapça, bağlar, âyet ilişkileri, `risale_refs`, notlar,
+  FTS), Osmanlıca İşârât bütünüyle çıkar (birimleri paralel değil); vektörler değişmez (dizin bölümleri veritabanından
+  kurar). Eklerden (usul özeti, birim çizelgesi) sınanan birimden alınan her şey çıkar; 11–12'de V2'nin temsil örneği
+  eserde yalnız orada geçtiği için onu anlatan cümle de çıktı. Sızıntı testi: gizlenen cümlelerin Kur'ân dışı 6'lı
+  dizileri; risale ve istemde 3 ve üstü ortak dizi sızıntıdır (1–2'si kalıp ibare: "mâkabliyle vech‑i irtibatı").
+  İstem ≈456 bin karakter: görev, usul, çalışma sırası, şablon, ekler ve İşârât'ın Arapça aslının tamamı (birim hariç).
+  Taslağı yazan oturum: Fable 5.2, yüksek, proje dışında, yerleşik araçlar ve web kapalı, üç prova sunucusu.
+  Not: Arapça baskıda birimin âyet satırı bir önceki düğümün sonunda kalır (9–10 c100–c101); yalnız âyet metnidir.
 - D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
   nükteleri), i'râb ve belâgat doğruluğu, uydurma; mütehassıs taslağı İşârât'ın kendi metniyle yan yana okur; ezber
   otomatik ölçülür.
