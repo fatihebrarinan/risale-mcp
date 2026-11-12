@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""docs/d1-usul-ozeti.md'deki alıntıları veritabanıyla denetler (PLANLAR.md D1).
+"""docs/d1/usul-ozeti.md'deki alıntıları veritabanıyla denetler (PLANLAR.md D1).
 
     python3 scripts/d1-usul-denetim.py                               # usul özeti
-    python3 scripts/d1-usul-denetim.py docs/d1-birim-cizelgesi.md    # yalnız adresler (F/, B/ kısaltmalı)
+    python3 scripts/d1-usul-denetim.py docs/d1/birim-cizelgesi.md    # yalnız adresler (F/, B/ kısaltmalı)
 
 Her `> "…"` alıntısı, ardından gelen `— … (`kimlik`)` satırındaki cümlenin metniyle birebir aynı olmalı; satırdaki
 yol (aynı yer denmediyse) cümlenin `ref`'iyle aynı olmalı; belgede geçen bütün cümle kimlikleri var olmalı.
@@ -14,7 +14,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 db = sqlite3.connect(ROOT / "data" / "dist" / "genel" / "risale.db")
-target = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "docs" / "d1-usul-ozeti.md"
+target = Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "docs" / "d1" / "usul-ozeti.md"
 lines = (target if target.is_absolute() else ROOT / target).read_text(encoding="utf-8").split("\n")
 SHORT = {"F/": "isaratul-icaz-arabi/sure-i-fatiha/", "B/": "isaratul-icaz-arabi/sure-i-bakara/"}
 bad = quotes = 0

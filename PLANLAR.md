@@ -81,7 +81,7 @@ Sadeleştirme (2026-11-09/10, kullanıcının sorusu üzerine): **prova** asıl 
 âyetin İşârât'taki kısmı gizlenir; taslak İşârât'ın o âyetteki kendi metniyle yan yana okunur. Ayrı bir ezber
 yoklaması deneyi yapılmaz: ezber provanın değerlendirmesinde ölçülür (taslak ile gizlenen metnin ortak kelime
 dizileri), içerik hatırlamasını mütehassıs görür.
-- D1.1 **Usul özeti** (taslak hazır, 2026-11-10: `docs/d1-usul-ozeti.md`). İşârât'ın bir âyeti ele alırken ne
+- D1.1 **Usul özeti** (taslak hazır, 2026-11-10: `docs/d1/usul-ozeti.md`). İşârât'ın bir âyeti ele alırken ne
   yaptığının ve hangi sırayla yaptığının dökümü; tefsir değildir. Her madde İşârât'ın kendi cümlesine dayanır,
   adresi ve kimliğiyle; derleyenin çıkarımı "[Çıkarım]" diye işaretlidir. İçeriği: eserin kendini tanımlaması
   (maksat nazımdaki i'câz, sınır lafzın delâleti ve işârâtı, niyet bir heyetin tefsirine örnek ve me'haz), ilkeler
@@ -111,8 +111,8 @@ dizileri), içerik hatırlamasını mütehassıs görür.
     aynı paragrafın aslını denetler; provada Arapça taslak İşârât'ın gizlenen Arapça kısmıyla yan yana okunur.
   - **Mütehassıs** bu iş için: Arapça ve belâgat bilen, İşârât'ı okumuş biri (Arapça taslağı kullanıcı denetleyemez).
 - D1.2a **Tam okuma ve birim çizelgesi** (bitti, 2026-11-10): Arapça asıl baştan sona okundu (3.264 cümle;
-  15 Fâtiha kelime bahsi, 23 Bakara âyet bahsi). Çizelge `docs/d1-birim-cizelgesi.md` (239 adres, `python3
-  scripts/d1-usul-denetim.py docs/d1-birim-cizelgesi.md` ile denetlenir), okuma notları `docs/d1-okuma-notlari.md`.
+  15 Fâtiha kelime bahsi, 23 Bakara âyet bahsi). Çizelge `docs/d1/birim-cizelgesi.md` (239 adres, `python3
+  scripts/d1-usul-denetim.py docs/d1/birim-cizelgesi.md` ile denetlenir), okuma notları `docs/d1/okuma-notlari.md`.
   Bulgular: (1) eser üç vechi dokuz yerde adıyla sayar; Bakara 9'dan sonra sıra sabit (V1 → V2 → V3, 15/15 birim),
   1–8'de düzen henüz oturmamış, Fâtiha'da birim kelime. (2) Mukaddime sabit basamak değil; dört durumda gelir:
   âyetin meâli dört maksattan ya da iman rükünlerinden biri, âyetin altında büyük kelâm ihtilafı, bir üslûp türünün
@@ -126,7 +126,7 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   2026-11-10):** taslakta mukaddime yalnız dört durumdan biri varsa yazılır, kısa tutulur, her iddiası âyetin bir
   lafzına bağlanır, mesele İşârât'ta ya da Risale-i Nur'da işlenmişse oraya atıfla hülâsa edilir.
   E2 için not: Miftâh, Delâilü'l-İ'câz, Esrârü'l-Belâga ve Keşşâf eserin adıyla dayandığı kaynaklar.
-- D1.2b **Özetin ikinci sürümü** (bitti, 2026-11-10): `docs/d1-usul-ozeti.md` Arapça asla dayanır. 55 Arapça
+- D1.2b **Özetin ikinci sürümü** (bitti, 2026-11-10): `docs/d1/usul-ozeti.md` Arapça asla dayanır. 55 Arapça
   alıntı; 40'ının yanında Abdülmecid Nursî tercümesindeki karşılığı, 15'inde "Yapay zekâ tercümesi" damgalı model
   tercümesi (11'i Bakara 17–20'nin tercümede bulunmayan nazarî girişinden). Yeni bölümler: usulün nazarî temeli (2:
   i'câzın esası nazmın belâgati, nazm-ı meânî, mânâ tabakaları ve delâlet dereceleri, her kayıt mukadder suale
@@ -146,7 +146,7 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   model Fable 5.2, yüksek düşünme, prova boyunca ve asıl işte aynı; gizleme birim başına prova profiliyle (yalnız
   sınanan birim çıkar, İşârât'ın kalanı görünür; asıl işte profil gerekmez); istem sürümlü tek dosya, düzeltmeler
   yalnız genel usule, âyete özgü ipucu girmez.
-  **Kurulum (2026-11-11):** `scripts/d1-prova.py` (`hazirla`, `yazdir`, `karsilastir`), istem `docs/d1-prova-istemi.md`
+  **Kurulum (2026-11-11):** `scripts/d1-prova.py` (`hazirla`, `yazdir`, `karsilastir`), istem `docs/d1/prova-istemi.md`
   (v1). Gizleme kurulumda: yayındaki `genel` ve `tefsir` veritabanlarının kopyasından sınanan birimin Türkçe ve Arapça
   düğümleri ve onlara bağlı her satır silinir (cümle, paragraf, Arapça, bağlar, âyet ilişkileri, `risale_refs`, notlar,
   FTS), Osmanlıca İşârât bütünüyle çıkar (birimleri paralel değil); vektörler değişmez (dizin bölümleri veritabanından

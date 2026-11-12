@@ -6,7 +6,7 @@
     python3 scripts/site-uret.py        # sayfanın menüsü, alt bilgisi ve Open Graph etiketleri
     scripts/deploy.sh --code
 
-Kaynak `docs/d1-usul-ozeti.md`'dir (programcı sürümü: kimlikler, denetim komutu). Okur sürümünde:
+Kaynak `docs/d1/usul-ozeti.md`'dir (programcı sürümü: kimlikler, denetim komutu). Okur sürümünde:
 - cümle kimlikleri görünmez; her adres eser, bölüm ve cümlenin ilk kelimeleriyle yazılır (veritabanından: `ref`,
   `incipit`; aralık "… ile başlayan N cümle"), cümle numarası yazılmaz;
 - Arapça alıntı sağdan sola, altında "Tercümede" etiketiyle Türkçe karşılığı; derleyenin tercümesi "Yapay zekâ
@@ -26,7 +26,7 @@ from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-SOURCE = ROOT / "docs" / "d1-usul-ozeti.md"
+SOURCE = ROOT / "docs" / "d1" / "usul-ozeti.md"
 OUT = ROOT / "site" / "taslak"
 NAME = "isarat-usulu"
 TITLE = "İşârâtü'l-İ'câz'ın usulü: kendi metninden bir döküm"

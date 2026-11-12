@@ -3,12 +3,12 @@
 > **Bu belge nedir.** İşârâtü'l-İ'câz'ın Arapça aslının (`isaratul-icaz-arabi`: 3.264 cümle, ≈57.700 kelime)
 > baştan sona okunmasıyla çıkarılmış çizelgedir: her âyet bahsinde üç nazım vechinden hangileri var, hangi
 > sırayla, mukaddime ya da mesele var mı ve neye bağlı, asıl maksat söyleniyor mu. Usul özetinin
-> (`docs/d1-usul-ozeti.md`) mütehassısa sorduğu ilk üç soruya cevaptır. Tefsir değildir; bir yapay zekâ okumasının
+> (`docs/d1/usul-ozeti.md`) mütehassısa sorduğu ilk üç soruya cevaptır. Tefsir değildir; bir yapay zekâ okumasının
 > dökümüdür. Arapça belâgat inceliklerinde okuyan yanılmış olabilir: her hücre adresiyle verilmiştir, denetlenebilir.
 >
 > **Adresler.** `F/…` = `isaratul-icaz-arabi/sure-i-fatiha/…`, `B/…` = `isaratul-icaz-arabi/sure-i-bakara/…`.
 > Türkçe tercümenin (`isaratul-icaz`) bölüm kimlikleri paraleldir, cümle numaraları değildir. Okuma notlarının
-> tamamı (birim birim, alıntılarla): `docs/d1-okuma-notlari.md`.
+> tamamı (birim birim, alıntılarla): `docs/d1/okuma-notlari.md`.
 >
 > **Üç vecih** (eserin kendi adlandırması): V1 = âyetin öncesiyle nazmı (`نظمها بسابقها`), V2 = cümlelerinin
 > birbiriyle nazmı (`النظم بين جملها`), V3 = her cümlenin hey'et ve kayıtlarının nazmı (`نظم هيئات جملة جملة`).
@@ -123,7 +123,7 @@ Not: düğüm adları (`mukaddime`, `mesele-10`…) Arapça baskının başlık 
 ## Denetim
 
 ```
-python3 scripts/d1-usul-denetim.py docs/d1-birim-cizelgesi.md
+python3 scripts/d1-usul-denetim.py docs/d1/birim-cizelgesi.md
 ```
 
 Belgede geçen bütün cümle adreslerinin veritabanında bulunduğunu denetler (`F/`, `B/` kısaltmalarını açar).

@@ -7,7 +7,7 @@
 > **[Çıkarım]** diye işaretlidir.
 >
 > **İkinci sürümde ne değişti (2026-11-10).** Birinci sürüm Türkçe tercümenin taranmasına dayanıyordu. Bu sürüm
-> Arapça aslın baştan sona okunmasına dayanır (`docs/d1-birim-cizelgesi.md`, `docs/d1-okuma-notlari.md`): dayanak
+> Arapça aslın baştan sona okunmasına dayanır (`docs/d1/birim-cizelgesi.md`, `docs/d1/okuma-notlari.md`): dayanak
 > Arapça cümledir, yanında Abdülmecid Nursî tercümesindeki karşılığı durur. Karşılığı tercümede olmayan yerde
 > "Yapay zekâ tercümesi" damgasıyla derleyenin tercümesi verilir; bu tercüme alıntı değildir, eserin sözü yerine
 > geçmez. Eklenenler: usulün nazarî temeli (2), mukaddimelerin ne zaman geldiği (5), taslak için kararlaştırılan
@@ -466,7 +466,7 @@ Tercümede:
 
 — İşaratü'l-İ'caz › Sûre‑i Bakara › 28. Âyetin Tefsiri › 5. cümle (`isaratul-icaz/sure-i-bakara/28/c005`)
 
-**[Çıkarım]** Tam okumanın bulgusu (`docs/d1-birim-cizelgesi.md`):
+**[Çıkarım]** Tam okumanın bulgusu (`docs/d1/birim-cizelgesi.md`):
 
 - Eser üç vechi dokuz ayrı yerde adıyla sayar ve "öbür âyetlerde olduğu gibi" der.
 - Bakara 9'dan sonra sıra sabittir: öncesiyle nazım (V1), cümlelerin birbiriyle nazmı (V2), her cümlenin hey'et ve kayıtları (V3). On beş birimin on beşi böyledir; her vecih kendi geçiş cümlesiyle açılır.
@@ -570,7 +570,7 @@ Tercümede:
 
 ### 4.3 Üçüncü vecih: cümlelerin hey'etleri, kayıtları ve kelimeleri
 
-**[Çıkarım]** Arapça asılda tekrar eden işler (adresler `docs/d1-birim-cizelgesi.md` "Üçüncü vecihte neye bakılıyor" bölümünde):
+**[Çıkarım]** Arapça asılda tekrar eden işler (adresler `docs/d1/birim-cizelgesi.md` "Üçüncü vecihte neye bakılıyor" bölümünde):
 
 **Bakılacak yerlerin önce sayılması.** Cümlenin başında nükte beklenen kayıtlar listelenir, sonra sırayla işlenir.
 

@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prova Okuma</title>
+<style>
+:root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #ffffff; --accent: #1f5c3f;
+        --own: #8a4b00; --own-bg: #fdf0dc; --src: #1f4f7a; --src-bg: #e3eef8; --quote: #f2efe8; --ez: #f7e08a;
+        --ez-fg: #1d1d1b; --note: #fff8e6; --note-line: #e2c675; --bad: #a3271f; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --accent: #7cc49d;
+  --own: #f0b46a; --own-bg: #3a2a14; --src: #8cc0ef; --src-bg: #18293a; --quote: #26251f; --ez: #6b5a12;
+  --ez-fg: #f5efd8; --note: #2a2618; --note-line: #7a6a32; --bad: #f08a80; } }
+:root[data-theme="dark"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b;
+  --accent: #7cc49d; --own: #f0b46a; --own-bg: #3a2a14; --src: #8cc0ef; --src-bg: #18293a; --quote: #26251f;
+  --ez: #6b5a12; --ez-fg: #f5efd8; --note: #2a2618; --note-line: #7a6a32; --bad: #f08a80; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.65 "Noto Serif", "DejaVu Serif", Georgia, serif; }
+button, select, input, textarea { font: inherit; font-size: .88rem; color: var(--fg); }
+header { position: sticky; top: 0; z-index: 3; background: var(--bg); border-bottom: 1px solid var(--line); padding: 8px 16px; }
+h1 { font-size: 1.05rem; margin: 0 0 2px; }
+.stamp { color: var(--muted); font-size: .8rem; margin: 0 0 6px; }
+.controls { display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-family: system-ui, sans-serif; }
+.controls label { font-size: .8rem; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+.controls select, .controls input { padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: var(--card); padding: 3px 12px; cursor: pointer; }
+.seg button[aria-pressed=true] { background: var(--accent); color: var(--bg); }
+.btn { border: 1px solid var(--line); background: var(--card); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--bg); }
+.msg { font-size: .8rem; color: var(--bad); }
+main { max-width: 1500px; margin: 0 auto; padding: 8px 16px 80px; }
+.meta { color: var(--muted); font-size: .82rem; font-family: system-ui, sans-serif; margin: 8px 0 0; }
+h2 { font-size: 1rem; margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--accent);
+     display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+h3 { font-size: .85rem; margin: 0; color: var(--muted); font-weight: 600; font-family: system-ui, sans-serif; }
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.heads { position: sticky; top: var(--head-h, 96px); background: var(--bg); padding: 6px 0; border-bottom: 1px solid var(--line); z-index: 2; margin-top: 12px; }
+.col { min-width: 0; }
+.col + .col { border-left: 1px solid var(--line); padding-left: 24px; }
+.blk { position: relative; margin: 0 0 12px; }
+.blk > p { margin: 0; }
+.blk:hover > .nb, .blk:focus-within > .nb { opacity: 1; }
+.nb { position: absolute; top: 0; inset-inline-end: -4px; transform: translateX(100%); opacity: .25; border: 0;
+      background: none; cursor: pointer; font-size: .85rem; padding: 0 2px; color: var(--muted); }
+[dir=rtl] .nb, .col.rtl .nb { transform: translateX(-100%); }
+.blk.has-notes > p { box-shadow: inset 3px 0 0 var(--note-line); padding-inline-start: 8px; }
+p.ar { direction: rtl; text-align: right; font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif;
+       font-size: 1.3rem; line-height: 2.05; }
+p.q { background: var(--quote); padding: 6px 12px; border-radius: 4px; font-size: .95em; }
+p.ar.q { border-right: 3px solid var(--muted); font-size: 1.2rem; } p.tr.q { border-left: 3px solid var(--muted); }
+p.empty { color: var(--muted); }
+.arw { font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; font-size: 1.12em; }
+.muted { color: var(--muted); font-weight: 400; }
+mark.ez { background: var(--ez); color: var(--ez-fg); border-radius: 2px; }
+body.no-ez mark.ez { background: none; color: inherit; }
+.mk { font-family: system-ui, sans-serif; font-size: .72rem; padding: 0 4px; border-radius: 3px; white-space: nowrap;
+      direction: ltr; unicode-bidi: isolate; cursor: pointer; }
+.mk.own { color: var(--own); background: var(--own-bg); } .mk.src { color: var(--src); background: var(--src-bg); }
+.ref { font-family: system-ui, sans-serif; font-size: .72rem; color: var(--src); cursor: pointer; direction: ltr; unicode-bidi: isolate; }
+.legend { font-size: .76rem; color: var(--muted); margin: 6px 0 0; font-family: system-ui, sans-serif; }
+.notes { margin: 6px 0 0; font-family: system-ui, sans-serif; font-size: .82rem; direction: ltr; text-align: left; }
+.note { background: var(--note); border: 1px solid var(--note-line); border-radius: 6px; padding: 5px 8px; margin: 4px 0; }
+.note .h { color: var(--muted); font-size: .75rem; display: flex; gap: 8px; justify-content: space-between; }
+.note .h b { color: var(--fg); }
+.note .x { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: .75rem; padding: 0; }
+.note p { margin: 2px 0 0; white-space: pre-wrap; }
+.tag { display: inline-block; border: 1px solid var(--note-line); border-radius: 999px; padding: 0 6px; font-size: .7rem; }
+.tag.exp { border-color: var(--src); color: var(--src); }
+form.ed { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px; margin: 6px 0;
+          display: grid; gap: 6px; font-family: system-ui, sans-serif; direction: ltr; text-align: left; }
+form.ed .r { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: .8rem; }
+form.ed textarea { width: 100%; min-height: 70px; border: 1px solid var(--line); border-radius: 6px; padding: 6px; background: var(--bg); }
+form.ed select { border: 1px solid var(--line); border-radius: 6px; background: var(--bg); padding: 2px 4px; }
+dialog { border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--fg); max-width: min(920px, 94vw);
+         width: 100%; padding: 0; }
+dialog::backdrop { background: rgba(0, 0, 0, .35); }
+dialog .dh { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-bottom: 1px solid var(--line);
+             position: sticky; top: 0; background: var(--card); font-family: system-ui, sans-serif; }
+dialog .db { padding: 10px 14px; max-height: 75vh; overflow: auto; }
+table.rub { border-collapse: collapse; width: 100%; font-family: system-ui, sans-serif; font-size: .85rem; }
+table.rub td, table.rub th { border-bottom: 1px solid var(--line); padding: 6px 4px; vertical-align: top; text-align: left; }
+table.rub input[type=text] { width: 100%; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); padding: 2px 4px; }
+table.rub .sc { white-space: nowrap; }
+.srcbox .cite { font-family: system-ui, sans-serif; font-size: .85rem; color: var(--muted); margin: 0 0 8px; }
+.srcbox .txt { white-space: pre-wrap; }
+.srcbox .txt.ar { direction: rtl; text-align: right; font-family: "Noto Naskh Arabic", "Amiri", serif; font-size: 1.2rem; line-height: 2; }
+.list .it { border-bottom: 1px solid var(--line); padding: 6px 0; font-family: system-ui, sans-serif; font-size: .85rem; }
+.list .ex { color: var(--muted); font-size: .8rem; }
+.list a { color: var(--src); cursor: pointer; }
+.flt { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 8px; font-family: system-ui, sans-serif; font-size: .8rem; }
+.hidden-side h3 .muted { font-size: .8rem; }
+.flash { animation: flash 1.6s ease-out; }
+@keyframes flash { from { background: var(--ez); } to { background: transparent; } }
+@media (max-width: 800px) {
+  .row { grid-template-columns: 1fr; } .col + .col { border-left: 0; padding-left: 0; border-top: 1px dashed var(--line); padding-top: 12px; }
+  .heads { display: none; } .nb { position: static; transform: none; opacity: .7; } header { position: static; }
+}
+</style></head><body>
+<header id="top">
+  <h1 id="h1">Prova okuma</h1>
+  <p class="stamp">Yapay zekâ taslağı, tefsir değildir; yayımlanmaz. Sağ sütun İşârâtü'l-İ'câz'ın taslağı yazan modelden gizlenen metnidir (ya da karşılaştırılan öbür taslak).</p>
+  <div class="controls">
+    <label>Birim <select id="unit"></select></label>
+    <span class="seg" id="mode"><button data-v="isarat">Taslak ↔ İşârât</button><button data-v="taslak">Taslak ↔ taslak</button></span>
+    <label>Taslak <select id="da"></select></label>
+    <label id="dbw">karşısında <select id="db"></select></label>
+    <span class="seg" id="lang"><button data-v="ar">Arapça</button><button data-v="tr">Türkçe</button></span>
+    <label><input type="checkbox" id="ez" checked> ortak diziler</label>
+    <label>Okuyucu <input id="reader" size="12" placeholder="adınız"></label>
+    <button class="btn" id="rubric">Ölçüt çizelgesi</button>
+    <button class="btn" id="list">Notlar <span id="count"></span></button>
+    <button class="btn primary" id="export">Notları dışa aktar</button>
+    <label class="btn" style="color:var(--fg)">İçe aktar <input type="file" id="import" accept=".json" hidden></label>
+    <span class="msg" id="msg"></span>
+  </div>
+  <p class="legend"><span class="mk own">[kendi tespiti]</span> modelin kendi tespiti ·
+  <span class="mk src">[belâgat; 14]</span> kaynağa dayanan iddia · <span class="ref">[14]</span> kaynak (tıklayınca metni) ·
+  <mark class="ez">sarı</mark> gizlenen metinle ortak 6 kelimelik dizi (ezber şüphesi; çoğu geçiş kalıbı) · ✎ paragrafa ya da bölüme not</p>
+</header>
+<main id="main"></main>
+<dialog id="dlg"><div class="dh"><b id="dlgt"></b><button class="btn" id="dlgx">Kapat</button></div><div class="db" id="dlgb"></div></dialog>
+<script type="application/json" id="data">{data}</script>
+<script>
+const DATA = JSON.parse(document.getElementById('data').textContent);
+const TYPES = DATA.note_types, CRITERIA = DATA.criteria;
+const SEV = {1: 'küçük', 2: 'orta', 3: 'önemli'};
+const $ = s => document.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+};
+let notes = store.get('d1-okuma-notlar', []);
+let rubric = store.get('d1-okuma-olcut', {});      // "birim|taslak|okuyucu" -> {kriter: {score, note}}
+let st = Object.assign({unit: Object.keys(DATA.units)[0], mode: 'isarat', a: null, b: null, lang: 'ar', ez: true},
+                       store.get('d1-okuma-durum', {}));
+if (!DATA.units[st.unit]) st.unit = Object.keys(DATA.units)[0];
+$('#reader').value = store.get('d1-okuma-okur', '');
+
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'})[c]); }
+function saveNotes() { if (!store.set('d1-okuma-notlar', notes)) say('Tarayıcı notu saklayamadı: dışa aktarın.'); updateCount(); }
+function say(t) { $('#msg').textContent = t; if (t) setTimeout(() => { if ($('#msg').textContent === t) $('#msg').textContent = ''; }, 6000); }
+function reader() { return $('#reader').value.trim(); }
+function U() { return DATA.units[st.unit]; }
+function draftKeys() { return Object.keys(U().drafts); }
+function fix() {
+  const ks = draftKeys();
+  if (!ks.includes(st.a)) st.a = ks[0];
+  if (!ks.includes(st.b) || st.b === st.a) st.b = ks.find(k => k !== st.a) || ks[0];
+}
+function persist() { store.set('d1-okuma-durum', st); }
+function updateCount() { const n = notes.filter(x => x.unit === st.unit).length; $('#count').textContent = n ? `(${n})` : ''; }
+
+function controls() {
+  $('#unit').innerHTML = Object.entries(DATA.units).map(([k, u]) => `<option value="${k}">${esc(u.title)}</option>`).join('');
+  $('#unit').value = st.unit;
+  const opts = draftKeys().map(k => `<option value="${k}">${esc(U().drafts[k].label)}</option>`).join('');
+  $('#da').innerHTML = opts; $('#db').innerHTML = opts; $('#da').value = st.a; $('#db').value = st.b;
+  $('#dbw').hidden = st.mode !== 'taslak';
+  document.querySelectorAll('#mode button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.mode));
+  document.querySelectorAll('#lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.lang));
+  $('#ez').checked = st.ez; document.body.classList.toggle('no-ez', !st.ez);
+  $('#h1').textContent = `Prova: ${U().title}`;
+}
+
+// --- notlar
+function notesFor(draft, side, anchor) {
+  return notes.filter(n => n.unit === st.unit && n.draft === draft && n.side === side && n.anchor === anchor);
+}
+function noteHtml(n) {
+  const t = TYPES[n.type] || n.type;
+  return `<div class="note" data-id="${n.id}"><div class="h"><span><b>${esc(t)}</b> · ${SEV[n.severity] || ''}
+    ${n.expert ? '<span class="tag exp">ehline sor</span>' : ''} · ${esc(n.reader)} · ${n.at.slice(0, 10)}</span>
+    <span><button class="x" data-act="edit">düzelt</button> <button class="x" data-act="del">sil</button></span></div>
+    <p>${esc(n.text)}</p></div>`;
+}
+function editor(n) {
+  const types = Object.entries(TYPES).map(([k, v]) => `<option value="${k}" ${n.type === k ? 'selected' : ''}>${esc(v)}</option>`).join('');
+  const sev = [1, 2, 3].map(v => `<option value="${v}" ${n.severity === v ? 'selected' : ''}>${SEV[v]}</option>`).join('');
+  return `<form class="ed"><div class="r"><label>Tür <select name="type">${types}</select></label>
+    <label>Önem <select name="severity">${sev}</select></label>
+    <label><input type="checkbox" name="expert" ${n.expert ? 'checked' : ''}> ehline sor (Arapça, belâgat)</label></div>
+    <textarea name="text" placeholder="Ne daha iyi olabilir? Neden?">${esc(n.text || '')}</textarea>
+    <div class="r"><button class="btn primary" type="submit">Kaydet</button><button class="btn" type="button" data-act="cancel">Vazgeç</button></div></form>`;
+}
+function openEditor(host, base, existing) {
+  if (!reader()) { say('Önce okuyucu adınızı yazın.'); $('#reader').focus(); return; }
+  host.querySelectorAll(':scope > form.ed').forEach(f => f.remove());
+  host.insertAdjacentHTML('beforeend', editor(existing || {type: 'yanlis', severity: 2}));
+  const f = host.querySelector(':scope > form.ed');
+  f.querySelector('textarea').focus();
+  f.addEventListener('submit', e => {
+    e.preventDefault();
+    const text = f.text.value.trim();
+    if (!text) { f.text.focus(); return; }
+    const now = new Date().toISOString();
+    if (existing) Object.assign(existing, {type: f.type.value, severity: +f.severity.value, expert: f.expert.checked, text, at: now});
+    else notes.push(Object.assign({}, base, {id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random(),
+      type: f.type.value, severity: +f.severity.value, expert: f.expert.checked, text, reader: reader(), at: now}));
+    saveNotes(); render(base.anchor);
+  });
+  f.querySelector('[data-act=cancel]').onclick = () => f.remove();
+}
+
+// --- sayfa
+function blockHtml(draft, side, anchor, html, cls, excerpt) {
+  const ns = notesFor(draft, side, anchor);
+  return `<div class="blk${ns.length ? ' has-notes' : ''}" data-draft="${draft}" data-side="${side}" data-anchor="${anchor}"
+    data-excerpt="${esc(excerpt)}"><p class="${cls}">${html}</p><button class="nb" title="Not ekle">✎</button>
+    <div class="notes">${ns.map(noteHtml).join('')}</div></div>`;
+}
+function draftCol(dk, key) {
+  const d = U().drafts[dk], blocks = ((d.blocks[key] || {})[st.lang]) || [];
+  if (!blocks.length) return '<p class="empty">—</p>';
+  return blocks.map(b => blockHtml(dk, 'taslak', b.a, b.h, (st.lang === 'ar' ? 'ar' : 'tr') + (b.q ? ' q' : ''), b.x)).join('');
+}
+function hiddenCol(dk, key) {
+  const paras = ((U().drafts[dk].hidden[st.lang] || {})[key]) || [];
+  if (!paras.length) return '<p class="empty">—</p>';
+  return paras.map(p => blockHtml(dk, 'isarat', p.a, p.h, st.lang === 'ar' ? 'ar' : 'tr', p.x)).join('');
+}
+function sectionNotes(dk, key) {
+  const ns = notesFor(dk, 'bolum', key);
+  return `<div class="blk" data-draft="${dk}" data-side="bolum" data-anchor="${key}" data-excerpt="${esc(U().sections[key])}">
+    <div class="notes">${ns.map(noteHtml).join('')}</div></div>`;
+}
+function render(focus) {
+  fix(); controls(); persist(); updateCount();
+  const u = U(), a = u.drafts[st.a], right = st.mode === 'isarat';
+  const rightTitle = right ? `${esc(u.hidden_titles[st.lang])} <span class="muted">gizlenen metin</span>`
+                           : `${esc(u.drafts[st.b].label)} <span class="muted">${esc(u.drafts[st.b].short)}</span>`;
+  let h = `<p class="meta">${esc(a.label)}: ${esc(a.meta)}</p>`;
+  if (!right) h += `<p class="meta">${esc(u.drafts[st.b].label)}: ${esc(u.drafts[st.b].meta)}</p>`;
+  h += `<div class="row heads"><div class="col"><h3>${esc(a.label)} <span class="muted">${esc(a.short)}</span></h3></div>
+        <div class="col"><h3>${rightTitle}</h3></div></div>`;
+  for (const key of Object.keys(u.sections)) {
+    const has = k => ((u.drafts[k].blocks[key] || {})[st.lang] || []).length;
+    const hidden = ((a.hidden[st.lang] || {})[key] || []).length;
+    if (!has(st.a) && !(right ? hidden : has(st.b))) continue;
+    h += `<h2><span>${esc(u.sections[key])}</span><button class="btn nb-sec" data-draft="${st.a}" data-key="${key}" title="Bu bölüme not (ör. eksik kalan)">✎ bölüme not</button></h2>`;
+    h += sectionNotes(st.a, key);
+    h += `<div class="row"><div class="col${st.lang === 'ar' ? ' rtl' : ''}">${draftCol(st.a, key)}</div>
+          <div class="col${st.lang === 'ar' ? ' rtl' : ''}">${right ? hiddenCol(st.a, key) : draftCol(st.b, key)}</div></div>`;
+  }
+  h += `<details style="margin-top:32px"><summary class="muted">${esc(a.label)}: kaynakça (${Object.keys(a.sources).length})</summary>
+        <ol class="list" style="list-style:none;padding:0">${Object.entries(a.sources).map(([n, s]) =>
+          `<li class="it"><a data-src="${n}" data-draft="${st.a}">[${n}]</a> ${esc(s.c)}</li>`).join('')}</ol></details>`;
+  $('#main').innerHTML = h;
+  document.documentElement.style.setProperty('--head-h', $('#top').offsetHeight + 'px');
+  if (focus) {
+    const el = document.querySelector(`.blk[data-anchor="${CSS.escape(focus)}"]`);
+    if (el) { el.scrollIntoView({block: 'center'}); el.classList.add('flash'); }
+  }
+}
+
+// --- kaynak
+function showSource(dk, n) {
+  const s = U().drafts[dk].sources[n];
+  if (!s) return;
+  const ar = s.t && /[؀-ۿ]/.test(s.t) && (s.t.match(/[؀-ۿ]/g).length > s.t.length / 3);
+  dialog(`Kaynak [${n}]`, `<div class="srcbox"><p class="cite">${esc(s.c)}${s.i ? ` · <code>${esc(s.i)}</code>` : ''}</p>
+    ${s.t ? `<div class="txt${ar ? ' ar' : ''}">${esc(s.t)}</div>` : '<p class="muted">Metni bulunamadı (taslağın döküm kaydında kimliği yok).</p>'}</div>`);
+}
+function dialog(title, body) { $('#dlgt').textContent = title; $('#dlgb').innerHTML = body; $('#dlg').showModal(); }
+$('#dlgx').onclick = () => $('#dlg').close();
+
+// --- ölçüt çizelgesi
+function rubricKey(dk) { return `${st.unit}|${dk}|${reader()}`; }
+function showRubric() {
+  if (!reader()) { say('Önce okuyucu adınızı yazın.'); $('#reader').focus(); return; }
+  const dk = st.a, r = rubric[rubricKey(dk)] || {};
+  const rows = CRITERIA.map(([k, label, hint]) => {
+    const v = (r[k] || {});
+    const sc = [0, 1, 2].map(x => `<label><input type="radio" name="${k}" value="${x}" ${v.score === x ? 'checked' : ''}> ${x}</label>`).join(' ');
+    return `<tr><td><b>${esc(label)}</b><br><span class="muted" style="font-size:.78rem">${esc(hint)}</span></td>
+      <td class="sc">${sc} <label><input type="radio" name="${k}" value="" ${v.score === undefined || v.score === null ? 'checked' : ''}> —</label></td>
+      <td><input type="text" data-k="${k}" value="${esc(v.note || '')}" placeholder="kısa gerekçe"></td></tr>`;
+  }).join('');
+  dialog(`Ölçüt çizelgesi: ${U().drafts[dk].label} · ${reader()}`,
+    `<p class="muted" style="font-family:system-ui;font-size:.82rem">0 yok ya da yanlış, 1 kısmen, 2 iyi; "—" bakılmadı. Ölçütler usul özetinin 4. ve 8. bölümlerinden (D1.4).</p>
+     <table class="rub"><tbody>${rows}</tbody></table>`);
+  const box = $('#dlgb');
+  box.oninput = box.onchange = () => {
+    const out = {};
+    for (const [k] of CRITERIA) {
+      const c = box.querySelector(`input[name="${k}"]:checked`), t = box.querySelector(`input[data-k="${k}"]`).value.trim();
+      const score = c && c.value !== '' ? +c.value : null;
+      if (score !== null || t) out[k] = {score, note: t};
+    }
+    rubric[rubricKey(dk)] = out; store.set('d1-okuma-olcut', rubric);
+  };
+}
+
+// --- not listesi
+function showList() {
+  const u = U(), mine = notes.filter(n => n.unit === st.unit);
+  const draftOpts = ['', ...Object.keys(u.drafts)].map(k => `<option value="${k}">${k ? esc(u.drafts[k].label) : 'bütün taslaklar'}</option>`).join('');
+  const typeOpts = ['', ...Object.keys(TYPES)].map(k => `<option value="${k}">${k ? esc(TYPES[k]) : 'bütün türler'}</option>`).join('');
+  dialog(`Notlar: ${u.title}`, `<div class="flt"><select id="fd">${draftOpts}</select><select id="ft">${typeOpts}</select>
+    <label><input type="checkbox" id="fe"> yalnız "ehline sor"</label></div><div class="list" id="nl"></div>`);
+  const draw = () => {
+    const d = $('#fd').value, t = $('#ft').value, e = $('#fe').checked;
+    const rows = mine.filter(n => (!d || n.draft === d) && (!t || n.type === t) && (!e || n.expert));
+    $('#nl').innerHTML = rows.length ? rows.map(n => `<div class="it"><a data-go="${n.id}">${esc(u.drafts[n.draft] ? u.drafts[n.draft].label : n.draft)} ·
+      ${esc(u.sections[n.anchor.split('/')[0]] || n.anchor)} · ${n.side === 'isarat' ? 'İşârât' : n.side === 'bolum' ? 'bölüm' : 'taslak'}</a>
+      · <b>${esc(TYPES[n.type] || n.type)}</b> · ${SEV[n.severity] || ''} ${n.expert ? '<span class="tag exp">ehline sor</span>' : ''} · ${esc(n.reader)}
+      <div class="ex">${esc((n.excerpt || '').slice(0, 140))}</div><div>${esc(n.text)}</div></div>`).join('') : '<p class="muted">Not yok.</p>';
+  };
+  ['#fd', '#ft', '#fe'].forEach(s => $(s).onchange = draw); draw();
+  $('#nl').onclick = ev => {
+    const id = ev.target.dataset.go; if (!id) return;
+    const n = notes.find(x => x.id === id); $('#dlg').close();
+    st.a = n.draft; st.lang = n.lang || st.lang; if (n.side === 'isarat') st.mode = 'isarat';
+    render(n.anchor);
+  };
+}
+
+// --- dışa ve içe aktarma
+function exportNotes() {
+  const r = reader() || 'okuyucu';
+  const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes,
+    rubric: Object.entries(rubric).map(([k, v]) => { const [unit, draft, rd] = k.split('|'); return {unit, draft, reader: rd, scores: v}; })};
+  const blob = new Blob([JSON.stringify(payload, null, 1)], {type: 'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `d1-notlar-${r.replace(/[^\p{L}\p{N}]+/gu, '-')}-${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '')}.json`;
+  a.click(); URL.revokeObjectURL(a.href);
+  say(`${notes.length} not dışa aktarıldı.`);
+}
+$('#import').onchange = async ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  try {
+    const p = JSON.parse(await f.text());
+    if (p.app !== 'd1-okuma') throw new Error('bu sayfanın dosyası değil');
+    let added = 0;
+    for (const n of p.notes || []) {
+      const i = notes.findIndex(x => x.id === n.id);
+      if (i < 0) { notes.push(n); added++; } else if (n.at > notes[i].at) notes[i] = n;
+    }
+    for (const r of p.rubric || []) rubric[`${r.unit}|${r.draft}|${r.reader}`] = r.scores;
+    saveNotes(); store.set('d1-okuma-olcut', rubric); render(); say(`${added} yeni not içe aktarıldı.`);
+  } catch (e) { say('İçe aktarılamadı: ' + e.message); }
+  ev.target.value = '';
+};
+
+// --- olaylar
+$('#unit').onchange = e => { st.unit = e.target.value; render(); };
+$('#da').onchange = e => { st.a = e.target.value; render(); };
+$('#db').onchange = e => { st.b = e.target.value; render(); };
+document.querySelectorAll('#mode button').forEach(b => b.onclick = () => { st.mode = b.dataset.v; render(); });
+document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { st.lang = b.dataset.v; render(); });
+$('#ez').onchange = e => { st.ez = e.target.checked; document.body.classList.toggle('no-ez', !st.ez); persist(); };
+$('#reader').onchange = () => store.set('d1-okuma-okur', reader());
+$('#rubric').onclick = showRubric;
+$('#list').onclick = showList;
+$('#export').onclick = exportNotes;
+$('#main').addEventListener('click', ev => {
+  const t = ev.target;
+  const src = t.closest('[data-src]');
+  if (src) { showSource(src.dataset.draft || t.closest('.blk').dataset.draft, src.dataset.src); return; }
+  const mk = t.closest('.mk, .ref');
+  if (mk && mk.dataset.n) { showSource(mk.closest('.blk').dataset.draft, mk.dataset.n.split(',')[0]); return; }
+  if (t.classList.contains('nb-sec')) {
+    const host = document.querySelector(`.blk[data-side="bolum"][data-anchor="${CSS.escape(t.dataset.key)}"]`);
+    openEditor(host, {unit: st.unit, draft: t.dataset.draft, side: 'bolum', anchor: t.dataset.key, lang: st.lang,
+                      excerpt: U().sections[t.dataset.key]}, null);
+    return;
+  }
+  const blk = t.closest('.blk');
+  if (!blk) return;
+  if (t.classList.contains('nb')) {
+    openEditor(blk, {unit: st.unit, draft: blk.dataset.draft, side: blk.dataset.side, anchor: blk.dataset.anchor,
+                     lang: st.lang, excerpt: blk.dataset.excerpt}, null);
+  } else if (t.dataset.act === 'del') {
+    const id = t.closest('.note').dataset.id; notes = notes.filter(n => n.id !== id); saveNotes(); render(blk.dataset.anchor);
+  } else if (t.dataset.act === 'edit') {
+    const n = notes.find(x => x.id === t.closest('.note').dataset.id); openEditor(blk, n, n);
+  }
+});
+render();
+</script></body></html>

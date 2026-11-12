@@ -1,9 +1,10 @@
-"""D1 provası (PLANLAR.md D1.3): sınanan birimi gizleyen prova profili, istem, yazdırma ve yan yana okuma.
+"""D1 provası (PLANLAR.md D1, D4): sınanan birimi gizleyen prova profili, istem, yazdırma, okuma sayfası, notlar.
 
     uv run python scripts/d1-prova.py hazirla 11-12 [--istem tam|ince] [--db-yenile]   # veritabanları, ekler, istem, sızıntı testi
     uv run python scripts/d1-prova.py yazdir 11-12 [--istem tam|ince] [--kez 2] [--model claude-fable-5-2] [--effort high]
-    uv run python scripts/d1-prova.py karsilastir 11-12    # taslaklar gizlenen metinle yan yana, ortak diziler
-    uv run python scripts/d1-prova.py okuma 11-12          # okuma sayfası: Arapça ve Türkçe ayrı, vecih vecih yan yana
+    uv run python scripts/d1-prova.py karsilastir 11-12    # taslaklar gizlenen metinle, ortak diziler
+    uv run python scripts/d1-prova.py okuma                # okuma ve not sayfası: bütün birimler, data/d1/okuma.html
+    uv run python scripts/d1-prova.py notlar [dosya.json…] # okuyucuların notlarını al, birim başına notlar.md
 
 Gizleme kurulumda yapılır (çalışma anında süzgeç değil): yayındaki `genel` ve `tefsir` veritabanlarının kopyasından
 sınanan birimin düğümleri (Türkçe ve Arapça İşârât) ve onlara bağlı her satır silinir; Osmanlıca İşârât bütünüyle
@@ -15,9 +16,13 @@ cümlelerin 6 kelimelik dizilerini (Kur'ân'da geçenler hariç) prova veritaban
 yalnız birimin `ince` listesindeki bölümlerini (`istem-ince.md`, `sizinti-ince.md`); kalanı eklentidedir. Veritabanları
 iki biçimde ortaktır: varsa yeniden kurulmaz (`--db-yenile` ile kurulur), taslaklar aynı gizlemeyle karşılaştırılsın.
 
-Çıktılar `data/interim/d1-prova/<birim>/`: `risale.db`, `tefsir.db` (prova veritabanları), `istem.md`, `sizinti.md`,
-`mcp.json`, `taslak-<n>.md` ve dökümleri, `karsilastirma.md`. Taslağı yazan oturum proje dışında, boş bir klasörde,
-yerleşik araçlar kapalı çalışır (golden.py ile aynı düzen).
+Çıktılar iki yerde (D4, 2026-11-12):
+- `data/interim/d1-prova/<birim>/`: yeniden üretilebilenler (`risale.db`, `tefsir.db`, ekler, istem, sızıntı raporları,
+  `mcp.json`).
+- `data/d1/` (kendi git deposu, uzak kopyası özel depoda; README): yeniden üretilemeyenler. `provalar/<birim>/`
+  `taslak-<n>.md`, `.json`, `.jsonl` (döküm), `karsilastirma.md`, `notlar.md`; `notlar/` okuyucuların dışa aktardığı
+  dosyalar; `okuma.html` okuma ve not sayfası (taslakları taşır: açık adreste durmaz, dosya olarak paylaşılır).
+Taslağı yazan oturum proje dışında, boş bir klasörde, yerleşik araçlar kapalı çalışır (golden.py ile aynı düzen).
 """
 
 import argparse
@@ -35,14 +40,17 @@ from datetime import datetime
 from pathlib import Path
 
 from risale_mcp.normalize import search_words, tr_lower
-from risale_mcp.paths import DIST_DIR, INTERIM_DIR, ROOT
+from risale_mcp.paths import DATA_DIR, DIST_DIR, INTERIM_DIR, ROOT
 
 GENEL_DB = DIST_DIR / "genel" / "risale.db"
 TEFSIR_DB = DIST_DIR / "tefsir" / "risale.db"
-OUT = INTERIM_DIR / "d1-prova"
-PROMPT = ROOT / "docs" / "d1-prova-istemi.md"
-OZET = ROOT / "docs" / "d1-usul-ozeti.md"
-CIZELGE = ROOT / "docs" / "d1-birim-cizelgesi.md"
+OUT = INTERIM_DIR / "d1-prova"                # yeniden üretilebilenler: prova veritabanları, ekler, istem, sızıntı
+KEEP = DATA_DIR / "d1"                         # yeniden üretilemeyenler: kendi git deposu (README)
+DRAFTS = KEEP / "provalar"                     # taslaklar, dökümler, karşılaştırma, okuma notları
+HADIS_DB = DIST_DIR / "hadis" / "hadis.db"
+PROMPT = ROOT / "docs" / "d1" / "prova-istemi.md"
+OZET = ROOT / "docs" / "d1" / "usul-ozeti.md"
+CIZELGE = ROOT / "docs" / "d1" / "birim-cizelgesi.md"
 DROP_WORKS = ("isaratul-icaz-osmanlica",)
 N = 6                                   # sızıntı testinde kelime dizisi uzunluğu
 LEAK_MIN = 3        # bir cümle ya da istem en az bu kadar ortak dizi paylaşırsa sızıntı (≈8 ardışık kelime); 1–2 kalıp ibaredir
@@ -319,15 +327,17 @@ def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False) -> None:
 
 
 def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam") -> None:
-    out = OUT / unit
-    prompt = (out / ISTEM[istem][0]).read_text(encoding="utf-8")
+    work = OUT / unit
+    out = DRAFTS / unit
+    out.mkdir(parents=True, exist_ok=True)
+    prompt = (work / ISTEM[istem][0]).read_text(encoding="utf-8")
     env = {k: v for k, v in os.environ.items() if k not in PARENT_ENV}
     existing = [int(m.group(1)) for p in out.glob("taslak-*.jsonl") if (m := re.match(r"taslak-(\d+)", p.stem))]
     first = max(existing, default=0) + 1
     for n in range(first, first + times):
         with tempfile.TemporaryDirectory(prefix="d1-prova-") as tmp:
             command = ["claude", "-p", "--model", model, "--effort", effort, "--output-format", "stream-json",
-                       "--verbose", "--mcp-config", str(out / "mcp.json"), "--strict-mcp-config", "--tools", "",
+                       "--verbose", "--mcp-config", str(work / "mcp.json"), "--strict-mcp-config", "--tools", "",
                        "--allowedTools", "mcp__risale,mcp__tefsir,mcp__hadis", "--no-session-persistence"]
             log = out / f"taslak-{n}.jsonl"
             started = time.monotonic()
@@ -369,7 +379,7 @@ def transcript(log: Path) -> tuple[str, dict, float | None]:
 
 def karsilastir(unit: str) -> None:
     cfg = UNITS[unit]
-    out = OUT / unit
+    out = DRAFTS / unit
     rows = hidden_sentences(cfg)
     by_work = defaultdict(list)
     for sid, text in rows:
@@ -377,7 +387,7 @@ def karsilastir(unit: str) -> None:
     arabic = "\n\n".join(by_work["isaratul-icaz-arabi"])
     turkish = "\n\n".join(by_work["isaratul-icaz"])
     hidden = shingles(arabic) - quran_shingles()
-    tefsir = sqlite3.connect(out / "tefsir.db")
+    tefsir = sqlite3.connect(OUT / unit / "tefsir.db")
     sura, (a, b) = cfg["sura"], cfg["ayahs"]
     # müfessirlerin bu âyetlerdeki birimleri: İşârât'la ortak ibare oradan da gelebilir
     units = []
@@ -495,6 +505,139 @@ def hidden_sections(cfg: dict, work: str) -> dict[str, list[str]]:
 ARABIC_RUN = re.compile(r"[\u0600-\u06ff\ufb50-\ufdff\ufe70-\ufeff][\u0600-\u06ff\ufb50-\ufdff\ufe70-\ufeff\s\-]*")
 
 
+def _blocks_plain(text: str) -> str:
+    """Notun alıntısı: işaretsiz düz metin, ilk 200 harf."""
+    return re.sub(r"\s+", " ", re.sub(r"\*\*|\[[^\]\n]{1,80}\]", "", text)).strip()[:200]
+
+
+# ---------------------------------------------------------------- kaynakların metni
+
+def draft_sources(log: Path) -> dict[str, tuple[str, str]]:
+    """Taslağın kaynak numarası -> (sunucu, kimlik): her sunucunun son `cite` çağrısından (`first` + sıra)."""
+    last: dict[str, dict] = {}
+    for line in log.read_text(encoding="utf-8").splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if event.get("type") != "assistant":
+            continue
+        for block in event["message"].get("content", []):
+            if block.get("type") == "tool_use" and block["name"].endswith("__cite"):
+                last[block["name"].split("__")[1]] = block.get("input") or {}
+    out = {}
+    for server, inp in last.items():
+        first = int(inp.get("first") or 1)
+        items = inp.get("sources") or inp.get("ids") or []
+        for i, item in enumerate(items):
+            out[str(first + i)] = (server, item["id"] if isinstance(item, dict) else item)
+    return out
+
+
+class SourceTexts:
+    """Kaynak kimliğinden metin: Risale ve tefsir prova veritabanlarından, hadis kütüphanesinden, Kur'ân'dan."""
+
+    def __init__(self, unit: str):
+        work = OUT / unit
+        self.dbs = {"risale": [work / "risale.db", GENEL_DB], "tefsir": [work / "tefsir.db", TEFSIR_DB],
+                    "hadis": [HADIS_DB]}
+        self.conns: dict[Path, sqlite3.Connection] = {}
+
+    def _conn(self, path: Path) -> sqlite3.Connection | None:
+        if path not in self.conns:
+            self.conns[path] = sqlite3.connect(f"file:{path}?mode=ro", uri=True) if path.exists() else None
+        return self.conns[path]
+
+    def sentences(self, conn: sqlite3.Connection, sid: str) -> str | None:
+        first, _, last = sid.partition("..")
+        row = conn.execute("SELECT seq, node_id FROM sentences WHERE id = ?", (first,)).fetchone()
+        if not row:
+            return None
+        if not last:
+            return conn.execute("SELECT text FROM sentences WHERE id = ?", (first,)).fetchone()[0]
+        end_id = first.rsplit("/", 1)[0] + "/" + last if "/" not in last else last
+        end = conn.execute("SELECT seq FROM sentences WHERE id = ?", (end_id,)).fetchone()
+        rows = conn.execute("SELECT text FROM sentences WHERE seq BETWEEN ? AND ? ORDER BY seq",
+                            (row[0], end[0] if end else row[0])).fetchall()
+        return " ".join(t for (t,) in rows)
+
+    def hadith(self, conn: sqlite3.Connection, hid: str) -> str | None:
+        for table, col in (("lib_units", "text"),):                    # hadis_db.py
+            if _has(conn, table):
+                row = conn.execute(f"SELECT {col} FROM {table} WHERE id = ?", (hid,)).fetchone()
+                if row:
+                    return row[0]
+        return self.sentences(conn, hid) if _has(conn, "sentences") else None
+
+    def quran(self, cite: str) -> str | None:
+        m = re.search(r"(\d+):(\d+)(?:[-–](\d+))?", cite)
+        conn = self._conn(GENEL_DB)
+        if not m or "Sûresi" not in cite or conn is None:
+            return None
+        sura, a, b = int(m[1]), int(m[2]), int(m[3] or m[2])
+        rows = conn.execute("SELECT ayah, text FROM quran_ayahs WHERE sura = ? AND ayah BETWEEN ? AND ? ORDER BY ayah",
+                            (sura, a, b)).fetchall()
+        return " ".join(f"{t} ﴿{n}﴾" for n, t in rows) or None
+
+    def text(self, server: str | None, sid: str | None, cite: str) -> str | None:
+        if sid is None:
+            return self.quran(cite)
+        for path in self.dbs.get(server, []):
+            conn = self._conn(path)
+            if conn is None:
+                continue
+            try:
+                found = self.hadith(conn, sid) if server == "hadis" else self.sentences(conn, sid)
+            except sqlite3.Error:
+                found = None
+            if found:
+                return found
+        return None
+
+
+# ---------------------------------------------------------------- ortak diziler
+
+def _marked(text: str, shared: set) -> str:
+    """Paylaşılan 6'lı diziye giren kelimeleri \\x01…\\x02 ile çevirir (işaretleme kaçışlamadan sonra <mark> olur)."""
+    if not shared:
+        return text
+    tokens = re.split(r"(\s+)", text)
+    seq = [(w, i) for i, tok in enumerate(tokens) if tok.strip() for w in search_words(tok)]
+    covered: set[int] = set()
+    for j in range(len(seq) - N + 1):
+        if tuple(w for w, _ in seq[j:j + N]) in shared:
+            covered |= {i for _, i in seq[j:j + N]}
+    return "".join(f"\x01{t}\x02" if i in covered else t for i, t in enumerate(tokens))
+
+
+def _unmark(html_text: str) -> str:
+    return html_text.replace("\x01", '<mark class="ez">').replace("\x02", "</mark>")
+
+
+# ---------------------------------------------------------------- okuma sayfası
+
+TEMPLATE = Path(__file__).with_name("d1-okuma-sablon.html")
+PAGE_OUT = KEEP / "okuma.html"
+NOTE_TYPES = {"dogru": "doğru, iyi", "yanlis": "yanlış", "eksik": "eksik", "fazla": "fazla", "uydurma": "uydurma",
+              "irab": "i'râb, dil", "belagat": "belâgat", "usul": "usul", "kaynak": "kaynak, atıf",
+              "uslup": "üslûp, tercüme", "diger": "diğer"}
+# D1.4: usul özetinin 4. ve 8. bölümleri. Kimlikler değişmez (notlar ve rapor onlarla birleşir).
+CRITERIA = [
+    ("sira", "Sıra ve düzen", "Âyet, gerekirse mukaddime, V1, V2, V3 (özet 4, 8.4)"),
+    ("v1", "Birinci vecih: öncesiyle nazım", "Âyetin mâkabliyle irtibatı doğru ve yeterli mi (4.1)"),
+    ("v2", "İkinci vecih: cümleler arası nazım", "Cümlelerin birbirini nasıl istediği (4.2)"),
+    ("v3", "Üçüncü vecih: hey'et ve kelimeler", "Hey'et, kayıt ve kelime nükteleri; tercih soruları (4.3)"),
+    ("maksat", "Dört maksat kuralı", "Asıl maksat söylenmiş; öbürleri yalnız lafza dayanınca, derecesiyle (8.5)"),
+    ("mukaddime", "Mukaddime kuralı", "Yalnız dört durumdan biri varsa, kısa, lafza bağlı (8.6)"),
+    ("kabul", "Kabul ölçüsü ve delâlet derecesi", "Nükte dile, belâgate ve şeriatin maksatlarına uygun; derecesi belli (8.7)"),
+    ("dil", "Dil ve i'râb doğruluğu", "Arapçanın doğruluğu (ehline)"),
+    ("belagat", "Belâgat doğruluğu", "Belâgat iddialarının doğruluğu (ehline)"),
+    ("kaynak", "Kaynağa bağlılık", "Her iddia bir kaynağa ya da âyetin lafzına bağlı (8.3)"),
+    ("uydurma", "Uydurma yok", "Olmayan söz, yanlış atıf, yanlış nakil yok (2: en iyi)"),
+    ("uslup", "Üslûp ve tercüme", "Îcâz; Türkçe tercüme Abdülmecid Nursî tarzına yakın (D1.2c)"),
+]
+
+
 def _inline(text: str, sources: dict, lang: str = "ar") -> str:
     import html
     s = html.escape(text)
@@ -505,146 +648,168 @@ def _inline(text: str, sources: dict, lang: str = "ar") -> str:
 
     def mark(m: re.Match) -> str:
         inner = m.group(1)
-        if re.fullmatch(r"[\d,\s]+", inner):
-            nums = [n.strip() for n in inner.split(",")]
+        clean = inner.replace("\x01", "").replace("\x02", "")
+        if re.fullmatch(r"[\d,\s]+", clean):
+            nums = [n.strip() for n in clean.split(",")]
             title = html.escape(" | ".join(f"[{n}] {sources.get(n, '')}" for n in nums), quote=True)
-            return f'<span class="ref" title="{title}">[{inner}]</span>'
-        cls = "own" if "kendi tespiti" in inner else "src"
-        nums = re.findall(r"\b\d+\b", inner)
+            return f'<span class="ref" data-n="{",".join(nums)}" title="{title}">[{clean}]</span>'
+        cls = "own" if "kendi tespiti" in clean else "src"
+        nums = re.findall(r"\b\d+\b", clean)
         title = html.escape(" | ".join(f"[{n}] {sources.get(n, '')}" for n in nums), quote=True)
-        return f'<span class="mk {cls}" title="{title}">[{inner}]</span>'
-    return re.sub(r"\[([^\]\n]{1,80})\]", mark, s).replace("\n", "<br>")
+        data = f' data-n="{",".join(nums)}"' if nums else ""
+        return f'<span class="mk {cls}"{data} title="{title}">[{clean}]</span>'
+    return _unmark(re.sub(r"\[([^\]\n]{1,80})\]", mark, s).replace("\n", "<br>"))
 
 
-def _blocks_html(blocks: list, lang: str, sources: dict) -> str:
-    out = []
-    for blang, kind, text in blocks:
-        if blang != lang:
-            continue
-        cls = ("ar" if lang == "ar" else "tr") + (" q" if kind == "quote" else "")
-        out.append(f'<p class="{cls}">{_inline(text, sources, lang)}</p>')
-    return "\n".join(out) or '<p class="empty">—</p>'
+def _hidden_paragraphs(cfg: dict) -> dict[str, dict[str, list[str]]]:
+    return {"ar": hidden_sections(cfg, "isaratul-icaz-arabi"), "tr": hidden_sections(cfg, "isaratul-icaz")}
 
 
-def _hidden_html(paras: list[str], lang: str) -> str:
-    import html
-    if not paras:
-        return '<p class="empty">—</p>'
-    cls = "ar" if lang == "ar" else "tr"
-    return "\n".join(f'<p class="{cls}">{_inline(p, {}, lang) if lang == "tr" else html.escape(p)}</p>' for p in paras)
-
-
-def okuma(unit: str) -> None:
-    import html
+def unit_data(unit: str, quran: set) -> dict | None:
     cfg = UNITS[unit]
-    out = OUT / unit
-    drafts = []
-    for path in sorted(out.glob("taslak-*.md"), key=lambda p: int(p.stem.split("-")[1])):
-        meta = json.loads((out / f"{path.stem}.json").read_text())
-        sections, sources = parse_draft(path.read_text(encoding="utf-8"))
-        ar_chars = sum(len(t) for blocks in sections.values() for lang, kind, t in blocks
-                       if lang == "ar" and kind == "para" and blocks is not sections.get("Âyet"))
-        drafts.append((path.stem, meta, sections, sources, ar_chars))
-    hidden = {"ar": hidden_sections(cfg, "isaratul-icaz-arabi"), "tr": hidden_sections(cfg, "isaratul-icaz")}
-    hidden_ar_chars = sum(len(p) for p in sum(hidden["ar"].values(), []))
-    keys = ["Âyet", "Mukaddime", "V1", "V2", "V3"]
+    keep = DRAFTS / unit
+    paths = sorted(keep.glob("taslak-*.md"), key=lambda p: int(p.stem.split("-")[1]))
+    if not paths:
+        return None
+    hidden = _hidden_paragraphs(cfg)
+    hidden_sh = {lang: set().union(*(shingles(p) for ps in secs.values() for p in ps)) - quran
+                 for lang, secs in hidden.items()}
+    texts = SourceTexts(unit)
+    drafts = {}
+    for path in paths:
+        meta = json.loads((keep / f"{path.stem}.json").read_text())
+        raw = path.read_text(encoding="utf-8")
+        sections, cites = parse_draft(raw)
+        ids = draft_sources(keep / f"{path.stem}.jsonl") if (keep / f"{path.stem}.jsonl").exists() else {}
+        sources = {}
+        for n, cite in cites.items():
+            server, sid = ids.get(n, (None, None))
+            sources[n] = {"c": cite, "i": sid, "t": texts.text(server, sid, cite.split(" · ")[0])}
+        draft_sh = {lang: set().union(*(shingles(t) for blocks in sections.values() for bl, _, t in blocks if bl == lang))
+                    - quran for lang in ("ar", "tr")}
+        blocks: dict = {}
+        for key, items in sections.items():
+            if key not in SECTION_TITLES:
+                continue
+            for lang in ("ar", "tr"):
+                rows = [(kind, text) for bl, kind, text in items if bl == lang]
+                blocks.setdefault(key, {})[lang] = [
+                    {"a": f"{key}/{lang}/{i}", "q": kind == "quote", "x": _blocks_plain(text),
+                     "h": _inline(_marked(text, hidden_sh[lang] if key != "Âyet" else set()), cites, lang)}
+                    for i, (kind, text) in enumerate(rows)]
+        hidden_html = {lang: {key: [{"a": f"{key}/{lang}/h{i}", "x": _blocks_plain(p),
+                                     "h": (_inline(_marked(p, draft_sh[lang]), {}, "tr") if lang == "tr"
+                                           else _unmark(__import__("html").escape(_marked(p, draft_sh[lang]))))}
+                                    for i, p in enumerate(paras)]
+                              for key, paras in secs.items()} for lang, secs in hidden.items()}
+        n = path.stem.split("-")[1]
+        cost = f", ≈{meta['cost_usd']:.2f} $" if meta.get("cost_usd") else ""
+        drafts[path.stem] = {
+            "label": f"Taslak {n}", "short": f"istem {meta.get('istem', 'tam')}",
+            "meta": (f"{meta['model']}, {meta['effort']}, istem {meta.get('istem', 'tam')} ({meta.get('prompt_sha', '')}), "
+                     f"{meta['seconds'] // 60} dk{cost}, {sum(meta['calls'].values())} araç çağrısı, "
+                     f"{len(cites)} kaynak, ortak dizi: Arapça {len(draft_sh['ar'] & hidden_sh['ar'])}"),
+            "blocks": blocks, "sources": sources, "hidden": hidden_html}
     ayahs = "–".join(map(str, cfg["ayahs"]))
-    tabs, panes = [], []
-    for d_i, (name, meta, sections, sources, ar_chars) in enumerate(drafts):
-        for lang, label, right in (("ar", "Arapça", "İşârâtü'l-İ'câz (Arapça asıl)"),
-                                   ("tr", "Türkçe", "Abdülmecid Nursî tercümesi")):
-            pane_id = f"{name}-{lang}"
-            tabs.append(f'<button role="tab" data-pane="{pane_id}">{name.replace("taslak-", "Taslak ")} · {label}</button>')
-            rows = []
-            for key in keys:
-                left = sections.get(key, [])
-                right_paras = hidden[lang].get(key, [])
-                if not left and not right_paras:
-                    continue
-                rows.append(f'<h2>{SECTION_TITLES[key]}</h2><div class="row">'
-                            f'<div class="col">{_blocks_html(left, lang, sources)}</div>'
-                            f'<div class="col">{_hidden_html(right_paras, lang)}</div></div>')
-            src_html = "".join(f"<li><b>[{n}]</b> {html.escape(s)}</li>" for n, s in sources.items())
-            heads = (f'<div class="row heads"><div class="col"><h3>Yapay zekâ taslağı ({name.split("-")[1]})</h3></div>'
-                     f'<div class="col"><h3>{right} <span class="muted">gizlenen metin</span></h3></div></div>')
-            info = (f'<p class="meta">{meta["model"]}, {meta["effort"]}, istem {meta.get("istem", "tam")}, '
-                    f'{meta["seconds"] // 60} dk, '
-                    f'{sum(meta["calls"].values())} araç çağrısı. Taslağın Arapçası {ar_chars:,} karakter, '
-                    f'İşârât\'ın bu birimi {hidden_ar_chars:,} karakter.</p>').replace(",", ".")
-            panes.append(f'<section class="pane" id="{pane_id}" hidden>{info}{heads}{"".join(rows)}'
-                         f'<details><summary>Taslağın kaynakçası ({len(sources)})</summary><ol class="src">{src_html}'
-                         f'</ol></details></section>')
-    page = PAGE.replace("{title}", f"Prova {unit}").replace("{h1}", f"Prova: {cfg['sura_name']} {ayahs}") \
-        .replace("{tabs}", "".join(tabs)).replace("{panes}", "".join(panes))
-    (out / "okuma.html").write_text(page, encoding="utf-8")
-    print((out / "okuma.html").relative_to(ROOT))
+    return {"title": f"{cfg['sura_name']} {ayahs}", "sections": SECTION_TITLES, "drafts": drafts,
+            "hidden_titles": {"ar": "İşârâtü'l-İ'câz (Arapça asıl)", "tr": "Abdülmecid Nursî tercümesi"}}
 
 
-PAGE = """<!doctype html>
-<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{title}</title>
-<style>
-:root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #ffffff; --accent: #1f5c3f;
-        --own: #8a4b00; --own-bg: #fdf0dc; --src: #1f4f7a; --src-bg: #e3eef8; --quote: #f2efe8; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --accent: #7cc49d;
-  --own: #f0b46a; --own-bg: #3a2a14; --src: #8cc0ef; --src-bg: #18293a; --quote: #26251f; } }
-:root[data-theme="dark"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b;
-  --accent: #7cc49d; --own: #f0b46a; --own-bg: #3a2a14; --src: #8cc0ef; --src-bg: #18293a; --quote: #26251f; }
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.65 "Noto Serif", "DejaVu Serif", Georgia, serif; }
-header { position: sticky; top: 0; z-index: 2; background: var(--bg); border-bottom: 1px solid var(--line); padding: 10px 16px; }
-h1 { font-size: 1.15rem; margin: 0 0 6px; }
-.stamp { color: var(--muted); font-size: .85rem; margin: 0 0 8px; }
-[role=tablist] { display: flex; flex-wrap: wrap; gap: 6px; }
-[role=tab] { font: inherit; font-size: .9rem; padding: 4px 12px; border: 1px solid var(--line); border-radius: 999px;
-             background: var(--card); color: var(--fg); cursor: pointer; }
-[role=tab][aria-selected=true] { background: var(--accent); border-color: var(--accent); color: var(--bg); }
-main { max-width: 1500px; margin: 0 auto; padding: 8px 16px 60px; }
-.meta { color: var(--muted); font-size: .85rem; }
-h2 { font-size: 1rem; margin: 28px 0 8px; padding-bottom: 4px; border-bottom: 2px solid var(--accent); }
-h3 { font-size: .9rem; margin: 0; color: var(--muted); font-weight: 600; }
-.row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.heads { position: sticky; top: 86px; background: var(--bg); padding: 6px 0; border-bottom: 1px solid var(--line); z-index: 1; }
-.col { min-width: 0; }
-.col + .col { border-left: 1px solid var(--line); padding-left: 24px; }
-p { margin: 0 0 12px; }
-p.ar { direction: rtl; text-align: right; font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif;
-       font-size: 1.3rem; line-height: 2.05; }
-p.q { background: var(--quote); padding: 6px 12px; border-radius: 4px; font-size: .95em; }
-p.ar.q { border-right: 3px solid var(--muted); font-size: 1.2rem; } p.tr.q { border-left: 3px solid var(--muted); }
-p.empty { color: var(--muted); }
-.arw { font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; font-size: 1.12em; }
-.muted { color: var(--muted); font-weight: 400; }
-.mk { font-family: system-ui, sans-serif; font-size: .72rem; padding: 0 4px; border-radius: 3px; white-space: nowrap;
-      direction: ltr; unicode-bidi: isolate; cursor: help; }
-.mk.own { color: var(--own); background: var(--own-bg); } .mk.src { color: var(--src); background: var(--src-bg); }
-.ref { font-family: system-ui, sans-serif; font-size: .72rem; color: var(--src); cursor: help; direction: ltr; unicode-bidi: isolate; }
-details { margin-top: 32px; } summary { cursor: pointer; color: var(--muted); }
-ol.src { list-style: none; padding: 0; font-size: .85rem; } ol.src li { margin: 4px 0; }
-.legend { font-size: .8rem; color: var(--muted); margin: 6px 0 0; }
-@media (max-width: 800px) { .row { grid-template-columns: 1fr; } .col + .col { border-left: 0; padding-left: 0;
-  border-top: 1px dashed var(--line); padding-top: 12px; } .heads { display: none; } }
-</style></head><body>
-<header><h1>{h1}</h1>
-<p class="stamp">Yapay zekâ taslağı, tefsir değildir; yayımlanmaz. Sağ sütun İşârâtü'l-İ'câz'ın taslağı yazan modelden gizlenen metnidir.</p>
-<div role="tablist">{tabs}</div>
-<p class="legend"><span class="mk own">[kendi tespiti]</span> modelin kendi tespiti ·
-<span class="mk src">[belâgat; 14]</span> kaynağa dayanan iddia · <span class="ref">[14]</span> kaynak (üzerine gelince adı)</p>
-</header>
-<main>{panes}</main>
-<script>
-const tabs = [...document.querySelectorAll('[role=tab]')];
-function show(id) {
-  tabs.forEach(t => t.setAttribute('aria-selected', t.dataset.pane === id));
-  document.querySelectorAll('.pane').forEach(p => p.hidden = p.id !== id);
-  try { localStorage.setItem('prova-tab', id); } catch (e) {}
-}
-tabs.forEach(t => t.addEventListener('click', () => show(t.dataset.pane)));
-let saved = null; try { saved = localStorage.getItem('prova-tab'); } catch (e) {}
-show(tabs.some(t => t.dataset.pane === saved) ? saved : tabs[0].dataset.pane);
-</script></body></html>
-"""
+def okuma() -> None:
+    quran = quran_shingles()
+    units = {u: d for u in UNITS if (d := unit_data(u, quran))}
+    data = {"units": units, "note_types": NOTE_TYPES, "criteria": CRITERIA}
+    blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    PAGE_OUT.write_text(TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
+    counts = ", ".join(f"{u}: {len(d['drafts'])} taslak" for u, d in units.items())
+    print(f"{PAGE_OUT.relative_to(ROOT)} ({counts})")
+
+
+# ---------------------------------------------------------------- notlar
+
+NOTES_DIR = KEEP / "notlar"
+
+
+def notlar(files: list[Path]) -> None:
+    """Dışa aktarılan not dosyalarını `data/d1/notlar/`a alır; bütün dosyalardan birim başına `notlar.md` yazar."""
+    NOTES_DIR.mkdir(parents=True, exist_ok=True)
+    for f in files:
+        payload = json.loads(f.read_text(encoding="utf-8"))
+        if payload.get("app") != "d1-okuma":
+            sys.exit(f"{f}: okuma sayfasının dışa aktarma dosyası değil")
+        target = NOTES_DIR / f.name
+        if not target.exists():
+            shutil.copyfile(f, target)
+            print(f"alındı: {target.relative_to(ROOT)}")
+    notes: dict[str, dict] = {}
+    rubric: dict[tuple, dict] = {}
+    for f in sorted(NOTES_DIR.glob("*.json")):
+        payload = json.loads(f.read_text(encoding="utf-8"))
+        for n in payload.get("notes", []):
+            if n["id"] not in notes or n["at"] > notes[n["id"]]["at"]:
+                notes[n["id"]] = n
+        for r in payload.get("rubric", []):
+            rubric[(r["unit"], r["draft"], r["reader"])] = r["scores"]
+    for unit in UNITS:
+        mine = [n for n in notes.values() if n["unit"] == unit]
+        scores = {k: v for k, v in rubric.items() if k[0] == unit}
+        if not mine and not scores:
+            continue
+        path = DRAFTS / unit / "notlar.md"
+        path.write_text(notes_report(unit, mine, scores), encoding="utf-8")
+        print(f"{path.relative_to(ROOT)}: {len(mine)} not, {len(scores)} çizelge")
+
+
+def notes_report(unit: str, notes: list[dict], scores: dict) -> str:
+    drafts = sorted({n["draft"] for n in notes} | {k[1] for k in scores}, key=lambda d: int(d.split("-")[1]))
+    readers = sorted({n["reader"] for n in notes} | {k[2] for k in scores})
+    lines = [f"# Prova {unit}: okuma notları", "",
+             f"`uv run python scripts/d1-prova.py notlar` ile `data/d1/notlar/` dosyalarından üretilir; elle "
+             f"düzenlenmez. Okuyucular: {', '.join(readers)}.", ""]
+    lines += ["## Sayılar", "", "| Taslak | " + " | ".join(NOTE_TYPES.values()) + " | ehline sor |",
+              "|---|" + "---:|" * (len(NOTE_TYPES) + 1)]
+    for d in drafts:
+        c = Counter(n["type"] for n in notes if n["draft"] == d)
+        e = sum(1 for n in notes if n["draft"] == d and n.get("expert"))
+        lines.append(f"| {d} | " + " | ".join(str(c.get(k, 0) or "") for k in NOTE_TYPES) + f" | {e or ''} |")
+    if scores:
+        cols = sorted(scores, key=lambda k: (int(k[1].split("-")[1]), k[2]))
+        lines += ["", "## Ölçüt çizelgesi", "", "0 yok ya da yanlış, 1 kısmen, 2 iyi; boş: bakılmadı.", "",
+                  "| Ölçüt | " + " | ".join(f"{d} · {r}" for _, d, r in cols) + " |",
+                  "|---|" + "---:|" * len(cols)]
+        for key, label, _ in CRITERIA:
+            vals = [scores[c].get(key, {}).get("score") for c in cols]
+            lines.append(f"| {label} | " + " | ".join("" if v is None else str(v) for v in vals) + " |")
+        totals = [sum(v.get("score") or 0 for v in scores[c].values()) for c in cols]
+        lines.append("| **Toplam** | " + " | ".join(f"**{t}**" for t in totals) + " |")
+        reasons = [(c, key, scores[c][key]["note"]) for c in cols for key, _, _ in CRITERIA
+                   if scores[c].get(key, {}).get("note")]
+        if reasons:
+            labels = {k: lab for k, lab, _ in CRITERIA}
+            lines += ["", "Gerekçeler:", ""] + [f"- {d} · {r} · {labels[k]}: {t}" for (_, d, r), k, t in reasons]
+    expert = [n for n in notes if n.get("expert")]
+    if expert:
+        lines += ["", "## Ehline sorulacaklar", ""]
+        for n in sorted(expert, key=lambda n: (n["draft"], n["anchor"])):
+            lines += [f"- **{n['draft']} · {SECTION_TITLES.get(n['anchor'].split('/')[0], n['anchor'])}** "
+                      f"({n['reader']}): {n['text']}", f"  > {n.get('excerpt', '')}"]
+    side_name = {"taslak": "taslakta", "isarat": "İşârât'ın metninde", "bolum": "bölüme"}
+    for d in drafts:
+        lines += ["", f"## {d}", ""]
+        for key in SECTION_TITLES:
+            ns = sorted((n for n in notes if n["draft"] == d and n["anchor"].split("/")[0] == key),
+                        key=lambda n: (n["side"], n["anchor"], n["at"]))
+            if not ns:
+                continue
+            lines += [f"### {SECTION_TITLES[key]}", ""]
+            for n in ns:
+                lines += [f"- **{NOTE_TYPES.get(n['type'], n['type'])}, {['', 'küçük', 'orta', 'önemli'][n['severity']]}**"
+                          f"{' · ehline sor' if n.get('expert') else ''} · {side_name.get(n['side'], n['side'])} "
+                          f"({n.get('lang', '')}) · {n['reader']}: {n['text']}"]
+                if n.get("excerpt") and n["side"] != "bolum":
+                    lines.append(f"  > {n['excerpt']}")
+            lines.append("")
+    return "\n".join(lines).rstrip() + "\n"
 
 
 def _has(conn: sqlite3.Connection, table: str) -> bool:
@@ -666,15 +831,18 @@ def main() -> None:
     p.add_argument("--effort", default="high")
     p = sub.add_parser("karsilastir")
     p.add_argument("unit", choices=UNITS)
-    p = sub.add_parser("okuma")
-    p.add_argument("unit", choices=UNITS)
+    sub.add_parser("okuma")
+    p = sub.add_parser("notlar")
+    p.add_argument("files", nargs="*", type=Path, help="okuyucuların dışa aktardığı not dosyaları")
     args = parser.parse_args()
     if args.command == "hazirla":
         hazirla(args.unit, args.istem, args.db_yenile)
     elif args.command == "yazdir":
         yazdir(args.unit, args.kez, args.model, args.effort, args.istem)
     elif args.command == "okuma":
-        okuma(args.unit)
+        okuma()
+    elif args.command == "notlar":
+        notlar(args.files)
     else:
         karsilastir(args.unit)
 
