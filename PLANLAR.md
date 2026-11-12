@@ -27,7 +27,8 @@ konuşuldu:
    emeğin karşılığı az. Modelin tercümesi "Yapay zekâ tercümesi" damgasıyla verilir (bugünkü kural). Talimata
    "tercümeyi internette ara" konmaz (web'den gelen söz kütüphanenin bulgusu gibi sunuluyordu, 2026-11-09 10.59
    sohbeti); kullanıcı yayımlanmış tercümeyi açıkça sorarsa model web'e bakabilir, bulduğunu yayıncısıyla ve
-   Kaynaklar'ın dışında verir. Diyanet'ten izin gelirse (Elmalılı, Kur'an Yolu, mealler) eklenir, peşine düşülmez.
+   Kaynaklar'ın dışında verir. Diyanet izin vermedi (2026-11-12, "Bekleyen"den kapandı): Kur'an Yolu yok, Diyanet İşleri meali
+   çıkarıldı (B6); Elmalılı asıl metninden (E6).
 3. **Planlar tek belgede:** bu belge.
 4. **Eser ekleme ölçütü** (aşağıda E2): her tavsiye edilen eser eklenmez; ölçütle seçilir.
 5. **Kendi model ve üyelik:** konuşuldu, karar yok (aşağıda "Fikirler").
@@ -47,23 +48,30 @@ durur, "Kayıt"taki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E4, S4, A3, D1, B5 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E6, S4, A3, D5, B6 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
+Sıra kullanıcının kararıdır (2026-11-12).
+
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D1 | İşârât usulüyle yapay zekâ taslağı: usul özeti (taslak hazır), prova, asıl iş | — |
-| 2 | E2 | Klasik eserler ve eser ekleme ölçütü | K |
-| 3 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 4 | S3 | Gemini | Aşama 18 |
-| 5 | B1 | Kontrol kuyruğu ve işaretlerin işlenmesi | Aşama 16 |
-| 6 | A2 | Osmanlıca–Türkçe eşleme | Aşama 19 |
-| 7 | A3 | Kaynak seçimi | Aşama 13.3 |
-| 8 | B2–B5 | Küçük açıklar | MVP "Kalan" |
-| 9 | E3 | Sorularla Risale (izin; isteğe bağlı) | — |
+| 1 | D4 | Prova okuma ve not platformu, D1 belgelerinin düzeni, taslakların özel deposu | — |
+| 2 | D1 | İşârât usulüyle taslak, prova: Bakara 11–12'nin üç taslağı, okunması ve geri dönüt | — |
+| 3 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis ve tefsir) | M7 |
+| 4 | E2 | Belâgat eserleri ve Risale'nin andığı önemli kaynaklar; klasik eserler bağdaştırıcısı | K |
+| 5 | D2 | Bakara 11–12 yeniden, E2'nin eserleriyle (üç taslak, fark) | D1.7 |
+| 6 | D3 | Başka türden bir birim, İşârât aralığında | — |
+| 7 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
+| 8 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 9 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
+| 10 | B2–B6 | Küçük açıklar | MVP "Kalan" |
 
 **D1. İşârât usulüyle yapay zekâ taslağı** (kullanıcının yola çıkarkenki fikri; "Fikirler"den alındı, 2026-11-09).
+**Daraltıldı (kullanıcının kararı, 2026-11-12):** D1 yalnız Bakara 11–12 provasıdır: farklı taslaklar, karşılaştırma
+ve bilir kişilerle okunup geri dönüt. Eser eklendikten sonra aynı prova D2, dersleriyle başka bir birim D3, asıl iş
+D5 (küçük adımlarla), okuma ve not platformu D4. Aşağıdaki genel tarif (asıl iş, me'haz) bu adımların ortak
+zeminidir.
 Model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Taslak "yapay zekâ taslağı" diye
 damgalanır, "tefsir" denmez, yayımlanmaz; her iddia kaynağa bağlıdır, dil ve belâgat iddiaları ayrı işaretlidir.
 Asıl iş Bakara 34 ve sonrasıdır; me'haz İşârât'ın tamamı, Risale-i Nur ve Tefsir ile Hadis eklentileridir.
@@ -168,13 +176,36 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   araçla ulaştı; sayılarda tam istemin üstünlüğü yok. Okuma sayfasında üç taslak; değerlendirme kullanıcıda.
 - D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
   nükteleri), i'râb ve belâgat doğruluğu, uydurma; mütehassıs taslağı İşârât'ın kendi metniyle yan yana okur; ezber
-  otomatik ölçülür.
+  otomatik ölçülür. Okuma sayfasında ölçüt çizelgesi olur (D4).
 - D1.5 Mütehassıs: en az bir Arapça ve belâgat bilen (kullanıcı; ilanla değil davetle).
-- D1.6 Prova (bugünkü kaynaklar); D1.7 E2'de belâgat eserleri (Cürcânî, Miftâh) eklenince aynı âyetlerle yeniden:
-  fark, eklemenin katkısını ölçer.
-- D1.8 Prova tutarsa asıl iş: Bakara 34 ve sonrası.
+- D1.6 Okuma ve geri dönüt: kullanıcı üç taslağı bildiği kişilerle okur (2026-11-12'den), notlar D4'ün sayfasında.
+- D1.7 D2 oldu; D1.8 D5 oldu (2026-11-12).
+- D1.9 Rapor: taslakların ve okumaların dersleri; D2, D3 ve istemin sonraki sürümü buna dayanır.
 
-**E2. Klasik eserler ve eser ekleme ölçütü.** Ölçüt (kullanıcı onayladı, 2026-11-09): bir eser şu üç şarttan en
+**D2. Bakara 11–12, E2'nin eserleriyle** (eski D1.7). Aynı birim, aynı model ve düşünme, aynı istem sürümü; değişen
+yalnız eklenen eserler (E2 ve klasik eserler bağdaştırıcısı prova sunucularına girer). Üç taslak (kullanıcı onayladı,
+2026-11-12; aynı şartlarda üç taslak birbirinden epey farklıydı: İşârât'tan 29, 21, 36 yer). Fark: yeni eserlere
+dayanan iddia, belâgat isabeti, uydurma, okuyucuların notları; D1 ile aynı ölçüt çizelgesi.
+
+**D3. Başka türden bir birim.** D1 ve D2'nin dersleriyle, yine İşârât'ın kapsadığı aralıkta (cevabı bilinen, kör
+prova), 11–12'den farklı türde (temsil: 17–20, ya da hüküm); üç taslak.
+
+**D4. Prova okuma ve not platformu** (kullanıcı bütün önerileri onayladı, 2026-11-12). D1, D2, D3 ve D5'e hizmet eder.
+- Seçim: birim → taslak → dil; iki kip: taslak ile İşârât'ın gizlenen metni, taslak ile taslak (D2'de önce ve sonra).
+- Notlar paragrafa ya da vecihe bağlı; türü (doğru, yanlış, eksik, fazla, uydurma, i'râb/belâgat, usul), önemi,
+  okuyucunun adı; "ehline sor" işareti (Arapçayı kullanıcı denetleyemez; mütehassısa ayrı liste).
+- Taslaktaki kaynak numarasının üzerinde dayandığı cümlenin kendisi; gizlenen metinle ortak kelime dizileri işaretli.
+- Ölçüt çizelgesi (D1.4) her taslak için 0–2; taslaklar ve provalar sayıyla karşılaştırılır.
+- Notlar tarayıcıda, dışa aktarma ile dosya; okuyucu dosyayı gönderir, betik birleştirip rapora işler. Taslaklar
+  kapalı kalır: açık adreste durmaz.
+- Belgeler `docs/d1/` altında (README durum ve dizin, prova başına rapor). Taslaklar, dökümler ve notlar
+  yeniden üretilemez ve kapalıdır: ayrı yerel git deposunda, uzak kopyası özel depoda (denetim kayıtları gibi).
+
+**D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; alt adımları D3'ten sonra yazılır.
+İlki: D5.1 Bakara 34, tek birim, ehlin okuması.
+
+**E2. Belâgat eserleri ve Risale'nin andığı önemli kaynaklar** (kullanıcının kararı, 2026-11-12: klasik eserler iki
+parçaya ayrıldı; kalanı E5). Ölçüt (kullanıcı onayladı, 2026-11-09): bir eser şu üç şarttan en
 az ikisini tutarsa girer:
 1. Risale onu ya da müellifini adıyla anıyor, ya da Risale'deki bir hadisin künyesi o kitabı gösteriyor (veriden
    sayılır: `search` ile adlar, `data/interim/hadis/kunye.md` künyeler).
@@ -184,34 +215,50 @@ az ikisini tutarsa girer:
 Gerekçe: her eser anlamsal aramayı sulandırır ve bellek ister (tefsir makinesi 8 GB, 1,3 GB kullanılıyor).
 "Bediüzzaman'ın ezberlediği 90 kitap" bir liste değil, bir rivayettir; çoğu ders kitabıdır. Beklenen sonuç 15–30
 eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded.py`).
-- E2.1 Aday listesi: Risale'de anılma sıklığı, künye sıklığı ve gelen tavsiyeler, her aday üç şartla ve OpenITI
-  nüshasıyla (`docs/eserler/klasik.md` (b) ve (c)).
+- E2.1 Aday listesi: önce belâgat (İşârât'ın adıyla dayandığı Delâilü'l-İ'câz, Esrârü'l-Belâga, Miftâhu'l-Ulûm;
+  Keşşâf tefsirde var), sonra Risale'nin adıyla andığı önemli kaynaklar; her aday üç şartla ve OpenITI nüshasıyla
+  (`docs/eserler/klasik.md` (b) ve (c)).
 - E2.2 Kullanıcı seçer.
 - E2.3 Ayrıştırma: OpenITI ortak ayrıştırıcılarıyla (`books/tefsir_openiti.py`, `hadis_openiti.py` örnek).
-- E2.4 Nerede durur: yeni "klasik eserler" bağdaştırıcısı mı, tefsir makinesinde ayrı profil mi (karar). Önceki
-  adaylar: İhyâ, Miftâhu'l-Ulûm, Cürcânî; eş-Şifâ ve Delâil hadis kütüphanesinde.
+- E2.4 Nerede durur: **karar (kullanıcı, 2026-11-12): yeni bir "klasik eserler" bağdaştırıcısı**, tefsirlerle
+  karışmasın diye; tefsir makinesinde (8 GB, bunun için alındı), tefsir sunucusunun yanında. Kurulum: profil, sunucu
+  ve talimat, Caddy yönlendirmesi, sitede eklenti sayfası.
 
-**A1 – A3, S3, B1:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 18, 16, 19, 13.3).
+**S4. Dizin başvuruları** (sıraya alındı, 2026-11-12; kullanıcı: bağdaştırıcıların erişilebilir olması için çok
+önemli). Belgeler `docs/dizin-basvurusu.md`, `docs/chatgpt-dizin-basvurusu.md`, `docs/dizin-politikalari.md`.
+- S4.1 OpenAI reddi (2026-11-12): içerik değil kimlik: "eklentinin, markanın veya ticari markanın doğrulanmış kişiye
+  ya da işletmeye ait olduğunu onaylayamadık"; çözüm işletme doğrulaması ya da doğrulanmış sahibin hesabı. Kullanıcının
+  durumu: organizasyon adı "Nur Hadimleri" (eklentide Developer olarak görünüyor), Organization Settings ›
+  Verifications'ta "Verified - Individual". Olası sebep: bireysel doğrulama ile organizasyon adının ve "Risale-i Nur"
+  adının uyuşmaması. Araştırılır (yardım makalesi, bireysel hesapla gönderilebilir mi).
+- S4.2 Yeniden başvuru "Risale MCP" adıyla (kullanıcının kararı, 2026-11-12; alan adı risalemcp.com bizim);
+  "Risale-i Nur" açıklamada kalır. Gerekirse itiraz (e-postayı yanıtlayarak).
+- S4.3 Claude: başvuru portalda görünüyor, "in review" (2026-11-12).
+- S4.4 Hadis ve tefsir başvuruları (ayrı).
+
+**A1, A2:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
+kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
+baskısı, `osmanlica` grubu). erisale'den alınabilirse baskı farkı kalkar, ama beklenmez. Şimdilik sırada kalır, sonra
+yeniden bakılır.
 
 **Küçük açıklar:**
 - B2 Risale talimatının öbür bağdaştırıcılara bilgi kipinde gönderme cümlesi (MVP'nin "Kalan"ı; tek kaynakça kuralı
   onları anıyor, yeterli mi bakılır).
 - B3 Tefsirde noktalaması seyrek eserlerin uzun cümleleri (Bursevî ortalama 97 kelime) ve âyet birimlerinin %0,9'unun
   denetimden geçmemesi (`data/interim/tefsir/mvp-denetim.md`, çoğu yanlış alarm): ölçüldü, düzeltilmedi.
-- B4 Nutuk'ta "birinci kılıç" başlığının altındaki paragraf (B1 kuyruğu).
+- B4 Nutuk'ta "birinci kılıç" başlığının altındaki paragraf (B1'in kuyruğundan; B1 donunca buraya kaldı).
 - B5 Üç âyet dizgi şüphesi (`docs/ayet-duzeltmeleri.md`), kullanıcının kararı.
-
-**E3. Sorularla Risale:** web araması değil; izin alınırsa `risale/ilgili` koleksiyonuna (`authority: modern`,
-varsayılan aramaya girmez). İzin yoksa eklenmez. Bkz. "Fikirler".
+- B6 Diyanet İşleri Başkanlığı mealinin çıkarılması (Diyanet izin vermedi, 2026-11-12): Kur'ân katmanı, üç
+  sunucunun talimatı ve `get_ayah`, site, belgeler; Vakfın meali kalır.
 
 ## Bekleyen (başkasının cevabı)
 
 | Kimlik | İş | Kimde | Eski adı |
 |---|---|---|---|
-| S4 | Dizin başvuruları (Claude, ChatGPT; hadis ve tefsir için ayrı). Claude başvurusu artık claude.ai/directory/manage portalında; Risale başvurusunun orada görünüp görünmediğine bakılır. `docs/dizin-basvurusu.md`, `docs/chatgpt-dizin-basvurusu.md`, `docs/dizin-politikalari.md` | Kullanıcı | M7 |
-| E4 | Kızıl İcaz'ın Türkçesi ve Ta'likat (`docs/akgunduz-izin-epostasi.md`); cevap gelmeden PDF okunmaz | Akgündüz | Aşama 17 |
-| — | Diyanet: Elmalılı, Kur'an Yolu, mealler (`docs/diyanet-izin-epostasi.md`); gelirse E listesine girer | Diyanet | — |
-| — | Osmanlıcanın kaynağı (A2'nin ön şartı) | e-Risale | Aşama 19 |
+| S4.3 | Claude dizini: Risale başvurusu "in review" (2026-11-12) | Anthropic | M7 |
+
+Kapananlar (2026-11-12): E4 Kızıl İcaz'ın Türkçesi (gerek yok, "Biten"); Diyanet (izin yok, "Biten"); Osmanlıcanın
+kaynağı (A2'nin ön şartı değil).
 
 ## Sonra (sırası belli değil; sıraya girince kimlik alır)
 
@@ -223,10 +270,25 @@ varsayılan aramaya girmez). İzin yoksa eklenmez. Bkz. "Fikirler".
 - **Gönderme tablosu** (Aşama 13'ün ertelenen kısmı).
 - **Yerel indirilebilir paket** (Y2.7).
 - **Ortak derlemler** (e-Risale, Yeni Asya): tasarım aşağıda.
+- **E3 Sorularla Risale:** web araması değil; izin alınırsa `risale/ilgili` koleksiyonuna (`authority: modern`,
+  varsayılan aramaya girmez). İzin e-postası gönderilmedi (2026-11-12), izin yoksa eklenmez. Bkz. "Fikirler".
+- **E5 Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`).
+- **E6 Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
+  2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
+  dizgisi baskının yayıncısınındır: kaynak seçilirken bakılır. Bir arkadaşın gönderdiği PDF'ler biçimi bozuk, son çare.
 
-## Dondurulan (2026-11-09)
+## Dondurulan
 
 Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır olur.
+
+2026-11-12 (kullanıcının kararı):
+- **S3 Gemini** (Aşama 18): Gemini uygulamasında Türkiye için uzak MCP desteği yok (Antigravity ve CLI hariç); şu an
+  yapılamaz.
+- **B1 Kontrol kuyruğu ve işaretlerin işlenmesi** (Aşama 16): kuyruk paragraflara ayırma içindi, atıf birimi cümle
+  olunca gereği kalmadı; Risale'den bugüne hata çıkmadı, çıkarsa kullanıcı bildirir. Kuyruktaki tek şüphe B4'te.
+- **A3 Kaynak seçimi** (Aşama 13.3): şu an gerekmiyor.
+
+2026-11-09:
 
 - **Okumayla kurulan ve denetlenen bağlar:** denetçi daveti (Y0.2), aday bağ durumu (Y1.3), denetim arayüzü (Y1.4),
   âyet dosyaları (Y1.8), katkı altyapısı (Y3: OAuth'lu katkı bağdaştırıcısı, `propose_link`, kuyruk), katkılar ve
@@ -272,6 +334,11 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - E1 Eser listeleri (2026-11-09): `docs/eserler/tefsir.md`, `hadis.md` (yeni; kütüphanedeki 18 kitaptan üretilir), `klasik.md` (yeni) üç bölümlü; `checklist` elle tutulan (b) ve (c)'yi korur, OpenITI indirmelerini görür ("ham veri 0/13" düzeldi). (b) ve (c) `docs/mvp-kitaplar.md`'deki önerilerden ve künye sayılarından dolduruldu; "?" işaretli şartlar E2.1'de sayılacak.
 - S1 Yenilikler ve Open Graph (2026-11-09, yayında): `scripts/site-uret.py`, `docs/yenilikler/`, yazım kılavuzu `docs/yenilikler-kilavuzu.md`; bütün Türkçe sitede "eklenti".
 - S2 Sitenin yenilenmesi (2026-11-09, yayında): üç eklentiyi anlatan ana sayfa, `risale.html`, "Hata bildirin", İngilizcesi; ayrıntı "Kayıt › Kimlikli işler"de.
+- E4 kapandı (2026-11-12, kullanıcının kararı): Kızıl İcaz'ın Türkçesine gerek yok, model tercümesi damgalı yeter;
+  katalogdaki kayıt silindi (73/73). Akgündüz e-postası hiç gönderilmemişti.
+- Diyanet'in cevabı (2026-11-12): kaynak dosyalar paylaşılmaz, toplu aktarılmaz, yeniden yayımlanmaz. Kur'an Yolu
+  yok; Diyanet İşleri Başkanlığı meali çıkarılır (B6), Türkiye Diyanet Vakfı'nın meali (ayrı kuruluş) kalır;
+  Elmalılı E6.
 - MVP sonrası düzeltmeler (2026-11-07/09): hata ayıklama adresleri, râvi araması ve `ibn`, hadis `cite`'ında alıntı
   denetimi, tercüme damgası, ChatGPT önbelleği, kesik kaynakça, web içeriği kuralı.
 
