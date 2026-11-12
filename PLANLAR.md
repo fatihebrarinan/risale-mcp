@@ -170,6 +170,12 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   17–20'nin iki faslı; İşârât'ın kalanı `risale` eklentisinden (`read_section`, `search`, `semantic_search`), istem
   bunu söyler. `istem-ince.md` 171 bin karakter (tam 759 bin; tam biçim dünkü istemi harfi harfine aynı üretir).
   Veritabanları ortak, yeniden kurulmadı. Sızıntı testi temiz (`sizinti-ince.md`: istemde 1 kalıp ibare).
+  **Taslak 2 (ince istem, 2026-11-12):** 690 sn, 37 tur, ≈7,55 $ (taslak 1: 11,85 $; araç sonuçları birikip bağlam
+  ≈270 bine çıktı, tasarruf üçte ikide kaldı). İşârât'tan 21 yer, 10 birim; taslak 1'in uzak birimlerinin hepsini
+  (2 mukaddimesi, 6, 26–27, 30 mukaddimesi, 17–20 mesele 5 ve 10) `search`, `semantic_search`, `get_passage` ile
+  buldu, yalnız Fâtiha yok. İşaretler: kaynaklı 39, kendi tespiti 35 (taslak 1: 23 ve 42). Gizlenen metinle ortak
+  6'lı dizi 4, hepsi geçiş kalıbı ("اعلم ان وجه نظم هذه الاية", "واما جملة …"). İlk bakışta tam metnin katkısı
+  görülmedi; içerik değerlendirmesi kullanıcıda. Kullanıcı Max planına geçti.
 - D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
   nükteleri), i'râb ve belâgat doğruluğu, uydurma; mütehassıs taslağı İşârât'ın kendi metniyle yan yana okur; ezber
   otomatik ölçülür.
