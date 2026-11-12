@@ -200,6 +200,11 @@ prova), 11–12'den farklı türde (temsil: 17–20, ya da hüküm); üç taslak
   kapalı kalır: açık adreste durmaz.
 - Belgeler `docs/d1/` altında (README durum ve dizin, prova başına rapor). Taslaklar, dökümler ve notlar
   yeniden üretilemez ve kapalıdır: ayrı yerel git deposunda, uzak kopyası özel depoda (denetim kayıtları gibi).
+- **Kuruldu (2026-11-12):** `uv run python scripts/d1-prova.py okuma` → `data/d1/okuma.html` (tek dosya, bütün
+  birimler; şablon `scripts/d1-okuma-sablon.html`); kaynak metinleri taslağın dökümündeki `cite` çağrılarından
+  (üç taslağın 164 kaynağının hepsi); `notlar <dosya>` → `data/d1/notlar/` ve `provalar/<birim>/notlar.md`. Belgeler `docs/d1/`
+  (README), kapalı kayıtlar `data/d1/` (kendi git deposu, README, `provalar/11-12/rapor.md` iskeleti). Tarayıcıda
+  denendi: not, kaynak, iki kip, iki dil, çizelge, dışa aktarma ve rapor. Uzak özel depo kullanıcıda.
 
 **D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; alt adımları D3'ten sonra yazılır.
 İlki: D5.1 Bakara 34, tek birim, ehlin okuması.
@@ -230,7 +235,14 @@ eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded
   ya da işletmeye ait olduğunu onaylayamadık"; çözüm işletme doğrulaması ya da doğrulanmış sahibin hesabı. Kullanıcının
   durumu: organizasyon adı "Nur Hadimleri" (eklentide Developer olarak görünüyor), Organization Settings ›
   Verifications'ta "Verified - Individual". Olası sebep: bireysel doğrulama ile organizasyon adının ve "Risale-i Nur"
-  adının uyuşmaması. Araştırılır (yardım makalesi, bireysel hesapla gönderilebilir mi).
+  adının uyuşmaması. **Araştırma (2026-11-12):** OpenAI'nin gönderim belgesi: "Complete individual or business
+  verification in organization settings to publish under your name or a company name"; dizindeki geliştirici adı
+  seçilen doğrulanmış kimlikten gelir; "Public URLs must … identify the same publisher as the submission". Forumdaki
+  ret iletileri de geliştirici adının doğrulanmış kişi ya da işletme adıyla aynı olmasını istiyor. Yani bireysel
+  doğrulama ancak kişinin kendi adıyla yayımlamaya yeter; "Nur Hadimleri" adıyla yayımlamak işletme doğrulaması
+  (tüzel kişilik: dernek, vakıf, şirket) ister. Seçenekler: (a) kullanıcının doğrulanmış kendi adıyla yayımlamak
+  (ad dizinde görünür; sitedeki yayıncı bilgisi de aynı ad olmalı), (b) "Nur Hadimleri"ni tüzel kişi olarak doğrulatmak.
+  Karar kullanıcıda.
 - S4.2 Yeniden başvuru "Risale MCP" adıyla (kullanıcının kararı, 2026-11-12; alan adı risalemcp.com bizim);
   "Risale-i Nur" açıklamada kalır. Gerekirse itiraz (e-postayı yanıtlayarak).
 - S4.3 Claude: başvuru portalda görünüyor, "in review" (2026-11-12).
@@ -249,7 +261,8 @@ yeniden bakılır.
 - B4 Nutuk'ta "birinci kılıç" başlığının altındaki paragraf (B1'in kuyruğundan; B1 donunca buraya kaldı).
 - B5 Üç âyet dizgi şüphesi (`docs/ayet-duzeltmeleri.md`), kullanıcının kararı.
 - B6 Diyanet İşleri Başkanlığı mealinin çıkarılması (Diyanet izin vermedi, 2026-11-12): Kur'ân katmanı, üç
-  sunucunun talimatı ve `get_ayah`, site, belgeler; Vakfın meali kalır.
+  sunucunun talimatı ve `get_ayah`, site, belgeler; Vakfın meali kalır. **Yerelde bitti (2026-11-12):** `quran.json`
+  ve dört veritabanı yeniden kuruldu; yayın bekliyor (`DEPLOY_EXPECT`, `HADIS_EXPECT`, `TEFSIR_EXPECT` ile).
 
 ## Bekleyen (başkasının cevabı)
 
