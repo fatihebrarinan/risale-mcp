@@ -56,21 +56,20 @@ Sıra kullanıcının kararıdır (2026-11-12).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D4 | Prova okuma ve not platformu, D1 belgelerinin düzeni, taslakların özel deposu | — |
-| 2 | D1 | İşârât usulüyle taslak, prova: Bakara 11–12'nin üç taslağı, okunması ve geri dönüt | — |
-| 3 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis ve tefsir) | M7 |
-| 4 | E2 | Belâgat eserleri ve Risale'nin andığı önemli kaynaklar; klasik eserler bağdaştırıcısı | K |
-| 5 | D2 | Bakara 11–12 yeniden, E2'nin eserleriyle (üç taslak, fark) | D1.7 |
-| 6 | D3 | Başka türden bir birim, İşârât aralığında | — |
-| 7 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
-| 8 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 9 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
-| 10 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 1 | D1 | İşârât usulüyle prova, Bakara 11–12: üç taslağın okunması, mütehassıs, geri dönüt ve rapor | — |
+| 2 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis ve tefsir) | M7 |
+| 3 | E2 | Belâgat eserleri ve Risale'nin andığı önemli kaynaklar; klasik eserler bağdaştırıcısı | K |
+| 4 | D2 | Bakara 11–12 yeniden, E2'nin eserleriyle (üç taslak, fark) | D1.7 |
+| 5 | D3 | Başka türden bir birim, İşârât aralığında | — |
+| 6 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
+| 7 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 8 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
+| 9 | B2–B5 | Küçük açıklar | MVP "Kalan" |
 
 **D1. İşârât usulüyle yapay zekâ taslağı** (kullanıcının yola çıkarkenki fikri; "Fikirler"den alındı, 2026-11-09).
 **Daraltıldı (kullanıcının kararı, 2026-11-12):** D1 yalnız Bakara 11–12 provasıdır: farklı taslaklar, karşılaştırma
 ve bilir kişilerle okunup geri dönüt. Eser eklendikten sonra aynı prova D2, dersleriyle başka bir birim D3, asıl iş
-D5 (küçük adımlarla), okuma ve not platformu D4. Aşağıdaki genel tarif (asıl iş, me'haz) bu adımların ortak
+D5 (küçük adımlarla), okuma ve not platformu D4 (bitti). Aşağıdaki genel tarif (asıl iş, me'haz) bu adımların ortak
 zeminidir.
 Model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Taslak "yapay zekâ taslağı" diye
 damgalanır, "tefsir" denmez, yayımlanmaz; her iddia kaynağa bağlıdır, dil ve belâgat iddiaları ayrı işaretlidir.
@@ -81,105 +80,10 @@ Sadeleştirme (2026-11-09/10, kullanıcının sorusu üzerine): **prova** asıl 
 âyetin İşârât'taki kısmı gizlenir; taslak İşârât'ın o âyetteki kendi metniyle yan yana okunur. Ayrı bir ezber
 yoklaması deneyi yapılmaz: ezber provanın değerlendirmesinde ölçülür (taslak ile gizlenen metnin ortak kelime
 dizileri), içerik hatırlamasını mütehassıs görür.
-- D1.1 **Usul özeti** (taslak hazır, 2026-11-10: `docs/d1/usul-ozeti.md`). İşârât'ın bir âyeti ele alırken ne
-  yaptığının ve hangi sırayla yaptığının dökümü; tefsir değildir. Her madde İşârât'ın kendi cümlesine dayanır,
-  adresi ve kimliğiyle; derleyenin çıkarımı "[Çıkarım]" diye işaretlidir. İçeriği: eserin kendini tanımlaması
-  (maksat nazımdaki i'câz, sınır lafzın delâleti ve işârâtı, niyet bir heyetin tefsirine örnek ve me'haz), ilkeler
-  (dört maksat, havuz ilkesi, saat milleri, birden çok mânânın şartı), bir âyette izlenen sıra (âyet, gerekirse
-  mukaddime, mâkabliyle irtibat, cümleler arası intizam, hey'etler ve kelimeler), üçüncü vecihte bakılanlar,
-  anlatım biçimi, kaynaklarla ilişkisi, mütehassısa sorular. Üç işi var: usulü önce kullanıcı ve mütehassıs onaylar;
-  mütehassısın taslağı ölçeceği ölçü olur; modele neye bakacağını söyler. Alıntılar `python3
-  scripts/d1-usul-denetim.py` ile veritabanıyla denetlenir (48 alıntı, hepsi birebir). Türkçe tercümeden
-  derlendi; Arapça asılla karşılaştırma ve "usul hangi dilden öğretilir" sorusu mütehassısa ve kullanıcıya açık.
-  Okur sürümü (2026-11-10, kullanıcının isteği: paylaşılacak, programcı ayrıntısı olmadan): `python3
-  scripts/d1-okur.py` → `site/taslak/isarat-usulu.html` ve `.pdf` (kimlik yerine eser, bölüm ve ilk kelimeler;
-  "Derleyenin notu"; yalnız bağlantıyla: menüde ve site haritasında yok, `noindex`; açık olması sorun değil).
-  Adres: https://risalemcp.com/taslak/isarat-usulu.html
-- D1.2 Kullanıcı okudu ve bildiği uygun kişilere gönderdi (2026-11-10). **Kararlar (kullanıcı, 2026-11-10):**
-  - Özetin mütehassısa sorduğu ilk üç soruyu (üç vecih her birimde var mı, mukaddimeler, terimlerin Arapça asıldaki
-    dağılımı) model metnin tamamını okuyarak cevaplar: **birim çizelgesi** (D1.2a). Sınırlar: "taslakta ne zaman
-    mukaddime yazılır" kuralını model bulgudan önerir, kullanıcı karara bağlar; Arapça belâgat inceliklerinde model
-    yanılabilir, her hücre adresli kalır.
-  - **Dört maksat kuralı:** asıl maksat her zaman söylenir; öbürleri yalnız âyetin bir kelimesine ya da hey'etine
-    dayandırılabiliyorsa, derecesiyle (sarih, işaret, remiz) söylenir; dördü her âyette zorla gösterilmez.
-    Dayanak: Fâtiha girişi ("sarâhaten veya işâreten veya remzen") ve Bakara girişinin Arapça aslı (çoğu sûrede biri
-    asıl, kalanı tebeî).
-  - **Dil:** tefsir Arapça yazılmalıdır (kullanıcının görüşü; müellifin sözü değil, onun üç tespitinden çıkardığı
-    sonuç: tercüme cezâleti koruyamamış, Arapça tefsir ayrıca neşredilecek, Arapçasındaki tevâfuklar korunmalı).
-    Usul Arapça asıldan öğretilir, Türkçe tercüme destek olur. Taslak **Arapça asıl ve onun Türkçe tercümesidir**
-    (iki ayrı taslak değil): tercüme Arapçadan paragraf paragraf, damgalı; kullanıcı Türkçesini okur, Arapça bilen
-    aynı paragrafın aslını denetler; provada Arapça taslak İşârât'ın gizlenen Arapça kısmıyla yan yana okunur.
-  - **Mütehassıs** bu iş için: Arapça ve belâgat bilen, İşârât'ı okumuş biri (Arapça taslağı kullanıcı denetleyemez).
-- D1.2a **Tam okuma ve birim çizelgesi** (bitti, 2026-11-10): Arapça asıl baştan sona okundu (3.264 cümle;
-  15 Fâtiha kelime bahsi, 23 Bakara âyet bahsi). Çizelge `docs/d1/birim-cizelgesi.md` (239 adres, `python3
-  scripts/d1-usul-denetim.py docs/d1/birim-cizelgesi.md` ile denetlenir), okuma notları `docs/d1/okuma-notlari.md`.
-  Bulgular: (1) eser üç vechi dokuz yerde adıyla sayar; Bakara 9'dan sonra sıra sabit (V1 → V2 → V3, 15/15 birim),
-  1–8'de düzen henüz oturmamış, Fâtiha'da birim kelime. (2) Mukaddime sabit basamak değil; dört durumda gelir:
-  âyetin meâli dört maksattan ya da iman rükünlerinden biri, âyetin altında büyük kelâm ihtilafı, bir üslûp türünün
-  ilk kez toplu gelmesi, tahkik isteyen lafız; çoğu "başka kitapta tafsil ettik, burada hülâsa" diye gelir, her
-  delil âyetin bir lafzına bağlanır. (3) Üçüncü vecihte yapılan işler: bakılacak yerlerin sayılması, tercih sorusu
-  ("neden şu lafız, şu değil"), beklenenle muvazene, mukadder cümleler, sâmiin zihni, karşılıklı eşleme, genel ve
-  hususî nükte, toplayış. (4) Okumayla çıkanlar: nazarî temel Bakara 17–20'deki on iki mesele; dayanak Cürcânî
-  ("ونحن على مذهبه"); adıyla anılan kaynaklar (Cürcânî, Sekkâkî ve Miftâh, Zemahşerî ve Keşşâf, Râzî, Câhız,
-  Teftâzânî, Sîbeveyh…; bir yerde Abduh'tan nakil); bir nüktenin kabul ölçüleri (üçüncü şart Arapçada
-  "makàsıd-ı şeriat usulü"); Arapça asıl 31. âyetin ortasında biter. **Mukaddime kuralı (kullanıcı onayladı,
-  2026-11-10):** taslakta mukaddime yalnız dört durumdan biri varsa yazılır, kısa tutulur, her iddiası âyetin bir
-  lafzına bağlanır, mesele İşârât'ta ya da Risale-i Nur'da işlenmişse oraya atıfla hülâsa edilir.
-  E2 için not: Miftâh, Delâilü'l-İ'câz, Esrârü'l-Belâga ve Keşşâf eserin adıyla dayandığı kaynaklar.
-- D1.2b **Özetin ikinci sürümü** (bitti, 2026-11-10): `docs/d1/usul-ozeti.md` Arapça asla dayanır. 55 Arapça
-  alıntı; 40'ının yanında Abdülmecid Nursî tercümesindeki karşılığı, 15'inde "Yapay zekâ tercümesi" damgalı model
-  tercümesi (11'i Bakara 17–20'nin tercümede bulunmayan nazarî girişinden). Yeni bölümler: usulün nazarî temeli (2:
-  i'câzın esası nazmın belâgati, nazm-ı meânî, mânâ tabakaları ve delâlet dereceleri, her kayıt mukadder suale
-  cevap, hayalde hakikat çekirdeği, Cürcânî'nin mezhebi), âyet âyet sıra çizelgesi (4), mukaddimelerin dört durumu
-  ve gerekçe cümleleri (5), taslak için kurallar (8: ad ve damga, dil, me'haz, sıra, dört maksat, mukaddime, kabul
-  ölçüsü), açık sorular (9). 112 alıntı ve 148 kimlik veritabanıyla denetlendi, 0 sorun. Okur sayfası ve PDF aynı
-  adreste yenilendi (`scripts/d1-okur.py`: Arapça sağdan sola, altında tercümedeki karşılığı; 23 sayfa); yayına
-  gitmesi için `scripts/deploy.sh --code` gerekir. Model tercümeleri ve Arapça–Türkçe eşlemeleri ehli görmedi.
-- D1.2c Özetin açık sorularına kullanıcının görüşleri (2026-11-10/11; özette ve okur sayfasında soru olarak kalır,
-  mütehassısın görüşü de alınacak): **düzen** Bakara 9'dan sonraki sabit sıra (V1 → V2 → V3), öbür türlü usul sabit
-  olmaz; **Türkçe tercümenin dili** Abdülmecid Nursî tercümesine yakın (Arapça asla muvafık tarz); **üslûp** provada
-  îcâzlı. Prova bunlarla yapılır. Açık: Arapça okumanın ehlince denetimi (1).
-- D1.3 Prova düzeni: sınanan âyetin İşârât metnini (Türkçe ve Arapça) dışarıda bırakan deneme profili, taslak
-  şablonu ve damgası, farklı türden 4–5 âyet (hurûf-u mukattaa, hüküm, temsil, öncesiyle bağı ince olan…).
-  **Kararlar (kullanıcı, 2026-11-11):** âyet âyet gidilir: bir birim yazdırılır, kullanıcı (gerekirse başkaları)
-  inceler, hata varsa aynı birim yeniden, uygunsa sonrakine; her birim iki kez yazdırılır. Öneriler (onay bekliyor):
-  model Fable 5.2, yüksek düşünme, prova boyunca ve asıl işte aynı; gizleme birim başına prova profiliyle (yalnız
-  sınanan birim çıkar, İşârât'ın kalanı görünür; asıl işte profil gerekmez); istem sürümlü tek dosya, düzeltmeler
-  yalnız genel usule, âyete özgü ipucu girmez.
-  **Kurulum (2026-11-11):** `scripts/d1-prova.py` (`hazirla`, `yazdir`, `karsilastir`), istem `docs/d1/prova-istemi.md`
-  (v1). Gizleme kurulumda: yayındaki `genel` ve `tefsir` veritabanlarının kopyasından sınanan birimin Türkçe ve Arapça
-  düğümleri ve onlara bağlı her satır silinir (cümle, paragraf, Arapça, bağlar, âyet ilişkileri, `risale_refs`, notlar,
-  FTS), Osmanlıca İşârât bütünüyle çıkar (birimleri paralel değil); vektörler değişmez (dizin bölümleri veritabanından
-  kurar). Eklerden (usul özeti, birim çizelgesi) sınanan birimden alınan her şey çıkar; 11–12'de V2'nin temsil örneği
-  eserde yalnız orada geçtiği için onu anlatan cümle de çıktı. Sızıntı testi: gizlenen cümlelerin Kur'ân dışı 6'lı
-  dizileri; risale ve istemde 3 ve üstü ortak dizi sızıntıdır (1–2'si kalıp ibare: "mâkabliyle vech‑i irtibatı").
-  İstem ≈456 bin karakter: görev, usul, çalışma sırası, şablon, ekler ve İşârât'ın Arapça aslının tamamı (birim hariç).
-  Taslağı yazan oturum: Fable 5.2, yüksek, proje dışında, yerleşik araçlar ve web kapalı, üç prova sunucusu.
-  Not: Arapça baskıda birimin âyet satırı bir önceki düğümün sonunda kalır (9–10 c100–c101); yalnız âyet metnidir.
-  **İnce istem (2026-11-12):** tam istemle taslak 1 ≈11,85 $ (liste fiyatı) tuttu, 5 saatlik limitin tamamını
-  harcadı; maliyetin ≈3/4'ü istemin önbelleğe yazılması ve 32 turda yeniden okunmasıdır, istemin %88'i Ek 3. Taslak 1
-  İşârât'tan 29 yer andı, 11 birimden (Fâtiha, Bakara 2 mukaddimesi, 6, 26–27, 30 mukaddimesi gibi uzak yerler dahil):
-  tam metnin asıl katkısı bu olabilir. Kullanıcının kararı: tam istem kalır, ince biçim eklenir, taslak 2 onunla
-  yazılır ve taslak 1'le karşılaştırılır (İşârât'a dayanan iddia, uzak birim sayısı, kendi tespiti oranı, uydurma);
-  sonuca göre Max planı düşünülecek. `hazirla|yazdir 11-12 --istem ince`: Ek 3 yalnız Bakara 8, 9–10, 13, 14–15, 16 ve
-  17–20'nin iki faslı; İşârât'ın kalanı `risale` eklentisinden (`read_section`, `search`, `semantic_search`), istem
-  bunu söyler. `istem-ince.md` 171 bin karakter (tam 759 bin; tam biçim dünkü istemi harfi harfine aynı üretir).
-  Veritabanları ortak, yeniden kurulmadı. Sızıntı testi temiz (`sizinti-ince.md`: istemde 1 kalıp ibare).
-  **Taslak 2 (ince istem, 2026-11-12):** 690 sn, 37 tur, ≈7,55 $ (taslak 1: 11,85 $; araç sonuçları birikip bağlam
-  ≈270 bine çıktı, tasarruf üçte ikide kaldı). İşârât'tan 21 yer, 10 birim; taslak 1'in uzak birimlerinin hepsini
-  (2 mukaddimesi, 6, 26–27, 30 mukaddimesi, 17–20 mesele 5 ve 10) `search`, `semantic_search`, `get_passage` ile
-  buldu, yalnız Fâtiha yok. İşaretler: kaynaklı 39, kendi tespiti 35 (taslak 1: 23 ve 42). Gizlenen metinle ortak
-  6'lı dizi 4, hepsi geçiş kalıbı ("اعلم ان وجه نظم هذه الاية", "واما جملة …"). İlk bakışta tam metnin katkısı
-  görülmedi; içerik değerlendirmesi kullanıcıda. Kullanıcı Max planına geçti.
-  **Taslak 3 (ince istem, 2026-11-12):** 696 sn, ≈7,65 $. İşârât'tan 36 yer, 13 birim (Fâtiha ve Bakara 5 dahil);
-  kaynaklı işaret 38, kendi tespiti 27; ortak 6'lı dizi 4, yine geçiş kalıpları. İki ince taslak da uzak birimlere
-  araçla ulaştı; sayılarda tam istemin üstünlüğü yok. Okuma sayfasında üç taslak; değerlendirme kullanıcıda.
-- D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
-  nükteleri), i'râb ve belâgat doğruluğu, uydurma; mütehassıs taslağı İşârât'ın kendi metniyle yan yana okur; ezber
-  otomatik ölçülür. Okuma sayfasında ölçüt çizelgesi olur (D4).
+- D1.1–D1.4 bitti (2026-11-10/12): usul özeti ve okur sayfası, birim çizelgesi, prova düzeni ve üç taslak, ölçüt
+  çizelgesi (D4'ün sayfasında); ayrıntı "Kayıt › Kimlikli işler"de. D1.7 D2, D1.8 D5 oldu.
 - D1.5 Mütehassıs: en az bir Arapça ve belâgat bilen (kullanıcı; ilanla değil davetle).
 - D1.6 Okuma ve geri dönüt: kullanıcı üç taslağı bildiği kişilerle okur (2026-11-12'den), notlar D4'ün sayfasında.
-- D1.7 D2 oldu; D1.8 D5 oldu (2026-11-12).
 - D1.9 Rapor: taslakların ve okumaların dersleri; D2, D3 ve istemin sonraki sürümü buna dayanır.
 
 **D2. Bakara 11–12, E2'nin eserleriyle** (eski D1.7). Aynı birim, aynı model ve düşünme, aynı istem sürümü; değişen
@@ -189,22 +93,6 @@ dayanan iddia, belâgat isabeti, uydurma, okuyucuların notları; D1 ile aynı �
 
 **D3. Başka türden bir birim.** D1 ve D2'nin dersleriyle, yine İşârât'ın kapsadığı aralıkta (cevabı bilinen, kör
 prova), 11–12'den farklı türde (temsil: 17–20, ya da hüküm); üç taslak.
-
-**D4. Prova okuma ve not platformu** (kullanıcı bütün önerileri onayladı, 2026-11-12). D1, D2, D3 ve D5'e hizmet eder.
-- Seçim: birim → taslak → dil; iki kip: taslak ile İşârât'ın gizlenen metni, taslak ile taslak (D2'de önce ve sonra).
-- Notlar paragrafa ya da vecihe bağlı; türü (doğru, yanlış, eksik, fazla, uydurma, i'râb/belâgat, usul), önemi,
-  okuyucunun adı; "ehline sor" işareti (Arapçayı kullanıcı denetleyemez; mütehassısa ayrı liste).
-- Taslaktaki kaynak numarasının üzerinde dayandığı cümlenin kendisi; gizlenen metinle ortak kelime dizileri işaretli.
-- Ölçüt çizelgesi (D1.4) her taslak için 0–2; taslaklar ve provalar sayıyla karşılaştırılır.
-- Notlar tarayıcıda, dışa aktarma ile dosya; okuyucu dosyayı gönderir, betik birleştirip rapora işler. Taslaklar
-  kapalı kalır: açık adreste durmaz.
-- Belgeler `docs/d1/` altında (README durum ve dizin, prova başına rapor). Taslaklar, dökümler ve notlar
-  yeniden üretilemez ve kapalıdır: ayrı yerel git deposunda, uzak kopyası özel depoda (denetim kayıtları gibi).
-- **Kuruldu (2026-11-12):** `uv run python scripts/d1-prova.py okuma` → `data/d1/okuma.html` (tek dosya, bütün
-  birimler; şablon `scripts/d1-okuma-sablon.html`); kaynak metinleri taslağın dökümündeki `cite` çağrılarından
-  (üç taslağın 164 kaynağının hepsi); `notlar <dosya>` → `data/d1/notlar/` ve `provalar/<birim>/notlar.md`. Belgeler `docs/d1/`
-  (README), kapalı kayıtlar `data/d1/` (kendi git deposu, README, `provalar/11-12/rapor.md` iskeleti). Tarayıcıda
-  denendi: not, kaynak, iki kip, iki dil, çizelge, dışa aktarma ve rapor. Uzak özel depo kullanıcıda.
 
 **D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; alt adımları D3'ten sonra yazılır.
 İlki: D5.1 Bakara 34, tek birim, ehlin okuması.
@@ -355,6 +243,12 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - B6 Diyanet İşleri Başkanlığı meali çıkarıldı (2026-11-12, yayında): Kur'ân katmanı, üç sunucunun talimatı ve
   `get_ayah`, site, ChatGPT paketi, belgeler; Vakfın meali kalır. Yayın kaydı `yayin-20261112-175213`, hadis ve tefsir
   aynı gün; araç çıktısında beklenmeyen fark yok.
+- D1.1–D1.4 (2026-11-10/12): İşârât usul özeti (Arapça asla dayanan ikinci sürüm, okur sayfası ve PDF), birim
+  çizelgesi, prova düzeni (`scripts/d1-prova.py`, gizleme profili, tam ve ince istem), Bakara 11–12'nin üç taslağı,
+  ölçüt çizelgesi; D1'in kalanı "Sıradaki"de, ayrıntı "Kayıt › Kimlikli işler"de.
+- D4 Prova okuma ve not platformu (2026-11-12): `data/d1/okuma.html` (iki kip, iki dil, kaynak cümleleri, notlar,
+  ölçüt çizelgesi, dışa aktarma), notların rapora işlenmesi, belgeler `docs/d1/`, kapalı kayıtlar `data/d1/` (kendi
+  git deposu).
 - MVP sonrası düzeltmeler (2026-11-07/09): hata ayıklama adresleri, râvi araması ve `ibn`, hadis `cite`'ında alıntı
   denetimi, tercüme damgası, ChatGPT önbelleği, kesik kaynakça, web içeriği kuralı.
 
@@ -713,3 +607,119 @@ Kararlar (kullanıcı, 2026-11-09): plan ve öneriler onaylandı; Katkı sayfas�
 - S2.3 Betik `scripts/site-uret.py` (eski adı site-yenilikler.py): menü ve alt bilgi ortak, sayılar veritabanından, son üç yazı, `sitemap.xml`; `robots.txt` (bitti).
 - S2.4 İngilizce sayfalar (bitti): ana sayfa, `en/risale.html`, `en/contribute.html` "Report a mistake"; menü ve alt bilgi betikten.
 - S2.5 Yayın (2026-11-09).
+
+**D1 (biten kısımlar: D1.1–D1.4, D1.7).** D1'in kalanı (D1.5, D1.6, D1.9) "Sıradaki"de.
+
+- D1.1 **Usul özeti** (taslak hazır, 2026-11-10: `docs/d1/usul-ozeti.md`). İşârât'ın bir âyeti ele alırken ne
+  yaptığının ve hangi sırayla yaptığının dökümü; tefsir değildir. Her madde İşârât'ın kendi cümlesine dayanır,
+  adresi ve kimliğiyle; derleyenin çıkarımı "[Çıkarım]" diye işaretlidir. İçeriği: eserin kendini tanımlaması
+  (maksat nazımdaki i'câz, sınır lafzın delâleti ve işârâtı, niyet bir heyetin tefsirine örnek ve me'haz), ilkeler
+  (dört maksat, havuz ilkesi, saat milleri, birden çok mânânın şartı), bir âyette izlenen sıra (âyet, gerekirse
+  mukaddime, mâkabliyle irtibat, cümleler arası intizam, hey'etler ve kelimeler), üçüncü vecihte bakılanlar,
+  anlatım biçimi, kaynaklarla ilişkisi, mütehassısa sorular. Üç işi var: usulü önce kullanıcı ve mütehassıs onaylar;
+  mütehassısın taslağı ölçeceği ölçü olur; modele neye bakacağını söyler. Alıntılar `python3
+  scripts/d1-usul-denetim.py` ile veritabanıyla denetlenir (48 alıntı, hepsi birebir). Türkçe tercümeden
+  derlendi; Arapça asılla karşılaştırma ve "usul hangi dilden öğretilir" sorusu mütehassısa ve kullanıcıya açık.
+  Okur sürümü (2026-11-10, kullanıcının isteği: paylaşılacak, programcı ayrıntısı olmadan): `python3
+  scripts/d1-okur.py` → `site/taslak/isarat-usulu.html` ve `.pdf` (kimlik yerine eser, bölüm ve ilk kelimeler;
+  "Derleyenin notu"; yalnız bağlantıyla: menüde ve site haritasında yok, `noindex`; açık olması sorun değil).
+  Adres: https://risalemcp.com/taslak/isarat-usulu.html
+- D1.2 Kullanıcı okudu ve bildiği uygun kişilere gönderdi (2026-11-10). **Kararlar (kullanıcı, 2026-11-10):**
+  - Özetin mütehassısa sorduğu ilk üç soruyu (üç vecih her birimde var mı, mukaddimeler, terimlerin Arapça asıldaki
+    dağılımı) model metnin tamamını okuyarak cevaplar: **birim çizelgesi** (D1.2a). Sınırlar: "taslakta ne zaman
+    mukaddime yazılır" kuralını model bulgudan önerir, kullanıcı karara bağlar; Arapça belâgat inceliklerinde model
+    yanılabilir, her hücre adresli kalır.
+  - **Dört maksat kuralı:** asıl maksat her zaman söylenir; öbürleri yalnız âyetin bir kelimesine ya da hey'etine
+    dayandırılabiliyorsa, derecesiyle (sarih, işaret, remiz) söylenir; dördü her âyette zorla gösterilmez.
+    Dayanak: Fâtiha girişi ("sarâhaten veya işâreten veya remzen") ve Bakara girişinin Arapça aslı (çoğu sûrede biri
+    asıl, kalanı tebeî).
+  - **Dil:** tefsir Arapça yazılmalıdır (kullanıcının görüşü; müellifin sözü değil, onun üç tespitinden çıkardığı
+    sonuç: tercüme cezâleti koruyamamış, Arapça tefsir ayrıca neşredilecek, Arapçasındaki tevâfuklar korunmalı).
+    Usul Arapça asıldan öğretilir, Türkçe tercüme destek olur. Taslak **Arapça asıl ve onun Türkçe tercümesidir**
+    (iki ayrı taslak değil): tercüme Arapçadan paragraf paragraf, damgalı; kullanıcı Türkçesini okur, Arapça bilen
+    aynı paragrafın aslını denetler; provada Arapça taslak İşârât'ın gizlenen Arapça kısmıyla yan yana okunur.
+  - **Mütehassıs** bu iş için: Arapça ve belâgat bilen, İşârât'ı okumuş biri (Arapça taslağı kullanıcı denetleyemez).
+- D1.2a **Tam okuma ve birim çizelgesi** (bitti, 2026-11-10): Arapça asıl baştan sona okundu (3.264 cümle;
+  15 Fâtiha kelime bahsi, 23 Bakara âyet bahsi). Çizelge `docs/d1/birim-cizelgesi.md` (239 adres, `python3
+  scripts/d1-usul-denetim.py docs/d1/birim-cizelgesi.md` ile denetlenir), okuma notları `docs/d1/okuma-notlari.md`.
+  Bulgular: (1) eser üç vechi dokuz yerde adıyla sayar; Bakara 9'dan sonra sıra sabit (V1 → V2 → V3, 15/15 birim),
+  1–8'de düzen henüz oturmamış, Fâtiha'da birim kelime. (2) Mukaddime sabit basamak değil; dört durumda gelir:
+  âyetin meâli dört maksattan ya da iman rükünlerinden biri, âyetin altında büyük kelâm ihtilafı, bir üslûp türünün
+  ilk kez toplu gelmesi, tahkik isteyen lafız; çoğu "başka kitapta tafsil ettik, burada hülâsa" diye gelir, her
+  delil âyetin bir lafzına bağlanır. (3) Üçüncü vecihte yapılan işler: bakılacak yerlerin sayılması, tercih sorusu
+  ("neden şu lafız, şu değil"), beklenenle muvazene, mukadder cümleler, sâmiin zihni, karşılıklı eşleme, genel ve
+  hususî nükte, toplayış. (4) Okumayla çıkanlar: nazarî temel Bakara 17–20'deki on iki mesele; dayanak Cürcânî
+  ("ونحن على مذهبه"); adıyla anılan kaynaklar (Cürcânî, Sekkâkî ve Miftâh, Zemahşerî ve Keşşâf, Râzî, Câhız,
+  Teftâzânî, Sîbeveyh…; bir yerde Abduh'tan nakil); bir nüktenin kabul ölçüleri (üçüncü şart Arapçada
+  "makàsıd-ı şeriat usulü"); Arapça asıl 31. âyetin ortasında biter. **Mukaddime kuralı (kullanıcı onayladı,
+  2026-11-10):** taslakta mukaddime yalnız dört durumdan biri varsa yazılır, kısa tutulur, her iddiası âyetin bir
+  lafzına bağlanır, mesele İşârât'ta ya da Risale-i Nur'da işlenmişse oraya atıfla hülâsa edilir.
+  E2 için not: Miftâh, Delâilü'l-İ'câz, Esrârü'l-Belâga ve Keşşâf eserin adıyla dayandığı kaynaklar.
+- D1.2b **Özetin ikinci sürümü** (bitti, 2026-11-10): `docs/d1/usul-ozeti.md` Arapça asla dayanır. 55 Arapça
+  alıntı; 40'ının yanında Abdülmecid Nursî tercümesindeki karşılığı, 15'inde "Yapay zekâ tercümesi" damgalı model
+  tercümesi (11'i Bakara 17–20'nin tercümede bulunmayan nazarî girişinden). Yeni bölümler: usulün nazarî temeli (2:
+  i'câzın esası nazmın belâgati, nazm-ı meânî, mânâ tabakaları ve delâlet dereceleri, her kayıt mukadder suale
+  cevap, hayalde hakikat çekirdeği, Cürcânî'nin mezhebi), âyet âyet sıra çizelgesi (4), mukaddimelerin dört durumu
+  ve gerekçe cümleleri (5), taslak için kurallar (8: ad ve damga, dil, me'haz, sıra, dört maksat, mukaddime, kabul
+  ölçüsü), açık sorular (9). 112 alıntı ve 148 kimlik veritabanıyla denetlendi, 0 sorun. Okur sayfası ve PDF aynı
+  adreste yenilendi (`scripts/d1-okur.py`: Arapça sağdan sola, altında tercümedeki karşılığı; 23 sayfa); yayına
+  gitmesi için `scripts/deploy.sh --code` gerekir. Model tercümeleri ve Arapça–Türkçe eşlemeleri ehli görmedi.
+- D1.2c Özetin açık sorularına kullanıcının görüşleri (2026-11-10/11; özette ve okur sayfasında soru olarak kalır,
+  mütehassısın görüşü de alınacak): **düzen** Bakara 9'dan sonraki sabit sıra (V1 → V2 → V3), öbür türlü usul sabit
+  olmaz; **Türkçe tercümenin dili** Abdülmecid Nursî tercümesine yakın (Arapça asla muvafık tarz); **üslûp** provada
+  îcâzlı. Prova bunlarla yapılır. Açık: Arapça okumanın ehlince denetimi (1).
+- D1.3 Prova düzeni: sınanan âyetin İşârât metnini (Türkçe ve Arapça) dışarıda bırakan deneme profili, taslak
+  şablonu ve damgası, farklı türden 4–5 âyet (hurûf-u mukattaa, hüküm, temsil, öncesiyle bağı ince olan…).
+  **Kararlar (kullanıcı, 2026-11-11):** âyet âyet gidilir: bir birim yazdırılır, kullanıcı (gerekirse başkaları)
+  inceler, hata varsa aynı birim yeniden, uygunsa sonrakine; her birim iki kez yazdırılır. Öneriler (onay bekliyor):
+  model Fable 5.2, yüksek düşünme, prova boyunca ve asıl işte aynı; gizleme birim başına prova profiliyle (yalnız
+  sınanan birim çıkar, İşârât'ın kalanı görünür; asıl işte profil gerekmez); istem sürümlü tek dosya, düzeltmeler
+  yalnız genel usule, âyete özgü ipucu girmez.
+  **Kurulum (2026-11-11):** `scripts/d1-prova.py` (`hazirla`, `yazdir`, `karsilastir`), istem `docs/d1/prova-istemi.md`
+  (v1). Gizleme kurulumda: yayındaki `genel` ve `tefsir` veritabanlarının kopyasından sınanan birimin Türkçe ve Arapça
+  düğümleri ve onlara bağlı her satır silinir (cümle, paragraf, Arapça, bağlar, âyet ilişkileri, `risale_refs`, notlar,
+  FTS), Osmanlıca İşârât bütünüyle çıkar (birimleri paralel değil); vektörler değişmez (dizin bölümleri veritabanından
+  kurar). Eklerden (usul özeti, birim çizelgesi) sınanan birimden alınan her şey çıkar; 11–12'de V2'nin temsil örneği
+  eserde yalnız orada geçtiği için onu anlatan cümle de çıktı. Sızıntı testi: gizlenen cümlelerin Kur'ân dışı 6'lı
+  dizileri; risale ve istemde 3 ve üstü ortak dizi sızıntıdır (1–2'si kalıp ibare: "mâkabliyle vech‑i irtibatı").
+  İstem ≈456 bin karakter: görev, usul, çalışma sırası, şablon, ekler ve İşârât'ın Arapça aslının tamamı (birim hariç).
+  Taslağı yazan oturum: Fable 5.2, yüksek, proje dışında, yerleşik araçlar ve web kapalı, üç prova sunucusu.
+  Not: Arapça baskıda birimin âyet satırı bir önceki düğümün sonunda kalır (9–10 c100–c101); yalnız âyet metnidir.
+  **İnce istem (2026-11-12):** tam istemle taslak 1 ≈11,85 $ (liste fiyatı) tuttu, 5 saatlik limitin tamamını
+  harcadı; maliyetin ≈3/4'ü istemin önbelleğe yazılması ve 32 turda yeniden okunmasıdır, istemin %88'i Ek 3. Taslak 1
+  İşârât'tan 29 yer andı, 11 birimden (Fâtiha, Bakara 2 mukaddimesi, 6, 26–27, 30 mukaddimesi gibi uzak yerler dahil):
+  tam metnin asıl katkısı bu olabilir. Kullanıcının kararı: tam istem kalır, ince biçim eklenir, taslak 2 onunla
+  yazılır ve taslak 1'le karşılaştırılır (İşârât'a dayanan iddia, uzak birim sayısı, kendi tespiti oranı, uydurma);
+  sonuca göre Max planı düşünülecek. `hazirla|yazdir 11-12 --istem ince`: Ek 3 yalnız Bakara 8, 9–10, 13, 14–15, 16 ve
+  17–20'nin iki faslı; İşârât'ın kalanı `risale` eklentisinden (`read_section`, `search`, `semantic_search`), istem
+  bunu söyler. `istem-ince.md` 171 bin karakter (tam 759 bin; tam biçim dünkü istemi harfi harfine aynı üretir).
+  Veritabanları ortak, yeniden kurulmadı. Sızıntı testi temiz (`sizinti-ince.md`: istemde 1 kalıp ibare).
+  **Taslak 2 (ince istem, 2026-11-12):** 690 sn, 37 tur, ≈7,55 $ (taslak 1: 11,85 $; araç sonuçları birikip bağlam
+  ≈270 bine çıktı, tasarruf üçte ikide kaldı). İşârât'tan 21 yer, 10 birim; taslak 1'in uzak birimlerinin hepsini
+  (2 mukaddimesi, 6, 26–27, 30 mukaddimesi, 17–20 mesele 5 ve 10) `search`, `semantic_search`, `get_passage` ile
+  buldu, yalnız Fâtiha yok. İşaretler: kaynaklı 39, kendi tespiti 35 (taslak 1: 23 ve 42). Gizlenen metinle ortak
+  6'lı dizi 4, hepsi geçiş kalıbı ("اعلم ان وجه نظم هذه الاية", "واما جملة …"). İlk bakışta tam metnin katkısı
+  görülmedi; içerik değerlendirmesi kullanıcıda. Kullanıcı Max planına geçti.
+  **Taslak 3 (ince istem, 2026-11-12):** 696 sn, ≈7,65 $. İşârât'tan 36 yer, 13 birim (Fâtiha ve Bakara 5 dahil);
+  kaynaklı işaret 38, kendi tespiti 27; ortak 6'lı dizi 4, yine geçiş kalıpları. İki ince taslak da uzak birimlere
+  araçla ulaştı; sayılarda tam istemin üstünlüğü yok. Okuma sayfasında üç taslak; değerlendirme kullanıcıda.
+- D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
+  nükteleri), i'râb ve belâgat doğruluğu, uydurma; mütehassıs taslağı İşârât'ın kendi metniyle yan yana okur; ezber
+  otomatik ölçülür. Okuma sayfasında ölçüt çizelgesi olur (D4).
+- D1.7 D2 oldu; D1.8 D5 oldu (2026-11-12).
+
+**D4. Prova okuma ve not platformu** (kullanıcı bütün önerileri onayladı, 2026-11-12). D1, D2, D3 ve D5'e hizmet eder.
+- Seçim: birim → taslak → dil; iki kip: taslak ile İşârât'ın gizlenen metni, taslak ile taslak (D2'de önce ve sonra).
+- Notlar paragrafa ya da vecihe bağlı; türü (doğru, yanlış, eksik, fazla, uydurma, i'râb/belâgat, usul), önemi,
+  okuyucunun adı; "ehline sor" işareti (Arapçayı kullanıcı denetleyemez; mütehassısa ayrı liste).
+- Taslaktaki kaynak numarasının üzerinde dayandığı cümlenin kendisi; gizlenen metinle ortak kelime dizileri işaretli.
+- Ölçüt çizelgesi (D1.4) her taslak için 0–2; taslaklar ve provalar sayıyla karşılaştırılır.
+- Notlar tarayıcıda, dışa aktarma ile dosya; okuyucu dosyayı gönderir, betik birleştirip rapora işler. Taslaklar
+  kapalı kalır: açık adreste durmaz.
+- Belgeler `docs/d1/` altında (README durum ve dizin, prova başına rapor). Taslaklar, dökümler ve notlar
+  yeniden üretilemez ve kapalıdır: ayrı yerel git deposunda, uzak kopyası özel depoda (denetim kayıtları gibi).
+- **Kuruldu (2026-11-12):** `uv run python scripts/d1-prova.py okuma` → `data/d1/okuma.html` (tek dosya, bütün
+  birimler; şablon `scripts/d1-okuma-sablon.html`); kaynak metinleri taslağın dökümündeki `cite` çağrılarından
+  (üç taslağın 164 kaynağının hepsi); `notlar <dosya>` → `data/d1/notlar/` ve `provalar/<birim>/notlar.md`. Belgeler `docs/d1/`
+  (README), kapalı kayıtlar `data/d1/` (kendi git deposu, README, `provalar/11-12/rapor.md` iskeleti). Tarayıcıda
+  denendi: not, kaynak, iki kip, iki dil, çizelge, dışa aktarma ve rapor. Uzak özel depo kullanıcıda.
