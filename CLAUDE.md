@@ -28,7 +28,7 @@ Nihai kullanım hedefleri:
 
 ## Kapsam ve kaynaklar
 
-Eserlerin listesi, her birinin kaynağı ve durumu tek yerde tutulur: `src/risale_mcp/catalog/` (koleksiyon başına bir dosya). Her eserin hangi aşamada olduğu `docs/eserler/` kontrol listelerindedir (`risale-kulliyat.md`; `tefsir.md`, `hadis.md`, `klasik.md` üç bölümlü: (a) eklenenler üretilir, (b) eklenmesi çok iyi olacaklar ve (c) aklımızda bulunsun elle tutulur, işaret satırının altı yeniden üretimde korunur); kökteki `ESERLER.md` alanların dizinidir (`uv run python -m risale_mcp.checklist` ile diskten üretilir, elle düzenlenmez). 74 eserden 73'ü ayrıştırıldı; eksik olan Kızıl İcaz'ın Türkçesi (Aşama 17). Yerelde olup sunucuda olmayanların listesi `HUSUSI-VERILER.md`'dir (`uv run python -m risale_mcp.local_only`, `build` sonunda da üretilir, elle düzenlenmez).
+Eserlerin listesi, her birinin kaynağı ve durumu tek yerde tutulur: `src/risale_mcp/catalog/` (koleksiyon başına bir dosya). Her eserin hangi aşamada olduğu `docs/eserler/` kontrol listelerindedir (`risale-kulliyat.md`; `tefsir.md`, `hadis.md`, `klasik.md` üç bölümlü: (a) eklenenler üretilir, (b) eklenmesi çok iyi olacaklar ve (c) aklımızda bulunsun elle tutulur, işaret satırının altı yeniden üretimde korunur); kökteki `ESERLER.md` alanların dizinidir (`uv run python -m risale_mcp.checklist` ile diskten üretilir, elle düzenlenmez). Külliyatın 73 eserinin hepsi ayrıştırıldı (Kızıl İcaz'ın Türkçesi 2026-11-12'de katalogdan çıktı: model tercümesi damgalı yeter). Yerelde olup sunucuda olmayanların listesi `HUSUSI-VERILER.md`'dir (`uv run python -m risale_mcp.local_only`, `build` sonunda da üretilir, elle düzenlenmez).
 
 Genel sunucunun kaynakları (kim, hangi şartla izin verdi: `docs/izinler.md`; yeni izin oraya yazılır):
 
@@ -280,7 +280,7 @@ Bediüzzaman'ın Arapça yazdığı eserlerin hem Arapça aslı hem Türkçesi t
 |---|---|---|
 | el-Mesnevî el-Arabî | `el-mesnevi-el-arabi` (İhsan Kasım baskısı, harekesiz; harekeli Badıllı baskısı yalnız yerelde) | `mesnevi-i-nuriye` (erisale) |
 | İşaratü'l-İ'caz | `isaratul-icaz-arabi` | `isaratul-icaz` (erisale, Abdülmecid Nursî tercümesi) |
-| Kızıl İcaz | `kizil-icaz-arabi` | yok (Aşama 17) |
+| Kızıl İcaz | `kizil-icaz-arabi` | yok (gerek görülmedi, 2026-11-12; model tercümesi damgalı) |
 | Ta'likat | `talikat-arabi` | `talikat` (Keşif, Protranslate tercümesi) |
 | Hutbe-i Şamiye | `hutbe-i-samiye-arabi`: İhsan Kasım'ın Türkçeden tercümesi (1911 aslı değil) | `hutbe-i-samiye` (erisale) |
 

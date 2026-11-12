@@ -2,7 +2,8 @@
 
 Dosya indirilmez; kullanıcı `data/raw/kullanici/<kitap>/<kitap>.pdf` olarak koyar, `fetch get` manifest yazar.
 Rumuzat-ı Semaniye: Üçüncü, Dördüncü ve Sekizinci Kısımları içeren mecmua (LibreOffice'ten PDF, 77 sayfa).
-Kızıl İcaz'ın Türkçesi (`kizil-icaz/kizil-icaz.pdf`, 399 sayfa resim) aynı klasörde bekler; henüz ayrıştırılmaz (Aşama 17).
+Kızıl İcaz'ın Türkçesi (`kizil-icaz/kizil-icaz.pdf`, 399 sayfa resim) aynı klasörde durur; ayrıştırılmaz (kullanıcının
+kararı, 2026-11-12: Türkçesi katalogda yok, model tercümesi damgalı).
 
 Ham arşiv (`data/raw/kullanici/<kitap>/`): <kitap>.pdf, manifest.json
 """

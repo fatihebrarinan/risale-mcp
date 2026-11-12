@@ -33,7 +33,7 @@ def test_works_not_by_the_author_are_marked():
 def test_translations_are_marked_and_keep_their_author():
     marked = {w.slug for w in WORKS if w.translation}
     assert marked == {"isaratul-icaz", "mesnevi-i-nuriye", "talikat", "teshisul-illet-zeyli", "hutbe-i-samiye",
-                      "hutbe-i-samiye-arabi", "kizil-icaz"}
+                      "hutbe-i-samiye-arabi"}
     assert all(get_work(slug).authority is Authority.MUELLIF for slug in marked)
 
 

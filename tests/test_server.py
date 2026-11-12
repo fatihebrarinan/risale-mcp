@@ -38,9 +38,8 @@ def library(small_db):
 def test_works_lists_catalog_with_availability(library):
     works = {w["id"]: w for w in library.works()}
     assert works["sozler"]["sentences"] == 5 and works["sozler"]["sections"] == 4
-    assert works["kizil-icaz"] == {"id": "kizil-icaz", "title": "Kızıl İcaz", "group": "eski-said", "language": "tr",
-                                   "translation": True, "available": False, "status": "missing",
-                                   "note": get_work("kizil-icaz").note}
+    assert works["talikat"]["available"] is False and works["talikat"]["translation"] is True
+    assert "kizil-icaz" not in works and works["kizil-icaz-arabi"]["language"] == "ar"
     assert [w["id"] for w in library.works("mecmua")][0] == "asa-yi-musa"
     with pytest.raises(LibraryError, match="Unknown group"):
         library.works("roman")

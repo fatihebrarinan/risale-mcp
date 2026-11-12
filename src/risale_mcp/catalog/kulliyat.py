@@ -8,7 +8,7 @@ Bölüm seçicileri (`sections`, `exclude`) kaynağa özgüdür. erisale için b
 slug'larının önekleridir: `"lemeat"` hem `lemeat` hem `lemeat-tenbih` bölümünü kapsar.
 """
 
-from risale_mcp.catalog.model import AUTHOR, Authority, Group, Site, SourceRef, Status, Work
+from risale_mcp.catalog.model import AUTHOR, Authority, Group, Site, SourceRef, Work
 
 _IKS = "İhsan Kasım es-Sâlihî"
 
@@ -30,8 +30,7 @@ def _app(book: str, *sections: str) -> SourceRef:
 
 KULLIYAT_WORKS: tuple[Work, ...] = (
     # --- Eski Said dönemi
-    Work("kizil-icaz", "Kızıl İcaz", _E, None, Status.MISSING, translation=True, note=
-         "Türkçesi: ücretsiz tam tercüme bulunamadı (basılı tercümeler telifli). Arapçası Kızıl İcaz (Arapça)."),
+    # Kızıl İcaz'ın Türkçesi yok: gerek görülmedi, model tercümesi damgalı (kullanıcının kararı, 2026-11-12).
     Work("kizil-icaz-arabi", "Kızıl İcaz (Arapça)", _E, _app("ar_asaribediyye", "قزل ايجاز", "تعليقات"),
          note="Arapça asıl: Ahdarî'nin Süllem'ine hâşiye; İhsan Kasım es-Sâlihî tahkiki (Saykalü'l-İslâm).",
          language="ar", editor=_IKS),
