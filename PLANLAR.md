@@ -65,7 +65,7 @@ Sıra kullanıcının kararıdır (2026-11-12).
 | 7 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
 | 8 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
 | 9 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
-| 10 | B2–B6 | Küçük açıklar | MVP "Kalan" |
+| 10 | B2–B5 | Küçük açıklar | MVP "Kalan" |
 
 **D1. İşârât usulüyle yapay zekâ taslağı** (kullanıcının yola çıkarkenki fikri; "Fikirler"den alındı, 2026-11-09).
 **Daraltıldı (kullanıcının kararı, 2026-11-12):** D1 yalnız Bakara 11–12 provasıdır: farklı taslaklar, karşılaştırma
@@ -263,9 +263,6 @@ yeniden bakılır.
   denetimden geçmemesi (`data/interim/tefsir/mvp-denetim.md`, çoğu yanlış alarm): ölçüldü, düzeltilmedi.
 - B4 Nutuk'ta "birinci kılıç" başlığının altındaki paragraf (B1'in kuyruğundan; B1 donunca buraya kaldı).
 - B5 Üç âyet dizgi şüphesi (`docs/ayet-duzeltmeleri.md`), kullanıcının kararı.
-- B6 Diyanet İşleri Başkanlığı mealinin çıkarılması (Diyanet izin vermedi, 2026-11-12): Kur'ân katmanı, üç
-  sunucunun talimatı ve `get_ayah`, site, belgeler; Vakfın meali kalır. **Yerelde bitti (2026-11-12):** `quran.json`
-  ve dört veritabanı yeniden kuruldu; yayın bekliyor (`DEPLOY_EXPECT`, `HADIS_EXPECT`, `TEFSIR_EXPECT` ile).
 
 ## Bekleyen (başkasının cevabı)
 
@@ -355,6 +352,9 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - Diyanet'in cevabı (2026-11-12): kaynak dosyalar paylaşılmaz, toplu aktarılmaz, yeniden yayımlanmaz. Kur'an Yolu
   yok; Diyanet İşleri Başkanlığı meali çıkarılır (B6), Türkiye Diyanet Vakfı'nın meali (ayrı kuruluş) kalır;
   Elmalılı E6.
+- B6 Diyanet İşleri Başkanlığı meali çıkarıldı (2026-11-12, yayında): Kur'ân katmanı, üç sunucunun talimatı ve
+  `get_ayah`, site, ChatGPT paketi, belgeler; Vakfın meali kalır. Yayın kaydı `yayin-20261112-175213`, hadis ve tefsir
+  aynı gün; araç çıktısında beklenmeyen fark yok.
 - MVP sonrası düzeltmeler (2026-11-07/09): hata ayıklama adresleri, râvi araması ve `ibn`, hadis `cite`'ında alıntı
   denetimi, tercüme damgası, ChatGPT önbelleği, kesik kaynakça, web içeriği kuralı.
 
