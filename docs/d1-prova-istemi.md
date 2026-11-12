@@ -5,8 +5,15 @@ düzeltmeler yalnız genel usule yapılır, âyete özgü ipucu girmez. `scripts
 çizelgesinin prova kopyaları (sınanan birimden alınan her şey çıkarılmış) ve İşârât'ın Arapça aslı (sınanan birim
 hariç). Model bu istemi `claude -p` ile, yerleşik araçlar ve web kapalı, yalnız prova sunucularıyla alır.
 
+İki biçim (`hazirla <birim> --istem tam|ince`): `tam` Ek 3'te Arapça aslın tamamını verir (≈472 bin token), `ince`
+yalnız birimin komşularını ve Bakara 17–20'nin nazarî girişini verir, kalanını eklentiden okutur (≈1/4'ü). `@tam `
+ya da `@ince ` ile başlayan satır yalnız o biçimde kalır (önek atılır); öbür satırlar ikisinde de aynıdır.
+
 Sürümler:
 - v1 (2026-11-11): ilk sürüm; 11–12 için.
+- v1-ince (2026-11-12): v1'in ince biçimi; usul aynı, yalnız Ek 3'ün kapsamı ve İşârât'ın kalanına nasıl
+  bakılacağı değişti. Neden: tam istem bir taslakta 5 saatlik limitin tamamını harcıyordu; ince taslak tam taslakla
+  karşılaştırılarak tam metnin katkısı ölçülecek.
 -->
 
 ---- İSTEM ----
@@ -35,8 +42,11 @@ aşağıdaki eklerden ve me'hazdan öğrenerek kendin tatbik et.
 
 ## Me'haz
 
-- İşârâtü'l-İ'câz: Arapça aslı bu istemin sonunda (Ek 3) cümle kimlikleriyle; Türkçe tercümesi ve Risale-i Nur'un
-  bütün eserleri `risale` eklentisinde.
+@tam - İşârâtü'l-İ'câz: Arapça aslı bu istemin sonunda (Ek 3) cümle kimlikleriyle; Türkçe tercümesi ve Risale-i Nur'un
+@tam   bütün eserleri `risale` eklentisinde.
+@ince - İşârâtü'l-İ'câz: Arapça aslının bu âyetlere komşu birimleri ve Bakara 17–20'nin nazarî girişi bu istemin
+@ince   sonunda (Ek 3) cümle kimlikleriyle; Arapça aslının tamamı, Türkçe tercümesi ve Risale-i Nur'un bütün eserleri
+@ince   `risale` eklentisinde.
 - Müfessirlerin eserleri (Taberî, Mâtürîdî, Zemahşerî, Râzî, Kurtubî, Beyzâvî, Nesefî, İbn Kesîr, Celâleyn,
   Süyûtî, Ebüssuûd, Bursevî, Âlûsî): `tefsir` eklentisinde.
 - Hadis kitapları: `hadis` eklentisinde.
@@ -68,9 +78,16 @@ da müellife mal etme.
 
 ## Çalışma sırası
 
-1. Ek 1'i (usul özeti) ve Ek 2'yi (birim çizelgesi) oku. Ek 3'te İşârât'ın sınanan âyetlerden önceki ve sonraki
-   birimlerini, Bakara 17–20'nin nazarî girişini ve aynı türden birkaç birimi baştan sona oku: usulü ve üslûbu
-   oradan al.
+@tam 1. Ek 1'i (usul özeti) ve Ek 2'yi (birim çizelgesi) oku. Ek 3'te İşârât'ın sınanan âyetlerden önceki ve sonraki
+@tam    birimlerini, Bakara 17–20'nin nazarî girişini ve aynı türden birkaç birimi baştan sona oku: usulü ve üslûbu
+@tam    oradan al.
+@ince 1. Ek 1'i (usul özeti) ve Ek 2'yi (birim çizelgesi) oku. Ek 3'teki birimleri (sınanan âyetlerden önceki ve
+@ince    sonraki birimler, Bakara 17–20'nin nazarî girişi) baştan sona oku; aynı türden birkaç birimi daha `risale`
+@ince    eklentisinde `read_section` ile oku (kimlikleri Ek 2'de): usulü ve üslûbu oradan al.
+@ince    İşârât bir edatın, bir hey'etin ya da bir üslûbun genel kaidesini çoğu zaman başka bir âyetin bahsinde söyler.
+@ince    Taslakta böyle bir kaideye dayanacaksan onu İşârât'ın kendisinde ara: `risale` eklentisinde `search` (Arapça
+@ince    kelimeler) ve `semantic_search` (mânâ), ikisinde de `work: "isaratul-icaz-arabi"`; Ek 2 hangi birimde neyin
+@ince    işlendiğini de gösterir. Bulduğunu `get_passage` ile bağlamıyla oku, sonra ona dayan.
 2. `get_ayah` ile âyetleri ve bir öncesini al. `tefsir` eklentisinde `find_ayah` ile müfessirlerin bu âyetlerdeki
    birimlerini bul; en az Zemahşerî, Beyzâvî, Râzî ve Ebüssuûd'u oku (İşârât'ın adıyla andığı ya da onlara yakın
    kaynaklar), gerekirse öbürlerini. `risale` eklentisinde âyetle bağı olan yerlere bak; gerekirse `hadis`'e.

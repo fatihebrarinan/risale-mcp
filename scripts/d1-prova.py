@@ -1,7 +1,7 @@
 """D1 provası (PLANLAR.md D1.3): sınanan birimi gizleyen prova profili, istem, yazdırma ve yan yana okuma.
 
-    uv run python scripts/d1-prova.py hazirla 11-12        # veritabanları, ekler, istem, sızıntı testi
-    uv run python scripts/d1-prova.py yazdir 11-12 [--kez 2] [--model claude-fable-5-2] [--effort high]
+    uv run python scripts/d1-prova.py hazirla 11-12 [--istem tam|ince] [--db-yenile]   # veritabanları, ekler, istem, sızıntı testi
+    uv run python scripts/d1-prova.py yazdir 11-12 [--istem tam|ince] [--kez 2] [--model claude-fable-5-2] [--effort high]
     uv run python scripts/d1-prova.py karsilastir 11-12    # taslaklar gizlenen metinle yan yana, ortak diziler
     uv run python scripts/d1-prova.py okuma 11-12          # okuma sayfası: Arapça ve Türkçe ayrı, vecih vecih yan yana
 
@@ -10,6 +10,10 @@ sınanan birimin düğümleri (Türkçe ve Arapça İşârât) ve onlara bağlı
 çıkar (birimleri Türkçeyle paralel değil, sınanan kısım ayrılamıyor; usul için Türkçe ve Arapça yeter). Anlamsal arama
 vektörleri değişmez: dizin bölümleri veritabanından kurar, silinen bölümün vektörü kullanılmaz. Sızıntı testi gizlenen
 cümlelerin 6 kelimelik dizilerini (Kur'ân'da geçenler hariç) prova veritabanlarında ve istemde arar.
+
+İstemin iki biçimi (`--istem`): `tam` Ek 3'te İşârât'ın Arapça aslının tamamını verir (`istem.md`, `sizinti.md`), `ince`
+yalnız birimin `ince` listesindeki bölümlerini (`istem-ince.md`, `sizinti-ince.md`); kalanı eklentidedir. Veritabanları
+iki biçimde ortaktır: varsa yeniden kurulmaz (`--db-yenile` ile kurulur), taslaklar aynı gizlemeyle karşılaştırılsın.
 
 Çıktılar `data/interim/d1-prova/<birim>/`: `risale.db`, `tefsir.db` (prova veritabanları), `istem.md`, `sizinti.md`,
 `mcp.json`, `taslak-<n>.md` ve dökümleri, `karsilastirma.md`. Taslağı yazan oturum proje dışında, boş bir klasörde,
@@ -50,6 +54,12 @@ PARENT_ENV = ("CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT", "CLAUDE_JOB_DIR")
 UNITS = {
     "11-12": {
         "sura": 2, "ayahs": (11, 12), "sura_name": "Bakara", "olcu": "Bakara 9–10, 13, 14–15, 16",
+        # ince istemin Ek 3'ü: komşu birimler ve Bakara 17–20'nin nazarî girişi (tam bölüm kimlikleri, alt bölümsüz)
+        "ince": ("isaratul-icaz-arabi/sure-i-bakara/8", "isaratul-icaz-arabi/sure-i-bakara/9-10-ayetlerin-tefsiri",
+                 "isaratul-icaz-arabi/sure-i-bakara/13", "isaratul-icaz-arabi/sure-i-bakara/14-15-ayetlerin-tefsiri",
+                 "isaratul-icaz-arabi/sure-i-bakara/16", "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+                 "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/fasil",
+                 "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/fasil-2"),
         "nodes": ("isaratul-icaz/sure-i-bakara/11-12-ayetlerin-tefsiri",
                   "isaratul-icaz-arabi/sure-i-bakara/11-12-ayetlerin-tefsiri"),
         "ozet": [
@@ -146,12 +156,19 @@ def drop_block(text: str, marker: str, name: str) -> str:
     return "\n".join(lines)
 
 
-def arabic_text(db: Path) -> str:
-    """İşârât'ın Arapça aslı, prova veritabanından (gizlenen birim yok): başlık, kimlik, cümleler."""
+ISTEM = {"tam": ("istem.md", "sizinti.md"), "ince": ("istem-ince.md", "sizinti-ince.md")}
+
+
+def arabic_text(db: Path, only: tuple[str, ...] | None = None) -> str:
+    """İşârât'ın Arapça aslı, prova veritabanından (gizlenen birim yok): başlık, kimlik, cümleler. `only` verilirse
+    yalnız o bölümler (kitap sırasıyla)."""
     conn = sqlite3.connect(db)
     out = []
     nodes = conn.execute("SELECT id, ref, title, subtitle FROM nodes WHERE work = 'isaratul-icaz-arabi' ORDER BY ord")
-    for node_id, ref, title, subtitle in nodes.fetchall():
+    rows = [r for r in nodes.fetchall() if only is None or r[0] in only]
+    if only is not None and len(rows) != len(only):
+        sys.exit(f"ince Ek 3: bulunamayan bölüm: {sorted(set(only) - {r[0] for r in rows})}")
+    for node_id, ref, title, subtitle in rows:
         out.append(f"\n### {ref}  (`{node_id}`)" + (f"\n{subtitle}" if subtitle else ""))
         para = None
         for sid, pid, text in conn.execute("SELECT id, paragraph_id, text FROM sentences WHERE node_id = ? ORDER BY seq",
@@ -163,15 +180,35 @@ def arabic_text(db: Path) -> str:
     return "\n".join(out).strip() + "\n"
 
 
-def prompt_text(unit: str, cfg: dict, ozet: str, cizelge: str, arabic: str) -> str:
+def variant_lines(text: str, istem: str) -> str:
+    """`@tam ` / `@ince ` önekli satırlar yalnız o biçimde kalır (önek atılır)."""
+    out = []
+    for line in text.split("\n"):
+        if m := re.match(r"@(tam|ince) ", line):
+            if m.group(1) == istem:
+                out.append(line[m.end():])
+            continue
+        out.append(line)
+    return "\n".join(out)
+
+
+def prompt_text(unit: str, cfg: dict, ozet: str, cizelge: str, arabic: str, istem: str = "tam") -> str:
     body = PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
+    body = variant_lines(body, istem)
     ayahs = "–".join(map(str, cfg["ayahs"]))
     body = body.format(sura_name=cfg["sura_name"], ayahs=ayahs, olcu=cfg["olcu"])
+    if istem == "tam":
+        ek3 = ("# Ek 3: İşârâtü'l-İ'câz'ın Arapça aslı (prova kopyası)\n\n"
+               "Her bölüm başlığı, eklentilerde kullanılabilecek kimliğiyle; her cümlenin başında bölüm içindeki kimliği "
+               "(`[c004]` → `<bölüm kimliği>/c004`).\n\n")
+    else:
+        ek3 = ("# Ek 3: İşârâtü'l-İ'câz'ın Arapça aslından seçme bölümler (prova kopyası)\n\n"
+               "Burada yalnız sınanan âyetlere komşu birimler ve Bakara 17–20'nin nazarî girişi var; İşârât'ın öbür "
+               "bölümleri `risale` eklentisinde (`read_section`, `get_passage`, `search`, `semantic_search`). Her bölüm "
+               "başlığı, eklentilerde kullanılabilecek kimliğiyle; her cümlenin başında bölüm içindeki kimliği "
+               "(`[c004]` → `<bölüm kimliği>/c004`).\n\n")
     return (f"{body}\n\n---\n\n# Ek 1: Usul özeti (prova kopyası)\n\n{ozet}\n\n---\n\n"
-            f"# Ek 2: Birim çizelgesi (prova kopyası)\n\n{cizelge}\n\n---\n\n"
-            f"# Ek 3: İşârâtü'l-İ'câz'ın Arapça aslı (prova kopyası)\n\n"
-            "Her bölüm başlığı, eklentilerde kullanılabilecek kimliğiyle; her cümlenin başında bölüm içindeki kimliği "
-            "(`[c004]` → `<bölüm kimliği>/c004`).\n\n" + arabic)
+            f"# Ek 2: Birim çizelgesi (prova kopyası)\n\n{cizelge}\n\n---\n\n" + ek3 + arabic)
 
 
 # ---------------------------------------------------------------- sızıntı testi
@@ -213,11 +250,11 @@ def leak_scan(hidden: set, db: Path) -> dict[str, int]:
     return hits
 
 
-def leak_report(unit: str, cfg: dict, out: Path, prompt: str) -> bool:
+def leak_report(unit: str, cfg: dict, out: Path, prompt: str, report: str = "sizinti.md") -> bool:
     hidden_rows = hidden_sentences(cfg)
     quran = quran_shingles()
     hidden = set().union(*(shingles(t) for _, t in hidden_rows)) - quran
-    lines = [f"# Sızıntı testi: {unit}", "",
+    lines = [f"# Sızıntı testi: {unit} ({report.removesuffix('.md')})", "",
              f"Gizlenen {len(hidden_rows)} cümlenin Kur'ân dışı {N} kelimelik dizileri: {len(hidden)}. "
              "Bir satır, o cümlede bu dizilerden kaçının geçtiğidir. "
              f"Risale veritabanında ve istemde {LEAK_MIN} ve üstü sızıntı sayılır (1–2 kalıp ibare olur); tefsirde "
@@ -241,27 +278,32 @@ def leak_report(unit: str, cfg: dict, out: Path, prompt: str) -> bool:
         if name == "risale" and any(n >= LEAK_MIN for n in hits.values()):
             ok = False
         lines.append("")
-    (out / "sizinti.md").write_text("\n".join(lines), encoding="utf-8")
+    (out / report).write_text("\n".join(lines), encoding="utf-8")
     return ok
 
 
 # ---------------------------------------------------------------- komutlar
 
-def hazirla(unit: str) -> None:
+def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False) -> None:
     cfg = UNITS[unit]
     out = OUT / unit
     out.mkdir(parents=True, exist_ok=True)
     needles = list(cfg["nodes"]) + list(DROP_WORKS)
-    t = time.monotonic()
-    print("risale:", scrub(GENEL_DB, out / "risale.db", needles))
-    print("tefsir:", scrub(TEFSIR_DB, out / "tefsir.db", needles))
-    print(f"  {time.monotonic() - t:.0f} sn")
+    if db_yenile or not (out / "risale.db").exists() or not (out / "tefsir.db").exists():
+        t = time.monotonic()
+        print("risale:", scrub(GENEL_DB, out / "risale.db", needles))
+        print("tefsir:", scrub(TEFSIR_DB, out / "tefsir.db", needles))
+        print(f"  {time.monotonic() - t:.0f} sn")
+    else:
+        print("veritabanları var, yeniden kurulmadı (--db-yenile)")
+    prompt_name, report = ISTEM[istem]
     ozet = apply_edits(OZET.read_text(encoding="utf-8"), cfg["ozet"], "özet")
     cizelge = apply_edits(CIZELGE.read_text(encoding="utf-8"), cfg["cizelge"], "çizelge")
     (out / "ek-ozet.md").write_text(ozet, encoding="utf-8")
     (out / "ek-cizelge.md").write_text(cizelge, encoding="utf-8")
-    prompt = prompt_text(unit, cfg, ozet, cizelge, arabic_text(out / "risale.db"))
-    (out / "istem.md").write_text(prompt, encoding="utf-8")
+    only = cfg["ince"] if istem == "ince" else None
+    prompt = prompt_text(unit, cfg, ozet, cizelge, arabic_text(out / "risale.db", only), istem)
+    (out / prompt_name).write_text(prompt, encoding="utf-8")
     uv = shutil.which("uv") or "uv"
     base = [uv, "--directory", str(ROOT), "run", "risale-mcp"]
     servers = {"risale": base + ["--profile", "genel", "--db", str(out / "risale.db")],
@@ -270,15 +312,15 @@ def hazirla(unit: str) -> None:
     (out / "mcp.json").write_text(json.dumps({"mcpServers": {n: {"type": "stdio", "command": a[0], "args": a[1:]}
                                                              for n, a in servers.items()}}, indent=2), encoding="utf-8")
     print(f"istem: {len(prompt):,} karakter, {len(prompt.split()):,} kelime")
-    ok = leak_report(unit, cfg, out, prompt)
-    print(f"sızıntı testi: {'temiz' if ok else 'SORUN'} → {(out / 'sizinti.md').relative_to(ROOT)}")
+    ok = leak_report(unit, cfg, out, prompt, report)
+    print(f"sızıntı testi: {'temiz' if ok else 'SORUN'} → {(out / report).relative_to(ROOT)}")
     if not ok:
         sys.exit(1)
 
 
-def yazdir(unit: str, times: int, model: str, effort: str) -> None:
+def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam") -> None:
     out = OUT / unit
-    prompt = (out / "istem.md").read_text(encoding="utf-8")
+    prompt = (out / ISTEM[istem][0]).read_text(encoding="utf-8")
     env = {k: v for k, v in os.environ.items() if k not in PARENT_ENV}
     existing = [int(m.group(1)) for p in out.glob("taslak-*.jsonl") if (m := re.match(r"taslak-(\d+)", p.stem))]
     first = max(existing, default=0) + 1
@@ -289,14 +331,14 @@ def yazdir(unit: str, times: int, model: str, effort: str) -> None:
                        "--allowedTools", "mcp__risale,mcp__tefsir,mcp__hadis", "--no-session-persistence"]
             log = out / f"taslak-{n}.jsonl"
             started = time.monotonic()
-            print(f"taslak {n}: {model}, {effort} ({datetime.now():%H:%M})", flush=True)
+            print(f"taslak {n}: {model}, {effort}, istem {istem} ({datetime.now():%H:%M})", flush=True)
             with log.open("w", encoding="utf-8") as stdout:
                 done = subprocess.run(command, input=prompt, cwd=tmp, env=env, stdout=stdout, stderr=subprocess.PIPE,
                                       text=True, timeout=TIMEOUT, check=False)
             if done.returncode or done.stderr.strip():
                 (out / f"taslak-{n}.stderr.txt").write_text(done.stderr, encoding="utf-8")
             answer, calls, cost = transcript(log)
-            meta = {"model": model, "effort": effort, "prompt_sha": _sha(prompt), "seconds": round(time.monotonic() - started),
+            meta = {"model": model, "effort": effort, "istem": istem, "prompt_sha": _sha(prompt), "seconds": round(time.monotonic() - started),
                     "returncode": done.returncode, "calls": calls, "cost_usd": cost, "at": datetime.now().isoformat()}
             (out / f"taslak-{n}.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
             (out / f"taslak-{n}.md").write_text(answer, encoding="utf-8")
@@ -355,7 +397,8 @@ def karsilastir(unit: str) -> None:
         own = common - shared_src
         meta = json.loads((out / f"{draft.stem}.json").read_text())
         lines += [f"## {draft.stem}", "",
-                  f"{meta['model']}, {meta['effort']}, {meta['seconds']} sn, araçlar: {meta['calls']}", "",
+                  f"{meta['model']}, {meta['effort']}, istem {meta.get('istem', 'tam')}, {meta['seconds']} sn, "
+                  f"araçlar: {meta['calls']}", "",
                   f"Gizlenen Arapça metinle ortak {N} kelimelik dizi: {len(common)} (müfessirlerin bu âyetlerdeki "
                   f"birimlerinde de bulunmayan: {len(own)}; ezber şüphesi bunlardır)", ""]
         w = search_words(text)
@@ -524,7 +567,8 @@ def okuma(unit: str) -> None:
             src_html = "".join(f"<li><b>[{n}]</b> {html.escape(s)}</li>" for n, s in sources.items())
             heads = (f'<div class="row heads"><div class="col"><h3>Yapay zekâ taslağı ({name.split("-")[1]})</h3></div>'
                      f'<div class="col"><h3>{right} <span class="muted">gizlenen metin</span></h3></div></div>')
-            info = (f'<p class="meta">{meta["model"]}, {meta["effort"]}, {meta["seconds"] // 60} dk, '
+            info = (f'<p class="meta">{meta["model"]}, {meta["effort"]}, istem {meta.get("istem", "tam")}, '
+                    f'{meta["seconds"] // 60} dk, '
                     f'{sum(meta["calls"].values())} araç çağrısı. Taslağın Arapçası {ar_chars:,} karakter, '
                     f'İşârât\'ın bu birimi {hidden_ar_chars:,} karakter.</p>').replace(",", ".")
             panes.append(f'<section class="pane" id="{pane_id}" hidden>{info}{heads}{"".join(rows)}'
@@ -612,8 +656,11 @@ def main() -> None:
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("hazirla")
     p.add_argument("unit", choices=UNITS)
+    p.add_argument("--istem", choices=ISTEM, default="tam")
+    p.add_argument("--db-yenile", action="store_true")
     p = sub.add_parser("yazdir")
     p.add_argument("unit", choices=UNITS)
+    p.add_argument("--istem", choices=ISTEM, default="tam")
     p.add_argument("--kez", type=int, default=1)
     p.add_argument("--model", default="claude-fable-5-2")
     p.add_argument("--effort", default="high")
@@ -623,9 +670,9 @@ def main() -> None:
     p.add_argument("unit", choices=UNITS)
     args = parser.parse_args()
     if args.command == "hazirla":
-        hazirla(args.unit)
+        hazirla(args.unit, args.istem, args.db_yenile)
     elif args.command == "yazdir":
-        yazdir(args.unit, args.kez, args.model, args.effort)
+        yazdir(args.unit, args.kez, args.model, args.effort, args.istem)
     elif args.command == "okuma":
         okuma(args.unit)
     else:
