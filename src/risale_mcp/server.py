@@ -117,7 +117,7 @@ verdict.
 convey the meaning, say whose they are, never quote them as the text. The author's own explanation ("Yani, …") \
 is text.
 - Qur'an: copy the vowelled Arabic from get_ayah (or as the works quote it), never from memory. Cite a verse as \
-get_ayah's ref ("Bakara Sûresi, 2:255", no ›), name the Diyanet translation you use and mention covers_verses. \
+get_ayah's ref ("Bakara Sûresi, 2:255", no ›), name the translation (Türkiye Diyanet Vakfı) and mention covers_verses. \
 A translation aids the meaning; it does not replace the Arabic.
 - Your own translation (of Arabic the tools return without a translation: a hadith, a passage of the Arabic works, \
 another connector's text) is labelled where it begins, in Turkish "Yapay zekâ tercümesi:", a phrase or a long \
@@ -572,8 +572,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         end: Annotated[int | None, Field(description="Last verse of a range (at most 30 verses).", ge=1)] = None,
         context: Annotated[int, Field(description="Neighbouring verses to add on each side.", ge=0, le=10)] = 0,
     ) -> str:
-        """Get a verse (or a range) of the Qur'an itself: the vowelled Arabic (Medina Mushaf), the Diyanet İşleri
-        Başkanlığı and Türkiye Diyanet Vakfı translations, the ref to cite ("Bakara Sûresi, 2:255"), and how often
+        """Get a verse (or a range) of the Qur'an itself: the vowelled Arabic (Medina Mushaf), the Türkiye
+        Diyanet Vakfı translation, the ref to cite ("Bakara Sûresi, 2:255"), and how often
         the works quote it and link to it (find_ayah lists them). A translation of several verses together says
         which (covers_verses); ask for that range to read it whole."""
         with _tool_errors():
@@ -765,7 +765,7 @@ def _hadis_tools(server: MCPServer, library) -> None:
         ayah: Annotated[int, Field(description="Verse number.", ge=1)],
         end: Annotated[int | None, Field(description="Last verse of a range.")] = None,
     ) -> str:
-        """A verse or range of the Qur'an: the Arabic text (Medina mushaf), two Diyanet translations and its citation."""
+        """A verse or range of the Qur'an: the Arabic text (Medina mushaf), the Türkiye Diyanet Vakfı translation and its citation."""
         with _tool_errors():
             return _json(library.ayahs(sura, ayah, end))
 

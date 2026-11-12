@@ -75,7 +75,7 @@ IHLAS = "قُلْ هُوَ ٱللَّهُ أَحَدٌ"
 
 def _ayah(n: int, text: str, clean: str) -> dict:
     return {"ayah": n, "text": text, "text_simple": text, "text_clean": clean,
-            "translations": {"diyanet-isleri": f"meal {n}", "diyanet-vakfi": f"vakıf meali {n}"}}
+            "translations": {"diyanet-vakfi": f"vakıf meali {n}"}}
 
 
 def mini_quran() -> dict:
@@ -83,10 +83,9 @@ def mini_quran() -> dict:
     bakara[0] = _ayah(1, "الٓمٓ", "الم")
     bakara[254] = _ayah(255, KURSI, "الله لا إله إلا هو الحي القيوم")
     for a in bakara[252:254]:                                                 # 253-254 birlikte tercüme edilmiş
-        a["translations"]["diyanet-isleri"] = "ortak meal"
-        a["spans"] = {"diyanet-isleri": [253, 254]}
-    return {"source": "test", "translations": [{"id": "diyanet-isleri", "name": "Diyanet İşleri Başkanlığı meali"},
-                                               {"id": "diyanet-vakfi", "name": "Türkiye Diyanet Vakfı meali"}],
+        a["translations"]["diyanet-vakfi"] = "ortak meal"
+        a["spans"] = {"diyanet-vakfi": [253, 254]}
+    return {"source": "test", "translations": [{"id": "diyanet-vakfi", "name": "Türkiye Diyanet Vakfı meali"}],
             "suras": [{"number": 2, "name": "Bakara", "name_ar": "البقرة", "ayahs": bakara},
                       {"number": 112, "name": "İhlâs", "name_ar": "الإخلاص", "ayahs": [_ayah(1, IHLAS, "قل هو الله أحد")]}]}
 

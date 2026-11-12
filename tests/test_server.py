@@ -144,13 +144,12 @@ def test_get_ayah_text_translations_and_context(library):
     result = library.ayahs("İhlâs", 1)
     verse = result["ayahs"][0]
     assert (verse["ref"], verse["text"]) == ("İhlâs Sûresi, 112:1", IHLAS)
-    assert verse["translations"] == [{"translator": "Diyanet İşleri Başkanlığı meali", "text": "meal 1"},
-                                     {"translator": "Türkiye Diyanet Vakfı meali", "text": "vakıf meali 1"}]
+    assert verse["translations"] == [{"translator": "Türkiye Diyanet Vakfı meali", "text": "vakıf meali 1"}]
     assert "Tanzil" in result["attribution"]
     ranged = library.ayahs("2", 254, context=1)["ayahs"]
     assert [(v["ayah"], v.get("context", False), v["quoted_in_works"]) for v in ranged] == [
         (253, True, 0), (254, False, 0), (255, True, 1)]
-    assert ranged[1]["translations"][0] == {"translator": "Diyanet İşleri Başkanlığı meali", "text": "ortak meal",
+    assert ranged[1]["translations"][0] == {"translator": "Türkiye Diyanet Vakfı meali", "text": "ortak meal",
                                             "covers_verses": "2:253-254"}
     with pytest.raises(LibraryError, match="verses 1–255"):
         library.ayahs("2", 256)

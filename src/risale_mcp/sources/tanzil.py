@@ -11,7 +11,7 @@ Arapça metin üç biçimde indirilir:
 - `simple-clean`: harekesiz ve işaretsiz; yalnızca Risale'deki âyetleri metinle eşlemek için.
 
 Ham arşiv (`data/raw/tanzil/`):
-    manifest.json, quran-<biçim>.xml, <meal>.xml (tr.diyanet, tr.vakfi)
+    manifest.json, quran-<biçim>.xml, <meal>.xml (tr.vakfi)
 """
 
 import json
@@ -25,9 +25,8 @@ from risale_mcp.sources.http import PoliteClient
 
 BASE_URL = "https://tanzil.net"
 TEXT_TYPES = ("uthmani", "simple", "simple-clean")
-# Tanzil'in kimliği -> açıklama. İkisi de Diyanet'in mealidir: İşleri Başkanlığı ve Vakfı.
+# Tanzil'in kimliği -> açıklama. Diyanet İşleri Başkanlığı meali (`tr.diyanet`) 2026-11-12'de çıkarıldı (izin yok).
 TRANSLATIONS = {
-    "tr.diyanet": "Diyanet İşleri Başkanlığı meali",
     "tr.vakfi": "Türkiye Diyanet Vakfı meali",
 }
 SURAS, AYAHS = 114, 6236

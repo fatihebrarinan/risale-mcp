@@ -56,11 +56,10 @@ def test_locate_numbered_and_bracketed(quran):
 
 
 def test_grouped_translation_spans():
-    ayahs = [{"ayah": n, "translations": {"diyanet-isleri": t, "diyanet-vakfi": str(n)}}
-             for n, t in enumerate(["a", "b", "b", "b", "c"], 1)]
+    ayahs = [{"ayah": n, "translations": {"diyanet-vakfi": t}} for n, t in enumerate(["a", "b", "b", "b", "c"], 1)]
     _mark_spans(ayahs)
-    assert [a.get("spans") for a in ayahs] == [None, {"diyanet-isleri": [2, 4]}, {"diyanet-isleri": [2, 4]},
-                                               {"diyanet-isleri": [2, 4]}, None]
+    assert [a.get("spans") for a in ayahs] == [None, {"diyanet-vakfi": [2, 4]}, {"diyanet-vakfi": [2, 4]},
+                                               {"diyanet-vakfi": [2, 4]}, None]
 
 
 def test_sura_ref():

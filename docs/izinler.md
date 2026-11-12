@@ -44,7 +44,7 @@ Bize özel bir izin değildir; yayımlanan şartlara uyarak kullanıyoruz.
 | Sanadset 650K (Mghari, Bouras, El Hibaoui; Mendeley Data 5xth87zwb5) | CC BY 4.0: kaynak gösterilir | Hadis eşlemesi (Aşama 14), genel sunucuda yalnız eşleşen rivayetler. Not: makale kaynak siteleri bilerek gizler ("we anonymize the website and Hadith pages"), kitap baskısı vermez; "kamu malı" ifadesi yazarların beyanıdır. Lisans yazarların veri setini kapsar, üst kaynağın hakkı doğrulanamadı. Metnin doğruluğu kullanıcının kararıyla kabul edildi (2026-11-02) |
 | OpenITI (KITAB projesi, Aga Khan University; Zenodo sürüm kaydı) | CC BY-NC-SA 4.0: kaynak gösterilir (OpenITI, dosya ve sürüm), ticari kullanılmaz, türetilen veri aynı lisansla paylaşılır | Kütüb-i Sitte ve Muvatta'nın JK baskıları (`docs/hadis-kitaplari-plani.md`): kitaplar yalnız yerelde; künyenin bölgesinde okumayla bulunan rivayetlerin 6'sı yalnız JK metniyle genel sunucuda (2026-11-03). Beyzâvî'nin Envârü't-Tenzîl'i (tefsir pilotu, T0, 2026-11-04): beş sürüm indirildi, asıl nüsha Shamela0023588 (Maraşlî tahkiki, Dâru İhyâi't-Türâsi'l-Arabî 1418); yalnız yerelde. Lisans OpenITI'nin dijital metnini kapsar; muhakkikin girişi Maraşlî'nin diye işaretli alınır (kullanıcının kararı) |
 | Hadith API (fawazahmed0/hadith-api) | Unlicense. Yalnız Arapça ve dereceler; `tur-*` mealler alınmaz, mütercimleri belli değil | Hadis dereceleri (Aşama 14), genel sunucuda eşleşen rivayetlerle |
-| Diyanet mealleri (Tanzil üzerinden) | Ticari olmayan kullanım; ortak derlemlere girerse Diyanet'ten izin gerekir | İki meal, genel sunucuda |
+| Türkiye Diyanet Vakfı meali (Tanzil üzerinden) | Ticari olmayan kullanım; ortak derlemlere girerse Vakıf'tan izin gerekir | Genel sunucuda. Diyanet İşleri Başkanlığı meali 2026-11-12'de çıkarıldı (bkz. Reddeden) |
 
 ## Açık izin kaydı olmayanlar
 
@@ -63,6 +63,7 @@ nurpedia'dan gelir; yalnız nurpedia'nın resim verdiği tablolar PDF'ten, kulla
 
 | Kaynak | Karar | Durum |
 |---|---|---|
+| Diyanet İşleri Başkanlığı | 2026-11-12: Kur'ân metni, meal ve seslendirme kendi siteleri ve uygulamalarında açık; kaynak dosyaların üçüncü kişilerle paylaşılması, başka uygulamada kullanılmak üzere toplu aktarılması ya da yeniden yayımlanması talepleri karşılanmıyor | Kur'an Yolu ve Diyanet'in Hak Dini Kur'an Dili baskısı alınmaz; Başkanlığın Tanzil'deki meali çıkarıldı (kullanıcının kararı: risk alınmaz). Türkiye Diyanet Vakfı ayrı kuruluştur, meali kalır. Elmalılı'nın asıl, sadeleştirilmemiş metni aranır (PLANLAR E6) |
 | Hizmet Vakfı (rasaelalnour.com) | 2026-10-30'da izin vermedi | Site bırakıldı, Arapça eserler risaleoku'dan alındı. Yalnız harekeli Mesnevî yerelde durur, sunucuya çıkmaz |
 
 ## Şartları kullanıma izin vermeyen
@@ -75,6 +76,4 @@ nurpedia'dan gelir; yalnız nurpedia'nın resim verdiği tablolar PDF'ten, kulla
 
 | Kaynak | İstek | Durum |
 |---|---|---|
-| Prof. Dr. Ahmed Akgündüz | Kızıl İcaz tercümesi: izin ve dijital nüsha, Ta'likat tercümesi de | Cevap bekleniyor (Aşama 17) |
-| Diyanet İşleri Başkanlığı | Kur'an Yolu ve Hak Dini Kur'an Dili'nin (Diyanet baskısı) tefsir sunucusunda kullanımı, dijital nüsha (`docs/diyanet-izin-epostasi.md`) | Taslak hazır, kullanıcı gönderecek (2026-11-06) |
 | Yeni Asya | Ortak proje, izinli PDF'ler | Planda; mevcut veri kullanılmıyor |

@@ -95,8 +95,8 @@ def _arabic_record(row) -> dict:
 MAX_CITATIONS = 12       # find_hadith'in bir parça için döndürdüğü en çok künye
 MAX_LINKS = 30           # find_ayah'ın bir âyet için döndürdüğü en çok ilişki
 MAX_AYAHS = 30           # get_ayah'ın bir seferde döndürdüğü en çok âyet (bağlam hariç)
-QURAN_ATTRIBUTION = ("Arabic text: Tanzil Project (tanzil.net), Medina Mushaf script. Translations: Diyanet İşleri "
-                     "Başkanlığı and Türkiye Diyanet Vakfı, via Tanzil (non-commercial use).")
+QURAN_ATTRIBUTION = ("Arabic text: Tanzil Project (tanzil.net), Medina Mushaf script. Translation: Türkiye Diyanet "
+                     "Vakfı, via Tanzil (non-commercial use).")
 # Kaynağın âyet numarası Kur'ân metniyle tutmuyorsa modele giden uyarı (build_db, `ayah_check`).
 AYAH_CHECK_NOTES = {
     "near": "the quoted text is in a neighbouring verse, not exactly the one the source names",
@@ -955,7 +955,7 @@ class Library:
         return {"reviews": reviews, "review_fields": {"needs": needs, "covered": sorted(covered & set(needs))}}
 
     def ayahs(self, sura: str | int, ayah: int, end: int | None = None, context: int = 0) -> dict:
-        """Kur'ân'dan âyet ya da âyet aralığı: harekeli metin (Medine Mushafı hattı) ve Diyanet mealleri."""
+        """Kur'ân'dan âyet ya da âyet aralığı: harekeli metin (Medine Mushafı hattı) ve Vakıf meali."""
         if not self._has_quran():
             raise LibraryError("The Qur'an layer is not installed in this database.")
         number = self._sura_number(str(sura))

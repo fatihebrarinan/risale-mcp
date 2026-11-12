@@ -10,11 +10,12 @@ cümle değil. `build_db` onu kendi tablolarına yazar ve Risale'deki Arapça pa
 Metin ve mealler:
 - `text`: Medine Mushafı hattı (Tanzil "uthmani"), harekeli. Kullanıcıya gösterilen metindir.
 - `text_simple`: imlâî yazım, harekeli. `text_clean`: harekesiz; yalnızca eşleme için.
-- Mealler: Diyanet İşleri Başkanlığı (`tr.diyanet`) ve Türkiye Diyanet Vakfı (`tr.vakfi`). Tanzil'in
-  şartı: ticari olmayan kullanım; ortak derlemlere girerse Diyanet'ten izin gerekir.
+- Meal: Türkiye Diyanet Vakfı (`tr.vakfi`). Tanzil'in şartı: ticari olmayan kullanım. Diyanet İşleri Başkanlığı
+  meali (`tr.diyanet`) 2026-11-12'de çıkarıldı: Başkanlık içeriğinin başka uygulamada yeniden yayımlanmasına izin
+  vermedi (kullanıcının kararı: risk alınmaz; Vakıf ayrı kuruluştur).
 - Sûrelerin Türkçe adları aşağıdaki listededir (Tanzil yalnızca Arapça adları verir).
-- Diyanet İşleri meali art arda birkaç âyeti birlikte tercüme eder (570 grup, 1.413 âyet); Tanzil aynı
-  metni gruptaki her âyete yazar. Böyle bir âyette `spans` mealin kapsadığı ilk ve son âyettir.
+- Meal art arda birkaç âyeti birlikte tercüme edebilir (Vakıf'ta 20 âyet); Tanzil aynı metni gruptaki her âyete
+  yazar. Böyle bir âyette `spans` mealin kapsadığı ilk ve son âyettir.
 
 Eşleme (`skeleton`): Risale'nin Arapça yazımı Tanzil'inkinden farklıdır (Türk mushafı imlâsı, "﷽" bağlaması,
 "…الخ" ile kısaltma). Bu yüzden iki metin de harf iskeletine indirilir: hareke ve işaretler, hemze, elif,
@@ -36,7 +37,6 @@ from risale_mcp.sources import tanzil
 
 TANZIL_DIR = RAW_DIR / "tanzil"
 TRANSLATIONS = {  # veritabanındaki kimlik -> (Tanzil kimliği, ad)
-    "diyanet-isleri": ("tr.diyanet", "Diyanet İşleri Başkanlığı meali"),
     "diyanet-vakfi": ("tr.vakfi", "Türkiye Diyanet Vakfı meali"),
 }
 
