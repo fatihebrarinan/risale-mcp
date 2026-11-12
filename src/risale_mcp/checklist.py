@@ -47,7 +47,7 @@ DONE, PARTIAL, TODO, NONE, PAUSED = "✅", "⚠️", "⬜", "❌", "⏸️"
 
 # Üç bölümlü dosyalar: (a) üretilir, (b) ve (c) elle
 MANUAL_MARK = "<!-- Bu satırın altı elle tutulur; checklist yeniden üretirken korur. -->"
-MANUAL_DEFAULT = """
+MANUAL_DEFAULT = """\
 ## (b) Eklenmesi çok iyi olacaklar
 
 Her eser için: nüsha (OpenITI sürümü, muhakkik), E2 ölçütünün üç şartı (Risale'de anılma ya da künye, açık izin ve
@@ -216,8 +216,8 @@ def write_parted(path: Path, generated: str) -> None:
     """Üretilen (a) kısmını yazar, işaretin altındaki elle tutulan kısmı korur (yoksa boş iskelet)."""
     manual = MANUAL_DEFAULT
     if path.exists() and MANUAL_MARK in (old := path.read_text(encoding="utf-8")):
-        manual = old.split(MANUAL_MARK, 1)[1]
-    path.write_text(f"{generated}\n{MANUAL_MARK}\n{manual}", encoding="utf-8")
+        manual = old.split(MANUAL_MARK, 1)[1].lstrip("\n")   # her üretimde boş satır birikmesin
+    path.write_text(f"{generated}\n{MANUAL_MARK}\n\n{manual}", encoding="utf-8")
 
 
 def render_index(table: list[Row]) -> str:

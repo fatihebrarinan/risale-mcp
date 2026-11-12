@@ -34,8 +34,6 @@ Kaynak alınmaz (`catalog/excluded.py`, kullanıcının kararı): Muhammed Abduh
 
 <!-- Bu satırın altı elle tutulur; checklist yeniden üretirken korur. -->
 
-
-
 Şartlar (PLANLAR.md E2): **1** Risale'de anılma ya da künye, **2** muhakkiki bilinen nüsha ve açık izin, **3** gerçekçi soru. "?" henüz sayılmadı (E2.1). Künye sayıları `data/interim/hadis/kunye.md`'den, boyutlar `docs/mvp-kitaplar.md`'den (2026-11-06).
 
 ## (b) Eklenmesi çok iyi olacaklar
