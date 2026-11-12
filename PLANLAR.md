@@ -176,6 +176,9 @@ dizileri), içerik hatırlamasını mütehassıs görür.
   buldu, yalnız Fâtiha yok. İşaretler: kaynaklı 39, kendi tespiti 35 (taslak 1: 23 ve 42). Gizlenen metinle ortak
   6'lı dizi 4, hepsi geçiş kalıbı ("اعلم ان وجه نظم هذه الاية", "واما جملة …"). İlk bakışta tam metnin katkısı
   görülmedi; içerik değerlendirmesi kullanıcıda. Kullanıcı Max planına geçti.
+  **Taslak 3 (ince istem, 2026-11-12):** 696 sn, ≈7,65 $. İşârât'tan 36 yer, 13 birim (Fâtiha ve Bakara 5 dahil);
+  kaynaklı işaret 38, kendi tespiti 27; ortak 6'lı dizi 4, yine geçiş kalıpları. İki ince taslak da uzak birimlere
+  araçla ulaştı; sayılarda tam istemin üstünlüğü yok. Okuma sayfasında üç taslak; değerlendirme kullanıcıda.
 - D1.4 Değerlendirme ölçütü: usul özetinin maddeleri (münasebet, cümleler arası intizam, hey'et ve kelime
   nükteleri), i'râb ve belâgat doğruluğu, uydurma; mütehassıs taslağı İşârât'ın kendi metniyle yan yana okur; ezber
   otomatik ölçülür.
