@@ -242,7 +242,10 @@ eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded
   doğrulama ancak kişinin kendi adıyla yayımlamaya yeter; "Nur Hadimleri" adıyla yayımlamak işletme doğrulaması
   (tüzel kişilik: dernek, vakıf, şirket) ister. Seçenekler: (a) kullanıcının doğrulanmış kendi adıyla yayımlamak
   (ad dizinde görünür; sitedeki yayıncı bilgisi de aynı ad olmalı), (b) "Nur Hadimleri"ni tüzel kişi olarak doğrulatmak.
-  Karar kullanıcıda.
+  **Kullanıcının eğilimi (2026-11-12):** büyük ihtimalle (a), kendi adıyla; tüzel kişilik şu an zor. İleride bir vakıfla
+  anlaşılırsa onun adına yeniden yayımlanabilir, bugün öyle bir durum yok. S4'e gelince: başvuru doğrulanmış kendi
+  adıyla, uygulama adı "Risale MCP"; sitedeki yayıncı bilgisi (gizlilik, şartlar, `docs/chatgpt-dizin-basvurusu.md`)
+  aynı ada çevrilir; hadis ve tefsir başvuruları da aynı kimlikle.
 - S4.2 Yeniden başvuru "Risale MCP" adıyla (kullanıcının kararı, 2026-11-12; alan adı risalemcp.com bizim);
   "Risale-i Nur" açıklamada kalır. Gerekirse itiraz (e-postayı yanıtlayarak).
 - S4.3 Claude: başvuru portalda görünüyor, "in review" (2026-11-12).
