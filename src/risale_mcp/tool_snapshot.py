@@ -32,6 +32,7 @@ from risale_mcp.paths import INTERIM_DIR, ROOT
 CALLS_PATH = ROOT / "tests" / "golden" / "tool_calls.json"
 # Her sunucunun kendi çağrı seti (araçları farklı): genel ve yerel profil `tool_calls.json`, öbürleri kendi dosyası.
 PROFILE_CALLS = {"tefsir": ROOT / "tests" / "golden" / "tool_calls_tefsir.json",
+                 "klasik": ROOT / "tests" / "golden" / "tool_calls_klasik.json",
                  "hadis": ROOT / "tests" / "golden" / "tool_calls_hadis.json"}
 SNAPSHOT_DIR = INTERIM_DIR / "tool_snapshot"
 MAX_LINES = 400                  # raporda en çok bu kadar fark satırı
@@ -130,7 +131,7 @@ def record(name: str, profile_name: str, semantic: bool = True, calls_path: Path
     if semantic:
         _fixed_query_vectors()
     # yerel ve genel profil bugüne kadar varsayılan sunucuyla kaydedildi; adı ve talimatı profil seçer
-    server_profile = profile.name if profile.name in ("tefsir", "hadis") else "kisisel"
+    server_profile = profile.name if profile.name in ("tefsir", "klasik", "hadis") else "kisisel"
     data = asyncio.run(_record(library, calls, semantic, server_profile))
     built = library.conn.execute("SELECT value FROM meta WHERE key = 'built_at'").fetchone()
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()

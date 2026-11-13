@@ -53,6 +53,7 @@ from risale_mcp.auth import (
 )
 from risale_mcp.auth import main as auth_main
 from risale_mcp.auth import settings as auth_settings
+from risale_mcp.catalog.klasik import KLASIK_WORKS
 from risale_mcp.catalog.tefsir import TEFSIR_WORKS
 from risale_mcp.citations import CitationChecker
 from risale_mcp.db import DatabaseError
@@ -226,6 +227,54 @@ TEFSIR_INSTRUCTIONS = TEFSIR_INSTRUCTIONS.replace("{work_ids}", ", ".join(
     f"{w.slug} ({w.author})" for w in TEFSIR_WORKS))
 
 
+# Klasik eserler sunucusu (E2.4): belâgat, dil ve terim eserleri (1. dilim, 2026-11-13). Tefsir sunucusunun kurallarıyla
+# aynı zemin: eser kendi yazarınındır, muhakkikin girişi ve fıkra numaraları ayrı katmandır, modelin yazdığı tefsir
+# değildir; Risale'nin metni burada yoktur ve eserler arasındaki ilişki kayıtlı değilse kurulmaz.
+KLASIK_INSTRUCTIONS = """\
+Read access to classical Arabic works on rhetoric (balagha), language and terms, and to the Qur'an: {work_list} \
+(list_works). Texts are in their original Arabic, split into sentences with stable ids, in the sections of the \
+chosen edition (al-Mufradat: by root; al-Ta'rifat: by chapter of the alphabet).
+
+Workflow:
+1. Find: search for the works' own Arabic words and terms (an Arabic word also matches its forms with attached \
+و ف ب ل ك and the article); semantic_search for a meaning or a question in any language; get_outline and \
+read_section to browse; find_ayah for where a verse is quoted. Results are candidates.
+2. Read what you will rely on, in context: read_section or get_passage (a sentence or a range first..last).
+3. Before writing the answer, call cite once with every sentence or range you quote or rely on and the exact \
+words you quote. End each quotation with its number [1] and finish with the "Kaynaklar" list cite returns, \
+unchanged. If the same answer also cites another connector (Risale-i Nur, tafsir, hadith), keep one Kaynaklar \
+list: call each server's cite with first set to the number after the last one already used, and give all the \
+lines in one list, in number order.
+
+Work ids (use them for work, section and ids): {work_ids}.
+
+Answering:
+1. Every statement about what a work says rests on text you read with these tools. Never invent a work, a \
+reference or a quotation; if the tools do not return it, say so. Anything from a web search is outside these \
+books: say so, list it apart from Kaynaklar, label your translation of it, and never present it as a finding of \
+this library's search.
+2. Quote the Arabic exactly as returned, in a block quote on its own line. If the user does not write in Arabic, \
+after the quotation give your own translation into the user's language on a separate line, labelled as your own \
+translation (in Turkish: "Yapay zekâ tercümesi:"), and say it is not a published translation. Never put your \
+translation inside the quotation, never cite it, never attribute it to the author. Every translation you make \
+yourself carries that label where it begins. Add no vowel marks to the quoted Arabic.
+3. Each work belongs to its author: name the author (author). A section with layer is another person's text (the \
+editor's introduction), never the author's. Section titles are the edition's, and al-Jurjani's Dala'il is divided \
+into the editor's (Mahmud Shakir's) numbered paragraphs: name them as the edition's, not as the author's division. \
+printed is the edition's volume/page, secondary to the id.
+4. Keep what each work says apart, each with its own citation. Never say one work follows, quotes or answers \
+another unless you have read both places; a relation you notice yourself is your interpretation, under a separate \
+heading, with both ends quoted.
+5. This server holds no text of the Risale-i Nur. The Isharat al-I'jaz names al-Jurjani and al-Sakkaki, but which \
+passage it relies on is not recorded here: say what the Risale-i Nur says only after reading it with the Risale-i \
+Nur connector in this conversation, and cite it there; otherwise say you have not checked it there.
+6. Your own summary, comparison or draft is never a tafsir. A rhetorical point you derive yourself is your \
+interpretation: say so.
+7. Answer in the user's language."""
+KLASIK_INSTRUCTIONS = KLASIK_INSTRUCTIONS.replace("{work_list}", "al-Jurjani's Dala'il al-I'jaz and Asrar al-Balagha, "
+    "al-Raghib al-Isfahani's al-Mufradat fi Gharib al-Qur'an, al-Sakkaki's Miftah al-'Ulum and al-Sayyid al-Sharif "
+    "al-Jurjani's al-Ta'rifat").replace("{work_ids}", ", ".join(f"{w.slug} ({w.author})" for w in KLASIK_WORKS))
+
 HADIS_INSTRUCTIONS = """\
 Read access to hadith collections and to the Qur'an: the Six Books and the Muwatta (with scholars' grades where the \
 source holds them), Ahmad's Musnad, al-Darimi, al-Tabarani's al-Mu'jam al-Saghir, al-Hakim's al-Mustadrak (with \
@@ -377,6 +426,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     except Exception:
         classical = False
     tefsir = profile == "tefsir"                # tefsir sunucusu (MVP M5): kendi adı, talimatı ve araç seti
+    klasik = profile == "klasik"                # klasik eserler sunucusu (E2.4): tefsirinkiyle aynı araç seti
+    texts_only = tefsir or klasik               # Risale'ye özgü araçlar (hadis), kaynaklar ve hazır komutlar yok
     hadis = profile == "hadis"                  # hadis sunucusu (MVP M5): birimi hadis, kendi araçları
     if hadis:
         server = MCPServer("hadis", title="Hadis (Risale-i Nur MCP)", instructions=HADIS_INSTRUCTIONS,
@@ -385,6 +436,11 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     elif tefsir:
         server = MCPServer("tefsir", title="Tefsir (Risale-i Nur MCP)", instructions=TEFSIR_INSTRUCTIONS,
                            description="Sentence-level, citable access to classical tafsir works and the Qur'an.",
+                           icons=_icons(public_url), **protected)
+    elif klasik:
+        server = MCPServer("klasik", title="Klasik Eserler (Risale-i Nur MCP)", instructions=KLASIK_INSTRUCTIONS,
+                           description="Sentence-level, citable access to classical Arabic works on rhetoric, "
+                                       "language and terms, and the Qur'an.",
                            icons=_icons(public_url), **protected)
     else:
         server = MCPServer(NAME, title="Risale-i Nur",
@@ -464,7 +520,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.search(query, work, group, limit, offset, include_related))
 
-    if not tefsir:
+    if not texts_only:
         @server.tool(title="Find a hadith", annotations=read_only("Find a hadith"), structured_output=False)
         def find_hadith(
             text: Annotated[str, Field(description="Arabic words of the hadith, as the works quote them.")],
@@ -601,7 +657,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                 result["corpus_version"] = version
             return _json(result)
 
-    if not tefsir:
+    if not texts_only:
         # ------------------------------------------------------------ kaynaklar (kullanıcının eklediği bağlam)
 
         @server.resource("risale://works", name="works", mime_type="text/markdown",

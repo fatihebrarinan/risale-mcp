@@ -11,12 +11,17 @@
 #   scripts/tefsir-sunucu.sh auth debug-url --new | --revoke   # gizli hata ayıklama adresi (/tefsir/<anahtar>)
 #   scripts/tefsir-sunucu.sh auth usage --user '(debug)' --params   # o adresten gelen isteklerin kaydı
 #   scripts/tefsir-sunucu.sh status | restart | logs
+#   PROFIL=klasik scripts/tefsir-sunucu.sh gonder | auth … | status   # klasik eserler sunucusu (E2.4, 8003, /klasik)
 #
 # Sonra ana makinede docs/Caddyfile'a /tefsir bloğu (adresle) eklenir ve scripts/deploy.sh --code çalışır.
 # Kullanım kaydı (auth.db) bu makinede ayrı tutulur.
 set -euo pipefail
 
 HOST="${TEFSIR_HOST:-root@100.98.98.62}"   # tefsir-mcp (Hetzner CAX21, 8 GB; Tailscale)
+# Aynı makinede klasik eserler sunucusu da durur (E2.4, 8003): PROFIL=klasik ile bütün komutlar onun içindir.
+P="${PROFIL:-tefsir}"
+case "$P" in tefsir|klasik) ;; *) echo "PROFIL tefsir ya da klasik olmalı"; exit 2 ;; esac
+SERVICE="risale-mcp-$P"
 KEY="${RISALE_KEY:-$HOME/.ssh/risale_hetzner}"
 DEST=/home/risale/risale-mcp
 SSH=(ssh -i "$KEY" -o BatchMode=yes)
@@ -30,40 +35,41 @@ kur)
         su - risale -c 'command -v ~/.local/bin/uv >/dev/null || curl -LsSf https://astral.sh/uv/install.sh | sh >/dev/null'
         ufw default deny incoming >/dev/null; ufw default allow outgoing >/dev/null
         ufw allow in on tailscale0 >/dev/null; ufw --force enable >/dev/null
-        mkdir -p $DEST/data/dist/tefsir/vectors $DEST/data/library/kuran && chown -R risale:risale /home/risale
+        mkdir -p $DEST/data/dist/tefsir/vectors $DEST/data/dist/klasik/vectors $DEST/data/library/kuran && chown -R risale:risale /home/risale
         echo kuruldu; ufw status | head -5"
     ;;
 gonder)
-    # H0/H1: tefsir profilinin sürüm etiketi ve kendi çağrı setiyle son `tefsir-yayin-*` kaydına karşı araç çıktısı
+    # H0/H1: profilin sürüm etiketi ve kendi çağrı setiyle son `<profil>-yayin-*` kaydına karşı araç çıktısı
     SNAPSHOTS=data/interim/tool_snapshot
     STAMP=$(date +%Y%m%d-%H%M%S)
-    uv run python -m risale_mcp.manifest release --profile tefsir
-    PREV=$(ls -d "$SNAPSHOTS"/tefsir-yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename || true)
-    uv run python -m risale_mcp.tool_snapshot record "tefsir-aday-$STAMP" --profile tefsir
+    uv run python -m risale_mcp.manifest release --profile "$P"
+    PREV=$(ls -d "$SNAPSHOTS"/"$P"-yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename || true)
+    uv run python -m risale_mcp.tool_snapshot record "$P-aday-$STAMP" --profile "$P"
     if [[ -n "$PREV" ]]; then
         # shellcheck disable=SC2086
-        uv run python -m risale_mcp.tool_snapshot compare "$PREV" "tefsir-aday-$STAMP" --expect ${TEFSIR_EXPECT:-} \
-            || { echo "tefsir araç çıktısında beklenmeyen fark: gönderilmedi"; exit 1; }
+        uv run python -m risale_mcp.tool_snapshot compare "$PREV" "$P-aday-$STAMP" --expect ${TEFSIR_EXPECT:-} \
+            || { echo "$P araç çıktısında beklenmeyen fark: gönderilmedi"; exit 1; }
     fi
     git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DEST/"
-    rsync -az --info=progress2 -e "${SSH[*]}" data/dist/tefsir/risale.db "$HOST:$DEST/data/dist/tefsir/risale.db"
-    rsync -az --delete -e "${SSH[*]}" data/dist/tefsir/vectors/ "$HOST:$DEST/data/dist/tefsir/vectors/"
+    "${SSH[@]}" "$HOST" "mkdir -p $DEST/data/dist/$P/vectors"
+    rsync -az --info=progress2 -e "${SSH[*]}" "data/dist/$P/risale.db" "$HOST:$DEST/data/dist/$P/risale.db"
+    rsync -az --delete -e "${SSH[*]}" "data/dist/$P/vectors/" "$HOST:$DEST/data/dist/$P/vectors/"
     rsync -az -e "${SSH[*]}" data/library/kuran/quran.json "$HOST:$DEST/data/library/kuran/"
     grep '^VOYAGE_API_KEY=' .env | "${SSH[@]}" "$HOST" "cat > $DEST/.env && chmod 600 $DEST/.env"
-    rsync -az -e "${SSH[*]}" docs/risale-mcp-tefsir.server.service "$HOST:/etc/systemd/system/risale-mcp-tefsir.service"
+    rsync -az -e "${SSH[*]}" "docs/$SERVICE.server.service" "$HOST:/etc/systemd/system/$SERVICE.service"
     "${SSH[@]}" "$HOST" "chown -R risale:risale $DEST && su - risale -c 'cd $DEST && ~/.local/bin/uv sync --no-dev --frozen -q' \
-        && systemctl daemon-reload && systemctl enable -q risale-mcp-tefsir && systemctl restart risale-mcp-tefsir \
-        && sleep 5 && systemctl is-active risale-mcp-tefsir && free -m | head -2"
-    mv "$SNAPSHOTS/tefsir-aday-$STAMP" "$SNAPSHOTS/tefsir-yayin-$STAMP"
+        && chown -R risale:risale $DEST && systemctl daemon-reload && systemctl enable -q $SERVICE \
+        && systemctl restart $SERVICE && sleep 5 && systemctl is-active $SERVICE && free -m | head -2"
+    mv "$SNAPSHOTS/$P-aday-$STAMP" "$SNAPSHOTS/$P-yayin-$STAMP"
     ;;
 auth)
     shift
     args=$(printf ' %q' "$@")
-    ssh -i "$KEY" -t "$HOST" "su - risale -c 'cd risale-mcp && .venv/bin/risale-mcp auth --server tefsir$args'" ;;
+    ssh -i "$KEY" -t "$HOST" "su - risale -c 'cd risale-mcp && .venv/bin/risale-mcp auth --server $P$args'" ;;
 status|restart)
-    "${SSH[@]}" "$HOST" "systemctl $1 risale-mcp-tefsir; systemctl --no-pager status risale-mcp-tefsir | head -5" ;;
+    "${SSH[@]}" "$HOST" "systemctl $1 $SERVICE; systemctl --no-pager status $SERVICE | head -5" ;;
 logs)
-    ssh -i "$KEY" -t "$HOST" "journalctl -u risale-mcp-tefsir -f" ;;
+    ssh -i "$KEY" -t "$HOST" "journalctl -u $SERVICE -f" ;;
 *)
     echo "kullanım: TEFSIR_HOST=root@<adres> $0 kur|gonder|auth …|status|restart|logs"; exit 2 ;;
 esac

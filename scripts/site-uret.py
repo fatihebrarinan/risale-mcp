@@ -145,6 +145,7 @@ NAV = [("/#eklentiler", "Eklentiler"), ("/#ekle", "Kurulum"), ("/yenilikler.html
        ("/belgeler.html", "Belgeler")]
 # Sayfa -> menüde işaretli olan (sayfa adı; yazılar "yenilikler")
 CURRENT = {"risale.html": "/#eklentiler", "hadis.html": "/#eklentiler", "tefsir.html": "/#eklentiler",
+           "klasik.html": "/#eklentiler",
            "claude.html": "/#ekle", "chatgpt.html": "/#ekle", "yenilikler.html": "/yenilikler.html",
            "belgeler.html": "/belgeler.html"}
 FOOTER = ("<footer>Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti "
@@ -155,6 +156,7 @@ FOOTER = ("<footer>Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhan
 
 NAV_EN = [("/en/#connectors", "Connectors"), ("/en/#add", "Setup"), ("/en/docs.html", "Documentation")]
 CURRENT_EN = {"risale.html": "/en/#connectors", "hadith.html": "/en/#connectors", "tafsir.html": "/en/#connectors",
+              "classical.html": "/en/#connectors",
               "claude.html": "/en/#add", "chatgpt.html": "/en/#add", "docs.html": "/en/docs.html"}
 FOOTER_EN = ("<footer>Nur Hadimleri: a volunteer, independent project, not an official service of any publisher or "
              "community.<br><a href=\"/en/privacy.html\">Privacy</a> · <a href=\"/en/terms.html\">Terms of use</a> · "

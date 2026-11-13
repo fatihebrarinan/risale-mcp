@@ -18,8 +18,11 @@ def test_every_listed_work_is_present():
     # Arapçası ve Türkçesi ayrı eser; Hutbe-i Şamiye'nin Arapçası da (İhsan Kasım tercümesi) ayrı eser.
     # 2026-10-30'da risaleoku.com'dan 11 eser, 16 Osmanlıca cilt ve harekeli Mesnevî eklendi. Kızıl İcaz'ın Türkçesi
     # 2026-11-12'de katalogdan çıktı (kullanıcının kararı: model tercümesi damgalı yeter).
-    risale = [w for w in WORKS if w.collection is not Collection.TEFSIR]
+    risale = [w for w in WORKS if w.collection not in (Collection.TEFSIR, Collection.KLASIK)]
     assert len(risale) == 73
+    # Klasik eserlerin 1. dilimi (E2.2, 2026-11-13): beş belâgat ve terim eseri
+    assert [w.slug for w in WORKS if w.collection is Collection.KLASIK] == [
+        "delailul-icaz", "esrarul-belaga", "mufredat", "miftahul-ulum", "tarifat"]
     assert sum(w.group == "osmanlica" for w in WORKS) == 16
     # Müfessirlerin eserleri ayrı sayılır: MVP'nin 13 tefsiri (`docs/mvp-kitaplar.md`); genel çıkış kararına (M7)
     # kadar hepsi yalnız yerelde.

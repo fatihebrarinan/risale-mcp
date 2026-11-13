@@ -102,7 +102,8 @@ def split_paragraph(paragraph: dict, star: bool = False) -> list[tuple[int, int]
     text = paragraph["text"]
     if paragraph["kind"] == "ayah":                 # müfessirin baskısındaki âyet satırı: adresi âyetin kendisi
         return []
-    if paragraph["kind"] in ("arabic", "signature"):
+    if paragraph["kind"] in ("arabic", "signature") or paragraph.get("verse"):
+        # `verse`: klasik eserlerde tek beyit; mısraları ayıran "..." cümle sonu değildir (`books/klasik_openiti.py`)
         return [(0, len(text))] if text else []
     if paragraph["kind"] == "table":
         out, pos = [], 0

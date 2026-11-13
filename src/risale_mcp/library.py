@@ -539,7 +539,7 @@ class Library:
             out.append(record)
         node = self._node(first["node_id"])
         result = {"section": node["id"], "section_ref": node["ref"], "sentences": out} | self._work_status(node["work"])
-        if self.has_classical() and (layer := self._layer(node["id"])):     # muhakkikin girişi gibi (T6)
+        if node["work"] in self._layered_works() and (layer := self._layer(node["id"])):   # muhakkikin girişi (T6)
             result["layer"] = layer
         if len(rows) > 1 and not hasiye_only:
             if len({r["node_id"] for r in rows}) > 1:
@@ -861,11 +861,18 @@ class Library:
                 for r in rows]
 
     def _sentence_layer(self, work: str, sentence_id: str) -> dict:
-        """Arama sonucunda: cümle eser içi bir katmandaysa (muhakkikin girişi) onu söyler; yalnız müfessir eserinde."""
-        if not self.has_classical() or work not in self._classical_works():
+        """Arama sonucunda: cümle eser içi bir katmandaysa (muhakkikin girişi) onu söyler; yalnız müfessirin ve klasik
+        eserde."""
+        if work not in self._layered_works():
             return {}
         layer = self._layer(sentence_id.rsplit("/", 1)[0])
         return {"layer": layer} if layer else {}
+
+    def _layered_works(self) -> frozenset[str]:
+        """Eser içi katmanı (muhakkikin girişi) olabilen eserler: müfessirlerin ve klasik eserler (E2.4). Her çağrıda
+        sorulur: veritabanı yenilenince sunucu yeni dosyayı açar."""
+        return frozenset(r[0] for r in self.conn.execute(
+            "SELECT slug FROM works WHERE collection IN (?, ?) AND built = 1", (Collection.TEFSIR, Collection.KLASIK)))
 
     def _classical_works(self) -> dict[str, sqlite3.Row]:
         return {r["slug"]: r for r in self.conn.execute(

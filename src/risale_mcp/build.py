@@ -28,11 +28,11 @@ from risale_mcp.books import risale_online as risale_online_parser
 from risale_mcp.books import risaleoku as risaleoku_parser
 from risale_mcp.books import risaleoku_app as risaleoku_app_parser
 from risale_mcp.books import nurpedia as nurpedia_parser
-from risale_mcp.books import beyzavi, printed, rumuzat, saykal, tefsir_openiti, telif
+from risale_mcp.books import beyzavi, klasik_openiti, printed, rumuzat, saykal, tefsir_openiti, telif
 from risale_mcp.books import yeniasya as yeniasya_parser
 from risale_mcp.books.mecmua import CanonicalIndex, MappingReport, map_to_canonical
 from risale_mcp.books.model import Book
-from risale_mcp.catalog import WORKS, Group, Site, Status, Work, get_work
+from risale_mcp.catalog import WORKS, Collection, Group, Site, Status, Work, get_work
 from risale_mcp.db import connect
 from risale_mcp.paths import DB_PATH, INTERIM_DIR, KULLIYAT_DIR, RAW_DIR, ROOT
 from risale_mcp.profiles import PROFILES
@@ -181,6 +181,12 @@ def parse(work: Work) -> tuple[Book, list[str]]:
                       f" işareti bulunamayan metin {report.unmatched_texts[:3]}",
                       f"  Arapça               : harfe çevrilemeyen {len(report.pdf.unresolved)}"
                       f" {report.pdf.unresolved[:5]}, bağlanamayan hareke {report.pdf.stray_marks}"]
+    if work.collection is Collection.KLASIK:
+        book, report = klasik_openiti.parse(work)
+        return book, [f"  bölüm                : {report.sections}, fıkra {report.fikra}, madde {report.entries}",
+                      f"  satır → paragraf     : {report.lines} → {report.paragraphs}; sayfası bilinmeyen {report.unknown_pages}",
+                      f"  metne katılan başlık : {len(report.inline)} {report.inline[:6]}",
+                      f"  atılan başlık satırı : {report.dropped}; beyit {report.verses}"]
     if work.source.site is Site.OPENITI and work.source.book != "beyzavi-shamela":
         book, report = tefsir_openiti.parse(work)
         a = report.alignment

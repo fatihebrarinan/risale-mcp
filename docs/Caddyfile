@@ -33,6 +33,16 @@ mcp.risalemcp.com {
 		rewrite * /mcp{path}
 		reverse_proxy 100.98.98.62:8002
 	}
+	# Klasik eserler bağdaştırıcısı (E2.4): tefsirle aynı makinede, 8003 (docs/risale-mcp-klasik.server.service,
+	# PROFIL=klasik scripts/tefsir-sunucu.sh).
+	handle /klasik {
+		rewrite * /mcp
+		reverse_proxy 100.98.98.62:8003
+	}
+	handle_path /klasik/* {
+		rewrite * /mcp{path}
+		reverse_proxy 100.98.98.62:8003
+	}
 	reverse_proxy 127.0.0.1:8000
 }
 

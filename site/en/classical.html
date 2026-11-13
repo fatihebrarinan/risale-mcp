@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classical Works · Risale-i Nur MCP</title>
+<!-- og -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Risale-i Nur MCP">
+<meta property="og:title" content="Classical Works · Risale-i Nur MCP">
+<meta property="og:description" content="A connector that opens classical Arabic works on rhetoric, language and terms to AI assistants, sentence by sentence and with sources.">
+<meta property="og:url" content="https://risalemcp.com/en/classical.html">
+<meta property="og:image" content="https://risalemcp.com/img/paylasim.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Risale-i Nur MCP: the Risale-i Nur, hadith and tafsir connectors">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<!-- /og -->
+<meta name="description" content="A connector that opens classical Arabic works on rhetoric, language and terms to AI assistants, sentence by sentence and with sources.">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
+<link rel="apple-touch-icon" href="/icon.png">
+<link rel="stylesheet" href="/style.css?v=11">
+<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
+<link rel="alternate" hreflang="tr" href="/klasik.html">
+<script src="/site.js?v=11" defer></script>
+</head>
+<body>
+<main>
+<nav>
+  <a class="brand" href="/en/"><img src="/icon.png" alt="">Risale-i Nur MCP</a>
+  <a href="/en/#connectors" aria-current="page">Connectors</a>
+  <a href="/en/#add">Setup</a>
+  <a href="/en/docs.html">Documentation</a>
+  <a href="/klasik.html" lang="tr">Türkçe</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+</nav>
+
+<h1>Classical Works</h1>
+<p class="lead">The Classical Works connector opens classical Arabic works on rhetoric (balagha), language and terms to AI assistants. The books of the masters of rhetoric that the Isharat al-I'jaz names are shown from their own text, with the work and the section.</p>
+
+<h2>Works</h2>
+<p>In order of their authors' deaths: 'Abd al-Qahir al-Jurjani, <em>Dala'il al-I'jaz</em> and <em>Asrar al-Balagha</em> · al-Raghib al-Isfahani, <em>al-Mufradat fi Gharib al-Qur'an</em> · al-Sakkaki, <em>Miftah al-'Ulum</em> · al-Sayyid al-Sharif al-Jurjani, <em>al-Ta'rifat</em>. Works of theology, Sufism and the Prophet's life will follow.</p>
+
+<h2>How it works</h2>
+<ul>
+  <li>The unit of citation is the sentence. Sections are the edition's headings; the Dala'il is divided into its editor Mahmud Muhammad Shakir's numbered paragraphs, al-Mufradat into roots, al-Ta'rifat into chapters of the alphabet.</li>
+  <li>Texts are in their original Arabic. If you do not read Arabic, the assistant adds its own translation after the quotation and says it is an AI translation, not a published one.</li>
+  <li>The editor's introduction (Shakir's, in the Dala'il) is a separate layer, never attributed to the author.</li>
+  <li>The Isharat al-I'jaz names al-Jurjani and al-Sakkaki, but which passage it relies on is not recorded. A relation the assistant notices is its interpretation and stands under its own heading.</li>
+  <li>The text of the Risale-i Nur is not on this connector. Add the Risale-i Nur connector too and the assistant reads it there.</li>
+</ul>
+
+<h2>Test question</h2>
+<div class="card">How does 'Abd al-Qahir al-Jurjani argue in the Dala'il al-I'jaz that the inimitability lies in the arrangement (nazm)? With sources.</div>
+
+<h2>Add it</h2>
+<div class="card">
+  <strong>Connector address</strong><br>
+  <code>https://mcp.risalemcp.com/klasik</code>
+</div>
+<div class="actions">
+  <a class="button primary" href="https://claude.ai/customize/connectors?modal=add-custom-connector&amp;connectorName=Klasik%20Eserler&amp;connectorUrl=https%3A%2F%2Fmcp.risalemcp.com%2Fklasik">Add to Claude</a>
+</div>
+<ul>
+  <li><strong>Claude</strong> (claude.ai, desktop, mobile): the button opens the add dialog with the name and address filled in. By hand: <em>Customize › Connectors › Add › Add custom connector</em>, name "Klasik Eserler", the address above. Steps and screenshots on the <a href="/en/claude.html">Claude page</a>; only the name and address differ.</li>
+  <li><strong>ChatGPT</strong>: <em>Apps › Add › Add custom MCP server</em>, name "Klasik Eserler", the server URL above, <em>No authentication</em>. Steps on the <a href="/en/chatgpt.html">ChatGPT page</a>.</li>
+  <li><strong>Claude Code</strong>: <code>claude mcp add --transport http klasik https://mcp.risalemcp.com/klasik</code></li>
+</ul>
+<p>No account, free of charge. The connectors are independent; add them together and the assistant gives each one's sources under its own name, in a single bibliography.</p>
+
+<h2>Sources and licence</h2>
+<p>The texts come from <a href="https://openiti.org">OpenITI</a> (KITAB project) versions, each in the chosen edition; editor and publisher are in each work's record. Licence <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a>: non-commercial use, attribution, share alike. The Qur'an text is from <a href="https://tanzil.net">Tanzil</a>.</p>
+
+<footer>Nur Hadimleri: a volunteer, independent project, not an official service of any publisher or community.<br><a href="/en/privacy.html">Privacy</a> · <a href="/en/terms.html">Terms of use</a> · <a href="/en/contribute.html">Report a mistake</a> · <a href="/yenilikler.html" lang="tr">News (Turkish)</a> · <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
+</main>
+</body>
+</html>

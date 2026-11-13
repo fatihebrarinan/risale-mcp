@@ -102,7 +102,7 @@ CHATGPT_CALLBACK_PREFIX = "https://chatgpt.com/connector/oauth/"
 USAGE_DAYS = 90                        # kullanım kaydının saklama süresi (gizlilik politikasında yazılı)
 DEBUG_DAYS = 7                         # ayrıntılı kayıttaki parametrelerin saklama süresi (gizlilik politikasında yazılı)
 # Dışarıdan görünen yol: Caddy /hadis/<anahtar> ve /tefsir/<anahtar>'ı ilgili sürecin /mcp/<anahtar>'ına çevirir.
-DEBUG_PATHS = {"genel": "mcp", "hadis": "hadis", "tefsir": "tefsir"}
+DEBUG_PATHS = {"genel": "mcp", "hadis": "hadis", "tefsir": "tefsir", "klasik": "klasik"}
 DEBUG_USER = "(debug)"                 # açık kipte hata ayıklama adresinden gelen isteklerin kayıttaki kullanıcısı
 DEBUG_HEADER = b"x-risale-debug"       # OpenGate'in hata ayıklama isteğine eklediği başlık (dışarıdan geleni siler)
 

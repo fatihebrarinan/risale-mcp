@@ -30,14 +30,20 @@ class Profile:
 
 
 # Müfessirlerin eserleri (`tefsir`) şimdilik yalnız yerel profilde: pilot `private`, genel profilin koleksiyonları değişmez.
-KISISEL = Profile("kisisel", (Collection.KULLIYAT, Collection.ILGILI, Collection.TEFSIR), DB_PATH, VECTORS_DIR, private=True)
+KISISEL = Profile("kisisel", (Collection.KULLIYAT, Collection.ILGILI, Collection.TEFSIR, Collection.KLASIK), DB_PATH,
+                  VECTORS_DIR, private=True)
 GENEL = Profile("genel", (Collection.KULLIYAT, Collection.ILGILI), PUBLIC_DB_PATH, PUBLIC_VECTORS_DIR)
 # Tefsir sunucusu (MVP M5): Kur'ân ve müfessirlerin eserleri; Risale'nin metni taşınmaz, bağları kimlik ve atıfla
 # gelir. Genel çıkış kararına (M7) kadar `private` eserleri de alır ve yalnız yerelde kurulur.
 TEFSIR = Profile("tefsir", (Collection.TEFSIR,), DIST_DIR / "tefsir" / "risale.db", DIST_DIR / "tefsir" / "vectors",
                  private=True)
 
+# Klasik eserler sunucusu (E2.4, kullanıcının kararı 2026-11-12): belâgat, terim ve ileride kelâm, tasavvuf, siyer
+# eserleri; tefsirlerle karışmasın diye ayrı bağdaştırıcı, tefsir makinesinde. Risale'nin metni taşınmaz.
+KLASIK = Profile("klasik", (Collection.KLASIK,), DIST_DIR / "klasik" / "risale.db", DIST_DIR / "klasik" / "vectors",
+                 private=True)
+
 # Hadis sunucusu (MVP M5): kitaplar hadis biriminde (`hadis_db.py` kurar, `build_db` değil); Kur'ân ve Risale'den bağlar.
 HADIS = Profile("hadis", (), DIST_DIR / "hadis" / "hadis.db", DIST_DIR / "hadis" / "vectors", private=True)
 
-PROFILES = {p.name: p for p in (KISISEL, GENEL, TEFSIR, HADIS)}
+PROFILES = {p.name: p for p in (KISISEL, GENEL, TEFSIR, KLASIK, HADIS)}

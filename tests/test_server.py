@@ -267,7 +267,7 @@ def test_real_ayat_al_kursi_and_mecmua(real_library):
 
 def test_real_quran_layer(real_library):
     verse = real_library.ayahs("Bakara", 255)["ayahs"][0]
-    assert verse["ref"] == "Bakara Sûresi, 2:255" and len(verse["translations"]) == 2
+    assert verse["ref"] == "Bakara Sûresi, 2:255" and len(verse["translations"]) == 1      # B6: tek meal
     assert skeleton(verse["text"]).startswith(skeleton("اَللّٰهُ لَٓا اِلٰهَ اِلَّا هُوَ"))
     assert "\u064e" in verse["text"]                                          # harekeli (fetha)
     # Hizbü'l-Kur'ân'daki işaretsiz âyetler de bulunur.

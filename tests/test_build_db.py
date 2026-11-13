@@ -75,7 +75,8 @@ def test_quran_layer(db):
     conn, report = db
     assert report.counts["quran_ayahs"] == 256
     assert conn.execute("SELECT name FROM quran_suras WHERE number = 112").fetchone()[0] == "İhlâs"
-    assert conn.execute("SELECT count(*) FROM quran_translations").fetchone()[0] == 512
+    # tek meal: Türkiye Diyanet Vakfı (Diyanet İşleri Başkanlığı meali 2026-11-12'de çıkarıldı, B6)
+    assert conn.execute("SELECT count(*) FROM quran_translations").fetchone()[0] == 256
     # Veride hiç geçmeyen sûre de Türkçe adıyla bulunur.
     assert conn.execute("SELECT number FROM sura_names WHERE key = 'kadr'").fetchone()[0] == 97
 

@@ -19,6 +19,7 @@ class Collection(StrEnum):
     KULLIYAT = "risale/kulliyat"    # Bediüzzaman'ın eserleri ve mecmuaları
     ILGILI = "risale/ilgili"        # Külliyat dışı: Sorularla Risale, mufassal tarihçeler, hatıralar
     TEFSIR = "tefsir"               # Müfessirlerin eserleri (`docs/tefsir-altyapi-plani.md`); ad alanı `tefsir:`
+    KLASIK = "klasik"               # Klasik eserler (E2): belâgat, terim, kelâm…; ad alanı `klasik:`
 
 
 AUTHOR = "Bediüzzaman Said Nursî"      # külliyatın müellifi: `Work.author`'un varsayılanı
@@ -46,6 +47,7 @@ class Group(StrEnum):
     HIZB = "hizb"
     OSMANLICA = "osmanlica"
     TEFSIR = "tefsir"                # müfessirlerin eserleri
+    KLASIK = "klasik"                # klasik eserler (E2): belâgat ve terim (1. dilim)
 
 
 class Status(StrEnum):

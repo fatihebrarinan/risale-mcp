@@ -8,6 +8,7 @@ Kullanım:
     uv run python -m risale_mcp.fetch quran             # Kur'ân metni ve mealleri (tanzil.net)
     uv run python -m risale_mcp.fetch risaleoku         # risaleoku.com uygulamasının kitapları (RISALEOKU_BOOKS)
     uv run python -m risale_mcp.fetch tefsir            # müfessirlerin eserleri (OpenITI, sabit commit)
+    uv run python -m risale_mcp.fetch klasik            # klasik eserler (E2; OpenITI, sabit commit)
 
 Ham sayfalar `data/raw/<site>/<kitap>/`, doğrulanmış blok listesi
 `data/interim/<site>/<kitap>.blocks.json` altına yazılır.
@@ -22,8 +23,8 @@ from typing import Callable
 
 from risale_mcp.catalog import WORKS, Site, Status, Work, get_work, works_from
 from risale_mcp.paths import INTERIM_DIR, RAW_DIR, ROOT
-from risale_mcp.sources import (erisale, hadis, kastamonur, kesif, kullanici, nurpedia, rasaelalnour, risale_online, risaleoku,
-                                risaleoku_app, tanzil, tefsir, yeniasya)
+from risale_mcp.sources import (erisale, hadis, kastamonur, kesif, klasik, kullanici, nurpedia, rasaelalnour, risale_online,
+                                risaleoku, risaleoku_app, tanzil, tefsir, yeniasya)
 from risale_mcp.sources.http import PoliteClient
 
 DEFAULT_DELAY = 5.0                                 # saniye; siteleri yormamak için
@@ -197,6 +198,12 @@ def cmd_tefsir(args: argparse.Namespace) -> None:
     print(f"openiti: {', '.join(tefsir.TEXTS)}")
 
 
+def cmd_klasik(args: argparse.Namespace) -> None:
+    # Klasik eserler (E2, `docs/e2-adaylar.md`): seçilen sürümler ve karşılaştırma sürümleri.
+    klasik.fetch(RAW_DIR / "openiti", PoliteClient(args.delay), refresh=args.refresh)
+    print(f"openiti: {', '.join(klasik.TEXTS)}")
+
+
 def cmd_nurpedia(args: argparse.Namespace) -> None:
     # Eser metni (Rumuzat-ı Semaniye); hadis sayfaları `fetch hadis` ile gelir.
     for work in args.works or list(nurpedia.TEXTS):
@@ -253,6 +260,10 @@ def main() -> None:
     tafsir.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
     tafsir.add_argument("--delay", type=float, default=2.0, help="istekler arası bekleme (sn)")
     tafsir.set_defaults(func=cmd_tefsir)
+    classic = sub.add_parser("klasik", help="klasik eserler (E2; OpenITI, sabit commit)")
+    classic.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
+    classic.add_argument("--delay", type=float, default=2.0, help="istekler arası bekleme (sn)")
+    classic.set_defaults(func=cmd_klasik)
     nur = sub.add_parser("nurpedia", help="nurpedia.org'dan alınan eser metinleri (Rumuzat-ı Semaniye)")
     nur.add_argument("works", nargs="*", help="eser kimlikleri (verilmezse hepsi)")
     nur.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")

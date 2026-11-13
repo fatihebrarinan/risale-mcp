@@ -32,6 +32,7 @@ COLLECTION_TITLES = {
     Collection.KULLIYAT: "Risale-i Nur Külliyatı",
     Collection.ILGILI: "Risale-i Nur ile ilgili kaynaklar",
     Collection.TEFSIR: "Müfessirlerin eserleri",
+    Collection.KLASIK: "Klasik eserler",
 }
 
 GROUP_TITLES = {
@@ -41,6 +42,7 @@ GROUP_TITLES = {
     Group.HIZB: "Hizbler ve dualar",
     Group.OSMANLICA: "Osmanlıca eserler",
     Group.TEFSIR: "Müfessirlerin eserleri",
+    Group.KLASIK: "Belâgat ve terim (1. dilim)",
 }
 
 DONE, PARTIAL, TODO, NONE, PAUSED = "✅", "⚠️", "⬜", "❌", "⏸️"
@@ -60,7 +62,7 @@ nüsha, gerçekçi soru), gerekçe.
 KUTUB_DIR = LIBRARY_DIR / "hadis" / "kutub"
 HADIS_PATH = OUT_DIR / "hadis.md"
 KLASIK_PATH = OUT_DIR / "klasik.md"
-PARTED = {Collection.TEFSIR}
+PARTED = {Collection.TEFSIR, Collection.KLASIK}
 # Kütüb-i Sitte ve Muvatta (`hadis_kutub.py`), sonra öbürleri (`hadis_openiti.SPECS`) bu sırayla
 KUTUB_AUTHORS = {"bukhari": "Buhârî", "muslim": "Müslim", "abudawud": "Ebû Dâvûd", "tirmidhi": "Tirmizî",
                  "nasai": "Nesâî", "ibnmajah": "İbn Mâce", "malik": "İmam Mâlik"}
@@ -205,13 +207,6 @@ def render_hadis() -> str:
     return "\n".join(lines).rstrip("\n") + "\n"
 
 
-def render_klasik() -> str:
-    """Klasik eserler (belâgat, kelâm, tasavvuf, siyer): henüz koleksiyonu yok (PLANLAR.md E2)."""
-    return "\n".join(["# Klasik eserler: kontrol listesi", "",
-                      *_header(True, "> Koleksiyonu henüz yok; ilk eser eklenince katalogdan üretilir."),
-                      "Henüz eklenen eser yok.", *_excluded()]) + "\n"
-
-
 def write_parted(path: Path, generated: str) -> None:
     """Üretilen (a) kısmını yazar, işaretin altındaki elle tutulan kısmı korur (yoksa boş iskelet)."""
     manual = MANUAL_DEFAULT
@@ -236,7 +231,6 @@ def render_index(table: list[Row]) -> str:
         lines.append(f"| {title} | {len(chosen)} | {parsed} | {link} |")
     hadis = len(list(KUTUB_DIR.glob("*.json")))
     lines.append(f"| Hadis kitapları | {hadis} | {hadis} | [liste]({HADIS_PATH.relative_to(ROOT)}) |")
-    lines.append(f"| Klasik eserler | 0 | 0 | [liste]({KLASIK_PATH.relative_to(ROOT)}) |")
     if QURAN_PATH.exists():
         lines.append("| Kur'ân-ı Kerîm | 114 sûre | ✅ | `data/library/kuran/` |")
     return "\n".join(lines) + "\n"
@@ -253,7 +247,7 @@ def main() -> None:
             else:
                 path.write_text(render(chosen, title), encoding="utf-8")
             print(f"yazıldı: {path.relative_to(ROOT)}")
-    for path, text in ((HADIS_PATH, render_hadis()), (KLASIK_PATH, render_klasik())):
+    for path, text in ((HADIS_PATH, render_hadis()),):
         write_parted(path, text)
         print(f"yazıldı: {path.relative_to(ROOT)}")
     INDEX_PATH.write_text(render_index(table), encoding="utf-8")

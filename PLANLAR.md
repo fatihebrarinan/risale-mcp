@@ -201,9 +201,31 @@ eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded
   muhteşem, yakalanmayan nükteler beklenenden çok az; taslağın fazladan yakaladığı her şey projenin amacı olan ayrı bir
   zenginliktir.
 - E2.3 Ayrıştırma: OpenITI ortak ayrıştırıcılarıyla (`books/tefsir_openiti.py`, `hadis_openiti.py` örnek).
+  **Bitti (2026-11-13, 1. dilim):** `catalog/klasik.py`, `sources/klasik.py` (`fetch klasik`), `books/klasik_openiti.py`.
+  Ham verinin incelemesinden çıkanlar: (1) Shamela sürümlerinde başlık işareti yer yer metnin içine düşmüş (Esrâr'da
+  "الفصل" kelimesinin "فصل"i, Miftâh'ta mukaddimedeki kısım sayımı): başlıktan sonraki satır `</span>` ya da
+  noktalamayla sürüyorsa başlık metne geri katılır, kelime düşmez; (2) kaynağın satırı baskının paragrafıdır, yalnız
+  sayfa sınırında bölünmüştür (tefsirlerdeki "cümle sonunda biter" kuralı Esrâr'ı 1.520 satırdan 74 paragrafa
+  indiriyordu); (3) beyitlerin mısralarını ayıran "..." cümle sonu sayılıyordu: tek beyit `verse` paragrafı, tek cümle
+  (`sentences.split_paragraph`); (4) Müfredât'ın Dâvûdî baskısında (Shamela) madde başlığı işareti kelimelerin içine
+  girmiş ("[الح|شر|/ 14]"), metin kurulamıyor: Kîlânî'nin JK sürümü alındı, madde (kök) düğümü paragrafın "kök :"
+  başlangıcından, harf kitabı kökün ilk harfinden (bu baskıda و ه'den önce); (5) Ta'rîfât'ta Ebyârî'nin JK sürümünde
+  OCR artıkları var: DKİ'nin Shamela sürümü alındı; (6) Esrâr'ın bu sürümü son paragrafın ortasında biter (`gaps`).
+  Sonuç: 5 eser, 2.586 bölüm (Delâil 58 bölüm ve Şâkir'in 700 fıkrası, Müfredât 28 harf kitabı ve 1.600 madde,
+  Ta'rîfât 28 bab), 15.148 cümle, ≈570 bin kelime. Testler `tests/test_klasik.py`. E2.1'in kelime sayıları yanlıştı
+  (harf sayısıydı), `docs/e2-adaylar.md` ve `klasik.md`'de düzeltildi.
 - E2.4 Nerede durur: **karar (kullanıcı, 2026-11-12): yeni bir "klasik eserler" bağdaştırıcısı**, tefsirlerle
   karışmasın diye; tefsir makinesinde (8 GB, bunun için alındı), tefsir sunucusunun yanında. Kurulum: profil, sunucu
   ve talimat, Caddy yönlendirmesi, sitede eklenti sayfası.
+  **Hazır, yayın kullanıcının onayını bekler (2026-11-13):** profil `klasik` (`data/dist/klasik/risale.db` 40 MB,
+  vektörler 15.148, Voyage ≈1,2 milyon token), sunucu `KLASIK_INSTRUCTIONS` (araçlar tefsirinkiyle aynı: list_works,
+  get_outline, read_section, get_passage, search, semantic_search, find_sentence, find_ayah, get_ayah, cite;
+  muhakkikin girişi `layer`), servis `docs/risale-mcp-klasik.server.service` (8003), Caddy `/klasik`,
+  `scripts/tefsir-sunucu.sh` `PROFIL=klasik` ile, çağrı seti `tool_calls_klasik.json`, site `klasik.html`,
+  `en/classical.html`, ana sayfada dördüncü kart, gizlilik politikası dört eklenti. Uçtan uca deneme (claude -p,
+  yalnız bu sunucu): Delâil'in i'câz-nazım delili 7 kaynakla, fıkralar doğru, tercüme damgalı. Risale ve Tefsir
+  sunucularının araç çıktısı son yayına göre değişmedi. Yayın sırası: önce `PROFIL=klasik scripts/tefsir-sunucu.sh
+  gonder`, sonra `scripts/deploy.sh --code` (Caddy ve site).
 
 **S4. Dizin başvuruları** (sıraya alındı, 2026-11-12; kullanıcı: bağdaştırıcıların erişilebilir olması için çok
 önemli). Belgeler `docs/dizin-basvurusu.md`, `docs/chatgpt-dizin-basvurusu.md`, `docs/dizin-politikalari.md`.

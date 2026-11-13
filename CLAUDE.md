@@ -28,7 +28,7 @@ Nihai kullanım hedefleri:
 
 ## Kapsam ve kaynaklar
 
-Eserlerin listesi, her birinin kaynağı ve durumu tek yerde tutulur: `src/risale_mcp/catalog/` (koleksiyon başına bir dosya). Her eserin hangi aşamada olduğu `docs/eserler/` kontrol listelerindedir (`risale-kulliyat.md`; `tefsir.md`, `hadis.md`, `klasik.md` üç bölümlü: (a) eklenenler üretilir, (b) eklenmesi çok iyi olacaklar ve (c) aklımızda bulunsun elle tutulur, işaret satırının altı yeniden üretimde korunur); kökteki `ESERLER.md` alanların dizinidir (`uv run python -m risale_mcp.checklist` ile diskten üretilir, elle düzenlenmez). Külliyatın 73 eserinin hepsi ayrıştırıldı (Kızıl İcaz'ın Türkçesi 2026-11-12'de katalogdan çıktı: model tercümesi damgalı yeter). Yerelde olup sunucuda olmayanların listesi `HUSUSI-VERILER.md`'dir (`uv run python -m risale_mcp.local_only`, `build` sonunda da üretilir, elle düzenlenmez).
+Eserlerin listesi, her birinin kaynağı ve durumu tek yerde tutulur: `src/risale_mcp/catalog/` (koleksiyon başına bir dosya). Her eserin hangi aşamada olduğu `docs/eserler/` kontrol listelerindedir (`risale-kulliyat.md`; `tefsir.md`, `hadis.md`, `klasik.md` (koleksiyon `klasik`, 2026-11-13) üç bölümlü: (a) eklenenler üretilir, (b) eklenmesi çok iyi olacaklar ve (c) aklımızda bulunsun elle tutulur, işaret satırının altı yeniden üretimde korunur); kökteki `ESERLER.md` alanların dizinidir (`uv run python -m risale_mcp.checklist` ile diskten üretilir, elle düzenlenmez). Külliyatın 73 eserinin hepsi ayrıştırıldı (Kızıl İcaz'ın Türkçesi 2026-11-12'de katalogdan çıktı: model tercümesi damgalı yeter). Yerelde olup sunucuda olmayanların listesi `HUSUSI-VERILER.md`'dir (`uv run python -m risale_mcp.local_only`, `build` sonunda da üretilir, elle düzenlenmez).
 
 Genel sunucunun kaynakları (kim, hangi şartla izin verdi: `docs/izinler.md`; yeni izin oraya yazılır):
 
@@ -475,6 +475,15 @@ Adımların geçmişi `PLANLAR.md` "Kayıt"tadır; burada her oturumda gereken k
   kullanılırsa tek Kaynaklar listesi; modelin her tercümesi "Yapay zekâ tercümesi:" damgalı; alıntıya hareke
   eklenmez; web'den gelen her şey bu kitapların dışındadır; Risale'nin ne dediği yalnız Risale bağdaştırıcısında
   okunarak söylenir. ChatGPT talimatı ve araç tanımlarını önbelleğe alır: değişince kullanıcı bağdaştırıcıyı yeniler.
+- **Klasik eserler (E2):** koleksiyon `klasik` (`catalog/klasik.py`), 1. dilim beş belâgat ve terim eseri
+  (Delâilü'l-İ'câz, Esrârü'l-Belâğa, el-Müfredât, Miftâhu'l-Ulûm, et-Ta'rîfât); indirme `fetch klasik`
+  (`sources/klasik.py`, sabit commit; anahtar eser kimliğidir, `data/raw/openiti/` ortaktır), ayrıştırma
+  `books/klasik_openiti.py` (kurallar başında: kaynağın satırı baskının paragrafı, yalnız sayfa sınırında birleşir;
+  cümle ortasına düşmüş "başlık" metne geri katılır; tek beyit `verse` paragrafı, tek cümle; Delâil'de Şâkir'in
+  fıkraları düğüm; Müfredât'ta madde kökün ilk harfinden). Profil `klasik` (`data/dist/klasik/`), sunucu
+  `KLASIK_INSTRUCTIONS` (tefsirinkiyle aynı araç seti), tefsir makinesinde 8003, `/klasik`
+  (`PROFIL=klasik scripts/tefsir-sunucu.sh gonder`), çağrı seti `tests/golden/tool_calls_klasik.json`. Kalan dilimler
+  ve bekleyenler `docs/eserler/klasik.md` (b), (c), E5.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

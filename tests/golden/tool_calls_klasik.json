@@ -1,0 +1,208 @@
+{
+ "note": "E2.4: klasik eserler sunucusunun sabit çağrı seti (risale_mcp.tool_snapshot --profile klasik). Çağrı eklenebilir; var olan çağrı değiştirilirse eski kayıtlarla karşılaştırma o çağrıda fark verir.",
+ "calls": [
+  {
+   "name": "list_works",
+   "tool": "list_works"
+  },
+  {
+   "name": "outline_delail",
+   "tool": "get_outline",
+   "args": {
+    "section": "delailul-icaz",
+    "depth": 1
+   }
+  },
+  {
+   "name": "outline_mufredat_elif",
+   "tool": "get_outline",
+   "args": {
+    "section": "mufredat/01",
+    "depth": 1
+   }
+  },
+  {
+   "name": "outline_bad",
+   "tool": "get_outline",
+   "args": {
+    "section": "yok/boyle"
+   }
+  },
+  {
+   "name": "read_delail_tahkik_layer",
+   "tool": "read_section",
+   "args": {
+    "section": "delailul-icaz/mukaddime-tahkik",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "read_delail_fikra_1",
+   "tool": "read_section",
+   "args": {
+    "section": "delailul-icaz/1/f1",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "read_tarifat_elif",
+   "tool": "read_section",
+   "args": {
+    "section": "tarifat/2",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "read_mufredat_ebe",
+   "tool": "read_section",
+   "args": {
+    "section": "mufredat/01/001",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "read_esrar_intro",
+   "tool": "read_section",
+   "args": {
+    "section": "esrarul-belaga/1",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "read_miftah_mukaddime",
+   "tool": "read_section",
+   "args": {
+    "section": "miftahul-ulum/mukaddime",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "passage_delail",
+   "tool": "get_passage",
+   "args": {
+    "id": "delailul-icaz/1/f1/c001"
+   }
+  },
+  {
+   "name": "passage_range",
+   "tool": "get_passage",
+   "args": {
+    "id": "tarifat/2/c001..c003",
+    "context": 1
+   }
+  },
+  {
+   "name": "passage_layer",
+   "tool": "get_passage",
+   "args": {
+    "id": "delailul-icaz/mukaddime-tahkik/c001"
+   }
+  },
+  {
+   "name": "passage_bad",
+   "tool": "get_passage",
+   "args": {
+    "id": "tarifat/2/c99999"
+   }
+  },
+  {
+   "name": "search_nazm",
+   "tool": "search",
+   "args": {
+    "query": "النظم",
+    "work": "delailul-icaz",
+    "limit": 5
+   }
+  },
+  {
+   "name": "search_istiare",
+   "tool": "search",
+   "args": {
+    "query": "الاستعارة",
+    "limit": 5
+   }
+  },
+  {
+   "name": "search_bad",
+   "tool": "search",
+   "args": {
+    "query": "NEAR("
+   }
+  },
+  {
+   "name": "semantic_nazm",
+   "tool": "semantic_search",
+   "args": {
+    "query": "i'câz nazımdadır, kelimelerde değil",
+    "limit": 5
+   },
+   "semantic": true
+  },
+  {
+   "name": "semantic_tarifat",
+   "tool": "semantic_search",
+   "args": {
+    "query": "istiarenin tanımı",
+    "work": "tarifat",
+    "limit": 5
+   },
+   "semantic": true
+  },
+  {
+   "name": "find_sentence",
+   "tool": "find_sentence",
+   "args": {
+    "incipit": "الابتداء: هو أول جزء",
+    "scope": "tarifat"
+   }
+  },
+  {
+   "name": "find_ayah_2_255",
+   "tool": "find_ayah",
+   "args": {
+    "sura": "Bakara",
+    "ayah": 255
+   }
+  },
+  {
+   "name": "find_ayah_bad",
+   "tool": "find_ayah",
+   "args": {
+    "sura": "115"
+   }
+  },
+  {
+   "name": "get_ayah_2_255",
+   "tool": "get_ayah",
+   "args": {
+    "sura": "2",
+    "ayah": 255
+   }
+  },
+  {
+   "name": "cite_ok",
+   "tool": "cite",
+   "args": {
+    "sources": [
+     {
+      "id": "tarifat/2/c001"
+     },
+     {
+      "id": "delailul-icaz/1/f1/c001"
+     }
+    ]
+   }
+  },
+  {
+   "name": "cite_bad",
+   "tool": "cite",
+   "args": {
+    "sources": [
+     {
+      "id": "yok/c001"
+     }
+    ]
+   }
+  }
+ ]
+}

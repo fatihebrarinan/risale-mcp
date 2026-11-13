@@ -40,7 +40,7 @@ def test_authors_are_only_what_the_catalog_knows():
     for work in WORKS:
         if work.authority is Authority.BASKASI:
             assert work.author is None, work.slug                # bilinmeyen yazar tahmin edilmez
-        elif work.collection is Collection.TEFSIR:               # müfessirin eseri kendi yazarının
+        elif work.collection in (Collection.TEFSIR, Collection.KLASIK):   # müfessirin, klasik eserin kendi yazarı
             assert work.author and work.author != AUTHOR, work.slug
         else:
             assert work.author == AUTHOR, work.slug
