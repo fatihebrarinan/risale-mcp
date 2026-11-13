@@ -1,7 +1,7 @@
 <!--
 D7 yapay zekâ karşılaştırıcısının istemi (PLANLAR.md D7.1). Sürümlüdür: her değişiklik aşağıdaki "Sürümler"e
 tarihiyle yazılır; sürüm özeti her çıktının meta kaydındadır. `scripts/d1-yz.py` bu dosyanın üç bölümünü ("---- ORTAK
-----", "---- ENVANTER ----", "---- DENETIM ----", "---- ESLESTIRME ----") alır, {yer tutucuları} doldurur. Model
+----", "---- ENVANTER ----", "---- DENETIM ----", "---- ESLESTIRME ----", "---- KAYNAK ----") alır, {yer tutucuları} doldurur. Model
 istemi `claude -p` ile, proje dışında, yerleşik araçlar, web ve eklentiler kapalı alır: bütün girdiler istemdedir.
 
 İlkeler (kullanıcı onayladı, 2026-11-13): karşılaştırıcı eşleştirir, hüküm vermez (fazladan söylenenin doğruluğunu
@@ -10,6 +10,8 @@ alıntıyla; alıntılar sonra mekanik olarak denetlenir.
 
 Sürümler:
 - v1 (2026-11-13): ilk sürüm; 11–12 için.
+- v1.1 (2026-11-13, D2): `KAYNAK` görevi eklendi (taslağın klasik bir esere dayanışının denetimi). Envanter, denetim
+  ve eşleştirme metinleri değişmedi; dosyanın özeti değiştiği için D2'nin eşleştirmeleri başka `istem_sha` taşır.
 -->
 
 ---- ORTAK ----
@@ -195,3 +197,40 @@ Fazlanın doğru ya da değerli olup olmadığını söyleme.
 # Yapay zekâ taslağı
 
 {taslak}
+
+---- KAYNAK ----
+
+# Görev: taslağın bir esere dayanışını denetle
+
+Aşağıda bir **yapay zekâ taslağından** paragraflar ve her birinde taslağın dayandığını söylediği **kaynak cümleler**
+var. Kaynaklar klasik belâgat, dil ve terim eserleridir (Cürcânî'nin Delâilü'l-İ'câz'ı ve Esrârü'l-Belâğa'sı,
+Sekkâkî'nin Miftâhu'l-Ulûm'u, Râgıb'ın el-Müfredât'ı, Seyyid Şerîf'in et-Ta'rîfât'ı). Taslak İşârât'ın usulüyle
+{sura_name} {ayahs}. âyetler için yazıldı; Türkçe paragraflarında yazarın işaretleri var (`[belâgat; 3]`: bu iddia
+kaynakçadaki 3 numaralı kaynaktan).
+
+Her kalem için (`kalemler`, her biri bir kez, sırasıyla) iki şey söyle:
+
+1. `durum`: kaynak cümle, taslağın ona dayandırdığı iddiayı söylüyor mu?
+   - `destekliyor`: kaynak bu sözü ya da bu kaideyi açıkça söylüyor; taslak onu doğru aktarıyor.
+   - `kismen`: kaynak ilgili bir şey söylüyor ama taslak onu genişletmiş, daraltmış ya da başka bir şeyle birleştirmiş.
+   - `desteklemiyor`: kaynak bu iddiayı söylemiyor ya da başka bir şey söylüyor.
+2. `rol`: kaynak iddiada ne işe yarıyor?
+   - `kaide`: genel bir belâgat ya da nahiv kaidesi; taslak onu bu âyete uyguluyor.
+   - `tanim`: bir terimin tarifi.
+   - `lugat`: bir kelimenin aslî mânâsı.
+   - `nakil`: kaynağın bu âyet ya da benzer bir âyet hakkındaki sözü aynen aktarılıyor.
+   - `ornek`: kaynağın verdiği bir misal.
+   - `diger`.
+`gerekce`: bir ya da iki cümle. `uygulama`: rol `kaide` ise kaidenin bu âyete uygulanışı hakkında ehlin bakması
+gereken bir nokta varsa bir cümleyle yaz, yoksa boş bırak. Uygulamanın doğru olup olmadığına hüküm verme.
+
+```json
+{{"kalemler": [
+  {{"id": "K01", "durum": "destekliyor | kismen | desteklemiyor", "rol": "kaide | tanim | lugat | nakil | ornek | diger",
+   "gerekce": "…", "uygulama": ""}}
+]}}
+```
+
+# Kalemler
+
+{kalemler}

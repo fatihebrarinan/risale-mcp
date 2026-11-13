@@ -607,6 +607,188 @@ def _extra_lines(f: dict, blocks: dict, items: dict) -> list[str]:
     return out
 
 
+# ---------------------------------------------------------------- D2: klasik eserlerin kullanımı
+
+_MARK = re.compile(r"\[(?:[^\[\]]*?;\s*)?([\d][\d\s,،]*)\]")
+
+
+def source_items(unit: str, n: int, server: str = "klasik") -> list[dict]:
+    """Taslağın `server` eklentisinden bir kaynağa dayanan paragrafları: her (paragraf, kaynak) bir kalem. Paragraf
+    çifti (Arapça ve tercümesi) birlikte verilir; işaret hangisindeyse (tercümede `[belâgat; 3]`, alıntıda `[3]`)."""
+    blocks, sources = draft_blocks(unit, n)
+    log = P.DRAFTS / unit / f"taslak-{n}.jsonl"
+    ids = P.draft_sources(log) if log.exists() else {}
+    texts = P.SourceTexts(unit)
+    by_anchor = {a: t for a, _, _, t in blocks}
+    items, seen = [], set()
+    for anchor, lang, _, text in blocks:
+        nums = {x for m in _MARK.finditer(text) for x in re.findall(r"\d+", m[1])}
+        for num in sorted(nums, key=int):
+            srv, sid = ids.get(num, (None, None))
+            if srv != server:
+                continue
+            ar = anchor.replace("/tr/", "/ar/")
+            key = (ar, num)
+            if key in seen:
+                continue
+            seen.add(key)
+            items.append({"id": f"K{len(items) + 1:02d}", "anchor": ar, "kaynak": num, "kaynak_id": sid,
+                          "kaynak_atif": sources.get(num, ""), "kaynak_metin": texts.text(srv, sid, sources.get(num, "")),
+                          "ar": by_anchor.get(ar, ""), "tr": by_anchor.get(ar.replace("/ar/", "/tr/"), "")})
+    return items
+
+
+def render_items(items: list[dict]) -> str:
+    out = []
+    for it in items:
+        out += [f"## {it['id']} · taslağın paragrafı {it['anchor']} · kaynak [{it['kaynak']}]", "",
+                f"Taslağın Arapçası: {it['ar']}", "", f"Taslağın Türkçesi: {it['tr']}", "",
+                f"Kaynak [{it['kaynak']}] ({it['kaynak_atif']}): {it['kaynak_metin'] or '(metni bulunamadı)'}", ""]
+    return "\n".join(out)
+
+
+def kaynak(unit: str, drafts: list[int], models: list[str], parallel: int, again: bool) -> None:
+    d = out_dir(unit)
+    jobs = []
+    for n in drafts:
+        items = source_items(unit, n)
+        (d / f"kaynak-taslak-{n}-kalemler.json").write_text(json.dumps(items, ensure_ascii=False, indent=1),
+                                                            encoding="utf-8")
+        print(f"taslak {n}: {len(items)} kalem (klasik esere dayanan paragraf × kaynak)")
+        if not items:
+            continue
+        prompt, sha = build_prompt("KAYNAK", unit, kalemler=render_items(items))
+        for m in models:
+            stem = d / f"kaynak-taslak-{n}-{m}"
+            if stem.with_suffix(".json").exists() and not again:
+                continue
+            jobs.append((prompt, m, stem, {"gorev": "kaynak", "taslak": n, "istem_sha": sha}))
+    with ThreadPoolExecutor(max_workers=parallel) as pool:
+        list(pool.map(lambda j: run_model(*j), jobs))
+
+
+def d2_veri(unit: str, d1: list[int], d2: list[int], info: list[int] = ()) -> None:
+    """D1 ile D2'nin karşılaştırma verisi (`provalar/<birim>/d2-veri.md`): kapsama, nükte nükte fark, klasik
+    eserlerin kullanımı ve kaynak denetimi. Değerlendirme raporu bunun üstüne yazılır."""
+    d = out_dir(unit)
+    res = json.loads((d / "sonuc.json").read_text(encoding="utf-8"))
+    env = res["envanter"]
+    items = {i["id"]: i for i in env["kalemler"]}
+    models = sorted({m for t in res["taslaklar"].values() for m in t["modeller"]}, key=list(MODELS).index)
+    N = len(items)
+
+    def found(t: str, iid: str, m: str | None = None) -> bool:
+        row = next(r for r in res["taslaklar"][t]["satirlar"] if r["id"] == iid)
+        ms = [m] if m else models
+        return all(row["durum"].get(x) in FOUND for x in ms)
+
+    L = [f"# Prova {unit}: D2'nin verisi (D1 ile karşılaştırma)", "",
+         f"`uv run python scripts/d1-yz.py d2-veri {unit}` üretir. Taban D1: taslak {', '.join(map(str, d1))} (istem "
+         f"v1-ince); D2: taslak {', '.join(map(str, d2))} (v1-ince-klasik: aynı istem, me'hazda klasik eserler); "
+         f"yalnız bilgi için: taslak {', '.join(map(str, info)) or '—'} (tam istem, tabana girmez). "
+         f"Envanter {N} kalem; \"ikisi de\": iki okuyucunun ({' ve '.join(models)}) da bulduğu dediği.", ""]
+    L += ["## Kapsama", "", "| Taslak | Grup | " + " | ".join(f"Kapsama {m}" for m in models) + " | İkisi de | ✓ ikisi de |",
+          "|---|---|" + "---:|" * (len(models) + 2)]
+    for t in [f"taslak-{n}" for n in list(info) + d1 + d2]:
+        if t not in res["taslaklar"]:
+            continue
+        g = "D1" if int(t.split("-")[1]) in d1 else "D2" if int(t.split("-")[1]) in d2 else "D1 (tam, bilgi)"
+        covs = [sum(found(t, i, m) for i in items) / N for m in models]
+        both = sum(found(t, i) for i in items)
+        exact = sum(all(next(r for r in res["taslaklar"][t]["satirlar"] if r["id"] == i)["durum"].get(m) == "aynen"
+                        for m in models) for i in items)
+        L.append(f"| {t} | {g} | " + " | ".join(f"%{c * 100:.0f}" for c in covs) + f" | {both} (%{both / N * 100:.0f}) | {exact} |")
+
+    def count(group, iid):
+        return sum(found(f"taslak-{n}", iid) for n in group if f"taslak-{n}" in res["taslaklar"])
+    # grup büyüklükleri farklı olabilir: oranla karşılaştırılır (D2'de en az 2/3, D1'de en çok 1/2 gibi)
+    gained = [i for i in items if count(d2, i) / len(d2) - count(d1, i) / len(d1) >= 0.5]
+    lost = [i for i in items if count(d1, i) / len(d1) - count(d2, i) / len(d2) >= 0.5]
+    L += ["", "## Nükte nükte", "", f"Sayılar: o grubun kaç taslağında iki okuyucunun da bulduğu (D1 {len(d1)}, D2 "
+          f"{len(d2)} taslak; oranlar bu yüzden grup büyüklüğüne göre okunur).", "",
+          "| Kalem | Vecih | Nükte | D1 | D2 |", "|---|---|---|---:|---:|"]
+    for iid, it in items.items():
+        a, b = count(d1, iid), count(d2, iid)
+        mark = " ▲" if iid in gained else " ▼" if iid in lost else ""
+        L.append(f"| {iid} | {it.get('vecih')} | {_short(it.get('nukte', ''), 90)} | {a} | {b}{mark} |")
+    L += ["", f"▲ D2'de oran en az yarım fazla: {', '.join(gained) or '—'} · ▼ D2'de oran en az yarım eksik: "
+          f"{', '.join(lost) or '—'}", ""]
+    # kaynakların eklentilere dağılımı (kaynakçadaki numaralar, son `cite` çağrılarından)
+    L += ["## Kaynakların eklentilere dağılımı", "", "| Taslak | Grup | risale | tefsir | hadis | klasik | Toplam | "
+          "İşaret: kaynaklı / kendi tespiti |", "|---|---|---:|---:|---:|---:|---:|---|"]
+    for n in list(info) + d1 + d2:
+        log = P.DRAFTS / unit / f"taslak-{n}.jsonl"
+        if not log.exists():
+            continue
+        by = Counter(srv for srv, _ in P.draft_sources(log).values())
+        text = "\n".join(t for _, lang, _, t in draft_blocks(unit, n)[0] if lang == "tr")
+        own = len(re.findall(r"kendi tespiti\]", text))
+        sourced = len(re.findall(r"\[(?:dil|belâgat);\s*\d", text))
+        L.append(f"| taslak-{n} | {'D1' if n in d1 else 'D2' if n in d2 else 'D1 (tam, bilgi)'} | {by['risale']} | {by['tefsir']} | {by['hadis']} | "
+                 f"{by['klasik']} | {sum(by.values())} | {sourced} / {own} |")
+    L.append("")
+    # klasik eserlerin kullanımı
+    L += ["## Klasik eserlerin kullanımı", "",
+          "| Taslak | Klasik araç çağrısı | Kaynakçada klasik kaynak | Klasik esere dayanan paragraf × kaynak | Eserler |",
+          "|---|---:|---:|---:|---|"]
+    all_items = {}
+    for n in d2:
+        meta = json.loads((P.DRAFTS / unit / f"taslak-{n}.json").read_text())
+        calls = sum(v for k, v in meta["calls"].items() if k.startswith("klasik__"))
+        path = d / f"kaynak-taslak-{n}-kalemler.json"
+        its = json.loads(path.read_text(encoding="utf-8")) if path.exists() else []
+        all_items[n] = its
+        srcs = {it["kaynak"] for it in its}
+        works = Counter((it["kaynak_id"] or "?").split("/", 1)[0] for it in {it["kaynak"]: it for it in its}.values())
+        L.append(f"| taslak-{n} | {calls} | {len(srcs)} | {len(its)} | {', '.join(f'{w} {c}' for w, c in works.most_common())} |")
+    # kalemler: İşârât'ta karşılığı var mı (D7 eşleştirmesi), kaynak denetimi
+    L += ["", "## Klasik esere dayanan paragraflar: İşârât'ta karşılığı ve kaynak denetimi", "",
+          "Karşılık: D7 eşleştirmesinde bu paragraf bir envanter kalemine (aynen/kısmen) bağlanmış mı (iki okuyucudan "
+          "biri yeter), yoksa \"fazla\" mı. Kaynak denetimi iki kör okuyucunun (`KAYNAK` görevi) sonucudur.", ""]
+    tot_support = {m: Counter() for m in models}
+    tot_role = Counter()
+    linked = Counter()
+    for n, its in all_items.items():
+        t = f"taslak-{n}"
+        tr = res["taslaklar"].get(t)
+        if tr is None or not its:
+            continue
+        audit = {}
+        for m in models:
+            path = d / f"kaynak-taslak-{n}-{m}.json"
+            if path.exists():
+                audit[m] = {k["id"]: k for k in json.loads(path.read_text(encoding="utf-8")).get("kalemler", [])}
+        L += [f"### {t}", "", "| Kalem | Paragraf | Kaynak | İşârât'ta | " + " | ".join(models) + " | Rol |",
+              "|---|---|---|---|" + "---|" * len(models) + "---|"]
+        for it in its:
+            matches = sorted({iid for m in tr["modeller"].values() for iid, r in m["nukteler"].items()
+                              if r.get("durum") in FOUND and it["anchor"] in [x.replace("/tr/", "/ar/") for x in r.get("taslak") or []]})
+            extra = any(it["anchor"] in [x.replace("/tr/", "/ar/") for x in f.get("taslak") or []] for f in tr["fazla"])
+            where = ", ".join(matches) if matches else ("fazla" if extra else "—")
+            linked["nükte" if matches else "fazla" if extra else "yok"] += 1
+            cells = []
+            for m in models:
+                a = audit.get(m, {}).get(it["id"], {})
+                cells.append(a.get("durum", "?"))
+                tot_support[m][a.get("durum", "?")] += 1
+            role = Counter(audit.get(m, {}).get(it["id"], {}).get("rol") for m in models).most_common(1)[0][0]
+            tot_role[role] += 1
+            L.append(f"| {it['id']} | {it['anchor']} | [{it['kaynak']}] {_short(it['kaynak_atif'], 60)} | {where} | "
+                     + " | ".join(cells) + f" | {role} |")
+        notes = [(m, k) for m in models for k in audit.get(m, {}).values() if k.get("uygulama")]
+        if notes:
+            L += ["", "Ehline sorulacak uygulamalar:", ""] + [f"- {k['id']} ({m}): {k['uygulama']}" for m, k in notes]
+        L.append("")
+    L += ["## Toplam", "",
+          f"- Klasik esere dayanan paragraf × kaynak: {sum(len(v) for v in all_items.values())}; İşârât'ın bir nüktesine "
+          f"karşılık gelen {linked['nükte']}, fazla {linked['fazla']}, eşleştirmede geçmeyen {linked['yok']}.",
+          *[f"- Kaynak denetimi ({m}): " + ", ".join(f"{k} {v}" for k, v in tot_support[m].most_common()) for m in models],
+          "- Rol: " + ", ".join(f"{k} {v}" for k, v in tot_role.most_common())]
+    path = P.DRAFTS / unit / "d2-veri.md"
+    path.write_text("\n".join(L).rstrip() + "\n", encoding="utf-8")
+    print(path.relative_to(ROOT))
+
+
 # ---------------------------------------------------------------- D7.6 okuma sayfasının katmanı
 
 def hidden_para_anchors(unit: str) -> dict[str, str]:
@@ -705,6 +887,17 @@ def main() -> None:
     p.add_argument("--yeniden", action="store_true")
     p = sub.add_parser("rapor")
     p.add_argument("unit", choices=P.UNITS)
+    p = sub.add_parser("kaynak", help="D2: taslağın klasik eserlere dayanışını iki kör okuyucuya denetlet")
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--taslak", type=int, nargs="+", required=True)
+    p.add_argument("--modeller", nargs="*", choices=MODELS, default=["fable", "opus"])
+    p.add_argument("--paralel", type=int, default=3)
+    p.add_argument("--yeniden", action="store_true")
+    p = sub.add_parser("d2-veri", help="D1 ile D2'nin karşılaştırma verisi")
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--d1", type=int, nargs="+", default=[2, 3], help="taban: D1'in ince istemli taslakları")
+    p.add_argument("--bilgi", type=int, nargs="*", default=[1], help="yalnız bilgi için gösterilen taslaklar")
+    p.add_argument("--d2", type=int, nargs="+", default=[4, 5, 6])
     p = sub.add_parser("istem", help="istemi dosyaya yaz (denetim için, model çağırmadan)")
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("gorev", choices=["ENVANTER", "ESLESTIRME"])
@@ -725,6 +918,10 @@ def main() -> None:
         eslestir(args.unit, args.taslak or drafts_of(args.unit), args.modeller, args.paralel, args.yeniden)
     elif args.command == "rapor":
         rapor(args.unit)
+    elif args.command == "kaynak":
+        kaynak(args.unit, args.taslak, args.modeller, args.paralel, args.yeniden)
+    elif args.command == "d2-veri":
+        d2_veri(args.unit, args.d1, args.d2, args.bilgi)
     else:
         if args.gorev == "ENVANTER":
             text, _ = build_prompt("ENVANTER", args.unit)

@@ -164,7 +164,10 @@ def drop_block(text: str, marker: str, name: str) -> str:
     return "\n".join(lines)
 
 
-ISTEM = {"tam": ("istem.md", "sizinti.md"), "ince": ("istem-ince.md", "sizinti-ince.md")}
+ISTEM = {"tam": ("istem.md", "sizinti.md"), "ince": ("istem-ince.md", "sizinti-ince.md"),
+         # D2: ince istem ve me'hazda klasik eserler eklentisi (yalnız `@klasik` satırı farklı)
+         "ince-klasik": ("istem-ince-klasik.md", "sizinti-ince-klasik.md")}
+VARIANT_TAGS = {"tam": {"tam"}, "ince": {"ince"}, "ince-klasik": {"ince", "klasik"}}
 
 
 def arabic_text(db: Path, only: tuple[str, ...] | None = None) -> str:
@@ -189,11 +192,11 @@ def arabic_text(db: Path, only: tuple[str, ...] | None = None) -> str:
 
 
 def variant_lines(text: str, istem: str) -> str:
-    """`@tam ` / `@ince ` önekli satırlar yalnız o biçimde kalır (önek atılır)."""
+    """`@tam ` / `@ince ` / `@klasik ` önekli satırlar yalnız o etiketi taşıyan biçimde kalır (önek atılır)."""
     out = []
     for line in text.split("\n"):
-        if m := re.match(r"@(tam|ince) ", line):
-            if m.group(1) == istem:
+        if m := re.match(r"@(tam|ince|klasik) ", line):
+            if m.group(1) in VARIANT_TAGS[istem]:
                 out.append(line[m.end():])
             continue
         out.append(line)
@@ -309,7 +312,7 @@ def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False) -> None:
     cizelge = apply_edits(CIZELGE.read_text(encoding="utf-8"), cfg["cizelge"], "çizelge")
     (out / "ek-ozet.md").write_text(ozet, encoding="utf-8")
     (out / "ek-cizelge.md").write_text(cizelge, encoding="utf-8")
-    only = cfg["ince"] if istem == "ince" else None
+    only = cfg["ince"] if istem != "tam" else None
     prompt = prompt_text(unit, cfg, ozet, cizelge, arabic_text(out / "risale.db", only), istem)
     (out / prompt_name).write_text(prompt, encoding="utf-8")
     uv = shutil.which("uv") or "uv"
@@ -319,6 +322,11 @@ def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False) -> None:
                "hadis": base + ["--profile", "hadis"]}
     (out / "mcp.json").write_text(json.dumps({"mcpServers": {n: {"type": "stdio", "command": a[0], "args": a[1:]}
                                                              for n, a in servers.items()}}, indent=2), encoding="utf-8")
+    # D2: klasik eserler eklentisi de açık (İşârât'ı taşımadığı için gizleme gerekmez); D1'in mcp.json'u değişmez
+    servers["klasik"] = base + ["--profile", "klasik"]
+    (out / "mcp-klasik.json").write_text(json.dumps({"mcpServers": {n: {"type": "stdio", "command": a[0], "args": a[1:]}
+                                                                    for n, a in servers.items()}}, indent=2),
+                                         encoding="utf-8")
     print(f"istem: {len(prompt):,} karakter, {len(prompt.split()):,} kelime")
     ok = leak_report(unit, cfg, out, prompt, report)
     print(f"sızıntı testi: {'temiz' if ok else 'SORUN'} → {(out / report).relative_to(ROOT)}")
@@ -337,8 +345,10 @@ def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam") -
     for n in range(first, first + times):
         with tempfile.TemporaryDirectory(prefix="d1-prova-") as tmp:
             command = ["claude", "-p", "--model", model, "--effort", effort, "--output-format", "stream-json",
-                       "--verbose", "--mcp-config", str(work / "mcp.json"), "--strict-mcp-config", "--tools", "",
-                       "--allowedTools", "mcp__risale,mcp__tefsir,mcp__hadis", "--no-session-persistence"]
+                       "--verbose", "--mcp-config", str(work / ("mcp-klasik.json" if "klasik" in istem else "mcp.json")),
+                       "--strict-mcp-config", "--tools", "",
+                       "--allowedTools", "mcp__risale,mcp__tefsir,mcp__hadis" + (",mcp__klasik" if "klasik" in istem else ""),
+                       "--no-session-persistence"]
             log = out / f"taslak-{n}.jsonl"
             started = time.monotonic()
             print(f"taslak {n}: {model}, {effort}, istem {istem} ({datetime.now():%H:%M})", flush=True)
@@ -540,6 +550,7 @@ class SourceTexts:
     def __init__(self, unit: str):
         work = OUT / unit
         self.dbs = {"risale": [work / "risale.db", GENEL_DB], "tefsir": [work / "tefsir.db", TEFSIR_DB],
+                    "klasik": [DIST_DIR / "klasik" / "risale.db"],                    # D2'nin taslakları
                     "hadis": [HADIS_DB]}
         self.conns: dict[Path, sqlite3.Connection] = {}
 

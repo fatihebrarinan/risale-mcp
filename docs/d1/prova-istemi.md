@@ -7,13 +7,17 @@ hariç). Model bu istemi `claude -p` ile, yerleşik araçlar ve web kapalı, yal
 
 İki biçim (`hazirla <birim> --istem tam|ince`): `tam` Ek 3'te Arapça aslın tamamını verir (≈472 bin token), `ince`
 yalnız birimin komşularını ve Bakara 17–20'nin nazarî girişini verir, kalanını eklentiden okutur (≈1/4'ü). `@tam `
-ya da `@ince ` ile başlayan satır yalnız o biçimde kalır (önek atılır); öbür satırlar ikisinde de aynıdır.
+ya da `@ince ` ile başlayan satır yalnız o biçimde kalır (önek atılır); öbür satırlar ikisinde de aynıdır. `ince-klasik`
+biçimi `@ince ` ve `@klasik ` satırlarını alır (D2).
 
 Sürümler:
 - v1 (2026-11-11): ilk sürüm; 11–12 için.
 - v1-ince (2026-11-12): v1'in ince biçimi; usul aynı, yalnız Ek 3'ün kapsamı ve İşârât'ın kalanına nasıl
   bakılacağı değişti. Neden: tam istem bir taslakta 5 saatlik limitin tamamını harcıyordu; ince taslak tam taslakla
   karşılaştırılarak tam metnin katkısı ölçülecek.
+- v1-ince-klasik (2026-11-13, D2): v1-ince'nin aynısı; yalnız me'haz listesine `klasik` eklentisinin satırı eklendi
+  (`@klasik ` önekli satırlar yalnız bu biçimde kalır). Usule dokunulmadı: D2'nin şartı D1 ile aynı olmaktır, değişen
+  yalnız eserlerdir (kullanıcının kararı, 2026-11-13).
 -->
 
 ---- İSTEM ----
@@ -50,6 +54,9 @@ aşağıdaki eklerden ve me'hazdan öğrenerek kendin tatbik et.
 - Müfessirlerin eserleri (Taberî, Mâtürîdî, Zemahşerî, Râzî, Kurtubî, Beyzâvî, Nesefî, İbn Kesîr, Celâleyn,
   Süyûtî, Ebüssuûd, Bursevî, Âlûsî): `tefsir` eklentisinde.
 - Hadis kitapları: `hadis` eklentisinde.
+@klasik - Belâgat, dil ve terim eserleri (Abdülkāhir el-Cürcânî'nin Delâilü'l-İ'câz'ı ve Esrârü'l-Belâğa'sı, Sekkâkî'nin
+@klasik   Miftâhu'l-Ulûm'u, Râgıb el-İsfahânî'nin el-Müfredât'ı, Seyyid Şerîf el-Cürcânî'nin et-Ta'rîfât'ı): `klasik`
+@klasik   eklentisinde.
 - Âyetin metni: `get_ayah`. Âyeti ve kendi alıntılarını eklentinin verdiği gibi, harf harf aynı yaz.
 
 Her iddia bir kaynağa, her nükte âyetin bir lafzına ya da hey'etine bağlanır. Bir nükteyi bir müfessirden

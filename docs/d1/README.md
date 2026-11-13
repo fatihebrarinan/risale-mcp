@@ -42,6 +42,19 @@ uv run python scripts/d1-yz.py rapor 11-12         # alıntı denetimi, birleşt
 uv run python scripts/d1-prova.py okuma            # okuma.html (okuyuculara) ve okuma-yz.html (yalnız kullanıcıya)
 ```
 
+## D2: klasik eserlerle aynı prova
+
+D1'in istemi (`v1-ince`) ve me'hazda klasik eserler satırı (`v1-ince-klasik`; `istem-ince-klasik.md` D1'in
+`istem-ince.md`'sinden yalnız o üç satır eklenerek kuruldu: `hazirla` yeniden çalıştırılırsa ek dosyalardaki yol
+değişiklikleri de girer, D1 ile birebirlik bozulur). Prova sunucularına `klasik` profili eklenir (`mcp-klasik.json`).
+
+```
+uv run python scripts/d1-prova.py yazdir 11-12 --istem ince-klasik --kez 3   # taslak 4–6
+uv run python scripts/d1-yz.py eslestir 11-12 --taslak 4 5 6                 # D7'nin envanteriyle eşleştirme
+uv run python scripts/d1-yz.py kaynak 11-12 --taslak 4 5 6                   # klasik esere dayanış denetimi
+uv run python scripts/d1-yz.py rapor 11-12 && uv run python scripts/d1-yz.py d2-veri 11-12   # veri; rapor d2-rapor.md
+```
+
 `okuma-yz.html`'de "YZ karşılaştırması" kutusu her paragrafın altına eşleşmeleri ve fazlaları açar; "YZ örneklemi"
 30 satırlık sınama listesidir (D7.7): her satır metne bakılarak "metinde tutuyor / kısmen / tutmuyor" diye işaretlenir,
 işaretler "Notları dışa aktar" dosyasına girer, `notlar` ile alınır ve `rapor` güven oranını yazar. Ölçü insanla

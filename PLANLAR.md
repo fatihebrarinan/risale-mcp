@@ -58,18 +58,16 @@ alındı).
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
 | 1 | D7 | Yapay zekâ karşılaştırıcısı: taslağı İşârât'ın gizlenen metniyle eşleştiren iki kör okuyucu (D7.7 kullanıcıda) | — |
-| 2 | D2 | Bakara 11–12 yeniden, E2'nin eserleriyle, D1'in istemiyle (üç taslak, fark) | D1.7 |
-| 3 | D6 | Bilirkişi okuması: kullanıcının ve okuyucuların notları, bilirkişi, notların işlenmesi, insan okuması raporu | D1.5, D1.6 |
-| 4 | D8 | Taslak altyapısının güncellenmesi: D6 ve D7'nin dersleri, istemin yeni sürümü, 11–12'de yeniden üç taslak | D1.9 |
-| 5 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
-| 6 | D3 | Başka türden bir birim, İşârât aralığında | — |
-| 7 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
-| 8 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 9 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
-| 10 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 2 | D6 | Bilirkişi okuması: kullanıcının ve okuyucuların notları, bilirkişi, notların işlenmesi, insan okuması raporu | D1.5, D1.6 |
+| 3 | D8 | Taslak altyapısının güncellenmesi: D6 ve D7'nin dersleri, istemin yeni sürümü, 11–12'de yeniden üç taslak | D1.9 |
+| 4 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
+| 5 | D3 | Başka türden bir birim, İşârât aralığında | — |
+| 6 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
+| 7 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 8 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
+| 9 | B2–B5 | Küçük açıklar | MVP "Kalan" |
 
-D7.7 ve D6 kullanıcıyı ve okuyucuları bekler; D2 hemen yürür (D1 ile aynı şartlar, yalnız eserler eklenir); D8 D2, D6
-ve D7'den sonra.
+D7.7 ve D6 kullanıcıyı ve okuyucuları bekler; D2 bitti (2026-11-13); D8 D6 ve D7.7'den sonra, D2'nin dersleriyle.
 
 **İşârât usulüyle yapay zekâ taslağı: ortak zemin** (D1–D8 ve D5'in; kullanıcının yola çıkarkenki fikri, "Fikirler"den
 alındı, 2026-11-09). D1 (taslakların yazılması, Bakara 11–12 provası) bitti; **kullanıcının kararı (2026-11-13):**
@@ -157,18 +155,12 @@ araçsız (girdi istemdedir), yüksek düşünme.
 **D8. Taslak altyapısının güncellenmesi** (D1'den ayrıldı, 2026-11-13; eski D1.9). D6 ve D7'nin raporlarından
 dersler: istemin yeni sürümü (yalnız genel usul; âyete özgü ipucu girmez), gerekirse usul özeti ve ölçüt çizelgesi.
 Sınaması: yeni istemle 11–12'de yeniden üç taslak, E2'nin eserleri açıkken; D7 ile ölçülür ve D2'nin taslaklarıyla
-karşılaştırılır (aynı eserler, değişen yalnız istem).
-
-**D2. Bakara 11–12, E2'nin eserleriyle** (eski D1.7). Aynı birim, aynı model ve düşünme, aynı istem sürümü; değişen
-yalnız eklenen eserler (E2 ve klasik eserler bağdaştırıcısı prova sunucularına girer). Üç taslak (kullanıcı onayladı,
-2026-11-12; aynı şartlarda üç taslak birbirinden epey farklıydı: İşârât'tan 29, 21, 36 yer). Fark: yeni eserlere
-dayanan iddia, belâgat isabeti, uydurma, okuyucuların notları; D1 ile aynı ölçüt çizelgesi; D7'nin envanteriyle
-kapsama. **Sıra ve taban (kullanıcının kararı, 2026-11-13; önceki "D8'den sonra" kararının yerine):** D2'nin şartı
-D1 ile aynı olmaktır; bu yüzden D8'den önce, D1'in istemiyle (`prova-istemi.md` v1-ince) yazılır ve D1'in
-taslaklarıyla karşılaştırılır. İstemde değişen yalnız me'haz listesine eklenen klasik eserler satırıdır (eklenti
-olmadan eserler görünmez; usule dokunmaz); sürümü `v1-ince-klasik` diye yazılır. Prova sunucularına `klasik` profili
-eklenir (İşârât'ı taşımadığı için gizleme gerekmez; sızıntı testi yine çalışır). D8 sonra istemi değiştirir ve
-D2'nin taslaklarıyla karşılaştırılır.
+karşılaştırılır (aynı eserler, değişen yalnız istem). **D2'nin dersleri (2026-11-13, `d2-rapor.md`):** klasik eserler
+me'hazda kalır; istem genel usul olarak (a) bir nüktenin aslı belâgat eserlerindeyse önce ona dayanmayı, müfessir
+naklediyorsa ikisini ayrı anmayı, (b) kaynağın sözünü kayıtlarıyla (قد، من معاني) aktarmayı, (c) kaideyi kaynağa,
+âyete uygulamasını "kendi tespiti"ne bağlamayı söyler; kapsamayı artırmak için kaynak değil usul gerekir: üçüncü
+vecihte her kayıt için dinleyenin zihnindeki sual ve kaydın vicdana tesiri sordurulur (yakalanmayan nüktelerin ortak
+noktası).
 
 **D3. Başka türden bir birim.** D1 ve D2'nin dersleriyle, yine İşârât'ın kapsadığı aralıkta (cevabı bilinen, kör
 prova), 11–12'den farklı türde (temsil: 17–20, ya da hüküm); üç taslak.
@@ -329,6 +321,9 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - Y0.1, Y0.3, Y0.5, Y0.6, Y1.2 (2026-11-05/07).
 - MVP M0–M7 (2026-11-06/07): 13 tefsir, hadis kütüphanesi (Kütüb-i Sitte, Muvatta, 9 kitap, eş-Şifâ, Delâil),
   HA2, hadis ve tefsir bağdaştırıcıları yayında.
+- D2 Bakara 11–12, E2'nin eserleriyle (2026-11-13): eserler kapsamayı artırmadı, dayanağı güçlendirdi (Delâil 264 ve
+  425 bu âyeti işliyor; 26 klasik dayanağın hiçbiri yanlış değil); rapor `data/d1/provalar/11-12/d2-rapor.md`,
+  ayrıntı "Kayıt › Kimlikli işler"de.
 - E2 Belâgat eserleri ve klasik eserler eklentisi (2026-11-13, yayında): 1. dilim beş eser (Delâilü'l-İ'câz,
   Esrârü'l-Belâğa, el-Müfredât, Miftâhu'l-Ulûm, et-Ta'rîfât), "Klasik Eserler" eklentisi (`/klasik`), site sayfası
   ve Yenilikler yazısı; 2. ve 3. dilim E5'te. Ayrıntı "Kayıt › Kimlikli işler"de.
@@ -690,6 +685,30 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   sunulmaz.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
+
+**D2. Bakara 11–12, E2'nin eserleriyle** (eski D1.7). Aynı birim, aynı model ve düşünme, aynı istem sürümü; değişen
+yalnız eklenen eserler (E2 ve klasik eserler bağdaştırıcısı prova sunucularına girer). Üç taslak (kullanıcı onayladı,
+2026-11-12; aynı şartlarda üç taslak birbirinden epey farklıydı: İşârât'tan 29, 21, 36 yer). Fark: yeni eserlere
+dayanan iddia, belâgat isabeti, uydurma, okuyucuların notları; D1 ile aynı ölçüt çizelgesi; D7'nin envanteriyle
+kapsama. **Sıra ve taban (kullanıcının kararı, 2026-11-13; önceki "D8'den sonra" kararının yerine):** D2'nin şartı
+D1 ile aynı olmaktır; bu yüzden D8'den önce, D1'in istemiyle (`prova-istemi.md` v1-ince) yazılır ve D1'in
+taslaklarıyla karşılaştırılır. İstemde değişen yalnız me'haz listesine eklenen klasik eserler satırıdır (eklenti
+olmadan eserler görünmez; usule dokunmaz); sürümü `v1-ince-klasik` diye yazılır. Prova sunucularına `klasik` profili
+eklenir (İşârât'ı taşımadığı için gizleme gerekmez; sızıntı testi yine çalışır). D8 sonra istemi değiştirir ve
+D2'nin taslaklarıyla karşılaştırılır.
+**Bitti (2026-11-13).** Taslak 4–6 (`istem-ince-klasik.md`: D1'in `istem-ince.md`'si ve me'hazda klasik eserler satırı;
+Fable 5.2, yüksek; 698–730 sn, 7,56–8,10 $), taban D1'in ince taslakları 2 ve 3 (kullanıcının önerisi: taslak 1 tam
+istemle, yalnız bilgi). Ölçüm D7'nin karşılaştırıcısıyla ve yeni `KAYNAK` göreviyle (`d1-yz.py kaynak`, `d2-veri`).
+Rapor `data/d1/provalar/11-12/d2-rapor.md`. **Sonuç: eserler kapsamayı artırmadı, dayanağı güçlendirdi.** Kapsama D1
+ortalaması 30, D2 28,7 kalem (taslaklar arası oynamanın içinde); aynen yakalanan 11'den 12,3'e. Hiçbir taslağın
+bulamadığı nükteler aynı (N05, N08, N24, N25, N27, N28, N22): İşârât'a has, kaynakta hazır durmuyor. Üç taslak da
+Delâil'in bu âyeti işleyen iki yerini buldu: fıkra 425 (إنما'nın malûmiyeti, ألا ve إنّ ile red: İşârât'ın N32, N38,
+N39 nüktelerinin aslı; D1 bunları müfessirlerden ya da kendi tespiti olarak veriyordu) ve fıkra 264 ("ألا إنهم هم
+المفسدون"un isti'nâfı: İşârât'ta yok, doğru bir fazla). Klasik esere dayanan 26 iddianın hiçbirinde kaynak iddiayı
+yalanlamıyor (Fable 22, Opus 20 tam destekli, kalanı kısmen); 19'u İşârât'ın bir nüktesine karşılık geliyor. Risk:
+kayıtlı sözün genellenmesi ("قد", "من معاني" → "hâssa-i âmme") ve kaidenin kaynakta olmayan sonuca taşınması; ehline
+altı not. Klasik kaynaklar tefsir kaynaklarının yerini almadı, yanlarına geldi (5–8 kaynak). Ezber şüphesi artmadı.
+Dersler D8'e (aşağıda).
 
 **E2. Belâgat eserleri ve Risale'nin andığı önemli kaynaklar (bitti, 2026-11-13; 1. dilim)** (kullanıcının kararı, 2026-11-12: klasik eserler iki
 parçaya ayrıldı; kalanı E5). Ölçüt (kullanıcı onayladı, 2026-11-09): bir eser şu üç şarttan en
