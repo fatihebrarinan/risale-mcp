@@ -91,6 +91,15 @@ table.rub .sc { white-space: nowrap; }
 .hidden-side h3 .muted { font-size: .8rem; }
 .flash { animation: flash 1.6s ease-out; }
 @keyframes flash { from { background: var(--ez); } to { background: transparent; } }
+.yz { margin: 6px 0 0; font-family: system-ui, sans-serif; font-size: .8rem; direction: ltr; text-align: left; }
+body:not(.show-yz) .yz { display: none; }
+.yzr { border-left: 3px solid var(--src); background: var(--src-bg); padding: 4px 8px; border-radius: 4px; margin: 3px 0; }
+.yzr.fz { border-left-color: var(--own); background: var(--own-bg); } .yzr.cel { border-left-color: var(--bad); }
+.yzr summary { cursor: pointer; } .yzr .d { color: var(--muted); margin: 2px 0 0 12px; }
+.yzr .qq { font-family: "Noto Naskh Arabic", "Amiri", serif; direction: rtl; unicode-bidi: isolate; }
+.ev { display: inline-flex; gap: 2px; margin-inline-start: 6px; } .ev button { border: 1px solid var(--line); background: var(--card);
+      border-radius: 4px; font-size: .7rem; padding: 0 5px; cursor: pointer; } .ev button[aria-pressed=true] { background: var(--accent); color: var(--bg); }
+.yzr a { color: var(--src); cursor: pointer; }
 @media (max-width: 800px) {
   .row { grid-template-columns: 1fr; } .col + .col { border-left: 0; padding-left: 0; border-top: 1px dashed var(--line); padding-top: 12px; }
   .heads { display: none; } .nb { position: static; transform: none; opacity: .7; } header { position: static; }
@@ -107,6 +116,8 @@ table.rub .sc { white-space: nowrap; }
     <span class="seg" id="lang"><button data-v="ar">Arapça</button><button data-v="tr">Türkçe</button></span>
     <label><input type="checkbox" id="ez" checked> ortak diziler</label>
     <label>Okuyucu <input id="reader" size="12" placeholder="adınız"></label>
+    <label id="yzw" hidden><input type="checkbox" id="yzc"> YZ karşılaştırması</label>
+    <button class="btn" id="yzs" hidden>YZ örneklemi <span id="yzn"></span></button>
     <button class="btn" id="rubric">Ölçüt çizelgesi</button>
     <button class="btn" id="list">Notlar <span id="count"></span></button>
     <button class="btn primary" id="export">Notları dışa aktar</button>
@@ -131,7 +142,8 @@ const store = {
 };
 let notes = store.get('d1-okuma-notlar', []);
 let rubric = store.get('d1-okuma-olcut', {});      // "birim|taslak|okuyucu" -> {kriter: {score, note}}
-let st = Object.assign({unit: Object.keys(DATA.units)[0], mode: 'isarat', a: null, b: null, lang: 'ar', ez: true},
+let yzEval = store.get('d1-yz-sinama', {});         // D7.7: "birim|taslak|okuyucu-modeli|kalem" -> {v, reader, at}
+let st = Object.assign({unit: Object.keys(DATA.units)[0], mode: 'isarat', a: null, b: null, lang: 'ar', ez: true, yz: false},
                        store.get('d1-okuma-durum', {}));
 if (!DATA.units[st.unit]) st.unit = Object.keys(DATA.units)[0];
 $('#reader').value = store.get('d1-okuma-okur', '');
@@ -160,6 +172,64 @@ function controls() {
   document.querySelectorAll('#lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.lang));
   $('#ez').checked = st.ez; document.body.classList.toggle('no-ez', !st.ez);
   $('#h1').textContent = `Prova: ${U().title}`;
+  const hasYz = !!U().yz;
+  $('#yzw').hidden = $('#yzs').hidden = !hasYz; $('#yzc').checked = hasYz && st.yz;
+  document.body.classList.toggle('show-yz', hasYz && st.yz);
+  if (hasYz) { const s = U().yz.sample, n = s.filter(k => yzEval[`${st.unit}|${k}`]).length; $('#yzn').textContent = `(${n}/${s.length})`; }
+}
+
+// --- D7: yapay zekâ karşılaştırması (yalnız okuma-yz.html; hüküm değil, eşleştirme)
+const DUR = {aynen: '✓ aynen', kismen: '◐ kısmen', farkli_gerekce: '↔ farklı gerekçe', yok: '· yok'};
+const ISR = {kaynakli: 'kaynaklı', kendi_tespiti: 'kendi tespiti', isaretsiz: 'işaretsiz'};
+function swap(a) { return a.includes('/ar/') ? a.replace('/ar/', '/tr/') : a.replace('/tr/', '/ar/'); }
+function evBtns(key) {
+  const k = `${st.unit}|${key}`, v = (yzEval[k] || {}).v;
+  return `<span class="ev" data-k="${esc(k)}">${[['tutuyor', 'metinde tutuyor'], ['kismen', 'kısmen'], ['tutmuyor', 'tutmuyor']].map(([x, l]) =>
+    `<button data-yzv="${x}" aria-pressed="${v === x}" title="Sınama (D7.7): bu satır metne bakınca ${l}">${l}</button>`).join('')}</span>`;
+}
+function rowDetail(dk, id, withGo) {
+  const y = U().yz, it = y.items[id], row = y.drafts[dk].rows[id] || {};
+  const ms = y.models.map(m => row[m] ? `${m}: ${DUR[row[m].d] || '?'}` : `${m}: —`).join(' · ');
+  const det = y.models.filter(m => row[m]).map(m => `<div class="d"><b>${m}</b>: ${DUR[row[m].d] || '?'}${row[m].a.length ?
+      ` · ${row[m].a.map(a => withGo ? `<a data-yzgo="${esc(a)}" data-draft="${dk}">${esc(a)}</a>` : esc(a)).join(', ')}` : ''}${row[m].ok ? '' : ' · <b>denetimsiz</b>'}
+      ${evBtns(`${dk}|${m}|${id}`)}<br>${esc(row[m].g)}${row[m].q ? `<br>«<span class="qq">${esc(row[m].q)}</span>»` : ''}</div>`).join('');
+  return `<details class="yzr${row.u === 'ayrilik' ? ' cel' : ''}"><summary><b>${id}</b> · ${esc(it.v)} · ${esc(it.l)} — ${esc(ms)}${row.u === 'ayrilik' ? ' ⚠' : ''}</summary>
+    <div class="d">${esc(it.n)}<br>İşârât: «<span class="qq">${esc(it.q)}</span>»</div>${det}</details>`;
+}
+function extraDetail(dk, f, withGo) {
+  const es = Object.entries(f.es || {}).map(([m, e]) => `<div class="d"><b>${m}</b>: ${esc(e.iddia || '')}${e.celiski ? ` · çelişki ${esc(e.celiski)}: ${esc(e.gerekce || '')}` : ''}</div>`).join('');
+  return `<details class="yzr fz${f.c ? ' cel' : ''}"><summary><b>fazla</b> · ${esc(ISR[f.s] || f.s || '?')}${f.src.length ? ` [${f.src.join(', ')}]` : ''} ·
+    ${f.r.length > 1 ? 'iki okuyucu' : esc(f.r[0])}${f.c ? ` · <b>çelişki ${esc(f.c)}</b>` : ''} — ${esc(f.i)}</summary>
+    <div class="d">${f.a.map(a => withGo ? `<a data-yzgo="${esc(a)}" data-draft="${dk}">${esc(a)}</a>` : esc(a)).join(', ')}${f.ok ? '' : ' · <b>denetimsiz</b>'}
+    ${evBtns(`${dk}|fazla|${f.k}`)}${f.g ? `<br>${esc(f.g)}` : ''}<br>«<span class="qq">${esc(f.q)}</span>»</div>${es}</details>`;
+}
+function yzHtml(dk, side, anchor) {
+  const y = U().yz;
+  if (!y || !y.drafts[dk]) return '';
+  const d = y.drafts[dk];
+  let h = '';
+  if (side === 'taslak') {
+    const hit = a => a.includes(anchor) || a.includes(swap(anchor));
+    for (const [id, row] of Object.entries(d.rows))
+      if (y.models.some(m => row[m] && hit(row[m].a))) h += rowDetail(dk, id, false);
+    for (const f of d.extras) if (hit(f.a)) h += extraDetail(dk, f, false);
+  } else if (side === 'isarat') {
+    for (const [id, it] of Object.entries(y.items)) if (it.h.includes(anchor)) h += rowDetail(dk, id, true);
+  }
+  return h ? `<div class="yz">${h}</div>` : '';
+}
+function showSample() {
+  const y = U().yz;
+  const body = y.sample.map((key, i) => {
+    const [dk, m, id] = key.split('|');
+    if (!y.drafts[dk]) return '';
+    const inner = m === 'fazla' ? extraDetail(dk, y.drafts[dk].extras.find(f => f.k === id) || {a: [], src: [], r: ['?'], es: {}}, true)
+                                : rowDetail(dk, id, true);
+    return `<div class="it"><b>${i + 1}.</b> ${esc(U().drafts[dk] ? U().drafts[dk].label : dk)}${m !== 'fazla' ? ` · okuyucu ${esc(m)}` : ''}${inner.replace('<details', '<details open')}</div>`;
+  }).join('');
+  dialog('YZ örneklemi (D7.7)', `<p class="muted" style="font-family:system-ui;font-size:.82rem">Her satırı metne bakarak işaretleyin:
+    yapay zekânın dediği (nükte taslakta var/yok, fazla, çelişki) metinde tutuyor mu? Ölçü insanla uyuşmak değil, metne bakınca tutmak.
+    İşaretler "Notları dışa aktar" dosyasına girer. Bağlantı taslaktaki yere götürür.</p><div class="list">${body}</div>`);
 }
 
 // --- notlar
@@ -206,7 +276,7 @@ function blockHtml(draft, side, anchor, html, cls, excerpt) {
   const ns = notesFor(draft, side, anchor);
   return `<div class="blk${ns.length ? ' has-notes' : ''}" data-draft="${draft}" data-side="${side}" data-anchor="${anchor}"
     data-excerpt="${esc(excerpt)}"><p class="${cls}">${html}</p><button class="nb" title="Not ekle">✎</button>
-    <div class="notes">${ns.map(noteHtml).join('')}</div></div>`;
+    ${yzHtml(draft, side, anchor)}<div class="notes">${ns.map(noteHtml).join('')}</div></div>`;
 }
 function draftCol(dk, key) {
   const d = U().drafts[dk], blocks = ((d.blocks[key] || {})[st.lang]) || [];
@@ -317,7 +387,7 @@ function showList() {
 // --- dışa ve içe aktarma
 function exportNotes() {
   const r = reader() || 'okuyucu';
-  const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes,
+  const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes, yz_sinama: yzEval,
     rubric: Object.entries(rubric).map(([k, v]) => { const [unit, draft, rd] = k.split('|'); return {unit, draft, reader: rd, scores: v}; })};
   const blob = new Blob([JSON.stringify(payload, null, 1)], {type: 'application/json'});
   const a = document.createElement('a');
@@ -337,6 +407,8 @@ $('#import').onchange = async ev => {
       if (i < 0) { notes.push(n); added++; } else if (n.at > notes[i].at) notes[i] = n;
     }
     for (const r of p.rubric || []) rubric[`${r.unit}|${r.draft}|${r.reader}`] = r.scores;
+    for (const [k, v] of Object.entries(p.yz_sinama || {})) if (!yzEval[k] || v.at > yzEval[k].at) yzEval[k] = v;
+    store.set('d1-yz-sinama', yzEval);
     saveNotes(); store.set('d1-okuma-olcut', rubric); render(); say(`${added} yeni not içe aktarıldı.`);
   } catch (e) { say('İçe aktarılamadı: ' + e.message); }
   ev.target.value = '';
@@ -351,6 +423,26 @@ document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { st.la
 $('#ez').onchange = e => { st.ez = e.target.checked; document.body.classList.toggle('no-ez', !st.ez); persist(); };
 $('#reader').onchange = () => store.set('d1-okuma-okur', reader());
 $('#rubric').onclick = showRubric;
+$('#yzc').onchange = e => { st.yz = e.target.checked; render(); };
+$('#yzs').onclick = showSample;
+document.addEventListener('click', ev => {
+  const b = ev.target.closest('[data-yzv]');
+  if (b) {
+    if (!reader()) { say('Önce okuyucu adınızı yazın.'); $('#reader').focus(); return; }
+    const k = b.parentElement.dataset.k, v = b.dataset.yzv;
+    if ((yzEval[k] || {}).v === v) delete yzEval[k]; else yzEval[k] = {v, reader: reader(), at: new Date().toISOString()};
+    store.set('d1-yz-sinama', yzEval);
+    document.querySelectorAll(`.ev[data-k="${CSS.escape(k)}"] button`).forEach(x => x.setAttribute('aria-pressed', (yzEval[k] || {}).v === x.dataset.yzv));
+    controls(); return;
+  }
+  const g = ev.target.closest('[data-yzgo]');
+  if (g) {
+    if ($('#dlg').open) $('#dlg').close();
+    st.a = g.dataset.draft; st.yz = true;
+    const a = g.dataset.yzgo, want = st.lang === 'ar' ? a.replace('/tr/', '/ar/') : a.replace('/ar/', '/tr/');
+    render(want);
+  }
+});
 $('#list').onclick = showList;
 $('#export').onclick = exportNotes;
 $('#main').addEventListener('click', ev => {

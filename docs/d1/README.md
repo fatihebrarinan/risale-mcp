@@ -11,6 +11,7 @@ D4 okuma ve not platformu, D5 asıl iş). Bu klasör işin açık belgeleridir; 
 | `birim-cizelgesi.md` | Arapça aslın birim birim çizelgesi (239 adres) |
 | `okuma-notlari.md` | Tam okumanın notları, birim birim |
 | `prova-istemi.md` | Taslağı yazan modelin istemi (sürümlü; `@tam`/`@ince` satırları) |
+| `karsilastirma-istemi.md` | D7 yapay zekâ karşılaştırıcısının istemi (sürümlü): envanter, denetim, eşleştirme |
 
 Alıntılar ve adresler veritabanıyla denetlenir: `python3 scripts/d1-usul-denetim.py [dosya]`.
 
@@ -28,6 +29,23 @@ uv run python scripts/d1-prova.py karsilastir 11-12            # ortak diziler, 
 uv run python scripts/d1-prova.py okuma                        # data/d1/okuma.html: bütün birimler ve taslaklar
 uv run python scripts/d1-prova.py notlar ~/İndirilenler/d1-notlar-*.json   # okuyucuların notları → notlar.md
 ```
+
+## Yapay zekâ karşılaştırıcısı (D7)
+
+Taslakları İşârât'ın gizlenen metniyle eşleştiren iki kör okuyucu (Fable 5.2 ve Opus 5.5). Eşleştirir, hüküm
+vermez; fazladan söyleneni "ehline sor"a koyar. Okuyuculara gösterilmez.
+
+```
+uv run python scripts/d1-yz.py envanter 11-12      # cevap anahtarı: Fable çıkarır, Opus denetler → yz/envanter.md
+uv run python scripts/d1-yz.py eslestir 11-12      # 3 taslak × 2 model, birbirini görmeden (var olanı atlar; --yeniden)
+uv run python scripts/d1-yz.py rapor 11-12         # alıntı denetimi, birleştirme → provalar/11-12/yz-karsilastirma.md
+uv run python scripts/d1-prova.py okuma            # okuma.html (okuyuculara) ve okuma-yz.html (yalnız kullanıcıya)
+```
+
+`okuma-yz.html`'de "YZ karşılaştırması" kutusu her paragrafın altına eşleşmeleri ve fazlaları açar; "YZ örneklemi"
+30 satırlık sınama listesidir (D7.7): her satır metne bakılarak "metinde tutuyor / kısmen / tutmuyor" diye işaretlenir,
+işaretler "Notları dışa aktar" dosyasına girer, `notlar` ile alınır ve `rapor` güven oranını yazar. Ölçü insanla
+uyuşmak değil, metne bakınca tutmaktır. Notlarınızı karşılaştırmayı görmeden önce dışa aktarın: iki okuma ayrı kalsın.
 
 ## Okuma sayfası (D4)
 

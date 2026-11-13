@@ -618,6 +618,7 @@ def _unmark(html_text: str) -> str:
 
 TEMPLATE = Path(__file__).with_name("d1-okuma-sablon.html")
 PAGE_OUT = KEEP / "okuma.html"
+PAGE_YZ = KEEP / "okuma-yz.html"           # D7.6: kullanıcının sayfası, yapay zekâ karşılaştırma katmanıyla
 NOTE_TYPES = {"dogru": "doğru, iyi", "yanlis": "yanlış", "eksik": "eksik", "fazla": "fazla", "uydurma": "uydurma",
               "irab": "i'râb, dil", "belagat": "belâgat", "usul": "usul", "kaynak": "kaynak, atıf",
               "uslup": "üslûp, tercüme", "diger": "diğer"}
@@ -723,6 +724,18 @@ def okuma() -> None:
     PAGE_OUT.write_text(TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
     counts = ", ".join(f"{u}: {len(d['drafts'])} taslak" for u, d in units.items())
     print(f"{PAGE_OUT.relative_to(ROOT)} ({counts})")
+    # D7.6: yapay zekâ karşılaştırması yalnız kullanıcının sayfasında (okuyuculara giden okuma.html'de yok)
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("d1_yz", ROOT / "scripts" / "d1-yz.py")
+    yz = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(yz)
+    layers = {u: layer for u in units if (layer := yz.page_data(u))}
+    if layers:
+        for u, layer in layers.items():
+            units[u]["yz"] = layer
+        blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+        PAGE_YZ.write_text(TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
+        print(f"{PAGE_YZ.relative_to(ROOT)} (yapay zekâ karşılaştırması: {', '.join(layers)}; okuyuculara gönderilmez)")
 
 
 # ---------------------------------------------------------------- notlar

@@ -103,7 +103,22 @@ verilir. **İlkeler (kullanıcı onayladı, 2026-11-13):**
   kazançtır; okuyucunun görüp yapay zekânın görmediği eksiğidir.
 - Sınırı: D5'te (Bakara 34 ve sonrası) gizlenen İşârât metni yok; orada aynı araç taslağı müfessirlerle karşılaştırır
   (daha zayıf bir kontrol). Bu D5'e gelince ayrıca konuşulur.
-Ayrıntılı plan (öneri, 2026-11-13; kullanıcının onayını bekler). Yeri `scripts/d1-prova.py` (yeni alt komutlar),
+**D7.1–D7.6 bitti (2026-11-13).** `scripts/d1-yz.py` (`envanter`, `eslestir`, `rapor`), istem
+`docs/d1/karsilastirma-istemi.md` (v1), sayfa `data/d1/okuma-yz.html` (`d1-prova.py okuma` sonuç varsa yazar; okuyuculara
+giden `okuma.html`'de katman yok), rapor `data/d1/provalar/11-12/yz-karsilastirma.md`. Sonuçlar: envanter 41 kalem (V1 6,
+V2 12, V3 23; Opus eksik bulmadı, bir silme önerdi: N30, kullanıcıya açık). Kapsama (aynen + kısmen) iki okuyucuya
+göre taslak 1 %71/%73, taslak 2 %76/%76, taslak 3 %80/%73; iki okuyucu kalemlerin 41/40/36'sında aynı ya da yakın
+(✓/◐), ayrılık 1/0/5. Hiçbir taslağın yakalamadığı: N05 (hamliyeden şartiyeye üslûp değişikliğinin mukadder kelâma
+remzi), N08, N25, N27 (fi'l-arz'ın nehyi şefkat-i cinsiye ve nefret-i umumiye ile idâmesi), N20 (yalnız tercümedeki
+vasıf), N30. Üçünün de yakaladığı 26 kalem. Fazla (envanterde karşılığı olmayan iddia) taslak başına 39–52; çelişki
+yalnız 1 (zayıf: taslak Ebüssuûd'un görüşünü nakledip iki vechi birlikte tutuyor). Bütün alıntılar metinde bulundu
+(denetimsiz 0). Maliyet ≈14,7 $ liste fiyatı (envanter 1,68, eşleştirme 13,05; Max planı), süre ≈20 dk. D7.7
+kullanıcıda: `okuma-yz.html` › "YZ örneklemi" (30 satır), notlar dışa aktarılır, `notlar` ve `rapor` güveni yazar;
+D6'nın notları gelince iki yönlü fark.
+
+Ayrıntılı plan (2026-11-13; kullanıcı üç öneriyi onayladı: envanteri Fable çıkarır, Opus denetler; envanter
+eşleştirmeden önce onay beklemez; Fable 5.2 ve Opus 5.5 yüksek düşünmeyle, örneklem ≈30). Yeri `scripts/d1-yz.py`
+(plandaki `d1-prova.py` alt komutları yerine ayrı betik: o dosya 850 satırdı),
 çıktılar `data/d1/provalar/<birim>/` (kapalı depo). Çağrılar taslak yazımıyla aynı düzende: `claude -p`, proje dışında,
 araçsız (girdi istemdedir), yüksek düşünme.
 - D7.1 İstem ve şema: `docs/d1/karsilastirma-istemi.md` (sürümlü; sürüm özeti her çıktıda), iki görev (envanter,
@@ -171,6 +186,13 @@ eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded
 - E2.1 Aday listesi: önce belâgat (İşârât'ın adıyla dayandığı Delâilü'l-İ'câz, Esrârü'l-Belâga, Miftâhu'l-Ulûm;
   Keşşâf tefsirde var), sonra Risale'nin adıyla andığı önemli kaynaklar; her aday üç şartla ve OpenITI nüshasıyla
   (`docs/eserler/klasik.md` (b) ve (c)).
+  **Bitti (2026-11-13):** `docs/e2-adaylar.md`. Anma sayıları genel veritabanından (Türkçe ve Arapça yazılışlarla),
+  nüshalar OpenITI'den (GitHub, salt okuma; muhakkik ve yayınevi sürümün `#META#` satırlarından). Öneri: **1. dilim
+  (belâgat ve terim, D2'nin ön şartı):** Delâilü'l-İ'câz (Şâkir), Esrârü'l-Belâğa, Miftâhu'l-Ulûm, et-Ta'rîfât,
+  el-Müfredât (≈2,5 milyon kelime); **2.** Şerhu'l-Makāsıd, et-Telvîh, el-Munkız, el-Fıkhu'l-Ekber, İhyâ; **3.**
+  Şerhu'ş-Şifâ (öneri: hadis sunucusunda eş-Şifâ'nın yanında), el-Mevâhib; seçmeli Sîbeveyh, Îzâh ya da Muhtasar,
+  Kâmûs; bekleyen (nüsha ya da boyut) Şerhu'l-Mevâkıf (yalnız OCR), Fütûhât, Bidâye, Fütûhu'l-Gayb ve Mektûbât
+  (OpenITI'de yok), Nesîmü'r-Riyâz, Mîzân-ı Şa'rânî. Dört soru kullanıcıya (belgenin sonu).
 - E2.2 Kullanıcı seçer.
 - E2.3 Ayrıştırma: OpenITI ortak ayrıştırıcılarıyla (`books/tefsir_openiti.py`, `hadis_openiti.py` örnek).
 - E2.4 Nerede durur: **karar (kullanıcı, 2026-11-12): yeni bir "klasik eserler" bağdaştırıcısı**, tefsirlerle
@@ -198,6 +220,13 @@ eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded
   "Risale-i Nur" açıklamada kalır. Gerekirse itiraz (e-postayı yanıtlayarak).
 - S4.3 Claude: başvuru portalda görünüyor, "in review" (2026-11-12).
 - S4.4 Hadis ve tefsir başvuruları (ayrı).
+- S4.5 **Uygulama belgesi** (2026-11-13, kullanıcının isteği): `docs/s4-dizin-basvurulari.md`: altı başvurunun
+  (Claude ve OpenAI × Risale, Hadis, Tefsir) adımları ve portala yapıştırılacak İngilizce metinler. Bulgular: Claude'daki
+  Risale listelemesi eski (44 eser ve 126 bin cümle yerine 53 ve ≈131 bin; çıkarılan Diyanet İşleri meali hâlâ
+  yazıyor; risale.online genel sunucuda yok; 10 değil 12 araç): düzenlenir. OpenAI için önce sitedeki yayıncı adı
+  doğrulanmış kişisel ada çevrilir ("public URLs must identify the same publisher"). Öneriler (kullanıcının kararı):
+  hadis ve tefsir listelemelerinin adı "Risale MCP Hadis" / "Risale MCP Tefsir", üç eklentiye ayrı simge; OpenAI'de
+  önce Risale, sonucu görülünce Hadis ve Tefsir (alan adı jetonu tek dosya). 23 aracın hepsi salt okunur.
 
 **A1, A2:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
 kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
