@@ -52,28 +52,29 @@ Son verilen kimlikler: E6, S4, A3, D8, B6 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
-Sıra kullanıcının kararıdır (2026-11-12; 2026-11-13'te D1 bölündü: D6, D7, D8).
+Sıra kullanıcının kararıdır (2026-11-12; 2026-11-13'te D1 bölündü: D6, D7, D8; aynı gün E2 bitti ve D2, D8'den öne
+alındı).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D7 | Yapay zekâ karşılaştırıcısı: taslağı İşârât'ın gizlenen metniyle eşleştiren iki kör okuyucu, 11–12 raporu | — |
-| 2 | D6 | Bilirkişi okuması: kullanıcının ve okuyucuların notları, bilirkişi, notların işlenmesi, insan okuması raporu | D1.5, D1.6 |
-| 3 | D8 | Taslak altyapısının güncellenmesi: D6 ve D7'nin dersleri, istemin yeni sürümü, 11–12'de yeniden üç taslak | D1.9 |
-| 4 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis ve tefsir) | M7 |
-| 5 | E2 | Belâgat eserleri ve Risale'nin andığı önemli kaynaklar; klasik eserler bağdaştırıcısı | K |
-| 6 | D2 | Bakara 11–12 yeniden, E2'nin eserleriyle (üç taslak, fark) | D1.7 |
-| 7 | D3 | Başka türden bir birim, İşârât aralığında | — |
-| 8 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
-| 9 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 10 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
-| 11 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 1 | D7 | Yapay zekâ karşılaştırıcısı: taslağı İşârât'ın gizlenen metniyle eşleştiren iki kör okuyucu (D7.7 kullanıcıda) | — |
+| 2 | D2 | Bakara 11–12 yeniden, E2'nin eserleriyle, D1'in istemiyle (üç taslak, fark) | D1.7 |
+| 3 | D6 | Bilirkişi okuması: kullanıcının ve okuyucuların notları, bilirkişi, notların işlenmesi, insan okuması raporu | D1.5, D1.6 |
+| 4 | D8 | Taslak altyapısının güncellenmesi: D6 ve D7'nin dersleri, istemin yeni sürümü, 11–12'de yeniden üç taslak | D1.9 |
+| 5 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
+| 6 | D3 | Başka türden bir birim, İşârât aralığında | — |
+| 7 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
+| 8 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 9 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
+| 10 | B2–B5 | Küçük açıklar | MVP "Kalan" |
 
-D7 hemen başlar; D6 okuyucuları bekler (≈1 hafta), D7 ile paralel yürür; D8 ikisinden sonra.
+D7.7 ve D6 kullanıcıyı ve okuyucuları bekler; D2 hemen yürür (D1 ile aynı şartlar, yalnız eserler eklenir); D8 D2, D6
+ve D7'den sonra.
 
 **İşârât usulüyle yapay zekâ taslağı: ortak zemin** (D1–D8 ve D5'in; kullanıcının yola çıkarkenki fikri, "Fikirler"den
 alındı, 2026-11-09). D1 (taslakların yazılması, Bakara 11–12 provası) bitti; **kullanıcının kararı (2026-11-13):**
 D1'in kalanı üç aşamaya bölündü, bir aşama kabarmasın diye: bilirkişi okuması D6, yapay zekâ karşılaştırıcısı D7,
-ikisinin dersleriyle taslak altyapısının güncellenmesi D8; sonra E2 ve D2. Okuma ve not platformu D4 (bitti).
+ikisinin dersleriyle taslak altyapısının güncellenmesi D8. E2 bitince D2 D8'den öne alındı (2026-11-13). Okuma ve not platformu D4 (bitti).
 Model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Taslak "yapay zekâ taslağı" diye
 damgalanır, "tefsir" denmez, yayımlanmaz; her iddia kaynağa bağlıdır, dil ve belâgat iddiaları ayrı işaretlidir.
 Asıl iş Bakara 34 ve sonrasıdır; me'haz İşârât'ın tamamı, Risale-i Nur ve Tefsir ile Hadis eklentileridir.
@@ -155,77 +156,25 @@ araçsız (girdi istemdedir), yüksek düşünme.
 
 **D8. Taslak altyapısının güncellenmesi** (D1'den ayrıldı, 2026-11-13; eski D1.9). D6 ve D7'nin raporlarından
 dersler: istemin yeni sürümü (yalnız genel usul; âyete özgü ipucu girmez), gerekirse usul özeti ve ölçüt çizelgesi.
-Sınaması: yeni istemle 11–12'de yeniden üç taslak, D7 ile ölçülür ve D1'in taslaklarıyla karşılaştırılır. Bu üç
-taslak D2'nin karşılaştırma tabanıdır (aşağıda).
+Sınaması: yeni istemle 11–12'de yeniden üç taslak, E2'nin eserleri açıkken; D7 ile ölçülür ve D2'nin taslaklarıyla
+karşılaştırılır (aynı eserler, değişen yalnız istem).
 
 **D2. Bakara 11–12, E2'nin eserleriyle** (eski D1.7). Aynı birim, aynı model ve düşünme, aynı istem sürümü; değişen
 yalnız eklenen eserler (E2 ve klasik eserler bağdaştırıcısı prova sunucularına girer). Üç taslak (kullanıcı onayladı,
 2026-11-12; aynı şartlarda üç taslak birbirinden epey farklıydı: İşârât'tan 29, 21, 36 yer). Fark: yeni eserlere
-dayanan iddia, belâgat isabeti, uydurma, okuyucuların notları; D1 ile aynı ölçüt çizelgesi. **Taban (kullanıcı
-onayladı, 2026-11-13):** D8 istemi değiştireceği için D2 D1'in taslaklarıyla değil D8'in üç taslağıyla
-karşılaştırılır; D2 D8'in istemiyle ve E2'nin eserleriyle yazılır, fark yalnız eserlerden gelir. Fark D7 ile de
-ölçülür.
+dayanan iddia, belâgat isabeti, uydurma, okuyucuların notları; D1 ile aynı ölçüt çizelgesi; D7'nin envanteriyle
+kapsama. **Sıra ve taban (kullanıcının kararı, 2026-11-13; önceki "D8'den sonra" kararının yerine):** D2'nin şartı
+D1 ile aynı olmaktır; bu yüzden D8'den önce, D1'in istemiyle (`prova-istemi.md` v1-ince) yazılır ve D1'in
+taslaklarıyla karşılaştırılır. İstemde değişen yalnız me'haz listesine eklenen klasik eserler satırıdır (eklenti
+olmadan eserler görünmez; usule dokunmaz); sürümü `v1-ince-klasik` diye yazılır. Prova sunucularına `klasik` profili
+eklenir (İşârât'ı taşımadığı için gizleme gerekmez; sızıntı testi yine çalışır). D8 sonra istemi değiştirir ve
+D2'nin taslaklarıyla karşılaştırılır.
 
 **D3. Başka türden bir birim.** D1 ve D2'nin dersleriyle, yine İşârât'ın kapsadığı aralıkta (cevabı bilinen, kör
 prova), 11–12'den farklı türde (temsil: 17–20, ya da hüküm); üç taslak.
 
 **D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; alt adımları D3'ten sonra yazılır.
 İlki: D5.1 Bakara 34, tek birim, ehlin okuması.
-
-**E2. Belâgat eserleri ve Risale'nin andığı önemli kaynaklar** (kullanıcının kararı, 2026-11-12: klasik eserler iki
-parçaya ayrıldı; kalanı E5). Ölçüt (kullanıcı onayladı, 2026-11-09): bir eser şu üç şarttan en
-az ikisini tutarsa girer:
-1. Risale onu ya da müellifini adıyla anıyor, ya da Risale'deki bir hadisin künyesi o kitabı gösteriyor (veriden
-   sayılır: `search` ile adlar, `data/interim/hadis/kunye.md` künyeler).
-2. Muhakkiki bilinen bir dijital nüshası ve açık izni ya da lisansı var (önce OpenITI).
-3. Gerçekçi bir sohbette ona soru gelir (medrese ders kitaplarının çoğu bunu tutmaz).
-
-Gerekçe: her eser anlamsal aramayı sulandırır ve bellek ister (tefsir makinesi 8 GB, 1,3 GB kullanılıyor).
-"Bediüzzaman'ın ezberlediği 90 kitap" bir liste değil, bir rivayettir; çoğu ders kitabıdır. Beklenen sonuç 15–30
-eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded.py`).
-- E2.1 Aday listesi: önce belâgat (İşârât'ın adıyla dayandığı Delâilü'l-İ'câz, Esrârü'l-Belâga, Miftâhu'l-Ulûm;
-  Keşşâf tefsirde var), sonra Risale'nin adıyla andığı önemli kaynaklar; her aday üç şartla ve OpenITI nüshasıyla
-  (`docs/eserler/klasik.md` (b) ve (c)).
-  **Bitti (2026-11-13):** `docs/e2-adaylar.md`. Anma sayıları genel veritabanından (Türkçe ve Arapça yazılışlarla),
-  nüshalar OpenITI'den (GitHub, salt okuma; muhakkik ve yayınevi sürümün `#META#` satırlarından). Öneri: **1. dilim
-  (belâgat ve terim, D2'nin ön şartı):** Delâilü'l-İ'câz (Şâkir), Esrârü'l-Belâğa, Miftâhu'l-Ulûm, et-Ta'rîfât,
-  el-Müfredât (≈2,5 milyon kelime); **2.** Şerhu'l-Makāsıd, et-Telvîh, el-Munkız, el-Fıkhu'l-Ekber, İhyâ; **3.**
-  Şerhu'ş-Şifâ (öneri: hadis sunucusunda eş-Şifâ'nın yanında), el-Mevâhib; seçmeli Sîbeveyh, Îzâh ya da Muhtasar,
-  Kâmûs; bekleyen (nüsha ya da boyut) Şerhu'l-Mevâkıf (yalnız OCR), Fütûhât, Bidâye, Fütûhu'l-Gayb ve Mektûbât
-  (OpenITI'de yok), Nesîmü'r-Riyâz, Mîzân-ı Şa'rânî. Dört soru kullanıcıya (belgenin sonu).
-- E2.2 **Seçim (kullanıcı, 2026-11-13):** önerilen eserlerin hepsi kıymetli, hepsi listelere girer. 1. dilim
-  (Delâilü'l-İ'câz, Esrârü'l-Belâğa, Miftâhu'l-Ulûm, et-Ta'rîfât, el-Müfredât) şimdi: E2.3 bunlarla. 2. ve 3. dilim
-  sonra, bu sırayla (E5): `docs/eserler/klasik.md` (b). Şerhu'ş-Şifâ hadis sunucusuna (`docs/eserler/hadis.md` (b)).
-  Seçmelilerden şimdi giren yok; seçmeliler ve bekleyenler (Fütûhu'l-Gayb, Mesnevî, Mektûbât "çok çok kıymetli")
-  klasik.md (c)'de, yer ve zaman müsait olunca E5'te. Kullanıcının D7 üzerine sözü: karşılaştırıcının bulguları
-  muhteşem, yakalanmayan nükteler beklenenden çok az; taslağın fazladan yakaladığı her şey projenin amacı olan ayrı bir
-  zenginliktir.
-- E2.3 Ayrıştırma: OpenITI ortak ayrıştırıcılarıyla (`books/tefsir_openiti.py`, `hadis_openiti.py` örnek).
-  **Bitti (2026-11-13, 1. dilim):** `catalog/klasik.py`, `sources/klasik.py` (`fetch klasik`), `books/klasik_openiti.py`.
-  Ham verinin incelemesinden çıkanlar: (1) Shamela sürümlerinde başlık işareti yer yer metnin içine düşmüş (Esrâr'da
-  "الفصل" kelimesinin "فصل"i, Miftâh'ta mukaddimedeki kısım sayımı): başlıktan sonraki satır `</span>` ya da
-  noktalamayla sürüyorsa başlık metne geri katılır, kelime düşmez; (2) kaynağın satırı baskının paragrafıdır, yalnız
-  sayfa sınırında bölünmüştür (tefsirlerdeki "cümle sonunda biter" kuralı Esrâr'ı 1.520 satırdan 74 paragrafa
-  indiriyordu); (3) beyitlerin mısralarını ayıran "..." cümle sonu sayılıyordu: tek beyit `verse` paragrafı, tek cümle
-  (`sentences.split_paragraph`); (4) Müfredât'ın Dâvûdî baskısında (Shamela) madde başlığı işareti kelimelerin içine
-  girmiş ("[الح|شر|/ 14]"), metin kurulamıyor: Kîlânî'nin JK sürümü alındı, madde (kök) düğümü paragrafın "kök :"
-  başlangıcından, harf kitabı kökün ilk harfinden (bu baskıda و ه'den önce); (5) Ta'rîfât'ta Ebyârî'nin JK sürümünde
-  OCR artıkları var: DKİ'nin Shamela sürümü alındı; (6) Esrâr'ın bu sürümü son paragrafın ortasında biter (`gaps`).
-  Sonuç: 5 eser, 2.586 bölüm (Delâil 58 bölüm ve Şâkir'in 700 fıkrası, Müfredât 28 harf kitabı ve 1.600 madde,
-  Ta'rîfât 28 bab), 15.148 cümle, ≈570 bin kelime. Testler `tests/test_klasik.py`. E2.1'in kelime sayıları yanlıştı
-  (harf sayısıydı), `docs/e2-adaylar.md` ve `klasik.md`'de düzeltildi.
-- E2.4 Nerede durur: **karar (kullanıcı, 2026-11-12): yeni bir "klasik eserler" bağdaştırıcısı**, tefsirlerle
-  karışmasın diye; tefsir makinesinde (8 GB, bunun için alındı), tefsir sunucusunun yanında. Kurulum: profil, sunucu
-  ve talimat, Caddy yönlendirmesi, sitede eklenti sayfası.
-  **Hazır, yayın kullanıcının onayını bekler (2026-11-13):** profil `klasik` (`data/dist/klasik/risale.db` 40 MB,
-  vektörler 15.148, Voyage ≈1,2 milyon token), sunucu `KLASIK_INSTRUCTIONS` (araçlar tefsirinkiyle aynı: list_works,
-  get_outline, read_section, get_passage, search, semantic_search, find_sentence, find_ayah, get_ayah, cite;
-  muhakkikin girişi `layer`), servis `docs/risale-mcp-klasik.server.service` (8003), Caddy `/klasik`,
-  `scripts/tefsir-sunucu.sh` `PROFIL=klasik` ile, çağrı seti `tool_calls_klasik.json`, site `klasik.html`,
-  `en/classical.html`, ana sayfada dördüncü kart, gizlilik politikası dört eklenti. Uçtan uca deneme (claude -p,
-  yalnız bu sunucu): Delâil'in i'câz-nazım delili 7 kaynakla, fıkralar doğru, tercüme damgalı. Risale ve Tefsir
-  sunucularının araç çıktısı son yayına göre değişmedi. Yayın sırası: önce `PROFIL=klasik scripts/tefsir-sunucu.sh
-  gonder`, sonra `scripts/deploy.sh --code` (Caddy ve site).
 
 **S4. Dizin başvuruları** (sıraya alındı, 2026-11-12; kullanıcı: bağdaştırıcıların erişilebilir olması için çok
 önemli). Belgeler `docs/dizin-basvurusu.md`, `docs/chatgpt-dizin-basvurusu.md`, `docs/dizin-politikalari.md`.
@@ -248,13 +197,13 @@ eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded
   "Risale-i Nur" açıklamada kalır. Gerekirse itiraz (e-postayı yanıtlayarak).
 - S4.3 Claude: başvuru portalda görünüyor, "in review" (2026-11-12).
 - S4.4 Hadis ve tefsir başvuruları (ayrı).
-- S4.5 **Uygulama belgesi** (2026-11-13, kullanıcının isteği): `docs/s4-dizin-basvurulari.md`: altı başvurunun
-  (Claude ve OpenAI × Risale, Hadis, Tefsir) adımları ve portala yapıştırılacak İngilizce metinler. Bulgular: Claude'daki
+- S4.5 **Uygulama belgesi** (2026-11-13, kullanıcının isteği): `docs/s4-dizin-basvurulari.md`: sekiz başvurunun
+  (Claude ve OpenAI × Risale, Hadis, Tefsir, Klasik Eserler; klasik aynı gün eklendi) adımları ve portala yapıştırılacak İngilizce metinler. Bulgular: Claude'daki
   Risale listelemesi eski (44 eser ve 126 bin cümle yerine 53 ve ≈131 bin; çıkarılan Diyanet İşleri meali hâlâ
   yazıyor; risale.online genel sunucuda yok; 10 değil 12 araç): düzenlenir. OpenAI için önce sitedeki yayıncı adı
   doğrulanmış kişisel ada çevrilir ("public URLs must identify the same publisher"). Öneriler (kullanıcının kararı):
-  hadis ve tefsir listelemelerinin adı "Risale MCP Hadis" / "Risale MCP Tefsir", üç eklentiye ayrı simge; OpenAI'de
-  önce Risale, sonucu görülünce Hadis ve Tefsir (alan adı jetonu tek dosya). 23 aracın hepsi salt okunur.
+  listelemelerin adı "Risale MCP Hadis" / "Risale MCP Tefsir" / "Risale MCP Klasik", dört eklentiye ayrı simge;
+  OpenAI'de önce Risale, sonucu görülünce öbürleri (alan adı jetonu tek dosya). 33 aracın hepsi salt okunur.
 
 **A1, A2:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
 kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
@@ -380,6 +329,9 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - Y0.1, Y0.3, Y0.5, Y0.6, Y1.2 (2026-11-05/07).
 - MVP M0–M7 (2026-11-06/07): 13 tefsir, hadis kütüphanesi (Kütüb-i Sitte, Muvatta, 9 kitap, eş-Şifâ, Delâil),
   HA2, hadis ve tefsir bağdaştırıcıları yayında.
+- E2 Belâgat eserleri ve klasik eserler eklentisi (2026-11-13, yayında): 1. dilim beş eser (Delâilü'l-İ'câz,
+  Esrârü'l-Belâğa, el-Müfredât, Miftâhu'l-Ulûm, et-Ta'rîfât), "Klasik Eserler" eklentisi (`/klasik`), site sayfası
+  ve Yenilikler yazısı; 2. ve 3. dilim E5'te. Ayrıntı "Kayıt › Kimlikli işler"de.
 - E1 Eser listeleri (2026-11-09): `docs/eserler/tefsir.md`, `hadis.md` (yeni; kütüphanedeki 18 kitaptan üretilir), `klasik.md` (yeni) üç bölümlü; `checklist` elle tutulan (b) ve (c)'yi korur, OpenITI indirmelerini görür ("ham veri 0/13" düzeldi). (b) ve (c) `docs/mvp-kitaplar.md`'deki önerilerden ve künye sayılarından dolduruldu; "?" işaretli şartlar E2.1'de sayılacak.
 - S1 Yenilikler ve Open Graph (2026-11-09, yayında): `scripts/site-uret.py`, `docs/yenilikler/`, yazım kılavuzu `docs/yenilikler-kilavuzu.md`; bütün Türkçe sitede "eklenti".
 - S2 Sitenin yenilenmesi (2026-11-09, yayında): üç eklentiyi anlatan ana sayfa, `risale.html`, "Hata bildirin", İngilizcesi; ayrıntı "Kayıt › Kimlikli işler"de.
@@ -738,6 +690,63 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   sunulmaz.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
+
+**E2. Belâgat eserleri ve Risale'nin andığı önemli kaynaklar (bitti, 2026-11-13; 1. dilim)** (kullanıcının kararı, 2026-11-12: klasik eserler iki
+parçaya ayrıldı; kalanı E5). Ölçüt (kullanıcı onayladı, 2026-11-09): bir eser şu üç şarttan en
+az ikisini tutarsa girer:
+1. Risale onu ya da müellifini adıyla anıyor, ya da Risale'deki bir hadisin künyesi o kitabı gösteriyor (veriden
+   sayılır: `search` ile adlar, `data/interim/hadis/kunye.md` künyeler).
+2. Muhakkiki bilinen bir dijital nüshası ve açık izni ya da lisansı var (önce OpenITI).
+3. Gerçekçi bir sohbette ona soru gelir (medrese ders kitaplarının çoğu bunu tutmaz).
+
+Gerekçe: her eser anlamsal aramayı sulandırır ve bellek ister (tefsir makinesi 8 GB, 1,3 GB kullanılıyor).
+"Bediüzzaman'ın ezberlediği 90 kitap" bir liste değil, bir rivayettir; çoğu ders kitabıdır. Beklenen sonuç 15–30
+eserlik bir küme, 90 değil. Abduh ve Menâr kaynak alınmaz (`catalog/excluded.py`).
+- E2.1 Aday listesi: önce belâgat (İşârât'ın adıyla dayandığı Delâilü'l-İ'câz, Esrârü'l-Belâga, Miftâhu'l-Ulûm;
+  Keşşâf tefsirde var), sonra Risale'nin adıyla andığı önemli kaynaklar; her aday üç şartla ve OpenITI nüshasıyla
+  (`docs/eserler/klasik.md` (b) ve (c)).
+  **Bitti (2026-11-13):** `docs/e2-adaylar.md`. Anma sayıları genel veritabanından (Türkçe ve Arapça yazılışlarla),
+  nüshalar OpenITI'den (GitHub, salt okuma; muhakkik ve yayınevi sürümün `#META#` satırlarından). Öneri: **1. dilim
+  (belâgat ve terim, D2'nin ön şartı):** Delâilü'l-İ'câz (Şâkir), Esrârü'l-Belâğa, Miftâhu'l-Ulûm, et-Ta'rîfât,
+  el-Müfredât (≈2,5 milyon kelime); **2.** Şerhu'l-Makāsıd, et-Telvîh, el-Munkız, el-Fıkhu'l-Ekber, İhyâ; **3.**
+  Şerhu'ş-Şifâ (öneri: hadis sunucusunda eş-Şifâ'nın yanında), el-Mevâhib; seçmeli Sîbeveyh, Îzâh ya da Muhtasar,
+  Kâmûs; bekleyen (nüsha ya da boyut) Şerhu'l-Mevâkıf (yalnız OCR), Fütûhât, Bidâye, Fütûhu'l-Gayb ve Mektûbât
+  (OpenITI'de yok), Nesîmü'r-Riyâz, Mîzân-ı Şa'rânî. Dört soru kullanıcıya (belgenin sonu).
+- E2.2 **Seçim (kullanıcı, 2026-11-13):** önerilen eserlerin hepsi kıymetli, hepsi listelere girer. 1. dilim
+  (Delâilü'l-İ'câz, Esrârü'l-Belâğa, Miftâhu'l-Ulûm, et-Ta'rîfât, el-Müfredât) şimdi: E2.3 bunlarla. 2. ve 3. dilim
+  sonra, bu sırayla (E5): `docs/eserler/klasik.md` (b). Şerhu'ş-Şifâ hadis sunucusuna (`docs/eserler/hadis.md` (b)).
+  Seçmelilerden şimdi giren yok; seçmeliler ve bekleyenler (Fütûhu'l-Gayb, Mesnevî, Mektûbât "çok çok kıymetli")
+  klasik.md (c)'de, yer ve zaman müsait olunca E5'te. Kullanıcının D7 üzerine sözü: karşılaştırıcının bulguları
+  muhteşem, yakalanmayan nükteler beklenenden çok az; taslağın fazladan yakaladığı her şey projenin amacı olan ayrı bir
+  zenginliktir.
+- E2.3 Ayrıştırma: OpenITI ortak ayrıştırıcılarıyla (`books/tefsir_openiti.py`, `hadis_openiti.py` örnek).
+  **Bitti (2026-11-13, 1. dilim):** `catalog/klasik.py`, `sources/klasik.py` (`fetch klasik`), `books/klasik_openiti.py`.
+  Ham verinin incelemesinden çıkanlar: (1) Shamela sürümlerinde başlık işareti yer yer metnin içine düşmüş (Esrâr'da
+  "الفصل" kelimesinin "فصل"i, Miftâh'ta mukaddimedeki kısım sayımı): başlıktan sonraki satır `</span>` ya da
+  noktalamayla sürüyorsa başlık metne geri katılır, kelime düşmez; (2) kaynağın satırı baskının paragrafıdır, yalnız
+  sayfa sınırında bölünmüştür (tefsirlerdeki "cümle sonunda biter" kuralı Esrâr'ı 1.520 satırdan 74 paragrafa
+  indiriyordu); (3) beyitlerin mısralarını ayıran "..." cümle sonu sayılıyordu: tek beyit `verse` paragrafı, tek cümle
+  (`sentences.split_paragraph`); (4) Müfredât'ın Dâvûdî baskısında (Shamela) madde başlığı işareti kelimelerin içine
+  girmiş ("[الح|شر|/ 14]"), metin kurulamıyor: Kîlânî'nin JK sürümü alındı, madde (kök) düğümü paragrafın "kök :"
+  başlangıcından, harf kitabı kökün ilk harfinden (bu baskıda و ه'den önce); (5) Ta'rîfât'ta Ebyârî'nin JK sürümünde
+  OCR artıkları var: DKİ'nin Shamela sürümü alındı; (6) Esrâr'ın bu sürümü son paragrafın ortasında biter (`gaps`).
+  Sonuç: 5 eser, 2.586 bölüm (Delâil 58 bölüm ve Şâkir'in 700 fıkrası, Müfredât 28 harf kitabı ve 1.600 madde,
+  Ta'rîfât 28 bab), 15.148 cümle, ≈570 bin kelime. Testler `tests/test_klasik.py`. E2.1'in kelime sayıları yanlıştı
+  (harf sayısıydı), `docs/e2-adaylar.md` ve `klasik.md`'de düzeltildi.
+- E2.4 Nerede durur: **karar (kullanıcı, 2026-11-12): yeni bir "klasik eserler" bağdaştırıcısı**, tefsirlerle
+  karışmasın diye; tefsir makinesinde (8 GB, bunun için alındı), tefsir sunucusunun yanında. Kurulum: profil, sunucu
+  ve talimat, Caddy yönlendirmesi, sitede eklenti sayfası.
+  **Yayında (2026-11-13; kullanıcının onayıyla):** profil `klasik` (`data/dist/klasik/risale.db` 40 MB,
+  vektörler 15.148, Voyage ≈1,2 milyon token), sunucu `KLASIK_INSTRUCTIONS` (araçlar tefsirinkiyle aynı: list_works,
+  get_outline, read_section, get_passage, search, semantic_search, find_sentence, find_ayah, get_ayah, cite;
+  muhakkikin girişi `layer`), servis `docs/risale-mcp-klasik.server.service` (8003), Caddy `/klasik`,
+  `scripts/tefsir-sunucu.sh` `PROFIL=klasik` ile, çağrı seti `tool_calls_klasik.json`, site `klasik.html`,
+  `en/classical.html`, ana sayfada dördüncü kart, gizlilik politikası dört eklenti. Uçtan uca deneme (claude -p,
+  yalnız bu sunucu): Delâil'in i'câz-nazım delili 7 kaynakla, fıkralar doğru, tercüme damgalı. Risale ve Tefsir
+  sunucularının araç çıktısı son yayına göre değişmedi. Yayın: `PROFIL=klasik scripts/tefsir-sunucu.sh gonder`
+  (kayıt `klasik-yayin-20261113-135607`), `scripts/deploy.sh --code` (Caddy, site; `yayin-20261113-135715`, fark yok).
+  Canlı adreste başlatma, `find_sentence` ve `semantic_search` denendi. Yenilikler yazısı
+  `docs/yenilikler/2026-11-13-klasik-eserler.md` (iki örnek soru eklentide denendi).
 
 Biten kimlikli işin ayrıntısı "Sıradaki"den buraya taşınır ("Biten"de tek satırı kalır).
 

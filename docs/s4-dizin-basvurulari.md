@@ -1,6 +1,6 @@
 # S4: Dizin başvuruları, yapılacaklar (2026-11-13)
 
-`PLANLAR.md` S4'ün uygulama belgesi: altı başvurunun her biri için sizin yapacaklarınız, portala yapıştırılacak
+`PLANLAR.md` S4'ün uygulama belgesi: sekiz başvurunun her biri için sizin yapacaklarınız, portala yapıştırılacak
 metinler (İngilizce; hakemler İngilizce okur) ve göndermeden önceki denetimler. Eski belgeler ayrıntı ve geçmiştir:
 `docs/dizin-basvurusu.md` (Claude, Risale), `docs/chatgpt-dizin-basvurusu.md` (OpenAI, Risale),
 `docs/dizin-politikalari.md` (iki dizinin kuralları).
@@ -13,11 +13,13 @@ metinler (İngilizce; hakemler İngilizce okur) ve göndermeden önceki denetiml
 | 4 | OpenAI | Risale | reddedildi (kimlik) | §5–§6: kişisel kimliğe geçiş, düzeltilmiş paket, yeniden başvuru |
 | 5 | OpenAI | Hadis | gönderilmedi | §7 |
 | 6 | OpenAI | Tefsir | gönderilmedi | §7 |
+| 7 | Claude | Klasik Eserler | gönderilmedi (eklenti 2026-11-13'te yayında) | §4a |
+| 8 | OpenAI | Klasik Eserler | gönderilmedi | §7 |
 
 Önerilen sıra: §1 (ortak hazırlık; sitedeki yayıncı adı OpenAI için şart) → §2 → §3 ve §4 (Claude, aynı gün olabilir)
-→ §5 ve §6 (OpenAI Risale) → kabul ya da ilk geri dönüt gelince §7 (OpenAI'de aynı ret sebebi üç kez gelmesin diye
-önce bir başvurunun sonucu görülür). OpenAI'nin alan adı doğrulaması tek dosyadır (§1.5): üç başvuru aynı anda
-doğrulanamaz.
+ve §4a (Claude, aynı gün olabilir) → §5 ve §6 (OpenAI Risale) → kabul ya da ilk geri dönüt gelince §7 (OpenAI'de
+aynı ret sebebi dört kez gelmesin diye önce bir başvurunun sonucu görülür). OpenAI'nin alan adı doğrulaması tek
+dosyadır (§1.5): başvurular aynı anda doğrulanamaz.
 
 ## 1. Ortak hazırlık (bir kez)
 
@@ -44,7 +46,7 @@ OpenAI'deki doğrulamadan siz verin.
 |---|---|
 | "About 126,000 sentences across 44 works" | "About 131,000 sentences across 53 works" (Osmanlıca ciltler hariç; 16 Osmanlıca cilt ayrıca) |
 | "two Turkish translations by Diyanet" (Claude listelemesi) | "the Türkiye Diyanet Foundation's Turkish translation" (Diyanet İşleri meali 2026-11-12'de çıkarıldı, B6) |
-| "10 tools" | Risale 12, Hadis 9, Tefsir 11 araç; hepsi `readOnlyHint: true`, `destructiveHint: false`, `openWorldHint: false`, başlıklı (`server.py` `read_only`; 23 kayıt denetlendi) |
+| "10 tools" | Risale 12, Hadis 9, Tefsir 11, Klasik Eserler 10 araç; hepsi `readOnlyHint: true`, `destructiveHint: false`, `openWorldHint: false`, başlıklı (`server.py` `read_only`; 23 kayıt denetlendi) |
 
 ### 1.3 Gizli hata ayıklama adresleriyle deneme
 
@@ -55,6 +57,7 @@ adresle izlenir:
 scripts/sunucu.sh auth debug-url --new                      # Risale: https://mcp.risalemcp.com/mcp/<anahtar>
 scripts/sunucu.sh auth --server hadis debug-url --new       # Hadis: /hadis/<anahtar>
 scripts/tefsir-sunucu.sh auth debug-url --new               # Tefsir: /tefsir/<anahtar> (kayıt tefsir makinesinde)
+PROFIL=klasik scripts/tefsir-sunucu.sh auth debug-url --new # Klasik Eserler: /klasik/<anahtar> (tefsir makinesinde)
 scripts/sunucu.sh auth usage --user '(debug)' --params      # kayıt (Risale ve Hadis; --only hadis süzer)
 ```
 
@@ -62,9 +65,9 @@ Denedikten sonra adresleri kapatın (`--revoke`).
 
 ### 1.4 Simgeler
 
-Üç eklenti bugün aynı simgeyi kullanıyor (`src/risale_mcp/static/icon.png`, 256×256). Dizinde üç aynı simge kafa
-karıştırır. Öneri: aynı çizgide üç ayrı simge (ör. ortak zemin, üstünde "R", "H", "T" ya da renk farkı). Karar
-sizin; isterseniz `icon.svg`'den üç türev çıkarırım (`scripts/ikon.sh`). Hadis ve tefsir sunucuları simgeyi
+Dört eklenti bugün aynı simgeyi kullanıyor (`src/risale_mcp/static/icon.png`, 256×256). Dizinde dört aynı simge
+kafa karıştırır. Öneri: aynı çizgide dört ayrı simge (ör. ortak zemin, üstünde "R", "H", "T", "K" ya da renk farkı).
+Karar sizin; isterseniz `icon.svg`'den türevler çıkarırım (`scripts/ikon.sh`). Hadis, tefsir ve klasik sunucuları simgeyi
 `/favicon.ico`'dan değil, başvuruda yüklenen dosyadan alır.
 
 ### 1.5 OpenAI alan adı doğrulaması
@@ -233,6 +236,59 @@ Portal › **Submit new** › **MCP connector**.
 Not: tefsir sunucusunun yükü ayrı makinededir (CAX21); hakem denemesinde bir sorun olursa Caddy'nin `/tefsir`
 yönlendirmesi ve `scripts/tefsir-sunucu.sh` kayıtları.
 
+## 4a. Claude: Klasik Eserler (yeni başvuru)
+
+- **Server URL:** `https://mcp.risalemcp.com/klasik` · different URLs: **no**.
+- **Server name** (öneri): `Risale MCP Klasik`, slug `risale-mcp-klasik` (§3'teki gerekçe; sitedeki adı "Klasik
+  Eserler", dizinde aile adıyla).
+- **One-liner:**
+  > Read and cite classical Arabic works on rhetoric, language and terms, from al-Jurjani's Dala'il al-I'jaz to
+  > al-Sayyid al-Sharif's Ta'rifat.
+- **Description:**
+  > Risale MCP Klasik gives Claude classical Arabic works on rhetoric (balagha), language and terms in their original
+  > Arabic: 'Abd al-Qahir al-Jurjani's Dala'il al-I'jaz and Asrar al-Balagha, al-Raghib al-Isfahani's al-Mufradat fi
+  > Gharib al-Qur'an, al-Sakkaki's Miftah al-'Ulum and al-Sayyid al-Sharif al-Jurjani's al-Ta'rifat: about 15,000
+  > sentences, together with the Qur'an's text. These are the masters of rhetoric that Bediüzzaman Said Nursî names
+  > in his Isharat al-I'jaz.
+  >
+  > Every sentence has a stable address in the sections of its edition (the Dala'il in its editor's numbered
+  > paragraphs, al-Mufradat by root, al-Ta'rifat by chapter):
+  >
+  > - Search by the works' own Arabic words and terms, or by meaning in any language.
+  > - Read a section or a passage in context and quote it exactly, with a numbered list of sources checked against
+  >   the text.
+  > - Find where a Qur'anic verse is quoted, for example in al-Mufradat's explanation of a word.
+  >
+  > Each work belongs to its author: the editor's introduction is a separate layer, and a link between these works
+  > and the Isharat is never presented as recorded unless Claude has read both. Claude's own translations are
+  > labelled as AI translations.
+  >
+  > All tools are read-only and work without an account. The texts come from OpenITI (KITAB project; CC BY-NC-SA
+  > 4.0), each in its chosen edition; the Qur'an's text from the Tanzil Project. A volunteer, non-commercial project.
+- **Docs:** `https://risalemcp.com/en/classical.html` · Privacy (dört eklentiyi kapsıyor, 2026-11-13), support, icon:
+  §3 gibi.
+- **Use cases** (ilk ikisi 2026-11-13'te eklentide denendi):
+
+  | Use case | Example prompt |
+  |---|---|
+  | Follow an argument in a classical work of rhetoric | How does al-Jurjani argue in the Dala'il al-I'jaz that inimitability lies in the arrangement (nazm)? With sources. |
+  | Look up the meaning of a Qur'anic word | How does al-Raghib explain the word "nur" in al-Mufradat? With sources. |
+  | Find the definition of a term | What is the definition of "الاستعارة" in al-Ta'rifat, and how does al-Sakkaki treat it in the Miftah? |
+  | Locate a sentence someone quotes | Find the sentence in al-Ta'rifat that begins "الابتداء: هو أول جزء". |
+
+- Ön koşul, yazma, şirket, kimlik doğrulama, veri, hesap: §3 gibi.
+- **Instructions for reviewers:**
+  > 1. Add a custom connector with the URL https://mcp.risalemcp.com/klasik. No sign-in is needed.
+  > 2. Prompts that exercise every tool:
+  >    - "List the works and show the outline of the Dala'il al-I'jaz." (list_works, get_outline)
+  >    - "How does al-Jurjani argue that inimitability lies in the arrangement? Quote him." (semantic_search,
+  >      read_section, get_passage, cite)
+  >    - "Search the works for 'الاستعارة'." (search) · "Find the sentence that begins 'الابتداء: هو أول جزء' in
+  >      al-Ta'rifat." (find_sentence)
+  >    - "Where is al-Baqara 2:255 quoted in these works? Show the verse." (find_ayah, get_ayah)
+  > 3. Expected: Arabic quoted exactly, the assistant's translation labelled as its own, a numbered sources list;
+  >    the editor's introduction is never attributed to the author.
+
 ## 5. OpenAI: kurum başvurusundan kişisel başvuruya
 
 Ret sebebi (2026-11-12) içerik değil kimlikti: "Nur Hadimleri" adıyla yayımlamak için kurum (işletme) doğrulaması
@@ -278,21 +334,21 @@ Adımlar:
    (liste dışı YouTube ya da paylaşılan Drive). Masaüstü ve mobilde birer deneme.
 6. **Submit for review.**
 
-## 7. OpenAI: Hadis ve Tefsir
+## 7. OpenAI: Hadis, Tefsir ve Klasik Eserler
 
-Her biri ayrı paket (`packaging/chatgpt-hadis/`, `packaging/chatgpt-tefsir/`; betik eklenti adını alacak biçimde
+Her biri ayrı paket (`packaging/chatgpt-hadis/`, `packaging/chatgpt-tefsir/`, `packaging/chatgpt-klasik/`; betik eklenti adını alacak biçimde
 genişletilir; ben hazırlarım):
 
-| Alan | Hadis | Tefsir |
-|---|---|---|
-| `name` | `risale-mcp-hadis` | `risale-mcp-tefsir` |
-| `displayName` | Risale MCP Hadis | Risale MCP Tefsir |
-| `shortDescription` (≤30) | Cite hadith collections | Cite classical tafsir works |
-| sunucu | `https://mcp.risalemcp.com/hadis` | `https://mcp.risalemcp.com/tefsir` |
-| açıklama | §3'teki Description ("Claude" yerine "ChatGPT") | §4'teki Description |
-| `websiteURL` | `https://risalemcp.com/en/hadith.html` | `https://risalemcp.com/en/tafsir.html` |
-| `defaultPrompt` | §3'ün ilk üç kullanım istemi | §4'ün ilk üç kullanım istemi |
-| kategori, gizlilik, şartlar, destek, yayıncı | Risale ile aynı | Risale ile aynı |
+| Alan | Hadis | Tefsir | Klasik Eserler |
+|---|---|---|---|
+| `name` | `risale-mcp-hadis` | `risale-mcp-tefsir` | `risale-mcp-klasik` |
+| `displayName` | Risale MCP Hadis | Risale MCP Tefsir | Risale MCP Klasik |
+| `shortDescription` (≤30) | Cite hadith collections | Cite classical tafsir works | Cite classical rhetoric works |
+| sunucu | `https://mcp.risalemcp.com/hadis` | `https://mcp.risalemcp.com/tefsir` | `https://mcp.risalemcp.com/klasik` |
+| açıklama | §3'teki Description ("Claude" yerine "ChatGPT") | §4'teki Description | §4a'daki Description |
+| `websiteURL` | `https://risalemcp.com/en/hadith.html` | `https://risalemcp.com/en/tafsir.html` | `https://risalemcp.com/en/classical.html` |
+| `defaultPrompt` | §3'ün ilk üç kullanım istemi | §4'ün ilk üç kullanım istemi | §4a'nın ilk üç kullanım istemi |
+| kategori, gizlilik, şartlar, destek, yayıncı | Risale ile aynı | Risale ile aynı | Risale ile aynı |
 
 Test senaryoları (pakete):
 - **Hadis olumlu:** (1) "اختلاف أمتي رحمة" hangi kitaplarda (search_hadith, get_hadith, cite; beklenen: Keşfü'l-Hafâ
@@ -302,20 +358,25 @@ Test senaryoları (pakete):
 - **Tefsir olumlu:** (1) Fâtiha 1:5'te Zemahşerî ve Beyzâvî (find_ayah, read_section, cite); (2) Âyetü'l-Kürsî'de
   müfessirler vefat sırasıyla (find_ayah); (3) "الحروف المقطعة" (search); (4) Kur'ân'da temsillerin hikmeti
   (semantic_search); (5) Keşşâf'ta "فإن قلت: لم قضيت لهذه الألفاظ" (Bakara 2:1) (find_sentence).
-- **Olumsuz (ikisinde):** hava durumu; "bu hadis sahih mi, sen karar ver" (hüküm vermez, derecesi kaynağında varsa
-  âlimin adıyla verir; Hadis'te); "yeni bir tefsir yaz" (yazdığına tefsir demez; Tefsir'de); ilgisiz bir çeviri.
+- **Klasik Eserler olumlu:** (1) Delâil'de i'câz ve nazım (semantic_search, read_section, cite); (2) Müfredât'ta
+  "nûr" (search ya da get_outline, read_section); (3) Ta'rîfât'ta istiarenin tarifi (search); (4) "الابتداء: هو أول
+  جزء" (find_sentence); (5) Bakara 2:255'in bu eserlerde geçtiği yerler (find_ayah, get_ayah).
+- **Olumsuz (hepsinde):** hava durumu; "bu hadis sahih mi, sen karar ver" (hüküm vermez, derecesi kaynağında varsa
+  âlimin adıyla verir; Hadis'te); "yeni bir tefsir yaz" (yazdığına tefsir demez; Tefsir'de ve Klasik'te); ilgisiz bir çeviri.
 
 Her başvuruda tanıtım videosu ayrı (o eklentinin beş senaryosu) ve alan adı jetonu ayrı (§1.5).
 
 ## 8. Kontrol listesi (gönderirken işaretleyin)
 
 - [ ] §1.1 yayıncı adı kararlaştırıldı, site ve politikalar yayında (`scripts/deploy.sh --code`)
-- [ ] §1.4 simgeler (üç ayrı ya da bilerek aynı)
+- [ ] §1.4 simgeler (dört ayrı ya da bilerek aynı)
 - [ ] Claude Risale: açıklama düzeltildi, hakeme not
 - [ ] Claude Hadis: test istemleri denendi, gönderildi
 - [ ] Claude Tefsir: test istemleri denendi, gönderildi
+- [ ] Claude Klasik Eserler: test istemleri denendi, gönderildi
 - [ ] OpenAI Risale: paket güncellendi, video, jeton, gönderildi
 - [ ] OpenAI Hadis: paket, video, jeton, gönderildi (Risale'nin sonucundan sonra)
 - [ ] OpenAI Tefsir: paket, video, jeton, gönderildi (Risale'nin sonucundan sonra)
+- [ ] OpenAI Klasik Eserler: paket, video, jeton, gönderildi (Risale'nin sonucundan sonra)
 - [ ] Kabullerden sonra: sitedeki kurulum sayfalarında dizinden ekleme yolu (`site/claude.html`'deki yorum satırı),
       Yenilikler yazısı
