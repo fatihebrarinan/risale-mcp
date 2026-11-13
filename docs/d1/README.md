@@ -12,6 +12,7 @@ D4 okuma ve not platformu, D5 asıl iş). Bu klasör işin açık belgeleridir; 
 | `okuma-notlari.md` | Tam okumanın notları, birim birim |
 | `prova-istemi.md` | Taslağı yazan modelin istemi (sürümlü; `@tam`/`@ince` satırları) |
 | `karsilastirma-istemi.md` | D7 yapay zekâ karşılaştırıcısının istemi (sürümlü): envanter, denetim, eşleştirme |
+| `elestiri-istemi.md` | D9 yapay zekâ eleştirmeninin istemi (sürümlü; açık kitap, dört eklenti) |
 
 Alıntılar ve adresler veritabanıyla denetlenir: `python3 scripts/d1-usul-denetim.py [dosya]`.
 
@@ -53,6 +54,14 @@ uv run python scripts/d1-prova.py yazdir 11-12 --istem ince-klasik --kez 3   # t
 uv run python scripts/d1-yz.py eslestir 11-12 --taslak 4 5 6                 # D7'nin envanteriyle eşleştirme
 uv run python scripts/d1-yz.py kaynak 11-12 --taslak 4 5 6                   # klasik esere dayanış denetimi
 uv run python scripts/d1-yz.py rapor 11-12 && uv run python scripts/d1-yz.py d2-veri 11-12   # veri; rapor d2-rapor.md
+```
+
+D9 (eleştirmen ve mekanik denetimler, `scripts/d1-elestiri.py`):
+
+```
+uv run python scripts/d1-elestiri.py mekanik 11-12    # D9.1: tırnak, âyet lafzı, kendi tespiti, kaçırılan nüktelerin ipucu → d9-mekanik.md
+uv run python scripts/d1-elestiri.py elestir 11-12    # D9.2: eleştirmen (Opus 5.5), taslak başına → d9-elestiri.md
+uv run python scripts/d1-elestiri.py rapor 11-12      # notların alıntı ve dayanak denetimi, rapor (model çağırmadan)
 ```
 
 `okuma-yz.html`'de "YZ karşılaştırması" kutusu her paragrafın altına eşleşmeleri ve fazlaları açar; "YZ örneklemi"
