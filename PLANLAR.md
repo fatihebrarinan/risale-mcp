@@ -53,14 +53,14 @@ Son verilen kimlikler: E6, S4, A3, D9, B6 (yeni iş bir sonrakini alır).
 ## Sıradaki
 
 Sıra kullanıcının kararıdır (2026-11-12; 2026-11-13'te D1 bölündü: D6, D7, D8; aynı gün E2 bitti ve D2, D8'den öne
-alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i beklemez).
+alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i beklemez; D6'nın bilirkişisi kullanıcı oldu).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
 | 1 | D7 | Yapay zekâ karşılaştırıcısı: taslağı İşârât'ın gizlenen metniyle eşleştiren iki kör okuyucu (D7.7 kullanıcıda) | — |
 | 2 | D9 | Yapay zekâ eleştirmeni ve mekanik denetimler: taslağın nasıl vardığı, kaynak disiplini, süzgeç kullanıcıda | — |
 | 3 | D8 | Taslak altyapısının güncellenmesi: D7 ve D9'un dersleri, istemin yeni sürümü, 11–12 ve ayrılmış bir birimde sınama | D1.9 |
-| 4 | D6 | Bilirkişi okuması (daraltıldı): yapay zekânın göremediği ya da yanlış bildiği hata türleri; D8'le paralel, D5'ten önce | D1.5, D1.6 |
+| 4 | D6 | Bilirkişi okuması (daraltıldı; bilirkişi kullanıcı): yapay zekânın göremediği ya da yanlış bildiği hata türleri; D8'le paralel, D5'ten önce | D1.5, D1.6 |
 | 5 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
 | 6 | D3 | Başka türden bir birim, İşârât aralığında | — |
 | 7 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
@@ -202,13 +202,29 @@ yanlış bildiği hata türlerini ayıklamak. D9.3 ile ters yönden bakar: D9.3'
 süzer (eleştirmenin isabeti, yanlış itirazı); D6'da bilirkişi eleştirmenin **söylemediğine** bakar (taslağı yazanın
 da eleştirenin de doğru sandığı yanlış: kör nokta). Geniş okuyucu kampanyası ve D8'i bekleten bir insan okuması
 raporu yok.
-- D6.1 Bilirkişi: Arapça ve belâgat bilen, İşârât'ı okumuş tek kişi (kullanıcı bulur; ilanla değil davetle; eski
-  D1.5).
+- D6.1 Bilirkişi: **kullanıcı** (kullanıcının kararı, 2026-11-13; eski D1.5'in Arapça ve belâgat bilen, İşârât'ı
+  okumuş tek kişisinin yerine). Arapçayı okuyup anlaması zayıf, belâgat bilmiyor; bilmediğini kaynaktan araştırarak
+  ya da çevresindeki ehline dar sorular sorarak bulur. Gerekçe: örneklemin maddeleri dar iddialardır ("şu kelimede şu
+  sanat var", "şu kelime şöyle i'râb edilir"); tek bir soruyu birine sormak, birine taslağı baştan sona okutmaktan
+  kolaydır. Kullanıcı D9.3'te eleştirmenin söylediğini de süzdüğü için iki yön (söylediği ve söylemediği) aynı
+  kişide birleşir. Sonradan bir bilirkişi bulunursa ona yalnız "emin değilim" kalanlar gider.
 - D6.2 Ayar okuması (D9'un ilk çalışmasından sonra, bir kez): taslakların eleştirmenin itiraz etmediği belâgat ve
   i'râb iddialarından 20–30'luk örneklem ve kullanıcının D9.3'te "ehline sor" dediği notlar; her biri için "doğru /
-  yanlış / emin değilim" ve not. Bulunan hata türleri D9'a kalıcı denetim olarak girer (insan emeği bir kez,
-  makineye kural olarak geçer); yeni tür çıkmazsa düzen güvenilir sayılır, gerisi heyete kalır. D8'le paralel, D5'ten
-  önce biter (D5'te gizlenen İşârât metni, yani cevap anahtarı yok; eleştirmenin en güçlü dayanağı gider).
+  yanlış / emin değilim" ve not. Bir maddeye nasıl bakılacağına (kaynakta arama, birine sorma, açık bırakma)
+  kullanıcı maddeye göre karar verir; maddeler önceden kümelere ayrılmaz. Bulunan hata türleri D9'a kalıcı denetim
+  olarak girer (insan emeği bir kez, makineye kural olarak geçer). D8'le paralel, D5'ten önce biter (D5'te gizlenen
+  İşârât metni, yani cevap anahtarı yok; eleştirmenin en güçlü dayanağı gider). **Dikkat edilecekler** (2026-11-13):
+  - **Dayanak yapay zekâ olmaz.** D6'nın amacı taslağı yazanın da eleştirenin de (ikisi de Claude) doğru sandığı
+    yanlışı bulmaktır; bir maddeyi claude.ai'ye ya da başka bir modele sorarak çözmek kör noktayı ölçülecek yere geri
+    getirir. Her hükmün yanına dayanağı yazılır: **kaynak** (cümle kimliğiyle; ör. iddia edilen sanat ya da i'râb
+    aynı âyette Beyzâvî, Ebüssuûd, Âlûsî'de geçiyor mu, terimin tanımı et-Ta'rîfât'ta ya da Miftâh'ta bu kullanıma
+    uyuyor mu), **kişi** (adı yazılmaz, yalnız alanı: Arapça hocası, ilahiyatçı…) ya da **kendi kanaati**. Yapay
+    zekâya dayanan hüküm "emin değilim" sayılır.
+  - **Başarı ölçütü zayıflar.** Bilirkişi olmayan okuyucunun bir şey bulamaması bilirkişininkinden az şey söyler.
+    Ölçüt: "kullanıcının kaynakla ve sorarak denetleyebildiği kadarıyla yeni hata türü çıkmadı"; o zaman düzen bu
+    ölçüde güvenilir sayılır, "emin değilim" kalanlar heyete (ya da sonradan bulunacak bilirkişiye) kalır.
+  - **Bazı maddeler çözülmeyebilir.** İnce belâgat isabeti (bir nüktenin yerinde olup olmadığı) ancak sorulan kişi
+    ehilse çözülür; "emin değilim" kalması kusur değildir.
 - D6.3 Gelen notlar: okuyuculara gönderilen `data/d1/okuma.html`'den notlar gelirse `scripts/d1-prova.py notlar` →
   `provalar/11-12/notlar.md` ile az emekle işlenir; beklenmez, yeniden davet edilmez. Kullanıcının ilk izlenimi
   (2026-11-13): taslak işliyor, yapay zekâ bazı yerlerde çok iyi tespit ve çıkarımlarda bulunmuş; özellikle üçüncü
