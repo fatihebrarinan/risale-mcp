@@ -49,7 +49,7 @@
 
 | Kitap | Müellif (ö.) | Nüsha | Künye | 1 | 2 | 3 | Gerekçe |
 |---|---|---|---:|:-:|:-:|:-:|---|
-| Şerhu'ş-Şifâ | Aliyyü'l-Kārî (1014) | OpenITI `1014MullaCaliQari.SharhShifa` (5,9 MB) | 109 | ✓ | ✓ | ✓ | Risale'de en çok anılan kitaplardan; eş-Şifâ kütüphanede, şerhi yanında durur |
+| Şerhu'ş-Şifâ | Aliyyü'l-Kārî (1014) | OpenITI `1014MullaCaliQari.SharhShifa.Shamela0009918` (DKİ, muhakkik yazılmamış; 2,53 milyon kelime) | 109 | ✓ | ◐ | ✓ | Risale'de en çok anılan kitaplardan; eş-Şifâ kütüphanede, şerhi yanında ayrı katman olarak durur. Hadis sunucusuna girer (kullanıcının kararı, 2026-11-13; E2.1) |
 | et-Terğîb ve't-Terhîb | Münzirî (656) | OpenITI `0656…Mundhiri.TarghibWaTarhib` (8,9 MB) | 33 | ✓ | ✓ | ✓ | Ameller ve faziletler; derece notlarıyla |
 | el-Mu'cemü'l-Evsat, el-Mu'cemü'l-Kebîr | Taberânî (360) | OpenITI'de var | 22, 19 | ✓ | ✓ | ✓ | el-Mu'cemü's-Sağîr kütüphanede; Risale'nin künyeleri daha çok bu ikisine gidiyor |
 | es-Sünenü'l-Kübrâ | Beyhakî (458) | OpenITI `0458Bayhaqi.SunanKubra` (26 MB) | 16 | ✓ | ✓ | ✓ | Büyük sünen; bellek payı hesaba katılır |
