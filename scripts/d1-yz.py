@@ -867,7 +867,30 @@ def page_data(unit: str) -> dict | None:
                   for f in tr["fazla"]]
         drafts[t] = {"rows": rows, "extras": extras}
     return {"models": sorted({m for t in res["taslaklar"].values() for m in t["modeller"]}, key=list(MODELS).index),
-            "items": items, "drafts": drafts, "sample": res.get("orneklem", [])}
+            "items": items, "drafts": drafts, "sample": res.get("orneklem", []), "critic": critic_page(unit)}
+
+
+def critic_key(n: int, note: dict) -> str:
+    """D9.3 süzgecinin kararı bu anahtara bağlanır (taslak, çapa, metin)."""
+    return hashlib.sha1(f"{n}|{note.get('capa')}|{note.get('metin')}".encode()).hexdigest()[:10]
+
+
+def critic_page(unit: str) -> dict:
+    """D9.2 eleştirmeninin notları (denetlenmiş hâli), taslak başına: okuma sayfasının ayrı katmanı (D9.3)."""
+    out = {}
+    for path in out_dir(unit).glob("elestiri-taslak-*.denetim.json"):
+        n = int(re.search(r"taslak-(\d+)", path.name).group(1))
+        data = json.loads(path.read_text(encoding="utf-8"))
+        notes = []
+        for x in data.get("notlar", []):
+            dn = x.get("denetim", {})
+            notes.append({"k": critic_key(n, x), "t": x.get("tur"), "a": x.get("capa") or "genel", "n": x.get("nukte"),
+                          "m": x.get("metin", ""), "h": x.get("nasil"), "s": x.get("soru"), "e": bool(x.get("ehline_sor")),
+                          "q": x.get("taslak_alinti"), "d": x.get("dayanak") or [],
+                          "ok": dn.get("alinti") is not False and not dn.get("dayanak_yok")})
+        out[f"taslak-{n}"] = {"notes": notes, "ozet": data.get("ozet", ""), "sistemli": data.get("sistemli", []),
+                              "oneriler": data.get("oneriler", [])}
+    return out
 
 
 def main() -> None:

@@ -13,6 +13,9 @@ meylettirir, bu yüzden istem sabittir ve doğru yapılanı da sorar; alıntıla
 
 Sürümler:
 - v1 (2026-11-13): ilk sürüm; 11–12 için.
+- v1.1 (2026-11-13): istem metni aynı; taslağın gösteriminde tercüme paragraflarının "Yapay zekâ tercümesi:" damgası
+  korunur. v1'de `draft_blocks` damgayı atıyordu, altı eleştirmen de alıntı tercümelerini "damgasız" saydı (yanlış;
+  taslaklarda damga var). v1'in çıktıları `yz/elestiri-v1/`.
 -->
 
 ---- ELESTIRI ----

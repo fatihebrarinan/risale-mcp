@@ -674,6 +674,9 @@ def critic_prompt(unit: str, n: int) -> tuple[str, str]:
     ar = next(x for x in cfg["nodes"] if x.startswith("isaratul-icaz-arabi/"))
     tr = next(x for x in cfg["nodes"] if x.startswith("isaratul-icaz/"))
     blocks, sources = Y.draft_blocks(unit, n)
+    stamped = {x["tr"] for x in draft(unit, n)["pairs"] if x.get("stamped")}
+    # damga taslakta tercüme paragrafının başındadır; `draft_blocks` onu atar, eleştirmen görmeli (v1'in hatası)
+    blocks = [(a, lang, q, (STAMP + " " + t) if a in stamped else t) for a, lang, q, t in blocks]
     text = body.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])), gizli_ar=ar, gizli_tr=tr,
                        klasik_not=", belâgat ve terim eserlerini" if "klasik" in (meta.get("istem") or "") else "",
                        d7=d7_text(unit, n), mekanik=mekanik_text(unit, n))
@@ -772,15 +775,32 @@ def check_critic(unit: str, n: int, data: dict) -> dict:
     return data
 
 
+def suzgec(unit: str) -> dict[str, dict]:
+    """D9.3 kararları: `data/d1/notlar/` altındaki dışa aktarımlardan (`yz_suzgec`), anahtar başına en yenisi."""
+    out: dict[str, dict] = {}
+    for f in sorted(P.NOTES_DIR.glob("*.json")) if P.NOTES_DIR.exists() else []:
+        try:
+            data = json.loads(f.read_text(encoding="utf-8"))
+        except json.JSONDecodeError:
+            continue
+        for k, v in (data.get("yz_suzgec") or {}).items():
+            if k.startswith(unit + "|") and (k not in out or v.get("at", "") > out[k].get("at", "")):
+                out[k] = v
+    return out
+
+
 def rapor(unit: str) -> None:
     d = Y.out_dir(unit)
+    decisions = suzgec(unit)
     L = [f"# Prova {unit}: D9.2 yapay zekâ eleştirmeni", "",
          f"`uv run python scripts/d1-elestiri.py elestir {unit}` üretir (istem `docs/d1/elestiri-istemi.md`). Notlar "
          "eleştirmenindir, hüküm değil: süzgeç kullanıcıdadır (D9.3). Denetim: ✓ taslak alıntısı çapasında, "
-         "↷ başka çapada, ✗ taslakta yok; dayanak ✗ veritabanında yok, ◌ eleştirmen o oturumda okumamış.", ""]
+         "↷ başka çapada, ✗ taslakta yok; dayanak ✗ veritabanında yok, ◌ eleştirmen o oturumda okumamış. Süzgeç "
+         "kararları `data/d1/notlar/` altındaki dışa aktarımlardan (`scripts/d1-prova.py notlar <dosya>`); kabul "
+         "oranı kalsın / (kalsın + atılsın), eleştirmenin isabet ölçüsüdür.", ""]
     rows, bodies = [], []
     for path in sorted(d.glob("elestiri-taslak-*.json"), key=lambda p: int(re.search(r"(\d+)", p.stem).group(1))):
-        if path.name.endswith(".meta.json"):
+        if not re.fullmatch(r"elestiri-taslak-\d+\.json", path.name):
             continue
         n = int(re.search(r"taslak-(\d+)", path.stem).group(1))
         data = check_critic(unit, n, json.loads(path.read_text(encoding="utf-8")))
@@ -792,16 +812,20 @@ def rapor(unit: str) -> None:
         bad_q = sum(1 for x in notes if x["denetim"].get("alinti") is False)
         bad_id = sum(len(x["denetim"]["dayanak_yok"]) for x in notes)
         unread = sum(len(x["denetim"]["dayanak_okunmamis"]) for x in notes)
+        dec = Counter((decisions.get(f"{unit}|taslak-{n}|{Y.critic_key(n, x)}") or {}).get("v") for x in notes)
+        judged = dec["kalsin"] + dec["atilsin"]
+        rate = f"{dec['kalsin']}/{judged} (%{dec['kalsin'] / judged * 100:.0f})" if judged else "—"
         rows.append(f"| {n} | {len(notes)} | " + ", ".join(f"{k} {v}" for k, v in types.most_common()) +
                     f" | {sum(1 for x in notes if x.get('ehline_sor'))} | {bad_q} | {bad_id} / {unread} | "
-                    f"{sum(meta['calls'].values())} | {meta['seconds'] // 60} dk |")
+                    f"{sum(meta['calls'].values())} | {meta['seconds'] // 60} dk | {rate} · ehline {dec['ehline']} |")
         B = [f"## Taslak {n}", "", f"**Özet:** {data.get('ozet', '')}", ""]
         for x in notes:
             dn = x["denetim"]
             mark = {True: "✓", False: "✗", "baska_capada": "↷"}.get(dn.get("alinti"), "")
             ids = ", ".join(("✗ " if s in dn["dayanak_yok"] else "◌ " if s in dn["dayanak_okunmamis"] else "") + f"`{s}`"
                             for s in x.get("dayanak") or [])
-            B.append(f"- **{x.get('tur')}** `{x.get('capa')}`" + (f" {x['nukte']}" if x.get("nukte") else "") +
+            v = (decisions.get(f"{unit}|taslak-{n}|{Y.critic_key(n, x)}") or {}).get("v")
+            B.append(f"- **{x.get('tur')}** `{x.get('capa')}`" + (f" [{ {'kalsin': 'kalsın', 'atilsin': 'atılsın', 'ehline': 'ehline sor'}.get(v, v)}]" if v else "") + (f" {x['nukte']}" if x.get("nukte") else "") +
                      (" · ehline sor" if x.get("ehline_sor") else "") + f" {mark}  \n  {x.get('metin', '')}")
             if x.get("nasil"):
                 B.append(f"  _Nasıl:_ {x['nasil']}")
@@ -815,8 +839,9 @@ def rapor(unit: str) -> None:
         if data.get("oneriler"):
             B += ["", "**Öneriler:**", ""] + [f"- {o}" for o in data["oneriler"]]
         bodies += B + [""]
-    L += ["| Taslak | Not | Türler | Ehline sor | Alıntı bulunmadı | Dayanak yok / okunmamış | Araç çağrısı | Süre |",
-          "|---|---:|---|---:|---:|---|---:|---:|"] + rows + [""] + bodies
+    L += ["| Taslak | Not | Türler | Ehline sor | Alıntı bulunmadı | Dayanak yok / okunmamış | Araç çağrısı | Süre | "
+          "Süzgeç: kalsın / karar (kabul) |",
+          "|---|---:|---|---:|---:|---|---:|---:|---|"] + rows + [""] + bodies
     out = P.DRAFTS / unit / "d9-elestiri.md"
     out.write_text("\n".join(L).rstrip() + "\n", encoding="utf-8")
     print(out.relative_to(ROOT))

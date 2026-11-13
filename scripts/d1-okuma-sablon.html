@@ -94,7 +94,7 @@ table.rub .sc { white-space: nowrap; }
 .yz { margin: 6px 0 0; font-family: system-ui, sans-serif; font-size: .8rem; direction: ltr; text-align: left; }
 body:not(.show-yz) .yz { display: none; }
 .yzr { border-left: 3px solid var(--src); background: var(--src-bg); padding: 4px 8px; border-radius: 4px; margin: 3px 0; }
-.yzr.fz { border-left-color: var(--own); background: var(--own-bg); } .yzr.cel { border-left-color: var(--bad); }
+.yzr.fz { border-left-color: var(--own); background: var(--own-bg); } .yzr.cr { border-left-color: var(--muted); } .yzr.cel { border-left-color: var(--bad); }
 .yzr summary { cursor: pointer; } .yzr .d { color: var(--muted); margin: 2px 0 0 12px; }
 .yzr .qq { font-family: "Noto Naskh Arabic", "Amiri", serif; direction: rtl; unicode-bidi: isolate; }
 .ev { display: inline-flex; gap: 2px; margin-inline-start: 6px; } .ev button { border: 1px solid var(--line); background: var(--card);
@@ -118,6 +118,7 @@ body:not(.show-yz) .yz { display: none; }
     <label>Okuyucu <input id="reader" size="12" placeholder="adınız"></label>
     <label id="yzw" hidden><input type="checkbox" id="yzc"> YZ karşılaştırması</label>
     <button class="btn" id="yzs" hidden>YZ örneklemi <span id="yzn"></span></button>
+    <button class="btn" id="yze" hidden>YZ eleştirisi <span id="yzen"></span></button>
     <button class="btn" id="rubric">Ölçüt çizelgesi</button>
     <button class="btn" id="list">Notlar <span id="count"></span></button>
     <button class="btn primary" id="export">Notları dışa aktar</button>
@@ -142,6 +143,7 @@ const store = {
 };
 let notes = store.get('d1-okuma-notlar', []);
 let rubric = store.get('d1-okuma-olcut', {});      // "birim|taslak|okuyucu" -> {kriter: {score, note}}
+let yzSuz = store.get('d1-yz-suzgec', {});          // D9.3: "birim|taslak|not anahtarı" -> {v, reader, at}
 let yzEval = store.get('d1-yz-sinama', {});         // D7.7: "birim|taslak|okuyucu-modeli|kalem" -> {v, reader, at}
 let st = Object.assign({unit: Object.keys(DATA.units)[0], mode: 'isarat', a: null, b: null, lang: 'ar', ez: true, yz: false},
                        store.get('d1-okuma-durum', {}));
@@ -176,6 +178,9 @@ function controls() {
   $('#yzw').hidden = $('#yzs').hidden = !hasYz; $('#yzc').checked = hasYz && st.yz;
   document.body.classList.toggle('show-yz', hasYz && st.yz);
   if (hasYz) { const s = U().yz.sample, n = s.filter(k => yzEval[`${st.unit}|${k}`]).length; $('#yzn').textContent = `(${n}/${s.length})`; }
+  const cr = hasYz && U().yz.critic && U().yz.critic[st.a];
+  $('#yze').hidden = !cr;
+  if (cr) $('#yzen').textContent = `(${cr.notes.filter(x => yzSuz[`${st.unit}|${st.a}|${x.k}`]).length}/${cr.notes.length})`;
 }
 
 // --- D7: yapay zekâ karşılaştırması (yalnız okuma-yz.html; hüküm değil, eşleştirme)
@@ -203,6 +208,31 @@ function extraDetail(dk, f, withGo) {
     <div class="d">${f.a.map(a => withGo ? `<a data-yzgo="${esc(a)}" data-draft="${dk}">${esc(a)}</a>` : esc(a)).join(', ')}${f.ok ? '' : ' · <b>denetimsiz</b>'}
     ${evBtns(`${dk}|fazla|${f.k}`)}${f.g ? `<br>${esc(f.g)}` : ''}<br>«<span class="qq">${esc(f.q)}</span>»</div>${es}</details>`;
 }
+// --- D9.3: yapay zekâ eleştirmeninin notları ve süzgeç (kalsın / atılsın / ehline sor)
+const CTUR = {nasil_vardi: 'nasıl vardı', kaynak_disiplini: 'kaynak disiplini', etiket: 'etiket', tercume: 'tercüme', diger: 'diğer'};
+function suzBtns(dk, k) {
+  const key = `${st.unit}|${dk}|${k}`, v = (yzSuz[key] || {}).v;
+  return `<span class="ev" data-s="${esc(key)}">${[['kalsin', 'kalsın'], ['atilsin', 'atılsın'], ['ehline', 'ehline sor']].map(([x, l]) =>
+    `<button data-suz="${x}" aria-pressed="${v === x}" title="Süzgeç (D9.3): eleştirmenin bu notu ${l}">${l}</button>`).join('')}</span>`;
+}
+function criticDetail(dk, x, withGo) {
+  const where = x.a === 'genel' ? 'genel' : (withGo ? `<a data-yzgo="${esc(x.a)}" data-draft="${dk}">${esc(x.a)}</a>` : esc(x.a));
+  return `<details class="yzr cr"><summary><b>eleştiri</b> · ${esc(TYPES[x.t] || x.t)}${x.n ? ` · ${esc(x.n)}` : ''}${x.e ? ' · <b>ehline sor</b>' : ''} — ${esc(x.m)}</summary>
+    <div class="d">${where}${x.ok ? '' : ' · <b>denetimsiz</b>'} ${suzBtns(dk, x.k)}
+    ${x.h ? `<br><i>Nasıl:</i> ${esc(x.h)}` : ''}${x.s ? `<br><i>Soru:</i> ${esc(x.s)}` : ''}${x.q ? `<br>«<span class="qq">${esc(x.q)}</span>»` : ''}
+    ${x.d.length ? `<br>Dayanak: ${x.d.map(esc).join(', ')}` : ''}</div></details>`;
+}
+function showCritic() {
+  const c = U().yz.critic[st.a];
+  const body = c.notes.map((x, i) => `<div class="it"><b>${i + 1}.</b>${criticDetail(st.a, x, true).replace('<details', '<details open')}</div>`).join('');
+  const sys = c.sistemli.map(s => `<li>(${esc(CTUR[s.tur] || s.tur)}) ${esc(s.metin)} <span class="muted">${(s.capalar || []).map(esc).join(', ')}</span></li>`).join('');
+  dialog(`YZ eleştirisi (D9): ${U().drafts[st.a] ? U().drafts[st.a].label : st.a}`, `<p class="muted" style="font-family:system-ui;font-size:.82rem">
+    Eleştirmenin (yapay zekâ, açık kitap) notları. Her notu süzün: <b>kalsın</b> (doğru ve işe yarar), <b>atılsın</b> (yanlış ya da boş),
+    <b>ehline sor</b> (Arapça ya da belâgat isabetine karar veremiyorsunuz; D6'ya gider). İşaretler "Notları dışa aktar" dosyasına girer.</p>
+    <p style="font-family:system-ui;font-size:.85rem">${esc(c.ozet)}</p><div class="list">${body}</div>
+    ${sys ? `<h3 style="font-family:system-ui;font-size:.9rem">Sistemli zaaflar</h3><ul style="font-family:system-ui;font-size:.82rem">${sys}</ul>` : ''}
+    ${c.oneriler.length ? `<h3 style="font-family:system-ui;font-size:.9rem">Öneriler</h3><ul style="font-family:system-ui;font-size:.82rem">${c.oneriler.map(o => `<li>${esc(o)}</li>`).join('')}</ul>` : ''}`);
+}
 function yzHtml(dk, side, anchor) {
   const y = U().yz;
   if (!y || !y.drafts[dk]) return '';
@@ -213,6 +243,8 @@ function yzHtml(dk, side, anchor) {
     for (const [id, row] of Object.entries(d.rows))
       if (y.models.some(m => row[m] && hit(row[m].a))) h += rowDetail(dk, id, false);
     for (const f of d.extras) if (hit(f.a)) h += extraDetail(dk, f, false);
+    const c = y.critic && y.critic[dk];
+    if (c) for (const x of c.notes) if (x.a === anchor || x.a === swap(anchor)) h += criticDetail(dk, x, false);
   } else if (side === 'isarat') {
     for (const [id, it] of Object.entries(y.items)) if (it.h.includes(anchor)) h += rowDetail(dk, id, true);
   }
@@ -387,7 +419,7 @@ function showList() {
 // --- dışa ve içe aktarma
 function exportNotes() {
   const r = reader() || 'okuyucu';
-  const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes, yz_sinama: yzEval,
+  const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes, yz_sinama: yzEval, yz_suzgec: yzSuz,
     rubric: Object.entries(rubric).map(([k, v]) => { const [unit, draft, rd] = k.split('|'); return {unit, draft, reader: rd, scores: v}; })};
   const blob = new Blob([JSON.stringify(payload, null, 1)], {type: 'application/json'});
   const a = document.createElement('a');
@@ -409,6 +441,8 @@ $('#import').onchange = async ev => {
     for (const r of p.rubric || []) rubric[`${r.unit}|${r.draft}|${r.reader}`] = r.scores;
     for (const [k, v] of Object.entries(p.yz_sinama || {})) if (!yzEval[k] || v.at > yzEval[k].at) yzEval[k] = v;
     store.set('d1-yz-sinama', yzEval);
+    for (const [k, v] of Object.entries(p.yz_suzgec || {})) if (!yzSuz[k] || v.at > yzSuz[k].at) yzSuz[k] = v;
+    store.set('d1-yz-suzgec', yzSuz);
     saveNotes(); store.set('d1-okuma-olcut', rubric); render(); say(`${added} yeni not içe aktarıldı.`);
   } catch (e) { say('İçe aktarılamadı: ' + e.message); }
   ev.target.value = '';
@@ -425,6 +459,7 @@ $('#reader').onchange = () => store.set('d1-okuma-okur', reader());
 $('#rubric').onclick = showRubric;
 $('#yzc').onchange = e => { st.yz = e.target.checked; render(); };
 $('#yzs').onclick = showSample;
+$('#yze').onclick = showCritic;
 document.addEventListener('click', ev => {
   const b = ev.target.closest('[data-yzv]');
   if (b) {
@@ -433,6 +468,15 @@ document.addEventListener('click', ev => {
     if ((yzEval[k] || {}).v === v) delete yzEval[k]; else yzEval[k] = {v, reader: reader(), at: new Date().toISOString()};
     store.set('d1-yz-sinama', yzEval);
     document.querySelectorAll(`.ev[data-k="${CSS.escape(k)}"] button`).forEach(x => x.setAttribute('aria-pressed', (yzEval[k] || {}).v === x.dataset.yzv));
+    controls(); return;
+  }
+  const sb = ev.target.closest('[data-suz]');
+  if (sb) {
+    if (!reader()) { say('Önce okuyucu adınızı yazın.'); $('#reader').focus(); return; }
+    const k = sb.parentElement.dataset.s, v = sb.dataset.suz;
+    if ((yzSuz[k] || {}).v === v) delete yzSuz[k]; else yzSuz[k] = {v, reader: reader(), at: new Date().toISOString()};
+    store.set('d1-yz-suzgec', yzSuz);
+    document.querySelectorAll(`.ev[data-s="${CSS.escape(k)}"] button`).forEach(x => x.setAttribute('aria-pressed', (yzSuz[k] || {}).v === x.dataset.suz));
     controls(); return;
   }
   const g = ev.target.closest('[data-yzgo]');
