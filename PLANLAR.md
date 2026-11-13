@@ -48,31 +48,38 @@ durur, "Kayıt"taki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E6, S4, A3, D8, B6 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E6, S4, A3, D9, B6 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
 Sıra kullanıcının kararıdır (2026-11-12; 2026-11-13'te D1 bölündü: D6, D7, D8; aynı gün E2 bitti ve D2, D8'den öne
-alındı).
+alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i beklemez).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
 | 1 | D7 | Yapay zekâ karşılaştırıcısı: taslağı İşârât'ın gizlenen metniyle eşleştiren iki kör okuyucu (D7.7 kullanıcıda) | — |
-| 2 | D6 | Bilirkişi okuması: kullanıcının ve okuyucuların notları, bilirkişi, notların işlenmesi, insan okuması raporu | D1.5, D1.6 |
-| 3 | D8 | Taslak altyapısının güncellenmesi: D6 ve D7'nin dersleri, istemin yeni sürümü, 11–12'de yeniden üç taslak | D1.9 |
-| 4 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
-| 5 | D3 | Başka türden bir birim, İşârât aralığında | — |
-| 6 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
-| 7 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 8 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
-| 9 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 2 | D9 | Yapay zekâ eleştirmeni ve mekanik denetimler: taslağın nasıl vardığı, kaynak disiplini, süzgeç kullanıcıda | — |
+| 3 | D8 | Taslak altyapısının güncellenmesi: D7 ve D9'un dersleri, istemin yeni sürümü, 11–12 ve ayrılmış bir birimde sınama | D1.9 |
+| 4 | D6 | Bilirkişi okuması (daraltıldı): yapay zekânın göremediği ya da yanlış bildiği hata türleri; D8'le paralel, D5'ten önce | D1.5, D1.6 |
+| 5 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
+| 6 | D3 | Başka türden bir birim, İşârât aralığında | — |
+| 7 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
+| 8 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 9 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
+| 10 | B2–B5 | Küçük açıklar | MVP "Kalan" |
 
-D7.7 ve D6 kullanıcıyı ve okuyucuları bekler; D2 bitti (2026-11-13); D8 D6 ve D7.7'den sonra, D2'nin dersleriyle.
+D7.7 kullanıcıda; D2 bitti (2026-11-13). D8, D7 ve D9'un dersleriyle (D2'ninkiler de) yapılır, D6'yı beklemez. D6
+D9'un ilk çalışmasından sonra başlar, D8'le paralel yürür, D5'ten önce biter; bulduğu hata türleri D9'a denetim
+olarak, gerekirse istemin sonraki sürümüne girer.
 
-**İşârât usulüyle yapay zekâ taslağı: ortak zemin** (D1–D8 ve D5'in; kullanıcının yola çıkarkenki fikri, "Fikirler"den
+**İşârât usulüyle yapay zekâ taslağı: ortak zemin** (D1–D9 ve D5'in; kullanıcının yola çıkarkenki fikri, "Fikirler"den
 alındı, 2026-11-09). D1 (taslakların yazılması, Bakara 11–12 provası) bitti; **kullanıcının kararı (2026-11-13):**
 D1'in kalanı üç aşamaya bölündü, bir aşama kabarmasın diye: bilirkişi okuması D6, yapay zekâ karşılaştırıcısı D7,
 ikisinin dersleriyle taslak altyapısının güncellenmesi D8. E2 bitince D2 D8'den öne alındı (2026-11-13). Okuma ve not platformu D4 (bitti).
+**Kullanıcının kararı (2026-11-13, D7'den sonra):** bu iş taslaktır; taslağı heyet ya da tefsirle çalışacak kişiler
+zaten okuyacak, bizim yaptığımız işin otomatik kısmıdır. Geri dönütün asıl kaynağı yapay zekâ eleştirmenidir (D9),
+süzgeci kullanıcıdır; insan okuması (D6) taslakları doğrulamak için değil, ölçme düzeninin (taslağı da ölçeni de
+eleştireni de Claude) kör noktalarını bulmak için, daraltılmış olarak kalır.
 Model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Taslak "yapay zekâ taslağı" diye
 damgalanır, "tefsir" denmez, yayımlanmaz; her iddia kaynağa bağlıdır, dil ve belâgat iddiaları ayrı işaretlidir.
 Asıl iş Bakara 34 ve sonrasıdır; me'haz İşârât'ın tamamı, Risale-i Nur ve Tefsir ile Hadis eklentileridir.
@@ -140,22 +147,83 @@ araçsız (girdi istemdedir), yüksek düşünme.
   İşârât paragrafının yanında nükteleri ve taslaklardaki karşılıkları, taslak bloğunun yanında bağlı nükte ya da
   "fazla"; satır başına "metinde tutuyor / kısmen / tutmuyor" işareti ve dışa aktarma.
 - D7.7 Sınama: örneklem (≈30 satır, durumlara ve uyuşma/ayrılığa göre katmanlı) kullanıcı metne bakarak işaretler,
-  güven oranı rapora; D6'nın notları gelince iki yönlü fark (yapay zekânın kazancı, eksiği) rapora.
+  güven oranı rapora; D6'nın notları gelince iki yönlü fark (yapay zekânın kazancı, eksiği) rapora. **Durum
+  (2026-11-13):** kullanıcının ilk dışa aktarımında (`d1-notlar-Fatih-202611131237.json`) 8 işaret var, hepsi
+  "tutuyor"; ama hepsi taslak 1'in N01–N04 satırları (iki model), örneklemden yalnız biri (`taslak-1|fable|N03`).
+  Örneklem bilerek riskli satırlara (ayrılıklar, fazlalar) ağırlık verir; güven oranı için 30 satır işaretlenir.
+  Destekleyen işaretler: iki model kalemlerin 41/40/36'sında uyuşuyor, alıntıların hepsi metinde bulundu, D9'un
+  öncülü olan sohbet D7 ile bağımsız olarak uyuştu ve ayrıldığı tek yerde (N31) D7 haklı çıktı (aşağıda).
 
-**D6. Bilirkişi okuması** (D1'den ayrıldı, 2026-11-13; eski D1.5, D1.6 ve D1.9'un insan okuması kısmı).
-- D6.1 Bilirkişi: Arapça ve belâgat bilen, İşârât'ı okumuş biri (kullanıcı; ilanla değil davetle; eski D1.5).
-- D6.2 Okuma: kullanıcı ve bildiği kişiler üç taslağı okuma sayfasında (`data/d1/okuma.html`) okur, notları dışa
-  aktarır (2026-11-12'den; cevaplar ≈1 hafta; eski D1.6). **Kullanıcının ilk izlenimi (2026-11-13):** taslak işliyor,
-  yapay zekâ bazı yerlerde çok iyi tespit ve çıkarımlarda bulunmuş; özellikle üçüncü vecihte bazı kelimelerin ele
-  alınışı İşârât'ın tarzına çok uygun. Kullanıcı notlarını dışa aktaracak. Tarz ile isabet ayrı not edilir (i'râb
-  ve belâgat isabetini bilirkişi söyler).
-- D6.3 Notların işlenmesi: `scripts/d1-prova.py notlar` → `provalar/11-12/notlar.md`, ölçüt çizelgesi.
-- D6.4 İnsan okuması raporu: `provalar/11-12/rapor.md` "Okuma".
+**D9. Yapay zekâ eleştirmeni ve mekanik denetimler** (kullanıcının fikri ve kararı, 2026-11-13; D7'den ayrı aşama).
+Kullanıcı taslak 1'i claude.ai'de Risale, Tefsir ve Hadis bağdaştırıcıları ve proje talimatı açıkken paragraf
+paragraf değerlendirtti (istem: "bu metni yazan modelden Bakara 11–12'yi sakladım, tefsir taslağı yazmasını istedim;
+neyi başarılı, neyi yanlış yapmış, kendi tespitleri değerli mi"), beğendiği bulguları notlarına ekledi (18 not).
+Kullanıcının değerlendirmesi: model tam onun düşündüğü gibi, yalnız kitaptan konuşarak düşünüyor; bu geri dönüt
+okuyuculardan beklenecek notlardan çok daha kıymetli; usul ve üslup geliştirme aşamasında not beklemek yerine
+otomatikleştirilebilir.
+- **D7 ile farkı:** D7 kapalı kitaptır (girdi istemde), sabit cevap anahtarıyla taslağın İşârât'ın **hangi**
+  nüktesini yakaladığını sayar (taslaklar arası karşılaştırılabilir sayı). Sohbet açık kitaptır (kaynakları kendisi
+  açar), taslağın oraya **nasıl** vardığını teşhis eder, kaynak disiplinini denetler, istem önerisi verir. İkisi
+  birbirini tamamlar.
+- **Sınandı (2026-11-13):** sohbetin altı olgusal iddiası veritabanında tuttu (Zemahşerî'nin "والأول أوجه"si
+  `kessaf/2/11-16/c002`; Râzî'de "الهرج والمرج" Kaffâl'in izahında, üç görüşten birinde `razi/2/11-12/c007`; taslağın
+  "kendi tespiti" dediği 2:30 bağı Taberî'de `taberi/2/11/c009`; Taberî İbn Abbâs'tan sonra "وخالفه في ذلك غيره"
+  `c011`; taslakta "tahliye … tahliye" yazım hatası). Bulguları D7 ile uyuşuyor ve nedenini ekliyor: N05 iki tarafta
+  da yok; N02–N04 "kısmen", çünkü üç taalluk sentezlenmemiş, ihtilaf gibi sıralanmış; N08, N25, N27 yok, ama ipucu
+  taslağın okuduğu kaynakta ([40]) vardı. **Yanıldığı yer:** "yed'ûn (davet) yönü eksik" dedi; taslak bunu üçüncü
+  vecihte söylüyor ("mesleklerini tervîce … remzeder", V3), D7 iki modelde N31 "aynen" ve çapası `V3/ar/12`. Sebep
+  paragraf paragraf okumak: eleştirmen taslağın tamamını ve D7'nin eşleştirmesini görmeli.
+- **En değerli teşhis:** "Model Nursî'nin vardığı noktayı buluyor, oraya nasıl vardığını bulamıyor": Nursî takdir
+  edilmiş zincirle, kıyasla, temsille varıyor. Hiçbir taslağın yakalamadığı nüktelerin çoğu bu türden (N05, N08,
+  N18, N25, N27, N28). Sohbetin istem önerileri genel usuldür ("nehiy ya da hüküm cümlesinin altında takdir edilmiş
+  bir kıyas ya da sebep zinciri var mı, sor"; "cümleler arası nazmı tek bir temsilin halkaları olarak dizmeyi dene";
+  "tırnak içine yalnız araçların döndürdüğü metni koy, kendi tercümen ayrı satırda ve damgalı"). D8'in girdisidir.
+- **Kayıtlar:** taslağı da ölçeni de eleştireni de Claude; ortak kör noktayı bu düzen göremez (D6'nın işi).
+  Kullanıcının seçimi değerin bir parçasıdır: otomatik düzende süzgeç kullanıcıda kalır. Çerçeveye duyarlılık
+  ("neyi yanlış yapmış" sorusu eksik aramaya meylettirir): sabit istem ve alıntıların mekanik denetimi dengeler.
+- D9.1 **Mekanik denetimler** (önce; model gerekmez, kesin): tırnak içindeki söz, taslağı yazanın araçlarından dönen
+  metinde geçiyor mu (kendi tercümesini metin gibi sunma); "kendi tespiti" denen söz yazarın o oturumda okuduğu bir
+  kaynakta geçiyor mu; kaçırılan her nüktenin ipucu yazarın okuduğu yerlerde var mıydı (taslakların `.jsonl`
+  kayıtlarından: "dikkat sorunu" ile "arama sorunu"nu ayırır).
+- D9.2 **Eleştirmen** (`d1-yz.py elestir`; **tek model**, kullanıcının kararı): `claude -p`, Risale, Tefsir, Klasik
+  ve Hadis bağdaştırıcıları açık, İşârât gizlenmeden; istem kullanıcının sohbetteki istemi; taslağın tamamını ve
+  D7'nin eşleştirmesini görür; notları okuma notlarıyla aynı biçimde (tür, çapa, metin) ve dayandığı cümle
+  kimlikleriyle yazar (dışa aktarılan sohbet notlarında [n] numaralarının Kaynaklar satırı bazen kayboluyordu).
+- D9.3 **Süzgeç:** `okuma-yz.html`'de ayrı katman; her notta "kalsın / atılsın / ehline sor". Kabul oranı
+  eleştirmenin isabet ölçüsüdür; "ehline sor" (kullanıcının karar veremediği Arapça ve belâgat isabeti) D6'ya gider.
+  Kalan notlar insan notlarıyla aynı hatta işlenir, kaynağı "yz" diye işaretli.
+- D9.4 **Rapor:** sistemli zaaflar türlerine göre (nasıl vardığı, kaynak disiplini, etiketler, tercüme), taslak
+  başına ve D1–D2 arasında; D8'in girdisi.
 
-**D8. Taslak altyapısının güncellenmesi** (D1'den ayrıldı, 2026-11-13; eski D1.9). D6 ve D7'nin raporlarından
-dersler: istemin yeni sürümü (yalnız genel usul; âyete özgü ipucu girmez), gerekirse usul özeti ve ölçüt çizelgesi.
-Sınaması: yeni istemle 11–12'de yeniden üç taslak, E2'nin eserleri açıkken; D7 ile ölçülür ve D2'nin taslaklarıyla
-karşılaştırılır (aynı eserler, değişen yalnız istem). **D2'nin dersleri (2026-11-13, `d2-rapor.md`):** klasik eserler
+**D6. Bilirkişi okuması** (D1'den ayrıldı, 2026-11-13; eski D1.5, D1.6 ve D1.9'un insan okuması kısmı). **Daraltıldı
+(kullanıcının kararı, 2026-11-13):** taslaklar taslaktır, içeriklerini doğrulamak heyetin işidir; bizim işimiz
+otomatik kısımdır. D6'nın kalan işi ölçme düzenini ayarlamaktır: yapay zekânın bir örüntü hâlinde göremediği ya da
+yanlış bildiği hata türlerini ayıklamak. D9.3 ile ters yönden bakar: D9.3'te kullanıcı eleştirmenin **söylediğini**
+süzer (eleştirmenin isabeti, yanlış itirazı); D6'da bilirkişi eleştirmenin **söylemediğine** bakar (taslağı yazanın
+da eleştirenin de doğru sandığı yanlış: kör nokta). Geniş okuyucu kampanyası ve D8'i bekleten bir insan okuması
+raporu yok.
+- D6.1 Bilirkişi: Arapça ve belâgat bilen, İşârât'ı okumuş tek kişi (kullanıcı bulur; ilanla değil davetle; eski
+  D1.5).
+- D6.2 Ayar okuması (D9'un ilk çalışmasından sonra, bir kez): taslakların eleştirmenin itiraz etmediği belâgat ve
+  i'râb iddialarından 20–30'luk örneklem ve kullanıcının D9.3'te "ehline sor" dediği notlar; her biri için "doğru /
+  yanlış / emin değilim" ve not. Bulunan hata türleri D9'a kalıcı denetim olarak girer (insan emeği bir kez,
+  makineye kural olarak geçer); yeni tür çıkmazsa düzen güvenilir sayılır, gerisi heyete kalır. D8'le paralel, D5'ten
+  önce biter (D5'te gizlenen İşârât metni, yani cevap anahtarı yok; eleştirmenin en güçlü dayanağı gider).
+- D6.3 Gelen notlar: okuyuculara gönderilen `data/d1/okuma.html`'den notlar gelirse `scripts/d1-prova.py notlar` →
+  `provalar/11-12/notlar.md` ile az emekle işlenir; beklenmez, yeniden davet edilmez. Kullanıcının ilk izlenimi
+  (2026-11-13): taslak işliyor, yapay zekâ bazı yerlerde çok iyi tespit ve çıkarımlarda bulunmuş; özellikle üçüncü
+  vecihte bazı kelimelerin ele alınışı İşârât'ın tarzına çok uygun. Tarz ile isabet ayrı not edilir.
+
+**D8. Taslak altyapısının güncellenmesi** (D1'den ayrıldı, 2026-11-13; eski D1.9). D7 ve D9'un raporlarından (D2'nin
+dersleriyle) dersler: istemin yeni sürümü (yalnız genel usul; âyete özgü ipucu girmez), gerekirse usul özeti ve
+ölçüt çizelgesi. D6'yı beklemez; D6'nın bulguları sonraki sürüme girer. Sınaması: yeni istemle 11–12'de yeniden üç
+taslak, E2'nin eserleri açıkken; D7 ve D9 ile ölçülür ve D2'nin taslaklarıyla karşılaştırılır (aynı eserler, değişen
+yalnız istem). **Ayrılmış birim (2026-11-13; seçimi D8'e gelince, kullanıcının kararı):** dersler 11–12'nin gizlenen
+metni görülerek çıktığı için yeni istem yalnız 11–12'de ölçülürse olduğundan iyi görünür (genel görünen kurallar da
+11–12'nin eksiklerini kapatsın diye seçildi). Sınama ayrıca hiç bakılmamış bir İşârât biriminde, eski ve yeni
+istemle yapılır; fark yalnız istemden gelir. Birim 11–12'ye bitişik olmaz (9–10 ve 13 eleştiride çok okundu),
+nazm ve lafız nükteleri bakımından ona benzer olur (D3'ün "başka türden birim"i başka bir soruyu sınar); seçildikten
+sonra ona kimse bakmaz. **D2'nin dersleri (2026-11-13, `d2-rapor.md`):** klasik eserler
 me'hazda kalır; istem genel usul olarak (a) bir nüktenin aslı belâgat eserlerindeyse önce ona dayanmayı, müfessir
 naklediyorsa ikisini ayrı anmayı, (b) kaynağın sözünü kayıtlarıyla (قد، من معاني) aktarmayı, (c) kaideyi kaynağa,
 âyete uygulamasını "kendi tespiti"ne bağlamayı söyler; kapsamayı artırmak için kaynak değil usul gerekir: üçüncü
