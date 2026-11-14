@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
 <title>Âyet Masası</title>
 <style>
 :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #ffffff; --soft: #f3f1ec;
@@ -130,6 +131,8 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
 .empty { color: var(--muted); font-size: .85rem; margin: 12px 0; }
 .welcome { max-width: 560px; margin: 24px auto; font-size: .9rem; }
 .welcome li { margin: 4px 0; }
+.credits { margin: 28px 0 0; padding-top: 8px; border-top: 1px solid var(--line); font-size: .76rem; color: var(--muted); }
+.credits a { color: inherit; }
 @media (max-width: 900px) {
   #split { grid-template-columns: 1fr; }
   .pane { position: static; height: auto; overflow: visible; }
@@ -147,6 +150,7 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
   <span id="progress" class="small muted"></span>
   <button class="btn" id="export" title="İşaretleri dosyaya yaz (eski okuma sayfasıyla aynı biçim)">Dışa aktar</button>
   <label class="btn" style="color:var(--fg)">İçe aktar<input type="file" id="import" accept=".json" hidden></label>
+  <a class="btn" id="logout" href="/taslak/cikis" hidden style="text-decoration:none;color:var(--fg)">Çıkış</a>
   <span class="msg" id="msg"></span>
 </header>
 <section id="ayah"></section>
@@ -368,10 +372,18 @@ function srcBoxHtml() {
     <div class="small">${esc(s.c || '')}</div>${s.i ? `<div class="small muted">${esc(s.i)}</div>` : ''}
     <p class="para ar" style="margin:4px 0 0">${s.t ? esc(s.t) : '<span class="muted small">metni bulunamadı</span>'}</p></div>`;
 }
+// Kaynak gösterme şartları (docs/izinler.md): e-Risale, risaleoku, OpenITI (CC BY-NC-SA 4.0), Tanzil
+const CREDITS = `<div class="credits"><b>Kaynaklar ve izinler.</b> İşârâtü'l-İ'câz'ın Türkçesi (Abdülmecid Nursî tercümesi) ve
+  Risale-i Nur metinleri <a href="https://www.erisale.com">e-Risale</a>'den, İşârât'ın Arapça aslı <a href="https://risaleoku.com">risaleoku.com</a>'dan,
+  sahiplerinin izniyle ve kaynak gösterilerek. Müfessirlerin ve klasik eserlerin metinleri
+  <a href="https://openiti.org">OpenITI</a> (KITAB projesi; dijital metin Shamela'dan), <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.tr">CC BY-NC-SA 4.0</a>;
+  kazanç amacı yoktur. Kur'ân metni ve Türkiye Diyanet Vakfı meali <a href="https://tanzil.net">Tanzil Project</a>'ten, değiştirilmeden.
+  Yapay zekâ taslakları, karşılaştırmaları ve eleştirileri yayımlanmamış çalışma metinleridir; tefsir değildir.
+  · <a href="/gizlilik.html">Gizlilik</a></div>`;
 function renderLeft() {
-  if (!st.loc) { $('#left').innerHTML = `<div class="ph"><h2>Kaynaklar</h2></div>${welcome()}`; return; }
+  if (!st.loc) { $('#left').innerHTML = `<div class="ph"><h2>Kaynaklar</h2></div>${welcome()}${CREDITS}`; return; }
   $('#left').innerHTML = `<div class="ph"><h2>Kaynaklar</h2><span class="where">${locName(st.loc)}</span>
-    <span class="tag src">yalnız kaynakların metni</span></div>${srcBoxHtml()}${isaratHtml()}${tefsirHtml()}${klasikHtml()}${risaleHtml()}`;
+    <span class="tag src">yalnız kaynakların metni</span></div>${srcBoxHtml()}${isaratHtml()}${tefsirHtml()}${klasikHtml()}${risaleHtml()}${CREDITS}`;
 }
 function welcome() {
   return `<div class="welcome"><p><b>Nasıl kullanılır?</b></p><ol>
@@ -698,6 +710,7 @@ document.addEventListener('change', ev => {
 });
 document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { st.lang = b.dataset.v; render(); });
 $('#reader').value = store.get('d1-okuma-okur', '');
+$('#logout').hidden = !location.pathname.startsWith('/taslak/');
 $('#reader').onchange = () => store.set('d1-okuma-okur', reader());
 
 // --- dışa ve içe aktarma: eski okuma sayfasıyla aynı dosya (notlar ve ölçütler de içinde, değiştirilmeden)

@@ -20,7 +20,7 @@ Sonra: scripts/deploy.sh --code
   İngilizcede `nav_en`, `FOOTER_EN`). Öbür dile giden bağlantı sayfanın `hreflang` adresidir.
 - Sayılar: sayfalardaki `<!-- sayi:ad -->…<!-- /sayi -->` arası yerel veritabanlarından (`data/dist/`) yazılır
   (`numbers`; İngilizce sayfalarda `ad_en`: "131,000"); veritabanı yoksa olduğu gibi kalır.
-- `site/sitemap.xml`: bütün sayfalar ve yazılar. `site/taslak/` altındaki sayfalar (yalnız bağlantıyla paylaşılanlar;
+- `site/sitemap.xml`: bütün sayfalar ve yazılar. `site/isarat-usul/` altındaki sayfalar (yalnız bağlantıyla paylaşılanlar;
   ör. `scripts/d1-okur.py`'nin ürettiği) menü, alt bilgi ve Open Graph alır ama haritaya girmez.
 - Dışarıya istek yok kuralı sürer: "WhatsApp'ta paylaş" yalnız tıklanınca açılan bir bağlantıdır.
 """
@@ -427,7 +427,7 @@ def main() -> None:
 
     handmade = [p for p in sorted(SITE.glob("*.html")) + sorted((SITE / "en").glob("*.html"))
                 if p.name != "yenilikler.html"]
-    unlisted = sorted((SITE / "taslak").glob("*.html"))     # yalnız bağlantıyla: site haritasına girmez
+    unlisted = sorted((SITE / "isarat-usul").glob("*.html"))     # yalnız bağlantıyla: site haritasına girmez
     changed = sum(add_og(p) for p in handmade + unlisted)
     print(f"Open Graph: {len(handmade + unlisted)} sayfa, {changed} değişti")
     print(f"menü ve alt bilgi: {sum(frame(p) for p in handmade + unlisted)} sayfa değişti")

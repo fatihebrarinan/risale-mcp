@@ -48,8 +48,34 @@ mcp.risalemcp.com {
 
 # Tanıtım sitesi, belgeler ve gizlilik politikası: depodaki site/ klasörü (scripts/deploy.sh gönderir).
 risalemcp.com {
-	root * /var/www/risalemcp
 	encode gzip
-	file_server
+	# İşârât'ın usul özeti 2026-11-14'e kadar /taslak/'taydı (bağlantısı paylaşıldı): yeni yerine
+	redir /taslak/isarat-usulu.html /isarat-usul/ 301
+	redir /taslak/isarat-usulu.pdf /isarat-usul/isarat-usulu.pdf 301
+	# S5: girişli taslak çalışma bölümü (âyet masası). Sayfalar /var/www/ozel/taslak/ altında statik dosyadır,
+	# site/ klasöründe değildir. Her istekte giriş servisine sorulur (src/risale_mcp/site_auth.py,
+	# docs/risale-taslak.service, 127.0.0.1:8009): oturum yoksa giriş sayfasına yönlendirir.
+	handle /taslak/giris {
+		reverse_proxy 127.0.0.1:8009
+	}
+	handle /taslak/cikis {
+		reverse_proxy 127.0.0.1:8009
+	}
+	handle /taslak* {
+		forward_auth 127.0.0.1:8009 {
+			uri /_auth
+		}
+		header {
+			Cache-Control "private, no-store"
+			X-Robots-Tag "noindex, nofollow"
+			Referrer-Policy "same-origin"
+		}
+		root * /var/www/ozel
+		file_server
+	}
+	handle {
+		root * /var/www/risalemcp
+		file_server
+	}
 }
 

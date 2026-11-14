@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """İşârât'ın usul özetinin okur sürümü (PLANLAR.md D1.1): site sayfası ve PDF.
 
-    python3 scripts/d1-okur.py          # site/taslak/isarat-usulu.html ve .pdf (PDF için uvx weasyprint; Arapça için sistemde
+    python3 scripts/d1-okur.py          # site/isarat-usul/index.html ve isarat-usulu.pdf (PDF için uvx weasyprint; Arapça için sistemde
                                         # Noto Naskh Arabic gerekir: sitenin amiri-hadis.woff2'si alt kümedir)
     python3 scripts/site-uret.py        # sayfanın menüsü, alt bilgisi ve Open Graph etiketleri
     scripts/deploy.sh --code
@@ -27,7 +27,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "docs" / "d1" / "usul-ozeti.md"
-OUT = ROOT / "site" / "taslak"
+OUT = ROOT / "site" / "isarat-usul"            # risalemcp.com/isarat-usul/ (2026-11-14'e kadar /taslak/)
 NAME = "isarat-usulu"
 TITLE = "İşârâtü'l-İ'câz'ın usulü: kendi metninden bir döküm"
 DESCRIPTION = ("İşârâtü'l-İ'câz'ın bir âyeti ele alırken ne yaptığını ve hangi sırayla yaptığını eserin kendi "
@@ -163,7 +163,7 @@ def page(content: str) -> str:
 <main class="reader">
 <nav></nav>
 
-<p class="muted small">{stamp()} · <a href="/taslak/{NAME}.pdf">PDF olarak indir</a></p>
+<p class="muted small">{stamp()} · <a href="/isarat-usul/{NAME}.pdf">PDF olarak indir</a></p>
 <h1>{html.escape(TITLE)}</h1>
 {INTRO}
 {content}
@@ -201,7 +201,7 @@ a { color: inherit; text-decoration: none; }
 def pdf(content: str) -> None:
     doc = (f'<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>{html.escape(TITLE)}</title>'
            f"<style>{PDF_CSS % stamp()}</style></head><body>"
-           f'<p class="stamp">{stamp()} · Risale-i Nur MCP · risalemcp.com/taslak/{NAME}.html</p>'
+           f'<p class="stamp">{stamp()} · Risale-i Nur MCP · risalemcp.com/isarat-usul/</p>'
            f"<h1>{html.escape(TITLE)}</h1>{INTRO}{content}{OUTRO}</body></html>")
     target = OUT / f"{NAME}.pdf"
     with tempfile.TemporaryDirectory() as tmp:
@@ -214,7 +214,7 @@ def pdf(content: str) -> None:
 def main() -> None:
     OUT.mkdir(exist_ok=True)
     content = body()
-    target = OUT / f"{NAME}.html"
+    target = OUT / "index.html"
     target.write_text(page(content), encoding="utf-8")
     print(f"yazıldı: {target.relative_to(ROOT)}")
     pdf(content)

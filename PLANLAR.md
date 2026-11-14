@@ -48,7 +48,7 @@ durur, "Kayıt"taki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E6, S4, A3, D10, B6 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E6, S5, A3, D10, B6 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -57,18 +57,19 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D7 | Yapay zekâ karşılaştırıcısı: taslağı İşârât'ın gizlenen metniyle eşleştiren iki kör okuyucu (D7.7 kullanıcıda) | — |
-| 2 | D9 | Yapay zekâ eleştirmeni ve mekanik denetimler: taslağın nasıl vardığı, kaynak disiplini, süzgeç kullanıcıda (D9.1–D9.3 bitti; süzgeç kullanıcıda) | — |
-| 3 | D8 | Taslak altyapısının güncellenmesi: D7 ve D9'un dersleri, istemin yeni sürümü, 11–12 ve ayrılmış bir birimde sınama | D1.9 |
-| 4 | D6 | Bilirkişi okuması (daraltıldı; bilirkişi kullanıcı): yapay zekânın göremediği ya da yanlış bildiği hata türleri; D8'le paralel, D5'ten önce | D1.5, D1.6 |
-| 5 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
-| 6 | D3 | Başka türden bir birim, İşârât aralığında | — |
-| 7 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
-| 8 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 9 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
-| 10 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 1 | S5 | Âyet masası (risalemcp.com/taslak/, girişli): D7.7, D9.3 ve D6.2 burada yapılır | D10 |
+| 2 | D7 | Yapay zekâ karşılaştırıcısı: taslağı İşârât'ın gizlenen metniyle eşleştiren iki kör okuyucu (D7.7 kullanıcıda) | — |
+| 3 | D9 | Yapay zekâ eleştirmeni ve mekanik denetimler: taslağın nasıl vardığı, kaynak disiplini, süzgeç kullanıcıda (D9.1–D9.3 bitti; süzgeç kullanıcıda) | — |
+| 4 | D8 | Taslak altyapısının güncellenmesi: D7 ve D9'un dersleri, istemin yeni sürümü, 11–12 ve ayrılmış bir birimde sınama | D1.9 |
+| 5 | D6 | Bilirkişi okuması (daraltıldı; bilirkişi kullanıcı): yapay zekânın göremediği ya da yanlış bildiği hata türleri; D8'le paralel, D5'ten önce | D1.5, D1.6 |
+| 6 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
+| 7 | D3 | Başka türden bir birim, İşârât aralığında | — |
+| 8 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
+| 9 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 10 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
+| 11 | B2–B5 | Küçük açıklar | MVP "Kalan" |
 
-D7.7, D9.3 ve D6.2 `okuma-yz.html`'de yürümedi; âyet masasında (D10) yapılacak (2026-11-14). D7.7 kullanıcıda; D2 bitti (2026-11-13). D8, D7 ve D9'un dersleriyle (D2'ninkiler de) yapılır, D6'yı beklemez. D6
+D7.7, D9.3 ve D6.2 `okuma-yz.html`'de yürümedi; âyet masasında (S5) yapılacak (2026-11-14). D7.7 kullanıcıda; D2 bitti (2026-11-13). D8, D7 ve D9'un dersleriyle (D2'ninkiler de) yapılır, D6'yı beklemez. D6
 D9'un ilk çalışmasından sonra başlar, D8'le paralel yürür, D5'ten önce biter; bulduğu hata türleri D9'a denetim
 olarak, gerekirse istemin sonraki sürümüne girer.
 
@@ -232,7 +233,9 @@ okuduklarında arar.
   geçmiş notlarla, D1–D2 farkı) ve D6.2'nin örneklemi (eleştirmenin itiraz etmediği belâgat ve i'râb iddiaları ve
   "ehline sor" notları).
 
-**D10. Âyet masası** (kullanıcının tasarımı ve kararları, 2026-11-14). `okuma-yz.html`'de D7.7, D9.3 ve D6.2 denendi,
+**S5. Âyet masası** (kullanıcının tasarımı ve kararları, 2026-11-14; önce D10 diye açıldı, aynı gün S5'e taşındı:
+bir deneme değil, âyet başına çalışma platformunun ilk hâli; D10 boş kalır. D7.7, D9.3 ve D6.2 kendi kimlikleriyle
+masada yapılır). `okuma-yz.html`'de D7.7, D9.3 ve D6.2 denendi,
 olmadı: sayfa iş akışımıza göre dizilmişti (üç katman, `N05`, `V3/ar/12`, `A01` kodları), kullanıcı ve yanındaki kişi
 neyi neyle karşılaştıracaklarını, eleştirinin taslağın neresine yapıldığını, bilirkişi iddiasının bağlamını bulamadı.
 Yerine âyetten başlayan sayfa: âyet üstte büyük, mealiyle; kelimeleri tıklanır, altında İşârât'ın o kelimedeki nükte
@@ -249,8 +252,17 @@ biçimi (`d1-prova.py notlar` okur).
   veriden: kelime düğmeleri âyetin kelimelerinden ve envanterin harekeli lafızlarından; taslak tarafı nükte kimliğinden,
   yoksa paragrafın vechi ve üçüncü vecihte paragrafın başlığından ("وأما ﴿…﴾"). Bilirkişi maddelerinin 17'si bir yere,
   7'si "belirsiz"e düştü (ör. A02 "ألا" iddiası, paragrafı "أما الاستيناف" ile başlıyor). Tarayıcıda denendi.
-- **Sıradaki:** kullanıcı ve yanındaki kişi dener; anlaşılırsa D7.7, D9.3 ve D6.2 bu sayfada yapılır. Açık: bilirkişi
-  maddelerini dar soruya çevirmek; müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı).
+- Kullanıcının denemesi (2026-11-14): "öncekinden yüz kat daha iyi"; D7.7, D9.3 ve D6.2 masada yapılır.
+- **Girişli yayın (2026-11-14, kullanıcının kararları):** `risalemcp.com/taslak/`; yalnız davetli hesaplar. Hesaplar MCP
+  hesapları değil, yalnız site girişi (`src/risale_mcp/site_auth.py`, ayrı `data/site_auth.db`; parola özeti ve kilit
+  `auth.py`'deki gibi; kullanıcı adı e-posta, parolayı yönetici verir, e-posta gönderilmez). Caddy `forward_auth` ile her
+  istekte sorar (servis `risale-taslak`, 127.0.0.1:8009); sayfa `/var/www/ozel/taslak/` altında statik, `site/`'a
+  girmez. İşaretler sunucuda tutulmaz (tarayıcıda, dışa aktarılır): dondurulan heyet akışı açılmadı, yalnız giriş
+  kapısı. Hesap: `scripts/sunucu.sh taslak add-user <e-posta> --generate`. Gizlilik politikası (tr, en) ve robots.txt
+  güncellendi; masaya "Kaynaklar ve izinler" alt bilgisi (e-Risale, risaleoku, OpenITI CC BY-NC-SA, Tanzil). İşârât'ın
+  usul özeti `/taslak/`'tan `/isarat-usul/`'e taşındı, eski adresler yönlenir.
+- **Açık:** bilirkişi maddelerini dar soruya çevirmek; müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); işaretlerin
+  sunucuda toplanması ayrı karardır (heyet akışı).
 
 **D6. Bilirkişi okuması** (D1'den ayrıldı, 2026-11-13; eski D1.5, D1.6 ve D1.9'un insan okuması kısmı). **Daraltıldı
 (kullanıcının kararı, 2026-11-13):** taslaklar taslaktır, içeriklerini doğrulamak heyetin işidir; bizim işimiz

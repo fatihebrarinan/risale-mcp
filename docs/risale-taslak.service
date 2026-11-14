@@ -1,0 +1,18 @@
+[Unit]
+Description=risalemcp.com/taslak/ girişi (S5; Caddy forward_auth, uygulama 127.0.0.1:8009; hesaplar data/site_auth.db)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=risale
+WorkingDirectory=/home/risale/risale-mcp
+ExecStart=/home/risale/risale-mcp/.venv/bin/python -m risale_mcp.site_auth serve --port 8009
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/home/risale/risale-mcp/data
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

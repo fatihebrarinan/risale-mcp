@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /taslak/
 
 Sitemap: https://risalemcp.com/sitemap.xml
