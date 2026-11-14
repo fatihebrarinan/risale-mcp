@@ -485,6 +485,25 @@ def quran_grams(unit: str) -> set:
     return out
 
 
+# D6'nın dersi (2026-11-14): taslağın kendi tespitinde inhisar ve mutlaklık kalıbı, kapsam ve derece adayı. A10
+# ("nifâkın tabiatıyla ifsad olduğuna işârettir") ve A09 ("reddi nâsihin şahsına değil, nasihatin kendisinedir")
+# bu süzgeçten geçer; hüküm eleştirmenin (istem v1.2, 4. soru) ve okuyucunundur.
+SCOPE = re.compile(r"(?<![\w])(tabiatıyla|zâtında|zatında|dâima|daima|asla|hiç|ancak|yalnız|sadece|"
+                   r"değil(?:dir)?(?![\w])[^.;]{0,40}?(?:dır|dir|dur|dür|tır|tir|tur|tür)(?![\w]))", re.I)
+
+
+def check_scope(d: dict) -> list[dict]:
+    out = []
+    for p in d["pairs"]:
+        if not p.get("tr"):
+            continue
+        for sent in re.split(r"(?<=[.!?])\s+", p["tr_text"]):
+            m = SCOPE.search(sent)
+            if m and "kendi tespiti" in sent:
+                out.append({"capa": p["tr"], "kalip": m.group(1)[:40], "cumle": sent.strip()})
+    return out
+
+
 def mekanik(unit: str, drafts: list[int]) -> None:
     d_out = Y.out_dir(unit)
     quran_sk, ayah_words = quran_data(unit)
@@ -502,12 +521,13 @@ def mekanik(unit: str, drafts: list[int]) -> None:
              "numaralar": check_numbers(d, raw_ids),
              "tirnak": check_quotes(d, ids, read, quran_sk),
              "ortak": check_overlap(d, ids, index),
-             "ipucu": check_hints(unit, n, read, extra, ayah_words)}
+             "ipucu": check_hints(unit, n, read, extra, ayah_words),
+             "kapsam": check_scope(d)}
         (d_out / f"mekanik-taslak-{n}.json").write_text(json.dumps(r, ensure_ascii=False, indent=1), encoding="utf-8")
         results[n] = r
         q = Counter((x["tur"], x["dil"], x["durum"]) for x in r["tirnak"])
         print(f"taslak {n}: okunan {r['okunan']} · tırnak {len(r['tirnak'])} · ortak {len(r['ortak'])} · "
-              f"ipucu {len(r['ipucu'])}")
+              f"ipucu {len(r['ipucu'])} · kapsam {len(r['kapsam'])}")
     report(unit, results)
 
 
@@ -522,8 +542,8 @@ def report(unit: str, results: dict) -> None:
          "`yz/mekanik-taslak-<n>.json`. \"Okunan\": yazarın o oturumda gördüğü metin (istem ve araç sonuçları).", ""]
     L += ["## Özet", "", "| Taslak | Okunan | Numara sorunu | Ar. tırnak: kaynakta / okunan / bulunmadı (nisbetli) | "
           "Tr. tırnak bulunmadı (nisbetli) | Damgasız Tr. blok | Âyet: aynen / iskelet / yok | Kendi tespiti adayı | "
-          "Atıfsız benzerlik | Kaçırılan: okunan yerde aday / yalnız okunmayanda |",
-          "|---|---:|---:|---|---|---:|---|---:|---:|---|"]
+          "Atıfsız benzerlik | Kaçırılan: okunan yerde aday / yalnız okunmayanda | Kapsam adayı |",
+          "|---|---:|---:|---|---|---:|---|---:|---:|---|---:|"]
     for n, r in results.items():
         nm = r["numaralar"]
         bad = len(nm["metinde_kaynakcada_yok"]) + len(nm["metinde_cite_yok"])
@@ -542,10 +562,14 @@ def report(unit: str, results: dict) -> None:
                  f"({ar_nis}) | {len(tr_no)} ({sum(1 for x in tr_no if x.get('nisbet'))}) | "
                  f"{sum(1 for x in t if x['tur'] == 'blok_damgasiz')} | {ay['aynen']} / {ay['iskelet']} / "
                  f"{ay['bulunmadi']} | {ov['kendi_tespiti']} | {ov['atifsiz']} | {strong_read} / {only_unread} "
-                 f"(toplam {len(hints)}) |")
-    L += ["", "Nisbetli: tırnağın ardından aynı cümlede kaynak numarası geliyor (söz o kaynağa mal ediliyor).", ""]
+                 f"(toplam {len(hints)}) | {len(r.get('kapsam', []))} |")
+    L += ["", "Nisbetli: tırnağın ardından aynı cümlede kaynak numarası geliyor (söz o kaynağa mal ediliyor). Kapsam "
+          "adayı: \"kendi tespiti\" işaretli cümlede inhisar ya da mutlaklık kalıbı (tabiatıyla, ancak, hiç, \"X değil Y'dir\"…; "
+          "D6'nın dersi), hüküm değil.", ""]
     for n, r in results.items():
         L += [f"## Taslak {n}", ""]
+        if r.get("kapsam"):
+            L += ["### Kapsam adayları", ""] + [f"- `{x['capa']}` ({x['kalip']}): {_s(x['cumle'], 200)}" for x in r["kapsam"]] + [""]
         nm = r["numaralar"]
         if nm["metinde_kaynakcada_yok"] or nm["metinde_cite_yok"] or nm["kaynakcada_kullanilmayan"]:
             L.append(f"- Numaralar: metinde olup kaynakçada olmayan {nm['metinde_kaynakcada_yok'] or '—'}, cite'ta "
@@ -662,6 +686,8 @@ def mekanik_text(unit: str, n: int) -> str:
         what = "\"kendi tespiti\" denen yerde" if x["tur"] == "kendi_tespiti" else "paragrafın anmadığı"
         L.append(f"- [{x['capa']}] {what} okunan kaynakla ortak söz: `{x['kaynak'].split(':', 1)[1]}` "
                  f"({'; '.join(x['ortak'][:3])}): {_s(x['cumle'], 120)}")
+    for x in r.get("kapsam", []):
+        L.append(f"- [{x['capa']}] kapsam adayı ({x['kalip']}): {_s(x['cumle'], 160)}")
     for h in r["ipucu"]:
         cands = "; ".join(f"{'●' if a['okundu'] else '○'} `{a['yer'].split(':', 1)[1]}` ({' '.join(a['ortak'])})"
                           for a in h["adaylar"]) or "aday yok"

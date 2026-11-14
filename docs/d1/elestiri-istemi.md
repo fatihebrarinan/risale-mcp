@@ -16,6 +16,10 @@ Sürümler:
 - v1.1 (2026-11-13): istem metni aynı; taslağın gösteriminde tercüme paragraflarının "Yapay zekâ tercümesi:" damgası
   korunur. v1'de `draft_blocks` damgayı atıyordu, altı eleştirmen de alıntı tercümelerini "damgasız" saydı (yanlış;
   taslaklarda damga var). v1'in çıktıları `yz/elestiri-v1/`.
+- v1.2 (2026-11-14; D6 ve D9.3'ün dersi, henüz çalıştırılmadı, ilk ölçümü D8'de): 5. soru **kapsam ve derece**
+  (D6'da A10: taslak "nifâk tabiatıyla ifsaddır" dedi, İşârât ilişkiyi "yalan → fitne → ifsad" zinciriyle kurar; v1.1
+  eleştirmeni bunu "eksik" saydı, hükmün genişliğine itiraz etmedi); not türü `kapsam`; D9.1'in kapsam adayları
+  istemde; `tur` alanına D7'nin durum adları (`kismen`, `farkli_gerekce`) yazılmaz.
 -->
 
 ---- ELESTIRI ----
@@ -48,7 +52,12 @@ kaynakları ve gerekirse başkalarını da eklentilerde aç.
 3. **Kaynak disiplini:** bir sözü bir müfessire ya da İşârât'a mal ederken o kaynak gerçekten öyle mi diyor; tırnak
    içindeki söz araçlardan dönen metin mi, kendi tercümesi ya da kendi sözü mü; "kendi tespiti" dediği şey aslında
    okuduğu bir kaynakta var mı; işaretler (`[dil]`, `[belâgat]`, delâlet derecesi) yerinde mi; tercüme damgası var mı.
-4. **Taslağı yazan düzene ne önerirsin?** Yalnız genel usul (her âyette işe yarayacak bir soru, bir adım, bir kural);
+4. **Kapsam ve derece:** taslağın kendi tespiti, söylediğinden geniş bir hüküm mü kuruyor? "Tabiatıyla", "zâtında",
+   "daima", "hiç", "ancak", "X değil Y'dir" gibi inhisar ve mutlaklık kalıplarında iki şeye bak: (a) İşârât ya da
+   kaynak aynı ilişkiyi kuruyor mu, kuruyorsa ara halkalarla (sebep zinciri, takdir) mı; zinciri atlayıp ilişkiyi
+   mahiyet hükmüne çevirmek eksik değil, **İşârât'la kısmi çelişkidir**; (b) iddia vecihlerden biri olarak mı, tek
+   vecih olarak mı söylenmiş. Bu notların türü `kapsam`. D9.1'in kapsam adayları aşağıdadır; adaydır, hüküm değildir.
+5. **Taslağı yazan düzene ne önerirsin?** Yalnız genel usul (her âyette işe yarayacak bir soru, bir adım, bir kural);
    bu âyete özgü ipucu değil.
 
 # Elindeki ölçümler
@@ -89,7 +98,7 @@ nüktelerin ipucu adayları (● yazarın okuduğu yer, ○ okumadığı yer; ad
 {{
   "notlar": [
     {{
-      "tur": "dogru | yanlis | eksik | fazla | uydurma | irab | belagat | usul | kaynak | uslup | diger",
+      "tur": "dogru | yanlis | eksik | fazla | kapsam | uydurma | irab | belagat | usul | kaynak | uslup | diger (D7'nin durum adları değil)",
       "capa": "taslağın paragrafı (V3/tr/12 gibi; bütün taslak için \"genel\")",
       "nukte": "ilgili envanter kalemi (N05 gibi) ya da null",
       "taslak_alinti": "taslağın o paragrafından harfi harfine söz ya da null",
