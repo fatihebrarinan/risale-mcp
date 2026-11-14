@@ -929,7 +929,26 @@ def page_data(unit: str) -> dict | None:
         drafts[t] = {"rows": rows, "extras": extras}
     return {"models": sorted({m for t in res["taslaklar"].values() for m in t["modeller"]}, key=list(MODELS).index),
             "items": items, "drafts": drafts, "sample": res.get("orneklem", []), "critic": critic_page(unit),
-            "bilirkisi": bilirkisi_page(unit)}
+            "bilirkisi": bilirkisi_page(unit), **critic_review_page(unit)}
+
+
+def critic_review_page(unit: str) -> dict:
+    """D9.3 süzgeci: örneklemin 10 notu (`elestiri-orneklem.json`) ve sistemli başlıklar (`elestiri-sistemli.json`),
+    başlığın dayandığı maddelerin metniyle (eleştirmenin `sistemli` listesinden, taslak ve sırasıyla)."""
+    d = out_dir(unit)
+    sp, zp = d / "elestiri-orneklem.json", d / "elestiri-sistemli.json"
+    sample = [{"t": x["taslak"], "k": x["k"]} for x in json.loads(sp.read_text(encoding="utf-8"))["notlar"]] if sp.exists() else []
+    systemic = []
+    if zp.exists():
+        lists = {}
+        for path in d.glob("elestiri-taslak-*.denetim.json"):
+            n = int(re.search(r"taslak-(\d+)", path.name).group(1))
+            lists[n] = json.loads(path.read_text(encoding="utf-8")).get("sistemli", [])
+        ref = lambda pairs: [{"t": f"taslak-{n}", "m": lists[n][i - 1]["metin"]} for n, i in pairs]
+        for b in json.loads(zp.read_text(encoding="utf-8"))["basliklar"]:
+            systemic.append({"id": b["id"], "tur": b["tur"], "b": b["baslik"], "x": b["aciklama"],
+                             "d": ref(b["dayanak"]), "karsi": ref(b.get("karsi", []))})
+    return {"critic_sample": sample, "systemic": systemic}
 
 
 def bilirkisi_page(unit: str) -> dict:

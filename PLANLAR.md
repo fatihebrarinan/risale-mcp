@@ -161,6 +161,18 @@ okuduklarında arar.
   `d1-elestiri.py rapor` kabul oranını (kalsın / karar) `d9-elestiri.md`'ye yazar. Okuyuculara giden `okuma.html`'de
   katman yok. Açık: eleştirmen bazen `tur` olarak D7'nin durum adlarını kullandı ("kismen", "farkli_gerekce"); "kalan
   notların insan notlarıyla aynı hatta işlenmesi" (`notlar.md`'de "yz" kaynağıyla) henüz yapılmadı.
+- **D9.3 örneklemle (kullanıcının kararı, 2026-11-14: notların hepsini süzmek yerine D7.7 gibi örneklem):** 10 not ve 9
+  sistemli başlık. Notlar `d1-elestiri.py orneklem` → `yz/elestiri-orneklem.json` (sabit tohum; 176 nottan, övgü ve
+  "ehline sor" dışında; yanlış ve fazla 3, kaynak 2, belâgat ve i'râb 2, eksik 2, usul 1; taslak başına en çok 2).
+  Başlıklar `yz/elestiri-sistemli.json` (elle, sürüm 1): eleştirmenin altı taslaktaki `sistemli` listelerinden (37
+  madde) en az iki taslakta geçenler; her başlık dayandığı maddeleri taşır, sayfada onların metni durur (Z1 takdir
+  zinciri ve temsil, Z2 kaydın muhatabın vicdanındaki işi, Z3 ihtilafı seçmek, Z4 hüküm taşıyıp mekanizmayı ve yanındaki
+  ipucunu almamak, Z5 seçici alıntı, Z6 "kendi tespiti" kaynakta bulunana, Z7 kendi sözü tırnakta kaynak numarasıyla,
+  Z8 mekanik delâlet derecesi, Z9 dava ve red kayıtlarının eşlenmemesi; tek taslakta kalan terim maddesi başlık
+  olmadı). Yukarıdaki özetteki "İşârât alıntılarında Abdülmecid Nursî tercümesi yerine kendi tercümesi" eleştirmenin
+  listelerinde yok; başlık olmadı. Masada Eleştirmen sekmesinin başında "Örneklem: x/10" ve "Sistemli başlıklar: x/9";
+  kararlar `yz_suzgec`'e (`<birim>|sistemli|Z1`), `d9-elestiri.md` örneklemi ve başlıkları ayrı yazar. Sonraki birimlerde
+  aynı düzen: 10 not ve o birimin başlıkları; bir türde "atılsın" çıkarsa o türün örneklemi büyür.
 - **Sıradaki:** kullanıcının süzgeci (D7.7 ve D6 bitti, 2026-11-14); sonra D9.4 raporu (kabul oranı, sistemli zaaflar
   süzgeçten geçmiş notlarla, D1–D2 farkı). D6'dan gelen (`provalar/11-12/d6-rapor.md`): kalıcı **kapsam** denetimi
   (taslağın kendi tespitinde "tabiatıyla", "hiç", "ancak", "X değil Y'dir" gibi kalıp varsa: İşârât aynı ilişkiyi sebep

@@ -4,6 +4,7 @@
     uv run python scripts/d1-elestiri.py elestir 11-12 [--taslak 1 …] [--model opus] [--paralel 3] [--yeniden]  # D9.2
     uv run python scripts/d1-elestiri.py rapor 11-12                      # D9.2 notlarının denetimi ve raporu
     uv run python scripts/d1-elestiri.py bilirkisi 11-12 [--kisim A|B]    # D6.2 örneklemi (A sabit, B süzgeçten)
+    uv run python scripts/d1-elestiri.py orneklem 11-12 [--yeniden]       # D9.3 süzgeç örneklemi (10 not, sabit)
 
 D9.1 mekanik denetimleri hüküm vermez, aday ve sayı verir; eleştirmen (D9.2) ve kullanıcı (D9.3) bakar. Girdiler:
 taslak (`provalar/<birim>/taslak-<n>.md`), yazarın dökümü (`.jsonl`: araçlardan dönen her metin), yazarın istemi (Ek 1–3:
@@ -967,6 +968,91 @@ def bilirkisi_rapor(unit: str) -> list[str]:
     return L
 
 
+# D9.3 süzgeç örneklemi (kullanıcının kararı, 2026-11-14): notların hepsi değil, eleştirmenin en çok zarar verebileceği
+# türlerden 10 not; övgü ("dogru") ve "ehline sor" notları girmez (övgünün kör noktası D6'nın işiydi, "ehline sor"
+# doğrudan heyete gider). Yanında eleştirmenin `sistemli` listelerinden toplanan başlıklar (`elestiri-sistemli.json`,
+# elle) süzülür: D8'in istemi onlardan yazılır.
+CRITIC_STRATA = [("itiraz", ("yanlis", "fazla"), 3), ("kaynak", ("kaynak",), 2), ("belagat", ("belagat", "irab"), 2),
+                 ("eksik", ("eksik",), 2), ("usul", ("usul",), 1)]
+CRITIC_PER_DRAFT = 2
+
+
+def orneklem(unit: str, again: bool = False) -> None:
+    import random
+    path = Y.out_dir(unit) / "elestiri-orneklem.json"
+    if path.exists() and not again:
+        print(f"{path.relative_to(ROOT)} var; korunuyor (--yeniden ile yeniden çekilir)")
+        return
+    pool: dict[str, list[dict]] = defaultdict(list)
+    for n in Y.drafts_of(unit):
+        dpath = Y.out_dir(unit) / f"elestiri-taslak-{n}.denetim.json"
+        if not dpath.exists():
+            continue
+        for i, x in enumerate(json.loads(dpath.read_text(encoding="utf-8"))["notlar"]):
+            if x.get("ehline_sor") or x.get("denetim", {}).get("alinti") is False:
+                continue
+            for name, types, _ in CRITIC_STRATA:
+                if x.get("tur") in types:
+                    pool[name].append({"taslak": f"taslak-{n}", "k": Y.critic_key(n, x), "sira": i, "tur": x.get("tur"),
+                                       "capa": x.get("capa"), "metin": x.get("metin", "")})
+    rng = random.Random(f"d9-{unit}-suzgec")
+    for xs in pool.values():
+        rng.shuffle(xs)
+    per_draft, picked = Counter(), []
+    for name, _, target in CRITIC_STRATA:
+        got = 0
+        while got < target:
+            cands = [c for c in pool[name] if per_draft[c["taslak"]] < CRITIC_PER_DRAFT]
+            if not cands:
+                break
+            low = min(per_draft[c["taslak"]] for c in cands)   # taslaklara yay: en az not alan taslaktan
+            c = next(c for c in cands if per_draft[c["taslak"]] == low)
+            pool[name].remove(c)
+            per_draft[c["taslak"]] += 1
+            picked.append({**c, "tabaka": name})
+            got += 1
+    picked.sort(key=lambda c: (int(c["taslak"].split("-")[1]), c["sira"]))
+    data = {"birim": unit, "at": datetime.now().isoformat(timespec="seconds"),
+            "tabakalar": {n: t for n, _, t in CRITIC_STRATA}, "havuz": {k: len(v) for k, v in pool.items()},
+            "notlar": picked}
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"{path.relative_to(ROOT)}: {len(picked)} not · " + ", ".join(f"{c['taslak']} {c['tur']}" for c in picked))
+
+
+def suzgec_lines(unit: str, decisions: dict) -> list[str]:
+    """D9.3 örneklemi ve sistemli başlıklar: kullanıcının kararları."""
+    d = Y.out_dir(unit)
+    L: list[str] = []
+    sp = d / "elestiri-orneklem.json"
+    if sp.exists():
+        xs = json.loads(sp.read_text(encoding="utf-8"))["notlar"]
+        got = {x["k"]: (decisions.get(f"{unit}|{x['taslak']}|{x['k']}") or {}).get("v") for x in xs}
+        c = Counter(v or "—" for v in got.values())
+        judged = c["kalsin"] + c["atilsin"]
+        L += ["## Süzgeç örneklemi (D9.3)", "",
+              f"{len(xs)} not (övgü ve \"ehline sor\" dışında, türlere göre katmanlı, sabit tohum). Karar: kalsın {c['kalsin']}, "
+              f"atılsın {c['atilsin']}, ehline sor {c['ehline']}, işaretsiz {c['—']}"
+              + (f"; kabul {c['kalsin']}/{judged} (%{c['kalsin'] / judged * 100:.0f})" if judged else "") + ".", ""]
+        for x in xs:
+            v = got[x["k"]]
+            L.append(f"- {x['taslak']} `{x['capa']}` **{x['tur']}** → {SUZ_TR.get(v, 'işaretsiz')}: {_s(x['metin'], 220)}")
+        L.append("")
+    zp = d / "elestiri-sistemli.json"
+    if zp.exists():
+        z = json.loads(zp.read_text(encoding="utf-8"))
+        L += ["## Sistemli başlıklar (D9.3)", "",
+              "Eleştirmenin altı taslaktaki `sistemli` listelerinden en az iki taslakta geçenler (`yz/elestiri-sistemli.json`). "
+              "D8'in istemi \"kalsın\" denenlerden yazılır.", ""]
+        for b in z["basliklar"]:
+            v = (decisions.get(f"{unit}|sistemli|{b['id']}") or {}).get("v")
+            L.append(f"- **{b['id']} {b['baslik']}** ({b['tur']}; {len(b['dayanak'])} taslak) → {SUZ_TR.get(v, 'işaretsiz')}")
+        L.append("")
+    return L
+
+
+SUZ_TR = {"kalsin": "kalsın", "atilsin": "atılsın", "ehline": "ehline sor"}
+
+
 def suzgec(unit: str) -> dict[str, dict]:
     """D9.3 kararları: `data/d1/notlar/` altındaki dışa aktarımlardan (`yz_suzgec`), anahtar başına en yenisi."""
     return exported(unit, "yz_suzgec")
@@ -1024,7 +1110,7 @@ def rapor(unit: str) -> None:
         bodies += B + [""]
     L += ["| Taslak | Not | Türler | Ehline sor | Alıntı bulunmadı | Dayanak yok / okunmamış | Araç çağrısı | Süre | "
           "Süzgeç: kalsın / karar (kabul) |",
-          "|---|---:|---|---:|---:|---|---:|---:|---|"] + rows + [""] + bodies
+          "|---|---:|---|---:|---:|---|---:|---:|---|"] + rows + [""] + suzgec_lines(unit, decisions) + bodies
     out = P.DRAFTS / unit / "d9-elestiri.md"
     out.write_text("\n".join(L).rstrip() + "\n", encoding="utf-8")
     print(out.relative_to(ROOT))
@@ -1055,6 +1141,9 @@ def main() -> None:
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("--kisim", choices=["A", "B"], default="A")
     p.add_argument("--yeniden", action="store_true", help="A'yı yeniden çek (işaretler kimliğe bağlıdır)")
+    p = sub.add_parser("orneklem", help="D9.3 süzgeç örneklemi (10 not, sabit tohum)")
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--yeniden", action="store_true")
     args = parser.parse_args()
     if args.command == "mekanik":
         mekanik(args.unit, args.taslak or Y.drafts_of(args.unit))
@@ -1067,6 +1156,8 @@ def main() -> None:
         print(f"{path.relative_to(ROOT)}: {len(text):,} karakter")
     elif args.command == "bilirkisi":
         bilirkisi(args.unit, args.yeniden) if args.kisim == "A" else bilirkisi_b(args.unit)
+    elif args.command == "orneklem":
+        orneklem(args.unit, args.yeniden)
     else:
         rapor(args.unit)
 

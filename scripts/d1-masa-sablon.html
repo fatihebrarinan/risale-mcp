@@ -432,8 +432,9 @@ const INTRO = {
     tıklayınca metni solda açılır; <span class="mk own">[kendi tespiti]</span> taslağın kaynaksız kendi sözüdür. Sarı kutu, öbür sekmelerden "taslakta göster" ile gelinen yerdir.</details>`,
   elestiri: `<details open><summary>Bu sekme nedir?</summary>Başka bir yapay zekâ (Opus) bu taslağı, İşârât'ın metni açıkken ve
     eklentilerle kaynaklara bakarak eleştirdi. Her not taslağın bir sözüne yapılmıştır: gri kutudaki söz taslaktandır, "taslakta göster" onu sarıyla gösterir.
-    "Dayanak" düğmeleri eleştirmenin baktığı kaynak cümlelerdir: solda varsa sarı olur. <b>Sizden beklenen:</b> notu süzmek:
-    <b>kalsın</b> (doğru ve işe yarar), <b>atılsın</b> (yanlış ya da boş), <b>ehline sor</b> (Arapça ya da belâgat isabetine karar veremiyorsunuz).</details>`,
+    "Dayanak" düğmeleri eleştirmenin baktığı kaynak cümlelerdir: solda varsa sarı olur. <b>Sizden beklenen:</b> önce aşağıdaki
+    <b>örneklemin 10 notunu</b> ve <b>9 sistemli başlığı</b> süzmek: <b>kalsın</b> (doğru ve işe yarar), <b>atılsın</b> (yanlış ya da boş), <b>ehline sor</b>
+    (Arapça ya da belâgat isabetine karar veremiyorsunuz). Öbür notlar isteğe bağlıdır.</details>`,
   bilirkisi: `<details open><summary>Bu sekme nedir?</summary>Taslakların dil (i'râb) ve belâgat iddialarından seçilmiş 24 madde (taslak başına 4).
     Her maddenin başında iddiayı tek cümlelik bir soruya çeviren <b>soru</b> durur; bir ehline olduğu gibi sorabilirsiniz. Soruyu yapay zekâ iddiadan sadeleştirdi:
     hüküm iddiaya verilir, soru iddiaya uymuyorsa notta söyleyin. Sarı söz iddiadır; çevresi taslağın paragrafıdır. <b>Sizden beklenen:</b> iddia doğru mu? Dayanağınızı da yazın: kaynak (soldaki cümleler,
@@ -612,11 +613,14 @@ function sidLabel(id) {
 }
 const SUZL = Object.fromEntries(SUZC);
 function suzMark(key) { const v = (yzSuz[key] || {}).v; return v ? `<span class="done">${esc(SUZL[v])}</span>` : '<span class="muted">işaretsiz</span>'; }
+const CSMP = '<span class="tag smp" title="D9.3 örneklemi: önce bunlar süzülür">örneklem</span>';
+const CSAMPLE = new Set((Y.critic_sample || []).map(x => `${x.t}|${x.k}`));
 function noteCard(dk, x, no) {
   const key = `${U}|${dk}|${x.k}`, it = x.n && Y.items[x.n], fid = 'not:' + x.k;
+  const smp = CSAMPLE.has(`${dk}|${x.k}`) ? ' ' + CSMP : '';
   const dayanak = x.d.map(id => `<button class="linkish" data-sidgo="${esc(id)}" title="${esc(id)}">${esc(sidLabel(id))}</button>`).join(' · ');
-  if (no && isFolded(fid)) return `<div class="card small">${cardHead(no, fid, `<span class="gist">${esc(x.m)}</span>`, suzMark(key))}</div>`;
-  return `<div class="card">${no ? cardHead(no, fid, '<span style="flex:1"></span>', suzMark(key)) : ''}<span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
+  if (no && isFolded(fid)) return `<div class="card small" data-not="${esc(key)}">${cardHead(no, fid, `<span class="gist">${esc(x.m)}</span>${smp}`, suzMark(key))}</div>`;
+  return `<div class="card" data-not="${esc(key)}">${no ? cardHead(no, fid, '<span style="flex:1"></span>' + smp, suzMark(key)) : ''}<span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
     ${x.ok ? '' : ' <span class="tag w">alıntısı ya da dayanağı denetimde tutmadı</span>'}
     <span style="float:right">${evBtns(key, SUZC, 'suz', (yzSuz[key] || {}).v)}</span>
     <div class="serif" style="margin-top:4px"><b>Model</b> <span class="small muted">(eleştirmen)</span><b>:</b> ${codes(x.m)}</div>
@@ -635,11 +639,41 @@ function locIndex(list, done, attr) {
     return `<button data-loc="${l}" class="${l === st.loc ? 'here' : d === n ? 'done' : ''}">${locName(l)} ${d}/${n}</button>`;
   }).join('')}</div>`;
 }
+function critNote(x) { return ((Y.critic[x.t] || {}).notes || []).find(n => n.k === x.k); }
+function critBox() {   // D9.3: süzülecek 10 not (taslaklara ve yerlere dağılmış; tıklayınca taslak ve yer değişir)
+  const xs = Y.critic_sample || []; if (!xs.length) return '';
+  const done = x => (yzSuz[`${U}|${x.t}|${x.k}`] || {}).v;
+  return `<details class="samplebox"${store.get('d1-masa-crit-acik', true) ? ' open' : ''} id="critbox">
+    <summary>Örneklem: ${xs.filter(done).length}/${xs.length} not süzüldü ${CSMP}</summary>
+    <p>Eleştirmenin 176 notunun hepsini süzmeniz gerekmez. Bu 10 not, eleştirmenin yanılırsa en çok zarar verebileceği türlerden seçildi:
+    "yanlış" ve "fazla" 3, kaynak 2, belâgat 2, eksik 2, usul 1; altı taslağa yayılmış. Övgü notları ve eleştirmenin kendisinin "ehline sorulmalı" dediği
+    notlar girmedi. Aşağıda bir de eleştirmenin taslaklarda tekrar eden zaaflarından toplanan 9 başlık var.</p>
+    <ol class="bklist">${xs.map(x => { const n = critNote(x) || {m: ''};
+      return `<li class="${done(x) ? 'done' : ''}${x.t === st.draft && x.loc.includes(st.loc) ? ' here' : ''}"><button class="linkish" data-critgo="${esc(x.t + '|' + x.k)}">
+      <span class="muted">${esc(draftLabel(x.t).replace('Taslak ', 'T'))} · ${locName(x.loc[0])} · ${esc(CTYPE[n.t] || n.t || '')}</span> ${esc(n.m.length > 120 ? n.m.slice(0, 119) + '…' : n.m)}</button>${done(x) ? ` <span class="done">${esc(SUZL[done(x)])}</span>` : ''}</li>`; }).join('')}</ol></details>`;
+}
+function sysBox() {    // D9.3: sistemli başlıklar; D8'in istemi "kalsın" denenlerden yazılır
+  const zs = Y.systemic || []; if (!zs.length) return '';
+  const key = z => `${U}|sistemli|${z.id}`, done = z => (yzSuz[key(z)] || {}).v;
+  return `<details class="samplebox bkbox"${store.get('d1-masa-sys-acik', true) ? ' open' : ''} id="sysbox">
+    <summary>Sistemli başlıklar: ${zs.filter(done).length}/${zs.length} süzüldü</summary>
+    <p>Eleştirmen her taslağın sonunda "sistemli zaaflar" listesi yazdı (altı taslakta 37 madde). En az iki taslakta tekrar edenler 9 başlıkta toplandı.
+    Başlığın sözü toplayanındır (yapay zekâ); altında eleştirmenin kendi maddeleri durur. <b>Sizden beklenen:</b> başlık taslaklar için doğru ve
+    istemin yeni sürümüne girmeli mi: <b>kalsın</b>, <b>atılsın</b>, <b>ehline sor</b>.</p>
+    ${zs.map((z, i) => `<div class="card"><div class="head"><span class="no">Başlık ${i + 1}/${zs.length}</span><span class="tag g">${esc(z.tur)}</span><span style="flex:1"></span>
+      <span class="marks">${suzMark(key(z))}</span></div>
+      <div style="margin:4px 0"><b>${esc(z.b)}</b> <span class="small muted">(${z.d.length} taslakta)</span></div>
+      <div class="serif small">${esc(z.x)}</div>
+      <details><summary class="small">Eleştirmenin maddeleri (${z.d.length})${z.karsi.length ? ` ve karşı görüş (${z.karsi.length})` : ''}</summary>
+        <ul class="small">${z.d.map(r => `<li><b>${esc(draftLabel(r.t))}:</b> ${codes(r.m)}</li>`).join('')}</ul>
+        ${z.karsi.length ? `<p class="small"><b>Karşı görüş</b> (eleştirmen başka bir taslakta):</p><ul class="small">${z.karsi.map(r => `<li><b>${esc(draftLabel(r.t))}:</b> ${codes(r.m)}</li>`).join('')}</ul>` : ''}</details>
+      <div style="margin-top:6px">${evBtns(key(z), SUZC, 'suz', done(z))}</div></div>`).join('')}</details>`;
+}
 function elestiriHtml() {
   const c = Y.critic[st.draft];
-  if (!c) return `<p class="empty">Bu taslağın eleştirisi yok.</p>`;
+  if (!c) return critBox() + sysBox() + `<p class="empty">Bu taslağın eleştirisi yok.</p>`;
   const here = c.notes.filter(at), done = x => (yzSuz[`${U}|${st.draft}|${x.k}`] || {}).v;
-  let h = foldBar(here.map(x => 'not:' + x.k), here.filter(done).map(x => 'not:' + x.k), 'not');
+  let h = critBox() + sysBox() + foldBar(here.map(x => 'not:' + x.k), here.filter(done).map(x => 'not:' + x.k), 'not');
   h += here.length ? here.map((x, i) => noteCard(st.draft, x, `Not ${i + 1}/${here.length}`)).join('') : `<p class="empty">Eleştirmenin bu taslakta bu yere notu yok.</p>`;
   h += `<h3>Bu taslağın bütün notları, yerlerine göre <span class="muted">süzülen / toplam</span></h3>${locIndex(c.notes, done)}`;
   const gen = c.notes.filter(x => x.loc.includes('L:genel'));
@@ -723,7 +757,9 @@ function progress() {
   const n2 = Object.keys(yzSuz).filter(k => k.startsWith(U + '|')).length;
   const n3 = Object.entries(bkMarks).filter(([k, v]) => k.startsWith(U + '|') && v.v).length;
   const ns = (Y.sample || []).filter(x => sampleDone(x.key)).length;
-  $('#progress').textContent = `İşaretler: örneklem ${ns}/${(Y.sample || []).length} · karşılaştırma ${n1} · eleştiri ${n2} · bilirkişi ${n3}/${bkAll().length}`;
+  const nc = (Y.critic_sample || []).filter(x => (yzSuz[`${U}|${x.t}|${x.k}`] || {}).v).length;
+  const nz = (Y.systemic || []).filter(z => (yzSuz[`${U}|sistemli|${z.id}`] || {}).v).length;
+  $('#progress').textContent = `İşaretler: örneklem ${ns}/${(Y.sample || []).length} · karşılaştırma ${n1} · eleştiri örneklemi ${nc}/${(Y.critic_sample || []).length} · başlık ${nz}/${(Y.systemic || []).length} · eleştiri ${n2} · bilirkişi ${n3}/${bkAll().length}`;
 }
 function render() {
   $('#unit').innerHTML = `<option>${esc(DATA.title)}</option>`;
@@ -791,6 +827,12 @@ document.addEventListener('click', ev => {
     if (fa) setFold(FOLDSET.all, fa.dataset.foldall === '1'); else setFold(FOLDSET.done, true);
     renderRight(); return;
   }
+  const cg = t.closest('[data-critgo]');
+  if (cg) {
+    const [dk, k] = cg.dataset.critgo.split('|'), x = Y.critic_sample.find(y => y.t === dk && y.k === k);
+    st.draft = dk; st.loc = x.loc[0]; st.tab = 'elestiri'; st.focus = null; st.dfocus = null; setFold(['not:' + k], false);
+    render(); scrollPane('#right', `[data-not="${CSS.escape(U + '|' + dk + '|' + k)}"]`); return;
+  }
   const sg2 = t.closest('[data-samplego]');
   if (sg2) {                                    // örneklemin satırına git: taslak, yer, kart açık ve vurgulu
     const x = Y.sample.find(y => y.key === sg2.dataset.samplego);
@@ -825,6 +867,8 @@ document.addEventListener('toggle', ev => {
   if (ev.target.parentElement && ev.target.parentElement.id === 'intro') store.set('d1-masa-intro-' + st.tab, ev.target.open);
   if (ev.target.id === 'smpbox') store.set('d1-masa-orneklem-acik', ev.target.open);
   if (ev.target.id === 'bkbox') store.set('d1-masa-bk-acik', ev.target.open);
+  if (ev.target.id === 'critbox') store.set('d1-masa-crit-acik', ev.target.open);
+  if (ev.target.id === 'sysbox') store.set('d1-masa-sys-acik', ev.target.open);
 }, true);
 function bkSave(box, patch) {
   if (needReader()) return false;

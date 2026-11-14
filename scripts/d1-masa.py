@@ -336,8 +336,11 @@ def layer(unit: str, ayah: Ayah, places: dict[str, list[str]], dr: dict) -> dict
         else:
             loc = items[i]["loc"] if i in items else ["L:genel"]
         sample.append({"key": key, "t": t, "m": m, "id": i, "loc": loc})
+    # D9.3 süzgeç örneklemi: her not yeriyle
+    notes = {(dk, x["k"]): x for dk, c in critic.items() for x in c["notes"]}
+    critic_sample = [dict(x, loc=notes[(x["t"], x["k"])]["loc"]) for x in y["critic_sample"] if (x["t"], x["k"]) in notes]
     return {"models": y["models"], "items": items, "drafts": out_drafts, "critic": critic, "bilirkisi": bk,
-            "sample": sample}
+            "sample": sample, "critic_sample": critic_sample, "systemic": y["systemic"]}
 
 
 def main() -> None:
