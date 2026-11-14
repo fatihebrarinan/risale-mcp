@@ -57,17 +57,16 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S5 | Âyet masası (risalemcp.com/taslak/, girişli): D9.3 burada yapılır (D7.7 ve D6.2 yapıldı) | D10 |
-| 2 | D9 | Yapay zekâ eleştirmeni ve mekanik denetimler: taslağın nasıl vardığı, kaynak disiplini, süzgeç kullanıcıda (D9.1–D9.3 bitti; süzgeç kullanıcıda) | — |
-| 3 | D8 | Taslak altyapısının güncellenmesi: D7, D9 ve D6'nın dersleri, istemin yeni sürümü, 11–12 ve ayrılmış bir birimde sınama | D1.9 |
-| 4 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
-| 5 | D3 | Başka türden bir birim, İşârât aralığında | — |
-| 6 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
-| 7 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 8 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
-| 9 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 1 | D9 | Yapay zekâ eleştirmeni ve mekanik denetimler: taslağın nasıl vardığı, kaynak disiplini, süzgeç kullanıcıda, âyet masasında (D9.1–D9.3'ün sayfası bitti) | — |
+| 2 | D8 | Taslak altyapısının güncellenmesi: D7, D9 ve D6'nın dersleri, istemin yeni sürümü, 11–12 ve ayrılmış bir birimde sınama | D1.9 |
+| 3 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
+| 4 | D3 | Başka türden bir birim, İşârât aralığında | — |
+| 5 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
+| 6 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 7 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
+| 8 | B2–B5 | Küçük açıklar | MVP "Kalan" |
 
-D7.7, D9.3 ve D6.2 `okuma-yz.html`'de yürümedi; âyet masasında (S5) yapılır (2026-11-14). D7.7 orada yapıldı, D7 kapandı (2026-11-14); D2 bitti (2026-11-13). D8, D7, D9 ve D6'nın dersleriyle (D2'ninkiler de) yapılır. D6 kapandı (2026-11-14): bulduğu tür (kapsam ve derece)
+D7.7, D9.3 ve D6.2 `okuma-yz.html`'de yürümedi; âyet masasında (S5, kapandı 2026-11-14) yapılır. D7.7 ve D6.2 orada yapıldı, D7 ve D6 kapandı (2026-11-14); D2 bitti (2026-11-13). D8, D7, D9 ve D6'nın dersleriyle (D2'ninkiler de) yapılır. D6 kapandı (2026-11-14): bulduğu tür (kapsam ve derece)
 D9'a kalıcı denetim, D8'in istemine kural olarak girer.
 
 **İşârât usulüyle yapay zekâ taslağı: ortak zemin** (D1–D9 ve D5'in; kullanıcının yola çıkarkenki fikri, "Fikirler"den
@@ -168,63 +167,6 @@ okuduklarında arar.
   zinciriyle mi kuruyor, zinciri atlayan mahiyet hükmü çelişki adayıdır; iddia tek vecih mi vecihlerden biri mi) ve
   aday denetim (dört maksat bağlarında lafız dayanağı); D9.4 bu türü de sayar.
 
-**S5. Âyet masası** (kullanıcının tasarımı ve kararları, 2026-11-14; önce D10 diye açıldı, aynı gün S5'e taşındı:
-bir deneme değil, âyet başına çalışma platformunun ilk hâli; D10 boş kalır. D7.7, D9.3 ve D6.2 kendi kimlikleriyle
-masada yapılır). `okuma-yz.html`'de D7.7, D9.3 ve D6.2 denendi,
-olmadı: sayfa iş akışımıza göre dizilmişti (üç katman, `N05`, `V3/ar/12`, `A01` kodları), kullanıcı ve yanındaki kişi
-neyi neyle karşılaştıracaklarını, eleştirinin taslağın neresine yapıldığını, bilirkişi iddiasının bağlamını bulamadı.
-Yerine âyetten başlayan sayfa: âyet üstte büyük, mealiyle; kelimeleri tıklanır, altında İşârât'ın o kelimedeki nükte
-sayısı; üç düzey ("Önceki âyetlerle münasebet" V1, "Cümlelerin nazmı" V2, üçüncü vechin kelimeleri; kalanlar "Cümleler ve
-kelimesi belirsizler"). Sol yan **kaynaklar** (İşârât, Türkçesi Abdülmecid Nursî tercümesi; 13 müfessir vefat sırasıyla,
-kelimenin geçtiği cümleler birer cümle bağlamla; klasik eserler; Risale'deki öbür yerler), sağ yan **yapay zekâ**
-(taslak seçici sabit; sekmeler: İşârât'la karşılaştırma, Taslak, Eleştirmen, Bilirkişi soruları; her sekmenin başında
-"bu nedir, sizden ne bekleniyor"). Kod görünmez (nükte kodu yerine özetinin ilk kelimeleri). İki yan birbirini vurgular:
-sağdaki nükte soldaki İşârât cümlesini, soldaki cümle sağdaki nükteyi, "taslakta göster" taslağın sözünü sarı yapar.
-Dil seçimi: Türkçe kipte İşârât tercümesi ve taslağın Türkçesi (damgalı) önde, Arapçası açılır. Kör okuma yok (bilirkişi
-maddesinde eleştiri görünür). Müfessirlerin Türkçesi sonraya. İşaretler eski sayfanın anahtarlarıyla, aynı dışa aktarma
-biçimi (`d1-prova.py notlar` okur).
-- **Prototip (2026-11-14):** `scripts/d1-masa.py` + `d1-masa-sablon.html` → `data/d1/masa.html` (kapalı depo). Yerleşim
-  veriden: kelime düğmeleri âyetin kelimelerinden ve envanterin harekeli lafızlarından; taslak tarafı nükte kimliğinden,
-  yoksa paragrafın vechi ve üçüncü vecihte paragrafın başlığından ("وأما ﴿…﴾"). Bilirkişi maddelerinin 17'si bir yere,
-  7'si "belirsiz"e düştü (ör. A02 "ألا" iddiası, paragrafı "أما الاستيناف" ile başlıyor). Tarayıcıda denendi.
-- Kullanıcının denemesi (2026-11-14): "öncekinden yüz kat daha iyi"; D7.7, D9.3 ve D6.2 masada yapılır.
-- **Girişli yayın (2026-11-14, kullanıcının kararları):** `risalemcp.com/taslak/`; yalnız davetli hesaplar. Hesaplar MCP
-  hesapları değil, yalnız site girişi (`src/risale_mcp/site_auth.py`, ayrı `data/site_auth.db`; parola özeti ve kilit
-  `auth.py`'deki gibi; kullanıcı adı e-posta, parolayı yönetici verir, e-posta gönderilmez). Caddy `forward_auth` ile her
-  istekte sorar (servis `risale-taslak`, 127.0.0.1:8009); sayfa `/var/www/ozel/taslak/` altında statik, `site/`'a
-  girmez. İşaretler sunucuda tutulmaz (tarayıcıda, dışa aktarılır): dondurulan heyet akışı açılmadı, yalnız giriş
-  kapısı. Hesap: `scripts/sunucu.sh taslak add-user <e-posta> --generate`. Gizlilik politikası (tr, en) ve robots.txt
-  güncellendi; masaya "Kaynaklar ve izinler" alt bilgisi (e-Risale, risaleoku, OpenITI CC BY-NC-SA, Tanzil). İşârât'ın
-  usul özeti `/taslak/`'tan `/isarat-usul/`'e taşındı, eski adresler yönlenir.
-- **Kullanıcının istekleri (2026-11-14, ikinci tur):** okuyucu adı girişten gelir (`/taslak/ben`; hesaba isteğe bağlı
-  ad, `scripts/sunucu.sh taslak set-name <e-posta> <ad>`, yoksa e-posta; dosyadan açılınca ad kutusu kalır). Kartlarda
-  karşılaştırıcının ve eleştirmenin yorumu "Model:", taslağın sözü "Taslak:" etiketli; taslağın sözü sayfanın dilinde:
-  alıntılar taslağın Arapçasından alındığı için Türkçe kipte alıntının geçtiği paragrafın Türkçesi verilir (alıntının
-  birebir karşılığı değil), Arapça söz altında açılır. "Fazla" kartında "Model:" karşılaştırıcının gerekçesidir; üstteki
-  cümle taslağın iddiasının karşılaştırıcıca özetidir.
-- **Kartlar numaralı ve küçültülür (2026-11-14, kullanıcının isteği: ortam temiz kalsın, nerede olduğu bilinsin):**
-  karşılaştırma sekmesinde "Nükte 3/7", "Fazla 2/4"; küçük kart tek satır (numara, özet, iki işaret); "hepsini küçült /
-  hepsini aç / işaretlenenleri küçült" ve "n/m kart işaretlendi". Küçültme taslak başına tarayıcıda hatırlanır, yalnız
-  görünümdür.
-- **Üç sekmede numara ve küçültme; örneklem görünür (2026-11-14, kullanıcının isteği):** Eleştirmen ("Not 2/5") ve
-  Bilirkişi ("Madde 1/2") sekmeleri de numaralı ve küçültülür. Kullanıcı D7.7 örnekleminin hangi satırlar olduğunu
-  göremiyordu ("iki okuyucu ayrıldı" olanlar mı diye sordu): örneklem katmanlıdır (ayrılık 5, fazla 5, çelişki 2, aynen
-  5, kısmen 5, farklı gerekçe 4, yok 4; bir satır bir taslakta tek okuyucunun hükmü). Karşılaştırma sekmesinin başında
-  "Örneklem: x/30" kutusu (açıklama, 30 satırın dizini, "yalnız örneklem" süzgeci); örneklemdeki kart ve okuyucu satırı
-  turuncu "örneklem" etiketli; üst çubukta örneklem sayacı.
-- **Bilirkişi maddeleri dar soru (2026-11-14, kullanıcının isteği: basit ve kısa birer soru):** A kısmının 24 maddesi
-  `yz/bilirkisi-A-sorular.json`'da (sürüm 1; sohbette Opus 5.5 yazdı) tek cümlelik sorudur: iddiayı değiştirmez, hüküm
-  vermez, cevabı ima etmez; lafız Arapçasıyla yazılır ki ehline olduğu gibi sorulabilsin; iddia bir kaynağa
-  yükleniyorsa "kaynak bunu söylüyor mu" diye sorulur. Masada kartın başında "Soru:", altında "Taslağın iddiası";
-  küçük kartın özeti sorudur. Hüküm iddiaya verilir; soru iddiaya uymuyorsa notta söylenir. `d6-bilirkisi.md` soruyu
-  da yazar. B kısmı (D9.3'ten sonra) aynı dosya düzeniyle (`bilirkisi-B-sorular.json`).
-- **Bütün maddeler listesi (2026-11-14, kullanıcı 24 maddenin yalnız 4'ünü bulabildi):** maddeler taslağa ve yere
-  dağıldığı için sekme yalnız seçili taslağın o yerdeki maddelerini gösteriyordu, kalanlar en alttaki dizindeydi.
-  Bilirkişi sekmesinin başında 24 maddenin numaralı listesi (soruyla, taslak ve yer; tıklayınca ikisi de değişir),
-  kartta genel numara ("Madde 14/24") ve "önceki / sonraki madde".
-- **Açık:** müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); işaretlerin
-  sunucuda toplanması ayrı karardır (heyet akışı).
-
 **D8. Taslak altyapısının güncellenmesi** (D1'den ayrıldı, 2026-11-13; eski D1.9). D7 ve D9'un raporlarından (D2'nin
 dersleriyle) dersler: istemin yeni sürümü (yalnız genel usul; âyete özgü ipucu girmez), gerekirse usul özeti ve
 ölçüt çizelgesi. D6'nın bulgusu (2026-11-14): kendi tespitleri ihtimal diliyle, vecihlerden biri olarak; inhisar
@@ -312,6 +254,9 @@ kaynağı (A2'nin ön şartı değil).
 - **E3 Sorularla Risale:** web araması değil; izin alınırsa `risale/ilgili` koleksiyonuna (`authority: modern`,
   varsayılan aramaya girmez). İzin e-postası gönderilmedi (2026-11-12), izin yoksa eklenmez. Bkz. "Fikirler".
 - **E5 Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Önce (b)'nin 2. dilimi, sonra 3. dilimi (kullanıcı, 2026-11-13); (c)'dekiler yer ve zaman müsait olunca.
+- **Âyet masasının açıkları** (S5'ten, 2026-11-14): müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); bilirkişi
+  kartında maddenin paragrafındaki bütün kaynaklar ve kaynak metni gösterilen maddede dayanak varsayılanı (D6'nın
+  dersi); işaretlerin sunucuda toplanması ayrı karardır (heyet akışı, dondurulan). Köklü değişiklik yeni kimlik alır.
 - **E6 Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
   2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
   dizgisi baskının yayıncısınındır: kaynak seçilirken bakılır. Bir arkadaşın gönderdiği PDF'ler biçimi bozuk, son çare.
@@ -348,16 +293,6 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   "kazanç olmaması", OpenITI CC BY-NC-SA, Tanzil'in Diyanet mealleri ticari olmayan kullanım; ücretli üyelik bunlarla
   çatışır, önce her kaynaktan yeni izin gerekir. Öneri: düşünülecekse ücretsiz ve bağış destekli, kaynaklara sorarak.
 
-- **İşârâtü'l-İ'câz usulüyle yapay zekâ taslağı (yeniden değerlendirme, 2026-11-09; D1 olarak sıraya alındı):** kullanıcının yola çıkarkenki
-  asıl fikri: model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Bilgili kişilerin
-  geri dönütü: model İşârât'ın şeklini ve usulünü iyi takip edip tatbik edebilir, bu kullanılmalı. 2026-11-04
-  değerlendirmesi (`docs/tefsir-pilot-degerlendirme.md` "4") taslağa karşıydı (akıcılık eksiği gizler, heyeti
-  düzeltmeye bağlar, sorumluluk). Yeni öneri: kör denemeyle sınamak. İşârât'ın kapsadığı aralıkta (Fâtiha, Bakara
-  1–33) model İşârât'ın usulünü (kendi Mukaddemat'ı ve önceki âyetler) görür, sınanan âyetin İşârât metnini görmez;
-  taslak İşârât'ın kendi metniyle ve mütehassısların gözüyle karşılaştırılır. Tutarsa asıl hedef: İşârât'ın
-  bittiği yerden (Bakara 34) sonrası. Şartlar: "yapay zekâ taslağı" damgası, "tefsir" denmez; her iddia kaynağa
-  bağlı (âyet, tefsir sunucusundaki müfessirler, Risale); dil ve belâgat iddiaları ayrı işaretli; taslak kapalı
-  kalır, yayımlanmaz. Bağ altyapısı gerekmez (dosya ve mütehassıs notu yeter). Karar kullanıcıda.
 - **Sorularla Risale (öneri, 2026-11-09):** modelin Risale'yi okurken web'deki kaynaklara (Sorularla Risale) bakması
   önerildi. Kullanıcı web aramasına sıcak bakmıyor (belirsizlik, kanıtsızlık). Doğru yol web araması değil, izin
   alınıp `risale/ilgili` koleksiyonuna (`authority: modern`, varsayılan aramaya girmez) eklemek; izin yoksa
@@ -384,16 +319,6 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   genişletilmişi; kazancı atlanan kelimenin görünmesi ve mütehassısın i'râbı hücre hücre denetlemesi. Çizelge ara
   çıktıdır, taslak değil. D2'ye katılmaz (orada değişen yalnız eserler); D3'te ya da ayrı değişke olarak denenir.
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
-- **Âyet başına çalışma platformu (2026-11-13; kullanıcının fikri):** tefsir heyeti ya da tefsirle çalışan biri için
-  âyet başına bir yüzde bir yanda kütüphanenin o âyetle ilgili bütün kaynakları (Risale'nin bağlı yerleri, müfessirlerin
-  birimleri, hadisler), öbür yanda o âyetin yapay zekâ taslakları. Değerlendirme: yön `CLAUDE.md`'deki uzun vadeli
-  hedefin kendisi; yarısı zaten var (sol yan tefsir sunucusunun `find_ayah`'ının ve bağların bir görünümü, sağ yanın
-  tohumu D4'ün okuma sayfası), yani yeni bir proje değil o sayfanın genişlemesi. Şartlar: adı "yapay zekâ taslağı",
-  tefsir değil; taslaklar müfessirlerle aynı ağırlıkta görünmez, damgalı ve kapalı. Hesaplı, paylaşımlı, not alan bir
-  sunucu 2026-11-09'da dondurulan heyet akışını yeniden açar; sunucu, hesap, KVKK, bakım ve lisans (BY-NC-SA,
-  kazançsızlık şartı) bedeli var; statik sayfa yettikçe statik kalır. Zamanı: gerçek kullanıcılar varken, D5.1'den
-  sonra; ilk somut adım D3 ya da D5'te okuma sayfasına müfessirlerin o âyetteki birimlerini yan sütun olarak eklemek.
-
 ## Biten (özet)
 
 - Aşamalar 1–12, 13 (küçültülmüş), 13.2, 14; veri düzeni (2026-11-02); risaleoku geçişi (2026-10-30).
@@ -418,6 +343,9 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - B6 Diyanet İşleri Başkanlığı meali çıkarıldı (2026-11-12, yayında): Kur'ân katmanı, üç sunucunun talimatı ve
   `get_ayah`, site, ChatGPT paketi, belgeler; Vakfın meali kalır. Yayın kaydı `yayin-20261112-175213`, hadis ve tefsir
   aynı gün; araç çıktısında beklenmeyen fark yok.
+- S5 Âyet masası (2026-11-14): âyetten başlayan girişli çalışma sayfası (risalemcp.com/taslak/; solda kaynaklar,
+  sağda yapay zekâ taslakları, karşılaştırma, eleştirmen, bilirkişi soruları); "Âyet başına çalışma platformu"
+  fikrinin ilk hâli. Açıkları "Sonra"da. Ayrıntı "Kayıt › Kimlikli işler"de.
 - D6 Bilirkişi okuması (2026-11-13/14; bilirkişi kullanıcı): 24 maddenin 20'si doğru, 3'ü emin değilim, 1'i yanlış;
   ölçme düzeninin kör noktası kapsam ve derece (mutlaklaştırma), D9'a kalıcı denetim; rapor
   `data/d1/provalar/11-12/d6-rapor.md`. Ayrıntı "Kayıt › Kimlikli işler"de.
@@ -772,6 +700,74 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S5. Âyet masası** (kullanıcının tasarımı ve kararları, 2026-11-14; önce D10 diye açıldı, aynı gün S5'e taşındı:
+bir deneme değil, âyet başına çalışma platformunun ilk hâli; D10 boş kalır. D7.7, D9.3 ve D6.2 kendi kimlikleriyle
+masada yapılır). `okuma-yz.html`'de D7.7, D9.3 ve D6.2 denendi,
+olmadı: sayfa iş akışımıza göre dizilmişti (üç katman, `N05`, `V3/ar/12`, `A01` kodları), kullanıcı ve yanındaki kişi
+neyi neyle karşılaştıracaklarını, eleştirinin taslağın neresine yapıldığını, bilirkişi iddiasının bağlamını bulamadı.
+Yerine âyetten başlayan sayfa: âyet üstte büyük, mealiyle; kelimeleri tıklanır, altında İşârât'ın o kelimedeki nükte
+sayısı; üç düzey ("Önceki âyetlerle münasebet" V1, "Cümlelerin nazmı" V2, üçüncü vechin kelimeleri; kalanlar "Cümleler ve
+kelimesi belirsizler"). Sol yan **kaynaklar** (İşârât, Türkçesi Abdülmecid Nursî tercümesi; 13 müfessir vefat sırasıyla,
+kelimenin geçtiği cümleler birer cümle bağlamla; klasik eserler; Risale'deki öbür yerler), sağ yan **yapay zekâ**
+(taslak seçici sabit; sekmeler: İşârât'la karşılaştırma, Taslak, Eleştirmen, Bilirkişi soruları; her sekmenin başında
+"bu nedir, sizden ne bekleniyor"). Kod görünmez (nükte kodu yerine özetinin ilk kelimeleri). İki yan birbirini vurgular:
+sağdaki nükte soldaki İşârât cümlesini, soldaki cümle sağdaki nükteyi, "taslakta göster" taslağın sözünü sarı yapar.
+Dil seçimi: Türkçe kipte İşârât tercümesi ve taslağın Türkçesi (damgalı) önde, Arapçası açılır. Kör okuma yok (bilirkişi
+maddesinde eleştiri görünür). Müfessirlerin Türkçesi sonraya. İşaretler eski sayfanın anahtarlarıyla, aynı dışa aktarma
+biçimi (`d1-prova.py notlar` okur).
+- **Prototip (2026-11-14):** `scripts/d1-masa.py` + `d1-masa-sablon.html` → `data/d1/masa.html` (kapalı depo). Yerleşim
+  veriden: kelime düğmeleri âyetin kelimelerinden ve envanterin harekeli lafızlarından; taslak tarafı nükte kimliğinden,
+  yoksa paragrafın vechi ve üçüncü vecihte paragrafın başlığından ("وأما ﴿…﴾"). Bilirkişi maddelerinin 17'si bir yere,
+  7'si "belirsiz"e düştü (ör. A02 "ألا" iddiası, paragrafı "أما الاستيناف" ile başlıyor). Tarayıcıda denendi.
+- Kullanıcının denemesi (2026-11-14): "öncekinden yüz kat daha iyi"; D7.7, D9.3 ve D6.2 masada yapılır.
+- **Girişli yayın (2026-11-14, kullanıcının kararları):** `risalemcp.com/taslak/`; yalnız davetli hesaplar. Hesaplar MCP
+  hesapları değil, yalnız site girişi (`src/risale_mcp/site_auth.py`, ayrı `data/site_auth.db`; parola özeti ve kilit
+  `auth.py`'deki gibi; kullanıcı adı e-posta, parolayı yönetici verir, e-posta gönderilmez). Caddy `forward_auth` ile her
+  istekte sorar (servis `risale-taslak`, 127.0.0.1:8009); sayfa `/var/www/ozel/taslak/` altında statik, `site/`'a
+  girmez. İşaretler sunucuda tutulmaz (tarayıcıda, dışa aktarılır): dondurulan heyet akışı açılmadı, yalnız giriş
+  kapısı. Hesap: `scripts/sunucu.sh taslak add-user <e-posta> --generate`. Gizlilik politikası (tr, en) ve robots.txt
+  güncellendi; masaya "Kaynaklar ve izinler" alt bilgisi (e-Risale, risaleoku, OpenITI CC BY-NC-SA, Tanzil). İşârât'ın
+  usul özeti `/taslak/`'tan `/isarat-usul/`'e taşındı, eski adresler yönlenir.
+- **Kullanıcının istekleri (2026-11-14, ikinci tur):** okuyucu adı girişten gelir (`/taslak/ben`; hesaba isteğe bağlı
+  ad, `scripts/sunucu.sh taslak set-name <e-posta> <ad>`, yoksa e-posta; dosyadan açılınca ad kutusu kalır). Kartlarda
+  karşılaştırıcının ve eleştirmenin yorumu "Model:", taslağın sözü "Taslak:" etiketli; taslağın sözü sayfanın dilinde:
+  alıntılar taslağın Arapçasından alındığı için Türkçe kipte alıntının geçtiği paragrafın Türkçesi verilir (alıntının
+  birebir karşılığı değil), Arapça söz altında açılır. "Fazla" kartında "Model:" karşılaştırıcının gerekçesidir; üstteki
+  cümle taslağın iddiasının karşılaştırıcıca özetidir.
+- **Kartlar numaralı ve küçültülür (2026-11-14, kullanıcının isteği: ortam temiz kalsın, nerede olduğu bilinsin):**
+  karşılaştırma sekmesinde "Nükte 3/7", "Fazla 2/4"; küçük kart tek satır (numara, özet, iki işaret); "hepsini küçült /
+  hepsini aç / işaretlenenleri küçült" ve "n/m kart işaretlendi". Küçültme taslak başına tarayıcıda hatırlanır, yalnız
+  görünümdür.
+- **Üç sekmede numara ve küçültme; örneklem görünür (2026-11-14, kullanıcının isteği):** Eleştirmen ("Not 2/5") ve
+  Bilirkişi ("Madde 1/2") sekmeleri de numaralı ve küçültülür. Kullanıcı D7.7 örnekleminin hangi satırlar olduğunu
+  göremiyordu ("iki okuyucu ayrıldı" olanlar mı diye sordu): örneklem katmanlıdır (ayrılık 5, fazla 5, çelişki 2, aynen
+  5, kısmen 5, farklı gerekçe 4, yok 4; bir satır bir taslakta tek okuyucunun hükmü). Karşılaştırma sekmesinin başında
+  "Örneklem: x/30" kutusu (açıklama, 30 satırın dizini, "yalnız örneklem" süzgeci); örneklemdeki kart ve okuyucu satırı
+  turuncu "örneklem" etiketli; üst çubukta örneklem sayacı.
+- **Bilirkişi maddeleri dar soru (2026-11-14, kullanıcının isteği: basit ve kısa birer soru):** A kısmının 24 maddesi
+  `yz/bilirkisi-A-sorular.json`'da (sürüm 1; sohbette Opus 5.5 yazdı) tek cümlelik sorudur: iddiayı değiştirmez, hüküm
+  vermez, cevabı ima etmez; lafız Arapçasıyla yazılır ki ehline olduğu gibi sorulabilsin; iddia bir kaynağa
+  yükleniyorsa "kaynak bunu söylüyor mu" diye sorulur. Masada kartın başında "Soru:", altında "Taslağın iddiası";
+  küçük kartın özeti sorudur. Hüküm iddiaya verilir; soru iddiaya uymuyorsa notta söylenir. `d6-bilirkisi.md` soruyu
+  da yazar. B kısmı (D9.3'ten sonra) aynı dosya düzeniyle (`bilirkisi-B-sorular.json`).
+- **Bütün maddeler listesi (2026-11-14, kullanıcı 24 maddenin yalnız 4'ünü bulabildi):** maddeler taslağa ve yere
+  dağıldığı için sekme yalnız seçili taslağın o yerdeki maddelerini gösteriyordu, kalanlar en alttaki dizindeydi.
+  Bilirkişi sekmesinin başında 24 maddenin numaralı listesi (soruyla, taslak ve yer; tıklayınca ikisi de değişir),
+  kartta genel numara ("Madde 14/24") ve "önceki / sonraki madde".
+- **Fikirden geldiği yer** ("Fikirler"den taşındı, 2026-11-14: fikir S5 ile gerçek oldu):
+  **Âyet başına çalışma platformu (2026-11-13; kullanıcının fikri):** tefsir heyeti ya da tefsirle çalışan biri için
+    âyet başına bir yüzde bir yanda kütüphanenin o âyetle ilgili bütün kaynakları (Risale'nin bağlı yerleri, müfessirlerin
+    birimleri, hadisler), öbür yanda o âyetin yapay zekâ taslakları. Değerlendirme: yön `CLAUDE.md`'deki uzun vadeli
+    hedefin kendisi; yarısı zaten var (sol yan tefsir sunucusunun `find_ayah`'ının ve bağların bir görünümü, sağ yanın
+    tohumu D4'ün okuma sayfası), yani yeni bir proje değil o sayfanın genişlemesi. Şartlar: adı "yapay zekâ taslağı",
+    tefsir değil; taslaklar müfessirlerle aynı ağırlıkta görünmez, damgalı ve kapalı. Hesaplı, paylaşımlı, not alan bir
+    sunucu 2026-11-09'da dondurulan heyet akışını yeniden açar; sunucu, hesap, KVKK, bakım ve lisans (BY-NC-SA,
+    kazançsızlık şartı) bedeli var; statik sayfa yettikçe statik kalır. Zamanı: gerçek kullanıcılar varken, D5.1'den
+    sonra; ilk somut adım D3 ya da D5'te okuma sayfasına müfessirlerin o âyetteki birimlerini yan sütun olarak eklemek.
+- **S5 kapandı (2026-11-14, kullanıcının kararı):** platform yerinde ve iyi işliyor; D7.7 ve D6.2 masada yapıldı, D9.3 de
+  orada yapılır. Masaya yapılacak köklü değişiklik yeni kimlikle açılır; bilinen açıklar "Sonra"da ("Âyet masasının
+  açıkları").
+
 **D6. Bilirkişi okuması** (D1'den ayrıldı, 2026-11-13; eski D1.5, D1.6 ve D1.9'un insan okuması kısmı). **Daraltıldı
 (kullanıcının kararı, 2026-11-13):** taslaklar taslaktır, içeriklerini doğrulamak heyetin işidir; bizim işimiz
 otomatik kısımdır. D6'nın kalan işi ölçme düzenini ayarlamaktır: yapay zekânın bir örüntü hâlinde göremediği ya da
@@ -1024,6 +1020,18 @@ Kararlar (kullanıcı, 2026-11-09): plan ve öneriler onaylandı; Katkı sayfas�
 **D1 Taslakların yazılması (D1.1–D1.4, D1.7, D1.8; kapandı 2026-11-13).** Kalanı ayrı aşamalar oldu (kullanıcının
 kararı, 2026-11-13): D1.5 ve D1.6 → D6 (bilirkişi okuması), D1.9 → D8 (taslak altyapısının güncellenmesi); yeni D7
 (yapay zekâ karşılaştırıcısı).
+
+- **Fikirden geldiği yer** ("Fikirler"den taşındı, 2026-11-14: fikir D1 olarak sıraya alınmıştı):
+  **İşârâtü'l-İ'câz usulüyle yapay zekâ taslağı (yeniden değerlendirme, 2026-11-09; D1 olarak sıraya alındı):** kullanıcının yola çıkarkenki
+    asıl fikri: model İşârât'ın usulüyle taslak yazar, mütehassıslar doğrular, ekler, çıkarır. Bilgili kişilerin
+    geri dönütü: model İşârât'ın şeklini ve usulünü iyi takip edip tatbik edebilir, bu kullanılmalı. 2026-11-04
+    değerlendirmesi (`docs/tefsir-pilot-degerlendirme.md` "4") taslağa karşıydı (akıcılık eksiği gizler, heyeti
+    düzeltmeye bağlar, sorumluluk). Yeni öneri: kör denemeyle sınamak. İşârât'ın kapsadığı aralıkta (Fâtiha, Bakara
+    1–33) model İşârât'ın usulünü (kendi Mukaddemat'ı ve önceki âyetler) görür, sınanan âyetin İşârât metnini görmez;
+    taslak İşârât'ın kendi metniyle ve mütehassısların gözüyle karşılaştırılır. Tutarsa asıl hedef: İşârât'ın
+    bittiği yerden (Bakara 34) sonrası. Şartlar: "yapay zekâ taslağı" damgası, "tefsir" denmez; her iddia kaynağa
+    bağlı (âyet, tefsir sunucusundaki müfessirler, Risale); dil ve belâgat iddiaları ayrı işaretli; taslak kapalı
+    kalır, yayımlanmaz. Bağ altyapısı gerekmez (dosya ve mütehassıs notu yeter). Karar kullanıcıda.
 
 - D1.1 **Usul özeti** (taslak hazır, 2026-11-10: `docs/d1/usul-ozeti.md`). İşârât'ın bir âyeti ele alırken ne
   yaptığının ve hangi sırayla yaptığının dökümü; tefsir değildir. Her madde İşârât'ın kendi cümlesine dayanır,
