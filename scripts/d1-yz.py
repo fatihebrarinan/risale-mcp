@@ -470,12 +470,22 @@ def rapor(unit: str) -> None:
          f"(`{env['istem_sha']}`).", "",
          "Simgeler: ✓ aynen, ◐ kısmen, ↔ farklı gerekçe (aynı lafza bakıp başka nükte), · yok; hücrede okuyucular "
          "sırasıyla (" + " / ".join(models) + ").", ""]
-    # sayılar
+    # sayılar; mukaddimesi olan birimde (31–33) vecihlerin kapsaması ayrıca: taslağın mukaddime yazıp yazmaması
+    # kalemlerin büyük kısmını tek başına oynatmasın (2026-11-15)
+    muk = {i for i, it in items.items() if it.get("vecih") == "Mukaddime"}
+    nv = N - len(muk)
+    vcol = muk and nv > 0
+    surum = {t: json.loads((P.DRAFTS / unit / f"{t}.json").read_text()).get("surum", "v1")
+             for t in drafts if (P.DRAFTS / unit / f"{t}.json").exists()}
     L += ["## Sayılar", "", "Kapsama: envanter kalemlerinden aynen ya da kısmen bulunanların oranı. \"İkisi de\": iki "
-          "okuyucunun da bulduğu dediği.", "",
-          "| Taslak | Okuyucu | ✓ | ◐ | ↔ | · | Kapsama | Fazla (kaynaklı / kendi / işaretsiz) | Çelişki | Denetimsiz |",
-          "|---|---|---:|---:|---:|---:|---:|---|---:|---:|"]
+          "okuyucunun da bulduğu dediği." + (f" \"Vecihler\": mukaddimenin {len(muk)} kalemi dışında, {nv} kalem üzerinden."
+                                             if vcol else ""), "",
+          "| Taslak | Okuyucu | ✓ | ◐ | ↔ | · | Kapsama |" + (" Vecihler |" if vcol else "")
+          + " Fazla (kaynaklı / kendi / işaretsiz) | Çelişki | Denetimsiz |",
+          "|---|---|---:|---:|---:|---:|---:|" + ("---:|" if vcol else "") + "---|---:|---:|"]
+    vc = lambda hits: f" %{hits / nv * 100:.0f} |" if vcol else ""
     for t in drafts:
+        tl = f"{t} ({surum[t]})" if len(set(surum.values())) > 1 else t
         tr = res["taslaklar"][t]
         for m in models:
             if m not in tr["modeller"]:
@@ -488,14 +498,17 @@ def rapor(unit: str) -> None:
             bad = (sum(1 for r in pm["nukteler"].values() if not all(r["denetim"].values()))
                    + sum(1 for f in fz if not all(f["denetim"].values())))
             cov = (c["aynen"] + c["kismen"]) / max(1, N)
-            L.append(f"| {t} | {m} | {c['aynen']} | {c['kismen']} | {c['farkli_gerekce']} | {c['yok']} | %{cov * 100:.0f} | "
-                     f"{len(fz)} ({fc['kaynakli']} / {fc['kendi_tespiti']} / {fc['isaretsiz']}) | {cel} | {bad} |")
+            vhits = sum(1 for i, r in pm["nukteler"].items() if i not in muk and r.get("durum") in FOUND)
+            L.append(f"| {tl} | {m} | {c['aynen']} | {c['kismen']} | {c['farkli_gerekce']} | {c['yok']} | %{cov * 100:.0f} |"
+                     + vc(vhits) + f" {len(fz)} ({fc['kaynakli']} / {fc['kendi_tespiti']} / {fc['isaretsiz']}) | {cel} | {bad} |")
         both = sum(1 for r in tr["satirlar"] if all(r["durum"].get(m) in FOUND for m in models))
+        vboth = sum(1 for r in tr["satirlar"] if r["id"] not in muk and all(r["durum"].get(m) in FOUND for m in models))
         u = Counter(r["uyum"] for r in tr["satirlar"])
-        L.append(f"| {t} | ikisi de | | | | | %{both / max(1, N) * 100:.0f} | {sum(len(f['okuyucular']) > 1 for f in tr['fazla'])} "
-                 f"ortak | | |")
+        L.append(f"| {tl} | ikisi de | | | | | %{both / max(1, N) * 100:.0f} |" + vc(vboth)
+                 + f" {sum(len(f['okuyucular']) > 1 for f in tr['fazla'])} ortak | | |")
         if not u.get("tek"):
-            L.append(f"| | uyum | {u['ayni']} aynı, {u['yakin']} yakın (✓/◐), {u['ayrilik']} ayrılık | | | | | | | |")
+            L.append(f"| | uyum | {u['ayni']} aynı, {u['yakin']} yakın (✓/◐), {u['ayrilik']} ayrılık | | | | | |"
+                     + (" |" if vcol else "") + " | |")
     # nükte × taslak
     L += ["", "## Nükte × taslak", "", "| Kalem | Vecih | Lafız | Nükte | " + " | ".join(drafts) + " |",
           "|---|---|---|---|" + ":---:|" * len(drafts)]
