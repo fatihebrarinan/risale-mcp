@@ -79,6 +79,10 @@ dialog .dh { display: flex; justify-content: space-between; align-items: center;
 dialog .db { padding: 10px 14px; max-height: 75vh; overflow: auto; }
 table.rub { border-collapse: collapse; width: 100%; font-family: system-ui, sans-serif; font-size: .85rem; }
 table.rub td, table.rub th { border-bottom: 1px solid var(--line); padding: 6px 4px; vertical-align: top; text-align: left; }
+[data-bk] select, [data-bk] input, [data-bk] textarea { border: 1px solid var(--line); border-radius: 6px;
+      background: var(--bg); color: var(--fg); padding: 2px 6px; }
+[data-bk] option { background: var(--card); color: var(--fg); }
+[data-bk] ::placeholder { color: var(--muted); }
 table.rub input[type=text] { width: 100%; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); padding: 2px 4px; }
 table.rub .sc { white-space: nowrap; }
 .srcbox .cite { font-family: system-ui, sans-serif; font-size: .85rem; color: var(--muted); margin: 0 0 8px; }
