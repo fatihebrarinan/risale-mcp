@@ -71,6 +71,7 @@ class Store:
         path.parent.mkdir(parents=True, exist_ok=True)
         with self._conn() as c:
             c.executescript(SCHEMA)
+        path.chmod(0o600)                                # e-postalar ve parola özetleri: yalnız servisin kullanıcısı
 
     def _conn(self) -> sqlite3.Connection:
         c = sqlite3.connect(self.path)

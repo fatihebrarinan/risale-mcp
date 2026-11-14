@@ -21,6 +21,10 @@ def client(store):
     return TestClient(build_app(store), base_url="https://risalemcp.com", follow_redirects=False)
 
 
+def test_db_private(store):
+    assert store.path.stat().st_mode & 0o077 == 0
+
+
 def test_add_user_normalizes_and_rejects(store):
     assert [u["email"] for u in store.users()] == ["okur@example.org"]
     with pytest.raises(ValueError):
