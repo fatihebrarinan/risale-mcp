@@ -271,6 +271,12 @@ biçimi (`d1-prova.py notlar` okur).
   karşılaştırma sekmesinde "Nükte 3/7", "Fazla 2/4"; küçük kart tek satır (numara, özet, iki işaret); "hepsini küçült /
   hepsini aç / işaretlenenleri küçült" ve "n/m kart işaretlendi". Küçültme taslak başına tarayıcıda hatırlanır, yalnız
   görünümdür.
+- **Üç sekmede numara ve küçültme; örneklem görünür (2026-11-14, kullanıcının isteği):** Eleştirmen ("Not 2/5") ve
+  Bilirkişi ("Madde 1/2") sekmeleri de numaralı ve küçültülür. Kullanıcı D7.7 örnekleminin hangi satırlar olduğunu
+  göremiyordu ("iki okuyucu ayrıldı" olanlar mı diye sordu): örneklem katmanlıdır (ayrılık 5, fazla 5, çelişki 2, aynen
+  5, kısmen 5, farklı gerekçe 4, yok 4; bir satır bir taslakta tek okuyucunun hükmü). Karşılaştırma sekmesinin başında
+  "Örneklem: x/30" kutusu (açıklama, 30 satırın dizini, "yalnız örneklem" süzgeci); örneklemdeki kart ve okuyucu satırı
+  turuncu "örneklem" etiketli; üst çubukta örneklem sayacı.
 - **Açık:** bilirkişi maddelerini dar soruya çevirmek; müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); işaretlerin
   sunucuda toplanması ayrı karardır (heyet akışı).
 

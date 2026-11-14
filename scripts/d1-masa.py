@@ -326,7 +326,18 @@ def layer(unit: str, ayah: Ayah, places: dict[str, list[str]], dr: dict) -> dict
     for dk, c in y["critic"].items():
         critic[dk] = dict(c, notes=[dict(x, loc=where(dk, [x["a"]], x["n"])) for x in c["notes"]])
     bk = {part: [dict(x, loc=where(x["t"], [x["a"]])) for x in xs] for part, xs in y["bilirkisi"].items()}
-    return {"models": y["models"], "items": items, "drafts": out_drafts, "critic": critic, "bilirkisi": bk}
+    # D7.7 örneklemi (`d1-yz.sample_keys`): 30 satır, katmanlı; her biri yeriyle
+    sample = []
+    for key in y["sample"]:
+        t, m, i = key.split("|")
+        if m == "fazla":
+            f = next((f for f in out_drafts.get(t, {}).get("extras", []) if f["k"] == i), None)
+            loc = f["loc"] if f else ["L:genel"]
+        else:
+            loc = items[i]["loc"] if i in items else ["L:genel"]
+        sample.append({"key": key, "t": t, "m": m, "id": i, "loc": loc})
+    return {"models": y["models"], "items": items, "drafts": out_drafts, "critic": critic, "bilirkisi": bk,
+            "sample": sample}
 
 
 def main() -> None:

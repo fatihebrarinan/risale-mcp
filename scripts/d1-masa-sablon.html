@@ -117,6 +117,10 @@ details > summary { cursor: pointer; }
 .marks { font-size: .75rem; white-space: nowrap; }
 .marks .done { color: var(--accent); font-weight: 600; }
 .foldbar { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; font-size: .78rem; }
+.tag.smp { background: var(--warn); color: var(--bg); }
+.card.insample { border-left: 4px solid var(--warn); }
+.samplebox { background: var(--card); border: 1px solid var(--warn); border-radius: 8px; padding: 6px 10px; margin: 0 0 10px; font-size: .82rem; }
+.samplebox summary { font-weight: 600; }
 .foldbar button { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 0 10px; cursor: pointer; }
 .strip { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; font-size: .78rem; }
 .strip button { border: 1px solid var(--line); background: var(--soft); border-radius: 4px; padding: 0 6px; cursor: pointer; }
@@ -202,7 +206,7 @@ const ISR = {kaynakli: 'kaynaklı', kendi_tespiti: 'kendi tespiti', isaretsiz: '
 const BKV = {dogru: 'doğru', yanlis: 'yanlış', emin_degilim: 'emin değilim'};
 const BKD = {'': 'dayanak türü…', kaynak: 'kaynak (cümle kimliği)', kisi: 'kişi (yalnız alanı)', kanaat: 'kendi kanaatim', yz: 'yapay zekâ'};
 
-function persist() { store.set('d1-masa', {loc: st.loc, lang: st.lang, draft: st.draft, tab: st.tab, whole: st.whole}); }
+function persist() { store.set('d1-masa', {loc: st.loc, lang: st.lang, draft: st.draft, tab: st.tab, whole: st.whole, onlySample: st.onlySample}); }
 function say(t) { $('#msg').textContent = t; if (t) setTimeout(() => { if ($('#msg').textContent === t) $('#msg').textContent = ''; }, 6000); }
 let ACCOUNT = null;                              // sitede girişli hesabın adı (/taslak/ben); dosyadan açılınca yok
 function reader() { return ACCOUNT || $('#reader').value.trim(); }
@@ -469,9 +473,34 @@ function itemMarks(id) { return Y.models.filter(m => ((Y.drafts[st.draft] || {ro
   .map(m => `${MODEL[m] || m}: ${markOf(`${U}|${st.draft}|${m}|${id}`)}`).join(' · '); }
 function itemDone(id) { const row = (Y.drafts[st.draft] || {rows: {}}).rows[id] || {};
   return Y.models.filter(m => row[m]).every(m => (yzEval[`${U}|${st.draft}|${m}|${id}`] || {}).v); }
+let FOLDSET = {all: [], done: []};               // görünen sekmenin kartları (küçültme çubuğu için)
+function foldBar(all, done, what) {
+  FOLDSET = {all, done};
+  return all.length ? `<div class="foldbar"><span class="muted">${done.length}/${all.length} ${what} işaretlendi</span>
+    <button data-foldall="1">hepsini küçült</button><button data-foldall="0">hepsini aç</button>
+    <button data-folddone="1">işaretlenenleri küçült</button></div>` : '';
+}
 function cardHead(no, fid, gist, marks) {
   return `<div class="head"><span class="no">${no}</span>${gist}<span class="marks">${marks}</span>
     <button class="fold" data-fold="${esc(fid)}">${isFolded(fid) ? 'aç' : 'küçült'}</button></div>`;
+}
+const SAMPLE = new Set((Y.sample || []).map(x => x.key));     // "taslak-3|opus|N24", "taslak-1|fazla|<anahtar>"
+const SMP = '<span class="tag smp" title="D7.7 örneklemi: önce bunlar işaretlenir">örneklem</span>';
+function inSample(dk, m, id) { return SAMPLE.has(`${dk}|${m}|${id}`); }
+function sampleDone(key) { return !!(yzEval[`${U}|${key}`] || {}).v; }
+function sampleBox() {
+  const xs = Y.sample || []; if (!xs.length) return '';
+  const done = xs.filter(x => sampleDone(x.key)).length;
+  const label = x => x.m === 'fazla' ? 'fazla' : `nükte, ${MODEL[x.m] || x.m}`;
+  return `<details class="samplebox"${store.get('d1-masa-orneklem-acik', false) ? ' open' : ''} id="smpbox">
+    <summary>Örneklem: ${done}/${xs.length} işaretlendi ${SMP}</summary>
+    <p>Karşılaştırıcıların güvenilirliğini ölçmek için seçilmiş 30 satır. Önce bunlar işaretlenir. Seçim katmanlıdır, yalnız
+    "iki okuyucu ayrıldı" olanlar değildir: iki okuyucunun ayrıldığı nükteler, İşârât'la çelişebilecek ve öbür "fazla" iddialar,
+    sonra "aynen", "kısmen", "farklı gerekçe" ve "yok" denen satırlardan eşit sayıda. Bir satır bir taslakta tek bir okuyucunun
+    (Fable ya da Opus) hükmüdür: kartta o okuyucunun satırı turuncu "örneklem" etiketlidir.</p>
+    <label class="small"><input type="checkbox" id="onlysmp" ${st.onlySample ? 'checked' : ''}> bu yerde yalnız örneklemdeki kartları göster</label>
+    <div class="idx">${xs.map((x, i) => `<button data-samplego="${esc(x.key)}" class="${sampleDone(x.key) ? 'done' : ''}${x.t === st.draft && x.loc.includes(st.loc) ? ' here' : ''}"
+      title="${esc(label(x))}">${i + 1}. ${esc(draftLabel(x.t).replace('Taslak ', 'T'))} · ${locName(x.loc[0])} · ${esc(label(x))}</button>`).join('')}</div></details>`;
 }
 function itemCard(id, it, no) {
   const row = (Y.drafts[st.draft] || {rows: {}}).rows[id] || {};
@@ -481,14 +510,15 @@ function itemCard(id, it, no) {
     if (!r) return `<div class="reader small muted">${MODEL[m] || m}: bu nükteye bakmamış</div>`;
     const k = `${U}|${st.draft}|${m}|${id}`;
     const [s, l] = DUR[r.d] || ['?', r.d];
-    return `<div class="reader"><b>${MODEL[m] || m}</b> (karşılaştırıcı yapay zekâ): ${s} ${l}${r.ok ? '' : ' <span class="tag w">alıntısı taslakta bulunamadı</span>'}
+    return `<div class="reader"><b>${MODEL[m] || m}</b> (karşılaştırıcı yapay zekâ): ${s} ${l}${inSample(st.draft, m, id) ? ' ' + SMP : ''}${r.ok ? '' : ' <span class="tag w">alıntısı taslakta bulunamadı</span>'}
       <span style="float:right">${evBtns(k, EVC, 'yzv', (yzEval[k] || {}).v)}</span>
       <div class="small"><b>Model:</b> ${codes(r.g)}</div>
       ${r.q ? draftSays(st.draft, r.a, r.q) : ''}</div>`;
   }).join('');
-  if (isFolded(id)) return `<div class="card small${foc ? ' focus' : ''}" data-item="${id}">${cardHead(no, id,
+  const smp = Y.models.some(m => inSample(st.draft, m, id)), sc = smp ? ' insample' : '', st2 = smp ? SMP : '';
+  if (isFolded(id)) return `<div class="card small${foc ? ' focus' : ''}${sc}" data-item="${id}">${cardHead(no + ' ' + st2, id,
     `<span class="gist top" data-focusitem="${id}">${esc(it.n)}</span>`, itemMarks(id))}</div>`;
-  return `<div class="card${foc ? ' focus' : ''}" data-item="${id}">${cardHead(no, id, '<span style="flex:1"></span>', itemMarks(id))}
+  return `<div class="card${foc ? ' focus' : ''}${sc}" data-item="${id}">${cardHead(no + ' ' + st2, id, '<span style="flex:1"></span>', itemMarks(id))}
     <div class="top" data-focusitem="${id}"><span class="tag ai" title="Nüktenin özeti yapay zekânın; asıl söz soldaki İşârât cümlesidir">özet</span>
     ${esc(it.n)} <span class="small muted" dir="rtl">${esc(it.l)}</span>
     ${row.u === 'ayrilik' ? ' <span class="tag w">iki okuyucu ayrıldı</span>' : ''}</div>
@@ -497,8 +527,10 @@ function itemCard(id, it, no) {
 function extraCard(f, no) {
   const k = `${U}|${st.draft}|fazla|${f.k}`, fid = 'fazla:' + f.k;
   const who = f.r.map(m => MODEL[m] || m).join(' ve ');
-  if (isFolded(fid)) return `<div class="card small">${cardHead(no, fid, `<span class="gist">${esc(f.i)}</span>`, markOf(k))}</div>`;
-  return `<div class="card">${cardHead(no, fid, '<span style="flex:1"></span>', markOf(k))}<span class="tag g">fazla</span> <span class="small muted">taslağın iddiası (karşılaştırıcının özeti):</span> ${codes(f.i)}
+  const smp = inSample(st.draft, 'fazla', f.k), sc = smp ? ' insample' : '', no2 = no + (smp ? ' ' + SMP : '');
+  const foc = st.focus && st.focus.extra === f.k ? ' focus' : '';
+  if (isFolded(fid)) return `<div class="card small${sc}${foc}" data-extra="${esc(f.k)}">${cardHead(no2, fid, `<span class="gist">${esc(f.i)}</span>`, markOf(k))}</div>`;
+  return `<div class="card${sc}${foc}" data-extra="${esc(f.k)}">${cardHead(no2, fid, '<span style="flex:1"></span>', markOf(k))}<span class="tag g">fazla</span> <span class="small muted">taslağın iddiası (karşılaştırıcının özeti):</span> ${codes(f.i)}
     <div class="small muted">Taslağın işareti: ${esc(ISR[f.s] || f.s || '?')}${f.src.length ? ` [${f.src.join(', ')}]` : ''} · bulan: ${esc(who)}
     ${f.c ? ` · <span class="tag w">İşârât'la çelişiyor olabilir</span>` : ''}${f.ok ? '' : ' · <span class="tag w">alıntısı taslakta bulunamadı</span>'}</div>
     ${f.g ? `<div class="small"><b>Model:</b> ${codes(f.g)}</div>` : ''}
@@ -506,23 +538,19 @@ function extraCard(f, no) {
     <span style="float:right">${evBtns(k, EVC, 'yzv', (yzEval[k] || {}).v)}</span></div>`;
 }
 function karsiHtml() {
-  const its = itemsAt(st.loc);
-  const ex = ((Y.drafts[st.draft] || {}).extras || []).filter(at);
-  const all = [...its.map(([id]) => id), ...ex.map(f => 'fazla:' + f.k)];
-  const done = its.filter(([id]) => itemDone(id)).length + ex.filter(f => (yzEval[`${U}|${st.draft}|fazla|${f.k}`] || {}).v).length;
-  let h = all.length ? `<div class="foldbar"><span class="muted">${done}/${all.length} kart işaretlendi</span>
-    <button data-foldall="1">hepsini küçült</button><button data-foldall="0">hepsini aç</button>
-    <button data-folddone="1">işaretlenenleri küçült</button></div>` : '';
+  let its = itemsAt(st.loc);
+  let ex = ((Y.drafts[st.draft] || {}).extras || []).filter(at);
+  if (st.onlySample) { its = its.filter(([id]) => Y.models.some(m => inSample(st.draft, m, id))); ex = ex.filter(f => inSample(st.draft, 'fazla', f.k)); }
+  const exDone = f => (yzEval[`${U}|${st.draft}|fazla|${f.k}`] || {}).v;
+  let h = sampleBox() + foldBar([...its.map(([id]) => id), ...ex.map(f => 'fazla:' + f.k)],
+                                [...its.filter(([id]) => itemDone(id)).map(([id]) => id), ...ex.filter(exDone).map(f => 'fazla:' + f.k)], 'kart');
   h += its.length ? its.map(([id, it], i) => itemCard(id, it, `Nükte ${i + 1}/${its.length}`)).join('')
                   : `<p class="empty">İşârât'ta bu yere bağlanmış bir nükte yok.</p>`;
   h += `<h3>Taslağın burada İşârât'ta karşılığı olmayan iddiaları <span class="muted">"fazla": doğru ya da yanlış olduğu söylenmez; iki okuyucunun bulduğu</span></h3>`;
   h += ex.length ? ex.map((f, i) => extraCard(f, `Fazla ${i + 1}/${ex.length}`)).join('') : `<p class="empty">Bu taslakta bu yerde yok.</p>`;
   return h;
 }
-function karsiIds() {
-  const ex = ((Y.drafts[st.draft] || {}).extras || []).filter(at);
-  return {items: itemsAt(st.loc).map(([id]) => id), extras: ex};
-}
+
 
 function blocksAt(dk) {
   const d = DATA.drafts[dk];
@@ -574,10 +602,13 @@ function sidLabel(id) {
   if (TEFSIR_AUTHOR[w] && c) return `${TEFSIR_AUTHOR[w]}, ${id.split('/')[1]}:${id.split('/')[2]}, ${+c[1]}.${c[2] ? `–${+c[2]}.` : ''} cümle`;
   return id;
 }
-function noteCard(dk, x) {
-  const key = `${U}|${dk}|${x.k}`, it = x.n && Y.items[x.n];
+const SUZL = Object.fromEntries(SUZC);
+function suzMark(key) { const v = (yzSuz[key] || {}).v; return v ? `<span class="done">${esc(SUZL[v])}</span>` : '<span class="muted">işaretsiz</span>'; }
+function noteCard(dk, x, no) {
+  const key = `${U}|${dk}|${x.k}`, it = x.n && Y.items[x.n], fid = 'not:' + x.k;
   const dayanak = x.d.map(id => `<button class="linkish" data-sidgo="${esc(id)}" title="${esc(id)}">${esc(sidLabel(id))}</button>`).join(' · ');
-  return `<div class="card"><span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
+  if (no && isFolded(fid)) return `<div class="card small">${cardHead(no, fid, `<span class="gist">${esc(x.m)}</span>`, suzMark(key))}</div>`;
+  return `<div class="card">${no ? cardHead(no, fid, '<span style="flex:1"></span>', suzMark(key)) : ''}<span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
     ${x.ok ? '' : ' <span class="tag w">alıntısı ya da dayanağı denetimde tutmadı</span>'}
     <span style="float:right">${evBtns(key, SUZC, 'suz', (yzSuz[key] || {}).v)}</span>
     <div class="serif" style="margin-top:4px"><b>Model</b> <span class="small muted">(eleştirmen)</span><b>:</b> ${codes(x.m)}</div>
@@ -600,7 +631,8 @@ function elestiriHtml() {
   const c = Y.critic[st.draft];
   if (!c) return `<p class="empty">Bu taslağın eleştirisi yok.</p>`;
   const here = c.notes.filter(at), done = x => (yzSuz[`${U}|${st.draft}|${x.k}`] || {}).v;
-  let h = here.length ? here.map(x => noteCard(st.draft, x)).join('') : `<p class="empty">Eleştirmenin bu taslakta bu yere notu yok.</p>`;
+  let h = foldBar(here.map(x => 'not:' + x.k), here.filter(done).map(x => 'not:' + x.k), 'not');
+  h += here.length ? here.map((x, i) => noteCard(st.draft, x, `Not ${i + 1}/${here.length}`)).join('') : `<p class="empty">Eleştirmenin bu taslakta bu yere notu yok.</p>`;
   h += `<h3>Bu taslağın bütün notları, yerlerine göre <span class="muted">süzülen / toplam</span></h3>${locIndex(c.notes, done)}`;
   const gen = c.notes.filter(x => x.loc.includes('L:genel'));
   h += `<details><summary class="small"><b>Eleştirmenin özeti, sistemli zaafları ve önerileri</b></summary>
@@ -611,8 +643,10 @@ function elestiriHtml() {
 }
 
 function bkAll() { return Object.entries(Y.bilirkisi).flatMap(([p, xs]) => xs.map(x => Object.assign({part: p}, x))); }
-function bkCard(x) {
-  const key = `${U}|${x.part}|${x.id}`, m = bkMarks[key] || {};
+function bkMark(m) { return m.v ? `<span class="done">${esc(BKV[m.v])}</span>${m.dt ? ` <span class="muted">(${esc(BKD[m.dt])})</span>` : ''}` : '<span class="muted">işaretsiz</span>'; }
+function bkCard(x, no) {
+  const key = `${U}|${x.part}|${x.id}`, m = bkMarks[key] || {}, fid = `bk:${x.part}|${x.id}`;
+  if (isFolded(fid)) return `<div class="card small" data-bk="${esc(key)}">${cardHead(no, fid, `<span class="gist">${trEsc(x.c)}</span>`, bkMark(m))}</div>`;
   const tr = x.tr || '', r = locate(tr, x.c);
   const trHtml = r ? trEsc(tr.slice(0, r[0])) + `<span class="claim">${trEsc(tr.slice(r[0], r[1]))}</span>` + trEsc(tr.slice(r[1])) : trEsc(tr);
   const anchor = x.a.replace('/tr/', '/ar/');
@@ -621,7 +655,7 @@ function bkCard(x) {
   const prim = st.lang === 'tr'
     ? `<div class="serif"><span class="tag ai">yapay zekâ tercümesi</span> ${trHtml}</div><details><summary class="small muted">Arapçası (taslağın aslı)</summary><p class="para ar">${esc(x.ar)}</p></details>`
     : `<p class="para ar">${esc(x.ar)}</p><div class="serif small"><span class="tag ai">yapay zekâ tercümesi</span> ${trHtml}</div>`;
-  return `<div class="card" data-bk="${esc(key)}"><div class="small muted">${esc(draftLabel(x.t))} · ${locName(x.loc[0])} · taslağın işareti: ${esc(x.m)}</div>
+  return `<div class="card" data-bk="${esc(key)}">${cardHead(no, fid, '<span style="flex:1"></span>', bkMark(m))}<div class="small muted">${esc(draftLabel(x.t))} · ${locName(x.loc[0])} · taslağın işareti: ${esc(x.m)}</div>
     <div style="margin:4px 0"><b>İddia:</b> <span class="claim">${trEsc(x.c)}</span></div>${prim}
     <button class="linkish" data-showdraft="${esc(x.a)}" data-quote="${esc(x.c)}" data-draftgo2="${esc(x.t)}">taslakta göster</button>${src}
     ${notes.length ? `<details><summary class="small">Eleştirmenin bu paragrafa notları (${notes.length})</summary>${notes.map(n => noteCard(x.t, n)).join('')}</details>` : ''}
@@ -634,7 +668,8 @@ function bkCard(x) {
 function bilirkisiHtml() {
   const all = bkAll(), here = all.filter(x => x.t === st.draft && at(x));
   const done = x => (bkMarks[`${U}|${x.part}|${x.id}`] || {}).v;
-  let h = here.length ? here.map(bkCard).join('') : `<p class="empty">Bu taslakta bu yere ait bilirkişi sorusu yok. Aşağıdaki dizinden gidin.</p>`;
+  let h = foldBar(here.map(x => `bk:${x.part}|${x.id}`), here.filter(done).map(x => `bk:${x.part}|${x.id}`), 'madde');
+  h += here.length ? here.map((x, i) => bkCard(x, `Madde ${i + 1}/${here.length}`)).join('') : `<p class="empty">Bu taslakta bu yere ait bilirkişi sorusu yok. Aşağıdaki dizinden gidin.</p>`;
   h += `<h3>Bütün maddeler <span class="muted">${all.filter(done).length}/${all.length} işaretlendi; taslak ve yer</span></h3><div class="idx">${all.map(x =>
     `<button data-bkgo="${esc(x.part + '|' + x.id)}" class="${x.t === st.draft && at(x) ? 'here' : done(x) ? 'done' : ''}">${esc(draftLabel(x.t).replace('Taslak ', 'T'))} · ${locName(x.loc[0])}</button>`).join('')}</div>`;
   return h;
@@ -663,7 +698,8 @@ function progress() {
   const n1 = Object.keys(yzEval).filter(k => k.startsWith(U + '|')).length;
   const n2 = Object.keys(yzSuz).filter(k => k.startsWith(U + '|')).length;
   const n3 = Object.entries(bkMarks).filter(([k, v]) => k.startsWith(U + '|') && v.v).length;
-  $('#progress').textContent = `İşaretler: karşılaştırma ${n1} · eleştiri ${n2} · bilirkişi ${n3}/${bkAll().length}`;
+  const ns = (Y.sample || []).filter(x => sampleDone(x.key)).length;
+  $('#progress').textContent = `İşaretler: örneklem ${ns}/${(Y.sample || []).length} · karşılaştırma ${n1} · eleştiri ${n2} · bilirkişi ${n3}/${bkAll().length}`;
 }
 function render() {
   $('#unit').innerHTML = `<option>${esc(DATA.title)}</option>`;
@@ -728,17 +764,23 @@ document.addEventListener('click', ev => {
   if (fb) { const id = fb.dataset.fold; setFold([id], !isFolded(id)); renderRight(); return; }
   const fa = t.closest('[data-foldall]'), fd = t.closest('[data-folddone]');
   if (fa || fd) {
-    const {items, extras} = karsiIds();
-    if (fa) setFold([...items, ...extras.map(f => 'fazla:' + f.k)], fa.dataset.foldall === '1');
-    else setFold([...items.filter(itemDone), ...extras.filter(f => (yzEval[`${U}|${st.draft}|fazla|${f.k}`] || {}).v).map(f => 'fazla:' + f.k)], true);
+    if (fa) setFold(FOLDSET.all, fa.dataset.foldall === '1'); else setFold(FOLDSET.done, true);
     renderRight(); return;
+  }
+  const sg2 = t.closest('[data-samplego]');
+  if (sg2) {                                    // örneklemin satırına git: taslak, yer, kart açık ve vurgulu
+    const x = Y.sample.find(y => y.key === sg2.dataset.samplego);
+    st.draft = x.t; st.loc = x.loc[0]; st.tab = 'karsi'; st.dfocus = null;
+    if (x.m === 'fazla') { setFold(['fazla:' + x.id], false); st.focus = {extra: x.id, sids: []}; }
+    else { setFold([x.id], false); st.focus = {sids: Y.items[x.id].sids, item: x.id}; }
+    render(); scrollPane('#right', '.card.focus'); scrollPane('#left', '.s.focus'); return;
   }
   const tab = t.closest('[data-tab]');
   if (tab) { st.tab = tab.dataset.tab; renderRight(); persist(); return; }
   const bg = t.closest('[data-bkgo]');
   if (bg) {
     const [p, id] = bg.dataset.bkgo.split('|'), x = Y.bilirkisi[p].find(y => y.id === id);
-    st.draft = x.t; st.loc = x.loc[0]; st.tab = 'bilirkisi'; st.focus = null; st.dfocus = null;
+    st.draft = x.t; st.loc = x.loc[0]; st.tab = 'bilirkisi'; st.focus = null; st.dfocus = null; setFold([`bk:${p}|${id}`], false);
     render(); scrollPane('#right', `[data-bk="${CSS.escape(U + '|' + p + '|' + id)}"]`); return;
   }
   const yv = t.closest('[data-yzv]'), sv = t.closest('[data-suz]'), bv = t.closest('[data-bkv]');
@@ -750,13 +792,14 @@ document.addEventListener('click', ev => {
     store.set(yv ? 'd1-yz-sinama' : 'd1-yz-suzgec', map);
     box.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', (map[k] || {}).v === (yv ? b.dataset.yzv : b.dataset.suz)));
     progress();
-    if (yv && st.tab === 'karsi') { const y0 = $('#right').scrollTop; renderRight(); $('#right').scrollTop = y0; }
+    { const y0 = $('#right').scrollTop; renderRight(); $('#right').scrollTop = y0; }
     return;
   }
   if (bv) { const box = bv.closest('[data-bk]'), cur = (bkMarks[box.dataset.bk] || {}).v; bkSave(box, {v: cur === bv.dataset.bkv ? '' : bv.dataset.bkv}); return; }
 });
 document.addEventListener('toggle', ev => {
   if (ev.target.parentElement && ev.target.parentElement.id === 'intro') store.set('d1-masa-intro-' + st.tab, ev.target.open);
+  if (ev.target.id === 'smpbox') store.set('d1-masa-orneklem-acik', ev.target.open);
 }, true);
 function bkSave(box, patch) {
   if (needReader()) return false;
@@ -764,12 +807,14 @@ function bkSave(box, patch) {
   if (m.dt === 'yz') m.v = 'emin_degilim';
   bkMarks[key] = m; store.set('d1-bilirkisi', bkMarks);
   box.querySelectorAll('[data-bkv]').forEach(x => x.setAttribute('aria-pressed', m.v === x.dataset.bkv));
+  const head = box.querySelector('.head .marks'); if (head) head.innerHTML = bkMark(m);
   progress(); return true;
 }
 document.addEventListener('change', ev => {
   const t = ev.target;
   if (t.id === 'draft') { st.draft = t.value; st.dfocus = null; render(); return; }
   if (t.id === 'whole') { st.whole = t.checked; renderRight(); persist(); return; }
+  if (t.id === 'onlysmp') { st.onlySample = t.checked; renderRight(); persist(); return; }
   const f = t.closest('[data-bkf]');
   if (f) { const box = f.closest('[data-bk]'); if (bkSave(box, {[f.dataset.bkf]: f.value}) && f.dataset.bkf === 'dt') renderRight(); }
 });
