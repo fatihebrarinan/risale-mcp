@@ -212,7 +212,13 @@ biçimi (`d1-prova.py notlar` okur).
   5, kısmen 5, farklı gerekçe 4, yok 4; bir satır bir taslakta tek okuyucunun hükmü). Karşılaştırma sekmesinin başında
   "Örneklem: x/30" kutusu (açıklama, 30 satırın dizini, "yalnız örneklem" süzgeci); örneklemdeki kart ve okuyucu satırı
   turuncu "örneklem" etiketli; üst çubukta örneklem sayacı.
-- **Açık:** bilirkişi maddelerini dar soruya çevirmek; müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); işaretlerin
+- **Bilirkişi maddeleri dar soru (2026-11-14, kullanıcının isteği: basit ve kısa birer soru):** A kısmının 24 maddesi
+  `yz/bilirkisi-A-sorular.json`'da (sürüm 1; sohbette Opus 5.5 yazdı) tek cümlelik sorudur: iddiayı değiştirmez, hüküm
+  vermez, cevabı ima etmez; lafız Arapçasıyla yazılır ki ehline olduğu gibi sorulabilsin; iddia bir kaynağa
+  yükleniyorsa "kaynak bunu söylüyor mu" diye sorulur. Masada kartın başında "Soru:", altında "Taslağın iddiası";
+  küçük kartın özeti sorudur. Hüküm iddiaya verilir; soru iddiaya uymuyorsa notta söylenir. `d6-bilirkisi.md` soruyu
+  da yazar. B kısmı (D9.3'ten sonra) aynı dosya düzeniyle (`bilirkisi-B-sorular.json`).
+- **Açık:** müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); işaretlerin
   sunucuda toplanması ayrı karardır (heyet akışı).
 
 **D6. Bilirkişi okuması** (D1'den ayrıldı, 2026-11-13; eski D1.5, D1.6 ve D1.9'un insan okuması kısmı). **Daraltıldı

@@ -939,9 +939,12 @@ def bilirkisi_page(unit: str) -> dict:
         path = out_dir(unit) / f"bilirkisi-{part}.json"
         if not path.exists():
             continue
+        qpath = path.with_name(f"bilirkisi-{part}-sorular.json")   # dar sorular (S5; iddiadan sadeleştirilmiş)
+        questions = json.loads(qpath.read_text(encoding="utf-8"))["sorular"] if qpath.exists() else {}
         items = []
         for i in json.loads(path.read_text(encoding="utf-8"))["maddeler"]:
             items.append({"id": i["id"], "t": i["taslak"], "a": i["capa"], "c": i.get("iddia") or "",
+                          "q": questions.get(i["id"], ""),
                           "m": i.get("isaret") or "", "ar": i.get("arapca") or "", "tr": i.get("tercume") or "",
                           "e": i.get("elestiri") or "", "s": i.get("soru") or "",
                           "src": [{"n": k["no"], "c": k.get("atif", ""), "x": k.get("metin") or ""}

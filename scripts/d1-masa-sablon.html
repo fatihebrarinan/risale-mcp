@@ -143,6 +143,7 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
 .idx button.done { border-color: var(--accent); color: var(--accent); }
 .idx button.here { background: var(--ai); color: var(--bg); border-color: var(--ai); }
 .claim { background: var(--hl); color: var(--hl-fg); border-radius: 3px; }
+.bkq { margin: 6px 0; padding: 6px 10px; background: var(--accent-soft); border-left: 3px solid var(--accent); border-radius: 3px; font-size: 1rem; }
 .empty { color: var(--muted); font-size: .85rem; margin: 12px 0; }
 .welcome { max-width: 560px; margin: 24px auto; font-size: .9rem; }
 .welcome li { margin: 4px 0; }
@@ -428,7 +429,8 @@ const INTRO = {
     "Dayanak" düğmeleri eleştirmenin baktığı kaynak cümlelerdir: solda varsa sarı olur. <b>Sizden beklenen:</b> notu süzmek:
     <b>kalsın</b> (doğru ve işe yarar), <b>atılsın</b> (yanlış ya da boş), <b>ehline sor</b> (Arapça ya da belâgat isabetine karar veremiyorsunuz).</details>`,
   bilirkisi: `<details open><summary>Bu sekme nedir?</summary>Taslakların dil (i'râb) ve belâgat iddialarından seçilmiş 24 madde (taslak başına 4).
-    Sarı söz iddiadır; çevresi taslağın paragrafıdır. <b>Sizden beklenen:</b> iddia doğru mu? Dayanağınızı da yazın: kaynak (soldaki cümleler,
+    Her maddenin başında iddiayı tek cümlelik bir soruya çeviren <b>soru</b> durur; bir ehline olduğu gibi sorabilirsiniz. Soruyu yapay zekâ iddiadan sadeleştirdi:
+    hüküm iddiaya verilir, soru iddiaya uymuyorsa notta söyleyin. Sarı söz iddiadır; çevresi taslağın paragrafıdır. <b>Sizden beklenen:</b> iddia doğru mu? Dayanağınızı da yazın: kaynak (soldaki cümleler,
     kimliğiyle), kişi (adı değil, alanı) ya da kendi kanaatiniz. Yapay zekâya dayanan hüküm "emin değilim" sayılır. Eleştirmenin aynı paragrafa
     notları maddenin altında görünür. Aşağıdaki dizinden bütün maddelere gidebilirsiniz.</details>`,
 };
@@ -646,7 +648,7 @@ function bkAll() { return Object.entries(Y.bilirkisi).flatMap(([p, xs]) => xs.ma
 function bkMark(m) { return m.v ? `<span class="done">${esc(BKV[m.v])}</span>${m.dt ? ` <span class="muted">(${esc(BKD[m.dt])})</span>` : ''}` : '<span class="muted">işaretsiz</span>'; }
 function bkCard(x, no) {
   const key = `${U}|${x.part}|${x.id}`, m = bkMarks[key] || {}, fid = `bk:${x.part}|${x.id}`;
-  if (isFolded(fid)) return `<div class="card small" data-bk="${esc(key)}">${cardHead(no, fid, `<span class="gist">${trEsc(x.c)}</span>`, bkMark(m))}</div>`;
+  if (isFolded(fid)) return `<div class="card small" data-bk="${esc(key)}">${cardHead(no, fid, `<span class="gist">${trEsc(x.q || x.c)}</span>`, bkMark(m))}</div>`;
   const tr = x.tr || '', r = locate(tr, x.c);
   const trHtml = r ? trEsc(tr.slice(0, r[0])) + `<span class="claim">${trEsc(tr.slice(r[0], r[1]))}</span>` + trEsc(tr.slice(r[1])) : trEsc(tr);
   const anchor = x.a.replace('/tr/', '/ar/');
@@ -656,7 +658,8 @@ function bkCard(x, no) {
     ? `<div class="serif"><span class="tag ai">yapay zekâ tercümesi</span> ${trHtml}</div><details><summary class="small muted">Arapçası (taslağın aslı)</summary><p class="para ar">${esc(x.ar)}</p></details>`
     : `<p class="para ar">${esc(x.ar)}</p><div class="serif small"><span class="tag ai">yapay zekâ tercümesi</span> ${trHtml}</div>`;
   return `<div class="card" data-bk="${esc(key)}">${cardHead(no, fid, '<span style="flex:1"></span>', bkMark(m))}<div class="small muted">${esc(draftLabel(x.t))} · ${locName(x.loc[0])} · taslağın işareti: ${esc(x.m)}</div>
-    <div style="margin:4px 0"><b>İddia:</b> <span class="claim">${trEsc(x.c)}</span></div>${prim}
+    ${x.q ? `<div class="bkq"><b>Soru:</b> ${trEsc(x.q)}</div>` : ''}
+    <div style="margin:4px 0"><b>${x.q ? 'Taslağın iddiası' : 'İddia'}:</b> <span class="claim">${trEsc(x.c)}</span></div>${prim}
     <button class="linkish" data-showdraft="${esc(x.a)}" data-quote="${esc(x.c)}" data-draftgo2="${esc(x.t)}">taslakta göster</button>${src}
     ${notes.length ? `<details><summary class="small">Eleştirmenin bu paragrafa notları (${notes.length})</summary>${notes.map(n => noteCard(x.t, n)).join('')}</details>` : ''}
     <div style="margin-top:6px">${evBtns(key, Object.entries(BKV), 'bkv', m.v)}

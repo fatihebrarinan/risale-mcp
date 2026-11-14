@@ -935,6 +935,8 @@ def bilirkisi_rapor(unit: str) -> list[str]:
         if not path.exists():
             continue
         items = json.loads(path.read_text(encoding="utf-8"))["maddeler"]
+        qpath = path.with_name(f"bilirkisi-{part}-sorular.json")
+        questions = json.loads(qpath.read_text(encoding="utf-8"))["sorular"] if qpath.exists() else {}
         got = {i["id"]: marks.get(f"{unit}|{part}|{i['id']}") for i in items}
         verdict = Counter((("emin_degilim" if (m or {}).get("dt") == "yz" else (m or {}).get("v")) or "—")
                           for m in got.values())
@@ -959,7 +961,8 @@ def bilirkisi_rapor(unit: str) -> list[str]:
             v = "emin_degilim" if m.get("dt") == "yz" else m.get("v")
             L.append(f"- **{i['id']}** {i['taslak']} `{i['capa']}` · {BK_VERDICT.get(v, '?')} · dayanak "
                      f"{BK_BASIS.get(m.get('dt'), '—')}{': ' + m['d'] if m.get('d') else ''}  \n  "
-                     f"{_s(i.get('iddia') or i.get('elestiri') or '', 200)}" + (f"  \n  _Not:_ {m['n']}" if m.get("n") else ""))
+                     + (f"_Soru:_ {questions[i['id']]}  \n  " if questions.get(i["id"]) else "")
+                     + f"{_s(i.get('iddia') or i.get('elestiri') or '', 200)}" + (f"  \n  _Not:_ {m['n']}" if m.get("n") else ""))
         L.append("")
     return L
 
