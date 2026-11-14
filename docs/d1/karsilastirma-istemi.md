@@ -16,7 +16,8 @@ Sürümler:
   okuyucunun birlikte "aynen" dediği N19 kısmen tutuyordu; D9 da N13 ve N34'ün "aynen"inin fazla olduğunu gösterdi).
   Çelişkiye **kısmi çelişki** eklendi: İşârât'ın ara halkalarla kurduğu bir ilişkiyi halkaları atlayıp mahiyet ya da
   zorunluluk hükmüne çevirmek (D6'da A10: "nifâk tabiatıyla ifsaddır"; v1 bunu çelişkisiz "fazla" saydı). Envanter,
-  denetim ve kaynak görevleri değişmedi. **Bir turun içinde ölçü sabittir:** D8'de 17–20'nin altı taslağı (v1 ve v2
+  denetim ve kaynak görevleri değişmedi; envanterde `vecih` alanına `Mukaddime` eklendi (31–33'te üç vecihten önce
+  mukaddime var; 11–12'de yoktu). **Bir turun içinde ölçü sabittir:** D8'de 17–20'nin altı taslağı (v1 ve v2
   istemi) bu sürümle ölçülür; 1. turun sayıları (v1.1) onlarla doğrudan karşılaştırılmaz.
 -->
 
@@ -75,7 +76,7 @@ bir temsilin gösterdiği şey, sonda yapılan toplayış.
 ```json
 {{"kalemler": [
   {{"id": "N01",
-   "vecih": "V1 | V2 | V3",
+   "vecih": "Mukaddime | V1 | V2 | V3 (Mukaddime yalnız metinde vecihlerden ayrı bir mukaddime varsa)",
    "lafiz": "nüktenin bağlı olduğu lafız ya da hey'et, Arapça (ör. \"إِنَّمَا\", \"تعريف الْمُفْسِدُونَ\"); bağ kaleminde iki ucu (\"قَالُوا ← لَا تُفْسِدُوا\")",
    "nukte": "metnin bu özellik için söylediği, Türkçe, yorum katmadan; 1–2 cümle",
    "ar": ["a003"],

@@ -57,7 +57,7 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 17–20'de (temsil) v1 ve v2 yan yana; D3 buna katıldı (D8.1 bitti) | D1.9, D3 |
+| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 31–33'te (kıssa) v1 ve v2 yan yana; D3 buna katıldı (D8.1 bitti, D8.2 sürüyor) | D1.9, D3 |
 | 2 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
 | 4 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
@@ -91,7 +91,7 @@ yapılan, bir döngünün ilk turudur: istemin bir sürümüyle yaz, kapalı kit
 (D9), insanla süz (örneklemler), gerekirse kör noktayı ara (D6), dersleri genel usul olarak istemin yeni sürümüne
 yaz. D8 ikinci turdur. Kurallar: durma ölçütü "eleştiri olumlu olana kadar" değildir (yazan da ölçen de Claude; olumlu
 eleştiriyi hedef yapmak modeli eleştirmenin beğendiğini yazmaya yöneltir); her tur yeni istemi hiç bakılmamış bir
-birimde eski istemle yan yana sınar ve o birim bir sonraki turun ders birimi olur (zincir: 11–12 → 17–20 → 21; dersin
+birimde eski istemle yan yana sınar ve o birim bir sonraki turun ders birimi olur (zincir: 11–12 → 31–33 → …; dersin
 çıktığı birim yeniden yazılmaz; kullanıcının tasarruflu seçimi, 2026-11-14; birimler harcanır: Bakara'da 23 birim);
 bir turun içinde ölçü sabittir; insan emeği her turda örneklemlerle sınırlıdır, kör nokta okuması eleştirmen
 değişince yapılır. Ölçütler: ayrılmış birimde kapsama, D9.1'in mekanik sayıları, sistemli başlıkların kaçının yine
@@ -99,11 +99,13 @@ değişince yapılır. Ölçütler: ayrılmış birimde kapsama, D9.1'in mekanik
 görebileceği türdense döngü durur, D5'e geçilir (beklenen iki ya da üç tur). Tur başına ≈30–35 $ ve kullanıcının ≈1
 saati.
 
-**D8. Döngü 2: istemin yeni sürümü, 11–12 ve 17–20'de sınama** (D1'den ayrıldı, 2026-11-13, eski D1.9; 2026-11-14'te
+**D8. Döngü 2: istemin yeni sürümü, 31–33'te sınama** (D1'den ayrıldı, 2026-11-13, eski D1.9; 2026-11-14'te
 D3 buna katıldı ve döngünün 2. turu oldu, kullanıcının kararı). Girdiler: `d9-rapor.md` › "D8'e geçenler" (11 madde),
 `d6-rapor.md`, `d2-rapor.md`, D7'nin bulguları. İstem yalnız genel usul alır, âyete özgü ipucu girmez; 11–12'de de
-yazılabileceği için kurallar 11–12'nin gizlenen nüktelerini anmaz. Ölçü 17–20'dir (temsil türü; D3'ün "başka türden
-birim"i): orada v1 ve v2 yan yana; 11–12 yeniden yazılmaz (kullanıcının tasarruflu seçimi, 2026-11-14: dersin çıktığı
+yazılabileceği için kurallar 11–12'nin gizlenen nüktelerini anmaz. Ölçü 31–33'tür (kıssa ve mu'cize türü; D3'ün "başka türden
+birim"i; D5'in başlayacağı Bakara 34'ten hemen önceki birim, kullanıcının kararı, 2026-11-14): orada v1 ve v2 yan yana.
+Önce 17–20 seçilmişti; âyetin tahlili 11–12'nin ≈6 katı (Arapçada ≈290 cümle, iki temsil) çıktığı için bırakıldı;
+3. turda gerekirse 17–20 gizlenip yalnız 17–18 yazılır. 31–33'te 11–12 yeniden yazılmaz (kullanıcının tasarruflu seçimi, 2026-11-14: dersin çıktığı
 birimde iyi çıkması kısmen önceden bellidir; yalnız v2'nin davranışı değiştirip değiştirmediğinden şüphe edilirse
 eklenir).
 - **D8.1 İstem ve ölçü (bitti, 2026-11-14):** taslak istemi **v2** (`docs/d1/prova-istemi-v2.md`; v1 değişmeden durur,
@@ -116,10 +118,15 @@ eklenir).
   gizlenen metin arasında 1 ortak dizi, kalıp ibare). Karşılaştırıcı istemi **v2** (`aynen` aynı gerekçeyle; kısmi
   çelişki), eleştirmen istemi **v1.2** (D9'da yazıldı: kapsam sorusu). Usul özetine dokunulmadı (İşârât'ın usulünün
   tarifidir, yapay zekânın zaaflarının değil).
-- D8.2 17–20'nin prova hazırlığı: `d1-prova.UNITS["17-20"]` (gizlenecek düğümler, ince Ek 3'ün komşuları 16 ve 21);
-  usul özetinin (≈21 yer) ve birim çizelgesinin (≈13 yer) 17–20'ye dayanan örnekleri çıkarılır, yerine ipucu konmaz;
-  sızıntı testi. 17–20'nin nükte envanteri (D7.2 gibi: Fable çıkarır, Opus denetler) yazdırmadan önce sabitlenir.
-- D8.3 Yazdırma: 17–20'de v1 ile 3, v2 ile 3 (hepsi ince-klasik, Fable 5.2, yüksek).
+- D8.2 31–33'ün prova hazırlığı (2026-11-14): `d1-prova.UNITS["31-33"]`: gizlenen iki düğüm alt bölümleriyle (Arapçada
+  mukaddime içinde mukaddime, V1 `c019`, V2 `c025`, V3 `c034`; asıl 31. âyetin ortasında "تمت بوفاء" ile biter;
+  Türkçede âyet ve meal, mukaddime ve üç vecih ayrı bölüm, 31–33'ün devamıyla), ince Ek 3: 28, 29, 30 (sonrası yok) ve
+  17–20'nin nazarî girişi; usul özetinden 2, birim çizelgesinden 5 yer çıktı. Araçlar alt bölümlü birimi okur
+  (`d1-prova.unit_sentences`; 11–12'nin masası birebir aynı kaldı). Sızıntı testi âyet alıntılarını İşârât'ın imlâsıyla
+  da dışarıda bırakır (`hidden_ayah_shingles`; Kur'ân katmanının "السماوات"ı İşârât'ın "السموات"ıyla tutmuyordu):
+  v1 ve v2 istemi temiz (2 ortak dizi, kalıp ibare). Envanterde `Mukaddime` vechi (karşılaştırıcı v2). Not: 20. Söz
+  Âdem'in ta'lîm-i esmâsını işler ve me'hazdadır (Risale me'hazdır); iki istem de ona eşit erişir.
+- D8.3 Yazdırma: 31–33'te v1 ile 3, v2 ile 3 (hepsi ince-klasik, Fable 5.2, yüksek).
 - D8.4 Ölçüm: altı taslak aynı ölçüyle: D7 v2, D9.1, eleştirmen v1.2.
 - D8.5 Kullanıcının örneklemleri (masada): karşılaştırma örneklemi, süzgeç (10 not ve başlıklar), eleştirmen v1.2
   olduğu için kapsam notlarından dar bir kör nokta okuması.

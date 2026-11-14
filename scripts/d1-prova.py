@@ -102,6 +102,48 @@ UNITS = {
              "(`B/14-15-ayetlerin-tefsiri/c035`..`c036`)"),
         ],
     },
+    # D8, döngünün 2. turu (kullanıcının seçimi, 2026-11-14): kıssa ve mu'cize türü, 11–12 büyüklüğünde, D5'in
+    # başlayacağı Bakara 34'ten hemen önceki birim. Birim alt bölümlüdür: Arapçada her şey `mukaddime` altında (asıl
+    # 31. âyetin ortasında "تمت بوفاء" ile biter), Türkçede âyet ve meal düğümün kendisinde, sonra mukaddime ve üç
+    # vecih ayrı bölümler (Türkçede 31–33'ün devamı var). İnce Ek 3: önceki üç birim (sonrası yok: İşârât burada
+    # biter) ve 11–12'deki gibi Bakara 17–20'nin nazarî girişi (istem onu anar).
+    "31-33": {
+        "sura": 2, "ayahs": (31, 33), "sura_name": "Bakara", "olcu": "Bakara 11–12, 13, 14–15",
+        "ince": ("isaratul-icaz-arabi/sure-i-bakara/28", "isaratul-icaz-arabi/sure-i-bakara/28/mesele-01",
+                 "isaratul-icaz-arabi/sure-i-bakara/28/mesele-02", "isaratul-icaz-arabi/sure-i-bakara/28/mesele-03",
+                 "isaratul-icaz-arabi/sure-i-bakara/28/mesele-04", "isaratul-icaz-arabi/sure-i-bakara/28/mesele-05",
+                 "isaratul-icaz-arabi/sure-i-bakara/29", "isaratul-icaz-arabi/sure-i-bakara/29/mesele-01",
+                 "isaratul-icaz-arabi/sure-i-bakara/29/mesele-02", "isaratul-icaz-arabi/sure-i-bakara/29/mesele-03",
+                 "isaratul-icaz-arabi/sure-i-bakara/30", "isaratul-icaz-arabi/sure-i-bakara/30/mukaddime",
+                 "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+                 "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/fasil",
+                 "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/fasil-2"),
+        "nodes": ("isaratul-icaz/sure-i-bakara/31-33-ayetlerin-tefsiri",
+                  "isaratul-icaz-arabi/sure-i-bakara/31-33-ayetlerin-tefsiri"),
+        "ozet": [
+            (None, "| 31–33 |"),                                                       # 3.x vecih düzeni çizelgesi
+            ("| 2 (kayıtların tecâvübü), 17–20 (temsil), 31–33 (kıssa ve mu'cize) |",
+             "| 2 (kayıtların tecâvübü), 17–20 (temsil) |"),                         # mukaddimenin (c) durumu
+        ],
+        # yerel kimlikler birimin düğümüne göre (`d1-prova.unit_sentences`); `son` yok: birim İşârât'ın sonu
+        "sections": {
+            "isaratul-icaz-arabi": {"Mukaddime": "mukaddime/c001", "V1": "mukaddime/c019", "V2": "mukaddime/c025",
+                                    "V3": "mukaddime/c034"},
+            "isaratul-icaz": {"Âyet": "c001", "Mukaddime": "mukaddime/c001", "V1": "vecih-01/c001",
+                              "V2": "vecih-02/c001", "V3": "vecih-03/c001"},
+        },
+        "cizelge": [
+            (None, "| 31–33 |"),                                                       # çizelge satırı
+            (", `B/29/c001`, `B/31-33-ayetlerin-tefsiri/mukaddime/c018`.", ", `B/29/c001`."),
+            ("17–20 (temsil: belâgat-ı nazm, on iki mesele), 31–33 (kıssa ve mu'cize), 2 (kayıtların tecâvübü) | "
+             "`B/17-20-ayetlerin-tefsiri/fasil-2/c011`..`c012`; `B/31-33-ayetlerin-tefsiri/mukaddime/c003`; `B/2/mukaddime/c001` |",
+             "17–20 (temsil: belâgat-ı nazm, on iki mesele), 2 (kayıtların tecâvübü) | "
+             "`B/17-20-ayetlerin-tefsiri/fasil-2/c011`..`c012`; `B/2/mukaddime/c001` |"),
+            ("(7, 17–20, 21–22, 23–24, 30, 31–33)", "(7, 17–20, 21–22, 23–24, 30)"),
+            ("7. **Arapça asıl 31. âyetin ortasında biter** (`B/31-33-ayetlerin-tefsiri/mukaddime/c051`: \"تمت بوفاء\"); "
+             "Türkçe tercümede 31–33'ün devamı vardır.\n", ""),
+        ],
+    },
 }
 
 
@@ -250,6 +292,20 @@ def hidden_sentences(cfg: dict) -> list[tuple[str, str]]:
     return out
 
 
+def hidden_ayah_shingles(cfg: dict) -> set[tuple[str, ...]]:
+    """Gizlenen metinde kaynağın âyet diye işaretlediği parçalar (İşârât'ın imlâsıyla): Kur'ân'dır, sızıntı değildir.
+    Kur'ân katmanının yazılışı İşârât'ınkiyle her zaman tutmaz ("السموات"; 31–33'te görüldü, 2026-11-14)."""
+    conn = sqlite3.connect(GENEL_DB)
+    out: set = set()
+    for node in cfg["nodes"]:
+        for text, a, b in conn.execute(
+                "SELECT p.text, x.span_start, x.span_end FROM arabic x JOIN paragraphs p ON p.id = x.paragraph_id "
+                "WHERE x.kind = 'ayet' AND (x.sentence_id LIKE ? OR x.sentence_id LIKE ?)", (node + "/c%", node + "/%")):
+            if text:
+                out |= shingles(text[a:b])
+    return out
+
+
 def quran_shingles() -> set[tuple[str, ...]]:
     conn = sqlite3.connect(GENEL_DB)
     out: set = set()
@@ -276,7 +332,7 @@ def leak_scan(hidden: set, db: Path) -> dict[str, int]:
 def leak_report(unit: str, cfg: dict, out: Path, prompt: str, report: str = "sizinti.md") -> bool:
     hidden_rows = hidden_sentences(cfg)
     quran = quran_shingles()
-    hidden = set().union(*(shingles(t) for _, t in hidden_rows)) - quran
+    hidden = set().union(*(shingles(t) for _, t in hidden_rows)) - quran - hidden_ayah_shingles(cfg)
     lines = [f"# Sızıntı testi: {unit} ({report.removesuffix('.md')})", "",
              f"Gizlenen {len(hidden_rows)} cümlenin Kur'ân dışı {N} kelimelik dizileri: {len(hidden)}. "
              "Bir satır, o cümlede bu dizilerden kaçının geçtiğidir. "
@@ -497,18 +553,29 @@ def parse_draft(text: str) -> tuple[dict, dict]:
     return dict(sections), sources
 
 
+def unit_node(cfg: dict, work: str) -> str:
+    return next(n for n in cfg["nodes"] if n.startswith(work + "/"))
+
+
+def unit_sentences(cfg: dict, work: str) -> list[tuple[str, str, str, str]]:
+    """Gizlenen birimin cümleleri, alt bölümleriyle, kitap sırasıyla: (kimlik, paragraf, metin, yerel kimlik). Yerel
+    kimlik birimin düğümüne göredir: tek bölümlü birimde `c004`, alt bölümlüde `mukaddime/c019` (31–33). `sections`'ın
+    sınırları bu yerel kimliklerle yazılır."""
+    conn = sqlite3.connect(GENEL_DB)
+    node = unit_node(cfg, work)
+    return [(sid, pid, text, sid[len(node) + 1:]) for sid, pid, text in conn.execute(
+        "SELECT id, paragraph_id, text FROM sentences WHERE node_id = ? OR node_id LIKE ? ORDER BY seq",
+        (node, node + "/%"))]
+
+
 def hidden_sections(cfg: dict, work: str) -> dict[str, list[str]]:
     """Gizlenen metnin vecihleri: {vecih: [paragraf metni]}."""
-    conn = sqlite3.connect(GENEL_DB)
-    node = next(n for n in cfg["nodes"] if n.startswith(work + "/"))
     bounds = cfg["sections"][work]
     order = [(k, v) for k, v in bounds.items() if k != "son"]
     out: dict[str, list] = defaultdict(list)
     current, para, last = None, None, None
-    for sid, pid, text in conn.execute("SELECT id, paragraph_id, text FROM sentences WHERE node_id = ? ORDER BY seq",
-                                       (node,)):
-        local = sid[len(node) + 1:]
-        if last == bounds["son"]:
+    for sid, pid, text, local in unit_sentences(cfg, work):
+        if last is not None and last == bounds.get("son"):
             break
         for key, first in order:
             if local == first:

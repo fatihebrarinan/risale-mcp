@@ -12,7 +12,7 @@ gerekirse **kör noktayı ara** (D6), **dersleri genel usul olarak istemin yeni 
   ya taslak iyileşmiştir ya da ikisi aynı kör noktada buluşmuştur (D6'da A10). Olumlu eleştiriyi hedef yapmak modeli
   eleştirmenin beğendiğini yazmaya yöneltir.
 - **Birimler zincir olur, karşılaştırma yeni birimde yapılır** (kullanıcının düzeni ve tasarruflu seçimi,
-  2026-11-14). Her turun yeni birimi bir sonraki turun ders birimidir: 11–12 → 17–20 → 21. Yeni birimde **eski ve yeni
+  2026-11-14). Her turun yeni birimi bir sonraki turun ders birimidir: 11–12 → 31–33 → …. Yeni birimde **eski ve yeni
   istem yan yana**, üçer taslak yazılır: fark yalnız istemden gelir, birimin kolay ya da zor olmasından değil. Dersin
   çıktığı birimde yeni istemle yeniden yazılmaz (orada iyi çıkması kısmen önceden bellidir, kurallar o birimin
   eksiklerine göre seçildi); yalnız yeni istemin davranışı değiştirip değiştirmediğinden şüphe edilirse eklenir. Yeni
@@ -42,8 +42,8 @@ gerekirse **kör noktayı ara** (D6), **dersleri genel usul olarak istemin yeni 
 | Tur | İstem | Birim (rol) | Taslak | Kapsama (iki okuyucunun ortak) | İnsan | Karar |
 |---|---|---|---|---|---|---|
 | 1 (D1, D2, D7, D9, D6; 2026-11-10/14) | v1 tam (1), v1-ince (2–3), v1-ince-klasik (4–6) | 11–12 (ders) | 6 | %71, %76, %71; %68, %73, %68 | D7.7 güven %95 (30/30); D9.3 10/10 not, 9/9 başlık kalsın; D6 24'te 20 doğru, 1 yanlış | Devam: dersler istem v2'ye (`d9-rapor.md` "D8'e geçenler", 11 madde); ölçü: karşılaştırıcı v2, eleştirmen v1.2 |
-| 2 (D8; planlı) | v1-ince-klasik ve v2-ince-klasik yan yana | **17–20** (yeni birim, temsil türü; 3. turun ders birimi) | 3 + 3 | — | D7.7 ve D9.3 gibi; eleştirmen v1.2 olduğu için kapsam notlarından dar bir kör nokta okuması | — |
-| 3 (gerekirse) | v2 ve v3 yan yana | 21 (yeni birim, hüküm türü) | 3 + 3 | — | — | — |
+| 2 (D8; planlı) | v1-ince-klasik ve v2-ince-klasik yan yana | **31–33** (yeni birim, kıssa ve mu'cize türü; Bakara 34'ten hemen önce; 3. turun ders birimi) | 3 + 3 | — | D7.7 ve D9.3 gibi; eleştirmen v1.2 olduğu için kapsam notlarından dar bir kör nokta okuması | — |
+| 3 (gerekirse) | v2 ve v3 yan yana | 17–18 (17–20 gizlenir; temsil) ya da 21 (hüküm) | 3 + 3 | — | — | — |
 
 1. tur ayrıntıları: `data/d1/provalar/11-12/` (`rapor.md`, `d2-rapor.md`, `yz-karsilastirma.md`, `d9-rapor.md`,
 `d6-rapor.md`). 1. turda D1 ile D2'nin farkı yalnız eserlerdi (klasik eserler kapsamayı artırmadı, dayanağı
@@ -55,6 +55,7 @@ güçlendirdi); tam istem ince istemden iyi değildi.
 |---|---|---|
 | 11–12 | nazm ve lafız (nehiy, iddia ve red) | 1. turun birimi ve 2. turun ders birimi; yeniden yazılmaz |
 | 9–10, 13 | nazm ve lafız | 1. turda eleştiride çok okundu: kör sınama için kullanılmaz |
-| 17–20 | temsil (Kur'ân'ın meseli, nazarî giriş) | 2. turun yeni birimi, 3. turun ders birimi; hazırlığı usul özetinden (≈21 yer) ve birim çizelgesinden (≈13 yer) 17–20'ye dayanan örneklerin çıkarılmasını ister |
-| 21, 22 | hüküm, emir | 21 3. turun yeni birimi (gerekirse; D3'ün "hüküm" türü); 22 kenarda |
+| 17–20 | temsil (Kur'ân'ın meseli) | Âyetin tahlili 11–12'nin ≈6 katı (Arapçada ≈290 cümle, iki temsil); 2. tur için bırakıldı. 3. turda gerekirse tamamı gizlenir, yalnız 17–18 yazılır. Nazarî girişi (giriş, iki fasıl, 1–9. meseleler) genel usuldür, me'hazda kalır |
+| 31–33 | kıssa ve mu'cize (başta mukaddime) | 2. turun yeni birimi; Arapça asıl 31. âyetin ortasında biter, Türkçede devamı var |
+| 21, 22 | hüküm, emir | 3. tur için aday (D3'ün "hüküm" türü) |
 | Öbürleri | | Kenarda; D5'e geçerken birkaçı kör sınama için ayrılmış kalır |

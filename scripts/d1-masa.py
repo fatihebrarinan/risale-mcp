@@ -185,9 +185,10 @@ def isarat(unit: str) -> dict:
     for lang, rows in Y.hidden(unit).items():
         work = "isaratul-icaz-arabi" if lang == "ar" else "isaratul-icaz"
         bounds = {v: k for k, v in cfg["sections"][work].items() if k != "son"}
+        node = P.unit_node(cfg, work)
         cur, paras, last = None, [], None
         for short, sid, text, pid in rows:
-            local = sid.rsplit("/", 1)[-1]
+            local = sid[len(node) + 1:]
             cur = bounds.get(local, cur)
             if cur is None or cur == "Âyet":
                 continue

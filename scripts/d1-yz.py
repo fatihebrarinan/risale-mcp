@@ -68,20 +68,19 @@ def prompt_parts() -> tuple[dict[str, str], str]:
 def hidden(unit: str) -> dict[str, list[tuple[str, str, str]]]:
     """Gizlenen metin: {'ar'|'tr': [(istem kimliği, veritabanı kimliği, metin, paragraf)]}; `son`dan öncesi."""
     cfg = P.UNITS[unit]
-    import sqlite3
-    conn = sqlite3.connect(P.GENEL_DB)
     out = {}
     for work, lang in (("isaratul-icaz-arabi", "ar"), ("isaratul-icaz", "tr")):
-        node = next(n for n in cfg["nodes"] if n.startswith(work + "/"))
-        stop = cfg["sections"][work]["son"]
+        stop = cfg["sections"][work].get("son")
         rows = []
-        for sid, pid, text in conn.execute("SELECT id, paragraph_id, text FROM sentences WHERE node_id = ? ORDER BY seq",
-                                           (node,)):
-            local = sid[len(node) + 1:]
+        for sid, pid, text, local in P.unit_sentences(cfg, work):
             if local == stop:
                 break
-            rows.append((f"{'a' if lang == 'ar' else 't'}{local[1:]}", sid, text, pid))
-        out[lang] = rows
+            rows.append((local, sid, text, pid))
+        p = "a" if lang == "ar" else "t"
+        if any("/" in r[0] for r in rows):    # alt bölümlü birim (31–33): istem kimliği sırayla
+            out[lang] = [(f"{p}{k:03d}", sid, text, pid) for k, (_, sid, text, pid) in enumerate(rows, 1)]
+        else:                                  # tek bölüm (11–12): c004 -> a004, eski kimlikler korunur
+            out[lang] = [(f"{p}{local[1:]}", sid, text, pid) for local, sid, text, pid in rows]
     return out
 
 
@@ -855,9 +854,10 @@ def hidden_para_anchors(unit: str) -> dict[str, str]:
     for lang, rows in hidden(unit).items():
         work = "isaratul-icaz-arabi" if lang == "ar" else "isaratul-icaz"
         bounds = {v: k for k, v in cfg["sections"][work].items() if k != "son"}
+        node = P.unit_node(cfg, work)
         current, para, count = None, None, Counter()
         for short, sid, _, pid in rows:
-            local = sid.rsplit("/", 1)[-1]
+            local = sid[len(node) + 1:]
             if local in bounds:
                 current, para = bounds[local], None
             if current is None:
