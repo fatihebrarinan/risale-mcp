@@ -121,6 +121,12 @@ details > summary { cursor: pointer; }
 .card.insample { border-left: 4px solid var(--warn); }
 .samplebox { background: var(--card); border: 1px solid var(--warn); border-radius: 8px; padding: 6px 10px; margin: 0 0 10px; font-size: .82rem; }
 .samplebox summary { font-weight: 600; }
+.bkbox { border-color: var(--accent); }
+.bklist { margin: 4px 0; padding-left: 1.8em; max-height: 40vh; overflow-y: auto; }
+.bklist li { margin: 2px 0; } .bklist li.here { background: var(--accent-soft); border-radius: 3px; }
+.bklist button { text-align: start; }
+.bknav { display: flex; justify-content: space-between; margin-top: 8px; }
+.bklist .done { color: var(--accent); font-weight: 600; }
 .foldbar button { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 0 10px; cursor: pointer; }
 .strip { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; font-size: .78rem; }
 .strip button { border: 1px solid var(--line); background: var(--soft); border-radius: 4px; padding: 0 6px; cursor: pointer; }
@@ -432,7 +438,7 @@ const INTRO = {
     Her maddenin başında iddiayı tek cümlelik bir soruya çeviren <b>soru</b> durur; bir ehline olduğu gibi sorabilirsiniz. Soruyu yapay zekâ iddiadan sadeleştirdi:
     hüküm iddiaya verilir, soru iddiaya uymuyorsa notta söyleyin. Sarı söz iddiadır; çevresi taslağın paragrafıdır. <b>Sizden beklenen:</b> iddia doğru mu? Dayanağınızı da yazın: kaynak (soldaki cümleler,
     kimliğiyle), kişi (adı değil, alanı) ya da kendi kanaatiniz. Yapay zekâya dayanan hüküm "emin değilim" sayılır. Eleştirmenin aynı paragrafa
-    notları maddenin altında görünür. Aşağıdaki dizinden bütün maddelere gidebilirsiniz.</details>`,
+    notları maddenin altında görünür. 24 maddenin hepsi sekmenin başındaki listededir.</details>`,
 };
 
 function evBtns(key, choices, attr, cur) {
@@ -646,7 +652,14 @@ function elestiriHtml() {
 
 function bkAll() { return Object.entries(Y.bilirkisi).flatMap(([p, xs]) => xs.map(x => Object.assign({part: p}, x))); }
 function bkMark(m) { return m.v ? `<span class="done">${esc(BKV[m.v])}</span>${m.dt ? ` <span class="muted">(${esc(BKD[m.dt])})</span>` : ''}` : '<span class="muted">işaretsiz</span>'; }
-function bkCard(x, no) {
+function bkNav(x) {    // bütün maddeler boyunca sırayla: taslak ve yer kendiliğinden değişir
+  const all = bkAll(), i = all.findIndex(y => y.part === x.part && y.id === x.id);
+  const go = (y, l) => y ? `<button class="linkish" data-bkgo="${esc(y.part + '|' + y.id)}">${l}</button>` : '';
+  return `<div class="small bknav">${go(all[i - 1], '← önceki madde')}${go(all[i + 1], 'sonraki madde →')}</div>`;
+}
+function bkNo(x) { const all = bkAll(); return `Madde ${all.findIndex(y => y.part === x.part && y.id === x.id) + 1}/${all.length}`; }
+function bkCard(x) {
+  const no = bkNo(x);
   const key = `${U}|${x.part}|${x.id}`, m = bkMarks[key] || {}, fid = `bk:${x.part}|${x.id}`;
   if (isFolded(fid)) return `<div class="card small" data-bk="${esc(key)}">${cardHead(no, fid, `<span class="gist">${trEsc(x.q || x.c)}</span>`, bkMark(m))}</div>`;
   const tr = x.tr || '', r = locate(tr, x.c);
@@ -666,15 +679,23 @@ function bkCard(x, no) {
     <select data-bkf="dt">${Object.entries(BKD).map(([v, l]) => `<option value="${v}"${(m.dt || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select></div>
     <input data-bkf="d" placeholder="dayanak: cümle kimliği, kişinin alanı…" value="${esc(m.d || '')}" style="width:100%;margin-top:4px">
     <textarea data-bkf="n" rows="2" style="width:100%;margin-top:4px" placeholder="not">${esc(m.n || '')}</textarea>
-    ${m.dt === 'yz' ? '<div class="small muted">Dayanak yapay zekâ: hüküm "emin değilim" sayılır.</div>' : ''}</div>`;
+    ${m.dt === 'yz' ? '<div class="small muted">Dayanak yapay zekâ: hüküm "emin değilim" sayılır.</div>' : ''}${bkNav(x)}</div>`;
+}
+function bkBox() {     // 24 maddenin hepsi, taslaktan ve yerden bağımsız (kullanıcı yalnız seçili taslağınkileri buluyordu)
+  const all = bkAll(), done = x => (bkMarks[`${U}|${x.part}|${x.id}`] || {}).v;
+  return `<details class="samplebox bkbox"${store.get('d1-masa-bk-acik', true) ? ' open' : ''} id="bkbox">
+    <summary>Bütün maddeler: ${all.filter(done).length}/${all.length} işaretlendi</summary>
+    <p>Maddeler altı taslağa (her birinde 4) ve âyetin yerlerine dağılmıştır; aşağıdakine tıklayınca taslak ve yer kendiliğinden
+    değişir. Kartın altındaki "sonraki madde" ile sırayla da gidebilirsiniz.</p>
+    <ol class="bklist">${all.map(x => `<li class="${done(x) ? 'done' : ''}${x.t === st.draft && at(x) ? ' here' : ''}"><button class="linkish" data-bkgo="${esc(x.part + '|' + x.id)}">
+      <span class="muted">${esc(draftLabel(x.t).replace('Taslak ', 'T'))} · ${locName(x.loc[0])}</span> ${trEsc(x.q || x.c)}</button>${done(x) ? ' <span class="done">✓</span>' : ''}</li>`).join('')}</ol></details>`;
 }
 function bilirkisiHtml() {
   const all = bkAll(), here = all.filter(x => x.t === st.draft && at(x));
   const done = x => (bkMarks[`${U}|${x.part}|${x.id}`] || {}).v;
-  let h = foldBar(here.map(x => `bk:${x.part}|${x.id}`), here.filter(done).map(x => `bk:${x.part}|${x.id}`), 'madde');
-  h += here.length ? here.map((x, i) => bkCard(x, `Madde ${i + 1}/${here.length}`)).join('') : `<p class="empty">Bu taslakta bu yere ait bilirkişi sorusu yok. Aşağıdaki dizinden gidin.</p>`;
-  h += `<h3>Bütün maddeler <span class="muted">${all.filter(done).length}/${all.length} işaretlendi; taslak ve yer</span></h3><div class="idx">${all.map(x =>
-    `<button data-bkgo="${esc(x.part + '|' + x.id)}" class="${x.t === st.draft && at(x) ? 'here' : done(x) ? 'done' : ''}">${esc(draftLabel(x.t).replace('Taslak ', 'T'))} · ${locName(x.loc[0])}</button>`).join('')}</div>`;
+  let h = bkBox();
+  h += foldBar(here.map(x => `bk:${x.part}|${x.id}`), here.filter(done).map(x => `bk:${x.part}|${x.id}`), 'madde');
+  h += here.length ? here.map(x => bkCard(x)).join('') : `<p class="empty">Bu taslakta bu yerde madde yok. Yukarıdaki listeden bir madde seçin.</p>`;
   return h;
 }
 
@@ -803,6 +824,7 @@ document.addEventListener('click', ev => {
 document.addEventListener('toggle', ev => {
   if (ev.target.parentElement && ev.target.parentElement.id === 'intro') store.set('d1-masa-intro-' + st.tab, ev.target.open);
   if (ev.target.id === 'smpbox') store.set('d1-masa-orneklem-acik', ev.target.open);
+  if (ev.target.id === 'bkbox') store.set('d1-masa-bk-acik', ev.target.open);
 }, true);
 function bkSave(box, patch) {
   if (needReader()) return false;

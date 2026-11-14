@@ -218,6 +218,10 @@ biçimi (`d1-prova.py notlar` okur).
   yükleniyorsa "kaynak bunu söylüyor mu" diye sorulur. Masada kartın başında "Soru:", altında "Taslağın iddiası";
   küçük kartın özeti sorudur. Hüküm iddiaya verilir; soru iddiaya uymuyorsa notta söylenir. `d6-bilirkisi.md` soruyu
   da yazar. B kısmı (D9.3'ten sonra) aynı dosya düzeniyle (`bilirkisi-B-sorular.json`).
+- **Bütün maddeler listesi (2026-11-14, kullanıcı 24 maddenin yalnız 4'ünü bulabildi):** maddeler taslağa ve yere
+  dağıldığı için sekme yalnız seçili taslağın o yerdeki maddelerini gösteriyordu, kalanlar en alttaki dizindeydi.
+  Bilirkişi sekmesinin başında 24 maddenin numaralı listesi (soruyla, taslak ve yer; tıklayınca ikisi de değişir),
+  kartta genel numara ("Madde 14/24") ve "önceki / sonraki madde".
 - **Açık:** müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); işaretlerin
   sunucuda toplanması ayrı karardır (heyet akışı).
 
