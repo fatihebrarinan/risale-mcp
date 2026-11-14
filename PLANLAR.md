@@ -262,6 +262,18 @@ raporu yok.
     ölçüde güvenilir sayılır, "emin değilim" kalanlar heyete (ya da sonradan bulunacak bilirkişiye) kalır.
   - **Bazı maddeler çözülmeyebilir.** İnce belâgat isabeti (bir nüktenin yerinde olup olmadığı) ancak sorulan kişi
     ehilse çözülür; "emin değilim" kalması kusur değildir.
+  **Örneklem hazır (2026-11-14; kullanıcının kararları: 24 madde, B ayrı sayılır, itiraz edilen 4 madde kalır).**
+  `scripts/d1-elestiri.py bilirkisi 11-12` → `yz/bilirkisi-A.json` (sabit tohum; `--yeniden` verilmedikçe korunur).
+  Havuz: tercüme paragraflarındaki `[dil]` ve `[belâgat]` işaretleri, işaret başına bir iddia (6 taslakta 388);
+  "itiraz" = eleştirmenin o paragrafa yanlış, belâgat, i'râb, kaynak, uydurma, fazla türünde ya da "ehline sor" notu
+  var (paragraf düzeyinde, kaba). Taslak başına 4: belâgat kendi tespiti 10 (havuz 122), belâgat kaynaklı 6 (114),
+  dil 4 (41; ikisi kendi tespiti), itiraz edilen paragraftan 4 (111; eleştirmenin itirazına ters yoklama). Kaynaklı
+  maddelerde kaynağın metni veritabanından gelir. `okuma-yz.html` › "Bilirkişi örneklemi": hüküm (doğru / yanlış /
+  emin değilim), dayanak türü (kaynak / kişi / kendi kanaati / yapay zekâ; yapay zekâ seçilince hüküm "emin değilim"
+  olur), dayanak ve not; kör okuma: tabaka ve itiraz gösterilmez, maddeden taslağa giden bağlantı YZ katmanını kapalı
+  açar. İşaretler dışa aktarma dosyasına `bilirkisi` diye girer; `d1-elestiri.py rapor` → `provalar/11-12/d6-bilirkisi.md`
+  (tabakayı gösterir: kullanıcı bitirmeden açmaz). B kısmı D9.3'ten sonra: `bilirkisi 11-12 --kisim B` (süzgeçte
+  "ehline sor" denen notlar). Kullanıcının sırası: D7.7, D6.2 A (eleştirmenin notlarını okumadan), D9.3, D6.2 B.
 - D6.3 Gelen notlar: okuyuculara gönderilen `data/d1/okuma.html`'den notlar gelirse `scripts/d1-prova.py notlar` →
   `provalar/11-12/notlar.md` ile az emekle işlenir; beklenmez, yeniden davet edilmez. Kullanıcının ilk izlenimi
   (2026-11-13): taslak işliyor, yapay zekâ bazı yerlerde çok iyi tespit ve çıkarımlarda bulunmuş; özellikle üçüncü

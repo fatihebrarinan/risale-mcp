@@ -119,6 +119,7 @@ body:not(.show-yz) .yz { display: none; }
     <label id="yzw" hidden><input type="checkbox" id="yzc"> YZ karşılaştırması</label>
     <button class="btn" id="yzs" hidden>YZ örneklemi <span id="yzn"></span></button>
     <button class="btn" id="yze" hidden>YZ eleştirisi <span id="yzen"></span></button>
+    <button class="btn" id="bks" hidden>Bilirkişi örneklemi <span id="bkn"></span></button>
     <button class="btn" id="rubric">Ölçüt çizelgesi</button>
     <button class="btn" id="list">Notlar <span id="count"></span></button>
     <button class="btn primary" id="export">Notları dışa aktar</button>
@@ -143,6 +144,7 @@ const store = {
 };
 let notes = store.get('d1-okuma-notlar', []);
 let rubric = store.get('d1-okuma-olcut', {});      // "birim|taslak|okuyucu" -> {kriter: {score, note}}
+let bkMarks = store.get('d1-bilirkisi', {});        // D6.2: "birim|kısım|madde" -> {v, dt, d, n, reader, at}
 let yzSuz = store.get('d1-yz-suzgec', {});          // D9.3: "birim|taslak|not anahtarı" -> {v, reader, at}
 let yzEval = store.get('d1-yz-sinama', {});         // D7.7: "birim|taslak|okuyucu-modeli|kalem" -> {v, reader, at}
 let st = Object.assign({unit: Object.keys(DATA.units)[0], mode: 'isarat', a: null, b: null, lang: 'ar', ez: true, yz: false},
@@ -178,6 +180,10 @@ function controls() {
   $('#yzw').hidden = $('#yzs').hidden = !hasYz; $('#yzc').checked = hasYz && st.yz;
   document.body.classList.toggle('show-yz', hasYz && st.yz);
   if (hasYz) { const s = U().yz.sample, n = s.filter(k => yzEval[`${st.unit}|${k}`]).length; $('#yzn').textContent = `(${n}/${s.length})`; }
+  const bk = hasYz && U().yz.bilirkisi && U().yz.bilirkisi.A;
+  $('#bks').hidden = !bk;
+  if (bk) { const all = Object.entries(U().yz.bilirkisi).flatMap(([p, xs]) => xs.map(x => `${st.unit}|${p}|${x.id}`));
+            $('#bkn').textContent = `(${all.filter(k => (bkMarks[k] || {}).v).length}/${all.length})`; }
   const cr = hasYz && U().yz.critic && U().yz.critic[st.a];
   $('#yze').hidden = !cr;
   if (cr) $('#yzen').textContent = `(${cr.notes.filter(x => yzSuz[`${st.unit}|${st.a}|${x.k}`]).length}/${cr.notes.length})`;
@@ -208,6 +214,41 @@ function extraDetail(dk, f, withGo) {
     <div class="d">${f.a.map(a => withGo ? `<a data-yzgo="${esc(a)}" data-draft="${dk}">${esc(a)}</a>` : esc(a)).join(', ')}${f.ok ? '' : ' · <b>denetimsiz</b>'}
     ${evBtns(`${dk}|fazla|${f.k}`)}${f.g ? `<br>${esc(f.g)}` : ''}<br>«<span class="qq">${esc(f.q)}</span>»</div>${es}</details>`;
 }
+// --- D6.2: bilirkişi örneklemi (kör: YZ katmanı ve eleştirmenin itirazı gösterilmez)
+const BKV = {dogru: 'doğru', yanlis: 'yanlış', emin_degilim: 'emin değilim'};
+const BKD = {'': 'dayanak türü…', kaynak: 'kaynak (cümle kimliği)', kisi: 'kişi (yalnız alanı)', kanaat: 'kendi kanaatim', yz: 'yapay zekâ'};
+function bkItem(part, x) {
+  const key = `${st.unit}|${part}|${x.id}`, m = bkMarks[key] || {};
+  const label = U().drafts[x.t] ? U().drafts[x.t].label : x.t;
+  const src = x.src.map(k => `<details><summary>Kaynak [${esc(k.n)}] ${esc(k.c)}</summary><div class="d"><span class="qq">${esc(k.x || '(metni bulunamadı)')}</span></div></details>`).join('');
+  return `<div class="it" data-bk="${esc(key)}"><b>${esc(x.id)}</b> · ${esc(label)} · <a data-bkgo="${esc(x.a)}" data-draft="${esc(x.t)}">${esc(x.a)}</a>
+    ${x.e ? `<div><i>Eleştirmenin notu:</i> ${esc(x.e)}${x.s ? `<br><i>Soru:</i> ${esc(x.s)}` : ''}</div>` : `<div><b>İddia:</b> ${esc(x.c)} <span class="muted">[${esc(x.m)}]</span></div>`}
+    <details><summary>Arapça paragraf ve tercümesi</summary><div class="d"><span class="qq">${esc(x.ar)}</span><br>${esc(x.tr)}</div></details>${src}
+    <div style="margin-top:4px"><span class="ev">${Object.entries(BKV).map(([v, l]) => `<button data-bkv="${v}" aria-pressed="${m.v === v}">${l}</button>`).join('')}</span>
+    <select data-bkf="dt">${Object.entries(BKD).map(([v, l]) => `<option value="${v}"${(m.dt || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select>
+    <input data-bkf="d" placeholder="dayanak: cümle kimliği, kişinin alanı…" value="${esc(m.d || '')}" style="width:40%"></div>
+    <textarea data-bkf="n" rows="2" style="width:100%;margin-top:3px" placeholder="not">${esc(m.n || '')}</textarea>
+    ${m.dt === 'yz' ? '<div class="muted">Dayanak yapay zekâ: hüküm "emin değilim" sayılır.</div>' : ''}</div>`;
+}
+function showBilirkisi() {
+  const b = U().yz.bilirkisi;
+  const parts = Object.entries(b).map(([p, xs]) => `<h3 style="font-family:system-ui;font-size:.9rem">${p === 'A' ? 'A: taslakların dil ve belâgat iddiaları' : 'B: D9.3\'te "ehline sor" dediğiniz notlar'} (${xs.length})</h3>
+    <div class="list">${xs.map(x => bkItem(p, x)).join('')}</div>`).join('');
+  dialog('Bilirkişi örneklemi (D6.2)', `<p class="muted" style="font-family:system-ui;font-size:.82rem">Her iddia için
+    hüküm (doğru / yanlış / emin değilim) ve dayanağı: kaynak (cümle kimliğiyle), kişi (adı değil alanı) ya da kendi kanaatiniz.
+    Dayanağı yapay zekâ olan hüküm "emin değilim" sayılır. Eklentileri yalnız metin bulmak için kullanın.
+    Bu görünümde yapay zekâ karşılaştırması ve eleştirisi yoktur; bir maddeye bakarken "YZ karşılaştırması"nı kapalı tutun.
+    İşaretler "Notları dışa aktar" dosyasına girer.</p>${parts}`);
+}
+function bkSave(box, patch) {
+  if (!reader()) { say('Önce okuyucu adınızı yazın.'); $('#reader').focus(); return false; }
+  const key = box.dataset.bk, m = Object.assign({}, bkMarks[key] || {}, patch, {reader: reader(), at: new Date().toISOString()});
+  if (m.dt === 'yz') m.v = 'emin_degilim';
+  bkMarks[key] = m; store.set('d1-bilirkisi', bkMarks);
+  box.querySelectorAll('[data-bkv]').forEach(x => x.setAttribute('aria-pressed', m.v === x.dataset.bkv));
+  controls(); return true;
+}
+
 // --- D9.3: yapay zekâ eleştirmeninin notları ve süzgeç (kalsın / atılsın / ehline sor)
 const CTUR = {nasil_vardi: 'nasıl vardı', kaynak_disiplini: 'kaynak disiplini', etiket: 'etiket', tercume: 'tercüme', diger: 'diğer'};
 function suzBtns(dk, k) {
@@ -419,7 +460,7 @@ function showList() {
 // --- dışa ve içe aktarma
 function exportNotes() {
   const r = reader() || 'okuyucu';
-  const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes, yz_sinama: yzEval, yz_suzgec: yzSuz,
+  const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes, yz_sinama: yzEval, yz_suzgec: yzSuz, bilirkisi: bkMarks,
     rubric: Object.entries(rubric).map(([k, v]) => { const [unit, draft, rd] = k.split('|'); return {unit, draft, reader: rd, scores: v}; })};
   const blob = new Blob([JSON.stringify(payload, null, 1)], {type: 'application/json'});
   const a = document.createElement('a');
@@ -443,6 +484,8 @@ $('#import').onchange = async ev => {
     store.set('d1-yz-sinama', yzEval);
     for (const [k, v] of Object.entries(p.yz_suzgec || {})) if (!yzSuz[k] || v.at > yzSuz[k].at) yzSuz[k] = v;
     store.set('d1-yz-suzgec', yzSuz);
+    for (const [k, v] of Object.entries(p.bilirkisi || {})) if (!bkMarks[k] || v.at > bkMarks[k].at) bkMarks[k] = v;
+    store.set('d1-bilirkisi', bkMarks);
     saveNotes(); store.set('d1-okuma-olcut', rubric); render(); say(`${added} yeni not içe aktarıldı.`);
   } catch (e) { say('İçe aktarılamadı: ' + e.message); }
   ev.target.value = '';
@@ -460,6 +503,18 @@ $('#rubric').onclick = showRubric;
 $('#yzc').onchange = e => { st.yz = e.target.checked; render(); };
 $('#yzs').onclick = showSample;
 $('#yze').onclick = showCritic;
+$('#bks').onclick = showBilirkisi;
+document.addEventListener('change', ev => {
+  const f = ev.target.closest('[data-bkf]'); if (!f) return;
+  const box = f.closest('[data-bk]');
+  if (!bkSave(box, {[f.dataset.bkf]: f.value})) return;
+  if (f.dataset.bkf === 'dt' && f.value === 'yz') showBilirkisiKeep(box.dataset.bk);
+});
+function showBilirkisiKeep(key) {          // "emin değilim" uyarısı görünsün diye maddeyi yeniden çiz
+  const box = document.querySelector(`[data-bk="${CSS.escape(key)}"]`); if (!box) return;
+  const [, part, id] = key.split('|');
+  box.outerHTML = bkItem(part, U().yz.bilirkisi[part].find(x => x.id === id));
+}
 document.addEventListener('click', ev => {
   const b = ev.target.closest('[data-yzv]');
   if (b) {
@@ -469,6 +524,15 @@ document.addEventListener('click', ev => {
     store.set('d1-yz-sinama', yzEval);
     document.querySelectorAll(`.ev[data-k="${CSS.escape(k)}"] button`).forEach(x => x.setAttribute('aria-pressed', (yzEval[k] || {}).v === x.dataset.yzv));
     controls(); return;
+  }
+  const bv = ev.target.closest('[data-bkv]');
+  if (bv) { const box = bv.closest('[data-bk]'), cur = (bkMarks[box.dataset.bk] || {}).v;
+            bkSave(box, {v: cur === bv.dataset.bkv ? '' : bv.dataset.bkv}); return; }
+  const bg = ev.target.closest('[data-bkgo]');
+  if (bg) {                                // kör okuma: YZ katmanı kapalı açılır
+    if ($('#dlg').open) $('#dlg').close();
+    st.a = bg.dataset.draft; st.yz = false;
+    const a = bg.dataset.bkgo; render(st.lang === 'ar' ? a.replace('/tr/', '/ar/') : a.replace('/ar/', '/tr/')); return;
   }
   const sb = ev.target.closest('[data-suz]');
   if (sb) {

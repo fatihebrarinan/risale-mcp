@@ -867,7 +867,26 @@ def page_data(unit: str) -> dict | None:
                   for f in tr["fazla"]]
         drafts[t] = {"rows": rows, "extras": extras}
     return {"models": sorted({m for t in res["taslaklar"].values() for m in t["modeller"]}, key=list(MODELS).index),
-            "items": items, "drafts": drafts, "sample": res.get("orneklem", []), "critic": critic_page(unit)}
+            "items": items, "drafts": drafts, "sample": res.get("orneklem", []), "critic": critic_page(unit),
+            "bilirkisi": bilirkisi_page(unit)}
+
+
+def bilirkisi_page(unit: str) -> dict:
+    """D6.2 örneklemi (A sabit, B süzgeçten): sayfada tabaka ve eleştirmenin itirazı gösterilmez (kör okuma)."""
+    out = {}
+    for part in ("A", "B"):
+        path = out_dir(unit) / f"bilirkisi-{part}.json"
+        if not path.exists():
+            continue
+        items = []
+        for i in json.loads(path.read_text(encoding="utf-8"))["maddeler"]:
+            items.append({"id": i["id"], "t": i["taslak"], "a": i["capa"], "c": i.get("iddia") or "",
+                          "m": i.get("isaret") or "", "ar": i.get("arapca") or "", "tr": i.get("tercume") or "",
+                          "e": i.get("elestiri") or "", "s": i.get("soru") or "",
+                          "src": [{"n": k["no"], "c": k.get("atif", ""), "x": k.get("metin") or ""}
+                                  for k in i.get("kaynaklar") or []]})
+        out[part] = items
+    return out
 
 
 def critic_key(n: int, note: dict) -> str:

@@ -3,6 +3,7 @@
     uv run python scripts/d1-elestiri.py mekanik 11-12 [--taslak 1 2 …]   # D9.1: model gerekmez
     uv run python scripts/d1-elestiri.py elestir 11-12 [--taslak 1 …] [--model opus] [--paralel 3] [--yeniden]  # D9.2
     uv run python scripts/d1-elestiri.py rapor 11-12                      # D9.2 notlarının denetimi ve raporu
+    uv run python scripts/d1-elestiri.py bilirkisi 11-12 [--kisim A|B]    # D6.2 örneklemi (A sabit, B süzgeçten)
 
 D9.1 mekanik denetimleri hüküm vermez, aday ve sayı verir; eleştirmen (D9.2) ve kullanıcı (D9.3) bakar. Girdiler:
 taslak (`provalar/<birim>/taslak-<n>.md`), yazarın dökümü (`.jsonl`: araçlardan dönen her metin), yazarın istemi (Ek 1–3:
@@ -48,6 +49,7 @@ import math
 import re
 import sqlite3
 from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime
 from collections import Counter, defaultdict
 from pathlib import Path
 
@@ -775,18 +777,196 @@ def check_critic(unit: str, n: int, data: dict) -> dict:
     return data
 
 
-def suzgec(unit: str) -> dict[str, dict]:
-    """D9.3 kararları: `data/d1/notlar/` altındaki dışa aktarımlardan (`yz_suzgec`), anahtar başına en yenisi."""
+# ---------------------------------------------------------------- D6.2 bilirkişi örneklemi
+
+BK_SIZE = 24
+BK_PER_DRAFT = 4
+# kullanıcının kararı (2026-11-14): 24 iddia, taslak başına 4; riskli olana ağırlık; itiraz edilen paragraftan 4
+# (eleştirmenin itirazına ters yoklama); B kısmı (D9.3'te "ehline sor" denen notlar) ayrı sayılır
+BK_STRATA = [("itiraz", 4), ("dil", 4), ("belagat_kaynakli", 6), ("belagat_kendi", 10)]
+BK_OBJECT = {"yanlis", "belagat", "irab", "kaynak", "uydurma", "fazla"}
+BK_VERDICT = {"dogru": "doğru", "yanlis": "yanlış", "emin_degilim": "emin değilim"}
+BK_BASIS = {"kaynak": "kaynak", "kisi": "kişi", "kanaat": "kendi kanaati", "yz": "yapay zekâ"}
+
+
+def _claim(text: str, start: int, prev_end: int) -> str:
+    """İşaretin önündeki iddia: işaretin cümlesinin başından işarete kadar (aynı cümledeki önceki işaretler atılır)."""
+    head = text[:start]
+    cut = max(head.rfind(". "), head.rfind("? "), head.rfind("! "))
+    return MARK.sub("", head[cut + 2 if cut >= 0 else 0:]).strip(" `;,")
+
+
+def claims(unit: str, n: int) -> list[dict]:
+    """Taslağın `[dil]` ve `[belâgat]` iddiaları: tercüme paragrafındaki her işaret bir iddia."""
+    blocks, sources = Y.draft_blocks(unit, n)
+    by = {a: t for a, _, _, t in blocks}
+    ids = P.draft_sources(P.DRAFTS / unit / f"taslak-{n}.jsonl")
+    crit_path = Y.out_dir(unit) / f"elestiri-taslak-{n}.denetim.json"
+    crit = json.loads(crit_path.read_text(encoding="utf-8"))["notlar"] if crit_path.exists() else []
+    objected: dict[str, list[str]] = defaultdict(list)
+    for x in crit:
+        if x.get("tur") in BK_OBJECT or x.get("ehline_sor"):
+            objected[(x.get("capa") or "").replace("/ar/", "/tr/")].append(Y.critic_key(n, x))
+    out = []
+    for anchor, lang, quote, text in blocks:
+        if lang != "tr" or quote:
+            continue
+        prev = 0
+        for m in MARK.finditer(text):
+            body = m.group(1)
+            kind = "dil" if body.startswith("dil") else "belagat" if body.startswith("belâgat") else None
+            if kind:
+                nums = re.findall(r"\d+", body.split("burada")[0])
+                out.append({"taslak": f"taslak-{n}", "capa": anchor, "ar_capa": anchor.replace("/tr/", "/ar/"),
+                            "tur": kind, "kaynak": "kendi" if "kendi tespiti" in body else "kaynakli",
+                            "isaret": body, "iddia": _claim(text, m.start(), prev), "tercume": MARK.sub("", text),
+                            "arapca": MARK.sub("", by.get(anchor.replace("/tr/", "/ar/"), "")),
+                            "kaynaklar": [{"no": k, "atif": sources.get(k, ""), "id": (ids.get(k) or (None, None))[1],
+                                           "sunucu": (ids.get(k) or (None, None))[0]} for k in nums],
+                            "itiraz": objected.get(anchor, [])})
+            prev = m.end()
+    return out
+
+
+def _stratum(c: dict) -> str:
+    if c["itiraz"]:
+        return "itiraz"
+    if c["tur"] == "dil":
+        return "dil"
+    return "belagat_kendi" if c["kaynak"] == "kendi" else "belagat_kaynakli"
+
+
+def bilirkisi(unit: str, again: bool = False) -> None:
+    """D6.2 A kısmı: sabit örneklem `yz/bilirkisi-A.json` (var olan, --yeniden verilmedikçe korunur)."""
+    import random
+    path = Y.out_dir(unit) / "bilirkisi-A.json"
+    if path.exists() and not again:
+        print(f"{path.relative_to(ROOT)} var; korunuyor (--yeniden ile yeniden çekilir)")
+        return
+    pool: dict[str, list[dict]] = defaultdict(list)
+    for n in Y.drafts_of(unit):
+        for c in claims(unit, n):
+            pool[_stratum(c)].append(c)
+    rng = random.Random(f"d6-{unit}-A")
+    for name, items in pool.items():
+        rng.shuffle(items)
+        if name == "dil":                       # dil ve kendi tespiti az: önce onlardan iki tane
+            items.sort(key=lambda c: c["kaynak"] != "kendi")
+    per_draft, used, picked = Counter(), set(), []
+    for name, target in BK_STRATA:
+        got, kendi_dil = 0, 0
+        while got < target:
+            cands = [c for c in pool[name] if per_draft[c["taslak"]] < BK_PER_DRAFT
+                     and (c["taslak"], c["capa"]) not in used
+                     and not (name == "dil" and c["kaynak"] == "kendi" and kendi_dil >= 2)]
+            if not cands:
+                break
+            low = min(per_draft[c["taslak"]] for c in cands)
+            c = next(c for c in cands if per_draft[c["taslak"]] == low)
+            pool[name].remove(c)
+            per_draft[c["taslak"]] += 1
+            used.add((c["taslak"], c["capa"]))
+            kendi_dil += name == "dil" and c["kaynak"] == "kendi"
+            picked.append({**c, "tabaka": name})
+            got += 1
+    texts = P.SourceTexts(unit)
+    picked.sort(key=lambda c: (int(c["taslak"].split("-")[1]), Y._anchor_order([c["capa"]])))
+    for i, c in enumerate(picked, 1):
+        c["id"] = f"A{i:02d}"
+        for k in c["kaynaklar"]:
+            k["metin"] = texts.text(k["sunucu"], k["id"], k["atif"])
+    data = {"birim": unit, "kisim": "A", "at": datetime.now().isoformat(timespec="seconds"),
+            "tabakalar": dict(BK_STRATA), "havuz": {k: len(v) + sum(1 for c in picked if c["tabaka"] == k)
+                                                    for k, v in pool.items()}, "maddeler": picked}
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"{path.relative_to(ROOT)}: {len(picked)} madde · " +
+          ", ".join(f"{k} {sum(1 for c in picked if c['tabaka'] == k)}" for k, _ in BK_STRATA) + " · taslak başına " +
+          ", ".join(f"{t.split('-')[1]}:{v}" for t, v in sorted(per_draft.items(), key=lambda kv: int(kv[0].split('-')[1]))))
+
+
+def bilirkisi_b(unit: str) -> None:
+    """D6.2 B kısmı: D9.3'te "ehline sor" denen eleştirmen notları (ayrı sayılır). Süzgeç değiştikçe yeniden kurulur."""
+    decisions = suzgec(unit)
+    items = []
+    for n in Y.drafts_of(unit):
+        path = Y.out_dir(unit) / f"elestiri-taslak-{n}.denetim.json"
+        if not path.exists():
+            continue
+        blocks, _ = Y.draft_blocks(unit, n)
+        by = {a: t for a, _, _, t in blocks}
+        for x in json.loads(path.read_text(encoding="utf-8"))["notlar"]:
+            key = Y.critic_key(n, x)
+            if (decisions.get(f"{unit}|taslak-{n}|{key}") or {}).get("v") != "ehline":
+                continue
+            capa = x.get("capa") or "genel"
+            items.append({"id": f"B{len(items) + 1:02d}", "taslak": f"taslak-{n}", "capa": capa, "not_anahtari": key,
+                          "tur": x.get("tur"), "elestiri": x.get("metin", ""), "soru": x.get("soru"),
+                          "dayanak": x.get("dayanak") or [],
+                          "arapca": MARK.sub("", by.get(capa.replace("/tr/", "/ar/"), "")),
+                          "tercume": MARK.sub("", by.get(capa.replace("/ar/", "/tr/"), ""))})
+    path = Y.out_dir(unit) / "bilirkisi-B.json"
+    path.write_text(json.dumps({"birim": unit, "kisim": "B", "at": datetime.now().isoformat(timespec="seconds"),
+                                "maddeler": items}, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"{path.relative_to(ROOT)}: {len(items)} madde (D9.3'te \"ehline sor\" denenler)")
+
+
+def exported(unit: str, field: str) -> dict[str, dict]:
+    """Dışa aktarımlardaki bir alan (`yz_suzgec`, `bilirkisi`): anahtar başına en yenisi."""
     out: dict[str, dict] = {}
     for f in sorted(P.NOTES_DIR.glob("*.json")) if P.NOTES_DIR.exists() else []:
         try:
             data = json.loads(f.read_text(encoding="utf-8"))
         except json.JSONDecodeError:
             continue
-        for k, v in (data.get("yz_suzgec") or {}).items():
+        for k, v in (data.get(field) or {}).items():
             if k.startswith(unit + "|") and (k not in out or v.get("at", "") > out[k].get("at", "")):
                 out[k] = v
     return out
+
+
+def bilirkisi_rapor(unit: str) -> list[str]:
+    marks = exported(unit, "bilirkisi")
+    L = ["# D6.2 bilirkişi okuması", "",
+         "Hüküm kullanıcınındır; dayanağı yapay zekâ olan hüküm \"emin değilim\" sayılır (PLANLAR.md D6.2). A: "
+         "eleştirmenin itiraz etmediği dil ve belâgat iddiaları (ve ters yoklama için itiraz edilen paragraftan 4); "
+         "B: D9.3'te \"ehline sor\" denen notlar. İki kısım ayrı sayılır.", ""]
+    for part in ("A", "B"):
+        path = Y.out_dir(unit) / f"bilirkisi-{part}.json"
+        if not path.exists():
+            continue
+        items = json.loads(path.read_text(encoding="utf-8"))["maddeler"]
+        got = {i["id"]: marks.get(f"{unit}|{part}|{i['id']}") for i in items}
+        verdict = Counter((("emin_degilim" if (m or {}).get("dt") == "yz" else (m or {}).get("v")) or "—")
+                          for m in got.values())
+        basis = Counter(((m or {}).get("dt") or "—") for m in got.values() if m)
+        L += [f"## {part} kısmı ({len(items)} madde)", "",
+              "Hüküm: " + ", ".join(f"{BK_VERDICT.get(k, 'işaretsiz')} {v}" for k, v in verdict.most_common()),
+              "Dayanak: " + (", ".join(f"{BK_BASIS.get(k, k)} {v}" for k, v in basis.most_common()) or "—"), ""]
+        if part == "A":
+            by = defaultdict(Counter)
+            for i in items:
+                m = got[i["id"]] or {}
+                by[i["tabaka"]][("emin_degilim" if m.get("dt") == "yz" else m.get("v")) or "—"] += 1
+            L += ["| Tabaka | " + " | ".join(BK_VERDICT.values()) + " | işaretsiz |", "|---|---:|---:|---:|---:|"]
+            for name, _ in BK_STRATA:
+                c = by[name]
+                L.append(f"| {name} | " + " | ".join(str(c[k]) for k in BK_VERDICT) + f" | {c['—']} |")
+            L.append("")
+        for i in items:
+            m = got[i["id"]]
+            if not m:
+                continue
+            v = "emin_degilim" if m.get("dt") == "yz" else m.get("v")
+            L.append(f"- **{i['id']}** {i['taslak']} `{i['capa']}` · {BK_VERDICT.get(v, '?')} · dayanak "
+                     f"{BK_BASIS.get(m.get('dt'), '—')}{': ' + m['d'] if m.get('d') else ''}  \n  "
+                     f"{_s(i.get('iddia') or i.get('elestiri') or '', 200)}" + (f"  \n  _Not:_ {m['n']}" if m.get("n") else ""))
+        L.append("")
+    return L
+
+
+def suzgec(unit: str) -> dict[str, dict]:
+    """D9.3 kararları: `data/d1/notlar/` altındaki dışa aktarımlardan (`yz_suzgec`), anahtar başına en yenisi."""
+    return exported(unit, "yz_suzgec")
 
 
 def rapor(unit: str) -> None:
@@ -845,6 +1025,10 @@ def rapor(unit: str) -> None:
     out = P.DRAFTS / unit / "d9-elestiri.md"
     out.write_text("\n".join(L).rstrip() + "\n", encoding="utf-8")
     print(out.relative_to(ROOT))
+    if (d / "bilirkisi-A.json").exists():
+        out = P.DRAFTS / unit / "d6-bilirkisi.md"
+        out.write_text("\n".join(bilirkisi_rapor(unit)).rstrip() + "\n", encoding="utf-8")
+        print(out.relative_to(ROOT))
 
 
 def main() -> None:
@@ -864,6 +1048,10 @@ def main() -> None:
     p.add_argument("--taslak", type=int, default=1)
     p = sub.add_parser("rapor")
     p.add_argument("unit", choices=P.UNITS)
+    p = sub.add_parser("bilirkisi", help="D6.2 örneklemi: A (sabit) ya da B (D9.3'ün \"ehline sor\" notları)")
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--kisim", choices=["A", "B"], default="A")
+    p.add_argument("--yeniden", action="store_true", help="A'yı yeniden çek (işaretler kimliğe bağlıdır)")
     args = parser.parse_args()
     if args.command == "mekanik":
         mekanik(args.unit, args.taslak or Y.drafts_of(args.unit))
@@ -874,6 +1062,8 @@ def main() -> None:
         path = P.OUT / args.unit / f"elestiri-istem-taslak-{args.taslak}.md"
         path.write_text(text, encoding="utf-8")
         print(f"{path.relative_to(ROOT)}: {len(text):,} karakter")
+    elif args.command == "bilirkisi":
+        bilirkisi(args.unit, args.yeniden) if args.kisim == "A" else bilirkisi_b(args.unit)
     else:
         rapor(args.unit)
 
