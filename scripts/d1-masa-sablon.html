@@ -107,6 +107,17 @@ details > summary { cursor: pointer; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 0 0 10px; }
 .card.focus { outline: 3px solid var(--hl); }
 .card .top { cursor: pointer; }
+.card .head { display: flex; gap: 8px; align-items: baseline; margin: 0 0 4px; }
+.card .no { font-weight: 700; font-size: .8rem; color: var(--ai); white-space: nowrap; }
+.card .fold { margin-left: auto; border: 1px solid var(--line); background: var(--soft); border-radius: 4px; padding: 0 8px;
+              cursor: pointer; font-size: .75rem; white-space: nowrap; }
+.card.small { padding: 4px 10px; margin-bottom: 6px; opacity: .85; }
+.card.small .head { margin: 0; }
+.card.small .gist { font-size: .82rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; flex: 1; }
+.marks { font-size: .75rem; white-space: nowrap; }
+.marks .done { color: var(--accent); font-weight: 600; }
+.foldbar { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 8px; font-size: .78rem; }
+.foldbar button { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 0 10px; cursor: pointer; }
 .strip { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; font-size: .78rem; }
 .strip button { border: 1px solid var(--line); background: var(--soft); border-radius: 4px; padding: 0 6px; cursor: pointer; }
 .strip button[aria-current=true] { border-color: var(--ai); background: var(--ai); color: var(--bg); }
@@ -447,7 +458,22 @@ function draftSays(dk, anchors, q) {
     <div class="q serif">${tr.map(trEsc).join('<br>')}</div>
     <details><summary class="small muted">Alıntılanan Arapça söz</summary><div class="q ar">${esc(q)}</div></details>${go}`;
 }
-function itemCard(id, it) {
+// Küçültülen kartlar taslak başına hatırlanır (yalnız görünüm; işaretlere dokunmaz)
+let folded = store.get('d1-masa-kucuk', {});
+const EVL = Object.fromEntries(EVC);
+function foldKey(id) { return `${st.draft}|${id}`; }
+function isFolded(id) { return !!folded[foldKey(id)]; }
+function setFold(ids, on) { for (const id of ids) { if (on) folded[foldKey(id)] = 1; else delete folded[foldKey(id)]; } store.set('d1-masa-kucuk', folded); }
+function markOf(k) { const v = (yzEval[k] || {}).v; return v ? `<span class="done">${esc(EVL[v])}</span>` : '<span class="muted">işaretsiz</span>'; }
+function itemMarks(id) { return Y.models.filter(m => ((Y.drafts[st.draft] || {rows: {}}).rows[id] || {})[m])
+  .map(m => `${MODEL[m] || m}: ${markOf(`${U}|${st.draft}|${m}|${id}`)}`).join(' · '); }
+function itemDone(id) { const row = (Y.drafts[st.draft] || {rows: {}}).rows[id] || {};
+  return Y.models.filter(m => row[m]).every(m => (yzEval[`${U}|${st.draft}|${m}|${id}`] || {}).v); }
+function cardHead(no, fid, gist, marks) {
+  return `<div class="head"><span class="no">${no}</span>${gist}<span class="marks">${marks}</span>
+    <button class="fold" data-fold="${esc(fid)}">${isFolded(fid) ? 'aç' : 'küçült'}</button></div>`;
+}
+function itemCard(id, it, no) {
   const row = (Y.drafts[st.draft] || {rows: {}}).rows[id] || {};
   const foc = st.focus && st.focus.item === id;
   const readers = Y.models.map(m => {
@@ -460,16 +486,19 @@ function itemCard(id, it) {
       <div class="small"><b>Model:</b> ${codes(r.g)}</div>
       ${r.q ? draftSays(st.draft, r.a, r.q) : ''}</div>`;
   }).join('');
-  return `<div class="card${foc ? ' focus' : ''}" data-item="${id}">
+  if (isFolded(id)) return `<div class="card small${foc ? ' focus' : ''}" data-item="${id}">${cardHead(no, id,
+    `<span class="gist top" data-focusitem="${id}">${esc(it.n)}</span>`, itemMarks(id))}</div>`;
+  return `<div class="card${foc ? ' focus' : ''}" data-item="${id}">${cardHead(no, id, '<span style="flex:1"></span>', itemMarks(id))}
     <div class="top" data-focusitem="${id}"><span class="tag ai" title="Nüktenin özeti yapay zekânın; asıl söz soldaki İşârât cümlesidir">özet</span>
     ${esc(it.n)} <span class="small muted" dir="rtl">${esc(it.l)}</span>
     ${row.u === 'ayrilik' ? ' <span class="tag w">iki okuyucu ayrıldı</span>' : ''}</div>
     ${stripHtml(id)}<div class="small muted">Seçili taslak: <b>${esc(draftLabel(st.draft))}</b></div>${readers}</div>`;
 }
-function extraCard(f) {
-  const k = `${U}|${st.draft}|fazla|${f.k}`;
+function extraCard(f, no) {
+  const k = `${U}|${st.draft}|fazla|${f.k}`, fid = 'fazla:' + f.k;
   const who = f.r.map(m => MODEL[m] || m).join(' ve ');
-  return `<div class="card"><span class="tag g">fazla</span> <span class="small muted">taslağın iddiası (karşılaştırıcının özeti):</span> ${codes(f.i)}
+  if (isFolded(fid)) return `<div class="card small">${cardHead(no, fid, `<span class="gist">${esc(f.i)}</span>`, markOf(k))}</div>`;
+  return `<div class="card">${cardHead(no, fid, '<span style="flex:1"></span>', markOf(k))}<span class="tag g">fazla</span> <span class="small muted">taslağın iddiası (karşılaştırıcının özeti):</span> ${codes(f.i)}
     <div class="small muted">Taslağın işareti: ${esc(ISR[f.s] || f.s || '?')}${f.src.length ? ` [${f.src.join(', ')}]` : ''} · bulan: ${esc(who)}
     ${f.c ? ` · <span class="tag w">İşârât'la çelişiyor olabilir</span>` : ''}${f.ok ? '' : ' · <span class="tag w">alıntısı taslakta bulunamadı</span>'}</div>
     ${f.g ? `<div class="small"><b>Model:</b> ${codes(f.g)}</div>` : ''}
@@ -478,11 +507,21 @@ function extraCard(f) {
 }
 function karsiHtml() {
   const its = itemsAt(st.loc);
-  let h = its.length ? its.map(([id, it]) => itemCard(id, it)).join('') : `<p class="empty">İşârât'ta bu yere bağlanmış bir nükte yok.</p>`;
   const ex = ((Y.drafts[st.draft] || {}).extras || []).filter(at);
+  const all = [...its.map(([id]) => id), ...ex.map(f => 'fazla:' + f.k)];
+  const done = its.filter(([id]) => itemDone(id)).length + ex.filter(f => (yzEval[`${U}|${st.draft}|fazla|${f.k}`] || {}).v).length;
+  let h = all.length ? `<div class="foldbar"><span class="muted">${done}/${all.length} kart işaretlendi</span>
+    <button data-foldall="1">hepsini küçült</button><button data-foldall="0">hepsini aç</button>
+    <button data-folddone="1">işaretlenenleri küçült</button></div>` : '';
+  h += its.length ? its.map(([id, it], i) => itemCard(id, it, `Nükte ${i + 1}/${its.length}`)).join('')
+                  : `<p class="empty">İşârât'ta bu yere bağlanmış bir nükte yok.</p>`;
   h += `<h3>Taslağın burada İşârât'ta karşılığı olmayan iddiaları <span class="muted">"fazla": doğru ya da yanlış olduğu söylenmez; iki okuyucunun bulduğu</span></h3>`;
-  h += ex.length ? ex.map(extraCard).join('') : `<p class="empty">Bu taslakta bu yerde yok.</p>`;
+  h += ex.length ? ex.map((f, i) => extraCard(f, `Fazla ${i + 1}/${ex.length}`)).join('') : `<p class="empty">Bu taslakta bu yerde yok.</p>`;
   return h;
+}
+function karsiIds() {
+  const ex = ((Y.drafts[st.draft] || {}).extras || []).filter(at);
+  return {items: itemsAt(st.loc).map(([id]) => id), extras: ex};
 }
 
 function blocksAt(dk) {
@@ -685,6 +724,15 @@ document.addEventListener('click', ev => {
     renderLeft(); $('#left').scrollTop = 0; return;
   }
   if (t.closest('[data-closesrc]')) { st.srcbox = null; renderLeft(); return; }
+  const fb = t.closest('[data-fold]');
+  if (fb) { const id = fb.dataset.fold; setFold([id], !isFolded(id)); renderRight(); return; }
+  const fa = t.closest('[data-foldall]'), fd = t.closest('[data-folddone]');
+  if (fa || fd) {
+    const {items, extras} = karsiIds();
+    if (fa) setFold([...items, ...extras.map(f => 'fazla:' + f.k)], fa.dataset.foldall === '1');
+    else setFold([...items.filter(itemDone), ...extras.filter(f => (yzEval[`${U}|${st.draft}|fazla|${f.k}`] || {}).v).map(f => 'fazla:' + f.k)], true);
+    renderRight(); return;
+  }
   const tab = t.closest('[data-tab]');
   if (tab) { st.tab = tab.dataset.tab; renderRight(); persist(); return; }
   const bg = t.closest('[data-bkgo]');
@@ -701,7 +749,9 @@ document.addEventListener('click', ev => {
     if ((map[k] || {}).v === v) delete map[k]; else map[k] = {v, reader: reader(), at: new Date().toISOString()};
     store.set(yv ? 'd1-yz-sinama' : 'd1-yz-suzgec', map);
     box.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', (map[k] || {}).v === (yv ? b.dataset.yzv : b.dataset.suz)));
-    progress(); return;
+    progress();
+    if (yv && st.tab === 'karsi') { const y0 = $('#right').scrollTop; renderRight(); $('#right').scrollTop = y0; }
+    return;
   }
   if (bv) { const box = bv.closest('[data-bk]'), cur = (bkMarks[box.dataset.bk] || {}).v; bkSave(box, {v: cur === bv.dataset.bkv ? '' : bv.dataset.bkv}); return; }
 });

@@ -267,6 +267,10 @@ biçimi (`d1-prova.py notlar` okur).
   alıntılar taslağın Arapçasından alındığı için Türkçe kipte alıntının geçtiği paragrafın Türkçesi verilir (alıntının
   birebir karşılığı değil), Arapça söz altında açılır. "Fazla" kartında "Model:" karşılaştırıcının gerekçesidir; üstteki
   cümle taslağın iddiasının karşılaştırıcıca özetidir.
+- **Kartlar numaralı ve küçültülür (2026-11-14, kullanıcının isteği: ortam temiz kalsın, nerede olduğu bilinsin):**
+  karşılaştırma sekmesinde "Nükte 3/7", "Fazla 2/4"; küçük kart tek satır (numara, özet, iki işaret); "hepsini küçült /
+  hepsini aç / işaretlenenleri küçült" ve "n/m kart işaretlendi". Küçültme taslak başına tarayıcıda hatırlanır, yalnız
+  görünümdür.
 - **Açık:** bilirkişi maddelerini dar soruya çevirmek; müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); işaretlerin
   sunucuda toplanması ayrı karardır (heyet akışı).
 
