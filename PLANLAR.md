@@ -57,7 +57,7 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 11–12 ve 17–20'de (temsil) sınama; D3 buna katıldı (D8.1 bitti) | D1.9, D3 |
+| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 17–20'de (temsil) v1 ve v2 yan yana; D3 buna katıldı (D8.1 bitti) | D1.9, D3 |
 | 2 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
 | 4 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
@@ -91,8 +91,9 @@ yapılan, bir döngünün ilk turudur: istemin bir sürümüyle yaz, kapalı kit
 (D9), insanla süz (örneklemler), gerekirse kör noktayı ara (D6), dersleri genel usul olarak istemin yeni sürümüne
 yaz. D8 ikinci turdur. Kurallar: durma ölçütü "eleştiri olumlu olana kadar" değildir (yazan da ölçen de Claude; olumlu
 eleştiriyi hedef yapmak modeli eleştirmenin beğendiğini yazmaya yöneltir); her tur yeni istemi hiç bakılmamış bir
-birimde eski istemle yan yana sınar (birimler harcanır: Bakara'da 23 birim); bir turun içinde ölçü sabittir (ölçü
-değişirse taban yeniden ölçülür); insan emeği her turda örneklemlerle sınırlıdır, kör nokta okuması eleştirmen
+birimde eski istemle yan yana sınar ve o birim bir sonraki turun ders birimi olur (zincir: 11–12 → 17–20 → 21; dersin
+çıktığı birim yeniden yazılmaz; kullanıcının tasarruflu seçimi, 2026-11-14; birimler harcanır: Bakara'da 23 birim);
+bir turun içinde ölçü sabittir; insan emeği her turda örneklemlerle sınırlıdır, kör nokta okuması eleştirmen
 değişince yapılır. Ölçütler: ayrılmış birimde kapsama, D9.1'in mekanik sayıları, sistemli başlıkların kaçının yine
 çıktığı, çelişkiler. Durma: bir tur ayrılmış birimde ölçülür bir iyileşme getirmezse ya da kalan hatalar yalnız ehlin
 görebileceği türdense döngü durur, D5'e geçilir (beklenen iki ya da üç tur). Tur başına ≈30–35 $ ve kullanıcının ≈1
@@ -101,8 +102,10 @@ saati.
 **D8. Döngü 2: istemin yeni sürümü, 11–12 ve 17–20'de sınama** (D1'den ayrıldı, 2026-11-13, eski D1.9; 2026-11-14'te
 D3 buna katıldı ve döngünün 2. turu oldu, kullanıcının kararı). Girdiler: `d9-rapor.md` › "D8'e geçenler" (11 madde),
 `d6-rapor.md`, `d2-rapor.md`, D7'nin bulguları. İstem yalnız genel usul alır, âyete özgü ipucu girmez; 11–12'de de
-yazılacağı için kurallar 11–12'nin gizlenen nüktelerini anmaz. 11–12'deki ölçüm dersin çıktığı birimde olduğu için
-iyimserdir; asıl ölçü 17–20'dir (temsil türü; D3'ün "başka türden birim"i).
+yazılabileceği için kurallar 11–12'nin gizlenen nüktelerini anmaz. Ölçü 17–20'dir (temsil türü; D3'ün "başka türden
+birim"i): orada v1 ve v2 yan yana; 11–12 yeniden yazılmaz (kullanıcının tasarruflu seçimi, 2026-11-14: dersin çıktığı
+birimde iyi çıkması kısmen önceden bellidir; yalnız v2'nin davranışı değiştirip değiştirmediğinden şüphe edilirse
+eklenir).
 - **D8.1 İstem ve ölçü (bitti, 2026-11-14):** taslak istemi **v2** (`docs/d1/prova-istemi-v2.md`; v1 değişmeden durur,
   `d1-prova.py hazirla|yazdir --surum v1|v2`): dört maksadın bu âyete özgü tutamağı, delâlet derecesinin gerekçesi,
   ikinci vecihte üslûp değişikliğinden takdir zinciri ve halka zinciri olarak temsil, üçüncü vecihte kaydın vicdandaki
@@ -116,9 +119,8 @@ iyimserdir; asıl ölçü 17–20'dir (temsil türü; D3'ün "başka türden bir
 - D8.2 17–20'nin prova hazırlığı: `d1-prova.UNITS["17-20"]` (gizlenecek düğümler, ince Ek 3'ün komşuları 16 ve 21);
   usul özetinin (≈21 yer) ve birim çizelgesinin (≈13 yer) 17–20'ye dayanan örnekleri çıkarılır, yerine ipucu konmaz;
   sızıntı testi. 17–20'nin nükte envanteri (D7.2 gibi: Fable çıkarır, Opus denetler) yazdırmadan önce sabitlenir.
-- D8.3 Yazdırma: 11–12'de v2 ile 3 taslak; 17–20'de v1 ile 3, v2 ile 3 (hepsi ince-klasik, Fable 5.2, yüksek).
-- D8.4 Ölçüm: D7 v2 ile (11–12'nin tabanı, D2'nin 4–6'sı, de yeniden; v1 sonuçları `yz/eslestirme-v1/`), D9.1,
-  eleştirmen v1.2 (taban da yeniden; v1.1 sonuçları `yz/elestiri-v1.1/`).
+- D8.3 Yazdırma: 17–20'de v1 ile 3, v2 ile 3 (hepsi ince-klasik, Fable 5.2, yüksek).
+- D8.4 Ölçüm: altı taslak aynı ölçüyle: D7 v2, D9.1, eleştirmen v1.2.
 - D8.5 Kullanıcının örneklemleri (masada): karşılaştırma örneklemi, süzgeç (10 not ve başlıklar), eleştirmen v1.2
   olduğu için kapsam notlarından dar bir kör nokta okuması.
 - D8.6 Rapor ve döngü kararı: ölçütlerle 2. tur, `docs/d1/dongu.md`'ye satır; devam (3. tur, hüküm türü: 21 ya da 22)

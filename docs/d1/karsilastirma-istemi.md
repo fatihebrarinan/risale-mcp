@@ -16,8 +16,8 @@ Sürümler:
   okuyucunun birlikte "aynen" dediği N19 kısmen tutuyordu; D9 da N13 ve N34'ün "aynen"inin fazla olduğunu gösterdi).
   Çelişkiye **kısmi çelişki** eklendi: İşârât'ın ara halkalarla kurduğu bir ilişkiyi halkaları atlayıp mahiyet ya da
   zorunluluk hükmüne çevirmek (D6'da A10: "nifâk tabiatıyla ifsaddır"; v1 bunu çelişkisiz "fazla" saydı). Envanter,
-  denetim ve kaynak görevleri değişmedi. **Bir turun içinde ölçü sabittir:** D8'de 1. turun taban taslakları (D2'nin
-  4–6'sı) da v2 ile yeniden ölçülür, v1'in sonuçları `yz/eslestirme-v1/`e taşınır.
+  denetim ve kaynak görevleri değişmedi. **Bir turun içinde ölçü sabittir:** D8'de 17–20'nin altı taslağı (v1 ve v2
+  istemi) bu sürümle ölçülür; 1. turun sayıları (v1.1) onlarla doğrudan karşılaştırılmaz.
 -->
 
 ---- ORTAK ----
