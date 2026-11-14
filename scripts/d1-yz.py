@@ -549,41 +549,98 @@ def rapor(unit: str) -> None:
     print(path.relative_to(ROOT))
 
 
+def _stratum(res: dict, key: str) -> str:
+    """Örneklem anahtarının katmanı (`sample_keys` ile aynı): ayrılık, çelişki, fazla ya da okuyucunun durumu."""
+    draft, who, ident = key.split("|", 2)
+    t = res["taslaklar"].get(draft, {})
+    if who == "fazla":
+        f = next((x for x in t.get("fazla", []) if x["k"] == ident), None)
+        return "celiski" if f and f.get("celiski") else "fazla"
+    row = next((r for r in t.get("satirlar", []) if r["id"] == ident), None)
+    if not row:
+        return "?"
+    return "ayrilik" if row["uyum"] == "ayrilik" else row["durum"].get(who) or "?"
+
+
+STRATUM_TR = {"ayrilik": "ayrılık (iki okuyucu ayrıldı)", "celiski": "çelişki", "fazla": "fazla",
+              **{k: v for k, v in DURUM_TR.items()}}
+MARK_TR = {"tutuyor": "tutuyor", "kismen": "kısmen", "tutmuyor": "tutmuyor"}
+
+
+def _trust_table(groups: dict[str, Counter], order: list[str]) -> list[str]:
+    L = ["| Satır türü | Tutuyor | Kısmen | Tutmuyor | Güven |", "|---|---:|---:|---:|---:|"]
+    total = Counter()
+    for kind in [k for k in order if k in groups] + sorted(k for k in groups if k not in order):
+        c = groups[kind]
+        total += c
+        n = sum(c.values())
+        L.append(f"| {STRATUM_TR.get(kind, kind)} | {c['tutuyor']} | {c['kismen']} | {c['tutmuyor']} | "
+                 f"%{(c['tutuyor'] + c['kismen'] / 2) / n * 100:.0f} |")
+    n = sum(total.values())
+    L.append(f"| **Toplam** | {total['tutuyor']} | {total['kismen']} | {total['tutmuyor']} | "
+             f"**%{(total['tutuyor'] + total['kismen'] / 2) / n * 100:.0f}** |")
+    return L
+
+
 def sinama_lines(unit: str, res: dict, items: dict) -> list[str]:
-    """D7.7: okuma-yz sayfasında "metinde tutuyor / kısmen / tutmuyor" işaretleri (`data/d1/notlar/*.json`,
-    `yz_sinama`). Ölçü insanla uyuşmak değil, metne bakınca tutmaktır (kullanıcının düzeltmesi, 2026-11-13)."""
+    """D7.7: masada (önce okuma-yz sayfasında) "metinde tutuyor / kısmen / tutmuyor" işaretleri
+    (`data/d1/notlar/*.json`, `yz_sinama`; aynı anahtarda en yeni işaret). Ölçü insanla uyuşmak değil, metne bakınca
+    tutmaktır (kullanıcının düzeltmesi, 2026-11-13). Güven oranı yalnız örneklemden; örneklem dışı ayrıca sayılır."""
     marks: dict[str, dict] = {}
     for f in sorted(P.NOTES_DIR.glob("*.json")) if P.NOTES_DIR.exists() else []:
         for k, v in (json.loads(f.read_text(encoding="utf-8")).get("yz_sinama") or {}).items():
             if k.startswith(unit + "|") and (k not in marks or v["at"] > marks[k]["at"]):
                 marks[k] = v
-    sample = set(res.get("orneklem", []))
+    marks = {k.split("|", 1)[1]: v for k, v in marks.items()}
+    sample = res.get("orneklem", [])
+    inside = [k for k in sample if k in marks]
+    outside = [k for k in marks if k not in set(sample)]
     L = ["", "## Sınama (D7.7)", "",
-         f"Örneklem {len(sample)} satır (katmanlı, sabit tohumla; `okuma-yz.html` › \"YZ örneklemi\"). İşaretli: "
-         f"{sum(1 for k in marks if k.split('|', 1)[1] in sample)} örneklemden, "
-         f"{sum(1 for k in marks if k.split('|', 1)[1] not in sample)} örneklem dışından.", ""]
+         f"Örneklem {len(sample)} satır (katmanlı, sabit tohumla; âyet masası › İşârât'la karşılaştırma › "
+         f"\"Örneklem\"). İşaretli: {len(inside)}/{len(sample)} örneklemden, {len(outside)} örneklem dışından. "
+         "Okuyucu satırında \"tutuyor\" okuyucunun hükmünün (aynen, kısmen, farklı gerekçe, yok) metne bakınca "
+         "doğru olduğudur; fazla satırında iddianın İşârât'ın gizlenen metninde gerçekten karşılığı olmadığı, çelişki "
+         "satırında çelişkinin metinde bulunduğudur. Fazlanın kendisinin doğruluğu ölçülmez (ehline sor).", ""]
     if not marks:
         return L + ["Henüz işaret yok."]
-    rows: dict[str, Counter] = {}
-    for k, v in marks.items():
-        _, draft, who, ident = k.split("|", 3)
-        if who == "fazla":
-            f = next((x for x in res["taslaklar"].get(draft, {}).get("fazla", []) if x["k"] == ident), None)
-            kind = "çelişki" if f and f.get("celiski") else "fazla"
-        else:
-            r = res["taslaklar"].get(draft, {}).get("modeller", {}).get(who, {}).get("nukteler", {}).get(ident, {})
-            kind = DURUM_TR.get(r.get("durum"), "?")
-        rows.setdefault(kind, Counter())[v["v"]] += 1
-    total = Counter()
-    L += ["| Satır türü | Tutuyor | Kısmen | Tutmuyor | Güven |", "|---|---:|---:|---:|---:|"]
-    for kind, c in sorted(rows.items()):
-        total += c
-        n = sum(c.values())
-        L.append(f"| {kind} | {c['tutuyor']} | {c['kismen']} | {c['tutmuyor']} | %{(c['tutuyor'] + c['kismen'] / 2) / n * 100:.0f} |")
-    n = sum(total.values())
-    L.append(f"| **Toplam** | {total['tutuyor']} | {total['kismen']} | {total['tutmuyor']} | "
-             f"**%{(total['tutuyor'] + total['kismen'] / 2) / n * 100:.0f}** |")
+    order = ["ayrilik", "celiski", "fazla", "aynen", "kismen", "farkli_gerekce", "yok"]
+    groups: dict[str, Counter] = {}
+    for k in inside:
+        groups.setdefault(_stratum(res, k), Counter())[marks[k]["v"]] += 1
+    L += ["### Örneklem", ""] + _trust_table(groups, order)
     L += ["", "Güven: (tutuyor + kısmen/2) / işaretli satır."]
+    if outside:
+        out_groups: dict[str, Counter] = {}
+        for k in outside:
+            out_groups.setdefault(_stratum(res, k), Counter())[marks[k]["v"]] += 1
+        L += ["", "### Örneklem dışı işaretler", "",
+              "Kullanıcının kendiliğinden işaretledikleri (çoğu bir ayrılığın öbür okuyucusu); güven oranına girmez.",
+              ""] + _trust_table(out_groups, order)
+    # Ayrılıklar: iki okuyucunun ayrıldığı satırlarda kullanıcı hangisini tuttu
+    rows = sorted({(k.split("|")[0], k.split("|")[2]) for k in marks
+                   if k.split("|")[1] != "fazla" and _stratum(res, k) == "ayrilik"},
+                  key=lambda x: (int(x[0].split("-")[1]), x[1]))
+    if rows:
+        models = sorted({m for t in res["taslaklar"].values() for m in t["modeller"]}, key=list(MODELS).index)
+        L += ["", "### Ayrılıklar", "",
+              "İki okuyucunun ayrıldığı satırlar: her okuyucunun hükmü ve kullanıcının işareti (işaretsizse —).", "",
+              "| Taslak | Nükte | " + " | ".join(models) + " |", "|---|---|" + "---|" * len(models)]
+        for draft, ident in rows:
+            row = next(r for r in res["taslaklar"][draft]["satirlar"] if r["id"] == ident)
+            cells = []
+            for m in models:
+                mk = marks.get(f"{draft}|{m}|{ident}")
+                cells.append(f"{DURUM_TR.get(row['durum'].get(m), '?')} → {MARK_TR[mk['v']] if mk else '—'}")
+            L.append(f"| {draft} | {ident} {_short(items.get(ident, {}).get('nukte', ''), 70)} | " + " | ".join(cells) + " |")
+    weak = [k for k in inside + outside if marks[k]["v"] != "tutuyor"]
+    if weak:
+        L += ["", "### Tam tutmayanlar", ""]
+        for k in weak:
+            draft, who, ident = k.split("|", 2)
+            what = (f"fazla {ident}" if who == "fazla" else
+                    f"{ident} {_short(items.get(ident, {}).get('nukte', ''), 70)} · {who}: "
+                    f"{DURUM_TR.get(next(r for r in res['taslaklar'][draft]['satirlar'] if r['id'] == ident)['durum'].get(who), '?')}")
+            L.append(f"- {draft} · {what} → {MARK_TR[marks[k]['v']]}{'' if k in set(sample) else ' (örneklem dışı)'}")
     return L
 
 
