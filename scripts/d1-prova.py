@@ -2,6 +2,7 @@
 
     uv run python scripts/d1-prova.py hazirla 11-12 [--istem tam|ince] [--db-yenile]   # veritabanları, ekler, istem, sızıntı testi
     uv run python scripts/d1-prova.py yazdir 11-12 [--istem tam|ince] [--kez 2] [--model claude-fable-5-2] [--effort high]
+    (hazirla ve yazdir `--surum v1|v2` alır: v1 `docs/d1/prova-istemi.md`, v2 `prova-istemi-v2.md`; D8, döngünün 2. turu)
     uv run python scripts/d1-prova.py karsilastir 11-12    # taslaklar gizlenen metinle, ortak diziler
     uv run python scripts/d1-prova.py okuma                # okuma ve not sayfası: bütün birimler, data/d1/okuma.html
     uv run python scripts/d1-prova.py notlar [dosya.json…] # okuyucuların notlarını al, birim başına notlar.md
@@ -49,6 +50,16 @@ KEEP = DATA_DIR / "d1"                         # yeniden üretilemeyenler: kendi
 DRAFTS = KEEP / "provalar"                     # taslaklar, dökümler, karşılaştırma, okuma notları
 HADIS_DB = DIST_DIR / "hadis" / "hadis.db"
 PROMPT = ROOT / "docs" / "d1" / "prova-istemi.md"
+# Döngünün turları (`docs/d1/dongu.md`): istemin sürümü; v1 dosyası değişmez, ayrılmış birimde eski ve yeni yan yana
+PROMPTS = {"v1": PROMPT, "v2": ROOT / "docs" / "d1" / "prova-istemi-v2.md"}
+
+
+def istem_files(istem: str, surum: str) -> tuple[str, str]:
+    """İstem ve sızıntı raporunun dosya adları; v1'in adları eskisi gibi (1. turun kayıtları bozulmasın)."""
+    name, report = ISTEM[istem]
+    if surum == "v1":
+        return name, report
+    return name.replace(".md", f"-{surum}.md"), report.replace(".md", f"-{surum}.md")
 OZET = ROOT / "docs" / "d1" / "usul-ozeti.md"
 CIZELGE = ROOT / "docs" / "d1" / "birim-cizelgesi.md"
 DROP_WORKS = ("isaratul-icaz-osmanlica",)
@@ -203,8 +214,9 @@ def variant_lines(text: str, istem: str) -> str:
     return "\n".join(out)
 
 
-def prompt_text(unit: str, cfg: dict, ozet: str, cizelge: str, arabic: str, istem: str = "tam") -> str:
-    body = PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
+def prompt_text(unit: str, cfg: dict, ozet: str, cizelge: str, arabic: str, istem: str = "tam",
+                surum: str = "v1") -> str:
+    body = PROMPTS[surum].read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
     body = variant_lines(body, istem)
     ayahs = "–".join(map(str, cfg["ayahs"]))
     body = body.format(sura_name=cfg["sura_name"], ayahs=ayahs, olcu=cfg["olcu"])
@@ -295,7 +307,7 @@ def leak_report(unit: str, cfg: dict, out: Path, prompt: str, report: str = "siz
 
 # ---------------------------------------------------------------- komutlar
 
-def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False) -> None:
+def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False, surum: str = "v1") -> None:
     cfg = UNITS[unit]
     out = OUT / unit
     out.mkdir(parents=True, exist_ok=True)
@@ -307,13 +319,13 @@ def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False) -> None:
         print(f"  {time.monotonic() - t:.0f} sn")
     else:
         print("veritabanları var, yeniden kurulmadı (--db-yenile)")
-    prompt_name, report = ISTEM[istem]
+    prompt_name, report = istem_files(istem, surum)
     ozet = apply_edits(OZET.read_text(encoding="utf-8"), cfg["ozet"], "özet")
     cizelge = apply_edits(CIZELGE.read_text(encoding="utf-8"), cfg["cizelge"], "çizelge")
     (out / "ek-ozet.md").write_text(ozet, encoding="utf-8")
     (out / "ek-cizelge.md").write_text(cizelge, encoding="utf-8")
     only = cfg["ince"] if istem != "tam" else None
-    prompt = prompt_text(unit, cfg, ozet, cizelge, arabic_text(out / "risale.db", only), istem)
+    prompt = prompt_text(unit, cfg, ozet, cizelge, arabic_text(out / "risale.db", only), istem, surum)
     (out / prompt_name).write_text(prompt, encoding="utf-8")
     uv = shutil.which("uv") or "uv"
     base = [uv, "--directory", str(ROOT), "run", "risale-mcp"]
@@ -334,11 +346,11 @@ def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False) -> None:
         sys.exit(1)
 
 
-def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam") -> None:
+def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam", surum: str = "v1") -> None:
     work = OUT / unit
     out = DRAFTS / unit
     out.mkdir(parents=True, exist_ok=True)
-    prompt = (work / ISTEM[istem][0]).read_text(encoding="utf-8")
+    prompt = (work / istem_files(istem, surum)[0]).read_text(encoding="utf-8")
     env = {k: v for k, v in os.environ.items() if k not in PARENT_ENV}
     existing = [int(m.group(1)) for p in out.glob("taslak-*.jsonl") if (m := re.match(r"taslak-(\d+)", p.stem))]
     first = max(existing, default=0) + 1
@@ -351,14 +363,14 @@ def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam") -
                        "--no-session-persistence"]
             log = out / f"taslak-{n}.jsonl"
             started = time.monotonic()
-            print(f"taslak {n}: {model}, {effort}, istem {istem} ({datetime.now():%H:%M})", flush=True)
+            print(f"taslak {n}: {model}, {effort}, istem {istem} {surum} ({datetime.now():%H:%M})", flush=True)
             with log.open("w", encoding="utf-8") as stdout:
                 done = subprocess.run(command, input=prompt, cwd=tmp, env=env, stdout=stdout, stderr=subprocess.PIPE,
                                       text=True, timeout=TIMEOUT, check=False)
             if done.returncode or done.stderr.strip():
                 (out / f"taslak-{n}.stderr.txt").write_text(done.stderr, encoding="utf-8")
             answer, calls, cost = transcript(log)
-            meta = {"model": model, "effort": effort, "istem": istem, "prompt_sha": _sha(prompt), "seconds": round(time.monotonic() - started),
+            meta = {"model": model, "effort": effort, "istem": istem, "surum": surum, "prompt_sha": _sha(prompt), "seconds": round(time.monotonic() - started),
                     "returncode": done.returncode, "calls": calls, "cost_usd": cost, "at": datetime.now().isoformat()}
             (out / f"taslak-{n}.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
             (out / f"taslak-{n}.md").write_text(answer, encoding="utf-8")
@@ -717,8 +729,8 @@ def unit_data(unit: str, quran: set) -> dict | None:
         n = path.stem.split("-")[1]
         cost = f", ≈{meta['cost_usd']:.2f} $" if meta.get("cost_usd") else ""
         drafts[path.stem] = {
-            "label": f"Taslak {n}", "short": f"istem {meta.get('istem', 'tam')}",
-            "meta": (f"{meta['model']}, {meta['effort']}, istem {meta.get('istem', 'tam')} ({meta.get('prompt_sha', '')}), "
+            "label": f"Taslak {n}", "short": f"istem {meta.get('istem', 'tam')} {meta.get('surum', 'v1')}",
+            "meta": (f"{meta['model']}, {meta['effort']}, istem {meta.get('istem', 'tam')} {meta.get('surum', 'v1')} ({meta.get('prompt_sha', '')}), "
                      f"{meta['seconds'] // 60} dk{cost}, {sum(meta['calls'].values())} araç çağrısı, "
                      f"{len(cites)} kaynak, ortak dizi: Arapça {len(draft_sh['ar'] & hidden_sh['ar'])}"),
             "blocks": blocks, "sources": sources, "hidden": hidden_html}
@@ -847,12 +859,14 @@ def main() -> None:
     p.add_argument("unit", choices=UNITS)
     p.add_argument("--istem", choices=ISTEM, default="tam")
     p.add_argument("--db-yenile", action="store_true")
+    p.add_argument("--surum", choices=PROMPTS, default="v1")
     p = sub.add_parser("yazdir")
     p.add_argument("unit", choices=UNITS)
     p.add_argument("--istem", choices=ISTEM, default="tam")
     p.add_argument("--kez", type=int, default=1)
     p.add_argument("--model", default="claude-fable-5-2")
     p.add_argument("--effort", default="high")
+    p.add_argument("--surum", choices=PROMPTS, default="v1")
     p = sub.add_parser("karsilastir")
     p.add_argument("unit", choices=UNITS)
     sub.add_parser("okuma")
@@ -860,9 +874,9 @@ def main() -> None:
     p.add_argument("files", nargs="*", type=Path, help="okuyucuların dışa aktardığı not dosyaları")
     args = parser.parse_args()
     if args.command == "hazirla":
-        hazirla(args.unit, args.istem, args.db_yenile)
+        hazirla(args.unit, args.istem, args.db_yenile, args.surum)
     elif args.command == "yazdir":
-        yazdir(args.unit, args.kez, args.model, args.effort, args.istem)
+        yazdir(args.unit, args.kez, args.model, args.effort, args.istem, args.surum)
     elif args.command == "okuma":
         okuma()
     elif args.command == "notlar":

@@ -1,7 +1,7 @@
 # İşârât usulüyle yapay zekâ taslağı (D1–D5)
 
-Durum, sıra ve kararlar `PLANLAR.md`'dedir (D1 prova, D2 aynı prova E2'nin eserleriyle, D3 başka türden bir birim,
-D4 okuma ve not platformu, D5 asıl iş). Bu klasör işin açık belgeleridir; taslaklar burada durmaz.
+Durum, sıra ve kararlar `PLANLAR.md`'dedir (D1 prova, D2 aynı prova E2'nin eserleriyle, D4 okuma ve not platformu,
+D6, D7, D9 ölçme düzeni, D8 döngünün 2. turu (D3 ona katıldı), D5 asıl iş). Döngünün kuralları ve turları `dongu.md`. Bu klasör işin açık belgeleridir; taslaklar burada durmaz.
 
 ## Belgeler
 
@@ -10,7 +10,9 @@ D4 okuma ve not platformu, D5 asıl iş). Bu klasör işin açık belgeleridir; 
 | `usul-ozeti.md` | İşârât'ın bir âyette ne yaptığının kendi metninden dökümü (ikinci sürüm, Arapça asla dayanır). Okur sürümü `python3 scripts/d1-okur.py` → `site/taslak/isarat-usulu.html` ve `.pdf` |
 | `birim-cizelgesi.md` | Arapça aslın birim birim çizelgesi (239 adres) |
 | `okuma-notlari.md` | Tam okumanın notları, birim birim |
-| `prova-istemi.md` | Taslağı yazan modelin istemi (sürümlü; `@tam`/`@ince` satırları) |
+| `dongu.md` | Taslak döngüsü: kurallar, durma ölçütü, tur çizelgesi, birimlerin durumu |
+| `prova-istemi.md` | Taslağı yazan modelin istemi, v1 (sürümlü; `@tam`/`@ince`/`@klasik` satırları); 1. tur |
+| `prova-istemi-v2.md` | Aynı istemin v2'si, 1. turun dersleriyle (`d1-prova.py --surum v2`); 2. tur |
 | `karsilastirma-istemi.md` | D7 yapay zekâ karşılaştırıcısının istemi (sürümlü): envanter, denetim, eşleştirme |
 | `elestiri-istemi.md` | D9 yapay zekâ eleştirmeninin istemi (sürümlü; açık kitap, dört eklenti) |
 

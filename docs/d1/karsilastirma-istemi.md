@@ -12,6 +12,12 @@ Sürümler:
 - v1 (2026-11-13): ilk sürüm; 11–12 için.
 - v1.1 (2026-11-13, D2): `KAYNAK` görevi eklendi (taslağın klasik bir esere dayanışının denetimi). Envanter, denetim
   ve eşleştirme metinleri değişmedi; dosyanın özeti değiştiği için D2'nin eşleştirmeleri başka `istem_sha` taşır.
+- v2 (2026-11-14, D8; 1. turun dersleri): eşleştirmede `aynen` sıkılaştı: aynı nükte **aynı gerekçeyle** (D7.7'de iki
+  okuyucunun birlikte "aynen" dediği N19 kısmen tutuyordu; D9 da N13 ve N34'ün "aynen"inin fazla olduğunu gösterdi).
+  Çelişkiye **kısmi çelişki** eklendi: İşârât'ın ara halkalarla kurduğu bir ilişkiyi halkaları atlayıp mahiyet ya da
+  zorunluluk hükmüne çevirmek (D6'da A10: "nifâk tabiatıyla ifsaddır"; v1 bunu çelişkisiz "fazla" saydı). Envanter,
+  denetim ve kaynak görevleri değişmedi. **Bir turun içinde ölçü sabittir:** D8'de 1. turun taban taslakları (D2'nin
+  4–6'sı) da v2 ile yeniden ölçülür, v1'in sonuçları `yz/eslestirme-v1/`e taşınır.
 -->
 
 ---- ORTAK ----
@@ -148,9 +154,11 @@ Aşağıda üç şey var:
 
 **A. Envanterin her kalemi için** taslakta karşılığı olup olmadığını söyle (`nukteler`; envanterdeki her kalem bir
 kez, sırasıyla):
-- `aynen`: taslak aynı özelliğe (lafız, hey'et ya da bağ) bakıyor ve aynı nükteyi söylüyor; ifade, uzunluk ve vecih
-  farklı olabilir.
-- `kismen`: aynı nükteye değiniyor ama eksik, daha genel ya da gerekçenin yalnız bir kısmıyla.
+- `aynen`: taslak aynı özelliğe (lafız, hey'et ya da bağ) bakıyor, aynı nükteyi söylüyor **ve oraya aynı gerekçeyle
+  varıyor** (İşârât'ın dayandığı lafız, takdir, zincir ya da kaide taslakta da var); ifade, uzunluk ve vecih farklı
+  olabilir. Sonuç aynı ama gerekçe yoksa ya da başka bir gerekçeyse `aynen` değildir.
+- `kismen`: aynı nükteye değiniyor ama eksik, daha genel, gerekçesiz ya da gerekçenin yalnız bir kısmıyla. Şüphede
+  `kismen` de; `gerekce`'de eksik olanı söyle.
 - `farkli_gerekce`: aynı özelliğe bakıyor ama başka bir nükte çıkarıyor.
 - `yok`: taslakta karşılığı yok.
 `taslak` alanına karşılığın çapalarını yaz (Arapça paragrafın çapasını; tercümede kalmışsa tercümeninkini), `alinti`
@@ -167,7 +175,11 @@ tek bir iddiayı açıyorsa tek kalem. Her kalemde:
 - `isaret`: taslağın tercümesindeki işarete göre `kaynakli` (bir kaynak numarası var), `kendi_tespiti` ya da
   `isaretsiz`; `kaynak`: işaretteki numaralar (yoksa boş liste);
 - `celiski`: iddia İşârât'ın bir kalemiyle çelişiyorsa o kalemin kimliği ve `gerekce`'de nasıl çeliştiği; çelişmiyorsa
-  `null`. "İşârât bunu söylemiyor" çelişki değildir; çelişki, ikisinin birlikte doğru olamamasıdır.
+  `null`. "İşârât bunu söylemiyor" çelişki değildir; çelişki, ikisinin birlikte doğru olamamasıdır. **Kısmi çelişki
+  de çelişkidir:** İşârât bir ilişkiyi ara halkalarla (sebep zinciri, takdir edilmiş cümleler) kuruyorsa ve taslak
+  halkaları atlayıp aynı ilişkiyi mahiyet ya da zorunluluk hükmüne çeviriyorsa ("A, B'ye yol açar" yerine "A
+  tabiatıyla B'dir"), ya da İşârât'ın bir ihtimal olarak söylediğini taslak tek vecih olarak söylüyorsa, o kalemi
+  yaz ve `gerekce`'ye "kısmi:" diye başla.
 Fazlanın doğru ya da değerli olup olmadığını söyleme.
 
 ```json

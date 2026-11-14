@@ -57,13 +57,12 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D8 | Taslak altyapısının güncellenmesi: D7, D9 ve D6'nın dersleri, istemin yeni sürümü, 11–12 ve ayrılmış bir birimde sınama | D1.9 |
+| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 11–12 ve 17–20'de (temsil) sınama; D3 buna katıldı (D8.1 bitti) | D1.9, D3 |
 | 2 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
-| 3 | D3 | Başka türden bir birim, İşârât aralığında | — |
-| 4 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
-| 5 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 6 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
-| 7 | B2–B5 | Küçük açıklar | MVP "Kalan" |
+| 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
+| 4 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
+| 5 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
+| 6 | B2–B5 | Küçük açıklar | MVP "Kalan" |
 
 D7.7, D9.3 ve D6.2 `okuma-yz.html`'de yürümedi; âyet masasında (S5) yapıldı; D7, D6 ve D9 kapandı (2026-11-14), D2
 bitti (2026-11-13). D8 dördünün dersleriyle yapılır: girdisi `data/d1/provalar/11-12/d9-rapor.md` › "D8'e geçenler"
@@ -87,27 +86,45 @@ Sadeleştirme (2026-11-09/10, kullanıcının sorusu üzerine): **prova** asıl 
 yoklaması deneyi yapılmaz: ezber provanın değerlendirmesinde ölçülür (taslak ile gizlenen metnin ortak kelime
 dizileri), içerik hatırlamasını mütehassıs görür.
 
-**D8. Taslak altyapısının güncellenmesi** (D1'den ayrıldı, 2026-11-13; eski D1.9). D7 ve D9'un raporlarından (D2'nin
-dersleriyle) dersler: istemin yeni sürümü (yalnız genel usul; âyete özgü ipucu girmez), gerekirse usul özeti ve
-ölçüt çizelgesi. Girdisi `d9-rapor.md` › "D8'e geçenler" (11 madde; eleştirmen v1.2 ile ölçer). D6'nın bulgusu (2026-11-14): kendi tespitleri ihtimal diliyle, vecihlerden biri olarak; inhisar
-kalıbı ancak kaynakta öyleyse; İşârât'ın sebep zinciri kısaltılırken atlanmaz. Sınaması: yeni istemle 11–12'de yeniden üç
-taslak, E2'nin eserleri açıkken; D7 ve D9 ile ölçülür ve D2'nin taslaklarıyla karşılaştırılır (aynı eserler, değişen
-yalnız istem). **Ayrılmış birim (2026-11-13; seçimi D8'e gelince, kullanıcının kararı):** dersler 11–12'nin gizlenen
-metni görülerek çıktığı için yeni istem yalnız 11–12'de ölçülürse olduğundan iyi görünür (genel görünen kurallar da
-11–12'nin eksiklerini kapatsın diye seçildi). Sınama ayrıca hiç bakılmamış bir İşârât biriminde, eski ve yeni
-istemle yapılır; fark yalnız istemden gelir. Birim 11–12'ye bitişik olmaz (9–10 ve 13 eleştiride çok okundu),
-nazm ve lafız nükteleri bakımından ona benzer olur (D3'ün "başka türden birim"i başka bir soruyu sınar); seçildikten
-sonra ona kimse bakmaz. **D2'nin dersleri (2026-11-13, `d2-rapor.md`):** klasik eserler
-me'hazda kalır; istem genel usul olarak (a) bir nüktenin aslı belâgat eserlerindeyse önce ona dayanmayı, müfessir
-naklediyorsa ikisini ayrı anmayı, (b) kaynağın sözünü kayıtlarıyla (قد، من معاني) aktarmayı, (c) kaideyi kaynağa,
-âyete uygulamasını "kendi tespiti"ne bağlamayı söyler; kapsamayı artırmak için kaynak değil usul gerekir: üçüncü
-vecihte her kayıt için dinleyenin zihnindeki sual ve kaydın vicdana tesiri sordurulur (yakalanmayan nüktelerin ortak
-noktası).
+**Döngü** (kullanıcının fikri ve kararı, 2026-11-14; ayrıntısı ve tur çizelgesi `docs/d1/dongu.md`). D1'den D9'a
+yapılan, bir döngünün ilk turudur: istemin bir sürümüyle yaz, kapalı kitapla karşılaştır (D7), açık kitapla eleştir
+(D9), insanla süz (örneklemler), gerekirse kör noktayı ara (D6), dersleri genel usul olarak istemin yeni sürümüne
+yaz. D8 ikinci turdur. Kurallar: durma ölçütü "eleştiri olumlu olana kadar" değildir (yazan da ölçen de Claude; olumlu
+eleştiriyi hedef yapmak modeli eleştirmenin beğendiğini yazmaya yöneltir); her tur yeni istemi hiç bakılmamış bir
+birimde eski istemle yan yana sınar (birimler harcanır: Bakara'da 23 birim); bir turun içinde ölçü sabittir (ölçü
+değişirse taban yeniden ölçülür); insan emeği her turda örneklemlerle sınırlıdır, kör nokta okuması eleştirmen
+değişince yapılır. Ölçütler: ayrılmış birimde kapsama, D9.1'in mekanik sayıları, sistemli başlıkların kaçının yine
+çıktığı, çelişkiler. Durma: bir tur ayrılmış birimde ölçülür bir iyileşme getirmezse ya da kalan hatalar yalnız ehlin
+görebileceği türdense döngü durur, D5'e geçilir (beklenen iki ya da üç tur). Tur başına ≈30–35 $ ve kullanıcının ≈1
+saati.
 
-**D3. Başka türden bir birim.** D1 ve D2'nin dersleriyle, yine İşârât'ın kapsadığı aralıkta (cevabı bilinen, kör
-prova), 11–12'den farklı türde (temsil: 17–20, ya da hüküm); üç taslak.
+**D8. Döngü 2: istemin yeni sürümü, 11–12 ve 17–20'de sınama** (D1'den ayrıldı, 2026-11-13, eski D1.9; 2026-11-14'te
+D3 buna katıldı ve döngünün 2. turu oldu, kullanıcının kararı). Girdiler: `d9-rapor.md` › "D8'e geçenler" (11 madde),
+`d6-rapor.md`, `d2-rapor.md`, D7'nin bulguları. İstem yalnız genel usul alır, âyete özgü ipucu girmez; 11–12'de de
+yazılacağı için kurallar 11–12'nin gizlenen nüktelerini anmaz. 11–12'deki ölçüm dersin çıktığı birimde olduğu için
+iyimserdir; asıl ölçü 17–20'dir (temsil türü; D3'ün "başka türden birim"i).
+- **D8.1 İstem ve ölçü (bitti, 2026-11-14):** taslak istemi **v2** (`docs/d1/prova-istemi-v2.md`; v1 değişmeden durur,
+  `d1-prova.py hazirla|yazdir --surum v1|v2`): dört maksadın bu âyete özgü tutamağı, delâlet derecesinin gerekçesi,
+  ikinci vecihte üslûp değişikliğinden takdir zinciri ve halka zinciri olarak temsil, üçüncü vecihte kaydın vicdandaki
+  işi ve iddia–red kayıtlarının mânâ üzerinden eşlenmesi, ihtilafı itibarlarla birlikte tutmak, kapsam ve derece,
+  kaynak okuma (ne dediğini görmek için; hükmü değil mekanizmayı almak; kayıtları ve çekinceyi korumak; klasik eserde
+  aslına dayanmak, terimi tanımında okumak), yazmadan önce iki soru, yazdıktan sonra öz denetim, "kendi tespiti",
+  tırnak ve takdir kuralları. 11–12 için `hazirla 11-12 --istem ince-klasik --surum v2`: sızıntı testi temiz (istemle
+  gizlenen metin arasında 1 ortak dizi, kalıp ibare). Karşılaştırıcı istemi **v2** (`aynen` aynı gerekçeyle; kısmi
+  çelişki), eleştirmen istemi **v1.2** (D9'da yazıldı: kapsam sorusu). Usul özetine dokunulmadı (İşârât'ın usulünün
+  tarifidir, yapay zekânın zaaflarının değil).
+- D8.2 17–20'nin prova hazırlığı: `d1-prova.UNITS["17-20"]` (gizlenecek düğümler, ince Ek 3'ün komşuları 16 ve 21);
+  usul özetinin (≈21 yer) ve birim çizelgesinin (≈13 yer) 17–20'ye dayanan örnekleri çıkarılır, yerine ipucu konmaz;
+  sızıntı testi. 17–20'nin nükte envanteri (D7.2 gibi: Fable çıkarır, Opus denetler) yazdırmadan önce sabitlenir.
+- D8.3 Yazdırma: 11–12'de v2 ile 3 taslak; 17–20'de v1 ile 3, v2 ile 3 (hepsi ince-klasik, Fable 5.2, yüksek).
+- D8.4 Ölçüm: D7 v2 ile (11–12'nin tabanı, D2'nin 4–6'sı, de yeniden; v1 sonuçları `yz/eslestirme-v1/`), D9.1,
+  eleştirmen v1.2 (taban da yeniden; v1.1 sonuçları `yz/elestiri-v1.1/`).
+- D8.5 Kullanıcının örneklemleri (masada): karşılaştırma örneklemi, süzgeç (10 not ve başlıklar), eleştirmen v1.2
+  olduğu için kapsam notlarından dar bir kör nokta okuması.
+- D8.6 Rapor ve döngü kararı: ölçütlerle 2. tur, `docs/d1/dongu.md`'ye satır; devam (3. tur, hüküm türü: 21 ya da 22)
+  ya da D5.
 
-**D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; alt adımları D3'ten sonra yazılır.
+**D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; alt adımları döngü durunca (D8 ya da sonraki tur) yazılır.
 İlki: D5.1 Bakara 34, tek birim, ehlin okuması.
 
 **S4. Dizin başvuruları** (sıraya alındı, 2026-11-12; kullanıcı: bağdaştırıcıların erişilebilir olması için çok
@@ -622,6 +639,11 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   sunulmaz.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
+
+**D3. Başka türden bir birim.** D1 ve D2'nin dersleriyle, yine İşârât'ın kapsadığı aralıkta (cevabı bilinen, kör
+prova), 11–12'den farklı türde (temsil: 17–20, ya da hüküm); üç taslak. **D8'e katıldı (2026-11-14, kullanıcının kararı):** D3'ün amacı D8'inkiydi (yeni istem 11–12'nin
+dışına genelleşiyor mu); D8'in ayrılmış birimi 17–20 (temsil) seçildi, "hüküm" türü gerekirse 3. turda. D3 kimliği boş
+kalır.
 
 **D9. Yapay zekâ eleştirmeni ve mekanik denetimler** (kullanıcının fikri ve kararı, 2026-11-13; D7'den ayrı aşama).
 Kullanıcı taslak 1'i claude.ai'de Risale, Tefsir ve Hadis bağdaştırıcıları ve proje talimatı açıkken paragraf
