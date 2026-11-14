@@ -7,7 +7,7 @@
 #   scripts/sunucu.sh auth --server hadis debug-url --new  # hadis bağdaştırıcısının ayrı adresi (/hadis/<anahtar>)
 #   scripts/sunucu.sh auth usage --user '(debug)' --params [--only genel|hadis]  # o adresten gelen isteklerin kaydı
 #   (tefsir ayrı makinede: scripts/tefsir-sunucu.sh auth debug-url --new)
-#   scripts/sunucu.sh taslak add-user <e-posta> [--generate] | passwd <e-posta> | remove-user <e-posta> | users | sessions | revoke <e-posta>
+#   scripts/sunucu.sh taslak add-user <e-posta> --generate [--name <ad>] | set-name <e-posta> <ad> | passwd <e-posta> | remove-user <e-posta> | users | sessions | revoke <e-posta>
 #                                                     # risalemcp.com/taslak/ hesapları (MCP hesapları değil)
 #   scripts/sunucu.sh auth debug <ad> on|off              # hesabın ayrıntılı kaydı (OAuth kipi; askıda)
 #   scripts/sunucu.sh openai-challenge <jeton>         # OpenAI dizininin alan adı doğrulama jetonu

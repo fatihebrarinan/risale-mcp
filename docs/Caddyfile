@@ -61,6 +61,10 @@ risalemcp.com {
 	handle /taslak/cikis {
 		reverse_proxy 127.0.0.1:8009
 	}
+	# girişli kişinin adı (sayfa işaretlere okuyucu adı olarak yazar); oturum yoksa 401
+	handle /taslak/ben {
+		reverse_proxy 127.0.0.1:8009
+	}
 	handle /taslak* {
 		forward_auth 127.0.0.1:8009 {
 			uri /_auth

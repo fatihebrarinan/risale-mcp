@@ -8,12 +8,14 @@ Parola özeti ve kilit kuralı `auth.py`'dekiyle aynıdır.
 Düzen: sayfalar statik dosyadır (`/var/www/ozel/taslak/`); Caddy her istekte bu servise sorar (`forward_auth`,
 `GET /_auth`). Oturum çerezi geçerliyse 200, değilse giriş sayfasına yönlendirme. Giriş ve çıkış sayfaları da bu
 servistedir (`/taslak/giris`, `/taslak/cikis`). İşaretler sunucuda tutulmaz: tarayıcıda kalır, dışa aktarılır.
+`/taslak/ben` girişli kişinin adını verir (`name`, yoksa e-posta): sayfa işaretlere okuyucu adı olarak onu yazar.
 
 Saklananlar (gizlilik politikası söyler): e-posta, parola özeti, yanlış deneme sayısı, son giriş zamanı; oturumun
 yalnız özeti, açılış ve son görülme zamanı. IP ve gezinti kaydı tutulmaz.
 
     uv run python -m risale_mcp.site_auth serve [--port 8009]
-    uv run python -m risale_mcp.site_auth add-user <e-posta> [--generate]   # sunucuda: scripts/sunucu.sh taslak …
+    uv run python -m risale_mcp.site_auth add-user <e-posta> [--generate] [--name <ad>]   # sunucuda: scripts/sunucu.sh taslak …
+    uv run python -m risale_mcp.site_auth set-name <e-posta> <ad>
     uv run python -m risale_mcp.site_auth users | sessions | passwd <e-posta> | remove-user <e-posta> | revoke <e-posta>
 """
 
@@ -41,6 +43,7 @@ _DUMMY = hash_password(secrets.token_hex(8))
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
     email        TEXT PRIMARY KEY,
+    name         TEXT,                     -- işaretlerdeki okuyucu adı (isteğe bağlı; yoksa e-posta)
     password     TEXT NOT NULL,
     created      REAL NOT NULL,
     failures     INTEGER NOT NULL DEFAULT 0,
@@ -71,6 +74,8 @@ class Store:
         path.parent.mkdir(parents=True, exist_ok=True)
         with self._conn() as c:
             c.executescript(SCHEMA)
+            if "name" not in {r[1] for r in c.execute("PRAGMA table_info(users)")}:     # 2026-11-14'ten önceki dosya
+                c.execute("ALTER TABLE users ADD COLUMN name TEXT")
         path.chmod(0o600)                                # e-postalar ve parola özetleri: yalnız servisin kullanıcısı
 
     def _conn(self) -> sqlite3.Connection:
@@ -85,14 +90,24 @@ class Store:
 
     # ------------------------------------------------------------ hesaplar
 
-    def add_user(self, email: str, password: str) -> None:
+    def add_user(self, email: str, password: str, name: str | None = None) -> None:
         email = norm_email(email)
         if not EMAIL.match(email):
             raise ValueError(f"e-posta adresi değil: {email}")
         if self._run("SELECT 1 FROM users WHERE email = ?", (email,)):
             raise ValueError(f"hesap zaten var: {email}")
-        self._run("INSERT INTO users (email, password, created) VALUES (?, ?, ?)",
-                  (email, hash_password(password), time.time()))
+        self._run("INSERT INTO users (email, name, password, created) VALUES (?, ?, ?, ?)",
+                  (email, (name or "").strip() or None, hash_password(password), time.time()))
+
+    def set_name(self, email: str, name: str) -> None:
+        email = norm_email(email)
+        if not self._run("SELECT 1 FROM users WHERE email = ?", (email,)):
+            raise ValueError(f"hesap yok: {email}")
+        self._run("UPDATE users SET name = ? WHERE email = ?", (name.strip() or None, email))
+
+    def display_name(self, email: str) -> str:
+        rows = self._run("SELECT name FROM users WHERE email = ?", (norm_email(email),))
+        return (rows[0]["name"] if rows else None) or email
 
     def set_password(self, email: str, password: str) -> None:
         email = norm_email(email)
@@ -108,7 +123,7 @@ class Store:
         self._run("DELETE FROM users WHERE email = ?", (email,))
 
     def users(self) -> list[sqlite3.Row]:
-        return self._run("SELECT email, created, last_login, failures, locked_until FROM users ORDER BY email")
+        return self._run("SELECT email, name, created, last_login, failures, locked_until FROM users ORDER BY email")
 
     def login(self, email: str, password: str, now: float | None = None) -> tuple[bool, str | None]:
         now = now or time.time()
@@ -204,7 +219,7 @@ def safe_next(target: str | None) -> str:
 def build_app(store: Store):
     from starlette.applications import Starlette
     from starlette.requests import Request
-    from starlette.responses import HTMLResponse, PlainTextResponse, RedirectResponse
+    from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse
     from starlette.routing import Route
 
     def page(next_url: str, message: str = "", email: str = "", status: int = 200) -> HTMLResponse:
@@ -239,6 +254,12 @@ def build_app(store: Store):
                             httponly=True, secure=secure(request), samesite="lax")
         return response
 
+    async def me(request: Request):
+        email = store.check(request.cookies.get(COOKIE))
+        if not email:
+            return JSONResponse({"error": "oturum yok"}, status_code=401, headers={"Cache-Control": "no-store"})
+        return JSONResponse({"email": email, "name": store.display_name(email)}, headers={"Cache-Control": "no-store"})
+
     async def logout(request: Request):
         store.close_session(request.cookies.get(COOKIE))
         response = RedirectResponse(f"{PREFIX}giris?cikis=1", status_code=303)
@@ -246,7 +267,7 @@ def build_app(store: Store):
         return response
 
     return Starlette(routes=[Route("/_auth", check), Route(f"{PREFIX}giris", login, methods=["GET", "POST"]),
-                             Route(f"{PREFIX}cikis", logout, methods=["GET", "POST"])])
+                             Route(f"{PREFIX}cikis", logout, methods=["GET", "POST"]), Route(f"{PREFIX}ben", me)])
 
 
 # ---------------------------------------------------------------- komut satırı
@@ -277,6 +298,11 @@ def main(argv: list[str] | None = None) -> None:
         p = sub.add_parser(name)
         p.add_argument("email")
         p.add_argument("--generate", action="store_true", help="parolayı üret ve göster")
+        if name == "add-user":
+            p.add_argument("--name", help="işaretlerde görünecek okuyucu adı (yoksa e-posta)")
+    p = sub.add_parser("set-name")
+    p.add_argument("email")
+    p.add_argument("name")
     for name in ("remove-user", "revoke"):
         sub.add_parser(name).add_argument("email")
     sub.add_parser("users")
@@ -288,11 +314,14 @@ def main(argv: list[str] | None = None) -> None:
         uvicorn.run(build_app(store), host="127.0.0.1", port=args.port, proxy_headers=True,
                     forwarded_allow_ips="127.0.0.1", access_log=False)
     elif args.command == "add-user":
-        store.add_user(args.email, _password(args.generate))
+        store.add_user(args.email, _password(args.generate), args.name)
         print(f"hesap açıldı: {norm_email(args.email)}")
     elif args.command == "passwd":
         store.set_password(args.email, _password(args.generate))
         print("parola değişti, açık oturumlar kapatıldı")
+    elif args.command == "set-name":
+        store.set_name(args.email, args.name)
+        print(f"ad: {store.display_name(args.email)}")
     elif args.command == "remove-user":
         store.remove_user(args.email)
         print("hesap silindi")
@@ -301,7 +330,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "users":
         for u in store.users():
             lock = f" kilitli ({_when(u['locked_until'])}'e kadar)" if u["locked_until"] > time.time() else ""
-            print(f"{u['email']}  açıldı {_when(u['created'])}  son giriş {_when(u['last_login'])}{lock}")
+            print(f"{u['email']}  ({u['name'] or 'adsız'})  açıldı {_when(u['created'])}  son giriş {_when(u['last_login'])}{lock}")
     elif args.command == "sessions":
         for s in store.sessions():
             print(f"{s['email']}  açıldı {_when(s['created'])}  son görülme {_when(s['last_seen'])}  biter {_when(s['expires'])}")

@@ -261,6 +261,12 @@ biçimi (`d1-prova.py notlar` okur).
   kapısı. Hesap: `scripts/sunucu.sh taslak add-user <e-posta> --generate`. Gizlilik politikası (tr, en) ve robots.txt
   güncellendi; masaya "Kaynaklar ve izinler" alt bilgisi (e-Risale, risaleoku, OpenITI CC BY-NC-SA, Tanzil). İşârât'ın
   usul özeti `/taslak/`'tan `/isarat-usul/`'e taşındı, eski adresler yönlenir.
+- **Kullanıcının istekleri (2026-11-14, ikinci tur):** okuyucu adı girişten gelir (`/taslak/ben`; hesaba isteğe bağlı
+  ad, `scripts/sunucu.sh taslak set-name <e-posta> <ad>`, yoksa e-posta; dosyadan açılınca ad kutusu kalır). Kartlarda
+  karşılaştırıcının ve eleştirmenin yorumu "Model:", taslağın sözü "Taslak:" etiketli; taslağın sözü sayfanın dilinde:
+  alıntılar taslağın Arapçasından alındığı için Türkçe kipte alıntının geçtiği paragrafın Türkçesi verilir (alıntının
+  birebir karşılığı değil), Arapça söz altında açılır. "Fazla" kartında "Model:" karşılaştırıcının gerekçesidir; üstteki
+  cümle taslağın iddiasının karşılaştırıcıca özetidir.
 - **Açık:** bilirkişi maddelerini dar soruya çevirmek; müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); işaretlerin
   sunucuda toplanması ayrı karardır (heyet akışı).
 

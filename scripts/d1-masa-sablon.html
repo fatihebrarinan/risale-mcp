@@ -145,7 +145,8 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
   <h1>Âyet masası</h1>
   <label>Âyet <select id="unit"></select></label>
   <label>Dil <span class="seg" id="lang"><button data-v="tr">Türkçe</button><button data-v="ar">Arapça</button></span></label>
-  <label>Okuyucu <input id="reader" size="10" placeholder="adınız"></label>
+  <label id="readerw">Okuyucu <input id="reader" size="10" placeholder="adınız"></label>
+  <span id="who" class="small muted" hidden></span>
   <span class="spacer"></span>
   <span id="progress" class="small muted"></span>
   <button class="btn" id="export" title="İşaretleri dosyaya yaz (eski okuma sayfasıyla aynı biçim)">Dışa aktar</button>
@@ -192,7 +193,8 @@ const BKD = {'': 'dayanak türü…', kaynak: 'kaynak (cümle kimliği)', kisi: 
 
 function persist() { store.set('d1-masa', {loc: st.loc, lang: st.lang, draft: st.draft, tab: st.tab, whole: st.whole}); }
 function say(t) { $('#msg').textContent = t; if (t) setTimeout(() => { if ($('#msg').textContent === t) $('#msg').textContent = ''; }, 6000); }
-function reader() { return $('#reader').value.trim(); }
+let ACCOUNT = null;                              // sitede girişli hesabın adı (/taslak/ben); dosyadan açılınca yok
+function reader() { return ACCOUNT || $('#reader').value.trim(); }
 function needReader() { if (reader()) return false; say('Önce okuyucu adınızı yazın.'); $('#reader').focus(); return true; }
 function locName(l) { return CHIP[l] ? `<span class="arw" dir="rtl">${esc(CHIP[l].text)}</span>` : esc(LOC[l] || l); }
 function at(x) { return x.loc && x.loc.includes(st.loc); }
@@ -432,6 +434,19 @@ function stripHtml(id) {
     return `<button data-draftgo="${dk}" aria-current="${dk === st.draft}" title="${esc(draftLabel(dk))}: Fable ${a}, Opus ${b}">${esc(draftLabel(dk).replace('Taslak ', 'T'))} ${s}</button>`;
   }).join('')}</div>`;
 }
+// Taslağın sözü sayfanın dilinde. Alıntılar (karşılaştırıcının ve eleştirmenin) taslağın Arapçasından alınmıştır;
+// Türkçe kipte o paragrafın Türkçesi verilir (paragrafın tercümesidir, alıntının birebir karşılığı değil),
+// alıntılanan Arapça söz altında açılır.
+function draftSays(dk, anchors, q) {
+  const blocks = DATA.drafts[dk].blocks;
+  const tr = st.lang === 'tr' ? [...new Set(anchors.map(a => a.replace('/ar/', '/tr/')))]
+    .map(a => (blocks.find(b => b.a === a) || {}).t).filter(Boolean) : [];
+  const go = `<button class="linkish" data-showdraft="${esc(anchors.join(','))}" data-quote="${esc(q || '')}" data-draftgo2="${esc(dk)}">taslakta göster</button>`;
+  if (!tr.length) return `<div class="small"><b>Taslak:</b></div><div class="q ar">${esc(q)}</div>${go}`;
+  return `<div class="small"><b>Taslak:</b> <span class="tag ai">yapay zekâ tercümesi</span> <span class="muted">alıntının geçtiği paragrafın Türkçesi</span></div>
+    <div class="q serif">${tr.map(trEsc).join('<br>')}</div>
+    <details><summary class="small muted">Alıntılanan Arapça söz</summary><div class="q ar">${esc(q)}</div></details>${go}`;
+}
 function itemCard(id, it) {
   const row = (Y.drafts[st.draft] || {rows: {}}).rows[id] || {};
   const foc = st.focus && st.focus.item === id;
@@ -440,10 +455,10 @@ function itemCard(id, it) {
     if (!r) return `<div class="reader small muted">${MODEL[m] || m}: bu nükteye bakmamış</div>`;
     const k = `${U}|${st.draft}|${m}|${id}`;
     const [s, l] = DUR[r.d] || ['?', r.d];
-    return `<div class="reader"><b>${MODEL[m] || m}</b>: ${s} ${l}${r.ok ? '' : ' <span class="tag w">alıntısı taslakta bulunamadı</span>'}
+    return `<div class="reader"><b>${MODEL[m] || m}</b> (karşılaştırıcı yapay zekâ): ${s} ${l}${r.ok ? '' : ' <span class="tag w">alıntısı taslakta bulunamadı</span>'}
       <span style="float:right">${evBtns(k, EVC, 'yzv', (yzEval[k] || {}).v)}</span>
-      <div class="small">${codes(r.g)}</div>
-      ${r.q ? `<div class="q ar">${esc(r.q)}</div><button class="linkish" data-showdraft="${esc(r.a.join(','))}" data-quote="${esc(r.q)}">taslakta göster</button>` : ''}</div>`;
+      <div class="small"><b>Model:</b> ${codes(r.g)}</div>
+      ${r.q ? draftSays(st.draft, r.a, r.q) : ''}</div>`;
   }).join('');
   return `<div class="card${foc ? ' focus' : ''}" data-item="${id}">
     <div class="top" data-focusitem="${id}"><span class="tag ai" title="Nüktenin özeti yapay zekânın; asıl söz soldaki İşârât cümlesidir">özet</span>
@@ -454,11 +469,11 @@ function itemCard(id, it) {
 function extraCard(f) {
   const k = `${U}|${st.draft}|fazla|${f.k}`;
   const who = f.r.map(m => MODEL[m] || m).join(' ve ');
-  return `<div class="card"><span class="tag g">fazla</span> ${codes(f.i)}
+  return `<div class="card"><span class="tag g">fazla</span> <span class="small muted">taslağın iddiası (karşılaştırıcının özeti):</span> ${codes(f.i)}
     <div class="small muted">Taslağın işareti: ${esc(ISR[f.s] || f.s || '?')}${f.src.length ? ` [${f.src.join(', ')}]` : ''} · bulan: ${esc(who)}
     ${f.c ? ` · <span class="tag w">İşârât'la çelişiyor olabilir</span>` : ''}${f.ok ? '' : ' · <span class="tag w">alıntısı taslakta bulunamadı</span>'}</div>
-    ${f.g ? `<div class="small">${codes(f.g)}</div>` : ''}
-    <div class="q ar">${esc(f.q)}</div><button class="linkish" data-showdraft="${esc(f.a.join(','))}" data-quote="${esc(f.q)}">taslakta göster</button>
+    ${f.g ? `<div class="small"><b>Model:</b> ${codes(f.g)}</div>` : ''}
+    ${draftSays(st.draft, f.a, f.q)}
     <span style="float:right">${evBtns(k, EVC, 'yzv', (yzEval[k] || {}).v)}</span></div>`;
 }
 function karsiHtml() {
@@ -526,11 +541,11 @@ function noteCard(dk, x) {
   return `<div class="card"><span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
     ${x.ok ? '' : ' <span class="tag w">alıntısı ya da dayanağı denetimde tutmadı</span>'}
     <span style="float:right">${evBtns(key, SUZC, 'suz', (yzSuz[key] || {}).v)}</span>
-    <div class="serif" style="margin-top:4px">${codes(x.m)}</div>
+    <div class="serif" style="margin-top:4px"><b>Model</b> <span class="small muted">(eleştirmen)</span><b>:</b> ${codes(x.m)}</div>
     ${x.h ? `<div class="small"><i>Taslak oraya nasıl varmış:</i> ${codes(x.h)}</div>` : ''}
     ${x.s ? `<div class="small"><i>Eleştirmenin sorusu:</i> ${codes(x.s)}</div>` : ''}
     ${it ? `<div class="small"><i>İlgili İşârât nüktesi:</i> <button class="linkish" data-focusitem="${x.n}" data-keeptab>${esc(it.n)}</button></div>` : ''}
-    ${x.q ? `<div class="q ar">${esc(x.q)}</div><button class="linkish" data-showdraft="${esc(x.a)}" data-quote="${esc(x.q)}">taslakta göster</button>` : ''}
+    ${x.q && x.a !== 'genel' ? draftSays(dk, [x.a], x.q) : x.q ? `<div class="small"><b>Taslak:</b></div><div class="q ar">${esc(x.q)}</div>` : ''}
     ${dayanak ? `<div class="small">Dayanak: ${dayanak}</div>` : ''}</div>`;
 }
 function locIndex(list, done, attr) {
@@ -711,6 +726,14 @@ document.addEventListener('change', ev => {
 document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { st.lang = b.dataset.v; render(); });
 $('#reader').value = store.get('d1-okuma-okur', '');
 $('#logout').hidden = !location.pathname.startsWith('/taslak/');
+if (location.pathname.startsWith('/taslak/')) {
+  fetch('/taslak/ben', {credentials: 'same-origin', cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(j => {
+    if (!j || !j.name) return;
+    ACCOUNT = j.name;
+    $('#readerw').hidden = true; $('#who').hidden = false; $('#who').textContent = `Okuyucu: ${j.name}`;
+    $('#who').title = j.email;
+  }).catch(() => {});
+}
 $('#reader').onchange = () => store.set('d1-okuma-okur', reader());
 
 // --- dışa ve içe aktarma: eski okuma sayfasıyla aynı dosya (notlar ve ölçütler de içinde, değiştirilmeden)

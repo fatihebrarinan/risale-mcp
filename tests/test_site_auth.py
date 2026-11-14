@@ -52,6 +52,20 @@ def test_sessions(store):
     assert store.check(token) is None
 
 
+def test_names(store, tmp_path):
+    assert store.display_name("okur@example.org") == "okur@example.org"
+    store.set_name("okur@example.org", "Fatih")
+    assert store.display_name("OKUR@example.org") == "Fatih"
+    store.add_user("iki@example.org", "dogru-parola-123", name="Ahmet")
+    assert store.display_name("iki@example.org") == "Ahmet"
+    # ad sütunu olmayan eski dosya açılınca sütun eklenir
+    import sqlite3
+    old = tmp_path / "eski.db"
+    sqlite3.connect(old).executescript("CREATE TABLE users (email TEXT PRIMARY KEY, password TEXT NOT NULL, created REAL NOT NULL,"
+                                       " failures INTEGER NOT NULL DEFAULT 0, locked_until REAL NOT NULL DEFAULT 0, last_login REAL);")
+    Store(old).add_user("x@example.org", "dogru-parola-123")
+
+
 def test_safe_next():
     assert safe_next("/taslak/") == "/taslak/"
     assert safe_next("/taslak/index.html?x=1") == "/taslak/index.html?x=1"
@@ -72,6 +86,9 @@ def test_gate_flow(client):
     token = r.cookies[COOKIE]
     # Caddy, tarayıcının /taslak/… isteğindeki çerezi olduğu gibi /_auth'a iletir
     assert client.get("/_auth", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 200
+    r = client.get("/taslak/ben", headers={"Cookie": f"{COOKIE}={token}"})
+    assert r.json() == {"email": "okur@example.org", "name": "okur@example.org"}
     client.cookies.clear()
+    assert client.get("/taslak/ben").status_code == 401
     assert client.get("/taslak/cikis", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 303
     assert client.get("/_auth", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 302
