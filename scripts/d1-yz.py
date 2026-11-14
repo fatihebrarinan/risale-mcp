@@ -233,9 +233,22 @@ def merge_envanter(unit: str, raw: dict, review: dict, meta: dict) -> None:
     h = hidden(unit)
     items = [dict(i, kaynak="cikaran", eski_id=i.get("id")) for i in raw.get("kalemler", [])]
     open_items = []
+    # Kullanıcının kabul ettiği öbür öneriler (`envanter-kararlar.json`: [{tur, ilgili}], ilgili çıkaranın kimlikleri):
+    # `bol` kalemi önerinin kalemleriyle değiştirir, `sil` kalemi çıkarır. Eşleştirmeden önce verilir (2026-11-15).
+    kp = out_dir(unit) / "envanter-kararlar.json"
+    accepted = json.loads(kp.read_text(encoding="utf-8"))["kabul"] if kp.exists() else []
+    is_accepted = lambda o: any(k["tur"] == o.get("tur") and k["ilgili"] == o.get("ilgili") for k in accepted)
+    applied = []
     for o in review.get("oneriler", []):
         if o.get("tur") == "eksik" and isinstance(o.get("oneri"), dict):
             items.append(dict(o["oneri"], kaynak="denetci", gerekce_denetci=o.get("gerekce", "")))
+        elif o.get("tur") in ("bol", "sil") and is_accepted(o):
+            gone = set(o.get("ilgili") or [])
+            items = [i for i in items if i.get("eski_id") not in gone]
+            if o["tur"] == "bol":
+                items += [dict(x, kaynak="denetci", eski_id=None, bolunen=sorted(gone), gerekce_denetci=o.get("gerekce", ""))
+                          for x in o.get("oneri") or []]
+            applied.append(o)
         else:
             open_items.append(o)
     items.sort(key=lambda i: (_first_ar(i, h), 0 if i["kaynak"] == "cikaran" else 1))
@@ -249,7 +262,7 @@ def merge_envanter(unit: str, raw: dict, review: dict, meta: dict) -> None:
     for o in open_items:
         o["ilgili"] = [renum.get(i, i) for i in o.get("ilgili") or []]
     out = {"birim": unit, "surum": 1, "at": datetime.now().isoformat(), **meta, "kalemler": items,
-           "acik_oneriler": open_items}
+           "acik_oneriler": open_items, "uygulanan_oneriler": applied}
     d = out_dir(unit)
     (d / "envanter.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
     (d / "envanter.md").write_text(envanter_md(unit, out, h), encoding="utf-8")
