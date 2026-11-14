@@ -845,11 +845,15 @@ def page_data(unit: str) -> dict | None:
         return None
     res = json.loads(path.read_text(encoding="utf-8"))
     anchors = hidden_para_anchors(unit)
+    h = hidden(unit)
+    tr_text = {r[0]: r[2] for r in h["tr"]}
     items = {}
     for i in res["envanter"]["kalemler"]:
         places = sorted({anchors[x] for x in (i.get("ar") or []) + (i.get("tr") or []) if x in anchors})
+        # İşârât'ın sözü sayfada Abdülmecid Nursî tercümesinden (kullanıcının isteği, 2026-11-14); Arapça alıntı ayrıca
+        tr = i.get("alinti", "") if i.get("yalniz_tercume") else " ".join(tr_text.get(x, "") for x in i.get("tr") or [])
         items[i["id"]] = {"v": i.get("vecih", ""), "l": i.get("lafiz", ""), "n": i.get("nukte", ""),
-                          "q": i.get("alinti", ""), "h": places}
+                          "q": "" if i.get("yalniz_tercume") else i.get("alinti", ""), "qt": tr.strip(), "h": places}
     drafts = {}
     for t, tr in res["taslaklar"].items():
         rows = {}

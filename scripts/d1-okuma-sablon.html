@@ -209,7 +209,9 @@ function rowDetail(dk, id, withGo) {
       ` · ${row[m].a.map(a => withGo ? `<a data-yzgo="${esc(a)}" data-draft="${dk}">${esc(a)}</a>` : esc(a)).join(', ')}` : ''}${row[m].ok ? '' : ' · <b>denetimsiz</b>'}
       ${evBtns(`${dk}|${m}|${id}`)}<br>${esc(row[m].g)}${row[m].q ? `<br>«<span class="qq">${esc(row[m].q)}</span>»` : ''}</div>`).join('');
   return `<details class="yzr${row.u === 'ayrilik' ? ' cel' : ''}"><summary><b>${id}</b> · ${esc(it.v)} · ${esc(it.l)} — ${esc(ms)}${row.u === 'ayrilik' ? ' ⚠' : ''}</summary>
-    <div class="d">${esc(it.n)}<br>İşârât: «<span class="qq">${esc(it.q)}</span>»</div>${det}</details>`;
+    <div class="d">${esc(it.n)}<br>İşârât (Abdülmecid Nursî tercümesi): ${it.qt ? `«${esc(it.qt)}»` : '<i>tercümede karşılığı yok</i>'}
+    ${it.q ? (it.qt ? `<details><summary class="muted">Arapçası</summary>«<span class="qq">${esc(it.q)}</span>»</details>`
+                    : `<br>Arapçası: «<span class="qq">${esc(it.q)}</span>»`) : ''}</div>${det}</details>`;
 }
 function extraDetail(dk, f, withGo) {
   const es = Object.entries(f.es || {}).map(([m, e]) => `<div class="d"><b>${m}</b>: ${esc(e.iddia || '')}${e.celiski ? ` · çelişki ${esc(e.celiski)}: ${esc(e.gerekce || '')}` : ''}</div>`).join('');
