@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Âyet Masası</title>
+<style>
+:root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #ffffff; --soft: #f3f1ec;
+        --accent: #1f5c3f; --accent-soft: #e2efe7; --ai: #5a4a8a; --ai-soft: #eeebf7; --hl: #fbe38a; --hl-fg: #1d1d1b;
+        --rel: #fdf6d8; --bad: #a3271f; --warn: #8a4b00; --warn-soft: #fdf0dc; --src: #1f4f7a; --src-soft: #e3eef8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --soft: #26251f;
+  --accent: #7cc49d; --accent-soft: #1c3127; --ai: #b9a8ee; --ai-soft: #2a2540; --hl: #7a6312; --hl-fg: #fff6d6;
+  --rel: #2d2915; --bad: #f08a80; --warn: #f0b46a; --warn-soft: #3a2a14; --src: #8cc0ef; --src-soft: #18293a; } }
+:root[data-theme="dark"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --soft: #26251f;
+  --accent: #7cc49d; --accent-soft: #1c3127; --ai: #b9a8ee; --ai-soft: #2a2540; --hl: #7a6312; --hl-fg: #fff6d6;
+  --rel: #2d2915; --bad: #f08a80; --warn: #f0b46a; --warn-soft: #3a2a14; --src: #8cc0ef; --src-soft: #18293a; }
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 system-ui, "Noto Sans", sans-serif; }
+button, select, input, textarea { font: inherit; font-size: .85rem; color: var(--fg); }
+.ar, .arw { font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; }
+.ar { direction: rtl; text-align: right; font-size: 1.22rem; line-height: 2; }
+.arw { font-size: 1.1em; }
+.serif { font-family: "Noto Serif", "DejaVu Serif", Georgia, serif; }
+.muted { color: var(--muted); }
+.small { font-size: .8rem; }
+
+header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line);
+         padding: 8px 16px; display: flex; flex-wrap: wrap; gap: 6px 16px; align-items: center; }
+header h1 { font-size: 1rem; margin: 0; }
+header label { font-size: .8rem; color: var(--muted); display: inline-flex; gap: 6px; align-items: center; }
+select, input, textarea { padding: 3px 6px; border: 1px solid var(--line); border-radius: 6px; background: var(--card); }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; overflow: hidden; }
+.seg button { border: 0; background: var(--card); padding: 3px 12px; cursor: pointer; }
+.seg button[aria-pressed=true] { background: var(--accent); color: var(--bg); }
+.btn { border: 1px solid var(--line); background: var(--card); border-radius: 6px; padding: 3px 10px; cursor: pointer; }
+.msg { font-size: .8rem; color: var(--bad); }
+.spacer { flex: 1; }
+
+#ayah { padding: 14px 16px 10px; border-bottom: 1px solid var(--line); background: var(--card); }
+.levels { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 10px; }
+.lvl { border: 1px solid var(--line); background: var(--soft); border-radius: 999px; padding: 4px 14px; cursor: pointer; }
+.lvl b { font-weight: 600; }
+.lvl[aria-pressed=true] { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+.chip[aria-pressed=true] { background: var(--accent-soft); border-color: var(--accent); }
+body.sel #ayah { padding: 6px 16px 4px; }
+body.sel .chip { font-size: 1.45rem; line-height: 1.7; padding-bottom: 12px; }
+body.sel .vno { font-size: 1.15rem; }
+body.sel .meal { font-size: .76rem; margin: 0 0 2px; }
+body.sel .levels { margin-bottom: 4px; }
+body.sel .hint { display: none; }
+.nk { font-size: inherit; }
+.verses { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.verse { display: flex; flex-wrap: wrap; direction: rtl; justify-content: center; align-items: flex-start; gap: 4px 6px; }
+.chip { position: relative; border: 1px solid transparent; background: none; border-radius: 10px; cursor: pointer;
+        padding: 0 8px 14px; font-family: "Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+        font-size: 2.1rem; line-height: 1.9; color: var(--fg); }
+.chip:hover { border-color: var(--line); background: var(--soft); }
+.chip .n { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font: 600 .68rem/1 system-ui, sans-serif;
+           color: var(--accent); background: var(--accent-soft); border-radius: 999px; padding: 2px 6px; direction: ltr; }
+.chip[aria-pressed=true] .n { background: var(--accent); color: var(--bg); }
+.chip .n.zero { color: var(--muted); background: none; }
+.vno { font-family: "Amiri", serif; font-size: 1.6rem; color: var(--muted); align-self: center; padding: 0 4px 14px; }
+.meal { font-size: .88rem; color: var(--muted); text-align: center; margin: 0 0 6px; }
+.meal i { font-size: .75rem; }
+.hint { text-align: center; font-size: .82rem; color: var(--muted); margin: 6px 0 0; }
+
+#split { display: grid; grid-template-columns: 1fr 1fr; }
+.pane { position: sticky; top: var(--head-h, 52px); height: calc(100vh - var(--head-h, 52px)); overflow: auto; padding: 0 16px 60px; }
+#left { border-right: 1px solid var(--line); }
+#right { background: var(--ai-soft); }
+.ph { position: sticky; top: 0; z-index: 2; padding: 10px 0 8px; display: flex; flex-wrap: wrap; gap: 6px 12px;
+      align-items: center; background: var(--bg); border-bottom: 1px solid var(--line); }
+#right .ph { background: var(--ai-soft); }
+.ph h2 { margin: 0; font-size: 1rem; }
+.where { font-size: .82rem; color: var(--muted); }
+.where .arw { color: var(--fg); }
+.tag { display: inline-block; font-size: .7rem; font-weight: 600; border-radius: 4px; padding: 0 6px; vertical-align: 1px; }
+.tag.ai { background: var(--ai); color: var(--bg); }
+.tag.src { background: var(--accent); color: var(--bg); }
+.tag.w { background: var(--warn-soft); color: var(--warn); }
+.tag.g { background: var(--soft); color: var(--muted); border: 1px solid var(--line); }
+
+h3 { font-size: .9rem; margin: 18px 0 6px; display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+h3 .muted { font-weight: 400; font-size: .78rem; }
+.para { margin: 0 0 10px; }
+.s { border-radius: 3px; cursor: pointer; }
+.s.rel { background: var(--rel); }
+.s.focus, mark.w.focus { background: var(--hl); color: var(--hl-fg); outline: 2px solid var(--hl); }
+mark.w { background: none; color: inherit; border-bottom: 2px solid var(--accent); }
+details { margin: 0 0 6px; }
+details > summary { cursor: pointer; }
+.wk { border: 1px solid var(--line); border-radius: 8px; background: var(--card); padding: 4px 10px; margin: 0 0 6px; }
+.wk > summary { font-size: .86rem; }
+.wk > summary .muted { font-size: .78rem; }
+.ctx { margin: 6px 0; padding: 4px 0; border-top: 1px dashed var(--line); }
+.ayahline { font-size: .9rem; color: var(--muted); }
+.gap { text-align: center; color: var(--muted); font-size: .8rem; }
+.linkish { color: var(--src); cursor: pointer; text-decoration: underline; text-decoration-style: dotted; background: none; border: 0; padding: 0; font-size: .8rem; }
+.srcbox { border: 2px solid var(--src); border-radius: 8px; background: var(--src-soft); padding: 8px 10px; margin: 10px 0; }
+
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+.tabs button { border: 1px solid var(--line); background: var(--card); border-radius: 6px 6px 0 0; padding: 4px 10px; cursor: pointer; }
+.tabs button[aria-selected=true] { background: var(--ai); color: var(--bg); border-color: var(--ai); }
+.intro { font-size: .82rem; background: var(--card); border-left: 3px solid var(--ai); border-radius: 0 6px 6px 0;
+         padding: 6px 10px; margin: 10px 0; }
+.intro summary { font-weight: 600; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px; margin: 0 0 10px; }
+.card.focus { outline: 3px solid var(--hl); }
+.card .top { cursor: pointer; }
+.strip { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; font-size: .78rem; }
+.strip button { border: 1px solid var(--line); background: var(--soft); border-radius: 4px; padding: 0 6px; cursor: pointer; }
+.strip button[aria-current=true] { border-color: var(--ai); background: var(--ai); color: var(--bg); }
+.reader { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 6px; }
+.q { background: var(--soft); border-radius: 4px; padding: 2px 8px; margin: 4px 0; }
+.ev { display: inline-flex; gap: 0; border: 1px solid var(--line); border-radius: 6px; overflow: hidden; vertical-align: middle; }
+.ev button { border: 0; border-right: 1px solid var(--line); background: var(--card); padding: 1px 8px; cursor: pointer; font-size: .78rem; }
+.ev button:last-child { border-right: 0; }
+.ev button[aria-pressed=true] { background: var(--accent); color: var(--bg); }
+.blk { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin: 0 0 8px; }
+.blk.focus { outline: 3px solid var(--hl); }
+.blk.quote { border-style: dashed; }
+mark.fq { background: var(--hl); color: var(--hl-fg); }
+.mk { font-size: .7rem; padding: 0 4px; border-radius: 3px; white-space: nowrap; direction: ltr; unicode-bidi: isolate;
+      cursor: pointer; color: var(--src); background: var(--src-soft); font-family: system-ui, sans-serif; }
+.mk.own { color: var(--warn); background: var(--warn-soft); }
+.idx { display: flex; flex-wrap: wrap; gap: 4px; margin: 6px 0; }
+.idx button { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 0 8px; cursor: pointer; font-size: .78rem; }
+.idx button.done { border-color: var(--accent); color: var(--accent); }
+.idx button.here { background: var(--ai); color: var(--bg); border-color: var(--ai); }
+.claim { background: var(--hl); color: var(--hl-fg); border-radius: 3px; }
+.empty { color: var(--muted); font-size: .85rem; margin: 12px 0; }
+.welcome { max-width: 560px; margin: 24px auto; font-size: .9rem; }
+.welcome li { margin: 4px 0; }
+@media (max-width: 900px) {
+  #split { grid-template-columns: 1fr; }
+  .pane { position: static; height: auto; overflow: visible; }
+  #left { border-right: 0; border-bottom: 2px solid var(--line); }
+  .chip { font-size: 1.6rem; }
+}
+</style></head>
+<body>
+<header id="hdr">
+  <h1>Âyet masası</h1>
+  <label>Âyet <select id="unit"></select></label>
+  <label>Dil <span class="seg" id="lang"><button data-v="tr">Türkçe</button><button data-v="ar">Arapça</button></span></label>
+  <label>Okuyucu <input id="reader" size="10" placeholder="adınız"></label>
+  <span class="spacer"></span>
+  <span id="progress" class="small muted"></span>
+  <button class="btn" id="export" title="İşaretleri dosyaya yaz (eski okuma sayfasıyla aynı biçim)">Dışa aktar</button>
+  <label class="btn" style="color:var(--fg)">İçe aktar<input type="file" id="import" accept=".json" hidden></label>
+  <span class="msg" id="msg"></span>
+</header>
+<section id="ayah"></section>
+<div id="split">
+  <section class="pane" id="left"></section>
+  <section class="pane" id="right"></section>
+</div>
+<script>
+const DATA = {data};
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
+};
+// İşaretler eski okuma sayfasının anahtarlarıyla (aynı tarayıcıda ortak; dışa aktarma aynı biçim)
+let yzEval = store.get('d1-yz-sinama', {});     // "birim|taslak|okuyucu-modeli|nükte" ya da "birim|taslak|fazla|anahtar"
+let yzSuz = store.get('d1-yz-suzgec', {});      // "birim|taslak|not anahtarı"
+let bkMarks = store.get('d1-bilirkisi', {});    // "birim|kısım|madde"
+const st = Object.assign({loc: null, lang: 'tr', draft: 'taslak-1', tab: 'karsi', whole: false}, store.get('d1-masa', {}));
+st.focus = null; st.dfocus = null; st.srcbox = null;
+if (!DATA.drafts[st.draft]) st.draft = Object.keys(DATA.drafts)[0];
+const U = DATA.unit, Y = DATA.yz;
+const CHIP = Object.fromEntries(DATA.chips.map(c => [c.id, c]));
+const LOC = {'L:munasebet': 'Önceki âyetlerle münasebet', 'L:nazim': 'Cümlelerin nazmı',
+             'L:belirsiz': 'Cümleler ve kelimesi belirsizler', 'L:genel': 'Taslağın geneli'};
+const LOC_V = {'L:munasebet': 'V1', 'L:nazim': 'V2'};
+const LOC_HELP = {'L:munasebet': 'İşârât\'ın birinci vechi: bu âyetin önceki âyetlerle bağı.',
+                  'L:nazim': 'İşârât\'ın ikinci vechi: cümlelerin birbirini nasıl istediği (temsil).',
+                  'L:belirsiz': 'Üçüncü vecihten, birden çok cümleyi kapsayan ya da hangi kelimeye ait olduğu veriden çıkmayanlar.'};
+const DUR = {aynen: ['✓', 'aynen'], kismen: ['◐', 'kısmen'], farkli_gerekce: ['↔', 'farklı gerekçe'], yok: ['·', 'yok']};
+const MODEL = {fable: 'Fable', opus: 'Opus'};
+const CTYPE = {dogru: 'doğru, iyi', yanlis: 'yanlış', eksik: 'eksik', fazla: 'fazla', uydurma: 'uydurma', irab: "i'râb, dil",
+               belagat: 'belâgat', usul: 'usul', kaynak: 'kaynak, atıf', uslup: 'üslûp, tercüme', diger: 'diğer',
+               kismen: 'kısmen', farkli_gerekce: 'farklı gerekçe'};
+const ISR = {kaynakli: 'kaynaklı', kendi_tespiti: 'kendi tespiti', isaretsiz: 'işaretsiz'};
+const BKV = {dogru: 'doğru', yanlis: 'yanlış', emin_degilim: 'emin değilim'};
+const BKD = {'': 'dayanak türü…', kaynak: 'kaynak (cümle kimliği)', kisi: 'kişi (yalnız alanı)', kanaat: 'kendi kanaatim', yz: 'yapay zekâ'};
+
+function persist() { store.set('d1-masa', {loc: st.loc, lang: st.lang, draft: st.draft, tab: st.tab, whole: st.whole}); }
+function say(t) { $('#msg').textContent = t; if (t) setTimeout(() => { if ($('#msg').textContent === t) $('#msg').textContent = ''; }, 6000); }
+function reader() { return $('#reader').value.trim(); }
+function needReader() { if (reader()) return false; say('Önce okuyucu adınızı yazın.'); $('#reader').focus(); return true; }
+function locName(l) { return CHIP[l] ? `<span class="arw" dir="rtl">${esc(CHIP[l].text)}</span>` : esc(LOC[l] || l); }
+function at(x) { return x.loc && x.loc.includes(st.loc); }
+function draftLabel(dk) { return DATA.drafts[dk] ? DATA.drafts[dk].label : dk; }
+
+// --- Arapça normalleştirme (betikteki `norm` ile aynı)
+const HAR = /[ً-ٰٟۖ-ۭـ]/g;
+function norm(t) { return t.replace(HAR, '').replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').replace(/[^ء-ي]/g, ''); }
+function eq(tok, w) { return tok === w || ('وف'.includes(w[0]) && w.length > 3 && tok === w.slice(1)); }
+// Metindeki âyet kelimelerini işaretle: kelime düğmesinin sözleri art arda geçiyorsa
+function wordMarks(text, chipIds) {
+  const parts = text.split(/(\s+)/), toks = [];
+  parts.forEach((p, i) => { if (p.trim()) toks.push([i, norm(p)]); });
+  const hit = new Set();
+  for (const cid of chipIds) {
+    const n = CHIP[cid].norm;
+    for (let s = 0; s + n.length <= toks.length; s++)
+      if (n.every((w, k) => toks[s + k][1] && eq(toks[s + k][1], w))) for (let k = 0; k < n.length; k++) hit.add(toks[s + k][0]);
+  }
+  return {hit: hit.size > 0, html: parts.map((p, i) => hit.has(i) ? `<mark class="w">${esc(p)}</mark>` : esc(p)).join('')};
+}
+function chipIn(text, cid) { return wordMarks(text, [cid]).hit; }
+
+// --- alıntıyı metinde bul (hareke, noktalama, büyük-küçük harf yok sayılarak); "…" ile atlanan yer serbest
+function sig(c) {
+  const d = c.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(HAR, '');
+  return d.replace(/[أإآٱ]/g, 'ا').replace(/ى/g, 'ي').replace(/ة/g, 'ه').toLocaleLowerCase('tr').replace(/[^\p{L}\p{N}]/gu, '');
+}
+function locate(text, quote) {
+  if (!quote) return null;
+  const idx = [], chars = [];
+  for (let i = 0; i < text.length; i++) { const s = sig(text[i]); for (const ch of s) { idx.push(i); chars.push(ch); } }
+  const hay = chars.join('');
+  const segs = quote.split(/…|\.\.\./).map(x => [...x].map(sig).join('')).filter(x => x.length >= 4);
+  if (!segs.length) return null;
+  const find = (needle, from) => {
+    let p = hay.indexOf(needle, from);
+    if (p < 0 && needle.length > 30) { p = hay.indexOf(needle.slice(0, 30), from); if (p >= 0) needle = needle.slice(0, 30); }
+    return p < 0 ? null : [p, p + needle.length];
+  };
+  const a = find(segs[0], 0); if (!a) return null;
+  let b = a;
+  if (segs.length > 1) { const z = find(segs[segs.length - 1], a[1]); if (z) b = z; }
+  return [idx[a[0]], idx[b[1] - 1] + 1];
+}
+
+// --- taslak metni: **kalın**, [n] kaynak işaretleri, Türkçedeki Arapça yalıtılır
+const ARUN = /[؀-ۿﭐ-﷿ﹰ-﻿][؀-ۿﭐ-﷿ﹰ-﻿\s\-]*/g;
+function trEsc(t) { return esc(t).replace(ARUN, m => `<bdi class="arw" dir="rtl">${m.trim()}</bdi>` + (m.endsWith(' ') ? ' ' : '')); }
+function inline(text, dk, lang) {
+  let s = esc(text).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  if (lang === 'tr') s = s.replace(ARUN, m => `<bdi class="arw" dir="rtl">${m.trim()}</bdi>` + (m.endsWith(' ') ? ' ' : ''));
+  const src = DATA.drafts[dk].sources;
+  return s.replace(/\[([^\]\n]{1,80})\]/g, (m, inner) => {
+    const nums = inner.match(/\b\d+\b/g) || [];
+    if (!nums.length) return m;
+    const own = inner.includes('kendi tespiti') ? ' own' : '';
+    const title = nums.map(n => `[${n}] ${src[n] ? src[n].c : ''}`).join(' | ');
+    return `<span class="mk${own}" data-src="${nums[0]}" data-draft="${dk}" title="${esc(title)}">[${inner}]</span>`;
+  }).replace(/\n/g, '<br>');
+}
+function draftText(text, dk, lang, quote) {
+  const r = quote ? locate(text, quote) : null;
+  if (!r) return inline(text, dk, lang);
+  return inline(text.slice(0, r[0]), dk, lang) + '<mark class="fq">' + inline(text.slice(r[0], r[1]), dk, lang) + '</mark>' + inline(text.slice(r[1]), dk, lang);
+}
+
+// ================================================================ âyet
+function renderAyah() {
+  const cnt = {}; for (const it of Object.values(Y.items)) for (const l of it.loc) cnt[l] = (cnt[l] || 0) + 1;
+  const lv = ['L:munasebet', 'L:nazim', 'L:belirsiz'].map(l =>
+    `<button class="lvl" data-loc="${l}" aria-pressed="${st.loc === l}" title="${esc(LOC_HELP[l])}">${esc(LOC[l])} <b>${cnt[l] || 0}</b></button>`).join('');
+  const verses = DATA.verses.map(v => {
+    const chips = DATA.chips.filter(c => c.ayah === v.n).map(c => `<button class="chip" data-loc="${c.id}" aria-pressed="${st.loc === c.id}"
+      title="İşârât'ın bu kelimedeki nükte sayısı: ${cnt[c.id] || 0}">${esc(c.text)}<span class="n${cnt[c.id] ? '' : ' zero'}">${cnt[c.id] || 0}</span></button>`).join('');
+    return `<div class="verse">${chips}<span class="vno">﴿${v.n.toLocaleString('ar-EG')}﴾</span></div>
+      <p class="meal">${esc(v.meal)} <i>(${esc(v.meal_by)}, ${esc(v.ref)})</i></p>`;
+  }).join('');
+  $('#ayah').innerHTML = `<div class="levels">${lv}</div><div class="verses">${verses}</div>
+    <p class="hint">Bir kelimeye ya da üstteki düzeylerden birine tıklayın. Kelimenin altındaki sayı İşârât'ın o kelimedeki nükte sayısıdır.</p>`;
+}
+
+// ================================================================ sol: kaynaklar
+function itemsAt(loc) { return Object.entries(Y.items).filter(([, it]) => it.loc.includes(loc)); }
+function focusSids() { return new Set((st.focus && st.focus.sids) || []); }
+
+function isaratHtml() {
+  const prim = st.lang, sec = prim === 'tr' ? 'ar' : 'tr';
+  const rel = new Set(itemsAt(st.loc).flatMap(([, it]) => it.sids)), foc = focusSids();
+  const pick = lang => {
+    const ps = DATA.isarat[lang];
+    if (LOC_V[st.loc]) return ps.filter(p => p.v === LOC_V[st.loc]);
+    return ps.filter(p => p.s.some(s => rel.has(s.id) || foc.has(s.id)));
+  };
+  const paraHtml = (p, lang) => `<p class="para ${lang === 'ar' ? 'ar' : 'serif'}">${p.s.map(s => {
+    const cls = foc.has(s.id) ? 's focus' : rel.has(s.id) ? 's rel' : 's';
+    const body = lang === 'ar' ? (CHIP[st.loc] ? wordMarks(s.t, [st.loc]).html : esc(s.t)) : trEsc(s.t);
+    return `<span class="${cls}" data-sid="${esc(s.id)}" title="Tıklayın: bu cümleye bağlı nükteler sağda">${body}</span>`;
+  }).join(' ')}</p>`;
+  const main = pick(prim), other = pick(sec);
+  const label = {tr: 'Türkçesi (Abdülmecid Nursî tercümesi)', ar: 'Arapça aslı'};
+  let h = `<h3>İşârâtü'l-İ'câz <span class="tag src">müellifin metni</span>
+    <span class="muted">Bu birimde taslaklardan gizlenen metin. ${st.lang === 'tr' ? 'Abdülmecid Nursî tercümesi.' : 'Arapça asıl.'}</span></h3>`;
+  if (!main.length) h += `<p class="empty">İşârât'ta bu yere bağlanmış bir nükte yok.</p>`;
+  else h += main.map(p => paraHtml(p, prim)).join('') +
+    `<details><summary class="small muted">${label[sec]}</summary>${other.map(p => paraHtml(p, sec)).join('')}</details>`;
+  h += `<details${st.whole ? ' open' : ''} id="isfull"><summary class="small muted">İşârât'ın bu birimdeki metninin tamamı</summary>
+    ${DATA.isarat[prim].map(p => paraHtml(p, prim)).join('')}</details>`;
+  return h;
+}
+
+function sentHtml(s, opts) {
+  const foc = focusSids();
+  const wm = CHIP[st.loc] ? wordMarks(s.t, [st.loc]) : {html: esc(s.t)};
+  const cls = foc.has(s.id) ? 's focus' : (opts && opts.hit && opts.hit.has(s.id)) ? 's rel' : 's';
+  return `<span class="${cls}" data-sid="${esc(s.id)}">${wm.html}</span>`;
+}
+// Bir birimin cümlelerinden kelimenin geçtikleri ve odaktakiler, birer cümle bağlamla
+function excerpt(rows, hitFn) {
+  const flat = [];
+  rows.forEach(r => { if (r.ayah) flat.push({ayah: r.ayah}); else r.s.forEach(s => flat.push(s)); });
+  const hits = new Set(), show = new Set();
+  flat.forEach((x, i) => { if (x.id && hitFn(x)) { hits.add(x.id); for (const j of [i - 1, i, i + 1]) if (flat[j] && flat[j].id) show.add(j); } });
+  if (!hits.size) return null;
+  let h = '', last = -2;
+  flat.forEach((x, i) => {
+    if (!show.has(i)) return;
+    if (i !== last + 1 && last >= 0) h += '<div class="gap">…</div>';
+    h += `<p class="para ar" style="margin:0">${sentHtml(x, {hit: hits})}</p>`;
+    last = i;
+  });
+  return {html: h, n: hits.size};
+}
+function fullUnit(rows) {
+  return rows.map(r => r.ayah ? `<p class="ayahline ar">﴿${esc(r.ayah)}﴾ <span class="small muted" dir="ltr">(baskının âyet satırı)</span></p>`
+    : `<p class="para ar">${r.s.map(s => sentHtml(s)).join(' ')}</p>`).join('');
+}
+function tefsirHtml() {
+  const foc = focusSids(), cid = CHIP[st.loc] ? st.loc : null;
+  const hitFn = s => foc.has(s.id) || (cid && chipIn(s.t, cid));
+  let h = `<h3>Müfessirler <span class="muted">vefat sırasıyla; bu âyetleri işleyen birimleri.${st.lang === 'tr'
+    ? ' Türkçeleri henüz yok.' : ''}${cid ? ' Kelimenin geçtiği cümleler, birer cümle bağlamla.' : ''}</span></h3>`;
+  for (const w of DATA.tefsir) {
+    let parts = [], total = 0;
+    for (const u of w.units) {
+      const ex = excerpt(u.rows, hitFn);
+      if (ex) total += ex.n;
+      const pr = u.printed ? ` · baskı ${u.printed.volume}/${u.printed.page}` : '';
+      parts.push(`<div class="ctx"><div class="small muted">${esc(u.verses)}${pr}</div>${ex ? ex.html : ''}
+        <details${ex ? '' : ' open'}><summary class="small muted">birimin tamamı</summary>${fullUnit(u.rows)}</details></div>`);
+    }
+    const open = total > 0 && (cid || foc.size);
+    h += `<details class="wk"${open ? ' open' : ''}><summary><b>${esc(w.author)}</b> · ${esc(w.title)}
+      <span class="muted">${total ? `${total} cümle` : ''}</span></summary>${parts.join('')}</details>`;
+  }
+  return h;
+}
+function klasikHtml() {
+  const cid = CHIP[st.loc] ? st.loc : null, foc = focusSids();
+  let xs = DATA.klasik;
+  if (cid) xs = xs.filter(x => x.s.some(s => chipIn(s.t, cid)));
+  let h = `<h3>Klasik eserler <span class="muted">âyetten en az üç kelimenin art arda geçtiği yerler, önceki ve sonraki ikişer cümleyle</span></h3>`;
+  if (!xs.length) return h + `<p class="empty">Bu kelimenin geçtiği bir yer yok (${DATA.klasik.length} yerin hiçbirinde).</p>`;
+  return h + xs.map(x => `<details class="wk"${foc.size && x.s.some(s => foc.has(s.id)) ? ' open' : ''}><summary><b>${esc(x.author)}</b> · ${esc(x.title)}
+    <span class="muted">${esc(x.ref)}</span></summary><p class="para ar">${x.s.map(s => sentHtml(s, {hit: new Set(x.hit)})).join(' ')}</p></details>`).join('');
+}
+function risaleHtml() {
+  return `<h3>Risale-i Nur <span class="muted">bu âyetlerin İşârât'ın bu birimi dışında geçtiği yerler</span></h3>` +
+    DATA.risale.map(x => `<details class="wk"><summary><span class="small">${esc(x.ref)}</span></summary>
+      <p class="para ${/[a-zçğıöşü]/i.test(x.s.map(s => s.t).join('')) ? 'serif' : 'ar'}">${x.s.map(s => sentHtml(s, {hit: new Set([x.id])})).join(' ')}</p></details>`).join('');
+}
+function srcBoxHtml() {
+  const b = st.srcbox; if (!b) return '';
+  const s = DATA.drafts[b.dk].sources[b.n] || {};
+  return `<div class="srcbox"><div style="display:flex;justify-content:space-between;gap:8px"><b class="small">${esc(draftLabel(b.dk))}
+    taslağının gösterdiği kaynak [${esc(b.n)}]</b><button class="linkish" data-closesrc>kapat</button></div>
+    <div class="small">${esc(s.c || '')}</div>${s.i ? `<div class="small muted">${esc(s.i)}</div>` : ''}
+    <p class="para ar" style="margin:4px 0 0">${s.t ? esc(s.t) : '<span class="muted small">metni bulunamadı</span>'}</p></div>`;
+}
+function renderLeft() {
+  if (!st.loc) { $('#left').innerHTML = `<div class="ph"><h2>Kaynaklar</h2></div>${welcome()}`; return; }
+  $('#left').innerHTML = `<div class="ph"><h2>Kaynaklar</h2><span class="where">${locName(st.loc)}</span>
+    <span class="tag src">yalnız kaynakların metni</span></div>${srcBoxHtml()}${isaratHtml()}${tefsirHtml()}${klasikHtml()}${risaleHtml()}`;
+}
+function welcome() {
+  return `<div class="welcome"><p><b>Nasıl kullanılır?</b></p><ol>
+    <li>Yukarıda âyetten bir kelimeye (ya da "Önceki âyetlerle münasebet", "Cümlelerin nazmı" düğmelerine) tıklayın.</li>
+    <li><b>Sol yan</b> kaynaklardır: İşârât'ın o yere ait cümleleri, müfessirlerin o kelimedeki sözleri, klasik eserler, Risale.</li>
+    <li><b>Sağ yan</b> yapay zekâdır: üstte taslağı seçin; sekmelerde karşılaştırma, taslağın kendisi, eleştirmen ve bilirkişi soruları.</li>
+    <li>Sağda bir maddeye tıklayınca solda dayandığı cümle sarı olur; soldaki bir İşârât cümlesine tıklayınca sağda ona bağlı nükteler sarı olur.</li>
+    <li>"Dil" Türkçe iken İşârât Abdülmecid Nursî tercümesiyle, taslaklar Türkçesiyle (yapay zekâ tercümesi) görünür; Arapçası her yerde açılır.</li></ol></div>`;
+}
+
+// ================================================================ sağ: yapay zekâ
+const TABS = [['karsi', 'İşârât\'la karşılaştırma'], ['taslak', 'Taslak'], ['elestiri', 'Eleştirmen'], ['bilirkisi', 'Bilirkişi soruları']];
+const INTRO = {
+  karsi: `<details open><summary>Bu sekme nedir?</summary>Taslağı yazan yapay zekâdan bu âyetlerin İşârât'taki metni gizlendi.
+    Sonra iki ayrı yapay zekâ okuyucu (<b>Fable</b> ve <b>Opus</b>) birbirini görmeden her taslağı gizlenen metinle karşılaştırdı:
+    İşârât'ın her nüktesi için taslak onu <b>aynen</b> mi, <b>kısmen</b> mi, <b>farklı gerekçeyle</b> mi söylemiş, yoksa hiç mi söylememiş.
+    Kartın başlığı nüktenin yapay zekâ özetidir; asıl söz soldadır (karta tıklayınca sarı olur).
+    <b>Sizden beklenen:</b> seçili taslakta iki okuyucunun hükmüne, soldaki İşârât cümlesine ve taslağın sözüne (gri kutu) bakarak
+    "metinde tutuyor / kısmen / tutmuyor" demek.</details>`,
+  taslak: `<details open><summary>Bu sekme nedir?</summary>Seçili taslağın bu yere ait paragrafları. Taslak, yapay zekânın İşârât'ın usulüyle
+    Arapça yazdığı bir denemedir; tefsir değildir. Türkçesi de yapay zekâ tercümesidir. <span class="mk">[12]</span> taslağın gösterdiği kaynaktır:
+    tıklayınca metni solda açılır; <span class="mk own">[kendi tespiti]</span> taslağın kaynaksız kendi sözüdür. Sarı kutu, öbür sekmelerden "taslakta göster" ile gelinen yerdir.</details>`,
+  elestiri: `<details open><summary>Bu sekme nedir?</summary>Başka bir yapay zekâ (Opus) bu taslağı, İşârât'ın metni açıkken ve
+    eklentilerle kaynaklara bakarak eleştirdi. Her not taslağın bir sözüne yapılmıştır: gri kutudaki söz taslaktandır, "taslakta göster" onu sarıyla gösterir.
+    "Dayanak" düğmeleri eleştirmenin baktığı kaynak cümlelerdir: solda varsa sarı olur. <b>Sizden beklenen:</b> notu süzmek:
+    <b>kalsın</b> (doğru ve işe yarar), <b>atılsın</b> (yanlış ya da boş), <b>ehline sor</b> (Arapça ya da belâgat isabetine karar veremiyorsunuz).</details>`,
+  bilirkisi: `<details open><summary>Bu sekme nedir?</summary>Taslakların dil (i'râb) ve belâgat iddialarından seçilmiş 24 madde (taslak başına 4).
+    Sarı söz iddiadır; çevresi taslağın paragrafıdır. <b>Sizden beklenen:</b> iddia doğru mu? Dayanağınızı da yazın: kaynak (soldaki cümleler,
+    kimliğiyle), kişi (adı değil, alanı) ya da kendi kanaatiniz. Yapay zekâya dayanan hüküm "emin değilim" sayılır. Eleştirmenin aynı paragrafa
+    notları maddenin altında görünür. Aşağıdaki dizinden bütün maddelere gidebilirsiniz.</details>`,
+};
+
+function evBtns(key, choices, attr, cur) {
+  return `<span class="ev" data-${attr}k="${esc(key)}">${choices.map(([v, l]) =>
+    `<button data-${attr}="${v}" aria-pressed="${cur === v}">${l}</button>`).join('')}</span>`;
+}
+const EVC = [['tutuyor', 'metinde tutuyor'], ['kismen', 'kısmen'], ['tutmuyor', 'tutmuyor']];
+const SUZC = [['kalsin', 'kalsın'], ['atilsin', 'atılsın'], ['ehline', 'ehline sor']];
+
+function sym(row, m) { const d = row && row[m] ? row[m].d : null; return d ? DUR[d][0] : '?'; }
+function stripHtml(id) {
+  return `<div class="strip">${Object.keys(DATA.drafts).map(dk => {
+    const row = (Y.drafts[dk] || {rows: {}}).rows[id];
+    if (!row) return '';
+    const a = sym(row, 'fable'), b = sym(row, 'opus'), s = a === b ? a : `${a}/${b}`;
+    return `<button data-draftgo="${dk}" aria-current="${dk === st.draft}" title="${esc(draftLabel(dk))}: Fable ${a}, Opus ${b}">${esc(draftLabel(dk).replace('Taslak ', 'T'))} ${s}</button>`;
+  }).join('')}</div>`;
+}
+function itemCard(id, it) {
+  const row = (Y.drafts[st.draft] || {rows: {}}).rows[id] || {};
+  const foc = st.focus && st.focus.item === id;
+  const readers = Y.models.map(m => {
+    const r = row[m];
+    if (!r) return `<div class="reader small muted">${MODEL[m] || m}: bu nükteye bakmamış</div>`;
+    const k = `${U}|${st.draft}|${m}|${id}`;
+    const [s, l] = DUR[r.d] || ['?', r.d];
+    return `<div class="reader"><b>${MODEL[m] || m}</b>: ${s} ${l}${r.ok ? '' : ' <span class="tag w">alıntısı taslakta bulunamadı</span>'}
+      <span style="float:right">${evBtns(k, EVC, 'yzv', (yzEval[k] || {}).v)}</span>
+      <div class="small">${codes(r.g)}</div>
+      ${r.q ? `<div class="q ar">${esc(r.q)}</div><button class="linkish" data-showdraft="${esc(r.a.join(','))}" data-quote="${esc(r.q)}">taslakta göster</button>` : ''}</div>`;
+  }).join('');
+  return `<div class="card${foc ? ' focus' : ''}" data-item="${id}">
+    <div class="top" data-focusitem="${id}"><span class="tag ai" title="Nüktenin özeti yapay zekânın; asıl söz soldaki İşârât cümlesidir">özet</span>
+    ${esc(it.n)} <span class="small muted" dir="rtl">${esc(it.l)}</span>
+    ${row.u === 'ayrilik' ? ' <span class="tag w">iki okuyucu ayrıldı</span>' : ''}</div>
+    ${stripHtml(id)}<div class="small muted">Seçili taslak: <b>${esc(draftLabel(st.draft))}</b></div>${readers}</div>`;
+}
+function extraCard(f) {
+  const k = `${U}|${st.draft}|fazla|${f.k}`;
+  const who = f.r.map(m => MODEL[m] || m).join(' ve ');
+  return `<div class="card"><span class="tag g">fazla</span> ${codes(f.i)}
+    <div class="small muted">Taslağın işareti: ${esc(ISR[f.s] || f.s || '?')}${f.src.length ? ` [${f.src.join(', ')}]` : ''} · bulan: ${esc(who)}
+    ${f.c ? ` · <span class="tag w">İşârât'la çelişiyor olabilir</span>` : ''}${f.ok ? '' : ' · <span class="tag w">alıntısı taslakta bulunamadı</span>'}</div>
+    ${f.g ? `<div class="small">${codes(f.g)}</div>` : ''}
+    <div class="q ar">${esc(f.q)}</div><button class="linkish" data-showdraft="${esc(f.a.join(','))}" data-quote="${esc(f.q)}">taslakta göster</button>
+    <span style="float:right">${evBtns(k, EVC, 'yzv', (yzEval[k] || {}).v)}</span></div>`;
+}
+function karsiHtml() {
+  const its = itemsAt(st.loc);
+  let h = its.length ? its.map(([id, it]) => itemCard(id, it)).join('') : `<p class="empty">İşârât'ta bu yere bağlanmış bir nükte yok.</p>`;
+  const ex = ((Y.drafts[st.draft] || {}).extras || []).filter(at);
+  h += `<h3>Taslağın burada İşârât'ta karşılığı olmayan iddiaları <span class="muted">"fazla": doğru ya da yanlış olduğu söylenmez; iki okuyucunun bulduğu</span></h3>`;
+  h += ex.length ? ex.map(extraCard).join('') : `<p class="empty">Bu taslakta bu yerde yok.</p>`;
+  return h;
+}
+
+function blocksAt(dk) {
+  const d = DATA.drafts[dk];
+  const want = new Set(st.dfocus && st.dfocus.dk === dk ? st.dfocus.a : []);
+  // bu yerdeki maddelerin bağlandığı paragraflar da (konu başka bir paragrafın içinde işlenmiş olabilir)
+  const yd = Y.drafts[dk] || {rows: {}, extras: []};
+  for (const [id] of itemsAt(st.loc)) for (const m of Y.models) for (const a of ((yd.rows[id] || {})[m] || {}).a || []) want.add(a);
+  for (const f of yd.extras.filter(at)) f.a.forEach(a => want.add(a));
+  for (const n of ((Y.critic[dk] || {}).notes || []).filter(at)) want.add(n.a);
+  for (const x of bkAll().filter(x => x.t === dk && at(x))) want.add(x.a);
+  for (const a of [...want]) want.add(a.replace('/tr/', '/ar/'));
+  const ar = d.blocks.filter(b => b.l === 'ar' && (st.whole || want.has(b.a) || (d.heads[b.a] || []).includes(st.loc)));
+  return ar.map(b => ({ar: b, tr: d.blocks.find(x => x.a === b.a.replace('/ar/', '/tr/'))}));
+}
+const SEC = {Âyet: 'Âyet', Mukaddime: 'Mukaddime', V1: 'Birinci vecih', V2: 'İkinci vecih', V3: 'Üçüncü vecih'};
+function blockHtml(dk, pair) {
+  const df = st.dfocus && st.dfocus.dk === dk ? st.dfocus : null;
+  const focused = df && df.a.some(a => a.replace('/tr/', '/ar/') === pair.ar.a);
+  const prim = st.lang === 'tr' && pair.tr ? pair.tr : pair.ar, sec = prim === pair.ar ? pair.tr : pair.ar;
+  const q = focused ? df.q : null;
+  const body = b => draftText(b.t, dk, b.l, q);
+  const lab = b => b.l === 'tr' ? '<span class="tag ai">yapay zekâ tercümesi</span> ' : '';
+  return `<div class="blk${focused ? ' focus' : ''}${pair.ar.q ? ' quote' : ''}" data-anchor="${esc(pair.ar.a)}">
+    <div class="small muted">${SEC[pair.ar.a.split('/')[0]] || ''}${pair.ar.q ? ' · kaynaktan alıntı' : ''}</div>
+    <div class="${prim.l === 'ar' ? 'ar' : 'serif'}">${lab(prim)}${body(prim)}</div>
+    ${sec ? `<details${q && !locate(prim.t, q) ? ' open' : ''}><summary class="small muted">${sec.l === 'ar' ? 'Arapçası (taslağın aslı)' : 'Türkçesi (yapay zekâ tercümesi)'}</summary>
+      <div class="${sec.l === 'ar' ? 'ar' : 'serif'}">${body(sec)}</div></details>` : ''}</div>`;
+}
+function taslakHtml() {
+  const pairs = blocksAt(st.draft);
+  const d = DATA.drafts[st.draft];
+  return `<div class="small"><label><input type="checkbox" id="whole" ${st.whole ? 'checked' : ''}> bütün taslağı göster</label>
+    <span class="muted"> · ${esc(d.about)}</span></div>` +
+    (pairs.length ? pairs.map(p => blockHtml(st.draft, p)).join('') : `<p class="empty">Bu taslakta bu yere ait paragraf bulunamadı. "Bütün taslağı göster" ile bakabilirsiniz.</p>`);
+}
+
+function codes(text) {
+  return trEsc(text).replace(/\bN(\d{2})\b/g, (m, n) => {
+    const it = Y.items['N' + n]; if (!it) return m;
+    const short = it.n.split(/\s+/).slice(0, 6).join(' ');
+    return `<button class="linkish nk" data-focusitem="N${n}" data-keeptab title="İşârât nüktesi (yapay zekâ özeti): ${esc(it.n)}">«${esc(short)}…»</button>`;
+  });
+}
+const TEFSIR_AUTHOR = Object.fromEntries(DATA.tefsir.map(w => [w.work, w.author]));
+function sidLabel(id) {
+  const m = id.match(/^(isaratul-icaz(-arabi)?)\/sure-i-bakara\/([^/]+)\/.*?c(\d+)(?:\.\.c?(\d+))?$/);
+  if (m) return `İşârât${m[2] ? ' (Arapça)' : ' (tercüme)'}, ${m[3].replace('-ayetlerin-tefsiri', '').replace(/-/g, '–')}. âyet, ${+m[4]}.${m[5] ? `–${+m[5]}.` : ''} cümle`;
+  const w = id.split('/')[0], c = id.match(/c(\d+)(?:\.\.c?(\d+))?$/);
+  if (TEFSIR_AUTHOR[w] && c) return `${TEFSIR_AUTHOR[w]}, ${id.split('/')[1]}:${id.split('/')[2]}, ${+c[1]}.${c[2] ? `–${+c[2]}.` : ''} cümle`;
+  return id;
+}
+function noteCard(dk, x) {
+  const key = `${U}|${dk}|${x.k}`, it = x.n && Y.items[x.n];
+  const dayanak = x.d.map(id => `<button class="linkish" data-sidgo="${esc(id)}" title="${esc(id)}">${esc(sidLabel(id))}</button>`).join(' · ');
+  return `<div class="card"><span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
+    ${x.ok ? '' : ' <span class="tag w">alıntısı ya da dayanağı denetimde tutmadı</span>'}
+    <span style="float:right">${evBtns(key, SUZC, 'suz', (yzSuz[key] || {}).v)}</span>
+    <div class="serif" style="margin-top:4px">${codes(x.m)}</div>
+    ${x.h ? `<div class="small"><i>Taslak oraya nasıl varmış:</i> ${codes(x.h)}</div>` : ''}
+    ${x.s ? `<div class="small"><i>Eleştirmenin sorusu:</i> ${codes(x.s)}</div>` : ''}
+    ${it ? `<div class="small"><i>İlgili İşârât nüktesi:</i> <button class="linkish" data-focusitem="${x.n}" data-keeptab>${esc(it.n)}</button></div>` : ''}
+    ${x.q ? `<div class="q ar">${esc(x.q)}</div><button class="linkish" data-showdraft="${esc(x.a)}" data-quote="${esc(x.q)}">taslakta göster</button>` : ''}
+    ${dayanak ? `<div class="small">Dayanak: ${dayanak}</div>` : ''}</div>`;
+}
+function locIndex(list, done, attr) {
+  const by = {};
+  for (const x of list) for (const l of x.loc) (by[l] = by[l] || []).push(x);
+  const order = ['L:munasebet', 'L:nazim', ...DATA.chips.map(c => c.id), 'L:belirsiz', 'L:genel'];
+  return `<div class="idx">${order.filter(l => by[l]).map(l => {
+    const n = by[l].length, d = by[l].filter(done).length;
+    return `<button data-loc="${l}" class="${l === st.loc ? 'here' : d === n ? 'done' : ''}">${locName(l)} ${d}/${n}</button>`;
+  }).join('')}</div>`;
+}
+function elestiriHtml() {
+  const c = Y.critic[st.draft];
+  if (!c) return `<p class="empty">Bu taslağın eleştirisi yok.</p>`;
+  const here = c.notes.filter(at), done = x => (yzSuz[`${U}|${st.draft}|${x.k}`] || {}).v;
+  let h = here.length ? here.map(x => noteCard(st.draft, x)).join('') : `<p class="empty">Eleştirmenin bu taslakta bu yere notu yok.</p>`;
+  h += `<h3>Bu taslağın bütün notları, yerlerine göre <span class="muted">süzülen / toplam</span></h3>${locIndex(c.notes, done)}`;
+  const gen = c.notes.filter(x => x.loc.includes('L:genel'));
+  h += `<details><summary class="small"><b>Eleştirmenin özeti, sistemli zaafları ve önerileri</b></summary>
+    <p class="serif small">${codes(c.ozet)}</p>
+    ${c.sistemli.length ? `<ul class="small">${c.sistemli.map(s => `<li>${codes(s.metin)}</li>`).join('')}</ul>` : ''}
+    ${c.oneriler.length ? `<p class="small"><b>Öneriler</b></p><ul class="small">${c.oneriler.map(o => `<li>${codes(o)}</li>`).join('')}</ul>` : ''}</details>`;
+  return h;
+}
+
+function bkAll() { return Object.entries(Y.bilirkisi).flatMap(([p, xs]) => xs.map(x => Object.assign({part: p}, x))); }
+function bkCard(x) {
+  const key = `${U}|${x.part}|${x.id}`, m = bkMarks[key] || {};
+  const tr = x.tr || '', r = locate(tr, x.c);
+  const trHtml = r ? trEsc(tr.slice(0, r[0])) + `<span class="claim">${trEsc(tr.slice(r[0], r[1]))}</span>` + trEsc(tr.slice(r[1])) : trEsc(tr);
+  const anchor = x.a.replace('/tr/', '/ar/');
+  const notes = ((Y.critic[x.t] || {}).notes || []).filter(n => n.a === anchor || n.a === x.a);
+  const src = x.src.map(k => `<details><summary class="small">Taslağın kaynağı [${esc(k.n)}] ${esc(k.c)}</summary><p class="para ar">${esc(k.x || '(metni bulunamadı)')}</p></details>`).join('');
+  const prim = st.lang === 'tr'
+    ? `<div class="serif"><span class="tag ai">yapay zekâ tercümesi</span> ${trHtml}</div><details><summary class="small muted">Arapçası (taslağın aslı)</summary><p class="para ar">${esc(x.ar)}</p></details>`
+    : `<p class="para ar">${esc(x.ar)}</p><div class="serif small"><span class="tag ai">yapay zekâ tercümesi</span> ${trHtml}</div>`;
+  return `<div class="card" data-bk="${esc(key)}"><div class="small muted">${esc(draftLabel(x.t))} · ${locName(x.loc[0])} · taslağın işareti: ${esc(x.m)}</div>
+    <div style="margin:4px 0"><b>İddia:</b> <span class="claim">${trEsc(x.c)}</span></div>${prim}
+    <button class="linkish" data-showdraft="${esc(x.a)}" data-quote="${esc(x.c)}" data-draftgo2="${esc(x.t)}">taslakta göster</button>${src}
+    ${notes.length ? `<details><summary class="small">Eleştirmenin bu paragrafa notları (${notes.length})</summary>${notes.map(n => noteCard(x.t, n)).join('')}</details>` : ''}
+    <div style="margin-top:6px">${evBtns(key, Object.entries(BKV), 'bkv', m.v)}
+    <select data-bkf="dt">${Object.entries(BKD).map(([v, l]) => `<option value="${v}"${(m.dt || '') === v ? ' selected' : ''}>${l}</option>`).join('')}</select></div>
+    <input data-bkf="d" placeholder="dayanak: cümle kimliği, kişinin alanı…" value="${esc(m.d || '')}" style="width:100%;margin-top:4px">
+    <textarea data-bkf="n" rows="2" style="width:100%;margin-top:4px" placeholder="not">${esc(m.n || '')}</textarea>
+    ${m.dt === 'yz' ? '<div class="small muted">Dayanak yapay zekâ: hüküm "emin değilim" sayılır.</div>' : ''}</div>`;
+}
+function bilirkisiHtml() {
+  const all = bkAll(), here = all.filter(x => x.t === st.draft && at(x));
+  const done = x => (bkMarks[`${U}|${x.part}|${x.id}`] || {}).v;
+  let h = here.length ? here.map(bkCard).join('') : `<p class="empty">Bu taslakta bu yere ait bilirkişi sorusu yok. Aşağıdaki dizinden gidin.</p>`;
+  h += `<h3>Bütün maddeler <span class="muted">${all.filter(done).length}/${all.length} işaretlendi; taslak ve yer</span></h3><div class="idx">${all.map(x =>
+    `<button data-bkgo="${esc(x.part + '|' + x.id)}" class="${x.t === st.draft && at(x) ? 'here' : done(x) ? 'done' : ''}">${esc(draftLabel(x.t).replace('Taslak ', 'T'))} · ${locName(x.loc[0])}</button>`).join('')}</div>`;
+  return h;
+}
+
+function tabCount(t) {
+  if (t === 'karsi') return itemsAt(st.loc).length;
+  if (t === 'elestiri') return ((Y.critic[st.draft] || {}).notes || []).filter(at).length;
+  if (t === 'bilirkisi') return bkAll().filter(x => x.t === st.draft && at(x)).length;
+  return blocksAt(st.draft).length;
+}
+function renderRight() {
+  const opts = Object.entries(DATA.drafts).map(([k, d]) => `<option value="${k}"${k === st.draft ? ' selected' : ''}>${esc(d.label)} · ${esc(d.about)}</option>`).join('');
+  const head = `<div class="ph"><h2>Yapay zekâ</h2><label class="small muted">Taslak <select id="draft">${opts}</select></label>
+    <span class="tag ai">yapay zekâ taslağı, tefsir değildir</span></div>`;
+  if (!st.loc) { $('#right').innerHTML = head + `<p class="empty">Önce âyetten bir yer seçin.</p>`; return; }
+  const tabs = `<div class="tabs" role="tablist" style="margin-top:8px">${TABS.map(([k, l]) =>
+    `<button role="tab" data-tab="${k}" aria-selected="${st.tab === k}">${l} (${tabCount(k)})</button>`).join('')}</div>`;
+  const body = {karsi: karsiHtml, taslak: taslakHtml, elestiri: elestiriHtml, bilirkisi: bilirkisiHtml}[st.tab]();
+  $('#right').innerHTML = head + `<div class="where" style="margin-top:6px">Yer: ${locName(st.loc)}</div>` + tabs +
+    `<div class="intro" id="intro">${INTRO[st.tab]}</div>` + body;
+  if (store.get('d1-masa-intro-' + st.tab, true) === false) $('#intro details').open = false;
+}
+
+function progress() {
+  const n1 = Object.keys(yzEval).filter(k => k.startsWith(U + '|')).length;
+  const n2 = Object.keys(yzSuz).filter(k => k.startsWith(U + '|')).length;
+  const n3 = Object.entries(bkMarks).filter(([k, v]) => k.startsWith(U + '|') && v.v).length;
+  $('#progress').textContent = `İşaretler: karşılaştırma ${n1} · eleştiri ${n2} · bilirkişi ${n3}/${bkAll().length}`;
+}
+function render() {
+  $('#unit').innerHTML = `<option>${esc(DATA.title)}</option>`;
+  document.querySelectorAll('#lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.lang));
+  document.body.classList.toggle('sel', !!st.loc);
+  renderAyah(); renderLeft(); renderRight(); progress(); persist();
+  document.documentElement.style.setProperty('--head-h', $('#hdr').offsetHeight + 'px');
+}
+function scrollPane(pane, sel) {
+  const el = $(pane).querySelector(sel);
+  if (el) el.scrollIntoView({block: 'center', behavior: 'smooth'});
+}
+
+// ================================================================ olaylar
+function setLoc(l) { st.loc = l; st.focus = null; st.dfocus = null; render(); }
+document.addEventListener('click', ev => {
+  const t = ev.target;
+  const loc = t.closest('[data-loc]');
+  if (loc) { setLoc(loc.dataset.loc); return; }
+  const fi = t.closest('[data-focusitem]');
+  if (fi) {                                     // sağdaki nükte -> soldaki İşârât cümleleri
+    const id = fi.dataset.focusitem, it = Y.items[id];
+    if (!it.loc.includes(st.loc)) st.loc = it.loc[0];
+    if (!fi.hasAttribute('data-keeptab')) st.tab = 'karsi';
+    st.focus = {sids: it.sids, item: id};
+    render(); scrollPane('#left', '.s.focus'); scrollPane('#right', '.card.focus'); return;
+  }
+  const s = t.closest('#left .s[data-sid]');
+  if (s) {                                      // soldaki İşârât cümlesi -> sağdaki nükteler
+    const sid = s.dataset.sid;
+    const hit = Object.entries(Y.items).filter(([, it]) => it.sids.includes(sid));
+    if (!hit.length) { say('Bu cümleye bağlı bir İşârât nüktesi yok.'); return; }
+    const [id, it] = hit.find(([, it]) => it.loc.includes(st.loc)) || hit[0];
+    if (!it.loc.includes(st.loc)) st.loc = it.loc[0];
+    st.tab = 'karsi'; st.focus = {sids: it.sids, item: id};
+    render(); scrollPane('#right', '.card.focus'); scrollPane('#left', '.s.focus'); return;
+  }
+  const sd = t.closest('[data-showdraft]');
+  if (sd) {                                     // "taslakta göster"
+    const dk = sd.dataset.draftgo2 || st.draft;
+    st.draft = dk; st.tab = 'taslak';
+    st.dfocus = {dk, a: sd.dataset.showdraft.split(',').filter(Boolean), q: sd.dataset.quote};
+    render(); scrollPane('#right', '.blk.focus'); return;
+  }
+  const dg = t.closest('[data-draftgo]');
+  if (dg) { st.draft = dg.dataset.draftgo; st.dfocus = null; render(); scrollPane('#right', `.card[data-item="${st.focus ? st.focus.item : ''}"]`); return; }
+  const sg = t.closest('[data-sidgo]');
+  if (sg) {
+    st.focus = {sids: [sg.dataset.sidgo]}; renderLeft();
+    if ($('#left .s.focus')) scrollPane('#left', '.s.focus'); else say('Bu dayanak soldaki kaynaklarda yok: ' + sg.dataset.sidgo);
+    return;
+  }
+  const mk = t.closest('.mk[data-src]');
+  if (mk) {
+    st.srcbox = {dk: mk.dataset.draft, n: mk.dataset.src};
+    const s = DATA.drafts[st.srcbox.dk].sources[st.srcbox.n];
+    st.focus = s && s.i ? {sids: [s.i]} : null;
+    renderLeft(); $('#left').scrollTop = 0; return;
+  }
+  if (t.closest('[data-closesrc]')) { st.srcbox = null; renderLeft(); return; }
+  const tab = t.closest('[data-tab]');
+  if (tab) { st.tab = tab.dataset.tab; renderRight(); persist(); return; }
+  const bg = t.closest('[data-bkgo]');
+  if (bg) {
+    const [p, id] = bg.dataset.bkgo.split('|'), x = Y.bilirkisi[p].find(y => y.id === id);
+    st.draft = x.t; st.loc = x.loc[0]; st.tab = 'bilirkisi'; st.focus = null; st.dfocus = null;
+    render(); scrollPane('#right', `[data-bk="${CSS.escape(U + '|' + p + '|' + id)}"]`); return;
+  }
+  const yv = t.closest('[data-yzv]'), sv = t.closest('[data-suz]'), bv = t.closest('[data-bkv]');
+  if (yv || sv) {
+    if (needReader()) return;
+    const box = (yv || sv).parentElement, k = yv ? box.dataset.yzvk : box.dataset.suzk, v = yv ? yv.dataset.yzv : sv.dataset.suz;
+    const map = yv ? yzEval : yzSuz;
+    if ((map[k] || {}).v === v) delete map[k]; else map[k] = {v, reader: reader(), at: new Date().toISOString()};
+    store.set(yv ? 'd1-yz-sinama' : 'd1-yz-suzgec', map);
+    box.querySelectorAll('button').forEach(b => b.setAttribute('aria-pressed', (map[k] || {}).v === (yv ? b.dataset.yzv : b.dataset.suz)));
+    progress(); return;
+  }
+  if (bv) { const box = bv.closest('[data-bk]'), cur = (bkMarks[box.dataset.bk] || {}).v; bkSave(box, {v: cur === bv.dataset.bkv ? '' : bv.dataset.bkv}); return; }
+});
+document.addEventListener('toggle', ev => {
+  if (ev.target.parentElement && ev.target.parentElement.id === 'intro') store.set('d1-masa-intro-' + st.tab, ev.target.open);
+}, true);
+function bkSave(box, patch) {
+  if (needReader()) return false;
+  const key = box.dataset.bk, m = Object.assign({}, bkMarks[key] || {}, patch, {reader: reader(), at: new Date().toISOString()});
+  if (m.dt === 'yz') m.v = 'emin_degilim';
+  bkMarks[key] = m; store.set('d1-bilirkisi', bkMarks);
+  box.querySelectorAll('[data-bkv]').forEach(x => x.setAttribute('aria-pressed', m.v === x.dataset.bkv));
+  progress(); return true;
+}
+document.addEventListener('change', ev => {
+  const t = ev.target;
+  if (t.id === 'draft') { st.draft = t.value; st.dfocus = null; render(); return; }
+  if (t.id === 'whole') { st.whole = t.checked; renderRight(); persist(); return; }
+  const f = t.closest('[data-bkf]');
+  if (f) { const box = f.closest('[data-bk]'); if (bkSave(box, {[f.dataset.bkf]: f.value}) && f.dataset.bkf === 'dt') renderRight(); }
+});
+document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { st.lang = b.dataset.v; render(); });
+$('#reader').value = store.get('d1-okuma-okur', '');
+$('#reader').onchange = () => store.set('d1-okuma-okur', reader());
+
+// --- dışa ve içe aktarma: eski okuma sayfasıyla aynı dosya (notlar ve ölçütler de içinde, değiştirilmeden)
+$('#export').onclick = () => {
+  const r = reader() || 'okuyucu', rubric = store.get('d1-okuma-olcut', {});
+  const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes: store.get('d1-okuma-notlar', []),
+    yz_sinama: yzEval, yz_suzgec: yzSuz, bilirkisi: bkMarks,
+    rubric: Object.entries(rubric).map(([k, v]) => { const [unit, draft, rd] = k.split('|'); return {unit, draft, reader: rd, scores: v}; })};
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 1)], {type: 'application/json'}));
+  a.download = `d1-notlar-${r.replace(/[^\p{L}\p{N}]+/gu, '-')}-${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '')}.json`;
+  a.click(); URL.revokeObjectURL(a.href); say('İşaretler dışa aktarıldı.');
+};
+$('#import').onchange = async ev => {
+  const f = ev.target.files[0]; if (!f) return;
+  try {
+    const p = JSON.parse(await f.text());
+    if (p.app !== 'd1-okuma') throw new Error('bu sayfanın dosyası değil');
+    for (const [src, map, key] of [[p.yz_sinama, yzEval, 'd1-yz-sinama'], [p.yz_suzgec, yzSuz, 'd1-yz-suzgec'], [p.bilirkisi, bkMarks, 'd1-bilirkisi']]) {
+      for (const [k, v] of Object.entries(src || {})) if (!map[k] || v.at > map[k].at) map[k] = v;
+      store.set(key, map);
+    }
+    const notes = store.get('d1-okuma-notlar', []);
+    for (const n of p.notes || []) { const i = notes.findIndex(x => x.id === n.id); if (i < 0) notes.push(n); else if (n.at > notes[i].at) notes[i] = n; }
+    store.set('d1-okuma-notlar', notes);
+    render(); say('İşaretler içe aktarıldı.');
+  } catch (e) { say('İçe aktarılamadı: ' + e.message); }
+  ev.target.value = '';
+};
+window.addEventListener('resize', () => document.documentElement.style.setProperty('--head-h', $('#hdr').offsetHeight + 'px'));
+render();
+</script></body></html>

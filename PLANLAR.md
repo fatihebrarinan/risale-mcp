@@ -48,7 +48,7 @@ durur, "Kayıt"taki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E6, S4, A3, D9, B6 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E6, S4, A3, D10, B6 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -68,7 +68,7 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 | 9 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
 | 10 | B2–B5 | Küçük açıklar | MVP "Kalan" |
 
-D7.7 kullanıcıda; D2 bitti (2026-11-13). D8, D7 ve D9'un dersleriyle (D2'ninkiler de) yapılır, D6'yı beklemez. D6
+D7.7, D9.3 ve D6.2 `okuma-yz.html`'de yürümedi; âyet masasında (D10) yapılacak (2026-11-14). D7.7 kullanıcıda; D2 bitti (2026-11-13). D8, D7 ve D9'un dersleriyle (D2'ninkiler de) yapılır, D6'yı beklemez. D6
 D9'un ilk çalışmasından sonra başlar, D8'le paralel yürür, D5'ten önce biter; bulduğu hata türleri D9'a denetim
 olarak, gerekirse istemin sonraki sürümüne girer.
 
@@ -231,6 +231,26 @@ okuduklarında arar.
 - **Sıradaki:** kullanıcının süzgeci (D7.7'den sonra); sonra D9.4 raporu (kabul oranı, sistemli zaaflar süzgeçten
   geçmiş notlarla, D1–D2 farkı) ve D6.2'nin örneklemi (eleştirmenin itiraz etmediği belâgat ve i'râb iddiaları ve
   "ehline sor" notları).
+
+**D10. Âyet masası** (kullanıcının tasarımı ve kararları, 2026-11-14). `okuma-yz.html`'de D7.7, D9.3 ve D6.2 denendi,
+olmadı: sayfa iş akışımıza göre dizilmişti (üç katman, `N05`, `V3/ar/12`, `A01` kodları), kullanıcı ve yanındaki kişi
+neyi neyle karşılaştıracaklarını, eleştirinin taslağın neresine yapıldığını, bilirkişi iddiasının bağlamını bulamadı.
+Yerine âyetten başlayan sayfa: âyet üstte büyük, mealiyle; kelimeleri tıklanır, altında İşârât'ın o kelimedeki nükte
+sayısı; üç düzey ("Önceki âyetlerle münasebet" V1, "Cümlelerin nazmı" V2, üçüncü vechin kelimeleri; kalanlar "Cümleler ve
+kelimesi belirsizler"). Sol yan **kaynaklar** (İşârât, Türkçesi Abdülmecid Nursî tercümesi; 13 müfessir vefat sırasıyla,
+kelimenin geçtiği cümleler birer cümle bağlamla; klasik eserler; Risale'deki öbür yerler), sağ yan **yapay zekâ**
+(taslak seçici sabit; sekmeler: İşârât'la karşılaştırma, Taslak, Eleştirmen, Bilirkişi soruları; her sekmenin başında
+"bu nedir, sizden ne bekleniyor"). Kod görünmez (nükte kodu yerine özetinin ilk kelimeleri). İki yan birbirini vurgular:
+sağdaki nükte soldaki İşârât cümlesini, soldaki cümle sağdaki nükteyi, "taslakta göster" taslağın sözünü sarı yapar.
+Dil seçimi: Türkçe kipte İşârât tercümesi ve taslağın Türkçesi (damgalı) önde, Arapçası açılır. Kör okuma yok (bilirkişi
+maddesinde eleştiri görünür). Müfessirlerin Türkçesi sonraya. İşaretler eski sayfanın anahtarlarıyla, aynı dışa aktarma
+biçimi (`d1-prova.py notlar` okur).
+- **Prototip (2026-11-14):** `scripts/d1-masa.py` + `d1-masa-sablon.html` → `data/d1/masa.html` (kapalı depo). Yerleşim
+  veriden: kelime düğmeleri âyetin kelimelerinden ve envanterin harekeli lafızlarından; taslak tarafı nükte kimliğinden,
+  yoksa paragrafın vechi ve üçüncü vecihte paragrafın başlığından ("وأما ﴿…﴾"). Bilirkişi maddelerinin 17'si bir yere,
+  7'si "belirsiz"e düştü (ör. A02 "ألا" iddiası, paragrafı "أما الاستيناف" ile başlıyor). Tarayıcıda denendi.
+- **Sıradaki:** kullanıcı ve yanındaki kişi dener; anlaşılırsa D7.7, D9.3 ve D6.2 bu sayfada yapılır. Açık: bilirkişi
+  maddelerini dar soruya çevirmek; müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı).
 
 **D6. Bilirkişi okuması** (D1'den ayrıldı, 2026-11-13; eski D1.5, D1.6 ve D1.9'un insan okuması kısmı). **Daraltıldı
 (kullanıcının kararı, 2026-11-13):** taslaklar taslaktır, içeriklerini doğrulamak heyetin işidir; bizim işimiz
