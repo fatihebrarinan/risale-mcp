@@ -57,7 +57,7 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak (Arapça, tercüme, izah); pilot 31–33'te (D8 kapandı, 2026-11-15) | |
+| 1 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak (Arapça, tercüme, izah); pilot 31–33'te (D11.1–D11.2 bitti; sırada kullanıcının okuması) | |
 | 2 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
 | 4 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
@@ -205,10 +205,24 @@ Kararlar:
   sıfırlanma saatine kadar bekleyip sürer (gece ve gündüz pencereleri boşa gitmez), pencere başına ve haftalık
   sığan işi ölçer. Sıra önerisi: önce Risale-i Nur'un bağ kurduğu âyetler.
 Adımlar:
-- D11.1 Hat: uzunluk oranı, kaynak dosyası, kısa istem (sızıntı testiyle), izah adımı, bölüm eleştirisi.
-- D11.2 Pilot: 31–33'te tek taslak (Opus), izah, ölçüm (tek okuyuculu kapsama, D9.1, eleştiri iki biçimde; taslak 3'e
-  bölüm eleştirisi), rapor `data/d1/provalar/31-33/d11-rapor.md`; gerekirse geri çekilme.
-- D11.3 Kullanıcının okuması (masada): pilot ile taslak 3 yan yana, izah, iki eleştiri listesinin süzgeci.
+- **D11.1 Hat (bitti, 2026-11-15):** `scripts/d1-hat.py` (`dosya`, `hazirla`, `yazdir`, `izah`, `bolum`, `orneklem`,
+  `oran`), istemler `docs/d1/hat-istemi.md` (h1) ve `docs/d1/izah-istemi.md` (i1). Kaynak dosyası 65 bin harf
+  (Keşşâf, Beyzâvî, Ebüssuûd, Âlûsî tam; İşârât'ın önceki birimi; Risale'nin yerleri bölümün başıyla; klasik
+  eserler); istem 94 bin harf, sızıntı testi temiz. Bölüm eleştirisinde eleştirmen taslağın tamamını bağlam olarak
+  görür, notu yalnız kendi bölümüne yazar (N31 dersi). Masa izahı paragrafın altında, bölüm notlarını etiketle
+  gösterir.
+- **D11.2 Pilot (bitti, 2026-11-15):** rapor `data/d1/provalar/31-33/d11-rapor.md`. Taslak 7 (Opus, h1): 3,1 $
+  (eskiler 8,6–12,5), 27 tur (51–76), Arapça 11,5 bin harf (hedef 7–14); kapsama tek okuyucuyla %53, mukaddimesiz %72
+  (eskiler aynı okuyucuyla %49–55, %69–79), çelişki 3 (1–5); eleştirmen 26 not (23–31), "doğru" notu 4 (6–9), aynı
+  sistemli zaaflar (Z1, Z4, Z6, Z7, Z10) ve istemin ihtilaf kuralının kalıplaşması. Geri çekilme gerekmedi. İzah
+  ≈1 $, mekanik denetimde temiz. Bölüm eleştirisi ≈3 kat not (84'e 29, 77'ye 26), ≈3 kat maliyet (≈9,5 $'a 3 $),
+  denetimde tutmayan yok. Uzunluk oranı: Bakara 8–33'te âyet kelimesi başına ≈440 harf (138–1238); 31–33 en seyrek
+  (Arapça asıl 31'in ortasında biter), D5'te tek oran yetmez. Birim başına tahmin: taslak + izah + D9.1 ≈4,1 $
+  (pencerede ≈11 birim). Pilotun toplamı ≈28 $. Kod düzeltmeleri: D9.1 kaynak dosyasını okunan saymıyordu; D7
+  raporu tek okuyuculu taslakta boş "ikisi de" satırı veriyordu; masa bölüm notlarını iki kez sayıyordu.
+- D11.3 Kullanıcının okuması (masada; masa kuruldu, yayına gönderilmedi): pilot (taslak 7, izahıyla) ile taslak 3
+  yan yana; 20 notluk süzgeç (`yz/d11-orneklem.json`: iki taslak × iki biçim × 5; D8'in 9 notluk süzgecinin yerine).
+  Ondan sonra iki karar: eleştirinin biçimi ve sıklığı; D5'in birimleri (İşârât 33'te bitiyor) ve uzunluk hedefi.
 - D11.4 Kuyruk, sonra D5.
 
 **D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; D11'in hattıyla ve kuyruğuyla yapılır (2026-11-15).

@@ -5,7 +5,9 @@
     uv run python scripts/d1-hat.py yazdir 31-33 [--model claude-opus-5-5]   # taslak (d1-prova.yazdir, istem "hat")
     uv run python scripts/d1-hat.py izah 31-33 --taslak 7  # günümüz Türkçesiyle izah, paragraf paragraf
     uv run python scripts/d1-hat.py bolum 31-33 --taslak 7 3   # bölüm bölüm eleştiri (eleştirmen v1.2'nin soruları)
-    uv run python scripts/d1-hat.py rapor 31-33 --taslak 7      # pilotun raporu: provalar/<birim>/d11-rapor.md
+    uv run python scripts/d1-hat.py orneklem 31-33 --taslak 3 7  # D11.3 süzgeci: iki biçimden eşit, sabit tohumlu
+    uv run python scripts/d1-hat.py oran                   # İşârât'ın Bakara birimlerinde âyet kelimesi başına harf
+(pilotun raporu elle yazıldı: provalar/<birim>/d11-rapor.md)
 
 Kararlar (kullanıcıyla, 2026-11-15):
 - **Kaynak dosyası** programla toplanır (âyet masasının fonksiyonlarıyla): altı taslağın hepsinin okuduğu müfessirlerin
