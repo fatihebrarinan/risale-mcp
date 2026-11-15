@@ -48,7 +48,7 @@ durur, "Kayıt"taki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E6, S5, A3, D10, B6 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E6, S5, A3, D11, B6 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -57,7 +57,7 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 31–33'te (kıssa) v1 ve v2 yan yana; D3 buna katıldı (D8.1–D8.4 bitti; sırada kullanıcının örneklemleri) | D1.9, D3 |
+| 1 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak (Arapça, tercüme, izah); pilot 31–33'te (D8 kapandı, 2026-11-15) | |
 | 2 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
 | 4 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
@@ -154,13 +154,64 @@ eklenir).
     v2 taslaklarını v1 isteminin ekleriyle ölçüyordu (`d1-elestiri.Read`).
   - Okuma: v2 ölçülür bir iyileşme getirmedi; yalnız Arapça tırnak kuralı mekanik olarak tuttu. Hüküm D8.6'da,
     örneklemlerden sonra.
-- D8.5 Kullanıcının örneklemleri (masada; masa 31–33 için kuruldu, 2026-11-15, yayına gönderilmedi): D7.7 örneklemi 30 satır, süzgeç 9 not
-  (katmanlama 9 verdi) ve 10 başlık; karşılaştırma örneklemi, süzgeç (10 not ve başlıklar), eleştirmen v1.2
-  olduğu için kapsam notlarından dar bir kör nokta okuması.
-- D8.6 Rapor ve döngü kararı: ölçütlerle 2. tur, `docs/d1/dongu.md`'ye satır; devam (3. tur, hüküm türü: 21 ya da 22)
-  ya da D5.
+- D8.5 Kullanıcının örneklemleri (masa 31–33 için kuruldu ve yayında, 2026-11-15): D7.7 örneklemi 30 satır, süzgeç
+  9 not (katmanlama 9 verdi) ve 10 başlık. D8.6'nın kararıyla D7.7 düştü; süzgeç (eleştirmen D11'de de kalır) açık,
+  kör nokta okuması yapılmadı.
+- **D8.6 Döngü kararı (bitti, 2026-11-15, kullanıcıyla konuşuldu):** D8 **kapandı**, istem döngüsü durdu (durma ölçütü:
+  ölçülür iyileşme yok). Bulgular, kullanıcının ve benim okumam:
+  1. **İstem kuralı düşünmeyi değiştirmiyor** (kullanıcının tespiti). Yüzeyden denetlenebilen biçim kuralları tutuyor
+     (Arapça tırnak 8,7 → 0); düşünme biçimine dair kurallar (takdir zinciri, garaz, yanındaki ipucu) tutmuyor; model
+     kurala katılıyor ve uyduğunu sanıyor. Z6 biçim gibi görünür ama fikrin nereden geldiğini hatırlamayı ister, o da
+     tutmadı. Fazla kural taslağı uzattı, iddia ve çelişki arttı. Aynı istemin üç taslağı arasındaki fark iki istem
+     arasındaki farktan büyük. Sonuç: düşünme hataları kuralla değil işin yapısıyla (adımı zorla yaptırmak, etiketi
+     programa koydurmak) ele alınır.
+  2. **Karşılaştırma (D7) döngüden çıktı** (kullanıcının önerisi): turun ≈%30'u (≈35 $; taslaklar ≈62 $, eleştiri
+     ≈20 $), sayısı hiçbir müdahaleyle kıpırdamadı (12 taslakta %47–55), asıl işte (Bakara 34 ve sonrası) cevap anahtarı
+     olmadığı için yapılamaz; istemi düzeltmeye eleştiriden çok daha az katkı verdi. Envanter ucuzdur, kalır: D11'de tek
+     okuyucuyla (Opus, ≈2 $) yalnız kalibrasyon için.
+  3. **Asıl iş bu yöntemle yapılamaz** (kullanıcının değerlendirmesi): birim başına üç taslak kullanıcının altından
+     kalkabileceği iş değil; birim ≈13 $ (taslak ≈10, eleştiri ≈3); Max planının 5 saatlik penceresine ≈45–50 $ liste
+     fiyatı kadar iş sığdı (iki pencerede ölçüldü, sohbet dahil); Bakara 1–33'te birim ≈1,4 âyet, 6236 âyette ≈4400
+     birim, bugünkü yöntemle ≈1200 pencere. Taslaklar İşârât'ın 3–5 katı uzun (31–33: İşârât'ın Arapçası 7 bin harf,
+     taslaklar 35–60 bin), kullanıcının okuyabileceğinden çok. Maliyetin ≈2/3'ü modelin 59 turluk araç döngüsünde
+     bağlamın her turda yeniden okunması; istem ≈130 bin harf (usul özeti ve İşârât'tan seçme bölümler).
+  Yön: D11 (yeni hattın pilotu). `docs/d1/dongu.md`'ye 2. turun satırı yazıldı.
 
-**D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; alt adımları döngü durunca (D8 ya da sonraki tur) yazılır.
+**D11. Üretim hattı: birim başına tek, kısa, ucuz taslak; pilot 31–33'te** (kullanıcının kararları, 2026-11-15; D8'in
+bulgularından; "bir sonraki tur" ama istem değil yöntem sınanır). Amaç asıl işi yapılabilir ve erişilebilir kılmak:
+taslak yine kıymetli olmalı, İşârât'ın usulünü ve Risale-i Nur'un çizgisini izlemeli, eldeki verileri kullanmalı.
+Kararlar:
+- **Birim başına tek taslak**; ucuz önlemler: D9.1 her taslakta (bedava), eleştiri örneklemle.
+- **Katmanlar:** Arapça taslak, Türkçe tercüme (sadık, Risale'nin diline yakın) ve **günümüz Türkçesiyle izah**
+  (kullanıcının isteği). İzah ayrı adımda, Opus ile, yalnız paragrafın Arapçası ve tercümesinden: taslağın
+  söylemediğini söylemez, kaynak numarası ve tırnak eklemez, terimi ilk geçtiği yerde açar; program izahta taslakta
+  olmayan [n] ya da tırnak arar; eleştirmen izahı görmez. İzah her paragrafın altında (önce böyle; izahları
+  birleştirme adımı "Sonra"da).
+- **Uzunluk:** Arapçada İşârât'ın 1–2 katı. D5'te İşârât olmadığı için hedef orandan gelir: Bakara 1–33'te âyetin
+  kelimesi başına İşârât'ın harfi; pilotta oran ile 31–33'ün gerçek uzunluğu karşılaştırılır (tutmazsa tür türe).
+- **Maliyet kaldıraçları:** kaynak dosyası (müfessirlerin altı taslağın hepsinde okunan birimleri, Risale'nin âyete
+  bağlı yerleri, klasik eserlerde âyetin kelimeleri; program toplar, masa gibi), kısa istem (usul özetinin taslağın
+  kullandığı özü, v2'nin tutan biçim kuralları), uzunluk sınırı, yazar Opus. Araçla arama kısıtlanmaz (kullanıcı:
+  çok kısıtlamak değer kaybettirebilir); kaç çağrı yaptığı ölçülür.
+- **Geri çekilme** (pilot kötü çıkarsa): önce belirtiye göre (ipucu dosyada değildi → dosyayı zenginleştir;
+  nükte sıkışmış → sınırı 2–3 kata; usul hatası arttı → istemin bölümünü geri koy; çıkarım sığ → Fable). Belirti açık
+  değilse sabit sıra: model → uzunluk → istem → dosya (en büyük tasarruf dosyada, en sona). "Kötü": mukaddimesiz
+  kapsama altı taslağın en düşüğünün (%66) altında **ve** kullanıcının okuması eskiyi açıkça üstün buluyor. En çok
+  iki adım, sonra konuşulur.
+- **Eleştiri biçimi** (kullanıcının sorusu: paragraf paragraf bakmak daha çok bulur mu): pilot taslak ve eski bir
+  taslak (taslak 3) iki kez eleştirilir: bütün olarak (v1.2) ve bölüm bölüm (aynı sorular, yalnız gördüğü parça
+  değişir). Kullanıcı iki not listesini süzer.
+- **Kuyruk:** hattın adımları pilotla kesinleşince; birimleri sırayla yazdırır, kullanım sınırına takılınca
+  sıfırlanma saatine kadar bekleyip sürer (gece ve gündüz pencereleri boşa gitmez), pencere başına ve haftalık
+  sığan işi ölçer. Sıra önerisi: önce Risale-i Nur'un bağ kurduğu âyetler.
+Adımlar:
+- D11.1 Hat: uzunluk oranı, kaynak dosyası, kısa istem (sızıntı testiyle), izah adımı, bölüm eleştirisi.
+- D11.2 Pilot: 31–33'te tek taslak (Opus), izah, ölçüm (tek okuyuculu kapsama, D9.1, eleştiri iki biçimde; taslak 3'e
+  bölüm eleştirisi), rapor `data/d1/provalar/31-33/d11-rapor.md`; gerekirse geri çekilme.
+- D11.3 Kullanıcının okuması (masada): pilot ile taslak 3 yan yana, izah, iki eleştiri listesinin süzgeci.
+- D11.4 Kuyruk, sonra D5.
+
+**D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; D11'in hattıyla ve kuyruğuyla yapılır (2026-11-15).
 İlki: D5.1 Bakara 34, tek birim, ehlin okuması.
 
 **S4. Dizin başvuruları** (sıraya alındı, 2026-11-12; kullanıcı: bağdaştırıcıların erişilebilir olması için çok
@@ -319,6 +370,9 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - S5 Âyet masası (2026-11-14): âyetten başlayan girişli çalışma sayfası (risalemcp.com/taslak/; solda kaynaklar,
   sağda yapay zekâ taslakları, karşılaştırma, eleştirmen, bilirkişi soruları); "Âyet başına çalışma platformu"
   fikrinin ilk hâli. Açıkları "Sonra"da. Ayrıntı "Kayıt › Kimlikli işler"de.
+- D8 Döngü 2, 31–33'te v1 ve v2 (2026-11-14/15): altı taslak, aynı ölçü; v2 ölçülür iyileşme getirmedi (kapsama %51 →
+  %49), yalnız Arapça tırnak kuralı tuttu; Z1 ve Z6 altı taslağın hepsinde. Döngü durdu, karşılaştırma (D7) döngüden
+  çıktı, asıl iş için yeni hat D11'e. Ayrıntı "Sıradaki › D8"de.
 - D9 Yapay zekâ eleştirmeni ve mekanik denetimler (2026-11-13/14): mekanik denetimler (kapsam adayıyla), Opus
   eleştirmeni (176 not), süzgeç örneklemle (10 notun 10'u, 9 başlığın 9'u kalsın); taslakların sistemli zaafı "nasıl
   vardığı"; D8'e 11 genel usul maddesi; rapor `data/d1/provalar/11-12/d9-rapor.md`. Ayrıntı "Kayıt › Kimlikli işler"de.
