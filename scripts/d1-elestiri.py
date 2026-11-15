@@ -131,7 +131,10 @@ class Read:
             self._log(log)
             return
         meta = json.loads((P.DRAFTS / unit / f"taslak-{n}.json").read_text(encoding="utf-8"))
-        prompt = P.OUT / unit / ISTEM_FILES[meta.get("istem")]
+        name = ISTEM_FILES[meta.get("istem")]
+        if meta.get("istem") in P.ISTEM:            # sürümlü istem (D8: v1 ve v2 aynı birimde)
+            name = P.istem_files(meta["istem"], meta.get("surum", "v1"))[0]
+        prompt = P.OUT / unit / name
         raw = prompt.read_text(encoding="utf-8")
         if P._sha(raw) != meta["prompt_sha"]:
             print(f"  uyarı: taslak {n}'in istemi değişmiş ({prompt.name}); okunanlar bugünkü istemden")
