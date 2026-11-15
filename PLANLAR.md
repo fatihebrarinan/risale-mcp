@@ -146,7 +146,7 @@ eklenir).
   - D9.1: tırnakta kendi Arapça sözü 8,7 → **0** (v2'nin tırnak kuralı Arapçada tuttu); tırnakta kendi Türkçesi 18,7 →
     12 (0, 11, 25: tutarsız); atıfsız ortak söz 4,3 → 9,7 (v2 kaynağın Arapçasını daha çok, atıfsız alıyor); kendi
     tespiti adayı ve kapsam adayı değişmedi.
-  - Eleştirmen: not 29 → 27, kapsam notu 16 → 11, yanlış 1 → 1. Sistemli başlıklar (`yz/elestiri-sistemli.json`,
+  - Eleştirmen (taslak başına): not 29 → 27, kapsam notu 5,3 → 3,7; "yanlış" notu iki turda da birer. Sistemli başlıklar (`yz/elestiri-sistemli.json`,
     1. turun kimlikleriyle): 1. turun 9 başlığından v1 taslaklarında 8'i, v2'de 7'si yine çıktı; **Z1 (takdir zinciri)
     ve Z6 (kendi tespiti etiketi) altı taslağın hepsinde**; Z2 hiçbirinde, Z9 yalnız v1'de. Yeni: Z10 kıssanın garazı
     (tahaddî) nazmın ölçüsü yapılmıyor (4 taslak), Z11 harfler ve küçük lafızlar incelenmiyor (3).
