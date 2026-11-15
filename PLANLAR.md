@@ -57,7 +57,7 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 31–33'te (kıssa) v1 ve v2 yan yana; D3 buna katıldı (D8.1 ve D8.2 bitti) | D1.9, D3 |
+| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 31–33'te (kıssa) v1 ve v2 yan yana; D3 buna katıldı (D8.1–D8.3 bitti) | D1.9, D3 |
 | 2 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
 | 4 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
@@ -127,11 +127,16 @@ eklenir).
   v1 ve v2 istemi temiz (2 ortak dizi, kalıp ibare). Envanterde `Mukaddime` vechi (karşılaştırıcı v2). Not: 20. Söz
   Âdem'in ta'lîm-i esmâsını işler ve me'hazdadır (Risale me'hazdır); iki istem de ona eşit erişir.
   **Envanter** (2026-11-15; Fable çıkardı, Opus denetledi, ≈1,8 $): `data/d1/provalar/31-33/yz/envanter.md`, 47 kalem
-  (Mukaddime 18, V1 5, V2 9, V3 15; 5'i yalnız tercümede). Denetçinin iki açık önerisi kullanıcıda: N32'yi ikiye bölmek
-  (aynı lafızdan iki ayrı gerekçe) ve N45'i silmek (tercümenin sonundaki hâtime notu, âyetin bir nüktesi değil).
+  (5'i yalnız tercümede). Denetçinin iki önerisi kullanıcının kararıyla uygulandı (2026-11-15, `envanter-kararlar.json`):
+  N32 ikiye bölündü (aynı lafızdan iki ayrı gerekçe), N45 silindi (tercümenin sonundaki hâtime notu, âyetin bir nüktesi
+  değil); yine 47 kalem: Mukaddime 18, V1 5, V2 10, V3 14.
   Ölçümde kapsama mukaddimeli ve mukaddimesiz ayrı verilir (kalemlerin %38'i mukaddimede; taslağın mukaddime yazıp
   yazmaması sayıyı oynatmasın). **D8.2 bitti** (önerilere karar eşleştirmeden önce).
-- D8.3 Yazdırma: 31–33'te v1 ile 3, v2 ile 3 (hepsi ince-klasik, Fable 5.2, yüksek).
+- **D8.3 Yazdırma (bitti, 2026-11-15):** 31–33'te v1 ile 3 (taslak 1, 3, 5), v2 ile 3 (2, 4, 6); hepsi ince-klasik,
+  Fable 5.2, yüksek. İlk 5 ve 6 kullanım sınırına takıldı (metinsiz), silinip yeniden yazıldı. v2 taslakları uzun
+  (≈80 bin harf, v1 ≈50–64 bin) ve pahalı (≈11–12,5 $, v1 ≈8,6–9,3 $; altısı ≈62 $ liste fiyatı). Ezber şüphesi yok:
+  gizlenen Arapçayla ortak 6'lı diziler (0–3) İşârât'ın her birimde tekrarlanan açılış kalıbıdır
+  (`provalar/31-33/karsilastirma.md`).
 - D8.4 Ölçüm: altı taslak aynı ölçüyle: D7 v2, D9.1, eleştirmen v1.2.
 - D8.5 Kullanıcının örneklemleri (masada): karşılaştırma örneklemi, süzgeç (10 not ve başlıklar), eleştirmen v1.2
   olduğu için kapsam notlarından dar bir kör nokta okuması.
