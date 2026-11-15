@@ -57,7 +57,7 @@ alındı; yine aynı gün D9 açıldı, D8'den önce, ve D6 daraltıldı: D8'i b
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 31–33'te (kıssa) v1 ve v2 yan yana; D3 buna katıldı (D8.1–D8.3 bitti) | D1.9, D3 |
+| 1 | D8 | Döngü 2: istemin yeni sürümü (D7, D9, D6 ve D2'nin dersleri), 31–33'te (kıssa) v1 ve v2 yan yana; D3 buna katıldı (D8.1–D8.4 bitti; sırada kullanıcının örneklemleri) | D1.9, D3 |
 | 2 | S4 | Dizin başvuruları (OpenAI reddi, Claude incelemede; hadis, tefsir ve klasik eserler) | M7 |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla | D1.8 |
 | 4 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
@@ -137,8 +137,25 @@ eklenir).
   (≈80 bin harf, v1 ≈50–64 bin) ve pahalı (≈11–12,5 $, v1 ≈8,6–9,3 $; altısı ≈62 $ liste fiyatı). Ezber şüphesi yok:
   gizlenen Arapçayla ortak 6'lı diziler (0–3) İşârât'ın her birimde tekrarlanan açılış kalıbıdır
   (`provalar/31-33/karsilastirma.md`).
-- D8.4 Ölçüm: altı taslak aynı ölçüyle: D7 v2, D9.1, eleştirmen v1.2.
-- D8.5 Kullanıcının örneklemleri (masada): karşılaştırma örneklemi, süzgeç (10 not ve başlıklar), eleştirmen v1.2
+- **D8.4 Ölçüm (bitti, 2026-11-15):** altı taslak aynı ölçüyle: D7 karşılaştırıcı v2 (iki kör okuyucu), D9.1,
+  eleştirmen v1.2 (Opus). Ortalamalar v1 → v2 (üçer taslak):
+  - kapsama (iki okuyucunun ortak) %51 → %49; mukaddimesiz %75 → %70; aynen 5,0 → 5,3; çelişki 1,7 → 3,7 (taslak 2'de
+    6; çoğu "kısmi": ara halkayı atlayıp mahiyet hükmü); fazla iddia 67 → 85. Mukaddimenin 18 kaleminden (mu'cizeler ve
+    terakki) hiçbir taslak birkaçından fazlasını bulmadı: Yirminci Söz'ü okuyup bu âyete taşımadılar (eleştirmen:
+    dikkat meselesi).
+  - D9.1: tırnakta kendi Arapça sözü 8,7 → **0** (v2'nin tırnak kuralı Arapçada tuttu); tırnakta kendi Türkçesi 18,7 →
+    12 (0, 11, 25: tutarsız); atıfsız ortak söz 4,3 → 9,7 (v2 kaynağın Arapçasını daha çok, atıfsız alıyor); kendi
+    tespiti adayı ve kapsam adayı değişmedi.
+  - Eleştirmen: not 29 → 27, kapsam notu 16 → 11, yanlış 1 → 1. Sistemli başlıklar (`yz/elestiri-sistemli.json`,
+    1. turun kimlikleriyle): 1. turun 9 başlığından v1 taslaklarında 8'i, v2'de 7'si yine çıktı; **Z1 (takdir zinciri)
+    ve Z6 (kendi tespiti etiketi) altı taslağın hepsinde**; Z2 hiçbirinde, Z9 yalnız v1'de. Yeni: Z10 kıssanın garazı
+    (tahaddî) nazmın ölçüsü yapılmıyor (4 taslak), Z11 harfler ve küçük lafızlar incelenmiyor (3).
+  - Ezber yok; v2 ≈%40 uzun, ≈%30 pahalı. Ölçümün maliyeti ≈53 $ (eşleştirme 35, eleştiri 20). Kod düzeltmesi: D9.1
+    v2 taslaklarını v1 isteminin ekleriyle ölçüyordu (`d1-elestiri.Read`).
+  - Okuma: v2 ölçülür bir iyileşme getirmedi; yalnız Arapça tırnak kuralı mekanik olarak tuttu. Hüküm D8.6'da,
+    örneklemlerden sonra.
+- D8.5 Kullanıcının örneklemleri (masada; masa 31–33 için kuruldu, 2026-11-15, yayına gönderilmedi): D7.7 örneklemi 30 satır, süzgeç 9 not
+  (katmanlama 9 verdi) ve 10 başlık; karşılaştırma örneklemi, süzgeç (10 not ve başlıklar), eleştirmen v1.2
   olduğu için kapsam notlarından dar bir kör nokta okuması.
 - D8.6 Rapor ve döngü kararı: ölçütlerle 2. tur, `docs/d1/dongu.md`'ye satır; devam (3. tur, hüküm türü: 21 ya da 22)
   ya da D5.
