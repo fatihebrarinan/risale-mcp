@@ -140,6 +140,7 @@ details > summary { cursor: pointer; }
 .blk { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; margin: 0 0 8px; }
 .blk.focus { outline: 3px solid var(--hl); }
 .blk.quote { border-style: dashed; }
+.izah { margin-top: 6px; padding: 6px 8px; border-left: 3px solid var(--line); font-size: .95em; line-height: 1.5; }
 mark.fq { background: var(--hl); color: var(--hl-fg); }
 .mk { font-size: .7rem; padding: 0 4px; border-radius: 3px; white-space: nowrap; direction: ltr; unicode-bidi: isolate;
       cursor: pointer; color: var(--src); background: var(--src-soft); font-family: system-ui, sans-serif; }
@@ -586,7 +587,8 @@ function blockHtml(dk, pair) {
     <div class="small muted">${SEC[pair.ar.a.split('/')[0]] || ''}${pair.ar.q ? ' · kaynaktan alıntı' : ''}</div>
     <div class="${prim.l === 'ar' ? 'ar' : 'serif'}">${lab(prim)}${body(prim)}</div>
     ${sec ? `<details${q && !locate(prim.t, q) ? ' open' : ''}><summary class="small muted">${sec.l === 'ar' ? 'Arapçası (taslağın aslı)' : 'Türkçesi (yapay zekâ tercümesi)'}</summary>
-      <div class="${sec.l === 'ar' ? 'ar' : 'serif'}">${body(sec)}</div></details>` : ''}</div>`;
+      <div class="${sec.l === 'ar' ? 'ar' : 'serif'}">${body(sec)}</div></details>` : ''}
+    ${pair.tr && pair.tr.iz ? `<div class="izah"><span class="tag ai">yapay zekâ izahı (günümüz Türkçesi)</span> ${esc(pair.tr.iz)}</div>` : ''}</div>`;
 }
 function taslakHtml() {
   const pairs = blocksAt(st.draft);
@@ -620,7 +622,7 @@ function noteCard(dk, x, no) {
   const smp = CSAMPLE.has(`${dk}|${x.k}`) ? ' ' + CSMP : '';
   const dayanak = x.d.map(id => `<button class="linkish" data-sidgo="${esc(id)}" title="${esc(id)}">${esc(sidLabel(id))}</button>`).join(' · ');
   if (no && isFolded(fid)) return `<div class="card small" data-not="${esc(key)}">${cardHead(no, fid, `<span class="gist">${esc(x.m)}</span>${smp}`, suzMark(key))}</div>`;
-  return `<div class="card" data-not="${esc(key)}">${no ? cardHead(no, fid, '<span style="flex:1"></span>' + smp, suzMark(key)) : ''}<span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
+  return `<div class="card" data-not="${esc(key)}">${no ? cardHead(no, fid, '<span style="flex:1"></span>' + smp, suzMark(key)) : ''}<span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.b ? ` <span class="tag" title="D11: eleştirmen yalnız bu bölüme baktı (taslağın tamamı bağlamdaydı)">bölüm eleştirisi: ${esc(SEC[x.b] || x.b)}</span>` : ''}${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
     ${x.ok ? '' : ' <span class="tag w">alıntısı ya da dayanağı denetimde tutmadı</span>'}
     <span style="float:right">${evBtns(key, SUZC, 'suz', (yzSuz[key] || {}).v)}</span>
     <div class="serif" style="margin-top:4px"><b>Model</b> <span class="small muted">(eleştirmen)</span><b>:</b> ${codes(x.m)}</div>
@@ -645,9 +647,7 @@ function critBox() {   // D9.3: süzülecek 10 not (taslaklara ve yerlere dağı
   const done = x => (yzSuz[`${U}|${x.t}|${x.k}`] || {}).v;
   return `<details class="samplebox"${store.get('d1-masa-crit-acik', true) ? ' open' : ''} id="critbox">
     <summary>Örneklem: ${xs.filter(done).length}/${xs.length} not süzüldü ${CSMP}</summary>
-    <p>Eleştirmenin 176 notunun hepsini süzmeniz gerekmez. Bu 10 not, eleştirmenin yanılırsa en çok zarar verebileceği türlerden seçildi:
-    "yanlış" ve "fazla" 3, kaynak 2, belâgat 2, eksik 2, usul 1; altı taslağa yayılmış. Övgü notları ve eleştirmenin kendisinin "ehline sorulmalı" dediği
-    notlar girmedi. Aşağıda bir de eleştirmenin taslaklarda tekrar eden zaaflarından toplanan 9 başlık var.</p>
+    <p>${Y.critic_sample_note ? esc(Y.critic_sample_note) : `Eleştirmenin notlarının hepsini süzmeniz gerekmez. Bu ${xs.length} not, eleştirmenin yanılırsa en çok zarar verebileceği türlerden seçildi; taslaklara yayılmış. Övgü notları ve eleştirmenin kendisinin "ehline sorulmalı" dediği notlar girmedi.`}</p>
     <ol class="bklist">${xs.map(x => { const n = critNote(x) || {m: ''};
       return `<li class="${done(x) ? 'done' : ''}${x.t === st.draft && x.loc.includes(st.loc) ? ' here' : ''}"><button class="linkish" data-critgo="${esc(x.t + '|' + x.k)}">
       <span class="muted">${esc(draftLabel(x.t).replace('Taslak ', 'T'))} · ${locName(x.loc[0])} · ${esc(CTYPE[n.t] || n.t || '')}</span> ${esc(n.m.length > 120 ? n.m.slice(0, 119) + '…' : n.m)}</button>${done(x) ? ` <span class="done">${esc(SUZL[done(x)])}</span>` : ''}</li>`; }).join('')}</ol></details>`;
@@ -657,9 +657,9 @@ function sysBox() {    // D9.3: sistemli başlıklar; D8'in istemi "kalsın" den
   const key = z => `${U}|sistemli|${z.id}`, done = z => (yzSuz[key(z)] || {}).v;
   return `<details class="samplebox bkbox"${store.get('d1-masa-sys-acik', true) ? ' open' : ''} id="sysbox">
     <summary>Sistemli başlıklar: ${zs.filter(done).length}/${zs.length} süzüldü</summary>
-    <p>Eleştirmen her taslağın sonunda "sistemli zaaflar" listesi yazdı (altı taslakta 37 madde). En az iki taslakta tekrar edenler 9 başlıkta toplandı.
-    Başlığın sözü toplayanındır (yapay zekâ); altında eleştirmenin kendi maddeleri durur. <b>Sizden beklenen:</b> başlık taslaklar için doğru ve
-    istemin yeni sürümüne girmeli mi: <b>kalsın</b>, <b>atılsın</b>, <b>ehline sor</b>.</p>
+    <p>Eleştirmen her taslağın sonunda "sistemli zaaflar" listesi yazdı. En az iki taslakta tekrar edenler ${zs.length} başlıkta toplandı.
+    Başlığın sözü toplayanındır (yapay zekâ); altında eleştirmenin kendi maddeleri durur. ${U === '11-12' ? `<b>Sizden beklenen:</b> başlık taslaklar için doğru ve
+    istemin yeni sürümüne girmeli mi: <b>kalsın</b>, <b>atılsın</b>, <b>ehline sor</b>.` : `İsteğe bağlı: istem döngüsü durdu (D8), bu başlıklar bilgi içindir; işaretlerseniz kaydedilir.`}</p>
     ${zs.map((z, i) => `<div class="card"><div class="head"><span class="no">Başlık ${i + 1}/${zs.length}</span><span class="tag g">${esc(z.tur)}</span><span style="flex:1"></span>
       <span class="marks">${suzMark(key(z))}</span></div>
       <div style="margin:4px 0"><b>${esc(z.b)}</b> <span class="small muted">(${z.d.length} taslakta)</span></div>

@@ -294,10 +294,18 @@ def drafts(unit: str, ayah: Ayah) -> dict:
             server, sid = ids.get(k, (None, None))
             sources[k] = {"c": cite, "i": sid, "t": texts.text(server, sid, cite.split(" · ")[0])}
         istem = meta.get("istem", "tam")
+        about = {"tam": "tam istem", "ince": "ince istem", "ince-klasik": "ince istem, klasik eserler açık",
+                 "hat": "üretim hattı (D11): kısa istem, kaynak dosyası, uzunluk sınırı"}.get(istem, istem)
+        if meta.get("surum") and meta["surum"] != "v1":
+            about += f" · istem {meta['surum']}"
+        if meta.get("model") and meta["model"] != "claude-fable-5-2":
+            about += f" · {meta['model']}"
+        izah = Y.out_dir(unit) / f"izah-taslak-{n}.json"       # D11: günümüz Türkçesiyle izah, paragraf başına
+        iz = {x["capa"]: x["metin"] for x in json.loads(izah.read_text(encoding="utf-8")).get("izah", [])} if izah.exists() else {}
         out[f"taslak-{n}"] = {
-            "label": f"Taslak {n}",
-            "about": {"tam": "tam istem", "ince": "ince istem", "ince-klasik": "ince istem, klasik eserler açık"}.get(istem, istem),
-            "blocks": [{"a": a, "l": lang, "q": quote, "t": text} for a, lang, quote, text in blocks],
+            "label": f"Taslak {n}", "about": about,
+            "blocks": [{"a": a, "l": lang, "q": quote, "t": text, **({"iz": iz[a]} if a in iz else {})}
+                       for a, lang, quote, text in blocks],
             "heads": ayah.heads(blocks), "sources": sources}
     return out
 
@@ -341,7 +349,8 @@ def layer(unit: str, ayah: Ayah, places: dict[str, list[str]], dr: dict) -> dict
     notes = {(dk, x["k"]): x for dk, c in critic.items() for x in c["notes"]}
     critic_sample = [dict(x, loc=notes[(x["t"], x["k"])]["loc"]) for x in y["critic_sample"] if (x["t"], x["k"]) in notes]
     return {"models": y["models"], "items": items, "drafts": out_drafts, "critic": critic, "bilirkisi": bk,
-            "sample": sample, "critic_sample": critic_sample, "systemic": y["systemic"]}
+            "sample": sample, "critic_sample": critic_sample, "systemic": y["systemic"],
+            "critic_sample_note": y.get("critic_sample_note", "")}
 
 
 def main() -> None:

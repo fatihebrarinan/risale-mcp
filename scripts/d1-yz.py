@@ -501,6 +501,8 @@ def rapor(unit: str) -> None:
             vhits = sum(1 for i, r in pm["nukteler"].items() if i not in muk and r.get("durum") in FOUND)
             L.append(f"| {tl} | {m} | {c['aynen']} | {c['kismen']} | {c['farkli_gerekce']} | {c['yok']} | %{cov * 100:.0f} |"
                      + vc(vhits) + f" {len(fz)} ({fc['kaynakli']} / {fc['kendi_tespiti']} / {fc['isaretsiz']}) | {cel} | {bad} |")
+        if len(tr["modeller"]) < 2:      # D11: tek okuyucu (kalibrasyon); "ikisi de" satırı anlamsız
+            continue
         both = sum(1 for r in tr["satirlar"] if all(r["durum"].get(m) in FOUND for m in models))
         vboth = sum(1 for r in tr["satirlar"] if r["id"] not in muk and all(r["durum"].get(m) in FOUND for m in models))
         u = Counter(r["uyum"] for r in tr["satirlar"])
@@ -964,6 +966,15 @@ def critic_review_page(unit: str) -> dict:
     d = out_dir(unit)
     sp, zp = d / "elestiri-orneklem.json", d / "elestiri-sistemli.json"
     sample = [{"t": x["taslak"], "k": x["k"]} for x in json.loads(sp.read_text(encoding="utf-8"))["notlar"]] if sp.exists() else []
+    note = ""
+    d11 = d / "d11-orneklem.json"        # D11.3: iki eleştiri biçiminin eşit örneklemi (D8'in süzgecinin yerine)
+    if d11.exists():
+        dd = json.loads(d11.read_text(encoding="utf-8"))
+        sample = [{"t": x["taslak"], "k": x["k"]} for x in dd["notlar"]]
+        note = ("Bu notlar iki eleştiri biçiminin karşılaştırması için seçildi (D11): aynı iki taslak (eski taslak 3 ve "
+                "yeni hattın pilotu taslak 7) bir kez bütün olarak, bir kez bölüm bölüm eleştirildi; her taslağın her "
+                "biçiminden 5 not, türlere yayılarak. Övgü notları, eleştirmenin \"ehline sorulmalı\" dedikleri ve "
+                "alıntısı denetimde tutmayanlar girmedi. Sıra karışıktır; notun biçimi kartındaki etiketten görünür.")
     systemic = []
     if zp.exists():
         lists = {}
@@ -974,7 +985,7 @@ def critic_review_page(unit: str) -> dict:
         for b in json.loads(zp.read_text(encoding="utf-8"))["basliklar"]:
             systemic.append({"id": b["id"], "tur": b["tur"], "b": b["baslik"], "x": b["aciklama"],
                              "d": ref(b["dayanak"]), "karsi": ref(b.get("karsi", []))})
-    return {"critic_sample": sample, "systemic": systemic}
+    return {"critic_sample": sample, "systemic": systemic, "critic_sample_note": note}
 
 
 def bilirkisi_page(unit: str) -> dict:
@@ -1018,6 +1029,20 @@ def critic_page(unit: str) -> dict:
                           "ok": dn.get("alinti") is not False and not dn.get("dayanak_yok")})
         out[f"taslak-{n}"] = {"notes": notes, "ozet": data.get("ozet", ""), "sistemli": data.get("sistemli", []),
                               "oneriler": data.get("oneriler", [])}
+    # D11: bölüm bölüm eleştiri (`d1-hat.py bolum`): aynı taslağın notlarına eklenir, kendi anahtarıyla ve işaretiyle
+    for path in out_dir(unit).glob("bolum-elestiri-taslak-*.json"):
+        if not (m := re.fullmatch(r"bolum-elestiri-taslak-(\d+)\.json", path.name)):   # bölüm başına dosyalar değil
+            continue
+        n = int(m.group(1))
+        data = json.loads(path.read_text(encoding="utf-8"))
+        entry = out.setdefault(f"taslak-{n}", {"notes": [], "ozet": "", "sistemli": [], "oneriler": []})
+        for x in data.get("notlar", []):
+            dn = x.get("denetim", {})
+            entry["notes"].append({"k": "b" + critic_key(n, x), "b": x.get("bolum"), "t": x.get("tur"),
+                                   "a": x.get("capa") or "genel", "n": x.get("nukte"), "m": x.get("metin", ""),
+                                   "h": x.get("nasil"), "s": x.get("soru"), "e": bool(x.get("ehline_sor")),
+                                   "q": x.get("taslak_alinti"), "d": x.get("dayanak") or [],
+                                   "ok": dn.get("alinti") is not False and not dn.get("dayanak_yok")})
     return out
 
 

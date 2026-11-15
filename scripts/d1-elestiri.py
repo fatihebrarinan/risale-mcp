@@ -122,6 +122,20 @@ def marks_of(text: str) -> tuple[set[str], list[tuple[int, str]]]:
 
 # ---------------------------------------------------------------- okunanlar
 
+FULL_ID = re.compile(r"\[([a-z][\w-]*/[^\]\s]*?c\d+)\] ")
+_WORKS: dict[str, str] = {}
+
+
+def _server_of(sid: str) -> str:
+    """Tam kimliğin eklentisi: eserin hangi veritabanında olduğuna göre (tefsir, klasik, yoksa risale)."""
+    if not _WORKS:
+        for server in ("tefsir", "klasik"):
+            db = sqlite3.connect(f"file:{CRITIC_DBS[server]}?mode=ro", uri=True)
+            for (w,) in db.execute("SELECT DISTINCT work FROM nodes"):
+                _WORKS[w] = server
+    return _WORKS.get(sid.split("/", 1)[0], "risale")
+
+
 class Read:
     """Yazarın oturumda gördüğü metin: [(sunucu, kimlik, dil, metin)] ve kimlikten metin."""
 
@@ -131,7 +145,7 @@ class Read:
             self._log(log)
             return
         meta = json.loads((P.DRAFTS / unit / f"taslak-{n}.json").read_text(encoding="utf-8"))
-        name = ISTEM_FILES[meta.get("istem")]
+        name = ISTEM_FILES.get(meta.get("istem"), "")
         if meta.get("istem") in P.ISTEM:            # sürümlü istem (D8: v1 ve v2 aynı birimde)
             name = P.istem_files(meta["istem"], meta.get("surum", "v1"))[0]
         prompt = P.OUT / unit / name
@@ -150,8 +164,12 @@ class Read:
         for i, line in enumerate(raw.split("\n")):
             if line.startswith("# Ek "):
                 ek = "ek" + line[5]
-            if m := re.match(r"### .*\(`([^`]+)`\)", line):
+            if m := re.match(r"#{3,4} .*\(`([^`]+)`\)", line):
                 node = m.group(1)
+            elif FULL_ID.match(line):          # D11 kaynak dosyası: "[eser/…/c033] metin" (bir satırda birkaç cümle)
+                parts = FULL_ID.split(line)
+                for sid, text in zip(parts[1::2], parts[2::2]):
+                    self.add(_server_of(sid), sid, text.strip())
             elif m := re.match(r"\[(c\d+(?:/[\w/-]+)?)\] (.+)", line):
                 self.add("risale", f"{node}/{m.group(1)}" if node else m.group(1), m.group(2))
             elif line.strip() and not line.startswith("#"):
@@ -710,7 +728,7 @@ def critic_prompt(unit: str, n: int) -> tuple[str, str]:
     # damga taslakta tercüme paragrafının başındadır; `draft_blocks` onu atar, eleştirmen görmeli (v1'in hatası)
     blocks = [(a, lang, q, (STAMP + " " + t) if a in stamped else t) for a, lang, q, t in blocks]
     text = body.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])), gizli_ar=ar, gizli_tr=tr,
-                       klasik_not=", belâgat ve terim eserlerini" if "klasik" in (meta.get("istem") or "") else "",
+                       klasik_not=", belâgat ve terim eserlerini" if P.uses_klasik(meta.get("istem")) else "",
                        d7=d7_text(unit, n), mekanik=mekanik_text(unit, n))
     text += "\n\n# Taslak\n\nHer paragrafın başında okuma sayfasındaki çapası var (`V3/ar/5`: üçüncü vecih, Arapça, " \
             "6. paragraf; `V3/tr/5` onun tercümesi).\n\n" + Y.render_draft(blocks, sources)

@@ -219,8 +219,15 @@ def drop_block(text: str, marker: str, name: str) -> str:
 
 ISTEM = {"tam": ("istem.md", "sizinti.md"), "ince": ("istem-ince.md", "sizinti-ince.md"),
          # D2: ince istem ve me'hazda klasik eserler eklentisi (yalnız `@klasik` satırı farklı)
-         "ince-klasik": ("istem-ince-klasik.md", "sizinti-ince-klasik.md")}
-VARIANT_TAGS = {"tam": {"tam"}, "ince": {"ince"}, "ince-klasik": {"ince", "klasik"}}
+         "ince-klasik": ("istem-ince-klasik.md", "sizinti-ince-klasik.md"),
+         # D11: üretim hattının kısa istemi ve kaynak dosyası (`scripts/d1-hat.py hazirla`; sürümü h1, h2…)
+         "hat": ("istem-hat.md", "sizinti-hat.md")}
+VARIANT_TAGS = {"tam": {"tam"}, "ince": {"ince"}, "ince-klasik": {"ince", "klasik"}, "hat": {"ince", "klasik"}}
+
+
+def uses_klasik(istem: str | None) -> bool:
+    """Klasik eserler eklentisi açık mı (D2'den beri ince-klasik; D11'in hattı)."""
+    return bool(istem) and ("klasik" in istem or istem == "hat")
 
 
 def arabic_text(db: Path, only: tuple[str, ...] | None = None) -> str:
@@ -413,9 +420,9 @@ def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam", s
     for n in range(first, first + times):
         with tempfile.TemporaryDirectory(prefix="d1-prova-") as tmp:
             command = ["claude", "-p", "--model", model, "--effort", effort, "--output-format", "stream-json",
-                       "--verbose", "--mcp-config", str(work / ("mcp-klasik.json" if "klasik" in istem else "mcp.json")),
+                       "--verbose", "--mcp-config", str(work / ("mcp-klasik.json" if uses_klasik(istem) else "mcp.json")),
                        "--strict-mcp-config", "--tools", "",
-                       "--allowedTools", "mcp__risale,mcp__tefsir,mcp__hadis" + (",mcp__klasik" if "klasik" in istem else ""),
+                       "--allowedTools", "mcp__risale,mcp__tefsir,mcp__hadis" + (",mcp__klasik" if uses_klasik(istem) else ""),
                        "--no-session-persistence"]
             log = out / f"taslak-{n}.jsonl"
             started = time.monotonic()
