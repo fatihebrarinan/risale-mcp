@@ -264,6 +264,12 @@ Adımlar:
   §1.1. Önce Claude (§2–§4a).
   Yayında (2026-11-16): site, dört sunucu (başlıklar "Risale MCP Hadis/Tefsir/Klasik", her biri kendi simgesi
   `icon-<ad>.png`); araç çıktısında fark yok.
+  **Alt alan adları** (kullanıcının kararı, 2026-11-16; yayında aynı gün): Hadis, Tefsir, Klasik
+  `https://<ad>.risalemcp.com/mcp` (Claude simgeyi alan adından alır; OpenAI doğrulaması alan adı başına; tefsir
+  makinesi ileride doğrudan yönlendirilebilir). Her sunucu kökünde kendi favicon'u ve küçük sayfası; eski yollar
+  (`mcp.risalemcp.com/hadis` …) sürer (`--extra-host`). Risale `mcp.risalemcp.com/mcp`'de kalır (başvurusu
+  incelemede; adı zaten kendisinin). Site, S4 belgesi ve gizli adresler yeni adreslerle; sunucudaki eski Caddyfile
+  `/etc/caddy/Caddyfile.bak-20261116`.
 
 **A1, A2:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
 kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
