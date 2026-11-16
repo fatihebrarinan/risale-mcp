@@ -8,7 +8,7 @@ metinler (İngilizce; hakemler İngilizce okur) ve göndermeden önceki denetiml
 | # | Dizin | Eklenti | Durum | Bu belgede |
 |---|---|---|---|---|
 | 1 | Claude | Risale-i Nur | "in review" (S4.3); açıklama düzeltildi (2026-11-16) | §2a: ek notlar, izin özeti |
-| 2 | Claude | Hadis | gönderilmedi | §2b |
+| 2 | Claude | Hadis | otomatik incelemeyle "Community" olarak onaylandı (2026-11-16), yayımlanması bizde | §2b |
 | 3 | Claude | Tefsir | gönderilmedi | §2c |
 | 4 | OpenAI | Risale | reddedildi (kimlik) | §5–§6: kişisel kimliğe geçiş, düzeltilmiş paket, yeniden başvuru |
 | 5 | OpenAI | Hadis | gönderilmedi | §7 |
