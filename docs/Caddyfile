@@ -46,8 +46,9 @@ mcp.risalemcp.com {
 	reverse_proxy 127.0.0.1:8000
 }
 
-# Hadis, tefsir ve klasik bağdaştırıcılarının kendi alt alan adları (S4.6, 2026-11-16): Claude ve dizin simgeyi
-# alan adından alır; her sunucu kökünde kendi simgesini ve küçük bir sayfa verir, /mcp ve /mcp/<anahtar> doğrudan
+# Hadis, tefsir ve klasik bağdaştırıcılarının kendi alt alan adları (S4.6, 2026-11-16): OpenAI doğrulaması alan adı
+# başınadır, sunucular ayrı yönlendirilebilir. Her sunucu kökünde kendi simgesini ve küçük bir sayfa verir (Claude'un
+# arayüzü simgeyi yine kök alan adından, risalemcp.com'dan alır), /mcp ve /mcp/<anahtar> doğrudan
 # ona gider. mcp.risalemcp.com/hadis gibi eski yollar yukarıda sürer (eklemiş olanlar için). OpenAI'nin alan adı
 # doğrulaması her alt alan adında ayrı dosyadır (scripts/sunucu.sh openai-challenge <jeton> [hadis|tefsir|klasik]).
 hadis.risalemcp.com {

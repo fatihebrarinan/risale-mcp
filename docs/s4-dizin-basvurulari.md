@@ -81,7 +81,8 @@ Denedikten sonra adresleri kapatın (`--revoke`).
 
 Aynı çizim, zemin rengi farklı (kullanıcı onayladı): Risale yeşil `src/risale_mcp/static/icon.png`, Hadis lacivert
 `icon-hadis.png`, Tefsir mor `icon-tefsir.png`, Klasik kahverengi `icon-klasik.png` (256×256; SVG'leri yanında).
-Portalda her başvuruya kendi PNG'si yüklenir. Sunucular da kendi simgesini MCP `icons` ile duyurur
+Portalda her başvuruya kendi PNG'si yüklenir: dizinde ayrı simgenin tek yolu budur. Claude'un kendi arayüzü simgeyi
+`google.com/s2/favicons?domain=risalemcp.com` ile kök alan adından alır, dört eklenti orada yeşil görünür (2026-11-16). Sunucular da kendi simgesini MCP `icons` ile duyurur
 (`https://mcp.risalemcp.com/icon-<ad>.png`, kök sunucu verir) ve başlıkları liste adlarıyla aynıdır: "Risale MCP
 Hadis", "Risale MCP Tefsir", "Risale MCP Klasik".
 

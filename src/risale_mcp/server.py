@@ -378,8 +378,8 @@ STATIC_DIR = Path(__file__).parent / "static"
 STATIC = {"/icon.png": ("icon.png", "image/png"), "/icon.svg": ("icon.svg", "image/svg+xml"),
           "/favicon.ico": ("favicon.ico", "image/x-icon")}
 # Hadis, tefsir ve klasik sunucularının kendi simgesi (S4.6: aynı çizim, zemin rengi farklı). Her biri kendi alt
-# alan adındadır (hadis.risalemcp.com); Claude ve dizin simgeyi alan adından aldığı için o sunucu /icon.png ve
-# /favicon.ico'da kendi simgesini, kökte simge bağlantılı küçük bir sayfa verir. Bütün dosyalar her sunucuda durur.
+# alan adındadır (hadis.risalemcp.com); o sunucu /icon.png ve /favicon.ico'da kendi simgesini, kökte simge bağlantılı
+# küçük bir sayfa verir (MCP `icons` ve alan adına bakan istemciler için; Claude'un arayüzü kök alan adınınkini alır). Bütün dosyalar her sunucuda durur.
 VARIANTS = {"hadis": ("Risale MCP Hadis", "hadis.html"), "tefsir": ("Risale MCP Tefsir", "tefsir.html"),
             "klasik": ("Risale MCP Klasik", "klasik.html")}
 for _variant in VARIANTS:

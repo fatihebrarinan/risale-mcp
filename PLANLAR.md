@@ -270,6 +270,11 @@ Adımlar:
   (`mcp.risalemcp.com/hadis` …) sürer (`--extra-host`). Risale `mcp.risalemcp.com/mcp`'de kalır (başvurusu
   incelemede; adı zaten kendisinin). Site, S4 belgesi ve gizli adresler yeni adreslerle; sunucudaki eski Caddyfile
   `/etc/caddy/Caddyfile.bak-20261116`.
+  **Bulgu (2026-11-16):** Claude eklentinin simgesini `https://www.google.com/s2/favicons?domain=risalemcp.com&sz=64`
+  ile kök alan adından alıyor (kullanıcı resim adresini kopyaladı): `risalemcp.com` altındaki her eklenti Claude'un
+  arayüzünde yeşil görünür, alt alan adı bunu değiştirmez. Ayrı simge yalnız dizin listelemesinde (portala yüklenen
+  dosya). Alt alan adları kalır (OpenAI doğrulaması alan adı başına, sunucuların bağımsızlığı); simge için ayrı kök
+  alan adı almaya değmez.
 
 **A1, A2:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
 kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
