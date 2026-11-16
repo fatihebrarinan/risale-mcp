@@ -60,7 +60,7 @@ işler"e taşındı (bitmişlerdi, "Sıradaki"de kalmışlardı).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (D12.1–D12.4 bitti; D12.5'in planı yazıldı, onay bekliyor) | |
+| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (D12.1–D12.4 bitti; D12.5 planı onaylandı, sırada Tur 0) | |
 | 2 | S6 | Âyet masasının ikinci hâli: iki yan kullanıcının seçtiği görünüm, taslak odaklı yapay zekâ kısmı (iki yanlı kısmı D12.2) | |
 | 3 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak; pilot 31–33'te (D11.1–D11.2 bitti; D11.3 D12.3'e katıldı; D12'yi bekler) | |
 | 4 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla (D12'yi bekler) | D1.8 |
@@ -213,6 +213,9 @@ Adımlar (sıra, 2026-11-16):
   turda en az tutulur**; takdir işareti Türkçede «…» (takdir ve beklenen söz), "…" kaynağın sözü (modelin hiç tırnak
   kullanamaması çözülür); düzeltmenin ikinci sürümü (d2) **ikinci kapalı eleştiri** (yalnız düzeltilen paragraflara:
   düşen fikir, belirsiz gönderme, nakil kendi sözün yerine mi geçti).
+  **İşleyiş** (onaylandı, 2026-11-16): plan belgesi 4.10 (kullanıcı turda bir okuma, 3 yer; Claude yürütür, okuma
+  hazır olunca ve karar belirsizken durur; tur raporu `data/d1/provalar/<birim>/d12-5-T<n>.md`). **Sırada: Tur 0**
+  (kullanıcı yeni sohbette başlatacak).
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 

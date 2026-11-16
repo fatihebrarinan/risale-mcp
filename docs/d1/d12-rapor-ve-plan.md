@@ -173,3 +173,32 @@ Bir tur bir 5 saatlik kullanım penceresine sığar.
 1. Yöntem ve tur sırası uygun. Kullanıcının örneklemi her turda **en az** tutulur.
 2. Takdir işareti: Türkçede «…» takdir ve beklenen söz, "…" kaynağın sözü.
 3. Düzeltmenin ikinci sürümü (D turu): **ikinci kapalı eleştiri**.
+
+### 4.10 İşleyiş (kullanıcı onayladı, 2026-11-16)
+
+Kullanıcının işi her turda tek bir okumadır; gerisini Claude yürütür ve yalnız iki yerde durur: okuma hazır olunca
+ve karar belirsiz kalınca.
+
+- **Tur 0** bir kez, yalnız Claude: dört geliştirme biriminin prova düzeni, envanterler, takdir işareti, masada yer
+  başına kör A/B kaydı, fark kartlarında kaynak metni (≈10 $). Bitince kısa özet.
+- **Her tur:**
+
+| Adım | Kim | Süre |
+|---|---|---|
+| 1. Değişikliği kodla, istem, sızıntı testi | Claude | — |
+| 2. İki taslak (taban ve yeni), arka planda | Claude | ≈30–60 dk |
+| 3. Ölçüm: mekanik, envanter, kör eleştirmen | Claude | ≈15–30 dk |
+| 4. Okumayı hazırla, haber ver ("Tur N okumaya hazır: bağlantı, yerler, ne aranıyor") | Claude | — |
+| 5. Masada okuma, dışa aktarma (dosya İndirilenler'de) | kullanıcı | ≈15–25 dk |
+| 6. Karar, kayıt, sonraki tur | Claude | — |
+
+- **Örneklem en az:** turda **3 yer**; ölçüler ayrılırsa en çok 5. Program seçer: iki ölçünün ayrıldığı yerler ve
+  değişikliğin dokunduğu (hipotezin sınandığı) yerler.
+- **Karar:** kural açıksa (eleştirmen ve kullanıcı aynı yönde) yeni taban olur ve Claude sonraki tura kendisi geçer.
+  Kullanıcıya sorulur: eleştirmenle ayrılınca, sonuç kıl payıysa (tekrar mı, bırak mı), bütçe tavana yaklaşınca.
+- **Beklemesiz:** yazım turları birbirine bağlıdır (taban önceki kararla belirlenir); kullanıcı okurken Claude sonraki
+  turun kodunu yazar. Düzeltme turu (D) bağımsızdır, T1'in kazanan taslağı üzerinde araya girer.
+- **Kullanım penceresi:** bir tur bir 5 saatlik pencereye sığar; sınıra takılınca sıfırlanma beklenir, kullanıcıya
+  söylenir.
+- **Oturumlar:** her turun durumu `PLANLAR.md` D12.5'e ve birimin klasöründeki tur raporuna
+  (`data/d1/provalar/<birim>/d12-5-T<n>.md`) yazılır; yeni oturumda "D12.5'e devam et" yeter. Gidişat: günde bir tur.
