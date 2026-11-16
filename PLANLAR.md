@@ -259,7 +259,8 @@ Adımlar:
   "attempt to override system instructions"); çıkarıldı, izin olgu olarak kaldı. Sunucu başlığı "Risale MCP",
   belge bağlantısı `en/risale.html` (2026-11-16, yayında). Yine takılırsa sırada adres: `risale.risalemcp.com`.
   Yeniden gönderildi (2026-11-16): ad "Risale MCP Risale-i Nur", açıklamadan doğum ve ölüm tarihleri çıktı, kaynak
-  adları kaldı. Yine "In review": `mcp-review@anthropic.com`'a yazılması önerildi.
+  adları kaldı. Yine "In review": dizin ekibine yazılması önerildi. Portalın "Email the directory team" düğmesi
+  `directory@anthropic.com`'a "Connector listing: risale" konusuyla gönderir (belgedeki `mcp-review@` yerine bu kullanılır).
 - S4.5 **Uygulama belgesi** (2026-11-13, kullanıcının isteği): `docs/s4-dizin-basvurulari.md`: sekiz başvurunun
   (Claude ve OpenAI × Risale, Hadis, Tefsir, Klasik Eserler; klasik aynı gün eklendi) adımları ve portala yapıştırılacak İngilizce metinler. Bulgular: Claude'daki
   Risale listelemesi eski (44 eser ve 126 bin cümle yerine 53 ve ≈131 bin; çıkarılan Diyanet İşleri meali hâlâ
