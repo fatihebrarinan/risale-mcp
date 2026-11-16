@@ -7,17 +7,17 @@ metinler (İngilizce; hakemler İngilizce okur) ve göndermeden önceki denetiml
 
 | # | Dizin | Eklenti | Durum | Bu belgede |
 |---|---|---|---|---|
-| 1 | Claude | Risale-i Nur | "in review" (S4.3) | §2: listeleme metnini düzeltin (eski sayılar, kaldırılan Diyanet meali) |
-| 2 | Claude | Hadis | gönderilmedi | §3 |
-| 3 | Claude | Tefsir | gönderilmedi | §4 |
+| 1 | Claude | Risale-i Nur | "in review" (S4.3); açıklama düzeltildi (2026-11-16) | §2a: ek notlar, izin özeti |
+| 2 | Claude | Hadis | gönderilmedi | §2b |
+| 3 | Claude | Tefsir | gönderilmedi | §2c |
 | 4 | OpenAI | Risale | reddedildi (kimlik) | §5–§6: kişisel kimliğe geçiş, düzeltilmiş paket, yeniden başvuru |
 | 5 | OpenAI | Hadis | gönderilmedi | §7 |
 | 6 | OpenAI | Tefsir | gönderilmedi | §7 |
-| 7 | Claude | Klasik Eserler | gönderilmedi (eklenti 2026-11-13'te yayında) | §4a |
+| 7 | Claude | Klasik Eserler | gönderilmedi (eklenti 2026-11-13'te yayında) | §2d |
 | 8 | OpenAI | Klasik Eserler | gönderilmedi | §7 |
 
-Önerilen sıra: §1 (ortak hazırlık; sitedeki yayıncı adı OpenAI için şart) → §2 → §3 ve §4 (Claude, aynı gün olabilir)
-ve §4a (Claude, aynı gün olabilir) → §5 ve §6 (OpenAI Risale) → kabul ya da ilk geri dönüt gelince §7 (OpenAI'de
+Önerilen sıra: §1 (ortak hazırlık; sitedeki yayıncı adı OpenAI için şart) → §2 (Claude formu) → §2a → §2b, §2c, §2d
+(Claude, aynı gün olabilir) → §5 ve §6 (OpenAI Risale) → kabul ya da ilk geri dönüt gelince §7 (OpenAI'de
 aynı ret sebebi dört kez gelmesin diye önce bir başvurunun sonucu görülür). OpenAI'nin alan adı doğrulaması tek
 dosyadır (§1.5): başvurular aynı anda doğrulanamaz.
 
@@ -37,22 +37,10 @@ Kişisel doğrulamayla yayımlanırsa dizinde doğrulanmış kişisel ad görün
 doğrulaması, (c) OpenAI dizinine şimdilik başvurmamak (elle ekleme sürer). `packaging/chatgpt/` bu karara kadar
 "Nur Hadimleri" adını taşır.
 
-### 1.1a Hakeme ek not (dört Claude başvurusunda "Additional notes", 2026-11-16)
+### 1.1a Hakeme ek not
 
-Şirket adı kayıtlı bir şirket olmadığı için baştan açıklanır. Son paragrafın kaynakları eklentiye göre değişir:
-Risale "e-Risale, risaleoku.com, nurpedia.org"; Hadis "OpenITI (CC BY-NC-SA 4.0) and Hadith API (Unlicense)";
-Tefsir ve Klasik "OpenITI (CC BY-NC-SA 4.0)". Risale başvurusunun portalı beş hazır komut buluyor (topic_survey,
-text_and_commentary, discuss, self_test, lesson_plan); doğru. Öbür üç sunucunun hazır komutu yok.
-
-> Publisher: "Risale MCP" is the name of a volunteer, non-commercial project, not a registered company. It is run
-> by an individual (the holder of this account) and is named the same way on the website, the privacy policy and
-> the terms (risalemcp.com). The project also runs three sibling connectors under the same name, submitted
-> separately: Risale MCP Hadis (hadis.risalemcp.com), Risale MCP Tefsir (tefsir.risalemcp.com) and Risale MCP
-> Klasik (klasik.risalemcp.com).
->
-> The texts are served with the permission of their sources (e-Risale, risaleoku.com, nurpedia.org); the
-> sources are named on the website and in every answer's list of sources. All tools are read-only, there are no accounts, and no conversation
-> content or tool inputs are stored (only the tool name, time, duration and error type, for 90 days).
+Claude formunun "Ek notlar" alanı: yayıncının kayıtlı şirket olmadığı, kaynaklar ve test istemleri (formda hakem
+talimatı alanı yok). Metinler §2'de (ortak paragraflar) ve §2a–§2d'de.
 
 ### 1.2 Eski bilgilerin düzeltilmesi (her listelemede)
 
@@ -100,51 +88,100 @@ Claude'un ölçütü, aracın ya da talimatın "kullanıcının istemediği bir 
 dediğini ancak bu sohbette Risale eklentisiyle okuduysan söyle, okumadıysan bakmadığını söyle". Bu bir çağırma emri
 değil, bir sınır. Düşük risk; hakem sorarsa cevabı budur (B2 bunu ayrıca izler).
 
-## 2. Claude: Risale-i Nur (incelemede)
+## 2. Claude portalı: formun alanları (2026-11-16, Risale formundan)
 
-Portal: https://claude.ai/directory/manage. Başvuruyu açın, **Edit**:
+Portal: https://claude.ai/directory/manage. Form bölümleri ekrandaki sırayla; değerler eklentiye göre §2a–§2d'de.
+Hakem talimatı için ayrı alan yok: test istemleri "Ek notlar"a girer. Kullanım alanı en fazla üçtür.
 
-1. **Description** (tam metin, 2026-11-16; 1.728 karakter): §1.2'deki düzeltmeler, hadis aracı (sonradan geldi),
-   kaynaklarda risale.online yerine nurpedia.org ve Keşif programı (risale.online yalnız yerelde), son cümlede
-   "by Nur Hadimleri" yok (§1.1).
+| Bölüm › alan | Ne girilir |
+|---|---|
+| Listeleme › Tek satırlık açıklama (≤200), Açıklama (≤2000) | eklentinin metni |
+| Kategoriler (≤5) | Education, Nonprofit, Other (Risale'de seçilenler) |
+| Simge | Risale boş (alan adının simgesi zaten yeşil); öbürleri `https://<ad>.risalemcp.com/icon.png` (§1.4) |
+| Bağlantılar › Dokümantasyon, Destek, Gizlilik | `https://risalemcp.com/en/<sayfa>.html`, `destek@risalemcp.com`, `https://risalemcp.com/en/privacy.html` |
+| Dizin sunumu › Şunlarla çalışır | Claude (web & mobile), Claude API, Claude Code, Claude Desktop |
+| Yazar adı, Yazar URL'si | `Risale MCP`, `https://risalemcp.com/` |
+| Sunucu etiketi | kısa ad (`risale`, `hadis`, `tefsir`, `klasik`); API'de ve Claude Code'da sunucunun adı olur |
+| İzin özeti | eklentinin satırı (aşağıda); Risale'de boş kalmış, doldurulur |
+| Hassas veri türleri | boş ("Kayıt yok") |
+| MCP uygulaması var | işaretlenmez |
+| Marka ve medya (logo, desen, video, karusel) | boş |
+| Entegrasyon parçacıkları | Claude API metni, Claude Code metni, Claude Code dış bağlantısı (aşağıda) |
+| Araçlar ve istemler | sihirbaz sunucudan okur; düzenlenmez |
+| Bağlantı › Sunucu URL'si | eklentinin herkese açık adresi; "Kullanıcılar farklı URL'lere bağlanır" işaretlenmez |
+| Kimlik doğrulama | Yok |
+| Kullanım alanları (3 × kullanım alanı + örnek istem) | eklentinin üç satırı; yalnız hakemler görür |
+| Ön koşullar | ortak metin (aşağıda) |
+| Okuma/yazma | Salt okunur |
+| API sahipliği; Kişisel sağlık verisi; Sponsorlu içerik | API bize ait; Hayır; Hayır |
+| Test › Bizzat test edilmiş | denemeden sonra işaretlenir (§1.3 ve aşağıdaki not) |
+| Politika beyanları | yedisi de işaretlenir |
+| Ek notlar | eklentinin notu: yayıncı, kaynaklar, test istemleri |
+| Şirket adı, web sitesi | `Risale MCP`, `https://risalemcp.com/` |
+| Ad | `Risale-i Nur`, `Risale MCP Hadis`, `Risale MCP Tefsir`, `Risale MCP Klasik` |
 
-   > Risale-i Nur gives Claude the complete works of Bediüzzaman Said Nursî (1878–1960): the Risale-i Nur Collection (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 131,000 sentences across 53 works, together with the Qur'an's vowelled Arabic text and the Türkiye Diyanet Foundation's Turkish translation.
+**Araç taraması için bağdaştırıcı hesapta olmalı.** Portal araçları sizin hesabınızdaki bağdaştırıcıdan okur ve
+"bu listelemenin gönderildiği bağdaştırıcı hesabınızda yok" diye uyarır. Gizli adres yetmez: listelemedeki adresin
+aynısı (ör. `https://hadis.risalemcp.com/mcp`) Ayarlar › Bağdaştırıcılar'da özel bağdaştırıcı olarak ekli olmalı.
+Gizli adresli olanı denemelerin kaydı için ayrıca tutabilirsiniz.
+
+**Ortak metinler:**
+
+- Ön koşullar:
+  > Nothing. There are no accounts and no sign-in: every tool works for everyone. To protect the service, search by
+  > meaning has a shared daily limit and requests a shared per-minute limit.
+- Ek notların ilk paragrafı (yayıncı; her eklentide aynı):
+  > Publisher: "Risale MCP" is the name of a volunteer, non-commercial project, not a registered company. It is run
+  > by an individual (the holder of this account) and is named the same way on the website, the privacy policy and
+  > the terms (risalemcp.com). The project runs four connectors under this name, submitted separately: Risale-i Nur
+  > (mcp.risalemcp.com/mcp), Risale MCP Hadis (hadis.risalemcp.com/mcp), Risale MCP Tefsir
+  > (tefsir.risalemcp.com/mcp) and Risale MCP Klasik (klasik.risalemcp.com/mcp).
+- Ek notların son paragrafı (her eklentide aynı):
+  > All tools are read-only, there are no accounts, and no conversation content or tool inputs are stored (only the
+  > tool name, time, duration and error type, for 90 days).
+
+### 2a. Risale-i Nur (incelemede; düzenleme)
+
+Formda bugün doğru olanlar (2026-11-16): açıklama (§1.2 düzeltmeleriyle), kategoriler, bağlantılar, yazar,
+etiket `risale`, kullanım alanları, ön koşullar, şirket. Düzeltilecekler:
+
+1. **Ek notlar:** eski metin "(/hadis), (/tefsir), (/klasik)" ve "the permissions are listed on the website" diyor
+   (sitede izin listesi yok). Yerine: ortak ilk paragraf, sonra
+   > The texts are served with the permission of their sources (e-Risale, risaleoku.com, nurpedia.org and the Keşif
+   > Yolculukları programme), which are named on the website and in every answer's list of sources; the Qur'an's
+   > text comes from the Tanzil Project. Since submission: corrected counts (53 works, about 131,000 sentences), one
+   > Turkish Qur'an translation (the Türkiye Diyanet Foundation's; the Presidency of Religious Affairs' translation
+   > was removed because it did not grant permission to republish it), two read-only tools added (find_hadith,
+   > get_hadith), and the publisher is now named Risale MCP, as on the website.
    >
-   > Every sentence has a stable address, so Claude can ground what it says in the text itself:
-   >
-   > - Search by the text's own words, or by meaning in today's language (a question about "despair" finds passages that speak of "ye's").
-   > - Read any section in book order, with the author's footnotes (hâşiye) and the sources of the verses and hadiths he quotes.
-   > - Quote the text exactly and end the answer with a list of sources giving work › section › the sentence's opening words. Quotations are checked against the cited sentences before the answer is sent.
-   > - Find where a Qur'anic verse or a hadith is quoted in the works, read the verse, and see the evidence for the hadith in the hadith collections.
-   >
-   > The connector keeps layers apart that are easy to confuse: the publishers' translations of verses are not the author's words, the Turkish of his Arabic works is a translation, and a commentary by his brother is marked as his. When something is not in the works, Claude is told to say so instead of filling the gap.
-   >
-   > All tools are read-only and work without an account. The texts come, unchanged and with permission, from e-Risale, risaleoku.com, nurpedia.org and the Keşif Yolculukları programme; the Qur'an's text from the Tanzil Project. A volunteer, non-commercial project.
+   > How to test (the texts are in Turkish; questions can be asked in English): "List the works and show the outline
+   > of Sözler." · "Why is the time of the Last Day kept hidden, according to the Risale-i Nur? Quote the text and
+   > give sources." · "Search the works for 'halk-ı şer şer değil' and explain the passage." · "Find the sentence that
+   > begins 'Hiç mümkün müdür ki; ölmüş'." · "Where is Âyetü'l-Kürsî (Bakara 2:255) quoted in the works? Show the
+   > verse." · "Where does the Risale-i Nur quote the hadith 'تفكر ساعة خير من عبادة سنة'? What is the evidence for
+   > it?" Expected: quotations in block quotes marked [1], [2]… and a "Kaynaklar" list; asking for something not in
+   > the works (e.g. "Summarise the Fifteenth Truth of the Tenth Word") gets the answer that it does not exist.
 
-2. **Use cases**: aynen kalır. İsterseniz bir satır ekleyin (hadis aracı sonradan geldi):
-   | Find where a hadith is quoted in the works and how well it is attested | Where does the Risale-i Nur quote the hadith "تفكر ساعة خير من عبادة سنة" and what is the evidence for it? |
-3. **Company name**: `Risale MCP` (bugün `Nur Hadimleri`; §1.1).
-4. **Instructions for reviewers**: `docs/dizin-basvurusu.md` §8'in sonuna ekleyin:
-   > - "Where does the Risale-i Nur quote the hadith 'تفكر ساعة خير من عبادة سنة'? What is the evidence for it?" (find_hadith, get_hadith)
-5. Hakeme kısa not (değişiklik bildirimi):
-   > Listing updated: corrected counts (53 works, about 131,000 sentences) and the Qur'an translation (one Turkish
-   > translation, by the Türkiye Diyanet Foundation; the Presidency of Religious Affairs' translation was removed
-   > because it did not grant permission to republish it). Two tools were added since submission (find_hadith,
-   > get_hadith), both read-only. The publisher is now named Risale MCP, as on the website. Everything else is
-   > unchanged.
+   ve ortak son paragraf.
+2. **İzin özeti:**
+   > Reads the works of Bediüzzaman Said Nursî and the Qur'an from this project's own library. It does not access
+   > your accounts, files or personal data.
+3. **Entegrasyon parçacıkları** (isteğe bağlı): Claude Code metni
+   `claude mcp add --transport http risale https://mcp.risalemcp.com/mcp`; dış bağlantı
+   `https://risalemcp.com/en/claude.html`; Claude API metni:
+   > Add the connector to a Messages API request as an MCP server: {"type": "url", "url":
+   > "https://mcp.risalemcp.com/mcp", "name": "risale"}. No authorization token is needed.
+4. Hesabınızda `https://mcp.risalemcp.com/mcp` adresli bir bağdaştırıcı yoksa ekleyin (portal uyarıyor).
 
-## 3. Claude: Hadis (yeni başvuru)
+### 2b. Hadis (yeni başvuru)
 
-Portal › **Submit new** › **MCP connector**.
+Portal › **Submit new** › **MCP connector**. Sunucu URL'si `https://hadis.risalemcp.com/mcp`, ad `Risale MCP Hadis`,
+etiket `hadis`, simge `https://hadis.risalemcp.com/icon.png`, dokümantasyon `https://risalemcp.com/en/hadith.html`.
 
-- **Server URL:** `https://hadis.risalemcp.com/mcp` · Users connect to different URLs: **no**.
-- **Server name** (öneri; karar sizin): `Risale MCP Hadis`. Gerekçe: "Hadis" tek başına genel bir ad, dizinde
-  aranmaz ve başka eklentilerle karışır; "Risale MCP" alan adımızın adıdır, üç eklentiyi bir aile olarak gösterir.
-  Slug (değişmez): `risale-mcp-hadis`.
-- **One-liner** (≤200):
+- **Tek satır:**
   > Read and cite eighteen classical hadith collections in Arabic, report by report, with grades only as the
   > sources give them.
-- **Description** (≤2000):
+- **Açıklama:**
   > Risale MCP Hadis gives Claude eighteen classical hadith collections in their original Arabic: the Six Books
   > (al-Bukhari, Muslim, Abu Dawud, al-Tirmidhi, al-Nasa'i, Ibn Majah) and the Muwatta, Ahmad's Musnad, al-Darimi,
   > al-Tabarani's al-Mu'jam al-Saghir, al-Hakim's al-Mustadrak with al-Dhahabi's notes, Ibn Hibban (al-Ihsan),
@@ -167,48 +204,43 @@ Portal › **Submit new** › **MCP connector**.
   > All tools are read-only and work without an account. The books come from OpenITI (CC BY-NC-SA 4.0), the
   > international numbers and grades of the Six Books and the Muwatta from Hadith API, the Qur'an's text from the
   > Tanzil Project. A volunteer, non-commercial project.
-- **Categories:** Education, Research / Reference, Religion (portalda hangisi varsa).
-- **Documentation URL:** `https://risalemcp.com/en/hadith.html` · **Privacy:** `https://risalemcp.com/en/privacy.html`
-  (üç eklentiyi kapsıyor) · **Support:** `destek@risalemcp.com` · **Icon:** §1.4.
-- **Use cases:**
+- **İzin özeti:**
+  > Reads classical hadith collections and the Qur'an from this project's own library. It does not access your
+  > accounts, files or personal data.
+- **Entegrasyon:** `claude mcp add --transport http hadis https://hadis.risalemcp.com/mcp`; dış bağlantı
+  `https://risalemcp.com/en/hadith.html`; API metni §2a'daki gibi (adres ve `"name": "hadis"`).
+- **Kullanım alanları:**
 
-  | Use case | Example prompt |
+  | Kullanım alanı | Örnek istem |
   |---|---|
-  | Find in which books a saying occurs, without a ruling | In which books does the saying "اختلاف أمتي رحمة" occur, and what is said about it? With sources, without a ruling. |
-  | Go from a reference to the report | Show me Bukhari, Adhan: 148 with its chain and text, and translate it. |
+  | Find in which books a saying occurs, without a ruling on it | In which books does the saying "اختلاف أمتي رحمة" occur, and what is said about it? With sources, without a ruling. |
+  | Go from a reference to the report and read it | Show me Bukhari, Adhan: 148 with its chain and text, and translate it. |
   | Find reports on a topic by meaning | Find reports about visiting the sick, with their sources. |
-  | Find reports by a narrator | Which reports in Muslim's Sahih does Abu Hurayra narrate about fasting on the day of Arafa? |
-  | Browse a collection | Show the chapters of the Book of Prayer in Sunan Abi Dawud. |
-  | See where the Risale-i Nur quotes a report | Where does the Risale-i Nur quote the report "تفكر ساعة خير من عبادة سنة"? |
 
-- **What users need before they can connect:** "Nothing. There are no accounts and no sign-in: every tool works for
-  everyone. Search by meaning has a shared daily limit and requests a shared per-minute limit."
-- **Reads / writes:** reads only. **Company:** `Risale MCP` (§1.1). **Authentication:** None. **Data handling:** own API (kendi
-  veritabanımız; anlamsal arama sorgusu vektör için Voyage AI'ya gider, gizlilik politikasında yazılı). Personal
-  health data: no. Sponsored content: no. **Test account:** yok.
-- **Instructions for reviewers:**
-  > 1. Add a custom connector with the URL https://hadis.risalemcp.com/mcp. No sign-in is needed.
-  > 2. Prompts that exercise every tool (the books are in Arabic; questions can be asked in English):
-  >    - "List the books in the Hadis connector and show the outline of Sunan Abi Dawud." (list_books, get_outline)
-  >    - "Show the chapter on the call to prayer (adhan) in Sahih al-Bukhari." (read_chapter)
-  >    - "Find Bukhari, Adhan: 148 and show its chain and text." (find_by_citation, get_hadith)
-  >    - "Search for reports with the words 'إنما الأعمال بالنيات'." (search_hadith)
-  >    - "Find reports about kindness to neighbours." (semantic_search)
-  >    - "Show the verse Bakara 2:255." (get_ayah)
-  >    - Any answer that quotes a report calls cite before it is written.
-  > 3. Expected: Arabic quoted exactly in block quotes, the assistant's translation labelled as its own, each
-  >    quotation marked [1], [2]… with a sources list at the end; no ruling on a report's soundness (grades only as
-  >    the source gives them, with the scholar's name).
-- **Compliance:** yedi onay (§2 ile aynı gerekçeler). Göndermeden önce istemleri claude.ai'de deneyin (§1.3).
+- **Ek notlar:** ortak ilk paragraf, sonra
+  > The books come from OpenITI (KITAB project, CC BY-NC-SA 4.0) and Hadith API (Unlicense), named on the website
+  > and in every answer's list of sources; the Qur'an's text from the Tanzil Project. The connector never grades a
+  > report itself: it shows grades only as the sources hold them, with the scholar's name.
+  >
+  > How to test (the books are in Arabic; questions can be asked in English): "List the books and show the outline
+  > of Sunan Abi Dawud." · "Show the chapter on the call to prayer (adhan) in Sahih al-Bukhari." · "Find Bukhari,
+  > Adhan: 148 and show its chain and text." · "Search for reports with the words 'إنما الأعمال بالنيات'." · "Find
+  > reports about kindness to neighbours." · "Show the verse al-Baqara 2:255." Expected: Arabic quoted exactly in
+  > block quotes, the assistant's translation labelled as its own, each quotation marked [1], [2]… with a sources
+  > list at the end, and no ruling on a report's soundness.
 
-## 4. Claude: Tefsir (yeni başvuru)
+  ve ortak son paragraf.
 
-- **Server URL:** `https://tefsir.risalemcp.com/mcp` · different URLs: **no**.
-- **Server name** (öneri): `Risale MCP Tefsir`, slug `risale-mcp-tefsir` (§3'teki gerekçe).
-- **One-liner:**
+### 2c. Tefsir (yeni başvuru)
+
+Sunucu URL'si `https://tefsir.risalemcp.com/mcp`, ad `Risale MCP Tefsir`, etiket `tefsir`, simge
+`https://tefsir.risalemcp.com/icon.png`, dokümantasyon `https://risalemcp.com/en/tafsir.html`. Tefsir sunucusu ayrı
+makinededir (CAX21); hakem denemesinde sorun olursa `scripts/tefsir-sunucu.sh status|logs`.
+
+- **Tek satır:**
   > Read and cite thirteen classical works of Qur'anic exegesis in Arabic, verse by verse, from al-Tabari to
   > al-Alusi.
-- **Description:**
+- **Açıklama:**
   > Risale MCP Tefsir gives Claude thirteen classical works of Qur'anic exegesis (tafsir) in their original
   > Arabic, in order of their authors' deaths: al-Tabari, al-Maturidi, al-Zamakhshari, Fakhr al-Din al-Razi,
   > al-Qurtubi, al-Baydawi, al-Nasafi, Ibn Kathir, al-Jalalayn, al-Suyuti's al-Durr al-Manthur, Abu al-Su'ud,
@@ -228,41 +260,41 @@ Portal › **Submit new** › **MCP connector**.
   > All tools are read-only and work without an account. The texts come from OpenITI (KITAB project; CC BY-NC-SA
   > 4.0), each in its chosen edition; the Qur'an's text from the Tanzil Project. A volunteer, non-commercial
   > project.
-- **Docs:** `https://risalemcp.com/en/tafsir.html` · Privacy, support, icon: §3 gibi.
-- **Use cases:**
+- **İzin özeti:**
+  > Reads classical works of Qur'anic exegesis and the Qur'an from this project's own library. It does not access
+  > your accounts, files or personal data.
+- **Entegrasyon:** `claude mcp add --transport http tefsir https://tefsir.risalemcp.com/mcp`; dış bağlantı
+  `https://risalemcp.com/en/tafsir.html`; API metni §2a'daki gibi.
+- **Kullanım alanları:**
 
-  | Use case | Example prompt |
+  | Kullanım alanı | Örnek istem |
   |---|---|
   | Compare what classical exegetes say about a verse | What do al-Zamakhshari and al-Baydawi say about "iyyaka na'budu" (al-Fatiha 1:5)? Quote them with sources. |
   | Survey the exegetes on a verse in order | Go through the exegetes on Ayat al-Kursi (al-Baqara 2:255) in order of their deaths, one key point each. |
-  | Find a term across the works | Where do the exegetes discuss "الحروف المقطعة" (the disjointed letters)? |
-  | Find a discussion by meaning | Which exegetes explain why the Qur'an uses parables, and how? |
-  | Locate a sentence someone quotes | Find the sentence in al-Kashshaf that begins "فإن قلت: لم قضيت لهذه الألفاظ" (al-Baqara 2:1). |
+  | Find a discussion by meaning across the works | Which exegetes explain why the Qur'an uses parables, and how? |
 
-- Ön koşul, yazma, şirket, kimlik doğrulama, veri, hesap: §3 gibi.
-- **Instructions for reviewers:**
-  > 1. Add a custom connector with the URL https://tefsir.risalemcp.com/mcp. No sign-in is needed.
-  > 2. Prompts that exercise every tool:
-  >    - "List the works in the Tefsir connector and show the outline of al-Baydawi's Anwar al-Tanzil." (list_works, get_outline)
-  >    - "What do the exegetes say about al-Fatiha 1:5? Read al-Zamakhshari's unit and quote him." (find_ayah, read_section, get_passage, cite)
-  >    - "Search the works for 'الحروف المقطعة'." (search) and "Which exegetes explain the purpose of the Qur'an's parables?" (semantic_search)
-  >    - "Find the sentence that begins 'فإن قلت: لم قضيت لهذه الألفاظ' in al-Kashshaf." (find_sentence)
-  >    - "Show the verse al-Baqara 2:255 and any recorded links between texts on it." (get_ayah, text_links)
-  > 3. Expected: Arabic quoted exactly, the assistant's translation labelled as its own, a numbered sources list;
-  >    the assistant never calls its own summary "tafsir".
+- **Ek notlar:** ortak ilk paragraf, sonra
+  > The texts come from OpenITI (KITAB project, CC BY-NC-SA 4.0), each in its chosen edition, named on the website
+  > and in every answer's list of sources; the Qur'an's text from the Tanzil Project.
+  >
+  > How to test: "List the works and show the outline of al-Baydawi's Anwar al-Tanzil." · "What do the exegetes say
+  > about al-Fatiha 1:5? Read al-Zamakhshari's unit and quote him." · "Search the works for 'الحروف المقطعة'." ·
+  > "Which exegetes explain the purpose of the Qur'an's parables?" · "Find the sentence that begins 'فإن قلت: لم
+  > قضيت لهذه الألفاظ' in al-Kashshaf." · "Show the verse al-Baqara 2:255 and any recorded links between texts on
+  > it." Expected: Arabic quoted exactly, the assistant's translation labelled as its own, a numbered sources list;
+  > the assistant never calls its own summary "tafsir".
 
-Not: tefsir sunucusunun yükü ayrı makinededir (CAX21); hakem denemesinde bir sorun olursa Caddy'nin `/tefsir`
-yönlendirmesi ve `scripts/tefsir-sunucu.sh` kayıtları.
+  ve ortak son paragraf.
 
-## 4a. Claude: Klasik Eserler (yeni başvuru)
+### 2d. Klasik Eserler (yeni başvuru)
 
-- **Server URL:** `https://klasik.risalemcp.com/mcp` · different URLs: **no**.
-- **Server name** (öneri): `Risale MCP Klasik`, slug `risale-mcp-klasik` (§3'teki gerekçe; sitedeki adı "Klasik
-  Eserler", dizinde aile adıyla).
-- **One-liner:**
+Sunucu URL'si `https://klasik.risalemcp.com/mcp`, ad `Risale MCP Klasik`, etiket `klasik`, simge
+`https://klasik.risalemcp.com/icon.png`, dokümantasyon `https://risalemcp.com/en/classical.html`.
+
+- **Tek satır:**
   > Read and cite classical Arabic works on rhetoric, language and terms, from al-Jurjani's Dala'il al-I'jaz to
   > al-Sayyid al-Sharif's Ta'rifat.
-- **Description:**
+- **Açıklama:**
   > Risale MCP Klasik gives Claude classical Arabic works on rhetoric (balagha), language and terms in their original
   > Arabic: 'Abd al-Qahir al-Jurjani's Dala'il al-I'jaz and Asrar al-Balagha, al-Raghib al-Isfahani's al-Mufradat fi
   > Gharib al-Qur'an, al-Sakkaki's Miftah al-'Ulum and al-Sayyid al-Sharif al-Jurjani's al-Ta'rifat: about 15,000
@@ -283,29 +315,32 @@ yönlendirmesi ve `scripts/tefsir-sunucu.sh` kayıtları.
   >
   > All tools are read-only and work without an account. The texts come from OpenITI (KITAB project; CC BY-NC-SA
   > 4.0), each in its chosen edition; the Qur'an's text from the Tanzil Project. A volunteer, non-commercial project.
-- **Docs:** `https://risalemcp.com/en/classical.html` · Privacy (dört eklentiyi kapsıyor, 2026-11-13), support, icon:
-  §3 gibi.
-- **Use cases** (ilk ikisi 2026-11-13'te eklentide denendi):
+- **İzin özeti:**
+  > Reads classical Arabic works on rhetoric, language and terms, and the Qur'an, from this project's own library.
+  > It does not access your accounts, files or personal data.
+- **Entegrasyon:** `claude mcp add --transport http klasik https://klasik.risalemcp.com/mcp`; dış bağlantı
+  `https://risalemcp.com/en/classical.html`; API metni §2a'daki gibi.
+- **Kullanım alanları** (ilk ikisi 2026-11-13'te eklentide denendi):
 
-  | Use case | Example prompt |
+  | Kullanım alanı | Örnek istem |
   |---|---|
   | Follow an argument in a classical work of rhetoric | How does al-Jurjani argue in the Dala'il al-I'jaz that inimitability lies in the arrangement (nazm)? With sources. |
   | Look up the meaning of a Qur'anic word | How does al-Raghib explain the word "nur" in al-Mufradat? With sources. |
   | Find the definition of a term | What is the definition of "الاستعارة" in al-Ta'rifat, and how does al-Sakkaki treat it in the Miftah? |
-  | Locate a sentence someone quotes | Find the sentence in al-Ta'rifat that begins "الابتداء: هو أول جزء". |
 
-- Ön koşul, yazma, şirket, kimlik doğrulama, veri, hesap: §3 gibi.
-- **Instructions for reviewers:**
-  > 1. Add a custom connector with the URL https://klasik.risalemcp.com/mcp. No sign-in is needed.
-  > 2. Prompts that exercise every tool:
-  >    - "List the works and show the outline of the Dala'il al-I'jaz." (list_works, get_outline)
-  >    - "How does al-Jurjani argue that inimitability lies in the arrangement? Quote him." (semantic_search,
-  >      read_section, get_passage, cite)
-  >    - "Search the works for 'الاستعارة'." (search) · "Find the sentence that begins 'الابتداء: هو أول جزء' in
-  >      al-Ta'rifat." (find_sentence)
-  >    - "Where is al-Baqara 2:255 quoted in these works? Show the verse." (find_ayah, get_ayah)
-  > 3. Expected: Arabic quoted exactly, the assistant's translation labelled as its own, a numbered sources list;
-  >    the editor's introduction is never attributed to the author.
+- **Ek notlar:** ortak ilk paragraf, sonra
+  > The texts come from OpenITI (KITAB project, CC BY-NC-SA 4.0), each in its chosen edition, named on the website
+  > and in every answer's list of sources; the Qur'an's text from the Tanzil Project. The Dala'il al-I'jaz keeps
+  > its editor's footnote markers in the text as the source has them (the footnotes themselves are not in the
+  > source).
+  >
+  > How to test: "List the works and show the outline of the Dala'il al-I'jaz." · "How does al-Jurjani argue that
+  > inimitability lies in the arrangement? Quote him." · "Search the works for 'الاستعارة'." · "Find the sentence
+  > that begins 'الابتداء: هو أول جزء' in al-Ta'rifat." · "Where is al-Baqara 2:255 quoted in these works? Show the
+  > verse." Expected: Arabic quoted exactly, the assistant's translation labelled as its own, a numbered sources
+  > list; the editor's introduction is never attributed to the author.
+
+  ve ortak son paragraf.
 
 ## 5. OpenAI: kurum başvurusundan kişisel başvuruya
 
@@ -363,9 +398,9 @@ genişletilir; ben hazırlarım):
 | `displayName` | Risale MCP Hadis | Risale MCP Tefsir | Risale MCP Klasik |
 | `shortDescription` (≤30) | Cite hadith collections | Cite classical tafsir works | Cite classical rhetoric works |
 | sunucu | `https://hadis.risalemcp.com/mcp` | `https://tefsir.risalemcp.com/mcp` | `https://klasik.risalemcp.com/mcp` |
-| açıklama | §3'teki Description ("Claude" yerine "ChatGPT") | §4'teki Description | §4a'daki Description |
+| açıklama | §2b'deki açıklama ("Claude" yerine "ChatGPT") | §2c'deki açıklama | §2d'deki açıklama |
 | `websiteURL` | `https://risalemcp.com/en/hadith.html` | `https://risalemcp.com/en/tafsir.html` | `https://risalemcp.com/en/classical.html` |
-| `defaultPrompt` | §3'ün ilk üç kullanım istemi | §4'ün ilk üç kullanım istemi | §4a'nın ilk üç kullanım istemi |
+| `defaultPrompt` | §2b'nin üç kullanım istemi | §2c'nin üç kullanım istemi | §2d'nin üç kullanım istemi |
 | kategori, gizlilik, şartlar, destek, yayıncı | Risale ile aynı | Risale ile aynı | Risale ile aynı |
 
 Test senaryoları (pakete):
@@ -386,12 +421,12 @@ Her başvuruda tanıtım videosu ayrı (o eklentinin beş senaryosu) ve alan ad�
 
 ## 8. Kontrol listesi (gönderirken işaretleyin)
 
-- [ ] §1.1 yayıncı adı kararlaştırıldı, site ve politikalar yayında (`scripts/deploy.sh --code`)
-- [ ] §1.4 simgeler (dört ayrı ya da bilerek aynı)
-- [ ] Claude Risale: açıklama düzeltildi, hakeme not
-- [ ] Claude Hadis: test istemleri denendi, gönderildi
-- [ ] Claude Tefsir: test istemleri denendi, gönderildi
-- [ ] Claude Klasik Eserler: test istemleri denendi, gönderildi
+- [x] §1.1 yayıncı adı "Risale MCP", site ve politikalar yayında (2026-11-16)
+- [x] §1.4 dört ayrı simge, alt alan adları yayında (2026-11-16)
+- [ ] Claude Risale: açıklama düzeltildi (✓), ek notlar ve izin özeti (§2a), herkese açık adresli bağdaştırıcı hesapta
+- [ ] Claude Hadis: herkese açık adresli bağdaştırıcı hesapta, test istemleri denendi, gönderildi
+- [ ] Claude Tefsir: aynı
+- [ ] Claude Klasik Eserler: aynı
 - [ ] OpenAI Risale: paket güncellendi, video, jeton, gönderildi
 - [ ] OpenAI Hadis: paket, video, jeton, gönderildi (Risale'nin sonucundan sonra)
 - [ ] OpenAI Tefsir: paket, video, jeton, gönderildi (Risale'nin sonucundan sonra)
