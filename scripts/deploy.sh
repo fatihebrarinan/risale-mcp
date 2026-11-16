@@ -66,7 +66,7 @@ rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
 # Birim başına bir sayfa (<birim>.html; index.html son birim)
 if [[ -f data/d1/masa/index.html ]]; then
     "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel /var/www/ozel/taslak"
-    rsync -az --chown=root:caddy --chmod=F640 -e "${SSH[*]}" data/d1/masa/ "$HOST:/var/www/ozel/taslak/"
+    rsync -az --chown=root:caddy --chmod=D750,F640 -e "${SSH[*]}" data/d1/masa/ "$HOST:/var/www/ozel/taslak/"
 fi
 # Caddy yapılandırması (docs/Caddyfile) değiştiyse yeniden yüklenir
 rsync -az -e "${SSH[*]}" docs/Caddyfile "$HOST:/etc/caddy/Caddyfile.new"
