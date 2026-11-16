@@ -142,6 +142,15 @@ Adımlar (sıra, 2026-11-16):
   eleştirmenin "8 açıkça iyi" ya da "8 zayıf" dediği yerler. Taslak 9 ve 3 dışarıda (9'un sorusu cevaplandı; 3'ünkü
   yapılı akışla önemini yitirdi). Süzülmüş notlar kolu düştü (kapalının tek kalan notlarının hiçbiri yanlış değil;
   asıl risk düzeltmenin eklediği). ≈30–45 dk.
+  **Bitti (2026-11-16):** rapor `data/d1/provalar/31-33/d12-3-okuma.md`, dosya `data/d1/notlar/d1-fark-31-33-7-8-Fatih-202611162030.json`.
+  10 yerde 8: 6, 7: 1, eşit 1, emin değilim 2. Kör eleştirmenle uyum: kesin tercihlerin 6/7'si 8 (eleştirmen 8 diyordu);
+  **envanterin 8'deki 5 "yeni çelişki"sinin hiçbiri gerçek değil** (2 farklı görüşün nakli, 3 çelişki değil): envanter
+  "farklı görüş adayı" diye okunur, D12.1'in o bulgusu düzeltildi. Düzeltmenin kazancı dayanak (dayanaksız tespiti
+  kaynağa bağlama, Arapça alıntı); kaybı îcâz ve kendi sözü (Mukaddime/1'de 7 daha iyi, V3/3 "alıntı yağmuru", V1/4'te
+  7'nin kısa sözü); yan etkisi belirsiz gönderme ("şarttaki", "onda") ve düşen fikir (V3/3). Kullanıcı: takdir ve beklenen
+  sözü tırnakla göstermek gerekli, sistem buna izin vermeli (V2/0). Fark kartlarında kaynak metni yoktu (Mukaddime/0'da
+  hüküm verilemedi). d2 için önerim: (b) düzeltilmiş paragraflara üç soruluk ikinci kapalı eleştiri (düşen fikir,
+  belirsiz gönderme, nakil kendi sözün yerine mi geçti) ve istemde "iyi kendi sözünü silme, etiketle"; karar kullanıcıda.
 - **D12.5'in döngüsü** (kullanıcının kararı, 2026-11-16): her tur **tek bir değişikliği** sınar (ör. uzunluk
   bütçesi, çizelge adımı, nakil–istinbat ayrımı): yeni hâl o anki en iyi hatla bir geliştirme biriminde yan yana,
   aynı üç ayaklı ölçüyle; kazanan sonraki turun hattı; tur başına ≈20–35 $ ve kullanıcının ≈30–45 dk fark okuması.
