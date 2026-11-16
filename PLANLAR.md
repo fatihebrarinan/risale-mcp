@@ -60,7 +60,7 @@ işler"e taşındı (bitmişlerdi, "Sıradaki"de kalmışlardı).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (planı onaylandı, 2026-11-16; sırada D12.1) | |
+| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (D12.1 bitti, 2026-11-16; sırada D12.2) | |
 | 2 | S6 | Âyet masasının ikinci hâli: iki yan kullanıcının seçtiği görünüm, taslak odaklı yapay zekâ kısmı (iki yanlı kısmı D12.2) | |
 | 3 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak; pilot 31–33'te (D11.1–D11.2 bitti; D11.3 D12.3'e katıldı; D12'yi bekler) | |
 | 4 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla (D12'yi bekler) | D1.8 |
@@ -117,11 +117,21 @@ Kullanıcının fikirleri:
   (isteyince taslak 3 de) okunur. Tek okuma üç soruyu cevaplar: D11 değer kaybettirdi mi (7–3), düzeltme işe yaradı
   mı (7–7'), süzgeç. Bunun için S6'nın iki yanlı kısmı okumadan önce gelir.
 Adımlar (sıra, 2026-11-16):
-- D12.1 Düzeltme deneyi, 31–33 taslak 7 (≈25–30 $, bir pencere): kapalı kitap prova veritabanıyla bölüm eleştirisi
-  (≈9,5 $); iki düzeltme, kapalı notlarla (7k) ve D11'in açık notlarıyla (7a) (≈4 $; yalnız değişen paragraflar,
-  not reddi gerekçeli); kör bütün ölçü 7, 7k, 7a (≈9 $); tek okuyuculu envanter 7k, 7a (≈4 $); iki eleştirmenin not
-  karşılaştırması (2). Süzülmüş notlar kolu kullanıcının süzmesini bekler: ilk turda yalnız bir bölümün (ör. V2)
-  notları.
+- **D12.1 Düzeltme deneyi (bitti, 2026-11-16; ≈25,9 $):** rapor `data/d1/provalar/31-33/d12-1-rapor.md`, sayılar
+  `d12-1-sayilar.md`; betik `scripts/d1-duzelt.py` (`kapali`, `duzelt`, `olc`, `notlar`, `rapor`), istemler
+  `docs/d1/elestiri-kapali-istemi.md` k1, `duzeltme-istemi.md` d1, `kor-olcu-istemi.md` o1, `not-karsilastirma-istemi.md`
+  n1. Kapalı kitap bölüm eleştirisi 58 not (43 karşılanacak; ≈8,1 $). Taslak 8 = 7 + kapalı notlar (41/43
+  karşılandı), taslak 9 = 7 + D11'in açık notları (46/51). Bulgular: (1) **kapalı notlarla düzeltme işe yaradı:** kör
+  ölçücü 8'i her bölümde 7'ye tercih etti (önce doğruluk: yanlış nisbetler gitti); kaynakta bulunmayan Türkçe tırnak
+  24 → 0; (2) **ama uzattı ve yeni iddia getirdi:** Arapça +%28 (hedefi 49 harf aştı), yeni kaynaklardan envanterde 5
+  yeni çelişki (eski 3'ün 2'si gitti; tek okuyucu, elle bakılmalı); "düzeltmek uzatmak değildir" kuralı tutmadı;
+  (3) kapalı eleştirmen D5'e büyük ölçüde hazır: açığın kapalının da görebileceği halde kaçırdığı 57'de 8 not,
+  kapalının tek kalan 24 notunun hiçbiri yanlış değil; (4) üst sınır kolu (9: kapsama %53 → %64, mukaddimesiz %72 →
+  %86, çelişki 0): darboğaz yazarın düzeltme gücü değil eleştirmenin bilebildiği; (5) yazar İşârât'ın kendi
+  temsilini "kaynakta dayanağı yok" diye reddetti: kaynağa bağlılık kuralı müellifin özgün nüktelerini caydırıyor,
+  D12.4–D12.5'te bakılır. Düzeltmenin sonraki sürümü için iki aday (program uzunluk bütçesi; düzeltilmiş
+  paragraflara kısa ikinci kapalı eleştiri), kullanıcının okumasından sonra. Masa 8 ve 9'la kuruldu (yayına
+  gönderilmedi).
 - D12.2 S6'nın iki yanlı kısmı: her yan Kaynaklar ya da bir taslak; kör A/B kaydı (yer başına tercih ve gerekçe).
 - D12.3 Kullanıcının okuması (D11.3 dahil): 7 ile 7k (ve 7a, isteyince 3) yan yana; 5–10 yerde kör A/B, süzgeç.
 - D12.4 Üslûp belgesi (İşârât'ın Arapçasından mekanik) ve usul özetine Muhâkemât (İkinci Makale "Unsur-u Belâğat");

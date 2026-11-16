@@ -609,7 +609,12 @@ def _blocks_plain(text: str) -> str:
 # ---------------------------------------------------------------- kaynakların metni
 
 def draft_sources(log: Path) -> dict[str, tuple[str, str]]:
-    """Taslağın kaynak numarası -> (sunucu, kimlik): her sunucunun son `cite` çağrısından (`first` + sıra)."""
+    """Taslağın kaynak numarası -> (sunucu, kimlik): her sunucunun son `cite` çağrısından (`first` + sıra).
+    Düzeltilmiş taslakta (D12, `d1-duzelt.py`) eşleme yanındaki `<taslak>.kaynak.json`'dadır: asıl taslağınki ile
+    düzeltmenin yeni kaynakları birleşik (aynı sunucunun ikinci `cite`'ı öncekini silmesin diye)."""
+    side = log.with_suffix(".kaynak.json")
+    if side.exists():
+        return {k: tuple(v) for k, v in json.loads(side.read_text(encoding="utf-8")).items()}
     last: dict[str, dict] = {}
     for line in log.read_text(encoding="utf-8").splitlines():
         try:

@@ -303,6 +303,8 @@ def drafts(unit: str, ayah: Ayah) -> dict:
             about += f" · istem {meta['surum']}"
         if meta.get("model") and meta["model"] != "claude-fable-5-2":
             about += f" · {meta['model']}"
+        if d := meta.get("duzeltme"):                          # D12: düzeltilmiş taslak
+            about += f" · taslak {d['kaynak']}'in düzeltmesi, {'kapalı' if d['notlar'] == 'kapali' else 'açık'} kitap notlarıyla"
         izah = Y.out_dir(unit) / f"izah-taslak-{n}.json"       # D11: günümüz Türkçesiyle izah, paragraf başına
         iz = {x["capa"]: x["metin"] for x in json.loads(izah.read_text(encoding="utf-8")).get("izah", [])} if izah.exists() else {}
         out[f"taslak-{n}"] = {
