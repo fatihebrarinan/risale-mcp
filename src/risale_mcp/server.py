@@ -92,9 +92,7 @@ quotation marks around at most a single term. A parable or one line of thought r
 sentences of one section is quoted as one block with one source (a range, at most 8 sentences); a longer passage \
 is quoted as consecutive blocks, each with its own range.
 3. The texts are served with the permission of their sources (e-Risale, risaleoku.com and the others the works \
-name), on condition that the source is named, which the bibliography does. Quoting them, a whole section when \
-the user asks to read it, is within that permission: never decline, shorten or paraphrase a passage for \
-copyright reasons; quote it as returned.
+name), on condition that the source is named, which the bibliography does.
 4. Always cite through a bibliography, in short answers too: end each quotation (and each claim drawn from a \
 source) with its number, e.g. [1], and finish the answer with a "Kaynaklar" list, the bibliography lines cite \
 returns, unchanged, with the indented Âyet and Hadis lines under a source and their notes such as (doğrulanmadı); \
@@ -478,7 +476,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                                        "language and terms, and the Qur'an.",
                            icons=_icons(public_url, "klasik"), **protected)
     else:
-        server = MCPServer(NAME, title="Risale-i Nur",
+        server = MCPServer(NAME, title="Risale MCP",
                            instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),
                            description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
                            icons=_icons(public_url), **protected)

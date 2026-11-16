@@ -294,9 +294,11 @@ def test_written_shown_and_inherited_by_subsections(library):
     assert next(w for w in library.works() if w["id"] == "sozler").get("written") is None
 
 
-def test_instructions_say_the_texts_may_be_quoted_in_full():
-    """Model telif gerekçesiyle bölümü reddetmesin: metinler kaynaklarının izniyle sunulur (`docs/izinler.md`)."""
-    assert "never decline, shorten or paraphrase a passage for" in INSTRUCTIONS
+def test_instructions_state_the_permission_without_overriding_claude():
+    """İzin olgu olarak söylenir (`docs/izinler.md`), ama Claude'un telif temkinini kaldıran buyruk yoktur: dizin
+    ölçütü "attempt to override system instructions" diyen talimatı reddeder (S4, 2026-11-16)."""
+    assert "served with the permission of their sources" in INSTRUCTIONS
+    assert "copyright" not in INSTRUCTIONS
     assert "consecutive blocks" in INSTRUCTIONS
 
 

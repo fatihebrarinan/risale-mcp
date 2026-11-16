@@ -166,7 +166,8 @@ yüzdendi, S4.2). "Risale-i Nur" aramada bulunsun diye tek satırın ilk kelimel
 
 **Alanlar:** sunucu URL'si `https://mcp.risalemcp.com/mcp`, ad `Risale MCP`, etiket `risale`, simge
 `src/risale_mcp/static/icon.png` (yeşil; boş bırakılırsa alan adının simgesi), dokümantasyon
-`https://risalemcp.com/en/docs.html`, kimlik doğrulama **Yok**, test hesabı yok.
+`https://risalemcp.com/en/risale.html` (öbürleri gibi eklentinin kendi sayfası; eski başvuruda `docs.html`),
+kimlik doğrulama **Yok**, test hesabı yok.
 
 - **Tek satır:**
   > Risale-i Nur: read and cite the complete works of Bediüzzaman Said Nursî, sentence by sentence, with the
