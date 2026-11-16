@@ -2,7 +2,7 @@
 # Aşama 12: kodu ve hazır veriyi uzak sunucuya gönderir, bağımlılıkları kurar, servisi yeniden başlatır.
 #
 #   scripts/deploy.sh            # kod + genel profilin veritabanı ve vektörleri + quran.json
-#   scripts/deploy.sh --code     # yalnızca kod, site/ ve taslak bölümü (data/d1/masa.html; veri değişmediyse)
+#   scripts/deploy.sh --code     # yalnızca kod, site/ ve taslak bölümü (data/d1/masa/; veri değişmediyse)
 #   DEPLOY_EXPECT="cite" scripts/deploy.sh   # bu araçların çıktısındaki fark beklenen sayılır
 #   scripts/deploy.sh --hadis    # ayrıca hadis sunucusu (aynı makine, 127.0.0.1:8001, hadis.risalemcp.com):
 #                                # hadis.db, vektörleri ve servis birimi; `--code` ile birlikte de verilebilir
@@ -63,9 +63,10 @@ git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DES
 rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
 # S5: girişli taslak bölümü (risalemcp.com/taslak/): âyet masası kapalı depodan (data/d1, `scripts/d1-masa.py`)
 # /var/www/ozel/taslak/'a; site/ klasörüne girmez, yalnız Caddy okur, giriş servisi (aşağıda) kapıdır
-if [[ -f data/d1/masa.html ]]; then
+# Birim başına bir sayfa (<birim>.html; index.html son birim)
+if [[ -f data/d1/masa/index.html ]]; then
     "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel /var/www/ozel/taslak"
-    rsync -az --chown=root:caddy --chmod=F640 -e "${SSH[*]}" data/d1/masa.html "$HOST:/var/www/ozel/taslak/index.html"
+    rsync -az --chown=root:caddy --chmod=F640 -e "${SSH[*]}" data/d1/masa/ "$HOST:/var/www/ozel/taslak/"
 fi
 # Caddy yapılandırması (docs/Caddyfile) değiştiyse yeniden yüklenir
 rsync -az -e "${SSH[*]}" docs/Caddyfile "$HOST:/etc/caddy/Caddyfile.new"

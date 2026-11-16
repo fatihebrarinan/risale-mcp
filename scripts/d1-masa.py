@@ -1,6 +1,9 @@
 """Âyet masası (kullanıcının tasarımı, 2026-11-14): âyet üstte, lafızları tıklanır; sol yan kaynaklar, sağ yan yapay zekâ.
 
-    uv run python scripts/d1-masa.py [11-12]      # data/d1/masa.html (kapalı depo; okuyuculara gönderilmez)
+    uv run python scripts/d1-masa.py [11-12 …]    # data/d1/masa/<birim>.html ve index.html (kapalı depo)
+
+Her birim kendi sayfasıdır (2026-11-16: tek sayfa vardı, 31–33 kurulunca 11–12'ninkinin üzerine yazılmıştı); birim
+verilmezse envanteri olan bütün birimler kurulur. `index.html` son birimin kopyasıdır; "Âyet" seçicisi öbürlerine gider.
 
 `okuma-yz.html`'in yerine geçmek için kuruldu: o sayfa iş akışımıza göre dizilmişti (D7, D9, D6 ayrı katman ve kod),
 okur neyi neyle karşılaştıracağını bulamadı. Burada her şey âyetin bir yerine bağlıdır:
@@ -37,7 +40,7 @@ _spec.loader.exec_module(Y)
 P = Y.P
 
 TEMPLATE = Path(__file__).with_name("d1-masa-sablon.html")
-OUT = P.KEEP / "masa.html"
+OUT_DIR = P.KEEP / "masa"
 KLASIK_DB = P.DIST_DIR / "klasik" / "risale.db"
 LEVELS = {"V1": "L:munasebet", "V2": "L:nazim"}
 OTHER = "L:belirsiz"
@@ -353,27 +356,49 @@ def layer(unit: str, ayah: Ayah, places: dict[str, list[str]], dr: dict) -> dict
             "critic_sample_note": y.get("critic_sample_note", "")}
 
 
-def main() -> None:
-    unit = sys.argv[1] if len(sys.argv) > 1 else "11-12"
+def ready_units() -> list[str]:
+    return [u for u in P.UNITS if (Y.out_dir(u) / "envanter.json").exists() and Y.drafts_of(u)]
+
+
+def build(unit: str, units: list[dict]) -> Path:
     cfg = P.UNITS[unit]
     env = json.loads((Y.out_dir(unit) / "envanter.json").read_text(encoding="utf-8"))
     ayah = Ayah(unit)
     places = ayah.build_chips(env["kalemler"])
     dr = drafts(unit, ayah)
-    data = {"unit": unit, "title": f"{cfg['sura_name']} {'–'.join(map(str, cfg['ayahs']))}",
+    data = {"unit": unit, "title": title(unit), "units": units,
             "verses": ayah.verses,
             "chips": [{k: c[k] for k in ("id", "ayah", "text", "norm")} for c in ayah.chips],
             "isarat": isarat(unit), "tefsir": tefsir(unit), "klasik": klasik(ayah), "risale": risale(unit),
             "drafts": dr, "yz": layer(unit, ayah, places, dr)}
     blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    OUT.write_text(TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
+    out = OUT_DIR / f"{unit}.html"
+    out.write_text(TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
     counts = {}
     for i in data["yz"]["items"].values():
         for l in i["loc"]:
             counts[l] = counts.get(l, 0) + 1
     names = {c["id"]: c["text"] for c in ayah.chips}
-    print(f"{OUT.relative_to(ROOT)} ({OUT.stat().st_size // 1024} KB)")
-    print("nükteler:", ", ".join(f"{names.get(k, k)} {v}" for k, v in counts.items()))
+    print(f"{out.relative_to(ROOT)} ({out.stat().st_size // 1024} KB)")
+    print("  nükteler:", ", ".join(f"{names.get(k, k)} {v}" for k, v in counts.items()))
+    return out
+
+
+def title(unit: str) -> str:
+    cfg = P.UNITS[unit]
+    return f"{cfg['sura_name']} {'–'.join(map(str, cfg['ayahs']))}"
+
+
+def main() -> None:
+    every = ready_units()
+    todo = sys.argv[1:] or every
+    OUT_DIR.mkdir(exist_ok=True)
+    units = [{"unit": u, "title": title(u)} for u in every]
+    for unit in todo:
+        build(unit, units)
+    last = OUT_DIR / f"{every[-1]}.html"
+    (OUT_DIR / "index.html").write_bytes(last.read_bytes())
+    print(f"{(OUT_DIR / 'index.html').relative_to(ROOT)} = {every[-1]}")
 
 
 if __name__ == "__main__":

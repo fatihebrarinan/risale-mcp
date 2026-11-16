@@ -762,7 +762,8 @@ function progress() {
   $('#progress').textContent = `İşaretler: örneklem ${ns}/${(Y.sample || []).length} · karşılaştırma ${n1} · eleştiri örneklemi ${nc}/${(Y.critic_sample || []).length} · başlık ${nz}/${(Y.systemic || []).length} · eleştiri ${n2} · bilirkişi ${n3}/${bkAll().length}`;
 }
 function render() {
-  $('#unit').innerHTML = `<option>${esc(DATA.title)}</option>`;
+  $('#unit').innerHTML = (DATA.units || [{unit: U, title: DATA.title}]).map(u =>
+    `<option value="${esc(u.unit)}"${u.unit === U ? ' selected' : ''}>${esc(u.title)}</option>`).join('');
   document.querySelectorAll('#lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.lang));
   document.body.classList.toggle('sel', !!st.loc);
   renderAyah(); renderLeft(); renderRight(); progress(); persist();
@@ -881,6 +882,7 @@ function bkSave(box, patch) {
 }
 document.addEventListener('change', ev => {
   const t = ev.target;
+  if (t.id === 'unit') { if (t.value !== U) { st.loc = null; persist(); location.href = t.value + '.html'; } return; }
   if (t.id === 'draft') { st.draft = t.value; st.dfocus = null; render(); return; }
   if (t.id === 'whole') { st.whole = t.checked; renderRight(); persist(); return; }
   if (t.id === 'onlysmp') { st.onlySample = t.checked; renderRight(); persist(); return; }
