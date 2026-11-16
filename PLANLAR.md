@@ -252,7 +252,8 @@ Adımlar:
   olarak onaylandı; portaldan yayımlanması bizde (`claude.ai/admin-settings/directory/submissions/hadis`). Risale
   ise 2026-10-29'dan beri "In review" (bir kişinin incelemesi): OAuth'lu (hakem hesabı `admin`) gönderilmiş, sunucu
   aynı akşam açık kipe geçmişti. Karar (kullanıcı, 2026-11-16): eski başvuru silinip bugünkü formla yeniden
-  gönderilir; sıra ve alanlar `docs/s4-dizin-basvurulari.md` §2a.
+  gönderilir, adı **Risale MCP** (slug `risale-mcp`; "Risale-i Nur" eserin adı, marka iddiası gibi
+  görünmesin; tek satırın ilk kelimeleri "Risale-i Nur:"); sıra ve alanlar `docs/s4-dizin-basvurulari.md` §2a.
 - S4.5 **Uygulama belgesi** (2026-11-13, kullanıcının isteği): `docs/s4-dizin-basvurulari.md`: sekiz başvurunun
   (Claude ve OpenAI × Risale, Hadis, Tefsir, Klasik Eserler; klasik aynı gün eklendi) adımları ve portala yapıştırılacak İngilizce metinler. Bulgular: Claude'daki
   Risale listelemesi eski (44 eser ve 126 bin cümle yerine 53 ve ≈131 bin; çıkarılan Diyanet İşleri meali hâlâ

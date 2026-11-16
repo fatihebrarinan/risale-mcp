@@ -7,7 +7,7 @@ metinler (İngilizce; hakemler İngilizce okur) ve göndermeden önceki denetiml
 
 | # | Dizin | Eklenti | Durum | Bu belgede |
 |---|---|---|---|---|
-| 1 | Claude | Risale-i Nur | 2026-10-29'dan beri "In review"; geri çekilip yeniden gönderilecek (2026-11-16) | §2a: sıra ve bütün alanlar |
+| 1 | Claude | Risale MCP (eski başvuruda Risale-i Nur) | 2026-10-29'dan beri "In review"; geri çekilip yeniden gönderilecek (2026-11-16) | §2a: sıra ve bütün alanlar |
 | 2 | Claude | Hadis | otomatik incelemeyle "Community" olarak onaylandı (2026-11-16), yayımlanması bizde | §2b |
 | 3 | Claude | Tefsir | gönderilmedi | §2c |
 | 4 | OpenAI | Risale | reddedildi (kimlik) | §5–§6: kişisel kimliğe geçiş, düzeltilmiş paket, yeniden başvuru |
@@ -118,7 +118,7 @@ Hakem talimatı için ayrı alan yok: test istemleri "Ek notlar"a girer. Kullan�
 | Politika beyanları | yedisi de işaretlenir |
 | Ek notlar | eklentinin notu: yayıncı, kaynaklar, test istemleri |
 | Şirket adı, web sitesi | `Risale MCP`, `https://risalemcp.com/` |
-| Ad | `Risale-i Nur`, `Risale MCP Hadis`, `Risale MCP Tefsir`, `Risale MCP Klasik` |
+| Ad | `Risale MCP`, `Risale MCP Hadis`, `Risale MCP Tefsir`, `Risale MCP Klasik` |
 
 **Araç taraması için bağdaştırıcı hesapta olmalı.** Portal araçları sizin hesabınızdaki bağdaştırıcıdan okur ve
 "bu listelemenin gönderildiği bağdaştırıcı hesabınızda yok" diye uyarır. Gizli adres yetmez: listelemedeki adresin
@@ -133,14 +133,14 @@ Gizli adresli olanı denemelerin kaydı için ayrıca tutabilirsiniz.
 - Ek notların ilk paragrafı (yayıncı; her eklentide aynı):
   > Publisher: "Risale MCP" is the name of a volunteer, non-commercial project, not a registered company. It is run
   > by an individual (the holder of this account) and is named the same way on the website, the privacy policy and
-  > the terms (risalemcp.com). The project runs four connectors under this name, submitted separately: Risale-i Nur
+  > the terms (risalemcp.com). The project runs four connectors under this name, submitted separately: Risale MCP
   > (mcp.risalemcp.com/mcp), Risale MCP Hadis (hadis.risalemcp.com/mcp), Risale MCP Tefsir
   > (tefsir.risalemcp.com/mcp) and Risale MCP Klasik (klasik.risalemcp.com/mcp).
 - Ek notların son paragrafı (her eklentide aynı):
   > All tools are read-only, there are no accounts, and no conversation content or tool inputs are stored (only the
   > tool name, time, duration and error type, for 90 days).
 
-### 2a. Risale-i Nur (geri çekilip yeniden gönderilecek, 2026-11-16)
+### 2a. Risale MCP (eski başvuru Risale-i Nur; geri çekilip yeniden gönderilecek, 2026-11-16)
 
 **Karar (kullanıcı, 2026-11-16):** eski başvuru silinir, bugünkü formla yeniden gönderilir. Sebep: Hadis aynı gün
 otomatik taramayla "Community" olarak onaylandı; Risale ise 2026-10-29'dan beri bir kişinin kuyruğunda ("In review").
@@ -149,6 +149,10 @@ kimlik doğrulama ve test hesabı bilgisi sunucuyla uyuşmuyor olabilir. Yeni ba
 yok, test hesabı yok, bütün alanlar dolu. Bedeli: kuyruktaki yer gider; otomatik yoldan geçeceğinin garantisi yok
 (Anthropic bazı başvuruları her durumda bir kişiye verir).
 
+**Ad `Risale MCP`** (kullanıcının kararı, 2026-11-16): yayıncıyla ve öbür üç eklentiyle aynı aile; "Risale-i Nur"
+eserin adıdır, listelemenin adı olunca resmî bir yayın ya da marka iddiası gibi görünebilir (OpenAI'nin reddi bu
+yüzdendi, S4.2). "Risale-i Nur" aramada bulunsun diye tek satırın ilk kelimeleridir.
+
 **Sıra:**
 
 1. Ayarlar › Bağdaştırıcılar'da `https://mcp.risalemcp.com/mcp` adresli bağdaştırıcı ekli olsun (portal araçları
@@ -156,21 +160,19 @@ yok, test hesabı yok, bütün alanlar dolu. Bedeli: kuyruktaki yer gider; otoma
 2. Eski başvuruyu portalda açın, menüsünden silin ya da geri çekin (**Withdraw/Delete**). Yeni başvuruyu ondan
    **sonra** gönderin: aynı adresli iki başvuru aynı anda durmasın.
 3. Portal › **Submit new** › **MCP connector**, alanlar aşağıda ve §2'deki tabloda.
-4. **Slug** `risale-i-nur` (yayımlanınca değişmez). Silinen başvuru adı tutuyorsa portal başka ad ister: o zaman
-   başka slug seçmeden `mcp-review@anthropic.com`'a yazın (listelemenin adı, organizasyon, eski başvurunun
-   silindiği).
+4. **Slug** `risale-mcp` (yayımlanınca değişmez; eski başvurunun `risale-i-nur`'u ile çakışmaz).
 5. Gönderdikten sonra durum "Approved" olursa yayımlamak bizde (**Publish**); onaydan sonra yapılan her düzenleme
    listelemeyi yeniden incelemeye gönderir, düzenlemeyi yayımlamadan önce yapın. "In review" olursa beklenir.
 
-**Alanlar:** sunucu URL'si `https://mcp.risalemcp.com/mcp`, ad `Risale-i Nur`, etiket `risale`, simge
+**Alanlar:** sunucu URL'si `https://mcp.risalemcp.com/mcp`, ad `Risale MCP`, etiket `risale`, simge
 `src/risale_mcp/static/icon.png` (yeşil; boş bırakılırsa alan adının simgesi), dokümantasyon
 `https://risalemcp.com/en/docs.html`, kimlik doğrulama **Yok**, test hesabı yok.
 
 - **Tek satır:**
-  > Read and cite the complete works of Bediüzzaman Said Nursî, sentence by sentence, with the Qur'an's text
-  > alongside.
+  > Risale-i Nur: read and cite the complete works of Bediüzzaman Said Nursî, sentence by sentence, with the
+  > Qur'an's text alongside.
 - **Açıklama:**
-  > Risale-i Nur gives Claude the complete works of Bediüzzaman Said Nursî (1878–1960): the Risale-i Nur Collection
+  > Risale MCP gives Claude the complete works of Bediüzzaman Said Nursî (1878–1960): the Risale-i Nur Collection
   > (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the
   > compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 131,000
   > sentences across 53 works, besides 16 volumes in Ottoman script, together with the Qur'an's vowelled Arabic
@@ -212,8 +214,10 @@ yok, test hesabı yok, bütün alanlar dolu. Bedeli: kuyruktaki yer gider; otoma
 - **Ek notlar:** ortak ilk paragraf, sonra
   > The texts are served with the permission of their sources (e-Risale, risaleoku.com, nurpedia.org and the Keşif
   > Yolculukları programme), which are named on the website and in every answer's list of sources; the Qur'an's
-  > text comes from the Tanzil Project. This replaces our earlier submission of the same connector (sent on 29
-  > October with optional OAuth), which we withdrew: the server has had no accounts and no OAuth since the evening of 29 October.
+  > text comes from the Tanzil Project. This replaces our earlier submission of the same connector (named
+  > "Risale-i Nur", sent on 29 October with optional OAuth), which we withdrew. It is now named Risale MCP, like the
+  > publisher and the other three connectors, and the server has had no accounts and no OAuth since the evening of
+  > 29 October.
   >
   > How to test (the texts are in Turkish; questions can be asked in English): "List the works and show the outline
   > of Sözler." · "Why is the time of the Last Day kept hidden, according to the Risale-i Nur? Quote the text and
