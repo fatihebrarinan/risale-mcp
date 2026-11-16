@@ -209,7 +209,10 @@ Adımlar (sıra, 2026-11-16):
   (D12.5'e kadar öğrenilenler, kalıcı dersler, hedef hat, bir turun adımları, karar kuralı, tur sırası T1 çizelge ve
   okuma–yazım ayrımı, T2 nakil–istinbat, T3 garaz, T4 takdir zinciri, T5 belgeler yazımda, D düzeltme d2; Tur 0
   hazırlığı: dört geliştirme biriminin prova düzeni, takdir işareti, masada kör A/B kaydı, fark kartlarında kaynak
-  metni, taban h2). Kullanıcının onayını bekliyor (yöntem, takdir işaretinin biçimi, d2).
+  metni, taban h2). **Onaylandı (kullanıcı, 2026-11-16):** yöntem ve tur sırası uygun; **kullanıcının örneklemi her
+  turda en az tutulur**; takdir işareti Türkçede «…» (takdir ve beklenen söz), "…" kaynağın sözü (modelin hiç tırnak
+  kullanamaması çözülür); düzeltmenin ikinci sürümü (d2) **ikinci kapalı eleştiri** (yalnız düzeltilen paragraflara:
+  düşen fikir, belirsiz gönderme, nakil kendi sözün yerine mi geçti).
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 

@@ -168,8 +168,8 @@ saklı birimlerdedir (21–22, 25, 30, 28, 29, 26–27).
 
 Bir tur bir 5 saatlik kullanım penceresine sığar.
 
-### 4.9 Sizden beklenen kararlar
+### 4.9 Kararlar (kullanıcı, 2026-11-16)
 
-1. Bu yöntem ve tur sırası (4.3–4.5) uygun mu?
-2. Takdir işareti: Türkçede «…» takdir, "…" kaynak sözü uygun mu?
-3. Düzeltmenin ikinci sürümü (D turu): ikinci kapalı eleştiri, uzunluk bütçesi ya da ikisi (D12.3'te bekleyen soru).
+1. Yöntem ve tur sırası uygun. Kullanıcının örneklemi her turda **en az** tutulur.
+2. Takdir işareti: Türkçede «…» takdir ve beklenen söz, "…" kaynağın sözü.
+3. Düzeltmenin ikinci sürümü (D turu): **ikinci kapalı eleştiri**.
