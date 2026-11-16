@@ -132,8 +132,28 @@ Adımlar (sıra, 2026-11-16):
   D12.4–D12.5'te bakılır. Düzeltmenin sonraki sürümü için iki aday (program uzunluk bütçesi; düzeltilmiş
   paragraflara kısa ikinci kapalı eleştiri), kullanıcının okumasından sonra. Masa 8 ve 9'la kuruldu (yayına
   gönderilmedi).
-- D12.2 S6'nın iki yanlı kısmı: her yan Kaynaklar ya da bir taslak; kör A/B kaydı (yer başına tercih ve gerekçe).
-- D12.3 Kullanıcının okuması (D11.3 dahil): 7 ile 7k (ve 7a, isteyince 3) yan yana; 5–10 yerde kör A/B, süzgeç.
+- D12.2 **Fark kartları ve kör A/B kaydı** (kullanıcının kararı, 2026-11-16; tam S6 yerine, D12.3 bunu yeter):
+  yalnız düzeltmenin değiştirdiği paragraf çiftleri, eski ve yeni yan yana, kör (sol/sağ sabit tohumla karışık, "A"
+  ve "B"); kart başına tercih ve kısa gerekçe; tercihten sonra "aç": hangisinin düzeltilmiş olduğu, envanterin ve kör
+  eleştirmenin o yer için dediği, çelişki adayıysa ikinci soru (gerçek çelişki / farklı görüşün nakli / çelişki
+  değil / emin değilim). Dışa aktarma JSON.
+- D12.3 **Fark okuması** (kullanıcının kararı, 2026-11-16; D11.3 buna katıldı): 7 ile 8, değişen ≈14 çiftten 8–10
+  yer: **ölçülerin ayrıldığı yerler** (envanter 8'de yeni çelişki diyor, kör eleştirmen 8'i tercih ediyor: 5 yer) ve
+  eleştirmenin "8 açıkça iyi" ya da "8 zayıf" dediği yerler. Taslak 9 ve 3 dışarıda (9'un sorusu cevaplandı; 3'ünkü
+  yapılı akışla önemini yitirdi). Süzülmüş notlar kolu düştü (kapalının tek kalan notlarının hiçbiri yanlış değil;
+  asıl risk düzeltmenin eklediği). ≈30–45 dk.
+- **D12.5'in döngüsü** (kullanıcının kararı, 2026-11-16): her tur **tek bir değişikliği** sınar (ör. uzunluk
+  bütçesi, çizelge adımı, nakil–istinbat ayrımı): yeni hâl o anki en iyi hatla bir geliştirme biriminde yan yana,
+  aynı üç ayaklı ölçüyle; kazanan sonraki turun hattı; tur başına ≈20–35 $ ve kullanıcının ≈30–45 dk fark okuması.
+  Geliştirme birimleri tekrar kullanılabilir (son hüküm saklı birimlerde). Durma: üst üste iki tur ölçülür iyileşme
+  yoksa ya da kalan kusurlar yalnız ehlin görebileceği türdense saklı birimlere geçilir ("eleştirmen kusur bulmuyor"
+  ölçüt değildir). Tavan ≈8 tur ya da ≈250 $, sonra konuşulur. D5'e geçiş: saklı birimlerde yeni hat D11'in hattına
+  karşı kör ölçüde ve kullanıcının A/B'sinde çoğunlukla tercih ediliyor, çelişki artmıyor, uzunluk hedefte. D5'e
+  geçince ar-ge yavaşlar, durmaz (taslak ≈5–10 $: hat iyileşince eski birimler yeniden yazdırılabilir).
+- **S6'ya ek** (kullanıcının fikri, 2026-11-16): **dinamik yanlar.** Âyetin altındaki alan N sütunlu: "+ yan ekle"
+  her basışta bir yan açar (bir yan tam, iki yan ikiye, üç yan üçe); her yanın kendi seçicisi (Kaynaklar, taslak N,
+  İşârât) ve kapatma düğmesi; seçilen yer bütün yanları süzer; kör kipte yanlar "A, B, C" ve sıra karışık;
+  masaüstünde en çok 3 (genişte 4), telefonda alt alta ya da sekme. S6'nın tamamı D12.4'ün yanında.
 - **Notlar (kullanıcı, 2026-11-16, D12.1'den):**
   - Düzeltmenin sonraki sürümü (d2) için iki aday: (a) **program uzunluk bütçesi** (paragraf başına harf sınırı;
     aşan değişiklik reddedilir ya da yazara geri döner), (b) **düzeltilmiş paragraflara kısa ikinci kapalı eleştiri**

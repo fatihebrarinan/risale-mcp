@@ -372,7 +372,8 @@ def build(unit: str, units: list[dict]) -> Path:
             "verses": ayah.verses,
             "chips": [{k: c[k] for k in ("id", "ayah", "text", "norm")} for c in ayah.chips],
             "isarat": isarat(unit), "tefsir": tefsir(unit), "klasik": klasik(ayah), "risale": risale(unit),
-            "drafts": dr, "yz": layer(unit, ayah, places, dr)}
+            "drafts": dr, "yz": layer(unit, ayah, places, dr),
+            "fark": sorted(p.name for p in OUT_DIR.glob(f"fark-{unit}-*.html"))}   # D12.2 fark kartları
     blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     out = OUT_DIR / f"{unit}.html"
     out.write_text(TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")

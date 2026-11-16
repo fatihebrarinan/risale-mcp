@@ -6,6 +6,7 @@
     uv run python scripts/d1-duzelt.py olc 31-33 --cift 7-8 7-9 8-9     # kör A/B, açık kitap, bütün
     uv run python scripts/d1-duzelt.py notlar 31-33 --taslak 7          # iki eleştirmenin notları (araçsız)
     uv run python scripts/d1-duzelt.py rapor 31-33                      # provalar/<birim>/d12-1-sayilar.md
+    uv run python scripts/d1-duzelt.py fark 31-33 --eski 7 --yeni 8     # D12.2 fark kartları (masa klasöründe)
 
 Kararlar (kullanıcı, 2026-11-16; PLANLAR.md D12):
 - **Kapalı kitap eleştirmen** (`docs/d1/elestiri-kapali-istemi.md`) D5'in şartıyla çalışır: prova sunucuları
@@ -522,6 +523,81 @@ def rapor(unit: str) -> None:
     out.write_text("\n".join(L) + "\n", encoding="utf-8")
     print("\n".join(L))
 
+# ---------------------------------------------------------------- D12.2 fark kartları
+
+FARK_TEMPLATE = Path(__file__).with_name("d1-fark-sablon.html")
+FARK_INTRO = """<p><b>Ne okuyorsunuz:</b> aynı taslağın iki hâli; biri bir eleştirmenin notlarıyla düzeltildi. Yalnız
+değişen paragraflar, A ve B diye; hangisinin düzeltilmiş olduğu karışık sırayla gizli. Sarı işaretli kelimeler öbür
+yanda olmayanlardır.</p><ul><li>Her kartta <b>hangisi daha iyi</b> (doğruluk, İşârât'a yakınlık, kaynak disiplini,
+îcâz) ve bir iki cümle gerekçe.</li><li>Sonra <b>Aç</b>: hangisinin düzeltilmiş olduğu ve iki ölçünün (İşârât'tan
+çıkarılan envanter ve kör eleştirmen) o yer için dediği. Envanter bir çelişki gösteriyorsa onun gerçek olup
+olmadığını sorar.</li><li>Bitince <b>Dışa aktar</b>; dosyayı bana gönderin.</li></ul><p class="small muted">Kartların
+yarısı iki ölçünün ayrıldığı yerlerdir (envanter düzeltmede yeni çelişki görüyor, eleştirmen düzeltilmişi tercih
+ediyor); öbürleri eleştirmenin açık hüküm verdiği yerler. Hangisi hangisi, açınca görünür.</p>"""
+# D12.3'ün yerleri (PLANLAR.md D12.3): ölçülerin ayrıldığı yerler ve eleştirmenin açık hüküm verdiği yerler
+FARK_YERLER = {("31-33", 7, 8): {"ayrilik": ["Mukaddime/0", "Mukaddime/1", "V1/0", "V2/0", "V3/0"],
+                                 "elestirmen": ["V2/3", "V3/3", "V3/6", "V3/4", "V1/4"]}}
+
+
+def fark(unit: str, old: int, new: int) -> Path:
+    cfg = P.UNITS[unit]
+    yerler = FARK_YERLER[(unit, old, new)]
+    bo = {a: t for a, _, _, t in Y.draft_blocks(unit, old)[0]}
+    bn = {a: t for a, _, _, t in Y.draft_blocks(unit, new)[0]}
+    env = json.loads((Y.out_dir(unit) / "envanter.json").read_text(encoding="utf-8"))
+    items = {i["id"]: i for i in env["kalemler"]}
+    h = Y.hidden(unit)
+    res = {}
+    for n in (old, new):
+        blocks, _ = Y.draft_blocks(unit, n)
+        res[n] = Y.check_match(json.loads((Y.out_dir(unit) / f"eslestirme-taslak-{n}-opus.json").read_text(
+            encoding="utf-8")), env, blocks)
+    old_conf = {(f.get("celiski"), a) for f in res[old]["fazla"] if f.get("celiski") for a in f.get("taslak") or []}
+    kor = Y.out_dir(unit) / f"kor-olcu-{old}-{new}"
+    kmeta = json.loads(Path(str(kor) + ".meta.json").read_text(encoding="utf-8"))
+    kdata = json.loads(Path(str(kor) + ".json").read_text(encoding="utf-8"))
+    who = {"A": kmeta["A"], "B": kmeta["B"]}
+    remarks = list(kdata.get("yalniz_A_kusurlari", [])) + list(kdata.get("yalniz_B_kusurlari", []))
+    for b in kdata.get("bolumler", []):
+        remarks += re.split(r"(?<=[.;])\s+", b.get("gerekce", ""))
+
+    def relabel(t: str) -> str:
+        return re.sub(r"\b([AB]):(?=[A-ZÂÎÛ])", lambda m: f"taslak {who[m.group(1)]}:", t)
+
+    cards = []
+    for tur, ids in yerler.items():
+        for pid in ids:
+            sec, k = pid.split("/")
+            ar, tr = f"{sec}/ar/{k}", f"{sec}/tr/{k}"
+            envs = []
+            for f in res[new]["fazla"]:
+                nid = f.get("celiski")
+                if nid and set(f.get("taslak") or []) & {ar, tr} and not any((nid, a) in old_conf for a in (ar, tr)):
+                    it = items.get(nid, {})
+                    envs.append({"id": nid, "iddia": f.get("iddia", ""), "nukte": it.get("nukte", ""),
+                                 "isarat_ar": Y.hidden_text(h, it.get("ar") or []),
+                                 "isarat_tr": Y.hidden_text(h, it.get("tr") or [])})
+            pat = re.compile(rf"\b[AB]:{re.escape(sec)}/(?:ar|tr)/{k}\b")
+            crit = [relabel(r) for r in remarks if pat.search(r)]
+            cards.append({"id": pid, "tur": tur, "sec_title": P.SECTION_TITLES[sec],
+                          "ar": [bo.get(ar, ""), bn.get(ar, "")], "tr": [bo.get(tr, ""), bn.get(tr, "")],
+                          "left": None,
+                          "envanter": envs, "elestirmen": crit})
+    rng = random.Random(f"d12-fark-{unit}-{old}-{new}")
+    rng.shuffle(cards)
+    sides = (["eski", "yeni"] * len(cards))[:len(cards)]       # sol ve sağ yarı yarıya (sıradan tahmin edilmesin)
+    rng.shuffle(sides)
+    for c, side in zip(cards, sides):
+        c["left"] = side
+    data = {"unit": unit, "title": f"{cfg['sura_name']} {ayahs(cfg)}", "eski": old, "yeni": new, "cards": cards,
+            "intro": FARK_INTRO}
+    blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    out = M.OUT_DIR / f"fark-{unit}-{old}-{new}.html"
+    out.write_text(FARK_TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
+    print(f"{out.relative_to(ROOT)}: {len(cards)} kart; envanter çelişkisi olan {sum(bool(c['envanter']) for c in cards)}, "
+          f"eleştirmen sözü olan {sum(bool(c['elestirmen']) for c in cards)}")
+    return out
+
 
 def main() -> None:
     ap = argparse.ArgumentParser()
@@ -550,6 +626,10 @@ def main() -> None:
     p.add_argument("--taslak", type=int, required=True)
     p = sub.add_parser("rapor")
     p.add_argument("unit", choices=P.UNITS)
+    p = sub.add_parser("fark")                        # D12.2 fark kartları: data/d1/masa/fark-<birim>-<eski>-<yeni>.html
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--eski", type=int, required=True)
+    p.add_argument("--yeni", type=int, required=True)
     a = ap.parse_args()
     if a.cmd == "kapali":
         kapali(a.unit, a.taslak, a.yeniden, a.sizinti_kabul)
@@ -572,6 +652,8 @@ def main() -> None:
         notlar(a.unit, a.taslak)
     elif a.cmd == "rapor":
         rapor(a.unit)
+    elif a.cmd == "fark":
+        fark(a.unit, a.eski, a.yeni)
 
 
 if __name__ == "__main__":
