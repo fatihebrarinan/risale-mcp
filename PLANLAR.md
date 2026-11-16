@@ -60,7 +60,7 @@ işler"e taşındı (bitmişlerdi, "Sıradaki"de kalmışlardı).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (D12.1 bitti, 2026-11-16; sırada D12.2) | |
+| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (D12.1–D12.4 bitti; D12.5'in planı yazıldı, onay bekliyor) | |
 | 2 | S6 | Âyet masasının ikinci hâli: iki yan kullanıcının seçtiği görünüm, taslak odaklı yapay zekâ kısmı (iki yanlı kısmı D12.2) | |
 | 3 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak; pilot 31–33'te (D11.1–D11.2 bitti; D11.3 D12.3'e katıldı; D12'yi bekler) | |
 | 4 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla (D12'yi bekler) | D1.8 |
@@ -180,7 +180,7 @@ Adımlar (sıra, 2026-11-16):
     âyetin lafzı, hey'eti ve usul olarak yazabilmeli. Kural iki şeyi ayırmalı: **nakil** (bir kaynağa mal edilen söz:
     kaynağa bağlı, mekanik denetimli) ve **istinbat** (âyetin lafzından ve usulden kendi çıkarımı: serbest, ama
     etiketli, derecesiyle ve gerekçesi lafza bağlı). D12.4–D12.5'te yapılır.
-- **D12.4 Üslûp belgesi ve Muhâkemât (yapıldı, 2026-11-16; kullanıcının okumasını bekliyor):**
+- **D12.4 Üslûp belgesi ve Muhâkemât (bitti, 2026-11-16; kullanıcı okudu: "uygunlar"):**
   - **Usul özeti 2.7** (`docs/d1/usul-ozeti.md`, üçüncü sürüm): İşârât'ın Bakara 17–20'deki on iki meselesi
     Muhâkemât'ın İkinci Makalesinin ("Unsur-u Belâğat") Arapça telhîsidir; müellif Muhâkemât'ı "tefsir mukaddimesi"
     diye anar (`muhakemat/makale-03/maksad-03/maksad-02/c004`). Türkçe aslı telhîste olmayan tatbik ve talimatları
@@ -201,8 +201,15 @@ Adımlar (sıra, 2026-11-16):
     31–33 kopyasının sızıntı testi 3 ortak dizi verdi; üçü de vecih açılış kalıbı ("أما نظم الجمل بعضها مع بعض",
     "إن لهذه الآية أيضاً الوجوه الثلاثة"), belgenin öğretmesi gereken şey: kabul edildi.
   - Hangi belgenin yazım hattında nereye gireceği (yazar, kapalı eleştirmen, yalnız yazım adımı) D12.5'te karar.
-- D12.5 Yapılı akış (okuma ve çizelge → garaz → takdir zinciri alanları → program etiketi → araçsız yazım → kapalı
-  bölüm eleştirisi ve düzeltme), iki geliştirme biriminde, D11'in tek geçişli hattıyla yan yana; aynı üç ayaklı ölçü.
+- **Kararlar (kullanıcı, 2026-11-16, D12.3'ten sonra):** envanterin çelişki sinyali "farklı görüş adayı" diye okunur;
+  düzeltmenin kazancı ve kaybı (dayanak; îcâz ve kendi sözü) kabul; düzeltmenin yan etkilerini gidermek D12.5'in
+  konusu; **tırnak kuralı: takdir için ayrı işaret**; düzeltmenin sonraki sürümü (ikinci kapalı eleştiri ya da
+  uzunluk bütçesi) henüz karara bağlanmadı.
+- D12.5 Yapılı akış ve ar-ge döngüsü. **Rapor ve plan** (kullanıcının isteği, 2026-11-16): `docs/d1/d12-rapor-ve-plan.md`
+  (D12.5'e kadar öğrenilenler, kalıcı dersler, hedef hat, bir turun adımları, karar kuralı, tur sırası T1 çizelge ve
+  okuma–yazım ayrımı, T2 nakil–istinbat, T3 garaz, T4 takdir zinciri, T5 belgeler yazımda, D düzeltme d2; Tur 0
+  hazırlığı: dört geliştirme biriminin prova düzeni, takdir işareti, masada kör A/B kaydı, fark kartlarında kaynak
+  metni, taban h2). Kullanıcının onayını bekliyor (yöntem, takdir işaretinin biçimi, d2).
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 
