@@ -885,7 +885,7 @@ def hidden_para_anchors(unit: str) -> dict[str, str]:
         node = P.unit_node(cfg, work)
         current, para, count = None, None, Counter()
         for short, sid, _, pid in rows:
-            local = sid[len(node) + 1:]
+            local = P.local_id(cfg, work, sid)
             if local in bounds:
                 current, para = bounds[local], None
             if current is None:

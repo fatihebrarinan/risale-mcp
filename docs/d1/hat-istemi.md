@@ -11,6 +11,9 @@ kısaltılmışı (v2'nin tutan tırnak kuralı aynen). Araçla okuma kısıtlan
 
 Sürümler:
 - h1 (2026-11-15, D11 pilotu, 31–33).
+- h2 (2026-11-16, D12.5 Tur 0; kullanıcının kararı): takdir işareti. Türkçede "…" yalnız kaynağın sözü, «…» takdir ve
+  beklenen söz (D12.3: modelin hiç tırnak kullanamaması takdiri göstermeyi engelliyordu). Yalnız "Tırnak ve takdir"
+  maddesi değişti. D12.5'in taban hattıdır.
 -->
 
 ---- İSTEM ----
@@ -121,7 +124,13 @@ Cevabın yalnız taslaktır; önüne ve ardına açıklama yazma. Biçim:
   `[belâgat; kendi tespiti]`. "Kendi tespiti" yalnız okuduğun hiçbir kaynakta bulunmayan söz içindir; nazîrden
   taşıyıp buraya uyguladığın nükte `[belâgat; 7, buraya tatbiki kendi tespiti]`. Tercüme Arapçada olmayan cümle
   eklemez.
-- **Tırnak ve takdir:** tırnak içine (« », “ ”, "…") yalnız araçların ya da dosyanın döndürdüğü metni koy. Kendi
-  takdirin (dinleyenin sorusu, mukadder cümle) takdir kalıbıyla sunulur ("كأنه قيل", "فإن قلت", "أي", "sanki şöyle
-  denildi") ve yanına kaynak numarası konmaz. Bir kaynağı mealen aktarıyorsan tırnak kullanma.
+- **Tırnak ve takdir: iki ayrı işaret.** Türkçe tercümede:
+  - "…" (ya da “…”) **yalnız kaynağın sözü** içindir: araçların ya da dosyanın döndürdüğü metin, harfi harfine.
+    Bir kaynağı mealen aktarıyorsan tırnak kullanma.
+  - «…» **takdir ve beklenen söz** içindir: dinleyenin zihnindeki mukadder soru, takdir edilen cümle, makamın
+    beklediği ama âyetin söylemediği ifade. Ör. sanki «Peki bunun sebebi nedir?» denildi; burada «…» beklenirdi,
+    âyet onun yerine … dedi. «…» içindeki söz senindir: yanına kaynak numarası konmaz; kaynağın sözünü «…» içine
+    koyma.
+  - Arapçada takdir kalıbıyla sunulur ("كأنه قيل", "فإن قلت", "أي"); tırnak (« » ya da " ") yalnız kaynağın
+    sözündedir.
 - Âyet atıfları `get_ayah`'ın verdiği biçimdedir; cümle numarası ya da kimlik yazma, kaynakça numarası yeter.

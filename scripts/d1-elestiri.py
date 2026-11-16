@@ -323,7 +323,16 @@ def ayah_status(frag: str, read: Read, quran_sk: list[str]) -> str:
     return "bulunmadi"
 
 
-def check_quotes(d: dict, ids: dict, read: Read, quran_sk: list[str]) -> list[dict]:
+# D12.5 Tur 0 (kullanıcının kararı, 2026-11-16): h2'den beri taslağın Türkçesinde «…» takdir ve beklenen sözdür,
+# "…" kaynağın sözü. O taslaklarda Türkçe «…» tırnak sayılmaz, `takdir` diye ayrıca sayılır (aranmaz).
+NO_TAKDIR = {"v1", "v2", "h1"}
+
+
+def takdir_mark(meta: dict) -> bool:
+    return (meta.get("surum") or "v1") not in NO_TAKDIR
+
+
+def check_quotes(d: dict, ids: dict, read: Read, quran_sk: list[str], takdir: bool = False) -> list[dict]:
     out = []
     for p in d["pairs"]:
         nums = pair_nums(p)
@@ -346,6 +355,9 @@ def check_quotes(d: dict, ids: dict, read: Read, quran_sk: list[str]) -> list[di
                 out.append({"tur": "ayet", "dil": lang, "capa": anchor, "soz": m.group(1).strip(), "durum": st})
             for m in INLINE.finditer(text):
                 q = next(g for g in m.groups() if g is not None).strip()
+                if takdir and m.group(1) is not None and not is_ar(q):
+                    out.append({"tur": "takdir", "dil": "tr", "capa": anchor, "soz": q, "durum": "takdir", "yer": []})
+                    continue
                 if len(search_words(AYAH.sub(" ", q))) < 2:
                     continue
                 st, where = _status(q, nums, ids, read)
@@ -540,7 +552,8 @@ def mekanik(unit: str, drafts: list[int]) -> None:
         r = {"taslak": n, "okunan": len(read.items),
              "okunan_sunucu": dict(Counter(k[0] for k in read.items)),
              "numaralar": check_numbers(d, raw_ids),
-             "tirnak": check_quotes(d, ids, read, quran_sk),
+             "tirnak": check_quotes(d, ids, read, quran_sk,
+                                    takdir_mark(json.loads((P.DRAFTS / unit / f"taslak-{n}.json").read_text()))),
              "ortak": check_overlap(d, ids, index),
              "ipucu": check_hints(unit, n, read, extra, ayah_words),
              "kapsam": check_scope(d)}
@@ -597,6 +610,9 @@ def report(unit: str, results: dict) -> None:
                      f"olmayan {nm['metinde_cite_yok'] or '—'}, kaynakçada olup kullanılmayan "
                      f"{nm['kaynakcada_kullanilmayan'] or '—'}")
             L.append("")
+        tk = [x for x in r["tirnak"] if x["tur"] == "takdir"]
+        if tk:
+            L += [f"### Takdir işareti «…» ({len(tk)})", ""] + [f"- `{x['capa']}` «{_s(x['soz'], 120)}»" for x in tk] + [""]
         bad = [x for x in r["tirnak"] if x["durum"] == "bulunmadi" and x["tur"] != "ayet"]
         nis = [x for x in bad if x["dil"] == "ar" and (x.get("nisbet") or x["tur"] == "blok")]
         if nis:

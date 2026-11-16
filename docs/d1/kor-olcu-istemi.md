@@ -9,6 +9,7 @@ okur (A/B bütünü tartar, ucuz). Taslakların istem, model ve düzeltme bilgis
 
 Sürümler:
 - o1 (2026-11-16): ilk sürüm; D12.1, 31–33.
+- o2 (2026-11-16, D12.5 Tur 0): takdir işareti «…» (h2'den beri) 3. ölçüde açıklandı.
 -->
 
 ---- OLCU ----
@@ -35,7 +36,7 @@ olarak: **hangi taslak daha iyi?** Şu ölçülerle, bu sırayla:
 1. **Doğruluk:** yanlış, uydurma, İşârât'la çelişki, kaynağa yanlış nisbet, kapsamı aşan hüküm daha az olan.
 2. **İşârât'a yakınlık:** İşârât'ın nüktelerini ve oraya vardığı yolu (takdir zinciri, mukadder sual, kayıtların
    eşlenmesi, garaza akış) daha çok yakalayan.
-3. **Kaynak disiplini:** tırnak, işaret, "kendi tespiti" ve numaralar yerinde olan.
+3. **Kaynak disiplini:** tırnak, işaret, "kendi tespiti" ve numaralar yerinde olan. Taslaklarda Türkçe «…» **takdir ve beklenen söz** işaretidir (dinleyenin mukadder sorusu, takdir edilen cümle, makamın beklediği ifade): yazarın kendi sözüdür, kaynak iddia etmez; "…" ve “…” kaynağın sözüdür.
 4. **Îcâz:** aynı şeyi daha az sözle söyleyen; nükteyi gerekçesiyle veren.
 
 Taslaklar birbirine çok benzeyebilir; o zaman farkın bulunduğu yerlere bak. Fark tercih gerektirmeyecek kadar

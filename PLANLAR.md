@@ -60,7 +60,7 @@ işler"e taşındı (bitmişlerdi, "Sıradaki"de kalmışlardı).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (D12.1–D12.4 bitti; D12.5 planı onaylandı, sırada Tur 0) | |
+| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (D12.1–D12.4 bitti; D12.5: Tur 0 bitti, T1 sürüyor) | |
 | 2 | S6 | Âyet masasının ikinci hâli: iki yan kullanıcının seçtiği görünüm, taslak odaklı yapay zekâ kısmı (iki yanlı kısmı D12.2) | |
 | 3 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak; pilot 31–33'te (D11.1–D11.2 bitti; D11.3 D12.3'e katıldı; D12'yi bekler) | |
 | 4 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla (D12'yi bekler) | D1.8 |
@@ -214,8 +214,24 @@ Adımlar (sıra, 2026-11-16):
   kullanamaması çözülür); düzeltmenin ikinci sürümü (d2) **ikinci kapalı eleştiri** (yalnız düzeltilen paragraflara:
   düşen fikir, belirsiz gönderme, nakil kendi sözün yerine mi geçti).
   **İşleyiş** (onaylandı, 2026-11-16): plan belgesi 4.10 (kullanıcı turda bir okuma, 3 yer; Claude yürütür, okuma
-  hazır olunca ve karar belirsizken durur; tur raporu `data/d1/provalar/<birim>/d12-5-T<n>.md`). **Sırada: Tur 0**
-  (kullanıcı yeni sohbette başlatacak).
+  hazır olunca ve karar belirsizken durur; tur raporu `data/d1/provalar/<birim>/d12-5-T<n>.md`).
+  - **Tur 0 (bitti, 2026-11-17; ≈7 $):** (1) dört geliştirme biriminin prova düzeni (`d1-prova.UNITS`, `_dev_unit`):
+    **Türkçe tercümenin düğüm sınırları âyetlerle örtüşmüyor** (13'ün Türkçesi `14-15` düğümünün c001–c010'unda, 14–15'inki
+    `16`nın c001–c003'ünde sürer); gizleme düğüm düzeyinde komşu Türkçe düğümü de siler (fazla gizlemek zararsız),
+    gizlenen metnin kendisi `parcalar` ile kesin aralık (`unit_sentences`, `local_id`). Sızıntı testi dördünde temiz;
+    9–10'da kizb ve sıdk dersindeki düstur (لا يلزم من لزوم صدق كل قول…) Hutbe-i Şâmiye ve Hakikat Çekirdekleri'nde de
+    geçer: müellifin başka eserdeki sözü, kabul edildi (`sizinti_kabul`). Kaynak dosyasında "önceki birim" programla.
+    Envanterler (Fable çıkarır, Opus denetler): 9–10 47, 13 50, 14–15 64, 16 24 kalem; açık öneriler (2–7) bakılmadı.
+    (2) **h2** = h1 + takdir işareti (`hat-istemi.md`: "…" kaynağın sözü, «…» takdir ve beklenen söz); D9.1 h2'den
+    beri Türkçe «…»'yı `takdir` sayar (tırnak değil); kör ölçü o2 ve kapalı eleştirmen k2 işaretin anlamını bilir.
+    (3) masada **tur okuması** (`d1-masa-sablon.html`): `provalar/<birim>/tur-T<n>.json`'un yerleri âyetin altında;
+    yer başına A/B/eşit/emin değilim, gerekçe, sonra "Aç"; yer adına tıklayınca kör kipte Kaynaklar + A + B açılır;
+    dışa aktarmada `ab`. (4) fark kartlarında paragrafların andığı kaynakların metni (açılır kutu).
+  - **T1 (sürüyor, 2026-11-17):** okuma ve yazım ayrı + kelime/hey'et çizelgesi, 9–10. Yeni kol `scripts/d1-tur.py`
+    (istem `docs/d1/cizelge-istemi.md` c1; ortak kısımlar h2'den aynen): okuma oturumu araçlı, çıktısı JSON çizelge
+    (âyetin her kelimesine satır: i'râb, harfler, sîga, ta'rif-tenkir, takdim-te'hir, tercih, müfessirler kimlik ve
+    aynen sözle, nükte adayı; cümleler, öncesiyle bağ, maksat, ayrılıklar); program eksik ve boş satırı ve kimliğinde
+    bulunmayan alıntıyı bir kez geri gönderir; yazım oturumunda yalnız `cite` açık. Taban taslak 1 (h2), yeni taslak 2.
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 

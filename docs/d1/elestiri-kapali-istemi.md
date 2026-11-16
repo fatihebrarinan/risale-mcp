@@ -13,6 +13,7 @@ her not taslağı yazana bir yapılacak iş söyler (`oneri`, `oncelik`). 5. sor
 
 Sürümler:
 - k1 (2026-11-16): ilk sürüm; D12.1, 31–33 taslak 7.
+- k2 (2026-11-16, D12.5 Tur 0): takdir işareti «…» (h2'den beri) 3. soruda açıklandı.
 -->
 
 ---- ELESTIRI ----
@@ -50,6 +51,8 @@ kitapları açık; taslağın dayandığı kaynakları ve gerekirse başkaların
 3. **Kaynak disiplini:** bir sözü bir müfessire ya da İşârât'a mal ederken o kaynak gerçekten öyle mi diyor; tırnak
    içindeki söz araçlardan dönen metin mi, kendi tercümesi ya da kendi sözü mü; "kendi tespiti" dediği şey aslında
    okuduğu bir kaynakta var mı; işaretler (`[dil]`, `[belâgat]`, delâlet derecesi) yerinde mi; tercüme damgası var mı.
+   Türkçe «…» takdir ve beklenen söz işaretidir (yazarın kendi sözü, kaynak iddia etmez; doğru yerde mi, ona bak);
+   "…" ve “…” kaynağın sözüdür.
 4. **Kapsam ve derece:** taslağın kendi tespiti, söylediğinden geniş bir hüküm mü kuruyor? "Tabiatıyla", "zâtında",
    "daima", "hiç", "ancak", "X değil Y'dir" gibi inhisar ve mutlaklık kalıplarında iki şeye bak: (a) kaynak aynı
    ilişkiyi kuruyor mu, kuruyorsa ara halkalarla (sebep zinciri, takdir) mı; zinciri atlayıp ilişkiyi mahiyet

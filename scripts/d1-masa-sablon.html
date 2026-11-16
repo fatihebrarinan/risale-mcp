@@ -179,6 +179,15 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
   .pane { position: static; height: auto; overflow: visible; border-right: 0; border-bottom: 2px solid var(--line); }
   .chip { font-size: 1.6rem; }
 }
+/* D12.5 tur okuması: yer başına kör A/B */
+#turbox { margin: 10px 0 0; border: 1px solid var(--accent); border-radius: 8px; background: var(--accent-soft); padding: 6px 12px; }
+#turbox summary { cursor: pointer; font-weight: 600; }
+.abrow { border-top: 1px solid var(--line); padding: 8px 0; }
+.abrow:first-of-type { border-top: 0; }
+.abrow .why { font-size: .8rem; color: var(--muted); }
+.abrow textarea { width: 100%; box-sizing: border-box; min-height: 3.2em; margin-top: 4px; }
+.abrow .seg { margin-top: 4px; }
+.abrow .reveal { font-size: .8rem; margin-top: 4px; }
 </style></head>
 <body>
 <header id="hdr">
@@ -211,6 +220,7 @@ const store = {
 let yzEval = store.get('d1-yz-sinama', {});     // "birim|taslak|okuyucu-modeli|nükte" ya da "birim|taslak|fazla|anahtar"
 let yzSuz = store.get('d1-yz-suzgec', {});      // "birim|taslak|not anahtarı"
 let bkMarks = store.get('d1-bilirkisi', {});    // "birim|kısım|madde"
+let abMarks = store.get('d1-masa-ab', {});      // D12.5: "birim|tur|yer" -> {secim: taslak|esit|emin_degilim, harf, gerekce, acildi}
 const U = DATA.unit, Y = DATA.yz;
 const DKEYS = Object.keys(DATA.drafts);
 const MAXP = 4;                                  // en çok yan (S6: masaüstünde 3, genişte 4)
@@ -247,7 +257,12 @@ function savePanes() { store.set('d1-masa-yanlar-' + U, panes.map(p => ({k: p.k,
 function withDraft(dk, fn) { const o = st.draft; st.draft = dk; try { return fn(); } finally { st.draft = o; } }
 
 // --- kör kip: taslaklar "Taslak A, B…" diye, sabit tohumla karışık sırada; bilgi satırı gizli
+const TUR = DATA.tur || null;                   // D12.5: bu birimin son turu {ad, a, b, yerler}
 const BLIND = (() => {
+  if (TUR) {                                     // turun iki kolu A ve B (programın sabit tohumu), öbürleri C…
+    const rest = DKEYS.filter(k => k !== TUR.a && k !== TUR.b);
+    return Object.fromEntries([TUR.a, TUR.b, ...rest].map((k, i) => [k, 'Taslak ' + 'ABCDEFGHIJKLMNOP'[i]]));
+  }
   const ks = [...DKEYS]; let s = 7;
   for (const c of U) s = (s * 31 + c.charCodeAt(0)) >>> 0;
   for (let i = ks.length - 1; i > 0; i--) { s = (s * 1103515245 + 12345) >>> 0; const j = s % (i + 1); [ks[i], ks[j]] = [ks[j], ks[i]]; }
@@ -341,7 +356,42 @@ function renderAyah() {
       <p class="meal">${esc(v.meal)} <i>(${esc(v.meal_by)}, ${esc(v.ref)})</i></p>`;
   }).join('');
   $('#ayah').innerHTML = `<div class="levels">${lv}</div><div class="verses">${verses}</div>
-    <p class="hint">Bir kelimeye ya da üstteki düzeylerden birine tıklayın. Kelimenin altındaki sayı İşârât'ın o kelimedeki nükte sayısıdır.</p>`;
+    <p class="hint">Bir kelimeye ya da üstteki düzeylerden birine tıklayın. Kelimenin altındaki sayı İşârât'ın o kelimedeki nükte sayısıdır.</p>${turHtml()}`;
+}
+
+// --- D12.5 tur okuması: program seçtiği yerlerde iki taslağı (A, B) kör karşılaştırma; tercih ve gerekçe, sonra "Aç"
+function abKey(y) { return `${U}|${TUR.ad}|${y.id}`; }
+function turHtml() {
+  if (!TUR) return '';
+  const done = TUR.yerler.filter(y => (abMarks[abKey(y)] || {}).secim).length;
+  const rows = TUR.yerler.map((y, i) => {
+    const m = abMarks[abKey(y)] || {}, k = abKey(y);
+    const opt = [['a', 'A daha iyi'], ['b', 'B daha iyi'], ['esit', 'eşit'], ['emin_degilim', 'emin değilim']].map(([v, l]) => {
+      const val = v === 'a' ? TUR.a : v === 'b' ? TUR.b : v;
+      return `<button data-abv="${esc(val)}" aria-pressed="${m.secim === val}">${l}</button>`; }).join('');
+    const who = d => `taslak ${esc(d)}${(DATA.drafts[d] || {}).about ? ' (' + esc(DATA.drafts[d].about) + ')' : ''}`;
+    const rev = m.acildi ? `<div class="reveal">A = ${who(TUR.a)}; B = ${who(TUR.b)}${y.acik ? '<br>' + esc(y.acik) : ''}</div>`
+      : (m.secim ? `<button class="btn reveal" data-abopen="${esc(k)}">Aç: hangisi hangisi</button>` : '');
+    return `<div class="abrow" data-abk="${esc(k)}"><b>${i + 1}. <a href="#" data-turgo="${esc(y.id)}">${locName(y.loc)}</a></b>
+      ${y.baslik ? ' · ' + esc(y.baslik) : ''}<div class="why">${esc(y.soru || '')}</div>
+      <span class="seg">${opt}</span><textarea data-abg placeholder="Kısa gerekçe (bir iki cümle)">${esc(m.gerekce || '')}</textarea>${rev}</div>`;
+  }).join('');
+  const open = store.get('d1-masa-tur-acik', true);
+  return `<details id="turbox"${open ? ' open' : ''}><summary>Tur okuması: ${esc(TUR.ad)} · ${done}/${TUR.yerler.length} yer</summary>
+    <p class="small">${TUR.giris || ''}</p>${rows}</details>`;
+}
+function turGo(id) {                              // yere git: kör kip, Kaynaklar + Taslak A + Taslak B, katmanlar kapalı
+  const y = TUR.yerler.find(x => x.id === id);
+  st.blind = true; st.loc = y.loc; st.focus = null; st.dfocus = null;
+  const off = {karsi: false, critic: false, kcritic: false, bk: false};
+  panes = [{k: 'src', open: {}}, Object.assign(newDraftPane(TUR.a), {L: Object.assign({}, off)}),
+           Object.assign(newDraftPane(TUR.b), {L: Object.assign({}, off)})];
+  savePanes(); render();
+}
+function abSave(k, patch) {
+  if (needReader()) return false;
+  abMarks[k] = Object.assign({}, abMarks[k] || {}, patch, {reader: reader(), at: new Date().toISOString()});
+  store.set('d1-masa-ab', abMarks); return true;
 }
 
 // ================================================================ kaynaklar
@@ -972,6 +1022,17 @@ document.addEventListener('click', ev => {
     withDraft(x.t, () => setFold([`bk:${p2}|${id}`], false));
     render(); scrollIn(i, `[data-bk="${CSS.escape(U + '|' + p2 + '|' + id)}"]`); return;
   }
+  const tg = t.closest('[data-turgo]');
+  if (tg) { ev.preventDefault(); turGo(tg.dataset.turgo); return; }
+  const abv = t.closest('[data-abv]');
+  if (abv) {
+    const row = abv.closest('[data-abk]'), k = row.dataset.abk, v = abv.dataset.abv;
+    const harf = v === TUR.a ? 'A' : v === TUR.b ? 'B' : v;
+    if (abSave(k, {secim: (abMarks[k] || {}).secim === v ? '' : v, harf, gerekce: row.querySelector('[data-abg]').value})) renderAyah();
+    return;
+  }
+  const abo = t.closest('[data-abopen]');
+  if (abo) { if (abSave(abo.dataset.abopen, {acildi: new Date().toISOString()})) renderAyah(); return; }
   const yv = t.closest('[data-yzv]'), sv = t.closest('[data-suz]'), bv = t.closest('[data-bkv]');
   if (yv || sv) {
     if (needReader()) return;
@@ -985,6 +1046,7 @@ document.addEventListener('click', ev => {
 });
 document.addEventListener('toggle', ev => {
   if (ev.target.id === 'smpbox') store.set('d1-masa-orneklem-acik', ev.target.open);
+  if (ev.target.id === 'turbox') store.set('d1-masa-tur-acik', ev.target.open);
   if (ev.target.id === 'bkbox') store.set('d1-masa-bk-acik', ev.target.open);
   if (ev.target.id === 'critbox') store.set('d1-masa-crit-acik', ev.target.open);
   if (ev.target.id === 'sysbox') store.set('d1-masa-sys-acik', ev.target.open);
@@ -1002,6 +1064,7 @@ document.addEventListener('change', ev => {
   const t = ev.target;
   if (t.id === 'unit') { if (t.value !== U) { st.loc = null; persist(); location.href = t.value + '.html'; } return; }
   if (t.id === 'blind') { st.blind = t.checked; persist(); render(); return; }
+  if (t.matches('[data-abg]')) { const k = t.closest('[data-abk]').dataset.abk; abSave(k, {gerekce: t.value}); return; }
   if (t.matches('[data-panekind]')) {
     const i = paneOf(t), v = t.value;
     panes[i] = v.startsWith('d:') ? Object.assign(newDraftPane(v.slice(2)), panes[i].k === 'draft' ? {L: panes[i].L} : {}) : {k: v, open: {}};
@@ -1030,7 +1093,7 @@ $('#reader').onchange = () => store.set('d1-okuma-okur', reader());
 $('#export').onclick = () => {
   const r = reader() || 'okuyucu', rubric = store.get('d1-okuma-olcut', {});
   const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes: store.get('d1-okuma-notlar', []),
-    yz_sinama: yzEval, yz_suzgec: yzSuz, bilirkisi: bkMarks,
+    yz_sinama: yzEval, yz_suzgec: yzSuz, bilirkisi: bkMarks, ab: abMarks,
     rubric: Object.entries(rubric).map(([k, v]) => { const [unit, draft, rd] = k.split('|'); return {unit, draft, reader: rd, scores: v}; })};
   const a = document.createElement('a');
   a.href = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 1)], {type: 'application/json'}));
@@ -1042,7 +1105,7 @@ $('#import').onchange = async ev => {
   try {
     const p = JSON.parse(await f.text());
     if (p.app !== 'd1-okuma') throw new Error('bu sayfanın dosyası değil');
-    for (const [src, map, key] of [[p.yz_sinama, yzEval, 'd1-yz-sinama'], [p.yz_suzgec, yzSuz, 'd1-yz-suzgec'], [p.bilirkisi, bkMarks, 'd1-bilirkisi']]) {
+    for (const [src, map, key] of [[p.yz_sinama, yzEval, 'd1-yz-sinama'], [p.yz_suzgec, yzSuz, 'd1-yz-suzgec'], [p.bilirkisi, bkMarks, 'd1-bilirkisi'], [p.ab, abMarks, 'd1-masa-ab']]) {
       for (const [k, v] of Object.entries(src || {})) if (!map[k] || v.at > map[k].at) map[k] = v;
       store.set(key, map);
     }

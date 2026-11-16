@@ -116,6 +116,12 @@ function diffPair(a, b) {
   return [out(A, keepA), out(B, keepB)];
 }
 
+function srcHtml(c) {                                  // paragrafların andığı kaynakların metni (D12.5 Tur 0)
+  if (!(c.kaynak || []).length) return '';
+  return `<details class="srcs"><summary class="small">Paragrafların andığı kaynaklar (${c.kaynak.length})</summary>` +
+    c.kaynak.map(s => `<div class="box"><b>[${esc(s.n)}]</b> <span class="small">${esc(s.cite)}</span>
+      <div class="${/[\u0600-\u06ff]/.test(s.text) ? 'ar' : 'small'}" dir="auto">${esc(s.text) || '<span class="muted">(metin bulunamadı)</span>'}</div></div>`).join('') + '</details>';
+}
 function cardHtml(c, idx) {
   const m = marks[base + c.id] || {};
   const left = c.left === 'eski' ? 0 : 1;               // A sütunu hangi taslak
@@ -146,7 +152,7 @@ function cardHtml(c, idx) {
   }
   return `<div class="card${m.choice ? ' done' : ''}" id="card-${idx}">
     <h2>${idx + 1}. ${esc(c.sec_title)} <span class="tag">paragraf ${esc(c.id.split('/')[1])}</span></h2>
-    <div class="cols">${col('A', arA, trA)}${col('B', arB, trB)}</div>
+    <div class="cols">${col('A', arA, trA)}${col('B', arB, trB)}</div>${srcHtml(c)}
     <div class="ask"><b class="small">Hangisi daha iyi?</b>${opts}
       <textarea data-card="${c.id}" data-f="reason" placeholder="Kısa gerekçe (bir iki cümle)">${esc(m.reason || '')}</textarea>
       <button class="btn" data-open="${c.id}" ${m.choice ? '' : 'disabled'}>${m.opened ? 'Açıldı' : 'Aç: hangisi düzeltilmiş, ölçüler ne demiş'}</button>

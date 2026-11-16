@@ -50,7 +50,7 @@ E = _load("d1_elestiri", "d1-elestiri.py")
 
 HAT_PROMPT = ROOT / "docs" / "d1" / "hat-istemi.md"
 IZAH_PROMPT = ROOT / "docs" / "d1" / "izah-istemi.md"
-SURUM = "h1"
+SURUM = "h2"          # istem dosyası yalnız son sürümü taşır; h1'in kopyası data/interim/d1-prova/<birim>/istem-hat-h1.md
 # altı taslağın hepsinin okuduğu müfessirler (D8, 31–33); öbürleri araçla
 DOSYA_TEFSIR = ("kessaf", "beyzavi", "ebussuud", "alusi")
 # usul özetinden kısa isteme giren bölümler: "Bir âyette izlenen sıra" ve "Mukaddime ne zaman gelir"
@@ -93,8 +93,13 @@ def hedef(unit: str) -> dict:
 def _isarat_prev(unit: str) -> str:
     """İşârât'ın sınanan birimden önceki birimi, Arapça asıl, cümle kimlikleriyle (prova veritabanından)."""
     cfg = P.UNITS[unit]
-    prev = {"31-33": "isaratul-icaz-arabi/sure-i-bakara/30", "11-12": "isaratul-icaz-arabi/sure-i-bakara/9-10-ayetlerin-tefsiri"}[unit]
     conn = sqlite3.connect(out_dir(unit) / "risale.db")
+    # önceki birim programla (D12.5 Tur 0): Bakara'nın Arapça birimlerinden, gizlenen birimden hemen önceki kardeş
+    me = P.unit_node(cfg, "isaratul-icaz-arabi")
+    g = sqlite3.connect(f"file:{P.GENEL_DB}?mode=ro", uri=True)
+    sibs = [r[0] for r in g.execute("SELECT id FROM nodes WHERE parent_id = 'isaratul-icaz-arabi/sure-i-bakara' "
+                                    "ORDER BY ord")]
+    prev = sibs[sibs.index(me) - 1]
     nodes = [r for r in conn.execute("SELECT id, ref FROM nodes WHERE id = ? OR id LIKE ? ORDER BY ord", (prev, prev + "/%"))]
     L = []
     for nid, ref in nodes:

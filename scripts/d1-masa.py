@@ -200,7 +200,7 @@ def isarat(unit: str) -> dict:
         node = P.unit_node(cfg, work)
         cur, paras, last = None, [], None
         for short, sid, text, pid in rows:
-            local = sid[len(node) + 1:]
+            local = P.local_id(cfg, work, sid)
             cur = bounds.get(local, cur)
             if cur is None or cur == "Âyet":
                 continue
@@ -382,7 +382,8 @@ def build(unit: str, units: list[dict]) -> Path:
             "chips": [{k: c[k] for k in ("id", "ayah", "text", "norm")} for c in ayah.chips],
             "isarat": isarat(unit), "tefsir": tefsir(unit), "klasik": klasik(ayah), "risale": risale(unit),
             "drafts": dr, "yz": layer(unit, ayah, places, dr),
-            "fark": sorted(p.name for p in OUT_DIR.glob(f"fark-{unit}-*.html"))}   # D12.2 fark kartları
+            "fark": sorted(p.name for p in OUT_DIR.glob(f"fark-{unit}-*.html")),   # D12.2 fark kartları
+            "tur": tur_data(unit)}                                                  # D12.5 tur okuması (kör A/B)
     blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     out = OUT_DIR / f"{unit}.html"
     out.write_text(TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
@@ -394,6 +395,12 @@ def build(unit: str, units: list[dict]) -> Path:
     print(f"{out.relative_to(ROOT)} ({out.stat().st_size // 1024} KB)")
     print("  nükteler:", ", ".join(f"{names.get(k, k)} {v}" for k, v in counts.items()))
     return out
+
+
+def tur_data(unit: str) -> dict | None:
+    """Birimin son tur okuması (`provalar/<birim>/tur-T<n>.json`, `d1-tur.py okuma` yazar): {ad, a, b, giris, yerler}."""
+    paths = sorted((P.DRAFTS / unit).glob("tur-T*.json"), key=lambda p: int(re.sub(r"\D", "", p.stem) or 0))
+    return json.loads(paths[-1].read_text(encoding="utf-8")) if paths else None
 
 
 def title(unit: str) -> str:

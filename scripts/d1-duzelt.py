@@ -59,7 +59,7 @@ KAPALI_PROMPT = ROOT / "docs" / "d1" / "elestiri-kapali-istemi.md"
 DUZELTME_PROMPT = ROOT / "docs" / "d1" / "duzeltme-istemi.md"
 OLCU_PROMPT = ROOT / "docs" / "d1" / "kor-olcu-istemi.md"
 NOT_PROMPT = ROOT / "docs" / "d1" / "not-karsilastirma-istemi.md"
-SURUM = {"kapali": "k1", "duzeltme": "d1", "olcu": "o1", "notlar": "n1"}
+SURUM = {"kapali": "k2", "duzeltme": "d1", "olcu": "o2", "notlar": "n1"}
 PROVA_SERVERS = ("risale", "tefsir", "hadis", "klasik")
 OPUS = "claude-opus-5-5"
 STAMP = E.STAMP
@@ -564,6 +564,25 @@ def fark(unit: str, old: int, new: int) -> Path:
     def relabel(t: str) -> str:
         return re.sub(r"\b([AB]):(?=[A-ZÂÎÛ])", lambda m: f"taslak {who[m.group(1)]}:", t)
 
+    # D12.5 Tur 0 (D12.3'te eksikti): kartın iki hâlinin andığı kaynakların metni, karar verirken açılabilir
+    texts = P.SourceTexts(unit)
+    srcs = {n: (Y.draft_blocks(unit, n)[1], P.draft_sources(P.DRAFTS / unit / f"taslak-{n}.jsonl")) for n in (old, new)}
+
+    def card_sources(anchors: list[str]) -> list[dict]:
+        out, seen = [], set()
+        for n in (old, new):
+            cites, ids = srcs[n]
+            body = " ".join({a: t for a, _, _, t in Y.draft_blocks(unit, n)[0]}.get(a, "") for a in anchors)
+            for num in sorted({x for m in re.finditer(r"\[([^\[\]\n]{1,80})\]", body) for x in re.findall(r"\d+", m.group(1))}, key=int):
+                server, sid = ids.get(num, (None, None))
+                key = (sid or cites.get(num, ""))
+                if not key or key in seen:
+                    continue
+                seen.add(key)
+                out.append({"n": num, "cite": cites.get(num, ""), "id": sid,
+                            "text": (texts.text(server, sid, cites.get(num, "")) or "")[:1500]})
+        return out
+
     cards = []
     for tur, ids in yerler.items():
         for pid in ids:
@@ -582,7 +601,7 @@ def fark(unit: str, old: int, new: int) -> Path:
             cards.append({"id": pid, "tur": tur, "sec_title": P.SECTION_TITLES[sec],
                           "ar": [bo.get(ar, ""), bn.get(ar, "")], "tr": [bo.get(tr, ""), bn.get(tr, "")],
                           "left": None,
-                          "envanter": envs, "elestirmen": crit})
+                          "envanter": envs, "elestirmen": crit, "kaynak": card_sources([ar, tr])})
     rng = random.Random(f"d12-fark-{unit}-{old}-{new}")
     rng.shuffle(cards)
     sides = (["eski", "yeni"] * len(cards))[:len(cards)]       # sol ve sağ yarı yarıya (sıradan tahmin edilmesin)

@@ -147,6 +147,72 @@ UNITS = {
 }
 
 
+# D12.5'in geliştirme birimleri (kullanıcının kararı, 2026-11-16; PLANLAR.md D12): 9–10, 13, 14–15, 16. Kısa, 11–12
+# türü, mukaddimesiz. **Türkçe tercümenin düğüm sınırları âyetlerle örtüşmez** (erisale'nin sayfa bölmesi, 2026-11-16
+# görüldü): 13'ün Türkçesi `14-15` düğümünün c001–c010'unda sürer, 14–15'inki `16`nın c001–c003'ünde. Gizleme düğüm
+# düzeyindedir: o komşu Türkçe düğüm de bütünüyle silinir (fazla gizlemek zararsız; Arapçası görünür kalır). Gizlenen
+# metnin kendisi (envanter, masa) `parcalar` ile kesin aralıktır: [(düğüm, ilk, son)], ilk ve son dahil, None uçta.
+B_AR, B_TR = "isaratul-icaz-arabi/sure-i-bakara/", "isaratul-icaz/sure-i-bakara/"
+_TEMSIL = ("isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri",
+           "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/fasil",
+           "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/fasil-2")
+_BIRIM_SATIRI = ("| 9–10, 11–12, 13, 14–15, 16 |", "9–10, 11–12, 13, 14–15, 16")
+
+
+def _dev_unit(key: str, ayahs: tuple[int, int], node: str, label: str, olcu: str, ince: tuple[str, ...],
+              tr_parts: list[tuple[str, str | None, str | None]], sections: dict, ozet: list, cizelge: list) -> dict:
+    others = ", ".join(x for x in _BIRIM_SATIRI[1].split(", ") if x != label)
+    tr_nodes = [B_TR + n for n, _, _ in tr_parts]
+    return {"sura": 2, "ayahs": ayahs, "sura_name": "Bakara", "olcu": olcu, "dev": True,
+            "ince": tuple(B_AR + x for x in ince) + _TEMSIL,
+            "nodes": (tr_nodes[0], B_AR + node, *tr_nodes[1:]),
+            "parcalar": {"isaratul-icaz": [(B_TR + n, a, b) for n, a, b in tr_parts]},
+            "sections": sections,
+            "ozet": [(_BIRIM_SATIRI[0], f"| {others} |")] + ozet,
+            "cizelge": [(None, f"| {label} |")] + cizelge}
+
+
+UNITS.update({
+    "9-10": _dev_unit(
+        "9-10", (9, 10), "9-10-ayetlerin-tefsiri", "9–10", "Bakara 11–12, 13, 14–15, 16",
+        ("8", "11-12-ayetlerin-tefsiri", "13"), [("9-10-ayetlerin-tefsiri", None, None)],
+        {"isaratul-icaz-arabi": {"V1": "c001", "V2": "c011", "V3": "c038", "son": "c100"},
+         "isaratul-icaz": {"Âyet": "c001", "V1": "c002", "V2": "c003", "V3": "c042"}},
+        [("(3: zekât ve ribâ; 7: ebedî ceza; 9–10: kizb ve sıdk)", "(3: zekât ve ribâ; 7: ebedî ceza)")],
+        [("(3: zekât ve ribâ; 9–10: kizb ve sıdk; 7: ebedî ceza üzerine S–C)", "(3: zekât ve ribâ; 7: ebedî ceza üzerine S–C)")]),
+    "13": _dev_unit(
+        "13", (13, 13), "13", "13", "Bakara 9–10, 11–12, 14–15, 16",
+        ("9-10-ayetlerin-tefsiri", "11-12-ayetlerin-tefsiri", "14-15-ayetlerin-tefsiri"),
+        [("13", None, None), ("14-15-ayetlerin-tefsiri", None, "c010")],
+        {"isaratul-icaz-arabi": {"V1": "c001", "V2": "c003", "V3": "c009", "son": "c047"},
+         "isaratul-icaz": {"Âyet": "c001", "V1": "c004", "V2": "c008", "V3": "c023"}},
+        [], []),
+    "14-15": _dev_unit(
+        "14-15", (14, 15), "14-15-ayetlerin-tefsiri", "14–15", "Bakara 9–10, 11–12, 13, 16",
+        ("11-12-ayetlerin-tefsiri", "13", "16"),
+        [("14-15-ayetlerin-tefsiri", "c011", None), ("16", None, "c003")],
+        {"isaratul-icaz-arabi": {"V1": "c001", "V2": "c002", "V3": "c018", "son": "c064"},
+         "isaratul-icaz": {"Âyet": "c011", "V1": "c012", "V2": "c013", "V3": "c067"}},
+        [],
+        [("Örn. `B/14-15-ayetlerin-tefsiri/c033` (ilâ / mea), ", "Örn. "),
+         ("; `B/14-15-ayetlerin-tefsiri/c024`: te'kid beklenirken terk)", ")"),
+         ("(`B/11-12-ayetlerin-tefsiri/c037`..`c050`; `B/14-15-ayetlerin-tefsiri/c035`..`c036`)",
+          "(`B/11-12-ayetlerin-tefsiri/c037`..`c050`)")]),
+    "16": _dev_unit(
+        "16", (16, 16), "16", "16", "Bakara 9–10, 11–12, 13, 14–15",
+        ("13", "14-15-ayetlerin-tefsiri"), [("16", "c004", None)],
+        {"isaratul-icaz-arabi": {"V1": "c001", "V2": "c004", "V3": "c006", "son": "c024"},
+         "isaratul-icaz": {"Âyet": "c004", "V1": "c006", "V2": "c014", "V3": "c021"}},
+        [], []),
+})
+# Sızıntı testinin elle incelenip kabul edilen ortak cümleleri (2026-11-16): müellifin başka eserlerdeki kendi
+# düsturu, İşârât'ın 9–10 sonundaki kizb ve sıdk dersinde de geçer; usul "Risale'de işlenmişse oraya atıfla" der.
+_DUSTUR = "müellifin düsturu, başka eserinde; İşârât'ın sızması değil"
+UNITS["9-10"]["sizinti_kabul"] = {s: _DUSTUR for s in ("hutbe-i-samiye/cuz-01/c125", "hakikat-cekirdekleri/kelime-02/c020",
+                                                       "mektubat-osmanlica/035/c125")}
+DEV_UNITS = ("9-10", "13", "14-15", "16")
+
+
 def _like_any(cols: list[str], needles: list[str]) -> tuple[str, list[str]]:
     where = " OR ".join(f'"{c}" LIKE ?' for c in cols for _ in needles)
     return where, [f"%{n}%" for _ in cols for n in needles]
@@ -221,13 +287,16 @@ ISTEM = {"tam": ("istem.md", "sizinti.md"), "ince": ("istem-ince.md", "sizinti-i
          # D2: ince istem ve me'hazda klasik eserler eklentisi (yalnız `@klasik` satırı farklı)
          "ince-klasik": ("istem-ince-klasik.md", "sizinti-ince-klasik.md"),
          # D11: üretim hattının kısa istemi ve kaynak dosyası (`scripts/d1-hat.py hazirla`; sürümü h1, h2…)
-         "hat": ("istem-hat.md", "sizinti-hat.md")}
-VARIANT_TAGS = {"tam": {"tam"}, "ince": {"ince"}, "ince-klasik": {"ince", "klasik"}, "hat": {"ince", "klasik"}}
+         "hat": ("istem-hat.md", "sizinti-hat.md"),
+         # D12.5 T1: okuma ve yazım ayrı (`scripts/d1-tur.py`; sürümü c1…); istem kaydı iki istemin birleşiği
+         "cizelge": ("istem-cizelge.md", "sizinti-cizelge.md")}
+VARIANT_TAGS = {"tam": {"tam"}, "ince": {"ince"}, "ince-klasik": {"ince", "klasik"}, "hat": {"ince", "klasik"},
+                "cizelge": {"ince", "klasik"}}
 
 
 def uses_klasik(istem: str | None) -> bool:
     """Klasik eserler eklentisi açık mı (D2'den beri ince-klasik; D11'in hattı)."""
-    return bool(istem) and ("klasik" in istem or istem == "hat")
+    return bool(istem) and ("klasik" in istem or istem in ("hat", "cizelge"))
 
 
 def arabic_text(db: Path, only: tuple[str, ...] | None = None) -> str:
@@ -361,7 +430,10 @@ def leak_report(unit: str, cfg: dict, out: Path, prompt: str, report: str = "siz
         for sid, n in sorted(hits.items(), key=lambda kv: -kv[1])[:60]:
             text = conn.execute("SELECT text FROM sentences WHERE id = ?", (sid,)).fetchone()[0]
             lines.append(f"- {n} · `{sid}` · {text[:160]}")
-        if name == "risale" and any(n >= LEAK_MIN for n in hits.values()):
+        accepted = cfg.get("sizinti_kabul", {})
+        for sid in [s for s in hits if s in accepted]:
+            lines.append(f"- kabul: `{sid}` ({accepted[sid]})")
+        if name == "risale" and any(n >= LEAK_MIN for s, n in hits.items() if s not in accepted):
             ok = False
         lines.append("")
     (out / report).write_text("\n".join(lines), encoding="utf-8")
@@ -570,9 +642,30 @@ def unit_sentences(cfg: dict, work: str) -> list[tuple[str, str, str, str]]:
     sınırları bu yerel kimliklerle yazılır."""
     conn = sqlite3.connect(GENEL_DB)
     node = unit_node(cfg, work)
-    return [(sid, pid, text, sid[len(node) + 1:]) for sid, pid, text in conn.execute(
-        "SELECT id, paragraph_id, text FROM sentences WHERE node_id = ? OR node_id LIKE ? ORDER BY seq",
-        (node, node + "/%"))]
+    parts = cfg.get("parcalar", {}).get(work) or [(node, None, None)]
+    out = []
+    for part, first, last in parts:      # geliştirme birimleri: Türkçe birden çok düğüme yayılır (UNITS'in notu)
+        inside = first is None
+        for sid, pid, text in conn.execute(
+                "SELECT id, paragraph_id, text FROM sentences WHERE node_id = ? OR node_id LIKE ? ORDER BY seq",
+                (part, part + "/%")):
+            short = sid[len(part) + 1:]
+            inside = inside or short == first
+            if inside:
+                out.append((sid, pid, text, local_id(cfg, work, sid)))
+            if short == last:
+                break
+    return out
+
+
+def local_id(cfg: dict, work: str, sid: str) -> str:
+    """Cümlenin birimdeki yerel kimliği: birimin düğümüne göre (`c004`); başka bir düğümdeki parçada düğümün son
+    kesimiyle (`14-15-ayetlerin-tefsiri/c003`)."""
+    node = unit_node(cfg, work)
+    if sid.startswith(node + "/"):
+        return sid[len(node) + 1:]
+    parent, _, short = sid.rpartition("/")
+    return f"{parent.rsplit('/', 1)[-1]}/{short}"
 
 
 def hidden_sections(cfg: dict, work: str) -> dict[str, list[str]]:
