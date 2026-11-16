@@ -154,6 +154,12 @@ Adımlar (sıra, 2026-11-16):
   her basışta bir yan açar (bir yan tam, iki yan ikiye, üç yan üçe); her yanın kendi seçicisi (Kaynaklar, taslak N,
   İşârât) ve kapatma düğmesi; seçilen yer bütün yanları süzer; kör kipte yanlar "A, B, C" ve sıra karışık;
   masaüstünde en çok 3 (genişte 4), telefonda alt alta ya da sekme. S6'nın tamamı D12.4'ün yanında.
+- **S6 yapıldı (2026-11-16):** `scripts/d1-masa-sablon.html` yeniden kuruldu (yardımcılar ve kartlar aynen taşındı,
+  yan düzeni ve olaylar yeni): dinamik yanlar (en çok 4), her yanın seçicisi (Kaynaklar, İşârât'ın metni, taslak N),
+  taslak yanında üç katman (karşılaştırma renk ve sonda kaçırılanlar; eleştirmen ve bilirkişi paragraf üstü işaret,
+  kartlar yerinde açılır; işaretleme listeleri katmanın başında), "Metinlerin tamamı" yer düğmesi, kör kip. İşaret
+  anahtarları ve dışa aktarma aynı. jsdom'da duman testi (24 adım) geçti; gerçek tarayıcıda kullanıcı dener.
+  Kalan: kapalı kitap eleştirisinin (D12.1) notları masada yok, eleştirmen katmanı D9/D11'in açık notlarını gösterir.
 - **Notlar (kullanıcı, 2026-11-16, D12.1'den):**
   - Düzeltmenin sonraki sürümü (d2) için iki aday: (a) **program uzunluk bütçesi** (paragraf başına harf sınırı;
     aşan değişiklik reddedilir ya da yazara geri döner), (b) **düzeltilmiş paragraflara kısa ikinci kapalı eleştiri**

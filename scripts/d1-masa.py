@@ -1,6 +1,15 @@
-"""Âyet masası (kullanıcının tasarımı, 2026-11-14): âyet üstte, lafızları tıklanır; sol yan kaynaklar, sağ yan yapay zekâ.
+"""Âyet masası (kullanıcının tasarımı, 2026-11-14): âyet üstte, lafızları tıklanır; altında yanlar.
 
     uv run python scripts/d1-masa.py [11-12 …]    # data/d1/masa/<birim>.html ve index.html (kapalı depo)
+
+**İkinci hâli (S6, 2026-11-16, kullanıcının tasarımı):** yan sayısı dinamik ("+ yan ekle", en çok 4; bir yan tam,
+iki yan ikiye, üç yan üçe; telefonda alt alta); her yan kendi seçicisiyle Kaynaklar, İşârât'ın metni ya da bir
+taslaktır; seçilen yer bütün yanları süzer. Yapay zekâ kısmının odağı taslaktır: karşılaştırma, eleştirmen ve
+bilirkişi taslağın üzerinde **katmandır** (sekme değil): karşılaştırma paragrafın sol kenarını boyar (bulunan, çelişki
+adayı, fazla) ve sonda kaçırılan nükteleri sayar; eleştirmen ve bilirkişi paragrafın üstüne işaret koyar, tıklanınca
+kartlar paragrafın altında açılır. "Metinlerin tamamı" bir yer düğmesidir (eski "bütün taslağı göster" ve "İşârât'ın
+tamamı" kutuları kalktı). Kör kip taslakları "Taslak A, B…" diye sabit tohumla karışık adlandırır. Yanların düzeni
+tarayıcıda birim başına saklanır (`d1-masa-yanlar-<birim>`); işaretlerin anahtarları ve dışa aktarma biçimi aynıdır.
 
 Her birim kendi sayfasıdır (2026-11-16: tek sayfa vardı, 31–33 kurulunca 11–12'ninkinin üzerine yazılmıştı); birim
 verilmezse envanteri olan bütün birimler kurulur. `index.html` son birimin kopyasıdır; "Âyet" seçicisi öbürlerine gider.
