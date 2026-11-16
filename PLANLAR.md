@@ -262,6 +262,8 @@ Adımlar:
   rengi farklı; `data/interim/ikon/`). OpenAI kararı bekliyor: kişisel doğrulamada dizin adı doğrulanmış kişisel
   addan otomatik gelir ve sitedeki yayıncıyla aynı olmalı (belge 2026-11-16); seçenekler `docs/s4-dizin-basvurulari.md`
   §1.1. Önce Claude (§2–§4a).
+  Yayında (2026-11-16): site, dört sunucu (başlıklar "Risale MCP Hadis/Tefsir/Klasik", her biri kendi simgesi
+  `icon-<ad>.png`); araç çıktısında fark yok.
 
 **A1, A2:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
 kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
