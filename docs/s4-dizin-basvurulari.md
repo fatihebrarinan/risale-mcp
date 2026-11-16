@@ -7,7 +7,7 @@ metinler (İngilizce; hakemler İngilizce okur) ve göndermeden önceki denetiml
 
 | # | Dizin | Eklenti | Durum | Bu belgede |
 |---|---|---|---|---|
-| 1 | Claude | Risale-i Nur | "in review" (S4.3); açıklama düzeltildi (2026-11-16) | §2a: ek notlar, izin özeti |
+| 1 | Claude | Risale-i Nur | 2026-10-29'dan beri "In review"; geri çekilip yeniden gönderilecek (2026-11-16) | §2a: sıra ve bütün alanlar |
 | 2 | Claude | Hadis | otomatik incelemeyle "Community" olarak onaylandı (2026-11-16), yayımlanması bizde | §2b |
 | 3 | Claude | Tefsir | gönderilmedi | §2c |
 | 4 | OpenAI | Risale | reddedildi (kimlik) | §5–§6: kişisel kimliğe geçiş, düzeltilmiş paket, yeniden başvuru |
@@ -140,38 +140,90 @@ Gizli adresli olanı denemelerin kaydı için ayrıca tutabilirsiniz.
   > All tools are read-only, there are no accounts, and no conversation content or tool inputs are stored (only the
   > tool name, time, duration and error type, for 90 days).
 
-### 2a. Risale-i Nur (incelemede; düzenleme)
+### 2a. Risale-i Nur (geri çekilip yeniden gönderilecek, 2026-11-16)
 
-Formda bugün doğru olanlar (2026-11-16): açıklama (§1.2 düzeltmeleriyle), kategoriler, bağlantılar, yazar,
-etiket `risale`, kullanım alanları, ön koşullar, şirket. Düzeltilecekler:
+**Karar (kullanıcı, 2026-11-16):** eski başvuru silinir, bugünkü formla yeniden gönderilir. Sebep: Hadis aynı gün
+otomatik taramayla "Community" olarak onaylandı; Risale ise 2026-10-29'dan beri bir kişinin kuyruğunda ("In review").
+O başvuru OAuth'lu (`sign_in`, hakem hesabı `admin`) gönderilmiş, sunucu aynı akşam açık kipe geçmişti; formdaki
+kimlik doğrulama ve test hesabı bilgisi sunucuyla uyuşmuyor olabilir. Yeni başvuru Hadis'le aynı biçimde: OAuth
+yok, test hesabı yok, bütün alanlar dolu. Bedeli: kuyruktaki yer gider; otomatik yoldan geçeceğinin garantisi yok
+(Anthropic bazı başvuruları her durumda bir kişiye verir).
 
-1. **Ek notlar:** eski metin "(/hadis), (/tefsir), (/klasik)" ve "the permissions are listed on the website" diyor
-   (sitede izin listesi yok). Yerine: ortak ilk paragraf, sonra
-   > The texts are served with the permission of their sources (e-Risale, risaleoku.com, nurpedia.org and the Keşif
-   > Yolculukları programme), which are named on the website and in every answer's list of sources; the Qur'an's
-   > text comes from the Tanzil Project. Since submission: corrected counts (53 works, about 131,000 sentences), one
-   > Turkish Qur'an translation (the Türkiye Diyanet Foundation's; the Presidency of Religious Affairs' translation
-   > was removed because it did not grant permission to republish it), two read-only tools added (find_hadith,
-   > get_hadith), and the publisher is now named Risale MCP, as on the website.
-   >
-   > How to test (the texts are in Turkish; questions can be asked in English): "List the works and show the outline
-   > of Sözler." · "Why is the time of the Last Day kept hidden, according to the Risale-i Nur? Quote the text and
-   > give sources." · "Search the works for 'halk-ı şer şer değil' and explain the passage." · "Find the sentence that
-   > begins 'Hiç mümkün müdür ki; ölmüş'." · "Where is Âyetü'l-Kürsî (Bakara 2:255) quoted in the works? Show the
-   > verse." · "Where does the Risale-i Nur quote the hadith 'تفكر ساعة خير من عبادة سنة'? What is the evidence for
-   > it?" Expected: quotations in block quotes marked [1], [2]… and a "Kaynaklar" list; asking for something not in
-   > the works (e.g. "Summarise the Fifteenth Truth of the Tenth Word") gets the answer that it does not exist.
+**Sıra:**
 
-   ve ortak son paragraf.
-2. **İzin özeti:**
-   > Reads the works of Bediüzzaman Said Nursî and the Qur'an from this project's own library. It does not access
-   > your accounts, files or personal data.
-3. **Entegrasyon parçacıkları** (isteğe bağlı): Claude Code metni
-   `claude mcp add --transport http risale https://mcp.risalemcp.com/mcp`; dış bağlantı
-   `https://risalemcp.com/en/claude.html`; Claude API metni:
-   > Add the connector to a Messages API request as an MCP server: {"type": "url", "url":
-   > "https://mcp.risalemcp.com/mcp", "name": "risale"}. No authorization token is needed.
-4. Hesabınızda `https://mcp.risalemcp.com/mcp` adresli bir bağdaştırıcı yoksa ekleyin (portal uyarıyor).
+1. Ayarlar › Bağdaştırıcılar'da `https://mcp.risalemcp.com/mcp` adresli bağdaştırıcı ekli olsun (portal araçları
+   oradan okur). §1.3'teki gizli adresle aşağıdaki test istemlerini bir kez deneyin.
+2. Eski başvuruyu portalda açın, menüsünden silin ya da geri çekin (**Withdraw/Delete**). Yeni başvuruyu ondan
+   **sonra** gönderin: aynı adresli iki başvuru aynı anda durmasın.
+3. Portal › **Submit new** › **MCP connector**, alanlar aşağıda ve §2'deki tabloda.
+4. **Slug** `risale-i-nur` (yayımlanınca değişmez). Silinen başvuru adı tutuyorsa portal başka ad ister: o zaman
+   başka slug seçmeden `mcp-review@anthropic.com`'a yazın (listelemenin adı, organizasyon, eski başvurunun
+   silindiği).
+5. Gönderdikten sonra durum "Approved" olursa yayımlamak bizde (**Publish**); onaydan sonra yapılan her düzenleme
+   listelemeyi yeniden incelemeye gönderir, düzenlemeyi yayımlamadan önce yapın. "In review" olursa beklenir.
+
+**Alanlar:** sunucu URL'si `https://mcp.risalemcp.com/mcp`, ad `Risale-i Nur`, etiket `risale`, simge
+`src/risale_mcp/static/icon.png` (yeşil; boş bırakılırsa alan adının simgesi), dokümantasyon
+`https://risalemcp.com/en/docs.html`, kimlik doğrulama **Yok**, test hesabı yok.
+
+- **Tek satır:**
+  > Read and cite the complete works of Bediüzzaman Said Nursî, sentence by sentence, with the Qur'an's text
+  > alongside.
+- **Açıklama:**
+  > Risale-i Nur gives Claude the complete works of Bediüzzaman Said Nursî (1878–1960): the Risale-i Nur Collection
+  > (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the
+  > compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 131,000
+  > sentences across 53 works, besides 16 volumes in Ottoman script, together with the Qur'an's vowelled Arabic
+  > text and the Türkiye Diyanet Foundation's Turkish translation.
+  >
+  > Every sentence has a stable address, so Claude can ground what it says in the text itself:
+  >
+  > - Search by the text's own words, or by meaning in today's language (a question about "despair" finds
+  >   passages that speak of "ye's").
+  > - Read any section in book order, with the author's footnotes (hâşiye) and the sources of the verses and
+  >   hadiths he quotes.
+  > - Quote the text exactly and end the answer with a list of sources giving work › section › the sentence's
+  >   opening words. Quotations are checked against the cited sentences before the answer is sent.
+  > - Find where a Qur'anic verse or a hadith is quoted in the works, read the verse, and see the evidence for the
+  >   hadith in the classical collections.
+  >
+  > The connector keeps layers apart that are easy to confuse: the publishers' translations of verses are not the
+  > author's words, the Turkish of his Arabic works is a translation, and a commentary by his brother is marked as
+  > his. When something is not in the works, Claude is told to say so instead of filling the gap.
+  >
+  > All tools are read-only and work without an account. The texts come, unchanged and with permission, from
+  > e-Risale, risaleoku.com, nurpedia.org and the Keşif Yolculukları programme; the Qur'an's text from the Tanzil
+  > Project. A volunteer, non-commercial project.
+- **İzin özeti:**
+  > Reads the works of Bediüzzaman Said Nursî and the Qur'an from this project's own library. It does not access
+  > your accounts, files or personal data.
+- **Entegrasyon:** Claude Code metni `claude mcp add --transport http risale https://mcp.risalemcp.com/mcp`; dış
+  bağlantı `https://risalemcp.com/en/claude.html`; Claude API metni:
+  > Add the connector to a Messages API request as an MCP server: {"type": "url", "url":
+  > "https://mcp.risalemcp.com/mcp", "name": "risale"}. No authorization token is needed.
+- **Kullanım alanları:**
+
+  | Kullanım alanı | Örnek istem |
+  |---|---|
+  | Answer questions about the Risale-i Nur with exact quotations and sources | Why is the time of the Last Day kept hidden, according to the Risale-i Nur? Quote the text and give the sources. |
+  | Survey where a topic is treated across the works | Where does Bediüzzaman write about patience in illness? List the main passages by work. |
+  | Find where a Qur'anic verse is quoted in the works and read the verse | Where is Âyetü'l-Kürsî (Bakara 2:255) quoted in the Risale-i Nur? Show the verse with a translation. |
+
+- **Ek notlar:** ortak ilk paragraf, sonra
+  > The texts are served with the permission of their sources (e-Risale, risaleoku.com, nurpedia.org and the Keşif
+  > Yolculukları programme), which are named on the website and in every answer's list of sources; the Qur'an's
+  > text comes from the Tanzil Project. This replaces our earlier submission of the same connector (sent on 29
+  > October with optional OAuth), which we withdrew: the server has had no accounts and no OAuth since the evening of 29 October.
+  >
+  > How to test (the texts are in Turkish; questions can be asked in English): "List the works and show the outline
+  > of Sözler." · "Why is the time of the Last Day kept hidden, according to the Risale-i Nur? Quote the text and
+  > give sources." · "Search the works for 'halk-ı şer şer değil' and explain the passage." · "Find the sentence that
+  > begins 'Hiç mümkün müdür ki; ölmüş'." · "Where is Âyetü'l-Kürsî (Bakara 2:255) quoted in the works? Show the
+  > verse." · "Where does the Risale-i Nur quote the hadith 'تفكر ساعة خير من عبادة سنة'? What is the evidence for
+  > it?" Expected: quotations in block quotes marked [1], [2]… and a "Kaynaklar" list; asking for something not in
+  > the works (e.g. "Summarise the Fifteenth Truth of the Tenth Word") gets the answer that it does not exist.
+
+  ve ortak son paragraf.
 
 ### 2b. Hadis (yeni başvuru)
 
@@ -423,8 +475,8 @@ Her başvuruda tanıtım videosu ayrı (o eklentinin beş senaryosu) ve alan ad�
 
 - [x] §1.1 yayıncı adı "Risale MCP", site ve politikalar yayında (2026-11-16)
 - [x] §1.4 dört ayrı simge, alt alan adları yayında (2026-11-16)
-- [ ] Claude Risale: açıklama düzeltildi (✓), ek notlar ve izin özeti (§2a), herkese açık adresli bağdaştırıcı hesapta
-- [ ] Claude Hadis: herkese açık adresli bağdaştırıcı hesapta, test istemleri denendi, gönderildi
+- [ ] Claude Risale: herkese açık adresli bağdaştırıcı hesapta, test istemleri denendi, eski başvuru silindi, yenisi gönderildi (§2a)
+- [x] Claude Hadis: gönderildi, otomatik taramayla onaylandı (2026-11-16); yayımlanacak
 - [ ] Claude Tefsir: aynı
 - [ ] Claude Klasik Eserler: aynı
 - [ ] OpenAI Risale: paket güncellendi, video, jeton, gönderildi
