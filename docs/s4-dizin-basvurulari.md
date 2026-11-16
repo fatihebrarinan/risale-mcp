@@ -60,12 +60,13 @@ scripts/sunucu.sh auth usage --user '(debug)' --params      # kayıt (Risale ve 
 
 Denedikten sonra adresleri kapatın (`--revoke`).
 
-### 1.4 Simgeler
+### 1.4 Simgeler (yapıldı, 2026-11-16)
 
-Dört eklenti bugün aynı simgeyi kullanıyor (`src/risale_mcp/static/icon.png`, 256×256). Dizinde dört aynı simge
-kafa karıştırır. Öneri: aynı çizgide dört ayrı simge (ör. ortak zemin, üstünde "R", "H", "T", "K" ya da renk farkı).
-Karar sizin; isterseniz `icon.svg`'den türevler çıkarırım (`scripts/ikon.sh`). Hadis, tefsir ve klasik sunucuları simgeyi
-`/favicon.ico`'dan değil, başvuruda yüklenen dosyadan alır.
+Aynı çizim, zemin rengi farklı (kullanıcı onayladı): Risale yeşil `src/risale_mcp/static/icon.png`, Hadis lacivert
+`icon-hadis.png`, Tefsir mor `icon-tefsir.png`, Klasik kahverengi `icon-klasik.png` (256×256; SVG'leri yanında).
+Portalda her başvuruya kendi PNG'si yüklenir. Sunucular da kendi simgesini MCP `icons` ile duyurur
+(`https://mcp.risalemcp.com/icon-<ad>.png`, kök sunucu verir) ve başlıkları liste adlarıyla aynıdır: "Risale MCP
+Hadis", "Risale MCP Tefsir", "Risale MCP Klasik".
 
 ### 1.5 OpenAI alan adı doğrulaması
 

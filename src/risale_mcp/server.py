@@ -377,15 +377,22 @@ def _section_markdown(section: dict) -> str:
 STATIC_DIR = Path(__file__).parent / "static"
 STATIC = {"/icon.png": ("icon.png", "image/png"), "/icon.svg": ("icon.svg", "image/svg+xml"),
           "/favicon.ico": ("favicon.ico", "image/x-icon")}
+# Hadis, tefsir ve klasik sunucularının kendi simgesi (S4.6: aynı çizim, zemin rengi farklı). Hepsinin public_url'i
+# aynı alan adı olduğu için simgeyi alan adının kökündeki ana sunucu verir; her sunucu bütün dosyaları sunar.
+for _variant in ("hadis", "tefsir", "klasik"):
+    STATIC[f"/icon-{_variant}.png"] = (f"icon-{_variant}.png", "image/png")
+    STATIC[f"/icon-{_variant}.svg"] = (f"icon-{_variant}.svg", "image/svg+xml")
 
 
-def _icons(public_url: str | None) -> list[Icon]:
-    """Sunucunun ikonu (MCP `icons`, 2025-11-25): HTTP'de adresiyle, stdio'da gömülü (data: URI)."""
+def _icons(public_url: str | None, variant: str = "") -> list[Icon]:
+    """Sunucunun ikonu (MCP `icons`, 2025-11-25): HTTP'de adresiyle, stdio'da gömülü (data: URI).
+    `variant`: hadis, tefsir, klasik sunucularının kendi simgesi; boşsa Risale'ninki."""
+    name = f"icon-{variant}" if variant else "icon"
     if public_url:
         base = public_url.rstrip("/")
-        return [Icon(src=f"{base}/icon.png", mime_type="image/png", sizes=["256x256"]),
-                Icon(src=f"{base}/icon.svg", mime_type="image/svg+xml", sizes=["any"])]
-    data = base64.b64encode((STATIC_DIR / "icon.png").read_bytes()).decode()
+        return [Icon(src=f"{base}/{name}.png", mime_type="image/png", sizes=["256x256"]),
+                Icon(src=f"{base}/{name}.svg", mime_type="image/svg+xml", sizes=["any"])]
+    data = base64.b64encode((STATIC_DIR / f"{name}.png").read_bytes()).decode()
     return [Icon(src=f"data:image/png;base64,{data}", mime_type="image/png", sizes=["256x256"])]
 
 
@@ -430,18 +437,18 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     texts_only = tefsir or klasik               # Risale'ye özgü araçlar (hadis), kaynaklar ve hazır komutlar yok
     hadis = profile == "hadis"                  # hadis sunucusu (MVP M5): birimi hadis, kendi araçları
     if hadis:
-        server = MCPServer("hadis", title="Hadis (Risale-i Nur MCP)", instructions=HADIS_INSTRUCTIONS,
+        server = MCPServer("hadis", title="Risale MCP Hadis", instructions=HADIS_INSTRUCTIONS,
                            description="Report-level, citable access to hadith collections and the Qur'an.",
-                           icons=_icons(public_url), **protected)
+                           icons=_icons(public_url, "hadis"), **protected)
     elif tefsir:
-        server = MCPServer("tefsir", title="Tefsir (Risale-i Nur MCP)", instructions=TEFSIR_INSTRUCTIONS,
+        server = MCPServer("tefsir", title="Risale MCP Tefsir", instructions=TEFSIR_INSTRUCTIONS,
                            description="Sentence-level, citable access to classical tafsir works and the Qur'an.",
-                           icons=_icons(public_url), **protected)
+                           icons=_icons(public_url, "tefsir"), **protected)
     elif klasik:
-        server = MCPServer("klasik", title="Klasik Eserler (Risale-i Nur MCP)", instructions=KLASIK_INSTRUCTIONS,
+        server = MCPServer("klasik", title="Risale MCP Klasik", instructions=KLASIK_INSTRUCTIONS,
                            description="Sentence-level, citable access to classical Arabic works on rhetoric, "
                                        "language and terms, and the Qur'an.",
-                           icons=_icons(public_url), **protected)
+                           icons=_icons(public_url, "klasik"), **protected)
     else:
         server = MCPServer(NAME, title="Risale-i Nur",
                            instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),

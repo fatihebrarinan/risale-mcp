@@ -332,6 +332,9 @@ def test_without_anonymous_mode_there_is_no_sign_in_tool(client):
 def test_icon_is_served_and_announced(client):
     assert client.get("/favicon.ico").status_code == 200
     assert client.get("/icon.png").headers["content-type"] == "image/png"
+    for variant in ("hadis", "tefsir", "klasik"):                 # öbür sunucuların simgesini kök sunucu verir
+        assert client.get(f"/icon-{variant}.png").headers["content-type"] == "image/png"
+        assert client.get(f"/icon-{variant}.svg").status_code == 200
     response = client.post("/mcp", headers=MCP_HEADERS, json={"jsonrpc": "2.0", "id": 1, "method": "ping"})
     assert response.status_code == 401                            # ikon açık, MCP korumalı
 
@@ -341,6 +344,13 @@ def test_server_info_carries_icons(small_db):
     assert remote._lowlevel_server.icons[0].src == f"{PUBLIC}/icon.png"
     local = create_server(Library(small_db[0]))
     assert local._lowlevel_server.icons[0].src.startswith("data:image/png;base64,")
+
+
+def test_each_server_announces_its_own_icon():
+    from risale_mcp.server import _icons
+    assert _icons(PUBLIC, "hadis")[0].src == f"{PUBLIC}/icon-hadis.png"
+    assert _icons(PUBLIC, "klasik")[1].src == f"{PUBLIC}/icon-klasik.svg"
+    assert _icons(None, "tefsir")[0].src != _icons(None)[0].src     # gömülü simge de kendisinin
 
 
 def test_usage_older_than_the_retention_period_is_deleted(store):
