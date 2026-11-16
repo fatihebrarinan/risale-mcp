@@ -60,9 +60,9 @@ işler"e taşındı (bitmişlerdi, "Sıradaki"de kalmışlardı).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (kapsamı ve sırası kullanıcının onayını bekliyor) | |
-| 2 | S6 | Âyet masasının ikinci hâli: iki yan kullanıcının seçtiği görünüm, taslak odaklı yapay zekâ kısmı | |
-| 3 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak; pilot 31–33'te (D11.1–D11.2 bitti; D12'yi bekler) | |
+| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (planı onaylandı, 2026-11-16; sırada D12.1) | |
+| 2 | S6 | Âyet masasının ikinci hâli: iki yan kullanıcının seçtiği görünüm, taslak odaklı yapay zekâ kısmı (iki yanlı kısmı D12.2) | |
+| 3 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak; pilot 31–33'te (D11.1–D11.2 bitti; D11.3 D12.3'e katıldı; D12'yi bekler) | |
 | 4 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla (D12'yi bekler) | D1.8 |
 | 5 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
 | 6 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
@@ -94,10 +94,42 @@ Kullanıcının fikirleri:
   (`muhakemat/makale-03/maksad-03/maksad-02/c004`), İkinci Makale "Unsur-u Belâğat"; usul özetinde hiç yoktu.
 - S6'nın tasarımı (iki yan seçilir, taslak belge gibi, eleştirmen/bilirkişi kenar işareti, karşılaştırma renk,
   "Metinlerin tamamı" yer düğmesi) kullanıcının hayal ettiği gibi.
-- Sıra: D12.1 düzeltme deneyi (taslak 7), D12.2 üslûp belgesi ve Muhâkemât, D12.3 yapılı akış iki geliştirme
-  biriminde, D12.4 saklı birimlerde ölçüm; S6 en geç D12.3'ten önce.
-- Konuşulacak (2026-11-16): eleştirmenin ölçü olarak güvenilirliği ve kullanıcının görüşünün ölçüdeki yeri; kapalı
-  ve açık kitap eleştirmenin birlikte kullanımı; D11.3 okunmadı, sıraya etkisi; eleştirinin biçimi (bütün ya da bölüm).
+- **Ölçü** (kullanıcının kararı, 2026-11-16, konuşmadan sonra): eleştirmenin notları güvenilir (D7.7 %95, D9.3
+  10/10, D11'de tutmayan alıntı yok); çekince yalnız aynı eleştirmenin hem yön verip hem ölçmesine (notları
+  karşılanan taslağı kendiliğinden beğenir; aynı modelin ortak kör noktaları). D5'te ölçü zaten eleştirmen ve
+  kullanıcı olacak; ar-ge eleştirmeni ayarlar. Üç ayak: (a) **eleştirmen asıl ölçü, kör:** notları yazandan ayrı yeni
+  sohbet, hangi taslağın düzeltildiğini bilmez ("A" ve "B", sıra karışık); (b) **kullanıcı:** deney başına 5–10 yerde
+  kör A/B tercihi ve kısa gerekçe, yanında süzgeç örneklemi (≈1 saat); (c) **İşârât envanteri** yalnız ar-gede,
+  ilk ikisini ayarlamak için, hedef değil.
+- **Kapalı ve açık kitap eleştirmen** (kullanıcının kararı, 2026-11-16). D5'te ayrım kalkar (İşârât yok): kapalı
+  kitap eleştirmen (MCP'de her şey açık, yalnız İşârât'ın o birimi gizli) D5'in eleştirmeninin kendisidir; açık
+  kitap yalnız ar-gede var, değeri cevabı bilmesi. Kullanımı: (1) kör ölçü (notları yazana gitmez); (2) kapalıyı
+  ayarlama: aynı taslakta iki not listesi karşılaştırılır, açığın yakalayıp kapalının kaçırdıkları "yalnız gizli
+  metinden bilinebilir" ve "kapalının da görebileceği" diye ayrılır; ikincisi küçükse kapalı D5'e hazır; (3) üst
+  sınır kolu: taslak 7 açık kitap notlarıyla da düzeltilir (notları D11'de yazıldı); açık notlu düzeltme çok iyiyse
+  darboğaz eleştirmen, benzerse yazanın düzeltme gücü; bu kolu açık eleştirmen adil ölçemez, envanter ve kullanıcı
+  ölçer; (4) açık notların genel dersleri D12.3'ün yapısına gider, aynı birimin yazarına hiç gitmez.
+- **Eleştiri biçimi** (kullanıcının kararı, 2026-11-16; D11.3'ün sorusuydu): düzeltmeye giden kapalı eleştiri
+  **bölüm bölüm** (Mukaddime ve üç vecih; her çağrı taslağın tamamını bağlam görür; yeri belli not, ≈3 kat not);
+  yazan bir notu gerekçeyle reddedebilir ("V2'de söyledim"), retler notların kalitesini de ölçer. Ölçü **bütün**
+  (A/B bütünü tartar, ucuz).
+- **D11.3 D12.1'in okumasına katılır** (2026-11-16): taslak 7 tek başına okunmaz; düzeltilmiş hâlinin yanında
+  (isteyince taslak 3 de) okunur. Tek okuma üç soruyu cevaplar: D11 değer kaybettirdi mi (7–3), düzeltme işe yaradı
+  mı (7–7'), süzgeç. Bunun için S6'nın iki yanlı kısmı okumadan önce gelir.
+Adımlar (sıra, 2026-11-16):
+- D12.1 Düzeltme deneyi, 31–33 taslak 7 (≈25–30 $, bir pencere): kapalı kitap prova veritabanıyla bölüm eleştirisi
+  (≈9,5 $); iki düzeltme, kapalı notlarla (7k) ve D11'in açık notlarıyla (7a) (≈4 $; yalnız değişen paragraflar,
+  not reddi gerekçeli); kör bütün ölçü 7, 7k, 7a (≈9 $); tek okuyuculu envanter 7k, 7a (≈4 $); iki eleştirmenin not
+  karşılaştırması (2). Süzülmüş notlar kolu kullanıcının süzmesini bekler: ilk turda yalnız bir bölümün (ör. V2)
+  notları.
+- D12.2 S6'nın iki yanlı kısmı: her yan Kaynaklar ya da bir taslak; kör A/B kaydı (yer başına tercih ve gerekçe).
+- D12.3 Kullanıcının okuması (D11.3 dahil): 7 ile 7k (ve 7a, isteyince 3) yan yana; 5–10 yerde kör A/B, süzgeç.
+- D12.4 Üslûp belgesi (İşârât'ın Arapçasından mekanik) ve usul özetine Muhâkemât (İkinci Makale "Unsur-u Belâğat");
+  ikisini kullanıcı bir kez okur.
+- D12.5 Yapılı akış (okuma ve çizelge → garaz → takdir zinciri alanları → program etiketi → araçsız yazım → kapalı
+  bölüm eleştirisi ve düzeltme), iki geliştirme biriminde, D11'in tek geçişli hattıyla yan yana; aynı üç ayaklı ölçü.
+- D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
+  D12.5'ten önce.
 
 **S6. Âyet masasının ikinci hâli** (kullanıcının fikirleri, 2026-11-16; "Sonra"daki masa açıkları buraya bakar):
 - Sol ve sağ yanda ne duracağını kullanıcı seçer (kaynaklar ya da bir taslak); iki taslak yan yana karşılaştırılır.
@@ -152,7 +184,7 @@ Adımlar:
   (Arapça asıl 31'in ortasında biter), D5'te tek oran yetmez. Birim başına tahmin: taslak + izah + D9.1 ≈4,1 $
   (pencerede ≈11 birim). Pilotun toplamı ≈28 $. Kod düzeltmeleri: D9.1 kaynak dosyasını okunan saymıyordu; D7
   raporu tek okuyuculu taslakta boş "ikisi de" satırı veriyordu; masa bölüm notlarını iki kez sayıyordu.
-- D11.3 Kullanıcının okuması (masada; masa kuruldu, yayına gönderilmedi): pilot (taslak 7, izahıyla) ile taslak 3
+- D11.3 Kullanıcının okuması (2026-11-16: okunmadı, D12.3'e katıldı; eleştiri biçimi D12'de kararlaştı): pilot (taslak 7, izahıyla) ile taslak 3
   yan yana; 20 notluk süzgeç (`yz/d11-orneklem.json`: iki taslak × iki biçim × 5; D8'in 9 notluk süzgecinin yerine).
   Ondan sonra iki karar: eleştirinin biçimi ve sıklığı; D5'in birimleri (İşârât 33'te bitiyor) ve uzunluk hedefi.
 - D11.4 Kuyruk, sonra D5.
