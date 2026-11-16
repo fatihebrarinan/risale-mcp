@@ -37,6 +37,22 @@ Kişisel doğrulamayla yayımlanırsa dizinde doğrulanmış kişisel ad görün
 doğrulaması, (c) OpenAI dizinine şimdilik başvurmamak (elle ekleme sürer). `packaging/chatgpt/` bu karara kadar
 "Nur Hadimleri" adını taşır.
 
+### 1.1a Hakeme ek not (dört Claude başvurusunda "Additional notes", 2026-11-16)
+
+Şirket adı kayıtlı bir şirket olmadığı için baştan açıklanır. Son paragrafın kaynakları eklentiye göre değişir:
+Risale "e-Risale, risaleoku.com, nurpedia.org"; Hadis "OpenITI (CC BY-NC-SA 4.0) and Hadith API (Unlicense)";
+Tefsir ve Klasik "OpenITI (CC BY-NC-SA 4.0)". Risale başvurusunun portalı beş hazır komut buluyor (topic_survey,
+text_and_commentary, discuss, self_test, lesson_plan); doğru. Öbür üç sunucunun hazır komutu yok.
+
+> Publisher: "Risale MCP" is the name of a volunteer, non-commercial project, not a registered company. It is run
+> by an individual (the holder of this account) and is named the same way on the website, the privacy policy and
+> the terms (risalemcp.com). The project also runs three sibling connectors under the same name, submitted
+> separately: Risale MCP Hadis (/hadis), Risale MCP Tefsir (/tefsir) and Risale MCP Klasik (/klasik).
+>
+> The texts are served with the permission of their sources (e-Risale, risaleoku.com, nurpedia.org); the
+> sources are named on the website and in every answer's list of sources. All tools are read-only, there are no accounts, and no conversation
+> content or tool inputs are stored (only the tool name, time, duration and error type, for 90 days).
+
 ### 1.2 Eski bilgilerin düzeltilmesi (her listelemede)
 
 | Eski metin | Doğrusu (2026-11-13, `scripts/site-uret.py` sayıları) |
