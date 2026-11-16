@@ -118,7 +118,7 @@ Hakem talimatı için ayrı alan yok: test istemleri "Ek notlar"a girer. Kullan�
 | Politika beyanları | yedisi de işaretlenir |
 | Ek notlar | eklentinin notu: yayıncı, kaynaklar, test istemleri |
 | Şirket adı, web sitesi | `Risale MCP`, `https://risalemcp.com/` |
-| Ad | `Risale MCP`, `Risale MCP Hadis`, `Risale MCP Tefsir`, `Risale MCP Klasik` |
+| Ad | `Risale MCP Risale-i Nur`, `Risale MCP Hadis`, `Risale MCP Tefsir`, `Risale MCP Klasik` |
 
 **Araç taraması için bağdaştırıcı hesapta olmalı.** Portal araçları sizin hesabınızdaki bağdaştırıcıdan okur ve
 "bu listelemenin gönderildiği bağdaştırıcı hesabınızda yok" diye uyarır. Gizli adres yetmez: listelemedeki adresin
@@ -164,7 +164,7 @@ yüzdendi, S4.2). "Risale-i Nur" aramada bulunsun diye tek satırın ilk kelimel
 5. Gönderdikten sonra durum "Approved" olursa yayımlamak bizde (**Publish**); onaydan sonra yapılan her düzenleme
    listelemeyi yeniden incelemeye gönderir, düzenlemeyi yayımlamadan önce yapın. "In review" olursa beklenir.
 
-**Alanlar:** sunucu URL'si `https://mcp.risalemcp.com/mcp`, ad `Risale MCP`, etiket `risale`, simge
+**Alanlar:** sunucu URL'si `https://mcp.risalemcp.com/mcp`, ad `Risale MCP Risale-i Nur` (kullanıcı, 2026-11-16: yayıncı adıyla aynı olmasın), etiket `risale`, simge
 `src/risale_mcp/static/icon.png` (yeşil; boş bırakılırsa alan adının simgesi), dokümantasyon
 `https://risalemcp.com/en/risale.html` (öbürleri gibi eklentinin kendi sayfası; eski başvuruda `docs.html`),
 kimlik doğrulama **Yok**, test hesabı yok.
@@ -173,7 +173,7 @@ kimlik doğrulama **Yok**, test hesabı yok.
   > Risale-i Nur: read and cite the complete works of Bediüzzaman Said Nursî, sentence by sentence, with the
   > Qur'an's text alongside.
 - **Açıklama:**
-  > Risale MCP gives Claude the complete works of Bediüzzaman Said Nursî (1878–1960): the Risale-i Nur Collection
+  > Risale MCP gives Claude the complete works of Bediüzzaman Said Nursî: the Risale-i Nur Collection
   > (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the
   > compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 131,000
   > sentences across 53 works, besides 16 volumes in Ottoman script, together with the Qur'an's vowelled Arabic
