@@ -438,3 +438,20 @@ def test_open_mode_has_a_per_minute_limit(opened):
     statuses = [opened.post("/mcp", headers=MCP_HEADERS, json={"jsonrpc": "2.0", "id": i, "method": "ping"}).status_code
                 for i in range(4)]
     assert statuses[-1] == 429
+
+
+def test_subdomain_server_serves_its_own_icon_and_landing():
+    import asyncio
+    from risale_mcp.server import _landing, _own_static, STATIC
+    own = _own_static("hadis")
+    assert own["/icon.png"][0] == "icon-hadis.png" and own["/favicon.ico"][0] == "favicon-hadis.ico"
+    assert _own_static("")["/icon.png"][0] == "icon.png" and set(own) == set(STATIC)
+    page = asyncio.run(_landing("klasik")(None)).body.decode()
+    assert "<title>Risale MCP Klasik</title>" in page and 'rel="icon" href="/favicon.ico"' in page
+
+
+def test_subdomain_server_also_accepts_the_old_host():
+    from risale_mcp.server import http_security
+    security = http_security("https://hadis.risalemcp.com", ["mcp.risalemcp.com"])
+    assert {"hadis.risalemcp.com", "mcp.risalemcp.com"} <= set(security.allowed_hosts)
+    assert "https://mcp.risalemcp.com" in security.allowed_origins

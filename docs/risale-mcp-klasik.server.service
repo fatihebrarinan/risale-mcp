@@ -1,12 +1,12 @@
 [Unit]
-Description=Klasik eserler MCP sunucusu (E2.4) (açık kip; ayrı makine, yalnız Tailscale: ana makinenin Caddy'si mcp.risalemcp.com/klasik isteklerini 8003/mcp'ye yönlendirir)
+Description=Klasik eserler MCP sunucusu (E2.4) (açık kip; ayrı makine, yalnız Tailscale: ana makinenin Caddy'si klasik.risalemcp.com ve eski yol mcp.risalemcp.com/klasik isteklerini 8003/mcp'ye yönlendirir)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 User=risale
 WorkingDirectory=/home/risale/risale-mcp
-ExecStart=/home/risale/risale-mcp/.venv/bin/risale-mcp --transport streamable-http --public-url https://mcp.risalemcp.com --open --profile klasik --host 0.0.0.0 --port 8003
+ExecStart=/home/risale/risale-mcp/.venv/bin/risale-mcp --transport streamable-http --public-url https://klasik.risalemcp.com --extra-host mcp.risalemcp.com --open --profile klasik --host 0.0.0.0 --port 8003
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true

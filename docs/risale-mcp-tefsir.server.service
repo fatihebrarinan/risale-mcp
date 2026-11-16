@@ -1,12 +1,12 @@
 [Unit]
-Description=Tefsir MCP sunucusu (açık kip; ayrı makine, yalnız Tailscale: ana makinenin Caddy'si mcp.risalemcp.com/tefsir isteklerini 8002/mcp'ye yönlendirir)
+Description=Tefsir MCP sunucusu (açık kip; ayrı makine, yalnız Tailscale: ana makinenin Caddy'si tefsir.risalemcp.com ve eski yol mcp.risalemcp.com/tefsir isteklerini 8002/mcp'ye yönlendirir)
 After=network-online.target
 Wants=network-online.target
 
 [Service]
 User=risale
 WorkingDirectory=/home/risale/risale-mcp
-ExecStart=/home/risale/risale-mcp/.venv/bin/risale-mcp --transport streamable-http --public-url https://mcp.risalemcp.com --open --profile tefsir --host 0.0.0.0 --port 8002
+ExecStart=/home/risale/risale-mcp/.venv/bin/risale-mcp --transport streamable-http --public-url https://tefsir.risalemcp.com --extra-host mcp.risalemcp.com --open --profile tefsir --host 0.0.0.0 --port 8002
 Restart=on-failure
 RestartSec=5
 NoNewPrivileges=true

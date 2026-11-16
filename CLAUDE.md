@@ -382,7 +382,7 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 Ayrıntı `auth.py` başındadır.
 
 - **Genel sunucu açık kipte çalışır** (`--open`; OAuth kullanıcının kararıyla 2026-10-29'da askıya alındı: OpenAI portalı OAuth bilgisini görünce "No authentication" seçilse de ısrar ediyordu). OAuth uç noktaları, giriş sayfası ve `sign_in` yoktur; herkes hesapsız ve sınırlıdır (anlamsal arama günde toplam 2.000, istekler dakikada toplam 120; sınır adres başına değil, çünkü claude.ai'nin istekleri Anthropic'in adreslerinden gelir). OAuth kodu ve testleri (kişi başına hesap, `--anonymous`) yerinde durur; ortak derlemler gibi erişimi kısıtlı bir sunucu gerekirse yeniden açılır.
-- **Hata ayıklama adresi:** `scripts/sunucu.sh auth debug-url --new` gizli bir `https://mcp.risalemcp.com/mcp/<anahtar>` verir (anahtarın yalnızca özeti saklanır); o adrese gelen istekler `(debug)` kullanıcısıyla, girdileriyle 7 gün kaydedilir ve sınırlara takılmaz. Okuma `scripts/sunucu.sh auth usage --user '(debug)' --params`, kapatma `--revoke`. Anahtar sunucu başınadır (2026-11-07): hadis için `scripts/sunucu.sh auth --server hadis debug-url --new` (`/hadis/<anahtar>`), tefsir için `scripts/tefsir-sunucu.sh auth debug-url --new` (`/tefsir/<anahtar>`, kayıt o makinede); `usage --only hadis` süzer.
+- **Hata ayıklama adresi:** `scripts/sunucu.sh auth debug-url --new` gizli bir `https://mcp.risalemcp.com/mcp/<anahtar>` verir (anahtarın yalnızca özeti saklanır); o adrese gelen istekler `(debug)` kullanıcısıyla, girdileriyle 7 gün kaydedilir ve sınırlara takılmaz. Okuma `scripts/sunucu.sh auth usage --user '(debug)' --params`, kapatma `--revoke`. Anahtar sunucu başınadır (2026-11-07): hadis için `scripts/sunucu.sh auth --server hadis debug-url --new` (`https://hadis.risalemcp.com/mcp/<anahtar>`), tefsir için `scripts/tefsir-sunucu.sh auth debug-url --new` (`tefsir.risalemcp.com`, kayıt o makinede); `usage --only hadis` süzer.
 - **Kullanım kaydı:** her MCP isteği zaman, araç, süre ve hata türüyle `usage` tablosuna yazılır, 90 gün tutulur. Parametreler (sorgular, alıntılar) kaydedilmez, IP de: Anthropic'in dizin politikası gereksiz konuşma verisini yasaklar (kullanıcının kararı). Gizlilik politikası (`site/gizlilik.html`) bunları söyler; değişirse orası da değişir.
 - **Uzak sunucu:** Hetzner Cloud CAX11 (ARM, 4 GB, Helsinki, Ubuntu 24.04), genel IPv4 `95.217.21.105`, Tailscale adı `risale` (`100.108.174.19`; SSH yalnız oradan, anahtar `~/.ssh/risale_hetzner`). Bağlayıcı **`https://mcp.risalemcp.com/mcp`**, tanıtım sitesi `https://risalemcp.com`; ikisini Caddy sunar (`docs/Caddyfile`), sertifika Let's Encrypt. Alan adı Cloudflare'de "DNS only" (proxy uzun MCP bağlantılarını 100 sn'de keser). Servis `risale-mcp` (`docs/risale-mcp.server.service`). Güvenlik duvarı: 80, 443; SSH yalnız `tailscale0`.
 - **Deploy'dan önce araç çıktısı kaydı** (kullanıcının kuralı, 2026-11-04; `--code` dahil): `deploy.sh` bunu kendisi yapar: veri gidecekse `manifest release`, sonra `tool_snapshot record aday-<zaman>` ve son `yayin-*` kaydıyla `compare`; beklenmeyen fark varsa hiçbir şey gönderilmez. Beklenen fark `DEPLOY_EXPECT="cite" scripts/deploy.sh` ile bildirilir. Gönderilen kayıt `yayin-<zaman>` olur (ilki `yayin-20261103-141900`: 2026-11-03'te deploy edilen hâl).
@@ -467,10 +467,12 @@ Adımların geçmişi `PLANLAR.md` "Kayıt"tadır; burada her oturumda gereken k
   `data/dist/hadis/hadis.db` (`build_db --profile hadis` reddeder), `hadis_library.HadisLibrary`, vektörler
   `hadis_vectors.py` (yalnız metin). Kimlik baskının numarası (`musned/14870`, tekrar `-2`, numarasız kitapta sıra
   `sifa/s00007`). `search_hadith(query?, narrator?)`: `narrator` senette; `ابن`/`بن` dizinde ve sorguda bir.
-- **Üç bağdaştırıcı:** `risale` (genel profil) ve `hadis` aynı makinede (`/mcp`, `/hadis`; servis
+- **Üç bağdaştırıcı:** `risale` (genel profil) ve `hadis` aynı makinede (`mcp.risalemcp.com/mcp`, `hadis.risalemcp.com/mcp`; servis
   `risale-mcp-hadis`, 127.0.0.1:8001; `scripts/deploy.sh [--code] [--hadis]`); `tefsir` ayrı makinede (`tefsir-mcp`,
   Hetzner CAX21, Falkenstein, Tailscale `100.98.98.62`, servis `risale-mcp-tefsir` :8002; `scripts/tefsir-sunucu.sh
-  kur|gonder|auth`), ana makinenin Caddy'si `/tefsir`'i Tailscale üzerinden yönlendirir. Talimatlar
+  kur|gonder|auth`), ana makinenin Caddy'si `tefsir.risalemcp.com`'u Tailscale üzerinden yönlendirir. Her eklenti kendi
+  alt alan adında (S4.6, 2026-11-16: Claude simgeyi alan adından alır; OpenAI doğrulaması alan adı başına); eski yollar
+  (`mcp.risalemcp.com/hadis` …) sürer, sunucu `--extra-host mcp.risalemcp.com` ile ikisini de kabul eder. Talimatlar
   `server.py` (`TEFSIR_INSTRUCTIONS`, `HADIS_INSTRUCTIONS`): üç `cite` `first` alır, başka bağdaştırıcı da
   kullanılırsa tek Kaynaklar listesi; modelin her tercümesi "Yapay zekâ tercümesi:" damgalı; alıntıya hareke
   eklenmez; web'den gelen her şey bu kitapların dışındadır; Risale'nin ne dediği yalnız Risale bağdaştırıcısında
@@ -481,7 +483,7 @@ Adımların geçmişi `PLANLAR.md` "Kayıt"tadır; burada her oturumda gereken k
   `books/klasik_openiti.py` (kurallar başında: kaynağın satırı baskının paragrafı, yalnız sayfa sınırında birleşir;
   cümle ortasına düşmüş "başlık" metne geri katılır; tek beyit `verse` paragrafı, tek cümle; Delâil'de Şâkir'in
   fıkraları düğüm; Müfredât'ta madde kökün ilk harfinden). Profil `klasik` (`data/dist/klasik/`), sunucu
-  `KLASIK_INSTRUCTIONS` (tefsirinkiyle aynı araç seti), tefsir makinesinde 8003, `/klasik`
+  `KLASIK_INSTRUCTIONS` (tefsirinkiyle aynı araç seti), tefsir makinesinde 8003, `klasik.risalemcp.com/mcp`
   (`PROFIL=klasik scripts/tefsir-sunucu.sh gonder`), çağrı seti `tests/golden/tool_calls_klasik.json`. Kalan dilimler
   ve bekleyenler `docs/eserler/klasik.md` (b), (c), E5.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox

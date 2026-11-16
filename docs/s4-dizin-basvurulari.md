@@ -47,7 +47,8 @@ text_and_commentary, discuss, self_test, lesson_plan); doğru. Öbür üç sunuc
 > Publisher: "Risale MCP" is the name of a volunteer, non-commercial project, not a registered company. It is run
 > by an individual (the holder of this account) and is named the same way on the website, the privacy policy and
 > the terms (risalemcp.com). The project also runs three sibling connectors under the same name, submitted
-> separately: Risale MCP Hadis (/hadis), Risale MCP Tefsir (/tefsir) and Risale MCP Klasik (/klasik).
+> separately: Risale MCP Hadis (hadis.risalemcp.com), Risale MCP Tefsir (tefsir.risalemcp.com) and Risale MCP
+> Klasik (klasik.risalemcp.com).
 >
 > The texts are served with the permission of their sources (e-Risale, risaleoku.com, nurpedia.org); the
 > sources are named on the website and in every answer's list of sources. All tools are read-only, there are no accounts, and no conversation
@@ -68,9 +69,9 @@ adresle izlenir:
 
 ```
 scripts/sunucu.sh auth debug-url --new                      # Risale: https://mcp.risalemcp.com/mcp/<anahtar>
-scripts/sunucu.sh auth --server hadis debug-url --new       # Hadis: /hadis/<anahtar>
-scripts/tefsir-sunucu.sh auth debug-url --new               # Tefsir: /tefsir/<anahtar> (kayıt tefsir makinesinde)
-PROFIL=klasik scripts/tefsir-sunucu.sh auth debug-url --new # Klasik Eserler: /klasik/<anahtar> (tefsir makinesinde)
+scripts/sunucu.sh auth --server hadis debug-url --new       # Hadis: https://hadis.risalemcp.com/mcp/<anahtar>
+scripts/tefsir-sunucu.sh auth debug-url --new               # Tefsir: https://tefsir.risalemcp.com/mcp/<anahtar> (kayıt tefsir makinesinde)
+PROFIL=klasik scripts/tefsir-sunucu.sh auth debug-url --new # Klasik: https://klasik.risalemcp.com/mcp/<anahtar> (tefsir makinesinde)
 scripts/sunucu.sh auth usage --user '(debug)' --params      # kayıt (Risale ve Hadis; --only hadis süzer)
 ```
 
@@ -135,7 +136,7 @@ Portal: https://claude.ai/directory/manage. Başvuruyu açın, **Edit**:
 
 Portal › **Submit new** › **MCP connector**.
 
-- **Server URL:** `https://mcp.risalemcp.com/hadis` · Users connect to different URLs: **no**.
+- **Server URL:** `https://hadis.risalemcp.com/mcp` · Users connect to different URLs: **no**.
 - **Server name** (öneri; karar sizin): `Risale MCP Hadis`. Gerekçe: "Hadis" tek başına genel bir ad, dizinde
   aranmaz ve başka eklentilerle karışır; "Risale MCP" alan adımızın adıdır, üç eklentiyi bir aile olarak gösterir.
   Slug (değişmez): `risale-mcp-hadis`.
@@ -185,7 +186,7 @@ Portal › **Submit new** › **MCP connector**.
   veritabanımız; anlamsal arama sorgusu vektör için Voyage AI'ya gider, gizlilik politikasında yazılı). Personal
   health data: no. Sponsored content: no. **Test account:** yok.
 - **Instructions for reviewers:**
-  > 1. Add a custom connector with the URL https://mcp.risalemcp.com/hadis. No sign-in is needed.
+  > 1. Add a custom connector with the URL https://hadis.risalemcp.com/mcp. No sign-in is needed.
   > 2. Prompts that exercise every tool (the books are in Arabic; questions can be asked in English):
   >    - "List the books in the Hadis connector and show the outline of Sunan Abi Dawud." (list_books, get_outline)
   >    - "Show the chapter on the call to prayer (adhan) in Sahih al-Bukhari." (read_chapter)
@@ -201,7 +202,7 @@ Portal › **Submit new** › **MCP connector**.
 
 ## 4. Claude: Tefsir (yeni başvuru)
 
-- **Server URL:** `https://mcp.risalemcp.com/tefsir` · different URLs: **no**.
+- **Server URL:** `https://tefsir.risalemcp.com/mcp` · different URLs: **no**.
 - **Server name** (öneri): `Risale MCP Tefsir`, slug `risale-mcp-tefsir` (§3'teki gerekçe).
 - **One-liner:**
   > Read and cite thirteen classical works of Qur'anic exegesis in Arabic, verse by verse, from al-Tabari to
@@ -239,7 +240,7 @@ Portal › **Submit new** › **MCP connector**.
 
 - Ön koşul, yazma, şirket, kimlik doğrulama, veri, hesap: §3 gibi.
 - **Instructions for reviewers:**
-  > 1. Add a custom connector with the URL https://mcp.risalemcp.com/tefsir. No sign-in is needed.
+  > 1. Add a custom connector with the URL https://tefsir.risalemcp.com/mcp. No sign-in is needed.
   > 2. Prompts that exercise every tool:
   >    - "List the works in the Tefsir connector and show the outline of al-Baydawi's Anwar al-Tanzil." (list_works, get_outline)
   >    - "What do the exegetes say about al-Fatiha 1:5? Read al-Zamakhshari's unit and quote him." (find_ayah, read_section, get_passage, cite)
@@ -254,7 +255,7 @@ yönlendirmesi ve `scripts/tefsir-sunucu.sh` kayıtları.
 
 ## 4a. Claude: Klasik Eserler (yeni başvuru)
 
-- **Server URL:** `https://mcp.risalemcp.com/klasik` · different URLs: **no**.
+- **Server URL:** `https://klasik.risalemcp.com/mcp` · different URLs: **no**.
 - **Server name** (öneri): `Risale MCP Klasik`, slug `risale-mcp-klasik` (§3'teki gerekçe; sitedeki adı "Klasik
   Eserler", dizinde aile adıyla).
 - **One-liner:**
@@ -294,7 +295,7 @@ yönlendirmesi ve `scripts/tefsir-sunucu.sh` kayıtları.
 
 - Ön koşul, yazma, şirket, kimlik doğrulama, veri, hesap: §3 gibi.
 - **Instructions for reviewers:**
-  > 1. Add a custom connector with the URL https://mcp.risalemcp.com/klasik. No sign-in is needed.
+  > 1. Add a custom connector with the URL https://klasik.risalemcp.com/mcp. No sign-in is needed.
   > 2. Prompts that exercise every tool:
   >    - "List the works and show the outline of the Dala'il al-I'jaz." (list_works, get_outline)
   >    - "How does al-Jurjani argue that inimitability lies in the arrangement? Quote him." (semantic_search,
@@ -360,7 +361,7 @@ genişletilir; ben hazırlarım):
 | `name` | `risale-mcp-hadis` | `risale-mcp-tefsir` | `risale-mcp-klasik` |
 | `displayName` | Risale MCP Hadis | Risale MCP Tefsir | Risale MCP Klasik |
 | `shortDescription` (≤30) | Cite hadith collections | Cite classical tafsir works | Cite classical rhetoric works |
-| sunucu | `https://mcp.risalemcp.com/hadis` | `https://mcp.risalemcp.com/tefsir` | `https://mcp.risalemcp.com/klasik` |
+| sunucu | `https://hadis.risalemcp.com/mcp` | `https://tefsir.risalemcp.com/mcp` | `https://klasik.risalemcp.com/mcp` |
 | açıklama | §3'teki Description ("Claude" yerine "ChatGPT") | §4'teki Description | §4a'daki Description |
 | `websiteURL` | `https://risalemcp.com/en/hadith.html` | `https://risalemcp.com/en/tafsir.html` | `https://risalemcp.com/en/classical.html` |
 | `defaultPrompt` | §3'ün ilk üç kullanım istemi | §4'ün ilk üç kullanım istemi | §4a'nın ilk üç kullanım istemi |

@@ -1,14 +1,15 @@
 #!/usr/bin/env bash
 # Tefsir sunucusunun ayrı makinesi (kullanıcının kararı, 2026-11-07: risale ve hadis bir makinede, tefsir ileride
 # büyüyeceği için ayrı makinede). Makine yalnız Tailscale'den erişilir; dışarıya ana makinenin Caddy'si açar
-# (mcp.risalemcp.com/tefsir → <tailscale adresi>:8002/mcp). Sertifika, alan adı ve site ana makinede kalır.
+# (tefsir.risalemcp.com ve eski yol mcp.risalemcp.com/tefsir → <tailscale adresi>:8002/mcp). Sertifika, alan adı ve
+# site ana makinede kalır.
 #
 # Önce (kullanıcı, Hetzner panelinde): Ubuntu 24.04, en az 4 GB bellek (CAX11 ya da CX22; tefsir süreci ≈1,5 GB),
 # SSH anahtarı ~/.ssh/risale_hetzner.pub; makinede `tailscale up` (giriş bağlantısı kullanıcının hesabıyla).
 #
 #   TEFSIR_HOST=root@<tailscale adresi> scripts/tefsir-sunucu.sh kur      # ilk kurulum: kullanıcı, uv, güvenlik duvarı
 #   TEFSIR_HOST=root@<tailscale adresi> scripts/tefsir-sunucu.sh gonder   # kod, tefsir profilinin verisi, servis
-#   scripts/tefsir-sunucu.sh auth debug-url --new | --revoke   # gizli hata ayıklama adresi (/tefsir/<anahtar>)
+#   scripts/tefsir-sunucu.sh auth debug-url --new | --revoke   # gizli hata ayıklama adresi (tefsir.risalemcp.com/mcp/<anahtar>)
 #   scripts/tefsir-sunucu.sh auth usage --user '(debug)' --params   # o adresten gelen isteklerin kaydı
 #   scripts/tefsir-sunucu.sh status | restart | logs
 #   PROFIL=klasik scripts/tefsir-sunucu.sh gonder | auth … | status   # klasik eserler sunucusu (E2.4, 8003, /klasik)

@@ -101,8 +101,10 @@ CHATGPT_CALLBACK_PREFIX = "https://chatgpt.com/connector/oauth/"
 
 USAGE_DAYS = 90                        # kullanım kaydının saklama süresi (gizlilik politikasında yazılı)
 DEBUG_DAYS = 7                         # ayrıntılı kayıttaki parametrelerin saklama süresi (gizlilik politikasında yazılı)
-# Dışarıdan görünen yol: Caddy /hadis/<anahtar> ve /tefsir/<anahtar>'ı ilgili sürecin /mcp/<anahtar>'ına çevirir.
-DEBUG_PATHS = {"genel": "mcp", "hadis": "hadis", "tefsir": "tefsir", "klasik": "klasik"}
+# Dışarıdan görünen adres: her sunucu kendi alt alan adında /mcp/<anahtar> (S4.6, 2026-11-16). Eski yollar
+# (mcp.risalemcp.com/hadis/<anahtar>) Caddy'de sürer, ilgili sürecin /mcp/<anahtar>'ına çevrilir.
+DEBUG_URLS = {"genel": "https://mcp.risalemcp.com/mcp", "hadis": "https://hadis.risalemcp.com/mcp",
+              "tefsir": "https://tefsir.risalemcp.com/mcp", "klasik": "https://klasik.risalemcp.com/mcp"}
 DEBUG_USER = "(debug)"                 # açık kipte hata ayıklama adresinden gelen isteklerin kayıttaki kullanıcısı
 DEBUG_HEADER = b"x-risale-debug"       # OpenGate'in hata ayıklama isteğine eklediği başlık (dışarıdan geleni siler)
 
@@ -749,7 +751,7 @@ def _when(ts: float) -> str:
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="risale-mcp auth", description="Hesaplar, oturumlar ve kullanım kaydı.")
     parser.add_argument("--db", type=Path, default=AUTH_DB)
-    parser.add_argument("--server", choices=sorted(DEBUG_PATHS), default="genel",
+    parser.add_argument("--server", choices=sorted(DEBUG_URLS), default="genel",
                         help="hangi sunucunun hata ayıklama adresi (genel ve hadis aynı auth.db'de, anahtarları ayrı)")
     sub = parser.add_subparsers(dest="command", required=True)
     for name in ("add-user", "passwd", "remove-user"):
@@ -774,7 +776,7 @@ def main(argv: list[str] | None = None) -> None:
     group = p.add_mutually_exclusive_group(required=True)
     group.add_argument("--new", action="store_true")
     group.add_argument("--revoke", action="store_true")
-    p.add_argument("--base", default="https://mcp.risalemcp.com")
+    p.add_argument("--base", help="adresin anahtardan önceki kısmı (varsayılan sunucunun alt alan adı, …/mcp)")
     p = sub.add_parser("debug", help="hesabın ayrıntılı kaydını aç ya da kapat")
     p.add_argument("user")
     p.add_argument("state", choices=["on", "off"])
@@ -815,7 +817,7 @@ def main(argv: list[str] | None = None) -> None:
                 store.revoke_debug_key()
                 print(f"{args.server}: hata ayıklama adresi kapatıldı, kayıtlı parametreleri silindi.")
             else:
-                print(f"{args.base.rstrip('/')}/{DEBUG_PATHS[args.server]}/{store.new_debug_key()}\n"
+                print(f"{(args.base or DEBUG_URLS[args.server]).rstrip('/')}/{store.new_debug_key()}\n"
                       f"(eski adres geçersiz; bu adrese gelen istekler girdileriyle {DEBUG_DAYS} gün saklanır)")
         elif args.command == "debug":
             store.set_debug(args.user, args.state == "on")

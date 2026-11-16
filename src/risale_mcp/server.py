@@ -21,7 +21,7 @@ import base64
 import json
 import sys
 import threading
-from collections.abc import Iterator
+from collections.abc import Iterator, Sequence
 from contextlib import contextmanager
 from pathlib import Path
 from typing import Annotated
@@ -377,11 +377,15 @@ def _section_markdown(section: dict) -> str:
 STATIC_DIR = Path(__file__).parent / "static"
 STATIC = {"/icon.png": ("icon.png", "image/png"), "/icon.svg": ("icon.svg", "image/svg+xml"),
           "/favicon.ico": ("favicon.ico", "image/x-icon")}
-# Hadis, tefsir ve klasik sunucularının kendi simgesi (S4.6: aynı çizim, zemin rengi farklı). Hepsinin public_url'i
-# aynı alan adı olduğu için simgeyi alan adının kökündeki ana sunucu verir; her sunucu bütün dosyaları sunar.
-for _variant in ("hadis", "tefsir", "klasik"):
+# Hadis, tefsir ve klasik sunucularının kendi simgesi (S4.6: aynı çizim, zemin rengi farklı). Her biri kendi alt
+# alan adındadır (hadis.risalemcp.com); Claude ve dizin simgeyi alan adından aldığı için o sunucu /icon.png ve
+# /favicon.ico'da kendi simgesini, kökte simge bağlantılı küçük bir sayfa verir. Bütün dosyalar her sunucuda durur.
+VARIANTS = {"hadis": ("Risale MCP Hadis", "hadis.html"), "tefsir": ("Risale MCP Tefsir", "tefsir.html"),
+            "klasik": ("Risale MCP Klasik", "klasik.html")}
+for _variant in VARIANTS:
     STATIC[f"/icon-{_variant}.png"] = (f"icon-{_variant}.png", "image/png")
     STATIC[f"/icon-{_variant}.svg"] = (f"icon-{_variant}.svg", "image/svg+xml")
+    STATIC[f"/favicon-{_variant}.ico"] = (f"favicon-{_variant}.ico", "image/x-icon")
 
 
 def _icons(public_url: str | None, variant: str = "") -> list[Icon]:
@@ -401,6 +405,30 @@ def _static(name: str, media: str):
 
     async def endpoint(_request) -> Response:
         return Response(body, media_type=media, headers={"Cache-Control": "public, max-age=86400"})
+    return endpoint
+
+
+def _own_static(variant: str) -> dict[str, tuple[str, str]]:
+    """Sunucunun yolları: alt alan adlı sunucuda /icon.png, /icon.svg, /favicon.ico onun kendi simgesidir."""
+    if not variant:
+        return STATIC
+    own = {"/icon.png": f"icon-{variant}.png", "/icon.svg": f"icon-{variant}.svg", "/favicon.ico": f"favicon-{variant}.ico"}
+    return {path: (own.get(path, name), media) for path, (name, media) in STATIC.items()}
+
+
+def _landing(variant: str):
+    """Alt alan adının kökü: simge servisleri (Claude, dizin) simge bağlantısını burada arar."""
+    title, page = VARIANTS[variant]
+    body = (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>{title}</title>'
+            '<meta name="viewport" content="width=device-width, initial-scale=1">'
+            '<link rel="icon" href="/favicon.ico" sizes="any"><link rel="icon" href="/icon.svg" type="image/svg+xml">'
+            '<link rel="apple-touch-icon" href="/icon.png"></head><body style="font-family:sans-serif;margin:2rem">'
+            f'<p><img src="/icon.png" alt="" width="64" height="64"></p><h1>{title}</h1>'
+            '<p>This is an MCP server; add it to your assistant with the address <code>/mcp</code> on this domain.</p>'
+            f'<p><a href="https://risalemcp.com/{page}">risalemcp.com</a></p></body></html>').encode()
+
+    async def endpoint(_request) -> Response:
+        return Response(body, media_type="text/html; charset=utf-8", headers={"Cache-Control": "public, max-age=3600"})
     return endpoint
 
 
@@ -454,8 +482,11 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                            instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),
                            description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
                            icons=_icons(public_url), **protected)
-    for path, (name, media) in STATIC.items():               # ikon: istemciler sunucu adresinden de alabilir
+    variant = profile if profile in VARIANTS else ""
+    for path, (name, media) in _own_static(variant).items():    # ikon: istemciler sunucu adresinden de alabilir
         server.custom_route(path, methods=["GET"], include_in_schema=False)(_static(name, media))
+    if variant:
+        server.custom_route("/", methods=["GET"], include_in_schema=False)(_landing(variant))
     if public_url and not open_access:
         server.custom_route("/login", methods=["GET", "POST"], include_in_schema=False)(login_endpoint(provider))
     if hadis:
@@ -853,19 +884,21 @@ def _hadis_tools(server: MCPServer, library) -> None:
             return _json(library.cite_reports(items, first, legacy=bool(ids)))
 
 
-def http_security(public_url: str) -> TransportSecuritySettings:
-    """DNS rebinding koruması: tünel isteği dış adresin Host başlığıyla iletir, o da izinlidir."""
-    host = urlparse(public_url).netloc
+def http_security(public_url: str, extra_hosts: Sequence[str] = ()) -> TransportSecuritySettings:
+    """DNS rebinding koruması: tünel isteği dış adresin Host başlığıyla iletir, o da izinlidir. `extra_hosts`:
+    sunucuya ulaşan öbür dış adlar (alt alan adlı sunucuda eski yol, mcp.risalemcp.com/hadis)."""
+    hosts = [urlparse(public_url).netloc, *extra_hosts]
     return TransportSecuritySettings(
-        enable_dns_rebinding_protection=True, allowed_hosts=[host, "127.0.0.1:*", "localhost:*"],
-        allowed_origins=[f"https://{host}", "https://claude.ai", "https://claude.com",
+        enable_dns_rebinding_protection=True, allowed_hosts=[*hosts, "127.0.0.1:*", "localhost:*"],
+        allowed_origins=[*(f"https://{h}" for h in hosts), "https://claude.ai", "https://claude.com",
                          "http://127.0.0.1:*", "http://localhost:*"])
 
 
-def http_app(server: MCPServer, public_url: str, anonymous: bool = False, open_store: AuthStore | None = None):
+def http_app(server: MCPServer, public_url: str, anonymous: bool = False, open_store: AuthStore | None = None,
+             extra_hosts: Sequence[str] = ()):
     """OAuth'lu HTTP uygulaması; `anonymous` ise `/mcp` önüne hesapsız erişim kapısı (`auth.AnonymousGate`) konur.
     `open_store` verilirse açık kip: OAuth'suz uygulamanın önüne `auth.OpenGate` (dakika sınırı, hata ayıklama adresi)."""
-    app = server.streamable_http_app(transport_security=http_security(public_url))
+    app = server.streamable_http_app(transport_security=http_security(public_url, extra_hosts))
     if open_store is not None:
         return OpenGate(app, open_store)
     if anonymous:
@@ -895,6 +928,8 @@ def main() -> None:
                         help="HTTP + --public-url: hesapsızlar da kullanır (anlamsal arama sınırlı), hesaplılar sınırsız")
     parser.add_argument("--open", action="store_true",
                         help="HTTP + --public-url: OAuth'suz, herkes hesapsız (sınırlı); gizli hata ayıklama adresi")
+    parser.add_argument("--extra-host", action="append", default=[],
+                        help="HTTP: sunucuya ulaşan öbür dış ad (Host başlığı), ör. eski yol için mcp.risalemcp.com")
     parser.add_argument("--anonymous-semantic", type=int, default=ANON_SEMANTIC_PER_DAY,
                         help="hesapsızların günlük toplam anlamsal arama sınırı")
     args = parser.parse_args()
@@ -919,7 +954,7 @@ def main() -> None:
             sys.exit("--public-url https:// ile başlamalı.")
         if not args.open and not AuthStore().users():
             sys.exit("Henüz hesap yok: önce `risale-mcp auth add-user <ad>`.")
-        security = http_security(args.public_url)
+        security = http_security(args.public_url, args.extra_host)
     if args.no_auth:
         create_server(library, warm=True, profile=args.profile).run("streamable-http", host=args.host, port=args.port, transport_security=security)
         return
@@ -929,14 +964,15 @@ def main() -> None:
         store = AuthStore(server=args.profile)
         server = create_server(library, args.public_url, store, anonymous_semantic=args.anonymous_semantic,
                                warm=True, open_access=True, profile=args.profile)
-        uvicorn.run(http_app(server, args.public_url, open_store=store), host=args.host, port=args.port,
+        uvicorn.run(http_app(server, args.public_url, open_store=store, extra_hosts=args.extra_host),
+                    host=args.host, port=args.port,
                     access_log=False)
         return
     server = create_server(library, args.public_url, anonymous=args.anonymous,
                            anonymous_semantic=args.anonymous_semantic, warm=True, profile=args.profile)
     # Erişim günlüğü kapalı: istemcinin IP adresini sistem günlüğüne yazıyordu; kullanım kaydı (auth.py) yeter
     # (gizlilik politikası: IP adresi kaydedilmez).
-    uvicorn.run(http_app(server, args.public_url, args.anonymous), host=args.host, port=args.port, access_log=False)
+    uvicorn.run(http_app(server, args.public_url, args.anonymous, extra_hosts=args.extra_host), host=args.host, port=args.port, access_log=False)
 
 
 if __name__ == "__main__":

@@ -4,7 +4,7 @@
 #   scripts/deploy.sh            # kod + genel profilin veritabanı ve vektörleri + quran.json
 #   scripts/deploy.sh --code     # yalnızca kod, site/ ve taslak bölümü (data/d1/masa.html; veri değişmediyse)
 #   DEPLOY_EXPECT="cite" scripts/deploy.sh   # bu araçların çıktısındaki fark beklenen sayılır
-#   scripts/deploy.sh --hadis    # ayrıca hadis sunucusu (aynı makine, 127.0.0.1:8001, mcp.risalemcp.com/hadis):
+#   scripts/deploy.sh --hadis    # ayrıca hadis sunucusu (aynı makine, 127.0.0.1:8001, hadis.risalemcp.com):
 #                                # hadis.db, vektörleri ve servis birimi; `--code` ile birlikte de verilebilir
 #
 # Göndermeden önce (kullanıcının kuralı, `--code` dahil): veri gidecekse genel veritabanı sürüm etiketi alır
