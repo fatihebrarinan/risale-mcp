@@ -13,9 +13,15 @@
 > geçmez. Eklenenler: usulün nazarî temeli (2), mukaddimelerin ne zaman geldiği (5), taslak için kararlaştırılan
 > kurallar (8).
 >
+> **Üçüncü sürümde ne değişti (2026-11-16, `PLANLAR.md` D12.4).** 2.7 eklendi: İşârât'ın Bakara 17–20'deki on iki
+> meselesi Muhâkemât'ın İkinci Makalesinin ("Unsur-u Belâğat") Arapça telhîsidir; müellif Muhâkemât'ı "tefsir
+> mukaddimesi" diye anar. Türkçe aslı telhîste olmayan tatbikleri ve talimatları taşır; taslakların sistemli
+> zaaflarına (harfler, garaz, takdir, derece, nakil ve istinbat) doğrudan cevap verir. Bu bölüm kullanıcının okumasını
+> bekler.
+>
 > **Hangi metin.** Arapça asıl `isaratul-icaz-arabi` (risaleoku metni), Türkçe tercüme `isaratul-icaz` (e-Risale
 > metni, Abdülmecid Nursî tercümesi). Tenbih ve Hâşiye'yi müellif sonradan Türkçe yazmıştır: onlarda asıl
-> Türkçedir. İfâdetü'l-Merâm'ın ve tefsirin aslı Arapçadır. Tercüme asıldan üç noktada ayrılır: âyetlerin ardındaki
+> Türkçedir. İfâdetü'l-Merâm'ın ve tefsirin aslı Arapçadır. Muhâkemât (`muhakemat`, 2.7) Türkçe yazılmıştır. Tercüme asıldan üç noktada ayrılır: âyetlerin ardındaki
 > "Yani: …" mealleri asılda yoktur; tercüme yer yer kısaltır (müellifin kendi sözü, 1.4); Bakara 17–20'nin nazarî
 > girişi (Cürcânî'den nakil ve on iki mesele) tercümede hiç yoktur. Arapça asıl 31. âyetin ortasında biter,
 > tercümede devamı vardır.
@@ -243,6 +249,187 @@ Tercümede:
 — İşaratü'l-İ'caz › Sûre‑i Bakara › 23‑24. Âyetlerin Tefsiri (Nübüvvet Hakkında) › İ'câzın Vecihleri › Üçüncü Vecih › 127. cümle (`isaratul-icaz/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/icazin-vecihleri/vecih-03-2/c127`)
 
 Yani eserin bütünü, nazımdaki i'câzın tabir edilebileceği kabulüne dayanan bir tatbiktir.
+
+### 2.7 Aslı: Muhâkemât'ın "Unsur-u Belâğat"ı
+
+Müellif Muhâkemât'ı tefsirinin mukaddimesi diye anar:
+
+> "“Latîf bir inâyet‑i Rabbâniye’dir ki; bundan otuz sene evvel Eski Said, yazdığı tefsir mukaddimesi ‘Muhâkemât’ nâmındaki eserin âhirinde: ‘İkinci Maksad: Kur'ân’da Haşre işâret eden iki âyet, tefsir ve beyân edilecek."
+
+— Muhakemat › Unsuru'l‑Akîde › Üçüncü Maksad › İkinci Maksad › 4. cümle (`muhakemat/makale-03/maksad-03/maksad-02/c004`)
+
+İşârât'ın Bakara 17–20'deki "on iki mesele"si (2.1; `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/fasil-2/c011`) Muhâkemât'ın İkinci Makalesinin, "Unsur-u Belâğat"ın Arapça telhîsidir: on iki meselenin sırası ve konuları aynıdır (`isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-01/c001` … `mesele-10`; 11. ve 12. mesele `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-10/c004..c017` içinde). Bu bölümün 2.2–2.4'teki maddeleri o telhîse dayanır. İkinci Makale Türkçe yazılmıştır (aslı Türkçedir, tercüme değildir) ve telhîste olmayan iki şey taşır: kaideyi bir âyette ya da beyitte **adım adım tatbik** ve okura **"sen de böyle yap"** diyen talimat. Aşağıda yalnız taslak işine dokunan meseleler var; her birinin telhîsteki karşılığı kimliğiyle.
+
+**Birinci Mes'ele: lafız mânâya hizmet eder** (telhîs: `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-01/c001`).
+
+> "Efkâr ve hissiyatın mecrâ‑yı tabîisi, nazm-ı maânîdir."
+
+— Muhakemat › İkinci Makale › Birinci Mes'ele › 3. cümle (`muhakemat/makale-02/mesele-01/c003`)
+
+> "Evet lafza zînet verilmeli, fakat tabiat‑ı mânâ istemek şartıyla‥ ve sûret-i mânâya haşmet vermeli, fakat meâlin iznini almak şartıyla‥ ve üslûba parlaklık vermeli, fakat maksûdun isti'dâdı müsâid olmak şartıyla‥ ve teşbihe revnâk vermeli, fakat matlûbun münâsebetini göze almak ve rızâsını tahsil etmek şartıyla‥ ve hayâle cevelân ve şa'şaa vermeli, fakat hakikati incitmemek ve ağır gelmemek ve hakikate misâl olmak ve hakikatten istimdâd etmek şartıyla gerektir."
+
+— Muhakemat › İkinci Makale › Birinci Mes'ele › 26. cümle (`muhakemat/makale-02/mesele-01/c026`)
+
+**Üçüncü Mes'ele: üslûb kıssanın parçalarını birbirine bağlar** (telhîs: `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-03/c001`).
+
+> "Ve belâğatça fâidesi, kıssatın tefârikini ve perîşan olan parçalarını iltiham ve bitiştirmektir; tâ, kaide‑i “Bir şey sâbit olursa, levâzımıyla sâbittir.” sırrıyla, bir cüz'ü tahrîk etmekle, kıssatın küllünü ihtizâza getirmektir."
+
+— Muhakemat › İkinci Makale › Üçüncü Mes'ele › 23. cümle (`muhakemat/makale-02/mesele-03/c023`)
+
+> "Güyâ mütekellim, üslûbun bir köşesini muhâtaba gösterse, muhâtab kendi kendine, velev bir derece karanlık olsa da, tamamını görebilir."
+
+— Muhakemat › İkinci Makale › Üçüncü Mes'ele › 24. cümle (`muhakemat/makale-02/mesele-03/c024`)
+
+**Dördüncü Mes'ele: kayıtlar birbirine cevap verir, hepsi asıl garaza parmak basar** (telhîs: `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-04/c001`; 3.2'deki havuz ilkesinin aslı).
+
+> "Kelâmın kuvvet ve kudreti ise; kelâmın kuyûdâtı, birbirine cevab vermek ve keyfiyâtı birbirine muâvenet etmekle; umumen karınca kaderince, asıl garaza işâret ve herbiri parmağını maksad üzerine bırakmak ile;عِبَارَاتُنَا شَتّٰى وَحُسْنُكَ وَاحِدٌ ❋ وَكُلٌّ اِلٰى ذَاكَ الْجَمَالِ يُش۪يرُdüsturuna timsâl olmaktır."
+
+— Muhakemat › İkinci Makale › Dördüncü Mes'ele › 1. cümle (`muhakemat/makale-02/mesele-04/c001`)
+
+> "Demek kuyûdât, zenâv gibi veyâhut dereler gibi; maksad ise, ortalarından istimdâd edici bir havuz gibi olmak gerektir."
+
+— Muhakemat › İkinci Makale › Dördüncü Mes'ele › 2. cümle (`muhakemat/makale-02/mesele-04/c002`)
+
+Ardından bir âyette (Enbiyâ 21:46, ﴿وَلَئِنْ مَسَّتْهُمْ نَفْحَةٌ﴾) her harfi ve hey'eti tek tek aynı garaza bağlar: «اِنْ»'deki teşkik, «مَسَّتْ»'teki temas, نَفْحَةٌ'nin maddesi, sîgası ve tenkiri, «مِنْ»'deki teb'îz, «رَبِّكَ»'deki rahmet îmâsı (`muhakemat/makale-02/mesele-04/c009..c014`):
+
+> "«اِنْ» lafzındaki teşkîk ile tahfif‥"
+
+— Muhakemat › İkinci Makale › Dördüncü Mes'ele › 9. cümle (`muhakemat/makale-02/mesele-04/c009`)
+
+> "Ve «رَبِّكَ»’deki îmâ‑i rahmet, umumen taklîli göstermekle, azâbı nihâyet derecede ta'zîm ve tehvil eder."
+
+— Muhakemat › İkinci Makale › Dördüncü Mes'ele › 14. cümle (`muhakemat/makale-02/mesele-04/c014`)
+
+> "Tenbih: Bu sana ser‑meşktir; yazabilirsen meşk et."
+
+— Muhakemat › İkinci Makale › Dördüncü Mes'ele › 16. cümle (`muhakemat/makale-02/mesele-04/c016`)
+
+> "Fakat makàsıd bazen mütedâhilen müteselsildir."
+
+— Muhakemat › İkinci Makale › Dördüncü Mes'ele › 18. cümle (`muhakemat/makale-02/mesele-04/c018`)
+
+> "Zîra, nazar-ı sathî böyle yerlerde çok halt eder."
+
+— Muhakemat › İkinci Makale › Dördüncü Mes'ele › 21. cümle (`muhakemat/makale-02/mesele-04/c021`)
+
+**Beşinci Mes'ele: telmih ve işaret garazın levâzımını gösterir** (telhîs: `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-05/c001`).
+
+> "Kelâmın servet ve vüs'ati ise; nasıl sûret‑i terkîb, nefs-i maksadı gösterir, öyle de; müstetbeâtının telmihâtıyla ve esâlibin işârâtıyla, garazın levâzım ve tevâbi'ini göstermek ve ihtizâza getirmektir."
+
+— Muhakemat › İkinci Makale › Beşinci Mes'ele › 1. cümle (`muhakemat/makale-02/mesele-05/c001`)
+
+> "Evet telmih ve işâret ise, yolun etrafını temâşâ ile tenezzüh etmek içindir; kasd ve taleb ve tasarruf için değildir."
+
+— Muhakemat › İkinci Makale › Beşinci Mes'ele › 3. cümle (`muhakemat/makale-02/mesele-05/c003`)
+
+> "Demek, mütekellim onda mes'ûl olmaz."
+
+— Muhakemat › İkinci Makale › Beşinci Mes'ele › 4. cümle (`muhakemat/makale-02/mesele-05/c004`)
+
+**Altıncı Mes'ele: mânâ tabakaları ve her birinin garaza yakınlığı kadar payı** (telhîs: `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-06/c001`; 2.3'ün aslı).
+
+> "İşte bu silsilenin borularından, ismin müsemmâsı ve fiilin mânâsı ve harfin medlûlü ve nazmın mazrufu ve hey'etin mefhûmu ve keyfiyâtın mermûzu ve müstetbeâtın müşârün‑ileyhleri ve hitâbı teşyî' eden etvârın muharrikleri, hem de “Dâllün bil'ibare”nin maksûdu ve “Dâllün bil'işâret”in medlûlü ve “Dâllün bilfehvâ”nın mefhûm-u kıyâsîsi ve “Dâllün bil'iktiza”nın mânâ-yı zarûrîsi ve daha başka mefâhim, umumen bu silsilenin birer tabakasından in'ikad eder ve şu mâdenden çıkar."
+
+— Muhakemat › İkinci Makale › Altıncı Mes'ele › 15. cümle (`muhakemat/makale-02/mesele-06/c015`)
+
+> "İşâret: Nasıl bir hükûmetin intizamında, her memura isti'dâdı nisbetinde, vazife derecesinde, hizmet mikdarınca ücret vermek lâzımdır, öyle de; böyle merâtib‑i mütefâviteden ihtilât eden mânâlar ise, garaz-ı küllî olan mesûk-u lehü'l-kelâmın merkezine kurbiyet nisbetinde ve maksûda hizmet derecesinde, herbirine inâyet ve ihtimamda hisse ve nasîblerini, taksim-i âdil ile tefrik etmek gerektir, tâ ki; o muâdeletle intizam ve o intizamdan tenâsüb ve o tenâsübden hüsn-ü vifâk ve o hüsn-ü vifâktan hüsn-ü muâşeret ve o hüsn-ü muâşeretten kelâmın kemâline bir mîzanü't-ta'dil çıkabilsin."
+
+— Muhakemat › İkinci Makale › Altıncı Mes'ele › 28. cümle (`muhakemat/makale-02/mesele-06/c028`)
+
+> "Demek, kuyûdât‑ı kelâmın isti'dâdlarını nazara almak gerektir."
+
+— Muhakemat › İkinci Makale › Altıncı Mes'ele › 31. cümle (`muhakemat/makale-02/mesele-06/c031`)
+
+> "Kezâlik, o maânî-i mütezâhime içinde, bazen bir küçük mânâ riyâset eder."
+
+— Muhakemat › İkinci Makale › Altıncı Mes'ele › 37. cümle (`muhakemat/makale-02/mesele-06/c037`)
+
+**Sekizinci Mes'ele: harflerin mânâ alışverişi** (telhîs: `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-08/c001`, Sîbeveyh'in sözüyle).
+
+> "Maânî‑i beyâniyenin aşılaması ve telkîhi ve mânâların becâyiş ve inkılâbları‥ kelimenin mânâ-yı hakîkisi, ya garaz veyâhut mânâ-yı muallakadan birisini teşerrüb ve içine cezb etmektir."
+
+— Muhakemat › İkinci Makale › Sekizinci Mes'ele › 1. cümle (`muhakemat/makale-02/mesele-08/c001`)
+
+> "Tenbih: Bu mütedâhil mânâların hangisi daha ziyâde senin garazına temâs eder ve maksada sıla‑i rahim vardır; ileriye sür ve izhâr et."
+
+— Muhakemat › İkinci Makale › Sekizinci Mes'ele › 16. cümle (`muhakemat/makale-02/mesele-08/c016`)
+
+**Dokuzuncu Mes'ele: maksatların çokluğu ve kelâmın fürû'a isti'dâdı** (telhîs: `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-09/c001`).
+
+> "İrâde‑i cüz'iyeyi ve tasavvur-u basiti âciz bırakan kelâmın yüksek tabakası şudur ki: Mütedâhilen müteselsil olan makàsıdın taaddüdü ve mütenâsilen murtabıt olan metâlibin teselsülü ve netice-i vâhideyi tevlîd eden asılların ictimâ'ı ve herbiri ayrı ayrı semere veren fürû'-u kesîrenin istinbatına isti'dâd veya tazammunu iledir."
+
+— Muhakemat › İkinci Makale › Dokuzuncu Mes'ele › 1. cümle (`muhakemat/makale-02/mesele-09/c001`)
+
+> "Dördüncü Nokta: Kelâmı öyle ifrâğ etmek ve isti'dâd vermektir ki; pek çok fürû'ların tohumlarını mutazammın ve pek çok ahkâma me'haz ve pek çok maânîye ve vücûh‑u muhtelifeye delâlet etmektir."
+
+— Muhakemat › İkinci Makale › Dokuzuncu Mes'ele › Dördüncü Nokta › 1. cümle (`muhakemat/makale-02/mesele-09/nokta-04/c001`)
+
+**On Birinci Mes'ele: her kayıt mukadder bir suale cevaptır** (telhîs aşağıda; 2.4'ün aslı).
+
+> "Bir hükmün levâzımını ihlâl etmemek, rahatlığını bozmamak ve nazara almak ve mebâdîsinden istimdâd‑ı hayat etmek için müracaat etmek ve hücum eden evhâmın i'tirâzâtına mukàbele edecek suâl-i mukaddere cevab olan kuyûdâtıyla takallüd etmek gerektir."
+
+— Muhakemat › İkinci Makale › Onbirinci Mes'ele › 3. cümle (`muhakemat/makale-02/mesele-11/c003`)
+
+> "Yani, mevzû veyâhut mahmûlü takyid ile veyâhut tavsif ile veyâhut başka cihetle vehmin hücumuna müsâid noktalarda birer müdâfi' müheyyâ ederek, baştan aşağıya kadar mukadder suâllere cevab hükmünde olan kuyûdâtıyla mücehhez etmektir."
+
+— Muhakemat › İkinci Makale › Onbirinci Mes'ele › 7. cümle (`muhakemat/makale-02/mesele-11/c007`)
+
+> "اعلم أن سلامة الكلام التي هي سببُ صحته وقوّته هي أن يكون الكلام بحيث يشير إلى المبادئ والدلائل، ويرمز إلى اللوازم والتوابع، وبقيود الموضوع والمحمول وكيفياتهما يومئ إلى ردِّ الأوهام ودفع الشبهات؛ كأنّ كلَّ قيدٍ جوابٌ لسؤال مقدّر."
+
+— İşârâtü'l-İ'câz (Arapça) › Sûre‑i Bakara › 17‑20. Âyetlerin Tefsiri › المسألة العاشرة: › 5. cümle (`isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-10/c005`)
+
+**On İkinci Mes'ele: her kayda hakkı kadar inâyet; hikâyede anlatılanın yerine geçmek; makamın dışında üslûb aramamak** (telhîs: `isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-10/c007..c017`; telhîs yalnız üç üslûbu alır, aşağıdaki talimatları almaz).
+
+> "Kelâmın selâmet ve rendeçlenmesi ve îtidâl‑i mizâcı ise; her kaydın istihkak ve isti'dâdına göre, inâyeti taksim ve hil'at-ı üslûbu tevzî' ve giydirmektir."
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 1. cümle (`muhakemat/makale-02/mesele-12/c001`)
+
+> "Hem de, hikâyette olursa, mütekellim kendini mahkiyyün-anh yerinde farz etmek gerektir."
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 2. cümle (`muhakemat/makale-02/mesele-12/c002`)
+
+> "Eğer başkasının hissiyat ve efkârının tasvirinde ise, mahkiyyün‑anh’a hulûl etmek ve onun kalbinde misâfir olmak ve lisânıyla tekellüm etmek gerektir."
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 4. cümle (`muhakemat/makale-02/mesele-12/c004`)
+
+> "Mânânın kàmetine göre bir üslûbu kestirmek istediğin vakit, dâhil‑i makamda olan menba'dan ve mevzûun fabrikasından; lâakal kelâmın tazammun ettiği mevzûun veya kıssatın veya san'atın levâzımının parça parçasından ve tevâbi'inin kıt'a kıt'asından bir üslûbu dikmek, zarûret olmadan harice medd-i nazar etmemek, tâbir hatâ olmasa, harice boykotaj etmek ile, elbette kelâmın kuvveti tezâyüd ettiği gibi, servetin dağılmamasına en büyük esâstır."
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 22. cümle (`muhakemat/makale-02/mesele-12/c022`)
+
+> "Hattâ zarûret olmazsa, efkâr ve mesâilde ve misâllerde ve esâlibde, harice boykotaj etmektir."
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 36. cümle (`muhakemat/makale-02/mesele-12/c036`)
+
+> "Fakat, tevâfuk‑u hâtır olabilir."
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 37. cümle (`muhakemat/makale-02/mesele-12/c037`)
+
+> "Zîra, hakikat birdir."
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 38. cümle (`muhakemat/makale-02/mesele-12/c038`)
+
+Mes'elenin hâtimesi:
+
+> "Fakat ben derim: Kim söylemiş?"
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 42. cümle (`muhakemat/makale-02/mesele-12/c042`)
+
+> "Söylediği sözü gibi dikkat etmek, belâğat nokta‑i nazarından lâzımdır, belki elzemdir."
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 46. cümle (`muhakemat/makale-02/mesele-12/c046`)
+
+> "İşâret: Ma'lûm olsun ki; fenn‑i maânî ve beyânın mezâyâsının belâğatça mühim bir şartı; kasden ve amden garazın cihetine emârât ile işâret ve alâmâtın nasbıyla, kasd ve amdini göstermektir."
+
+— Muhakemat › İkinci Makale › Onikinci Mes'ele › 47. cümle (`muhakemat/makale-02/mesele-12/c047`)
+
+**[Çıkarım] Taslak için ne demek.** Bu maddeler yeni bir usul değildir, 2–4. bölümlerin aslıdır; ama taslakların sistemli zaaflarına (`PLANLAR.md` D8, D12) doğrudan cevap verirler:
+
+- **Harfler ve küçük lafızlar** (Dördüncü ve Sekizinci Mes'ele): müellif kaideyi bir âyette her harfi ve hey'eti ayrı ayrı garaza bağlayarak gösterir ve "bu sana ser-meşktir" der. Taslağın üçüncü vechinde bakılacak yerler listesi harfleri de saymalı; her biri garaza bir "parmak" olarak yazılmalı.
+- **Garaz, özellikle kıssada** (Üçüncü ve On İkinci Mes'ele): kıssanın parçalarını bağlayan üslûbdur; hikâyede mütekellim anlatılanın yerine geçer (meleklerin, Âdem'in kalbinde "misafir olur"). Kıssa âyetlerinde nazmın ölçüsü kıssanın garazıdır.
+- **Takdir zinciri** (On Birinci Mes'ele): kayıtlar "mukadder suâllere cevab hükmünde"dir; taslak takdiri yazmalı, ama kaydı, sualini ve cevabını birlikte.
+- **Derece ve kapsam** (Beşinci ve Altıncı Mes'ele): telmih ve işaret "kasd ve taleb" değildir, mütekellim onda "mes'ûl olmaz"; her mânâya garaza yakınlığı kadar pay verilir, "haddinden büyük" olan sûreti çirkinleştirir. Bu, kapsamı aşan hükmün belâgatteki karşılığıdır.
+- **Nakil ve istinbat** (On İkinci Mes'ele ile 1.4): müellifin mesleği "harice boykotaj"dır: mânâ, misal ve üslûb, zaruret olmadıkça makamın ve mevzûun içinden çıkarılır; başkasıyla örtüşme "tevâfuk-u hâtır"dır. İşârât da me'hazsiz yazılmıştır (1.4). Taslak bir kaynağa mal ettiği sözde kaynağa bağlı kalmalı (nakil); âyetin lafzından, makamından ve usulden kendi çıkardığı nükteyi (istinbat) ise kaynak aramadan, etiketiyle, derecesiyle ve gerekçesi lafza bağlı olarak yazabilmelidir. D12.1'de yazar İşârât'ın kendi temsilini "okunabilen hiçbir kaynakta dayanak yok" diye reddetti; bu madde o kuralın hangi yarısının yanlış kurulduğunu gösterir.
+- **Makam** (hâtime): "Kim söylemiş? Kime söylemiş? Ne içinde söylemiş? Ne için söylemiş?" Taslağın birinci vechi ve kıssa âyetlerindeki mukâvele bu dört soruyla açılabilir.
 
 ## 3. İlkeler
 

@@ -35,7 +35,7 @@ for n, line in enumerate(lines):
     elif not cite.startswith("— aynı yer") and cite[2:cite.index(" (`")] != row[1]:
         print(f"satır {n + 1}: yol farklı\n  belge: {cite[2:cite.index(' (`')]}\n  veri : {row[1]}"); bad += 1
 ids = 0
-for ident in sorted(set(re.findall(r"`(isaratul-icaz[\w/-]*/c\d+(?:\.\.c\d+)?)`", "\n".join(lines)))):
+for ident in sorted(set(re.findall(r"`((?:isaratul-icaz|muhakemat)[\w/-]*/c\d+(?:\.\.c\d+)?)`", "\n".join(lines)))):
     first, _, last = ident.partition("..")
     for i in filter(None, (first, first.rsplit("/", 1)[0] + "/" + last if last else "")):
         ids += 1

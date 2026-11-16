@@ -164,8 +164,27 @@ Adımlar (sıra, 2026-11-16):
     âyetin lafzı, hey'eti ve usul olarak yazabilmeli. Kural iki şeyi ayırmalı: **nakil** (bir kaynağa mal edilen söz:
     kaynağa bağlı, mekanik denetimli) ve **istinbat** (âyetin lafzından ve usulden kendi çıkarımı: serbest, ama
     etiketli, derecesiyle ve gerekçesi lafza bağlı). D12.4–D12.5'te yapılır.
-- D12.4 Üslûp belgesi (İşârât'ın Arapçasından mekanik) ve usul özetine Muhâkemât (İkinci Makale "Unsur-u Belâğat");
-  ikisini kullanıcı bir kez okur.
+- **D12.4 Üslûp belgesi ve Muhâkemât (yapıldı, 2026-11-16; kullanıcının okumasını bekliyor):**
+  - **Usul özeti 2.7** (`docs/d1/usul-ozeti.md`, üçüncü sürüm): İşârât'ın Bakara 17–20'deki on iki meselesi
+    Muhâkemât'ın İkinci Makalesinin ("Unsur-u Belâğat") Arapça telhîsidir; müellif Muhâkemât'ı "tefsir mukaddimesi"
+    diye anar (`muhakemat/makale-03/maksad-03/maksad-02/c004`). Türkçe aslı telhîste olmayan tatbik ve talimatları
+    taşır: Dördüncü Mes'ele bir âyetin (Enbiyâ 21:46) her harfini ve hey'etini garaza bağlayıp "bu sana ser-meşktir"
+    der (harfler, Z11; garaz, Z10); Sekizinci harflerin mânâ alışverişi; On Birinci kayıt–mukadder sual (Z1); Beşinci
+    ve Altıncı derece ve pay (kapsam); On İkinci "hikâyede mahkiyyün-anh yerine geçmek" (kıssa) ve "harice boykotaj"
+    (nakil–istinbat). 37 yeni alıntı; denetim `python3 scripts/d1-usul-denetim.py` 148 alıntı, 195 kimlik, 0 sorun
+    (denetim artık `muhakemat` kimliklerini de tanır). Prova kopyaları (`ek-ozet.md`, 11–12 ve 31–33) yenilendi,
+    sızıntı testi temiz. Not: kapalı eleştirmen usulün 2–5. bölümlerini aldığı için bundan sonraki kapalı
+    eleştiriler 2.7'yi de görür (ölçü aleti D12.1'den farklı). Sitedeki okur sürümü (`site/isarat-usul/`,
+    `scripts/d1-okur.py`) kullanıcı onaylayınca yenilenir.
+  - **Üslûp belgesi** (`docs/d1/uslup-belgesi.md`, `scripts/d1-uslup.py`; prova kopyası `--prova <birim>` ile
+    `data/interim/d1-prova/<birim>/ek-uslup.md`, sınanan birim sayım ve örneklerden çıkar): ölçüler (3.264 cümle,
+    ortanca 15 kelime, paragraf başına ortanca 1 cümle), 8 grupta 33 kalıp (açılış ve geçiş, delâlet derecesi, takdir,
+    hey'et ve harf, garaz, ihtimal, temsil), her biri cümle ve birim sayısıyla ve iki kimlikli örnekle, ve "وأما ﴿…﴾"
+    ile açılan üç tam paragraf. **Nakil–istinbat ölçüsü:** cümlelerin yalnız 43'ünde (%1,3; 42 birimin 17'sinde) bir
+    âlimin, eserin, mezhebin ya da "قيل:" ile bir kavlin adı geçer; eserin nükteleri büyük çoğunlukla istinbattır.
+    31–33 kopyasının sızıntı testi 3 ortak dizi verdi; üçü de vecih açılış kalıbı ("أما نظم الجمل بعضها مع بعض",
+    "إن لهذه الآية أيضاً الوجوه الثلاثة"), belgenin öğretmesi gereken şey: kabul edildi.
+  - Hangi belgenin yazım hattında nereye gireceği (yazar, kapalı eleştirmen, yalnız yazım adımı) D12.5'te karar.
 - D12.5 Yapılı akış (okuma ve çizelge → garaz → takdir zinciri alanları → program etiketi → araçsız yazım → kapalı
   bölüm eleştirisi ve düzeltme), iki geliştirme biriminde, D11'in tek geçişli hattıyla yan yana; aynı üç ayaklı ölçü.
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
