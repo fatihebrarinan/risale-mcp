@@ -1043,6 +1043,36 @@ def critic_page(unit: str) -> dict:
                                    "h": x.get("nasil"), "s": x.get("soru"), "e": bool(x.get("ehline_sor")),
                                    "q": x.get("taslak_alinti"), "d": x.get("dayanak") or [],
                                    "ok": dn.get("alinti") is not False and not dn.get("dayanak_yok")})
+    # D12: kapalı kitap eleştirmen (`d1-duzelt.py kapali`; İşârât'ın bu birimi gizliydi): ayrı katman ("c": "kapali"),
+    # numarası düzeltmedeki gibi K1, K2… (taslak 8'in düzeltmesi bu numaralarla karşıladı ya da reddetti)
+    for path in out_dir(unit).glob("kapali-elestiri-taslak-*.json"):
+        if not (m := re.fullmatch(r"kapali-elestiri-taslak-(\d+)\.json", path.name)):
+            continue
+        n = int(m.group(1))
+        data = json.loads(path.read_text(encoding="utf-8"))
+        entry = out.setdefault(f"taslak-{n}", {"notes": [], "ozet": "", "sistemli": [], "oneriler": []})
+        entry["kapali"] = {"ozet": data.get("ozet", {}), "sistemli": data.get("sistemli", [])}
+        handled = {}
+        for rev in P.DRAFTS.joinpath(unit).glob("taslak-*.duzeltme.json"):      # düzeltmede karşılandı mı, reddedildi mi
+            meta = json.loads(rev.with_name(rev.name.replace(".duzeltme.json", ".json")).read_text(encoding="utf-8"))
+            d = meta.get("duzeltme") or {}
+            if d.get("kaynak") != n or d.get("notlar") != "kapali":
+                continue
+            r = json.loads(rev.read_text(encoding="utf-8"))
+            m2 = int(re.search(r"taslak-(\d+)", rev.name).group(1))
+            for ch in r.get("degisiklikler", []):
+                for no in ch.get("notlar", []):
+                    handled[no] = f"taslak {m2}: karşılandı"
+            for x in r.get("reddedilen", []):
+                handled[x.get("not")] = f"taslak {m2}: reddedildi ({x.get('gerekce', '')})"
+        for i, x in enumerate(data.get("notlar", []), 1):
+            dn = x.get("denetim", {})
+            entry["notes"].append({"k": "k" + critic_key(n, x), "c": "kapali", "no": f"K{i}", "b": x.get("bolum"),
+                                   "t": x.get("tur"), "a": x.get("capa") or "genel", "n": None, "m": x.get("metin", ""),
+                                   "h": x.get("nasil"), "s": x.get("soru"), "e": bool(x.get("ehline_sor")),
+                                   "o": x.get("oneri"), "p": x.get("oncelik"), "r": handled.get(f"K{i}"),
+                                   "q": x.get("taslak_alinti"), "d": x.get("dayanak") or [],
+                                   "ok": dn.get("alinti") is not False and not dn.get("dayanak_yok")})
     return out
 
 

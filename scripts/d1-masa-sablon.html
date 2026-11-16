@@ -79,7 +79,8 @@ body.sel .hint { display: none; }
 .bhead { display: flex; gap: 6px; align-items: baseline; flex-wrap: wrap; }
 .mkrs { margin-left: auto; display: inline-flex; gap: 4px; flex-wrap: wrap; }
 .mkr { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 0 8px; font-size: .74rem; cursor: pointer; }
-.mkr.karsi { color: var(--accent); } .mkr.critic { color: var(--ai); } .mkr.bk { color: var(--warn); }
+.mkr.karsi { color: var(--accent); } .mkr.critic { color: var(--ai); } .mkr.kcritic { color: var(--src); } .mkr.bk { color: var(--warn); }
+.tag.kc { background: var(--src); color: var(--bg); }
 .mkr[aria-pressed=true] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
 .blk.found { border-left: 4px solid var(--accent); } .blk.contra { border-left: 4px solid var(--bad); }
 .blk.extra { border-left: 4px solid var(--muted); }
@@ -233,14 +234,15 @@ const CTYPE = {dogru: 'doğru, iyi', yanlis: 'yanlış', eksik: 'eksik', fazla: 
 const ISR = {kaynakli: 'kaynaklı', kendi_tespiti: 'kendi tespiti', isaretsiz: 'işaretsiz'};
 const BKV = {dogru: 'doğru', yanlis: 'yanlış', emin_degilim: 'emin değilim'};
 const BKD = {'': 'dayanak türü…', kaynak: 'kaynak (cümle kimliği)', kisi: 'kişi (yalnız alanı)', kanaat: 'kendi kanaatim', yz: 'yapay zekâ'};
-const LAYERS = [['karsi', "İşârât'la karşılaştırma"], ['critic', 'Eleştirmen'], ['bk', 'Bilirkişi soruları']];
+const LAYERS = [['karsi', "İşârât'la karşılaştırma"], ['critic', 'Eleştirmen (açık kitap)'], ['kcritic', 'Kapalı kitap eleştirmen'], ['bk', 'Bilirkişi soruları']];
+const PRI = {yuksek: 'yüksek', orta: 'orta', dusuk: 'düşük'};
 
 // --- yanlar (S6): her yan Kaynaklar, İşârât'ın metni ya da bir taslak; taslak yanında katmanlar
-function newDraftPane(dk) { return {k: 'draft', d: dk, L: {karsi: true, critic: false, bk: false}, open: {}}; }
+function newDraftPane(dk) { return {k: 'draft', d: dk, L: {karsi: true, critic: false, kcritic: false, bk: false}, open: {}}; }
 let panes = store.get('d1-masa-yanlar-' + U, null) || [{k: 'src'}, newDraftPane(DKEYS[DKEYS.length - 1])];
 panes = panes.filter(p => p.k !== 'draft' || DATA.drafts[p.d]).slice(0, MAXP);
 if (!panes.length) panes = [{k: 'src'}];
-panes.forEach(p => { p.open = {}; if (p.k === 'draft') p.L = Object.assign({karsi: true, critic: false, bk: false}, p.L || {}); });
+panes.forEach(p => { p.open = {}; if (p.k === 'draft') p.L = Object.assign({karsi: true, critic: false, kcritic: false, bk: false}, p.L || {}); });
 function savePanes() { store.set('d1-masa-yanlar-' + U, panes.map(p => ({k: p.k, d: p.d, L: p.L}))); }
 function withDraft(dk, fn) { const o = st.draft; st.draft = dk; try { return fn(); } finally { st.draft = o; } }
 
@@ -577,12 +579,14 @@ function noteCard(dk, x, no) {
   const smp = CSAMPLE.has(`${dk}|${x.k}`) ? ' ' + CSMP : '';
   const dayanak = x.d.map(id => `<button class="linkish" data-sidgo="${esc(id)}" title="${esc(id)}">${esc(sidLabel(id))}</button>`).join(' · ');
   if (no && isFolded(fid)) return `<div class="card small" data-not="${esc(key)}">${cardHead(no, fid, `<span class="gist">${esc(x.m)}</span>${smp}`, suzMark(key))}</div>`;
-  return `<div class="card" data-not="${esc(key)}">${no ? cardHead(no, fid, '<span style="flex:1"></span>' + smp, suzMark(key)) : ''}<span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.b ? ` <span class="tag" title="D11: eleştirmen yalnız bu bölüme baktı (taslağın tamamı bağlamdaydı)">bölüm eleştirisi: ${esc(SEC[x.b] || x.b)}</span>` : ''}${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
+  return `<div class="card" data-not="${esc(key)}">${no ? cardHead(no, fid, '<span style="flex:1"></span>' + smp, suzMark(key)) : ''}${x.c === 'kapali' ? `<span class="tag kc" title="D12: İşârât'ın bu birimini görmeden eleştirdi (asıl işin şartı)">kapalı kitap ${esc(x.no || '')}</span> ` : ''}<span class="tag g">${esc(CTYPE[x.t] || x.t || 'not')}</span>${x.p ? ` <span class="tag${x.p === 'yuksek' ? ' w' : ''}">öncelik: ${esc(PRI[x.p] || x.p)}</span>` : ''}${x.b ? ` <span class="tag" title="D11: eleştirmen yalnız bu bölüme baktı (taslağın tamamı bağlamdaydı)">bölüm eleştirisi: ${esc(SEC[x.b] || x.b)}</span>` : ''}${x.e ? ' <span class="tag w">eleştirmen: ehline sorulmalı</span>' : ''}
     ${x.ok ? '' : ' <span class="tag w">alıntısı ya da dayanağı denetimde tutmadı</span>'}
     <span style="float:right">${evBtns(key, SUZC, 'suz', (yzSuz[key] || {}).v)}</span>
-    <div class="serif" style="margin-top:4px"><b>Model</b> <span class="small muted">(eleştirmen)</span><b>:</b> ${codes(x.m)}</div>
+    <div class="serif" style="margin-top:4px"><b>Model</b> <span class="small muted">(${x.c === 'kapali' ? 'kapalı kitap eleştirmen' : 'eleştirmen'})</span><b>:</b> ${codes(x.m)}</div>
     ${x.h ? `<div class="small"><i>Taslak oraya nasıl varmış:</i> ${codes(x.h)}</div>` : ''}
     ${x.s ? `<div class="small"><i>Eleştirmenin sorusu:</i> ${codes(x.s)}</div>` : ''}
+    ${x.o ? `<div class="small"><i>Yazara önerisi:</i> ${codes(x.o)}</div>` : ''}
+    ${x.r ? `<div class="small"><i>Düzeltmede:</i> ${esc(x.r)}</div>` : ''}
     ${it ? `<div class="small"><i>İlgili İşârât nüktesi:</i> <button class="linkish" data-focusitem="${x.n}" data-keeptab>${esc(it.n)}</button></div>` : ''}
     ${x.q && x.a !== 'genel' ? draftSays(dk, [x.a], x.q) : x.q ? `<div class="small"><b>Taslak:</b></div><div class="q ar">${esc(x.q)}</div>` : ''}
     ${dayanak ? `<div class="small">Dayanak: ${dayanak}</div>` : ''}</div>`;
@@ -671,7 +675,7 @@ function welcome() {
     <li>Her yanın başındaki seçiciden ne duracağını seçin: <b>Kaynaklar</b> (İşârât, müfessirler, klasik eserler, Risale), yalnız <b>İşârât'ın metni</b> ya da bir <b>taslak</b>.
       Üstteki <b>+ yan ekle</b> bir yan daha açar (en çok ${MAXP}); ✕ kapatır. İki taslağı yan yana koyup karşılaştırabilirsiniz.</li>
     <li>Taslak yanında <b>katmanlar</b> açılır: <b>İşârât'la karşılaştırma</b> paragrafın sol kenarını boyar (yeşil: İşârât'ta karşılığı var, kırmızı: çelişebilir,
-      gri: karşılığı yok) ve sonda taslağın kaçırdığı nükteleri sayar; <b>Eleştirmen</b> ve <b>Bilirkişi</b> paragrafın üstüne işaret koyar. İşarete tıklayınca kartlar paragrafın altında açılır.</li>
+      gri: karşılığı yok) ve sonda taslağın kaçırdığı nükteleri sayar; <b>Eleştirmen</b> (açık kitap: İşârât'ı okuyarak; <b>kapalı kitap</b>: görmeden, asıl işin şartıyla) ve <b>Bilirkişi</b> paragrafın üstüne işaret koyar. İşarete tıklayınca kartlar paragrafın altında açılır.</li>
     <li>Bir İşârât cümlesine tıklayınca taslak yanlarında ona bağlı paragraflar sarı olur; bir nükteye tıklayınca İşârât'taki cümlesi sarı olur.</li>
     <li><b>Kör kip</b> taslakların adını ve nasıl yazıldığını gizler ("Taslak A, B…").</li>
     <li>"Dil" Türkçe iken İşârât Abdülmecid Nursî tercümesiyle, taslaklar Türkçesiyle (yapay zekâ tercümesi) görünür; Arapçası her yerde açılır.</li></ol></div>`;
@@ -700,9 +704,10 @@ function annot(dk, pair) {
     (row[m].a || []).some(a => as.has(a)))).map(([id]) => id).filter(id => Y.items[id]);
   const found = items.filter(id => Y.models.some(m => ((yd.rows[id] || {})[m] || {}).d && FOUNDISH.includes(yd.rows[id][m].d)));
   const extras = (yd.extras || []).filter(f => f.a.some(a => as.has(a)));
-  const notes = ((Y.critic[dk] || {}).notes || []).filter(n => as.has(n.a));
+  const all = ((Y.critic[dk] || {}).notes || []).filter(n => as.has(n.a));
+  const notes = all.filter(n => n.c !== 'kapali'), knotes = all.filter(n => n.c === 'kapali');
   const bks = bkAll().filter(x => x.t === dk && as.has(x.a));
-  return {items, found, extras, notes, bks};
+  return {items, found, extras, notes, knotes, bks};
 }
 function mkr(p, key, layer, label, title) {
   const on = !!p.open[key + '|' + layer];
@@ -724,13 +729,15 @@ function blockHtml(dk, pair, p) {
   if (L.karsi && (A.items.length || A.extras.length))
     marks.push(mkr(p, key, 'karsi', `İşârât: ${A.found.length}/${A.items.length} nükte` + (A.extras.length ? ` · ${A.extras.length} fazla` : ''),
       'Karşılaştırıcıların bu paragrafa bağladığı İşârât nükteleri (bulunan/hepsi) ve İşârât\'ta karşılığı olmayan iddialar'));
-  if (L.critic && A.notes.length) marks.push(mkr(p, key, 'critic', `● ${A.notes.length} not`, 'Eleştirmenin bu paragrafa notları'));
+  if (L.critic && A.notes.length) marks.push(mkr(p, key, 'critic', `● ${A.notes.length} not`, 'Eleştirmenin (açık kitap) bu paragrafa notları'));
+  if (L.kcritic && A.knotes.length) marks.push(mkr(p, key, 'kcritic', `◆ ${A.knotes.length} kapalı`, 'Kapalı kitap eleştirmenin bu paragrafa notları'));
   if (L.bk && A.bks.length) marks.push(mkr(p, key, 'bk', `? ${A.bks.length} madde`, 'Bilirkişi soruları'));
   let opened = '';
   if (L.karsi && p.open[key + '|karsi'])
     opened += A.items.map((id, j) => itemCard(id, Y.items[id], `Nükte ${j + 1}/${A.items.length}`)).join('') +
               A.extras.map((f, j) => extraCard(f, `Fazla ${j + 1}/${A.extras.length}`)).join('');
   if (L.critic && p.open[key + '|critic']) opened += A.notes.map((n, j) => noteCard(dk, n, `Not ${j + 1}/${A.notes.length}`)).join('');
+  if (L.kcritic && p.open[key + '|kcritic']) opened += A.knotes.map((n, j) => noteCard(dk, n, `Kapalı not ${j + 1}/${A.knotes.length}`)).join('');
   if (L.bk && p.open[key + '|bk']) opened += A.bks.map(x => bkCard(x)).join('');
   return `<div class="blk${focused ? ' focus' : ''}${pair.ar.q ? ' quote' : ''}${cls}" data-anchor="${esc(key)}">
     <div class="bhead"><span class="small muted">${SEC[key.split('/')[0]] || ''}${pair.ar.q ? ' · kaynaktan alıntı' : ''}</span><span class="mkrs">${marks.join('')}</span></div>
@@ -751,14 +758,26 @@ function missingHtml(dk) {
 function criticSummary(dk) {
   const c = Y.critic[dk];
   if (!c) return `<p class="empty small">Bu taslağın eleştirisi yok.</p>`;
-  const gen = c.notes.filter(x => x.a === 'genel' && at(x));
+  const gen = c.notes.filter(x => x.c !== 'kapali' && x.a === 'genel' && at(x));
   const done = x => (yzSuz[`${U}|${dk}|${x.k}`] || {}).v;
   return (gen.length ? `<h3>Eleştirmenin bütün taslağa notları <span class="muted">${gen.length}</span></h3>${gen.map((x, i) => noteCard(dk, x, `Genel ${i + 1}/${gen.length}`)).join('')}` : '') +
     `<details><summary class="small"><b>Eleştirmenin özeti, sistemli zaafları ve önerileri</b> · bütün notları yerlerine göre</summary>
     ${c.ozet ? `<p class="serif small">${codes(c.ozet)}</p>` : ''}
     ${c.sistemli.length ? `<ul class="small">${c.sistemli.map(s => `<li>${codes(s.metin)}</li>`).join('')}</ul>` : ''}
     ${c.oneriler.length ? `<p class="small"><b>Öneriler</b></p><ul class="small">${c.oneriler.map(o => `<li>${codes(o)}</li>`).join('')}</ul>` : ''}
-    ${locIndex(c.notes, done)}</details>`;
+    ${locIndex(c.notes.filter(x => x.c !== 'kapali'), done)}</details>`;
+}
+function kapaliSummary(dk) {
+  const c = Y.critic[dk], k = c && c.kapali;
+  if (!k) return `<p class="empty small">Bu taslağın kapalı kitap eleştirisi yok.</p>`;
+  const notes = c.notes.filter(x => x.c === 'kapali'), gen = notes.filter(x => x.a === 'genel' && at(x));
+  const done = x => (yzSuz[`${U}|${dk}|${x.k}`] || {}).v;
+  const oz = typeof k.ozet === 'string' ? [['', k.ozet]] : Object.entries(k.ozet || {});
+  return (gen.length ? `<h3>Kapalı kitap eleştirmenin bütün taslağa notları <span class="muted">${gen.length}</span></h3>${gen.map((x, i) => noteCard(dk, x, `Genel ${i + 1}/${gen.length}`)).join('')}` : '') +
+    `<details><summary class="small"><b>Kapalı kitap eleştirmenin özeti ve sistemli zaafları</b> · bütün notları yerlerine göre</summary>
+    ${oz.map(([b, t]) => `<p class="serif small">${b ? `<b>${esc(SEC[b] || b)}:</b> ` : ''}${codes(t)}</p>`).join('')}
+    ${k.sistemli.length ? `<ul class="small">${k.sistemli.map(s => `<li>${s.bolum ? `<b>${esc(SEC[s.bolum] || s.bolum)}:</b> ` : ''}${codes(s.metin)}</li>`).join('')}</ul>` : ''}
+    ${locIndex(notes, done)}</details>`;
 }
 function draftPane(p) {
   const dk = p.d, L = p.L;
@@ -772,12 +791,14 @@ function draftPane(p) {
     : `<p class="empty">Bu taslakta bu yere ait paragraf yok. Üstteki "Metinlerin tamamı" ile bütününe bakabilirsiniz.</p>`;
   if (L.karsi) h += missingHtml(dk);
   if (L.critic) h += criticSummary(dk);
+  if (L.kcritic) h += kapaliSummary(dk);
   return h;
 }
 function layerCount(dk, k) {
   if (!st.loc) return '';
   if (k === 'karsi') return Y.drafts[dk] ? itemsAt(st.loc).length : '–';
-  if (k === 'critic') return Y.critic[dk] ? Y.critic[dk].notes.filter(at).length : '–';
+  if (k === 'critic') return Y.critic[dk] ? Y.critic[dk].notes.filter(n => n.c !== 'kapali' && at(n)).length : '–';
+  if (k === 'kcritic') return Y.critic[dk] && Y.critic[dk].kapali ? Y.critic[dk].notes.filter(n => n.c === 'kapali' && at(n)).length : '–';
   return bkAll().filter(x => x.t === dk && at(x)).length;
 }
 function paneHead(i, p) {

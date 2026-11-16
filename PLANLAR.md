@@ -159,7 +159,8 @@ Adımlar (sıra, 2026-11-16):
   taslak yanında üç katman (karşılaştırma renk ve sonda kaçırılanlar; eleştirmen ve bilirkişi paragraf üstü işaret,
   kartlar yerinde açılır; işaretleme listeleri katmanın başında), "Metinlerin tamamı" yer düğmesi, kör kip. İşaret
   anahtarları ve dışa aktarma aynı. jsdom'da duman testi (24 adım) geçti; gerçek tarayıcıda kullanıcı dener.
-  Kalan: kapalı kitap eleştirisinin (D12.1) notları masada yok, eleştirmen katmanı D9/D11'in açık notlarını gösterir.
+  Kapalı kitap eleştirmen (D12.1) ayrı katman (2026-11-16, kullanıcının isteği): notlar K1… numarasıyla, öncelik, yazara
+  önerisi ve düzeltmedeki akıbeti (taslak 8: karşılandı ya da gerekçeli reddedildi); bölüm özetleri ve sistemli zaaflar.
 - **Notlar (kullanıcı, 2026-11-16, D12.1'den):**
   - Düzeltmenin sonraki sürümü (d2) için iki aday: (a) **program uzunluk bütçesi** (paragraf başına harf sınırı;
     aşan değişiklik reddedilir ya da yazara geri döner), (b) **düzeltilmiş paragraflara kısa ikinci kapalı eleştiri**
