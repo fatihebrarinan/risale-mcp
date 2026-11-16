@@ -79,7 +79,25 @@ Kullanıcının fikirleri:
 - İşârât'a daha uygun bir iş akışı aranır.
 - Yazana usul belgesi gibi bir üslûp belgesi ve Risale-i Nur'dan çıkarılan öbür gerekli belgeler verilir: müellif
   Risale-i Nur ve İşârât'ı "me'haz" diye gösterir.
-Önerilerim ve onlara kararlar bu maddenin altına yazılır.
+**Kararlar (kullanıcı, 2026-11-16):**
+- Birimler ikiye ayrılır. Geliştirme: 9–10, 13, 14–15, 16 (kısa, 11–12 türü; İşârât'ına serbestçe bakılır). Saklı:
+  21–22, 25, 30 (maksat), 28, 29 (lafız tahkiki), 26–27 (mağlata cevabı); yalnız sonda, bir kez.
+- İki kez yazdırma üç şartla: düzeltme notlarını kapalı kitap eleştirmen yazar (İşârât'ın o birimi gizli, öbür her
+  şey MCP'den açık: D5'in şartı); baştan yazdırma yerine düzeltme (yalnız değişen paragraflar); notlar süzülmeli mi
+  ayrı ölçülür (bütün notlarla ve kullanıcının süzdükleriyle).
+- İşârât'a uygun yapılı akış onaylandı: (1) okuma ve kelime/hey'et çizelgesi (boş satır reddedilir; Z11), (2) garaz
+  ve her nüktede "garaza hizmeti" alanı (Z10), (3) ikinci vecihte takdir zinciri alanları (lafız → mukadder sual →
+  halka; Z1), (4) kaynak etiketini program koyar (Z5–Z7), (5) araçsız yazım, üslûp belgesi yalnız burada, (6) kapalı
+  kitap eleştiri ve düzeltme.
+- Üslûp belgesi İşârât'ın Arapçasından mekanik çıkarılır (kalıp, sıklık, cümle kimlikli örnek). **Muhâkemât usul
+  özetine eklenir:** müellif onu "yazdığı tefsir mukaddimesi" diye anar
+  (`muhakemat/makale-03/maksad-03/maksad-02/c004`), İkinci Makale "Unsur-u Belâğat"; usul özetinde hiç yoktu.
+- S6'nın tasarımı (iki yan seçilir, taslak belge gibi, eleştirmen/bilirkişi kenar işareti, karşılaştırma renk,
+  "Metinlerin tamamı" yer düğmesi) kullanıcının hayal ettiği gibi.
+- Sıra: D12.1 düzeltme deneyi (taslak 7), D12.2 üslûp belgesi ve Muhâkemât, D12.3 yapılı akış iki geliştirme
+  biriminde, D12.4 saklı birimlerde ölçüm; S6 en geç D12.3'ten önce.
+- Konuşulacak (2026-11-16): eleştirmenin ölçü olarak güvenilirliği ve kullanıcının görüşünün ölçüdeki yeri; kapalı
+  ve açık kitap eleştirmenin birlikte kullanımı; D11.3 okunmadı, sıraya etkisi; eleştirinin biçimi (bütün ya da bölüm).
 
 **S6. Âyet masasının ikinci hâli** (kullanıcının fikirleri, 2026-11-16; "Sonra"daki masa açıkları buraya bakar):
 - Sol ve sağ yanda ne duracağını kullanıcı seçer (kaynaklar ya da bir taslak); iki taslak yan yana karşılaştırılır.
