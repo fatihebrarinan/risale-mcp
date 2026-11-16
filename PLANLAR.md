@@ -134,6 +134,16 @@ Adımlar (sıra, 2026-11-16):
   gönderilmedi).
 - D12.2 S6'nın iki yanlı kısmı: her yan Kaynaklar ya da bir taslak; kör A/B kaydı (yer başına tercih ve gerekçe).
 - D12.3 Kullanıcının okuması (D11.3 dahil): 7 ile 7k (ve 7a, isteyince 3) yan yana; 5–10 yerde kör A/B, süzgeç.
+- **Notlar (kullanıcı, 2026-11-16, D12.1'den):**
+  - Düzeltmenin sonraki sürümü (d2) için iki aday: (a) **program uzunluk bütçesi** (paragraf başına harf sınırı;
+    aşan değişiklik reddedilir ya da yazara geri döner), (b) **düzeltilmiş paragraflara kısa ikinci kapalı eleştiri**
+    (yalnız yeni eklenen iddialar için). Hangisi denenecek, kullanıcının okumasından sonra.
+  - **Kaynağa bağlılık kuralı özgünlüğü kısıtlıyor; yapılacak.** D12.1'de yazar İşârât'ın kendi temsilini (bal)
+    "okunabilen hiçbir kaynakta dayanak yok; temsil uydurmak usule aykırı" diye reddetti. İşârât'ın en özgün kısmı
+    (müellifin kendi temsil, takdir ve nükteleri) kaynaksızdır; taslak bunları "kendi tespiti" etiketiyle, gerekçesi
+    âyetin lafzı, hey'eti ve usul olarak yazabilmeli. Kural iki şeyi ayırmalı: **nakil** (bir kaynağa mal edilen söz:
+    kaynağa bağlı, mekanik denetimli) ve **istinbat** (âyetin lafzından ve usulden kendi çıkarımı: serbest, ama
+    etiketli, derecesiyle ve gerekçesi lafza bağlı). D12.4–D12.5'te yapılır.
 - D12.4 Üslûp belgesi (İşârât'ın Arapçasından mekanik) ve usul özetine Muhâkemât (İkinci Makale "Unsur-u Belâğat");
   ikisini kullanıcı bir kez okur.
 - D12.5 Yapılı akış (okuma ve çizelge → garaz → takdir zinciri alanları → program etiketi → araçsız yazım → kapalı
