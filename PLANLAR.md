@@ -256,6 +256,12 @@ Adımlar:
   doğrulanmış kişisel ada çevrilir ("public URLs must identify the same publisher"). Öneriler (kullanıcının kararı):
   listelemelerin adı "Risale MCP Hadis" / "Risale MCP Tefsir" / "Risale MCP Klasik", dört eklentiye ayrı simge;
   OpenAI'de önce Risale, sonucu görülünce öbürleri (alan adı jetonu tek dosya). 33 aracın hepsi salt okunur.
+- S4.6 **Yayıncı "Risale MCP", kişisel ad hiçbir yerde** (kullanıcının kararı, 2026-11-16). Sitede "Nur Hadimleri"
+  yerine "Risale MCP" (gizlilik, şartlar, belgeler, alt bilgi); Claude başvuruları kişisel organizasyonla, "Company
+  name" `Risale MCP`. Liste adları "Risale MCP Hadis/Tefsir/Klasik"; dört eklentiye ayrı simge (aynı çizim, zemin
+  rengi farklı; `data/interim/ikon/`). OpenAI kararı bekliyor: kişisel doğrulamada dizin adı doğrulanmış kişisel
+  addan otomatik gelir ve sitedeki yayıncıyla aynı olmalı (belge 2026-11-16); seçenekler `docs/s4-dizin-basvurulari.md`
+  §1.1. Önce Claude (§2–§4a).
 
 **A1, A2:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
 kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar

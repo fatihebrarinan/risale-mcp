@@ -23,22 +23,19 @@ dosyadır (§1.5): başvurular aynı anda doğrulanamaz.
 
 ## 1. Ortak hazırlık (bir kez)
 
-### 1.1 Yayıncı adı (sizin kararınız; OpenAI için şart)
+### 1.1 Yayıncı adı: "Risale MCP" (karar 2026-11-16)
 
-OpenAI'nin kuralı: dizindeki geliştirici adı doğrulanmış kimlikten gelir, eklentinin açık adresleri (site, gizlilik,
-şartlar) "aynı yayıncıyı göstermeli" (S4.1'in araştırması). Kararınız (a): doğrulanmış kendi adınızla. Bu yüzden:
+Kullanıcının kararı (2026-11-16): adı projede hiçbir yerde geçmez. Sitede ve Claude başvurularında yayıncı
+**"Risale MCP"**dir; "Nur Hadimleri" siteden kalktı (gizlilik, şartlar, belgeler, alt bilgi; `scripts/site-uret.py`).
+Şartlar sayfası Klasik Eserler'i de anıyor. Claude kimlik doğrulaması istemez: başvuru kişisel organizasyonla,
+"Company name" `Risale MCP`.
 
-- `site/gizlilik.html` "Sorumlu" ve `site/en/privacy.html` aynı bölüm: "Nur Hadimleri" yerine doğrulanmış adınız
-  (OpenAI'deki doğrulamada yazdığı biçimiyle, harfi harfine).
-- `site/kullanim-sartlari.html`, `site/en/terms.html`: hizmeti sunanın adı aynı ad.
-- Sayfaların alt bilgisi ("Nur Hadimleri: gönüllü ve bağımsız bir projedir…", `scripts/site-uret.py` üretir):
-  öneri "Risale MCP: [adınız] tarafından yürütülen gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da
-  cemaatin resmî hizmeti değildir." "Nur Hadimleri" adı sitede kalmaz ya da yalnız tarihçe olarak geçer.
-- Claude başvurusundaki "Company name" (`docs/dizin-basvurusu.md` §5): aynı ad ya da "Risale MCP". Claude kimlik
-  doğrulaması istemedi; ama iki dizinde aynı yayıncı görünmesi daha temiz.
-
-Bunları ben yapabilirim (site üretimi, `?v=N`, `scripts/deploy.sh --code`); deploy sizin onayınızla. Adın yazılışını
-OpenAI'deki doğrulamadan siz verin.
+OpenAI (karar bekliyor): belge "The directory name is set automatically from your selected verified developer
+identity" ve "Public URLs must … identify the same publisher as the submission" diyor (2026-11-16'da bakıldı).
+Kişisel doğrulamayla yayımlanırsa dizinde doğrulanmış kişisel ad görünür, sitede de aynı ad gerekir. Yollar:
+(a) ad ChatGPT dizininde ve yalnız gizlilik ve şartların "Sorumlu" satırında, (b) tüzel kişilik ve işletme
+doğrulaması, (c) OpenAI dizinine şimdilik başvurmamak (elle ekleme sürer). `packaging/chatgpt/` bu karara kadar
+"Nur Hadimleri" adını taşır.
 
 ### 1.2 Eski bilgilerin düzeltilmesi (her listelemede)
 
@@ -88,32 +85,34 @@ değil, bir sınır. Düşük risk; hakem sorarsa cevabı budur (B2 bunu ayrıca
 
 Portal: https://claude.ai/directory/manage. Başvuruyu açın, **Edit**:
 
-1. **Description**: §1.2'deki iki düzeltme. Yeni metin:
+1. **Description** (tam metin, 2026-11-16; 1.728 karakter): §1.2'deki düzeltmeler, hadis aracı (sonradan geldi),
+   kaynaklarda risale.online yerine nurpedia.org ve Keşif programı (risale.online yalnız yerelde), son cümlede
+   "by Nur Hadimleri" yok (§1.1).
 
-   > Risale-i Nur gives Claude the complete works of Bediüzzaman Said Nursî (1878–1960): the Risale-i Nur Collection
-   > (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the
-   > compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 131,000
-   > sentences across 53 works, together with the Qur'an's vowelled Arabic text and the Türkiye Diyanet
-   > Foundation's Turkish translation.
+   > Risale-i Nur gives Claude the complete works of Bediüzzaman Said Nursî (1878–1960): the Risale-i Nur Collection (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 131,000 sentences across 53 works, together with the Qur'an's vowelled Arabic text and the Türkiye Diyanet Foundation's Turkish translation.
    >
-   > (sonraki paragraflar `docs/dizin-basvurusu.md` §3'teki gibi; yalnız son paragrafın sonu:)
-   > All tools are read-only and work without an account. The texts come, unchanged and with permission, from
-   > e-Risale, risaleoku.com and nurpedia.org; the Qur'an's text from the Tanzil Project. A volunteer,
-   > non-commercial project.
-
-   Not: eski metin kaynaklarda "risale.online" diyor; o kaynak yalnız yerelde (Sirâcü'n-Nûr'un Hayrat baskısı),
-   genel sunucuda yok. Genel sunucunun kaynakları e-Risale, risaleoku.com, nurpedia.org, Keşif programı (Ta'likat)
-   ve kullanıcının PDF'i (Rumuzat tabloları).
+   > Every sentence has a stable address, so Claude can ground what it says in the text itself:
+   >
+   > - Search by the text's own words, or by meaning in today's language (a question about "despair" finds passages that speak of "ye's").
+   > - Read any section in book order, with the author's footnotes (hâşiye) and the sources of the verses and hadiths he quotes.
+   > - Quote the text exactly and end the answer with a list of sources giving work › section › the sentence's opening words. Quotations are checked against the cited sentences before the answer is sent.
+   > - Find where a Qur'anic verse or a hadith is quoted in the works, read the verse, and see the evidence for the hadith in the hadith collections.
+   >
+   > The connector keeps layers apart that are easy to confuse: the publishers' translations of verses are not the author's words, the Turkish of his Arabic works is a translation, and a commentary by his brother is marked as his. When something is not in the works, Claude is told to say so instead of filling the gap.
+   >
+   > All tools are read-only and work without an account. The texts come, unchanged and with permission, from e-Risale, risaleoku.com, nurpedia.org and the Keşif Yolculukları programme; the Qur'an's text from the Tanzil Project. A volunteer, non-commercial project.
 
 2. **Use cases**: aynen kalır. İsterseniz bir satır ekleyin (hadis aracı sonradan geldi):
    | Find where a hadith is quoted in the works and how well it is attested | Where does the Risale-i Nur quote the hadith "تفكر ساعة خير من عبادة سنة" and what is the evidence for it? |
-3. **Company name**: §1.1'in kararı.
+3. **Company name**: `Risale MCP` (bugün `Nur Hadimleri`; §1.1).
 4. **Instructions for reviewers**: `docs/dizin-basvurusu.md` §8'in sonuna ekleyin:
    > - "Where does the Risale-i Nur quote the hadith 'تفكر ساعة خير من عبادة سنة'? What is the evidence for it?" (find_hadith, get_hadith)
 5. Hakeme kısa not (değişiklik bildirimi):
    > Listing updated: corrected counts (53 works, about 131,000 sentences) and the Qur'an translation (one Turkish
-   > translation, by the Türkiye Diyanet Foundation; the other was removed at its publisher's request). Two tools
-   > were added since submission (find_hadith, get_hadith), both read-only. Everything else is unchanged.
+   > translation, by the Türkiye Diyanet Foundation; the Presidency of Religious Affairs' translation was removed
+   > because it did not grant permission to republish it). Two tools were added since submission (find_hadith,
+   > get_hadith), both read-only. The publisher is now named Risale MCP, as on the website. Everything else is
+   > unchanged.
 
 ## 3. Claude: Hadis (yeni başvuru)
 
@@ -165,7 +164,7 @@ Portal › **Submit new** › **MCP connector**.
 
 - **What users need before they can connect:** "Nothing. There are no accounts and no sign-in: every tool works for
   everyone. Search by meaning has a shared daily limit and requests a shared per-minute limit."
-- **Reads / writes:** reads only. **Company:** §1.1. **Authentication:** None. **Data handling:** own API (kendi
+- **Reads / writes:** reads only. **Company:** `Risale MCP` (§1.1). **Authentication:** None. **Data handling:** own API (kendi
   veritabanımız; anlamsal arama sorgusu vektör için Voyage AI'ya gider, gizlilik politikasında yazılı). Personal
   health data: no. Sponsored content: no. **Test account:** yok.
 - **Instructions for reviewers:**

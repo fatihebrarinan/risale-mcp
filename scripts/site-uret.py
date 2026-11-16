@@ -148,7 +148,7 @@ CURRENT = {"risale.html": "/#eklentiler", "hadis.html": "/#eklentiler", "tefsir.
            "klasik.html": "/#eklentiler",
            "claude.html": "/#ekle", "chatgpt.html": "/#ekle", "yenilikler.html": "/yenilikler.html",
            "belgeler.html": "/belgeler.html"}
-FOOTER = ("<footer>Nur Hadimleri: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti "
+FOOTER = ("<footer>Risale MCP: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti "
           "değildir.<br><a href=\"/gizlilik.html\">Gizlilik</a> · <a href=\"/kullanim-sartlari.html\">Kullanım "
           "şartları</a> · <a href=\"/katki.html\">Hata bildirin</a> · <a href=\"/yenilikler.xml\">RSS</a> · "
           "<a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a></footer>")
@@ -158,7 +158,7 @@ NAV_EN = [("/en/#connectors", "Connectors"), ("/en/#add", "Setup"), ("/en/docs.h
 CURRENT_EN = {"risale.html": "/en/#connectors", "hadith.html": "/en/#connectors", "tafsir.html": "/en/#connectors",
               "classical.html": "/en/#connectors",
               "claude.html": "/en/#add", "chatgpt.html": "/en/#add", "docs.html": "/en/docs.html"}
-FOOTER_EN = ("<footer>Nur Hadimleri: a volunteer, independent project, not an official service of any publisher or "
+FOOTER_EN = ("<footer>Risale MCP: a volunteer, independent project, not an official service of any publisher or "
              "community.<br><a href=\"/en/privacy.html\">Privacy</a> · <a href=\"/en/terms.html\">Terms of use</a> · "
              "<a href=\"/en/contribute.html\">Report a mistake</a> · <a href=\"/yenilikler.html\" lang=\"tr\">News "
              "(Turkish)</a> · <a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a></footer>")
