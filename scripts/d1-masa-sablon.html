@@ -369,7 +369,7 @@ function turHtml() {
     const opt = [['a', 'A daha iyi'], ['b', 'B daha iyi'], ['esit', 'eşit'], ['emin_degilim', 'emin değilim']].map(([v, l]) => {
       const val = v === 'a' ? TUR.a : v === 'b' ? TUR.b : v;
       return `<button data-abv="${esc(val)}" aria-pressed="${m.secim === val}">${l}</button>`; }).join('');
-    const who = d => `taslak ${esc(d)}${(DATA.drafts[d] || {}).about ? ' (' + esc(DATA.drafts[d].about) + ')' : ''}`;
+    const who = d => `${esc(d)}${(DATA.drafts[d] || {}).about ? ' (' + esc(DATA.drafts[d].about) + ')' : ''}`;
     const rev = m.acildi ? `<div class="reveal">A = ${who(TUR.a)}; B = ${who(TUR.b)}${y.acik ? '<br>' + esc(y.acik) : ''}</div>`
       : (m.secim ? `<button class="btn reveal" data-abopen="${esc(k)}">Aç: hangisi hangisi</button>` : '');
     return `<div class="abrow" data-abk="${esc(k)}"><b>${i + 1}. <a href="#" data-turgo="${esc(y.id)}">${locName(y.loc)}</a></b>

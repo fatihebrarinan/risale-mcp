@@ -582,7 +582,25 @@ def karsilastir(unit: str) -> None:
 SECTION_TITLES = {"Âyet": "Âyet", "Mukaddime": "Mukaddime", "V1": "Birinci vecih: öncesiyle nazım",
                   "V2": "İkinci vecih: cümleler arasındaki nazım", "V3": "Üçüncü vecih: hey'etler ve kelimeler"}
 DRAFT_HEADINGS = {"âyet": "Âyet", "mukaddime": "Mukaddime", "birinci vecih": "V1", "ikinci vecih": "V2",
-                  "üçüncü vecih": "V3"}
+                  "üçüncü vecih": "V3",
+                  # D12.5 T1 (2026-11-17): yazım oturumu şablondan ayrılıp vecihlerden önce "## Üç vecih" girişi
+                  # yazdı; İşârât'ta ve öbür taslaklarda bu giriş birinci vechin ilk paragrafıdır
+                  "üç vecih": "V1"}
+
+
+def quote_tr_is_paragraph(tr: str, quote: str) -> bool:
+    return bool(re.search(r"\[[^\[\]\n]{1,80}\]", tr)) or len(tr) > 3 * len(quote) + 150
+
+
+def heading_key(name: str) -> str:
+    """Taslak başlığının bölümü: tam ad ya da ":" ve "(" öncesi ("Birinci vecih: Mâkabliyle nazım" → V1)."""
+    key = tr_lower(name.strip())
+    if key in DRAFT_HEADINGS:
+        return DRAFT_HEADINGS[key]
+    short = re.split(r"[:(—–-]", key, maxsplit=1)[0].strip()
+    if short == "kaynaklar":
+        return "Kaynaklar"
+    return DRAFT_HEADINGS.get(short, name.strip())
 
 
 def _arabic_ratio(text: str) -> float:
@@ -600,10 +618,13 @@ def parse_draft(text: str) -> tuple[dict, dict]:
         if not block:
             continue
         lines = block.split("\n")
+        if lines[0].startswith("### "):         # bölüm içi alt başlık (şablonda yok; T1'in yazımı koydu): atlanır
+            block = "\n".join(lines[1:]).strip()
+            if not block:
+                continue
+            lines = block.split("\n")
         if lines[0].startswith("## "):
-            name = lines[0][3:].strip()
-            key = tr_lower(name)
-            current = DRAFT_HEADINGS.get(key, "Kaynaklar" if key == "kaynaklar" else name)
+            current = heading_key(lines[0][3:])
             block = "\n".join(lines[1:]).strip()
             if not block:
                 continue
@@ -624,10 +645,13 @@ def parse_draft(text: str) -> tuple[dict, dict]:
             sections[current].append(("tr", kind, body.removeprefix("Yapay zekâ tercümesi:").strip()))
         else:
             sections[current].append(("ar" if _arabic_ratio(body) > 0.5 else "tr", kind, body))
-    # alıntının tercümesi alıntı gibi görünsün
+    # alıntının tercümesi alıntı gibi görünsün. Ama paragrafın tercümesi de alıntılardan sonra gelebilir (D12.5 T1'in
+    # yazımı: Arapça paragraf, alıntılar, sonra paragrafın tercümesi): işaret ([n], [belâgat…]) taşıyan ya da alıntıdan
+    # çok uzun tercüme paragrafındır (2026-11-17).
     for blocks in sections.values():
         for i in range(1, len(blocks)):
-            if blocks[i][0] == "tr" and blocks[i - 1][1] == "quote" and blocks[i - 1][0] == "ar":
+            if blocks[i][0] == "tr" and blocks[i - 1][1] == "quote" and blocks[i - 1][0] == "ar" \
+                    and not quote_tr_is_paragraph(blocks[i][2], blocks[i - 1][2]):
                 blocks[i] = ("tr", "quote", blocks[i][2])
     return dict(sections), sources
 

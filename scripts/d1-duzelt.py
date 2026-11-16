@@ -295,8 +295,7 @@ def _blocks(raw: str) -> list[dict]:
             continue
         lines = block.split("\n")
         if lines[0].startswith("## "):
-            key = P.tr_lower(lines[0][3:].strip())
-            current = P.DRAFT_HEADINGS.get(key, "Kaynaklar" if key == "kaynaklar" else lines[0][3:].strip())
+            current = P.heading_key(lines[0][3:])
             count = {}
             out.append({"raw": lines[0], "anchor": None, "section": current})
             block = "\n".join(lines[1:]).strip()

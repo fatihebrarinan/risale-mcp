@@ -60,7 +60,7 @@ işler"e taşındı (bitmişlerdi, "Sıradaki"de kalmışlardı).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (D12.1–D12.4 bitti; D12.5: Tur 0 bitti, T1 sürüyor) | |
+| 1 | D12 | Taslak altyapısının ar-gesi: D11 ve D5'ten önce (D12.1–D12.4 bitti; D12.5: Tur 0 bitti, T1 okumayı bekliyor) | |
 | 2 | S6 | Âyet masasının ikinci hâli: iki yan kullanıcının seçtiği görünüm, taslak odaklı yapay zekâ kısmı (iki yanlı kısmı D12.2) | |
 | 3 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak; pilot 31–33'te (D11.1–D11.2 bitti; D11.3 D12.3'e katıldı; D12'yi bekler) | |
 | 4 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla (D12'yi bekler) | D1.8 |
@@ -232,6 +232,13 @@ Adımlar (sıra, 2026-11-16):
     (âyetin her kelimesine satır: i'râb, harfler, sîga, ta'rif-tenkir, takdim-te'hir, tercih, müfessirler kimlik ve
     aynen sözle, nükte adayı; cümleler, öncesiyle bağ, maksat, ayrılıklar); program eksik ve boş satırı ve kimliğinde
     bulunmayan alıntıyı bir kez geri gönderir; yazım oturumunda yalnız `cite` açık. Taban taslak 1 (h2), yeni taslak 2.
+    **Ölçüm (2026-11-17; rapor `data/d1/provalar/9-10/d12-5-T1.md`):** kör eleştirmen yeniyi bütün olarak **hafif**
+    tercih etti (V3 yeni açık: tenvin, şuurun nefyi, sirayet; V2 taban açık: yeni iki âyeti "altı cümle" saydı, hata
+    çizelgenin cümle bölmesinden); envanter kapsaması %57 → %70; kelime ve harf ölçüsü eşit (18/22); yan etkiler:
+    blok alıntı 29 → 91 ("alıntı yağmuru"), Arapçada "قال الماتريدي ما يلي" boşlukları, maliyet 4,37 → 9,46 $ (okuma
+    tek başına tabandan pahalı). Kural (4.4): hafif → başka birimde bir kez daha. **Bekleyen:** kullanıcının okuması
+    (masa 9–10, tur kutusu, 3 yer: ikinci vecih, «فِى», «مَّرَضٌ») ve tekrar kararı. Ayrıştırıcı başlık önekine ve
+    alıntılardan sonra gelen paragraf tercümesine göre esnetildi (`heading_key`, `quote_tr_is_paragraph`).
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 

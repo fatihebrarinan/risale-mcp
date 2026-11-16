@@ -307,7 +307,8 @@ def drafts(unit: str, ayah: Ayah) -> dict:
             sources[k] = {"c": cite, "i": sid, "t": texts.text(server, sid, cite.split(" · ")[0])}
         istem = meta.get("istem", "tam")
         about = {"tam": "tam istem", "ince": "ince istem", "ince-klasik": "ince istem, klasik eserler açık",
-                 "hat": "üretim hattı (D11): kısa istem, kaynak dosyası, uzunluk sınırı"}.get(istem, istem)
+                 "hat": "üretim hattı (D11): kısa istem, kaynak dosyası, uzunluk sınırı",
+                 "cizelge": "D12.5 T1: önce okuma ve kelime çizelgesi (araçlı), sonra çizelgeden yazım (yalnız cite)"}.get(istem, istem)
         if meta.get("surum") and meta["surum"] != "v1":
             about += f" · istem {meta['surum']}"
         if meta.get("model") and meta["model"] != "claude-fable-5-2":

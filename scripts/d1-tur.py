@@ -402,22 +402,25 @@ HARF_NAMES = {"و": ("الواو", "واو"), "ف": ("الفاء", "فاء"), "�
 
 
 def kapsam(unit: str, n: int) -> dict:
-    """Âyetin kelimelerinden ve harflerinden kaçı taslağın V2/V3 Arapça paragraflarında lafzıyla anılıyor
-    (﴿…﴾, «…», "…" ya da parantez içinde); bitişik harf için harfin adı ("الواو", "فاء") da sayılır."""
+    """Âyetin kelimelerinden ve harflerinden kaçı taslağın V2/V3 Arapça paragraflarında **tek başına** ele alınıyor:
+    en çok iki kelimelik bir ayraç (﴿…﴾, «…», "…") içinde ya da harfin adıyla ("الواو", "الفاء"). Cümlenin
+    tamamını alıntılamak sayılmaz (T1'in ek ölçüsü, Z11: harfler ve küçük lafızlar)."""
     blocks, _ = Y.draft_blocks(unit, n)
-    body = " ".join(t for a, lang, q, t in blocks if lang == "ar" and not q and a.split("/")[0] in ("V1", "V2", "V3"))
-    spans = re.findall(r"﴿([^﴾]+)﴾|«([^»]+)»|\"([^\"]+)\"|“([^”]+)”|\(([^)]+)\)", body)
-    toks = {x for s in spans for g in s if g for x in M.SEP.split(g) if M.norm(x)}
+    body = " ".join(t for a, lang, q, t in blocks if lang == "ar" and not q and a.split("/")[0] in ("V2", "V3"))
+    spans = [next(g for g in s if g) for s in re.findall(r"﴿([^﴾]+)﴾|«([^»]+)»|\"([^\"]+)\"|“([^”]+)”", body)]
+    focused = [[x for x in M.SEP.split(s) if M.norm(x)] for s in spans]
+    focused = [f for f in focused if 1 <= len(f) <= 2]
     words = ayah_words(unit)
-    seen = [w for w in words if any(same(x, w["lafiz"]) for x in toks)]
-    parts_ = [w for w in words if w["norm"] in PARTICLES]
-    parts_seen = [w for w in parts_ if w in seen]
+    seen = [w for w in words if any(same(x, w["lafiz"]) for f in focused for x in f)]
+    parts_ = [w for w in words if w["norm"] in PARTICLES or (w["norm"][:1] in "وف" and w["norm"][1:] in PARTICLES)]
     att = [w for w in words if w["norm"][:1] in HARF_NAMES and len(w["norm"]) > 3 and w["norm"] not in PARTICLES]
     att_seen = [w for w in att if any(nm in body for nm in HARF_NAMES[w["norm"][0]])
-                or any(M.norm(x) == w["norm"][0] for x in toks)]
-    return {"kelime": len(words), "kelime_anilan": len(seen), "harf_kelime": len(parts_),
-            "harf_kelime_anilan": len(parts_seen), "bitisik": len(att), "bitisik_harf_adi": len(att_seen),
-            "anilmayan": [w["lafiz"] for w in words if w not in seen]}
+                or any(len(f) == 1 and M.norm(f[0]) == w["norm"][0] for f in focused)]
+    letters = sorted({w["norm"][0] for w in att})
+    return {"kelime": len(words), "kelime_tek_basina": len(seen), "edat": len(parts_),
+            "edat_tek_basina": sum(1 for w in parts_ if w in seen), "bitisik_harf": len(att),
+            "bitisik_harf_anilan": len(att_seen), "harf_adlari": {h: any(nm in body for nm in HARF_NAMES[h]) for h in letters},
+            "tek_basina_anilmayan": [w["lafiz"] for w in words if w not in seen]}
 
 
 def run_cmd(args: list[str]) -> None:
@@ -509,6 +512,12 @@ def main() -> None:
         p.add_argument("--tur", required=True)
         p.add_argument("--taban", type=int, required=True)
         p.add_argument("--yeni", type=int, required=True)
+    p = sub.add_parser("okuma")
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--tur", required=True)
+    p.add_argument("--taban", type=int, required=True)
+    p.add_argument("--yeni", type=int, required=True)
+    p.add_argument("--yerler", required=True, help="JSON: [{id, loc, baslik, soru, acik}]")
     a = ap.parse_args()
     if a.cmd == "hazirla":
         hazirla(a.unit)
@@ -519,6 +528,9 @@ def main() -> None:
             print(n, json.dumps(kapsam(a.unit, n), ensure_ascii=False))
     elif a.cmd == "olc":
         olc(a.unit, a.tur, a.taban, a.yeni)
+    elif a.cmd == "okuma":
+        okuma(a.unit, a.tur, a.taban, a.yeni, json.loads(Path(a.yerler).read_text(encoding="utf-8")))
+        run_cmd(["scripts/d1-masa.py", a.unit])
     elif a.cmd == "sayilar":
         sayilar(a.unit, a.tur, a.taban, a.yeni)
 

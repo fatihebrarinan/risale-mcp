@@ -245,12 +245,18 @@ def draft(unit: str, n: int) -> dict:
     raw = (P.DRAFTS / unit / f"taslak-{n}.md").read_text(encoding="utf-8")
     blocks, sources = Y.draft_blocks(unit, n)
     flat = re.sub(r"\s+", " ", raw)
-    pairs, last_ar = [], None
+    pairs, last_ar, last_para = [], None, None
     for anchor, lang, quote, text in blocks:
         stamped = lang == "tr" and (STAMP + " " + re.sub(r"\s+", " ", text)[:60]) in flat
         if lang == "ar":
             pairs.append({"ar": anchor, "ar_text": text, "quote": quote, "tr": None, "tr_text": "", "stamped": None})
             last_ar = pairs[-1]
+            if not quote:
+                last_para = pairs[-1]
+        elif not quote and last_ar is not None and last_ar["quote"] and last_para is not None \
+                and last_para["tr"] is None and anchor.split("/")[0] == last_para["ar"].split("/")[0]:
+            # paragrafın tercümesi alıntılardan sonra (D12.5 T1): alıntıya değil paragrafa bağlanır
+            last_para.update(tr=anchor, tr_text=text, stamped=stamped, tr_quote=quote)
         elif last_ar is not None and last_ar["tr"] is None and anchor.split("/")[0] == last_ar["ar"].split("/")[0]:
             last_ar.update(tr=anchor, tr_text=text, stamped=stamped, tr_quote=quote)
         else:
