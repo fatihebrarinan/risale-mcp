@@ -261,6 +261,9 @@ Adımlar (sıra, 2026-11-16):
     (taslak 4: ikinci kapalı eleştiri `elestiri-ikinci-istemi.md` i1, 13 not, ikinci geçiş) d1'e karşı hafif; Arapça
     18.997 → 23.426 → 22.834 (hedef ≤21.328), envanter %57 → %64 → %62. Okuma `tur-9-10-D.html` (N14, N13, N38;
     ≈977 kelime, sarı fark). Masa son turu kayıt tarihinden seçer (`tur-*.json`).
+    **Okuma (2026-11-17):** d2 1 (N14: d2 kendi tespitini açtı, mânâ netleşti), eşit 1 (N38), emin değil 1 (N13: iki
+    hâl neredeyse aynı; envanter gürültüsü, seçim kuralına eklendi). Kural 4.4: eleştirmen hafif, kullanıcı karşı değil:
+    başka birimde bir kez daha (kullanıcının kararı bekleniyor).
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 

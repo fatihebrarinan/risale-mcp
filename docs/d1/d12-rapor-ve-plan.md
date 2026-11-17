@@ -212,6 +212,8 @@ ve karar belirsiz kalınca.
      kelimeyi geçmez (≈15 dk). Sınırı aşan nükte seçilmez, program reddeder. Kelime ve süre sayfanın başında.
   4. **Seçim:** (a) değişikliğin sınandığı yer, (b) iki ölçünün ayrıldığı yer, (c) kör eleştirmenin açık hüküm verdiği
      yer; kartın sorusu nükteyi söylemez.
+     D turunda (sarı fark) yalnız metni gerçekten değişmiş nükteler seçilir: iki hâl neredeyse aynıyken envanterin durum
+     farkı tek okuyucunun gürültüsüdür (D turunun N13'ü, 2026-11-17).
   5. **Kart:** A solda, B sağda; **Türkçe önde, Arapça açılır kutuda**; andığı kaynaklar kapalı kutuda; seçim ve
      gerekçe; "Aç"tan sonra hangisi hangisi, neden seçildiği, envanterin o yer için dediği ve **İşârât'ın sözü**
      (Abdülmecid Nursî tercümesi, Arapçası açılır).
