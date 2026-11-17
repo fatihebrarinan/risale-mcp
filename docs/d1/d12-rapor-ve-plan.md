@@ -2,7 +2,7 @@
 
 > **Durum (2026-11-17):** D12.5'te Tur 0, T1 (yeni kol taban olmadı) ve D turu (d1 kalır, d2 bırakıldı) bitti. T2
 > (nakil–istinbat) yeni aşama **D13**'e (me'haz: taslak İşârât ve Risale-i Nur'dan konuşsun; `d13-mehaz-plani.md`)
-> katıldı; T3–T5 D13'ten sonra yeni tabanla yeniden değerlendirilir.
+> katıldı; T3–T5 ve D12.6 **D14**'e geçti. D12 bitti (kullanıcının kararı, 2026-11-17).
 
 Kullanıcının isteği (2026-11-16): D12.5'ten önceki hazırlıklar bitti; buraya kadar öğrenilenlerin raporu ve D12.5'in
 yolu ve yöntemi. Kararlar ve durum `PLANLAR.md` D12'dedir; bu belge onların okunur özeti ve D12.5'in tarifidir.

@@ -48,7 +48,7 @@ durur, "Kayıt"taki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E6, S6, A3, D13, B8 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E6, S6, A3, D14, B8 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -57,17 +57,15 @@ Sıra kullanıcının kararıdır (2026-11-12; 2026-11-13'te D1 bölündü; 2026
 e-posta gitti; OpenAI'de kendi adıyla başvuru kararı kullanıcıda), "Bekleyen"e geçti. D11 ve D5 için hazır değiliz,
 çok ar-ge gerekiyor: D12 açıldı, masanın ikinci hâli S6. D1–D9'un ortak zemini, döngü ve D8 "Kayıt › Kimlikli
 işler"e taşındı (bitmişlerdi, "Sıradaki"de kalmışlardı).
+**2026-11-17 (kullanıcının kararı):** "Sıradaki" yalnız taslakların ar-gesi ve yazımıdır: A1, A2 ve küçük açıklar
+"Sonra"ya indi; S6 bitti; D12 bitti, kalan turları D14'e geçti; D13 (me'haz) açıldı.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D13 | Me'haz: taslak İşârât ve Risale-i Nur'dan konuşsun (plan onay bekliyor; `docs/d1/d13-mehaz-plani.md`) | |
-| 2 | D12 | Taslak altyapısının ar-gesi (D12.1–D12.4 bitti; D12.5: Tur 0, T1, D turu bitti, kalan turlar D13'ten sonra yeniden değerlendirilir; D12.6 sonra) | |
-| 3 | S6 | Âyet masasının ikinci hâli: iki yan kullanıcının seçtiği görünüm, taslak odaklı yapay zekâ kısmı (iki yanlı kısmı D12.2) | |
-| 4 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak; pilot 31–33'te (D11.1–D11.2 bitti; D11.3 D12.3'e katıldı; D12'yi bekler) | |
-| 5 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla (D12'yi bekler) | D1.8 |
-| 6 | A1 | Kaynakçada doğrudan bağlantı | Aşama 20 |
-| 7 | A2 | Osmanlıca–Türkçe eşleme (şimdilik kalır, sonra yeniden bakılır) | Aşama 19 |
-| 8 | B2, B3, B4, B5, B7, B8 | Küçük açıklar | MVP "Kalan" |
+| 1 | D13 | Me'haz: taslak İşârât ve Risale-i Nur'dan konuşsun (plan onaylandı, 2026-11-17; sırada D13.2) | |
+| 2 | D14 | Taslak hattının turları ve saklı birimlerde son ölçüm (D12.5'in kalan turları ve D12.6; D13'ten sonra) | |
+| 3 | D11 | Üretim hattı: birim başına tek, kısa, ucuz taslak (D11.1–D11.3 bitti; kalanı değerlendiriliyor, 2026-11-17) | |
+| 4 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla (D14'ü bekler) | D1.8 |
 
 **D13. Me'haz: taslak İşârât ve Risale-i Nur'dan konuşsun** (kullanıcının değerlendirmesi ve kararları, 2026-11-17;
 plan `docs/d1/d13-mehaz-plani.md`). D12.5'in T1 ve D turlarından sonra kullanıcı: d2 maliyetine değmez (kazancı d1'in
@@ -86,9 +84,26 @@ bir cümle); Muhâkemât (usul 2.7) yazara gitmiyor; ölçüler me'hazı görmü
 - **Kör eleştirmene "Risale çizgisi" sorusu** (o3; iki kola birden). Birim **9–10**; taban taslak 1 (h2), yeni taslak 5.
 - **d2 bırakıldı;** düzeltme d1 hatta kalır, eleştirmeni (k3) D13 kazanırsa aynı me'haz anlayışına çekilir.
 - Adımlar D13.1–D13.8 (planın 3. bölümü); D13.2'den sonra kısa durak (konu listesi, dosyanın sayıları). ≈11–14 $.
-- **D13.1 Plan (yazıldı, 2026-11-17; onay bekliyor).**
+- **D13.1 Plan (onaylandı, 2026-11-17).** Sırada D13.2 (dosyanın yeni kuruluşu, sonra kısa durak).
 
-**D12. Taslak altyapısının ar-gesi** (kullanıcının değerlendirmesi, 2026-11-16). D8 istemle denedi, pahalı ve açıkça
+**D14. Taslak hattının turları ve saklı birimlerde son ölçüm** (kullanıcının kararı, 2026-11-17: D12'nin kalanı ayrı
+aşama). D13'ün sonucuyla kurulan tabanla, D12.5'in işleyişiyle (her tur tek değişiklik, taban ve yeni kol, kör
+eleştirmen, envanter ayar, kullanıcının okuması; plan belgesi `docs/d1/d12-rapor-ve-plan.md` 4.3, 4.4, 4.10). Adaylar
+(sıra D13'ün sonucundan ve tabanın zaaf profilinden; `data/d1/provalar/9-10/d12-5-profil.md`):
+- **Düzeltme eleştirmeni k3:** D13'ün me'haz anlayışı ("kaynakta var, adını ver" notları kalkar; Risale-i Nur'un
+  ilgili dersine dayanmayan yer sorulur). D13 kazanırsa ilk iş.
+- **Nisbet denetimi** (profilin en ağır kusuru, yüksek notların 6/9'u): nakledilen söz kaynağın kendi görüşü mü,
+  itirazın parçası mı, naklettiği ya da reddettiği vecih mi; yapıyla (programın sorusu), kuralla değil.
+- **Yazarın notu tartması:** 45/45 kabul, 0 ret; yanlış not (K30, "altı cümle") taslağa geçti.
+- **Uzunluk:** düzeltme Arapçayı %23 uzatıyor, hedef aşılıyor.
+- D12.5'ten kalan turlar: garaz (eski T3), takdir zinciri alanları (T4), üslûp belgesi ve usul yazımda (T5; usulün
+  2.7'si D13'le yazara gidiyor).
+- **Son adım (eski D12.6):** saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) en iyi hattın bir kez ölçülmesi; D5'e geçiş
+  ölçütü plan belgesi 4.7.
+- Tavan D12.5'inkiyle ortak: ≈8 tur ya da ≈250 $ (D12.5'te harcanan ≈51 $).
+
+**D12. Taslak altyapısının ar-gesi** (bitti, 2026-11-17, kullanıcının kararı: D12.1–D12.4, D12.5'in Tur 0, T1 ve D
+turu yapıldı; kalan turlar ve D12.6 D14'e geçti; aşağısı kayıttır) (kullanıcının değerlendirmesi, 2026-11-16). D8 istemle denedi, pahalı ve açıkça
 yürümedi (ders: istem kuralı düşünmeyi değiştirmiyor). D11 maliyeti düşürdü ama eleştirmenin sistemli zaafları (Z1, Z4,
 Z6, Z7, Z10) aynı kaldı. Hedef: eleştirmenin haklı ve olumsuz eleştirilerinden sıyrılmış taslak yazabilen bir altyapı.
 Kullanıcının fikirleri:
@@ -286,10 +301,10 @@ Adımlar (sıra, 2026-11-16):
     başka birimde bir kez daha (kullanıcının kararı bekleniyor).
     **Karar (kullanıcı, 2026-11-17): d2 bırakıldı** (kazancı d1'in çok azı, birim başına ≈5 $); tekrar yapılmaz. D turu
     bitti; d1 hatta kalır. Sıradaki aşama D13 (me'haz).
-- D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
+- D12.6 (D14'ün son adımına geçti, 2026-11-17) Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 
-**S6. Âyet masasının ikinci hâli** (kullanıcının fikirleri, 2026-11-16; "Sonra"daki masa açıkları buraya bakar):
+**S6. Âyet masasının ikinci hâli** (bitti, 2026-11-17, kullanıcının kararı; kullanıcının fikirleri, 2026-11-16; "Sonra"daki masa açıkları buraya bakar):
 - Sol ve sağ yanda ne duracağını kullanıcı seçer (kaynaklar ya da bir taslak); iki taslak yan yana karşılaştırılır.
 - Yapay zekâ kısmının odağı taslaktır; İşârât'la karşılaştırma, eleştirmen ve bilirkişi soruları taslağın yanında
   sekme değil, taslağın üzerinde açılan ayrı birimlerdir.
@@ -350,6 +365,21 @@ Adımlar:
 **D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; D11'in hattıyla ve kuyruğuyla yapılır (2026-11-15).
 İlki: D5.1 Bakara 34, tek birim, ehlin okuması.
 
+## Bekleyen (başkasının cevabı)
+
+| Kimlik | İş | Kimde | Eski adı |
+|---|---|---|---|
+| S4.3 | Claude dizini: Risale başvurusu "In review"; dizin ekibine e-posta gitti (2026-11-16) | Anthropic | M7 |
+| S4.1 | OpenAI: doğrulanmış kendi adıyla dizine başvurulsun mu | Kullanıcı | M7 |
+
+Kapananlar (2026-11-12): E4 Kızıl İcaz'ın Türkçesi (gerek yok, "Biten"); Diyanet (izin yok, "Biten"); Osmanlıcanın
+kaynağı (A2'nin ön şartı değil).
+
+## Sonra (sırası belli değil; sıraya girince kimlik alır)
+
+Kimliği olanlar ("Sıradaki"nden indi, kullanıcının kararı, 2026-11-17: sıra yalnız taslakların ar-gesi ve yazımı):
+A1 kaynakçada doğrudan bağlantı (Aşama 20), A2 Osmanlıca–Türkçe eşleme (Aşama 19), küçük açıklar B2, B3, B4, B5, B7, B8.
+
 **A1, A2:** ayrıntıları "Kayıt"ta eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
 kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
 baskısı, `osmanlica` grubu). erisale'den alınabilirse baskı farkı kalkar, ama beklenmez. Şimdilik sırada kalır, sonra
@@ -372,17 +402,7 @@ yeniden bakılır.
   OpenITI'de yok); model alıntıyı rakamıyla verdi, okuyana göze batıyor. `text` değişmez; işaret ayrı tutulup
   görüntüde ve alıntıda atlanabilir (`cite` dipnot işaretini atlayan alıntıyı zaten kabul ediyor mu, bakılır).
 
-## Bekleyen (başkasının cevabı)
-
-| Kimlik | İş | Kimde | Eski adı |
-|---|---|---|---|
-| S4.3 | Claude dizini: Risale başvurusu "In review"; dizin ekibine e-posta gitti (2026-11-16) | Anthropic | M7 |
-| S4.1 | OpenAI: doğrulanmış kendi adıyla dizine başvurulsun mu | Kullanıcı | M7 |
-
-Kapananlar (2026-11-12): E4 Kızıl İcaz'ın Türkçesi (gerek yok, "Biten"); Diyanet (izin yok, "Biten"); Osmanlıcanın
-kaynağı (A2'nin ön şartı değil).
-
-## Sonra (sırası belli değil; sıraya girince kimlik alır)
+Kimliksizler:
 
 - **Konu fihristi** (Aşama 15): dondurulması önerildi (anlamsal arama bu işi büyük ölçüde görüyor); karar kullanıcıda.
 - **Kur'ân'a kelime düzeyinde adres** (Y1.1): mekanik; bir ihtiyaç doğarsa.
@@ -462,6 +482,9 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- D12 Taslak altyapısının ar-gesi (2026-11-17): düzeltme deneyi, fark okuması, üslûp ve Muhâkemât, D12.5'in Tur 0,
+  T1 (okuma–yazım ayrımı taban olmadı) ve D turu (d1 kalır, d2 bırakıldı); kalanı D14'te.
+- S6 Âyet masasının ikinci hâli (2026-11-17, kullanıcının kararı).
 - Aşamalar 1–12, 13 (küçültülmüş), 13.2, 14; veri düzeni (2026-11-02); risaleoku geçişi (2026-10-30).
 - Tefsir hazırlığı H0–H6 ve Beyzâvî pilotu T0–T7 (2026-11-04).
 - Y0.1, Y0.3, Y0.5, Y0.6, Y1.2 (2026-11-05/07).
