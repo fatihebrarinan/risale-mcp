@@ -104,6 +104,12 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   nüktesi; hasrın sualine cevap ilk kez); taban Mukaddime (dört maksat) ve V2'de (yedi cümle; yeni "altı cümle")
   hafif. Keşşâf atfı 16 → 10, belâgat atfı 7 → 13; Risale'ye dayanan paragraf oranı aynı (≈%28). "Altı cümle" 9–10'da
   üçüncü kez. Okuma `tur-9-10-D14.1.html` (N40, N01, N17; ≈708 kelime).
+  **Okuma (2026-11-17):** taban 1 (N40: h4 kısalmış, mânâ kaybolmuş, Risale'den yorumsuz alıntı; h3 "böyledir" deyip
+  geçiyor), eşit 1 (N01), yeni 1 (N17: "Zemahşerî'den alıntı alıp sıyrılma furyası artık yok"; ama kartın sorusu
+  paragraflarla alakasızdı, okuma standardına kural eklendi). Kullanıcı: "bu sefer durum karışık." Kural 4.4: kullanıcı
+  kararsız, eleştirmen hafif: başka birimde bir kez daha. Bulgu: Zemahşerî'ye yaslanma giderildi; Risale'nin dersi iki
+  kolda da açılmıyor (h3 anıp geçiyor, h4 yorumsuz alıntılıyor): talimat biçimi değiştirdi, düşünceyi değil. Karar
+  bekliyor.
 - **D14.2 Düzeltme (k3):** netleşince yazılır (taslak: D14.1'in kazananı üzerinde; eleştirmen dosyanın Risale bölümünü
   de görür; iki soru: ders anılmış ama açılmamış mı, akıl yürütme bir kaynağa bırakılmış mı; "kaynakta var, adını
   ver" notları kalkar).
