@@ -408,9 +408,10 @@ def build(unit: str, units: list[dict]) -> Path:
 
 
 def tur_data(unit: str) -> dict | None:
-    """Birimin son tur okuması (`provalar/<birim>/tur-T<n>.json`, `d1-tur.py okuma` yazar): {ad, a, b, giris, yerler}."""
-    paths = sorted((P.DRAFTS / unit).glob("tur-T*.json"), key=lambda p: int(re.sub(r"\D", "", p.stem) or 0))
-    return json.loads(paths[-1].read_text(encoding="utf-8")) if paths else None
+    """Birimin son tur okuması (`provalar/<birim>/tur-<tur>.json`, `d1-tur.py okuma` yazar; en son kaydedilen):
+    {ad, a, b, giris, yerler, sayfa}."""
+    turs = [json.loads(p.read_text(encoding="utf-8")) for p in (P.DRAFTS / unit).glob("tur-*.json")]  # T1…, D
+    return max(turs, key=lambda t: t.get("at", "")) if turs else None
 
 
 def title(unit: str) -> str:

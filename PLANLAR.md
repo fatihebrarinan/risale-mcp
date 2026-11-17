@@ -253,6 +253,14 @@ Adımlar (sıra, 2026-11-16):
     D12.3'ün okuduğu 31–33 taslak 7 ve 8 doğru. Eş artık paragraf sırasından (`d1-yz.pairs`; masa, izah ve not
     denetimleri, bilirkişi ve iddia çıkarımı, eşleştirme raporu). Ölçümler (eşleştirme, kör ölçü, D9.1) çapaları
     doğrudan kullandığı için etkilenmedi. Eşi olmayan Türkçe paragraf (Risale'den Türkçe alıntı) masada hâlâ görünmez.
+  - **D turu (sürüyor, 2026-11-17; ≈23,7 $; rapor `data/d1/provalar/9-10/d12-5-D.md`):** kullanıcının kararı T1'den
+    sonra önce D, profil ölçümüyle. **Profil** (`d12-5-profil.md`): tabanın kapalı eleştirisinde 45 olumsuz not, en
+    ağırı yanlış nisbet (yüksek 9'un 6'sı: kaynağın söylemediği, itirazın parçası ya da reddettiği vecih ona mal
+    ediliyor), sonra nakil–istinbat etiketi (9; iki yönde bozuk), hey'et ve harf (7), zincir (5), kapsam (5). **d1**
+    (taslak 3, 45/45) kör ölçüde tabana karşı açık kazanç, ama K30'un yanlış notuyla "altı cümle" hatası geldi; **d2**
+    (taslak 4: ikinci kapalı eleştiri `elestiri-ikinci-istemi.md` i1, 13 not, ikinci geçiş) d1'e karşı hafif; Arapça
+    18.997 → 23.426 → 22.834 (hedef ≤21.328), envanter %57 → %64 → %62. Okuma `tur-9-10-D.html` (N14, N13, N38;
+    ≈977 kelime, sarı fark). Masa son turu kayıt tarihinden seçer (`tur-*.json`).
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 

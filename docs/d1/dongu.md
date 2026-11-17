@@ -45,6 +45,7 @@ gerekirse **kör noktayı ara** (D6), **dersleri genel usul olarak istemin yeni 
 | 2 (D8; 2026-11-14/15) | v1-ince-klasik (1, 3, 5) ve v2-ince-klasik (2, 4, 6) yan yana | **31–33** (yeni birim, kıssa ve mu'cize türü) | 3 + 3 | v1 %47, %53, %53; v2 %49, %49, %49 (mukaddimesiz v1 %75, v2 %70) | Örneklemler yapılmadı (D7.7 düştü) | **Dur**: ölçülür iyileşme yok; yalnız Arapça tırnak kuralı tuttu, Z1 ve Z6 altı taslağın hepsinde. Karşılaştırma döngüden çıktı; asıl iş için yöntem değişir (D11: tek, kısa, ucuz taslak; istem değil hat sınanır) |
 | 3 | Açılmadı: döngü 2. turda durdu (2026-11-15) | | | | | |
 | D12.5 T1 (2026-11-17) | h2 (1) ve çizelge c1: okuma ayrı, yazım yalnız cite (2) | 9–10 (geliştirme) | 1 + 1 | tek okuyucu: %57, %70 | 3 nükte (okuma standardı): taban 2, yeni 0, emin değil 1 | Kör eleştirmen yeni hafif (V3 yeni açık, V2 taban açık); maliyet 2,2 kat, alıntı yağmuru; sizin hükmünüz tabandan yana: **yeni kol taban olmaz** (onay bekliyor; `provalar/9-10/d12-5-T1.md`) |
+| D12.5 D (2026-11-17) | d1: kapalı notlarla düzeltme (3) ve d2: + ikinci kapalı eleştiri ve ikinci geçiş (4), taban taslak 1 (h2) | 9–10 | 2 düzeltme | tek okuyucu: 1 %57, 3 %64, 4 %62 | Bekliyor (3 nükte, sarı fark) | Kör: 1→3 açık, 3→4 hafif; Arapça +%23, sonra −%2,5; yanlış not (K30) düzeltmeye geçti (`provalar/9-10/d12-5-D.md`) |
 
 1. tur ayrıntıları: `data/d1/provalar/11-12/` (`rapor.md`, `d2-rapor.md`, `yz-karsilastirma.md`, `d9-rapor.md`,
 `d6-rapor.md`). 1. turda D1 ile D2'nin farkı yalnız eserlerdi (klasik eserler kapsamayı artırmadı, dayanağı
