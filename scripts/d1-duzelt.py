@@ -7,6 +7,8 @@
     uv run python scripts/d1-duzelt.py notlar 31-33 --taslak 7          # iki eleştirmenin notları (araçsız)
     uv run python scripts/d1-duzelt.py rapor 31-33                      # provalar/<birim>/d12-1-sayilar.md
     uv run python scripts/d1-duzelt.py fark 31-33 --eski 7 --yeni 8     # D12.2 fark kartları (masa klasöründe)
+    uv run python scripts/d1-duzelt.py ikinci 9-10 --taslak 3           # D turu (d2): düzeltmenin değiştirdiği yerlere ikinci eleştiri
+    uv run python scripts/d1-duzelt.py duzelt 9-10 --taslak 3 --notlar ikinci   # d2'nin ikinci geçişi
 
 Kararlar (kullanıcı, 2026-11-16; PLANLAR.md D12):
 - **Kapalı kitap eleştirmen** (`docs/d1/elestiri-kapali-istemi.md`) D5'in şartıyla çalışır: prova sunucuları
@@ -30,6 +32,7 @@ Kararlar (kullanıcı, 2026-11-16; PLANLAR.md D12):
 """
 
 import argparse
+import difflib
 import importlib.util
 import json
 import os
@@ -38,6 +41,7 @@ import re
 import subprocess
 import tempfile
 import time
+from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
 from pathlib import Path
@@ -59,7 +63,8 @@ KAPALI_PROMPT = ROOT / "docs" / "d1" / "elestiri-kapali-istemi.md"
 DUZELTME_PROMPT = ROOT / "docs" / "d1" / "duzeltme-istemi.md"
 OLCU_PROMPT = ROOT / "docs" / "d1" / "kor-olcu-istemi.md"
 NOT_PROMPT = ROOT / "docs" / "d1" / "not-karsilastirma-istemi.md"
-SURUM = {"kapali": "k2", "duzeltme": "d1", "olcu": "o2", "notlar": "n1"}
+IKINCI_PROMPT = ROOT / "docs" / "d1" / "elestiri-ikinci-istemi.md"
+SURUM = {"kapali": "k2", "duzeltme": "d1", "olcu": "o2", "notlar": "n1", "ikinci": "i1"}
 PROVA_SERVERS = ("risale", "tefsir", "hadis", "klasik")
 OPUS = "claude-opus-5-5"
 STAMP = E.STAMP
@@ -209,7 +214,11 @@ def kapali(unit: str, n: int, again: bool = False, kabul: str | None = None) -> 
 # ---------------------------------------------------------------- düzeltme
 
 NOTE_FILES = {"kapali": ("kapali-elestiri-taslak-{n}.json", "K", "kapalı kitap: İşârât'ın bu âyetlerdeki kısmını o da görmedi"),
-              "acik": ("bolum-elestiri-taslak-{n}.json", "A", "açık kitap: İşârât'ın bu âyetlerdeki kısmını okuyarak")}
+              "acik": ("bolum-elestiri-taslak-{n}.json", "A", "açık kitap: İşârât'ın bu âyetlerdeki kısmını okuyarak"),
+              # D turu (d2): yalnız düzeltmenin değiştirdiği paragraflara, yan etkileri için (`ikinci`)
+              "ikinci": ("ikinci-elestiri-taslak-{n}.json", "Y", "ikinci kapalı kitap eleştiri: yalnız bir önceki "
+                         "düzeltmenin değiştirdiği paragraflara, yan etkileri için (düşen fikir, belirsiz gönderme, "
+                         "kendi sözün yerine nakil, îcâz); İşârât'ın bu âyetlerdeki kısmını o da görmedi")}
 
 
 def notes_of(unit: str, n: int, kind: str) -> tuple[list[dict], str]:
@@ -407,6 +416,8 @@ def build_revised(unit: str, n: int, m: int, kind: str, data: dict, notes: list[
               "ar_harf": {"once": ar_chars(unit, n), "sonra": ar_chars(unit, m)},
               "cost_usd": rmeta.get("cost_usd"), "seconds": rmeta.get("seconds"), "calls": rmeta.get("calls")}
     meta = dict(meta0, duzeltme=report)
+    if meta0.get("duzeltme"):                          # D turu: düzeltilmiş taslağın düzeltmesi, önceki halkalar
+        meta["duzeltme_zinciri"] = meta0.get("duzeltme_zinciri", []) + [meta0["duzeltme"]]
     meta["cost_usd_asil"] = meta0.get("cost_usd")
     (keep / f"taslak-{m}.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
     print(f"taslak {m} (taslak {n}, {kind} notlarla): {report['karsilanan']}/{report['karsilanmasi_gereken']} "
@@ -415,6 +426,84 @@ def build_revised(unit: str, n: int, m: int, kind: str, data: dict, notes: list[
           f"sorun {len(problems)}")
     for p in problems:
         print("  ", p)
+
+
+# ---------------------------------------------------------------- D turu: ikinci kapalı eleştiri (d2)
+
+def changed_places(unit: str, n: int, m: int) -> list[dict]:
+    """Düzeltmenin değiştirdiği yerler: bölüm bölüm paragraf dizilerinin farkı; her yerde önceki ve düzeltilmiş
+    bloklar (kendi çapalarıyla) ve düzeltmenin o yerde andığı notlar (çapası ya da `sonra`sı yerdeki eski çapa)."""
+    old, _ = Y.draft_blocks(unit, n)
+    new, _ = Y.draft_blocks(unit, m)
+    data = json.loads((P.DRAFTS / unit / f"taslak-{m}.duzeltme.json").read_text(encoding="utf-8"))
+    by_anchor: dict[str, set] = {}
+    for ch in data.get("degisiklikler", []):
+        a = ch.get("capa") or ch.get("sonra")
+        if a:
+            by_anchor.setdefault(a, set()).update(ch.get("notlar") or [])
+    places = []
+    for sec in P.SECTION_TITLES:
+        o = [b for b in old if b[0].split("/")[0] == sec]
+        w = [b for b in new if b[0].split("/")[0] == sec]
+        sm = difflib.SequenceMatcher(a=[b[3] for b in o], b=[b[3] for b in w], autojunk=False)
+        for op, i1, i2, j1, j2 in sm.get_opcodes():
+            if op == "equal":
+                continue
+            olds, news = o[i1:i2], w[j1:j2]
+            near = [b[0] for b in olds] + ([o[i1 - 1][0]] if i1 > 0 else [])   # ekle: önceki paragrafın ardına
+            notes = sorted({x for a in near for x in by_anchor.get(a, ())}, key=lambda s: int(s[1:]))
+            places.append({"bolum": sec, "onceki": olds, "duzeltilmis": news, "notlar": notes})
+    return places
+
+
+def ikinci(unit: str, m: int, again: bool = False, kabul: str | None = None) -> Path | None:
+    """D turu (d2): taslak m (bir düzeltme) için yalnız değişen yerlere ikinci kapalı eleştiri (`elestiri-ikinci-istemi`)."""
+    cfg = P.UNITS[unit]
+    reg = json.loads(registry(unit).read_text(encoding="utf-8"))[str(m)]
+    n = reg["kaynak"]
+    out_path = Y.out_dir(unit) / f"ikinci-elestiri-taslak-{m}.json"
+    if out_path.exists() and not again:
+        print(f"{out_path.name}: var (--yeniden)")
+        return out_path
+    notes = {x["no"]: x for x in notes_of(unit, n, reg["notlar"])[0]}
+    places = changed_places(unit, n, m)
+    L = []
+    for i, pl in enumerate(places, 1):
+        L += [f"## Yer {i} · {P.SECTION_TITLES[pl['bolum']]}", ""]
+        if pl["notlar"]:
+            L.append("Düzeltmenin burada karşıladığı notlar:")
+            for k in pl["notlar"]:
+                x = notes.get(k, {})
+                L.append(f"- {k} ({x.get('tur', '')}): {x.get('metin', '')}" + (f" Öneri: {x['oneri']}" if x.get("oneri") else ""))
+            L.append("")
+        L += ["### Önceki hâl", ""] + ([f"[{a}]{' (alıntı)' if q else ''} {t}" for a, _, q, t in pl["onceki"]] or ["(yok: yeni eklendi)"])
+        L += ["", "### Düzeltilmiş hâl", ""] + ([f"[{a}]{' (alıntı)' if q else ''} {t}" for a, _, q, t in pl["duzeltilmis"]] or ["(silindi)"])
+        L.append("")
+    text, sha = body(IKINCI_PROMPT, "IKINCI")
+    text = text.format(sura_name=cfg["sura_name"], ayahs=ayahs(cfg), yerler="\n".join(L))
+    ozet = (P.OUT / unit / "ek-ozet.md").read_text(encoding="utf-8")
+    text += ("\n\n# Usul özeti, 2–5. bölüm (İşârât'ın kendi metninden döküm; prova kopyası)\n\n"
+             + H._section(ozet, "## 2. Usulün nazarî temeli", "## 6. Anlatım biçimi"))
+    out = P.OUT / unit
+    ok = P.leak_report(unit, cfg, out, text, f"sizinti-ikinci-taslak-{m}.md")
+    print(f"{len(places)} yer; sızıntı testi: {'temiz' if ok else 'SORUN'}")
+    if not ok and not kabul:
+        raise SystemExit("sızıntı raporunu oku; kalıp ibareyse --sizinti-kabul '<gerekçe>' ile sür")
+    stem = Y.out_dir(unit) / f"ikinci-elestiri-taslak-{m}"
+    data = run_claude(text, stem, out / "mcp-klasik.json", PROVA_SERVERS,
+                      {"gorev": "ikinci-elestiri", "surum": SURUM["ikinci"], "istem_sha": sha, "taslak": m,
+                       "kaynak": n, "yer": len(places), **({"sizinti_kabul": kabul} if kabul else {})})
+    if data is None:
+        return None
+    for x in data.get("notlar", []):
+        x["bolum"] = (x.get("capa") or "genel").split("/")[0]
+    H.check_notes(unit, m, data.get("notlar", []), Path(str(stem) + ".jsonl"))
+    merged = {"taslak": m, "kaynak": n, "surum": SURUM["ikinci"], "yer": len(places), "notlar": data.get("notlar", []),
+              "ozet": data.get("ozet", "")}
+    out_path.write_text(json.dumps(merged, ensure_ascii=False, indent=1), encoding="utf-8")
+    kinds = Counter(x.get("tur") for x in merged["notlar"])
+    print(f"taslak {m}: ikinci eleştiri {len(merged['notlar'])} not {dict(kinds)}")
+    return out_path
 
 
 # ---------------------------------------------------------------- kör ölçü
@@ -625,6 +714,11 @@ def main() -> None:
     p.add_argument("--taslak", type=int, required=True)
     p.add_argument("--yeniden", action="store_true")
     p.add_argument("--sizinti-kabul", help="sızıntı uyarısı elle incelendi: gerekçe")
+    p = sub.add_parser("ikinci")                      # D turu (d2): düzeltilmiş taslağın değişen yerlerine ikinci eleştiri
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--taslak", type=int, required=True, help="düzeltilmiş taslak (registry'de kaynağı olan)")
+    p.add_argument("--yeniden", action="store_true")
+    p.add_argument("--sizinti-kabul", help="sızıntı uyarısı elle incelendi: gerekçe")
     p = sub.add_parser("istem")                       # yalnız istemleri yaz ve sızıntı testi (model yok)
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("--taslak", type=int, required=True)
@@ -651,6 +745,8 @@ def main() -> None:
     a = ap.parse_args()
     if a.cmd == "kapali":
         kapali(a.unit, a.taslak, a.yeniden, a.sizinti_kabul)
+    elif a.cmd == "ikinci":
+        ikinci(a.unit, a.taslak, a.yeniden, a.sizinti_kabul)
     elif a.cmd == "istem":
         prompt, _ = kapali_prompt(a.unit, a.taslak)
         out = P.OUT / a.unit

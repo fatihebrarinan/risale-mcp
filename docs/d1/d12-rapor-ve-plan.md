@@ -130,6 +130,14 @@ Sıra iskeletten süse doğrudur: çizelge öbür adımların yuvasıdır, o ön
 | T5 | **Belgeler yazım adımında**: usul 2.7 ve üslûp belgesi | Îcâz ve İşârât üslûbu; uzunluk düşer | Arapça uzunluk; üslûp kalıplarının kullanımı | 9–10 |
 | D | **Düzeltmenin ikinci sürümü** (yan etki denetimi; adaylar: ikinci kapalı eleştiri, uzunluk bütçesi; kararınız bekleniyor) | Uzama, belirsiz gönderme, düşen fikir, kendi sözün yerine nakil azalır | Uzama oranı; düşen fikir sayısı | En iyi tabanın bir taslağı üzerinde; yazım turlarından bağımsız, araya girebilir |
 
+**D turunun tarifi** (kullanıcının kararı, 2026-11-17, T1'den sonra: önce D, sonra T2): birim 9–10, taban taslak 1
+(h2). **d1** (taban kol) = kapalı kitap bölüm eleştirisi (k2) ve bir düzeltme (taslak 3). **d2** (yeni kol) = d1 +
+tek değişiklik: yalnız düzeltmenin değiştirdiği yerlere **ikinci kapalı eleştiri** (`elestiri-ikinci-istemi.md` i1;
+dört soru: düşen fikir, belirsiz gönderme, kendi sözün yerine nakil, îcâz) ve aynı düzeltme istemiyle (d1) ikinci geçiş
+(taslak 4). Ölçü: kör A/B 3–4 (asıl soru) ve 1–3 (düzeltmenin bu birimdeki kazancı), eşleştirme, D9.1, Arapça uzunluk
+(uzama), maliyet; okuma standardıyla 3 nükte, sarı fark açık. Kapalı eleştiri aynı zamanda tabanın zaaf profilidir
+(`provalar/9-10/d12-5-profil.md`).
+
 Bir tur kazanmazsa değişiklik bırakılır, sıradaki tura geçilir. Geliştirme birimleri dönerek kullanılır; son hüküm
 saklı birimlerdedir (21–22, 25, 30, 28, 29, 26–27).
 

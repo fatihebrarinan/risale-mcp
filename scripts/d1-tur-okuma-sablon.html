@@ -5,14 +5,14 @@
 <style>
 :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #ffffff; --soft: #f3f1ec;
         --accent: #1f5c3f; --accent-soft: #e2efe7; --ai: #5a4a8a; --ai-soft: #eeebf7;
-        --bad: #a3271f; --src: #1f4f7a; --src-soft: #e3eef8; --warn-soft: #fdf0dc; --q: #f6f2e8; }
+        --bad: #a3271f; --src: #1f4f7a; --src-soft: #e3eef8; --warn-soft: #fdf0dc; --q: #f6f2e8; --diff: #fbe38a; --diff-fg: #1d1d1b; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --soft: #26251f;
   --accent: #7cc49d; --accent-soft: #1c3127; --ai: #b9a8ee; --ai-soft: #2a2540;
-  --bad: #f08a80; --src: #8cc0ef; --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; } }
+  --bad: #f08a80; --src: #8cc0ef; --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; --diff: #6b5810; --diff-fg: #fff6d6; } }
 :root[data-theme="dark"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --soft: #26251f;
   --accent: #7cc49d; --accent-soft: #1c3127; --ai: #b9a8ee; --ai-soft: #2a2540;
-  --bad: #f08a80; --src: #8cc0ef; --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; }
+  --bad: #f08a80; --src: #8cc0ef; --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; --diff: #6b5810; --diff-fg: #fff6d6; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 system-ui, "Noto Sans", sans-serif; }
@@ -46,6 +46,7 @@ main { max-width: 1300px; margin: 0 auto; padding: 12px 16px 80px; }
 .blk.quote { background: var(--q); border-left: 3px solid var(--line); padding: 4px 8px; margin: 4px 0; border-radius: 4px; }
 .lab { font-size: .72rem; color: var(--muted); }
 details > summary { cursor: pointer; }
+mark.d { background: var(--diff); color: var(--diff-fg); border-radius: 2px; }
 .mk { color: var(--src); font-size: .8em; cursor: help; }
 .none { color: var(--muted); font-style: italic; padding: 8px 0; }
 .ask { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; }
@@ -112,15 +113,58 @@ function inline(text, srcs, tr) {                     // [n] kaynağın adı üs
     return `<span class="mk" title="${esc(nums.map(n => `[${n}] ${srcs[n] ? srcs[n].c : ''}`).join(' | '))}">[${inner}]</span>`;
   }).replace(/\n/g, '<br>');
 }
-function paraHtml(p, srcs) {
-  const lab = p.q ? '<div class="lab">kaynaktan alıntı</div>' : '';
-  if (!p.tr) return `<div class="blk${p.q ? ' quote' : ''}">${lab}<div class="ar" dir="rtl">${inline(p.ar, srcs, false)}</div>
-    ${p.q ? '' : '<div class="small muted">(bu paragrafın Türkçesi taslakta yok)</div>'}</div>`;
-  return `<div class="blk${p.q ? ' quote' : ''}">${lab}<div class="serif">${inline(p.tr, srcs, true)}</div>
-    ${p.ar ? `<details><summary class="small muted">Arapçası (taslağın aslı)</summary><div class="ar" dir="rtl">${inline(p.ar, srcs, false)}</div></details>` : ''}</div>`;
+// --- sarı fark (yalnız D turu, `DATA.sari`): aynı taslağın iki sürümü; kelimeler sırayla (en uzun ortak dizi)
+// eşlenir, öbür yanda karşılığı olmayan kelime sarıdır. Türkçe Türkçeyle, Arapça Arapçayla.
+function norm(w) {
+  if (/^\[[^\]]*\]$/.test(w)) return '';
+  return w.replace(/[ً-ٰٟۖ-ۭـ«»"“”'’‘(),.:;؛،!?؟\[\]﴿﴾]/g, '');
 }
-function colHtml(lab, s) {
-  const body = s.paras.length ? s.paras.map(p => paraHtml(p, s.sources)).join('')
+function lcsMarks(A, B) {                             // A, B: [{p, k, n}] → [Set, Set] ("p:k" işaretlenecek)
+  const n = A.length, m = B.length, L = Array.from({length: n + 1}, () => new Uint16Array(m + 1));
+  for (let i = n - 1; i >= 0; i--) for (let j = m - 1; j >= 0; j--)
+    L[i][j] = A[i].n === B[j].n ? L[i + 1][j + 1] + 1 : Math.max(L[i + 1][j], L[i][j + 1]);
+  const kA = new Set(), kB = new Set();
+  let i = 0, j = 0;
+  while (i < n && j < m) {
+    if (A[i].n === B[j].n) { kA.add(i); kB.add(j); i++; j++; }
+    else if (L[i + 1][j] >= L[i][j + 1]) i++; else j++;
+  }
+  return [new Set(A.filter((x, q) => !kA.has(q)).map(x => x.p + ':' + x.k)),
+          new Set(B.filter((x, q) => !kB.has(q)).map(x => x.p + ':' + x.k))];
+}
+function toks(s, f) { const out = []; s.paras.forEach((p, i) => (p[f] || '').split(/(\s+)/).forEach((w, k) => { const n = w.trim() ? norm(w) : ''; if (n) out.push({p: i, k, n}); })); return out; }
+function cardMarks(c) {
+  if (!DATA.sari) return {A: {tr: new Set(), ar: new Set()}, B: {tr: new Set(), ar: new Set()}};
+  const [tA, tB] = lcsMarks(toks(c.A, 'tr'), toks(c.B, 'tr')), [aA, aB] = lcsMarks(toks(c.A, 'ar'), toks(c.B, 'ar'));
+  return {A: {tr: tA, ar: aA}, B: {tr: tB, ar: aB}};
+}
+function words(text, srcs, tr, mk, pi) {             // sarılı metin: kelime kelime, Türkçede Arapça öbek sağdan sola
+  const W = text.split(/(\s+)/), one = (w, k) => {
+    const ref = w.match(/^\[([^\]]+)\]([.,:;]*)$/);
+    const h = ref ? `<span class="mk" title="${esc((ref[1].match(/\d+/g) || []).map(n => `[${n}] ${srcs[n] ? srcs[n].c : ''}`).join(' | '))}">${esc(w)}</span>` : esc(w);
+    return mk.has(pi + ':' + k) ? `<mark class="d">${h}</mark>` : h;
+  };
+  const isAr = w => AR.test(w) && !/[A-Za-zÇĞİÖŞÜçğıöşüâîû]/.test(w);
+  let out = '', run = null;
+  const flush = () => { if (run !== null) { out += `<bdi class="arw" dir="rtl">${run.trim()}</bdi>` + (/\s$/.test(run) ? ' ' : ''); run = null; } };
+  W.forEach((w, k) => {
+    if (!w.trim()) { if (w.includes('\n')) { flush(); out += '<br>'; } else if (run !== null) run += w; else out += w; return; }
+    if (tr && isAr(w)) { run = (run || '') + one(w, k); return; }
+    flush(); out += one(w, k);
+  });
+  flush(); return out;
+}
+function paraHtml(p, srcs, mk, pi) {
+  const body = (t, tr, set) => DATA.sari ? words(t, srcs, tr, set, pi) : inline(t, srcs, tr);
+  const lab = p.q ? '<div class="lab">kaynaktan alıntı</div>' : '';
+  if (!p.tr) return `<div class="blk${p.q ? ' quote' : ''}">${lab}<div class="ar" dir="rtl">${body(p.ar, false, mk.ar)}</div>
+    ${p.q ? '' : '<div class="small muted">(bu paragrafın Türkçesi taslakta yok)</div>'}</div>`;
+  const arOpen = DATA.sari && [...mk.ar].some(x => x.startsWith(pi + ':')) && ![...mk.tr].some(x => x.startsWith(pi + ':'));
+  return `<div class="blk${p.q ? ' quote' : ''}">${lab}<div class="serif">${body(p.tr, true, mk.tr)}</div>
+    ${p.ar ? `<details${arOpen ? ' open' : ''}><summary class="small muted">Arapçası (taslağın aslı)${DATA.sari && [...mk.ar].some(x => x.startsWith(pi + ':')) ? ' · değişiklik var' : ''}</summary><div class="ar" dir="rtl">${body(p.ar, false, mk.ar)}</div></details>` : ''}</div>`;
+}
+function colHtml(lab, s, mk) {
+  const body = s.paras.length ? s.paras.map((p, i) => paraHtml(p, s.sources, mk, i)).join('')
     : '<div class="none">Bu taslakta bu nükteyi işleyen paragraf yok.</div>';
   const srcs = Object.entries(s.sources);
   const sh = srcs.length ? `<details class="srcs"><summary class="small">Andığı kaynaklar (${srcs.length})</summary>` +
@@ -129,7 +173,7 @@ function colHtml(lab, s) {
   return `<div class="col"><h3>${lab} <span class="stat">${s.paras.length} paragraf · ${s.words} kelime</span></h3>${body}${sh}</div>`;
 }
 function cardHtml(c, idx) {
-  const m = marks[kOf(c)] || {};
+  const m = marks[kOf(c)] || {}, M = cardMarks(c);
   const opts = CHOICE.map(([v, l]) => `<label><input type="radio" name="c-${idx}" value="${esc(val(v))}" data-i="${idx}" data-f="secim"${m.secim === val(v) ? ' checked' : ''}>${l}</label>`).join('');
   let rev = '';
   if (m.acildi) {
@@ -144,7 +188,7 @@ function cardHtml(c, idx) {
   }
   return `<div class="card${m.secim ? ' done' : ''}" id="card-${idx}">
     <h2>${idx + 1}. ${esc(c.baslik)}</h2><p class="soru">${esc(c.soru || '')}</p>
-    <div class="cols">${colHtml('A', c.A)}${colHtml('B', c.B)}</div>
+    <div class="cols">${colHtml('A', c.A, M.A)}${colHtml('B', c.B, M.B)}</div>
     <div class="ask"><b class="small">Hangisi daha iyi?</b>${opts}
       <textarea data-i="${idx}" data-f="gerekce" placeholder="Kısa gerekçe (bir iki cümle)">${esc(m.gerekce || '')}</textarea>
       ${m.acildi ? '' : `<button class="btn" data-open="${idx}" ${m.secim ? '' : 'disabled'}>Aç: hangisi hangisi, ölçüler ve İşârât</button>`}

@@ -491,6 +491,11 @@ TUR_GIRIS = ("<b>Ne okuyorsunuz:</b> aynı âyetler için iki yapay zekâ tasla�
              "(en çok iki), Türkçesiyle; Arapçası altında açılır. Her kartta <b>hangisi daha iyi</b> (doğruluk, "
              "İşârât'a yakınlık, kaynak disiplini, îcâz) ve bir iki cümle gerekçe; sonra <b>Aç</b>: hangisi hangisi, "
              "ölçülerin dediği ve İşârât'ın o yerdeki sözü. Bitince <b>Dışa aktar</b>.")
+TUR_GIRIS_D = ("<b>Ne okuyorsunuz:</b> aynı taslağın iki düzeltilmiş hâli, <b>A</b> ve <b>B</b>; hangisinin nasıl "
+               "düzeltildiği gizli. Her kart İşârât'ın tek bir nüktesinin yeridir: her hâlden o nükteyi işleyen "
+               "paragraflar (en çok iki), Türkçesiyle; Arapçası altında açılır. <b>Sarı</b>: öbür hâlde karşılığı "
+               "olmayan kelimeler (değişen yer). Her kartta <b>hangisi daha iyi</b> (doğruluk, İşârât'a yakınlık, "
+               "kaynak disiplini, îcâz, kendi sözü) ve bir iki cümle gerekçe; sonra <b>Aç</b>. Bitince <b>Dışa aktar</b>.")
 
 
 def read_side(unit: str, n: int, nid: str, rows: dict, sources: dict) -> dict:
@@ -515,7 +520,7 @@ def read_side(unit: str, n: int, nid: str, rows: dict, sources: dict) -> dict:
     return {"paras": paras, "words": words, "durum": durum, "sources": srcs}
 
 
-def okuma(unit: str, tur: str, taban: int, yeni: int, yerler: list[dict]) -> Path:
+def okuma(unit: str, tur: str, taban: int, yeni: int, yerler: list[dict], sari: bool = False) -> Path:
     """Turun okuma sayfası (standart): `provalar/<birim>/tur-<tur>.json` ve `masa/tur-<birim>-<tur>.html`.
 
     `yerler`: [{id: envanter kalemi, tur: hipotez|ayrilik|elestirmen, baslik, soru, acik}]; soru nükteyi söylemez
@@ -547,7 +552,8 @@ def okuma(unit: str, tur: str, taban: int, yeni: int, yerler: list[dict]) -> Pat
     words = sum(c[s]["words"] for c in cards for s in "AB")
     page = f"tur-{unit}-{tur}.html"
     data = {"ad": tur, "a": f"taslak-{order[0]}", "b": f"taslak-{order[1]}", "taban": f"taslak-{taban}",
-            "yeni": f"taslak-{yeni}", "giris": TUR_GIRIS, "sayfa": page, "kelime": words,
+            "yeni": f"taslak-{yeni}", "giris": TUR_GIRIS_D if sari else TUR_GIRIS, "sayfa": page, "kelime": words,
+            "sari": sari,
             "dakika": round(words / 100 + 2 * len(cards)),
             "yerler": [{k: c[k] for k in ("id", "tur", "baslik", "soru", "acik")} for c in cards],
             "at": datetime.now().isoformat()}
@@ -590,6 +596,7 @@ def main() -> None:
     p.add_argument("--taban", type=int, required=True)
     p.add_argument("--yeni", type=int, required=True)
     p.add_argument("--yerler", required=True, help="JSON: [{id: envanter kalemi, tur, baslik, soru, acik}]")
+    p.add_argument("--sari", action="store_true", help="sarı fark (yalnız D turu: aynı taslağın iki düzeltmesi)")
     a = ap.parse_args()
     if a.cmd == "hazirla":
         hazirla(a.unit)
@@ -601,7 +608,7 @@ def main() -> None:
     elif a.cmd == "olc":
         olc(a.unit, a.tur, a.taban, a.yeni)
     elif a.cmd == "okuma":
-        okuma(a.unit, a.tur, a.taban, a.yeni, json.loads(Path(a.yerler).read_text(encoding="utf-8")))
+        okuma(a.unit, a.tur, a.taban, a.yeni, json.loads(Path(a.yerler).read_text(encoding="utf-8")), a.sari)
         run_cmd(["scripts/d1-masa.py", a.unit])
     elif a.cmd == "sayilar":
         sayilar(a.unit, a.tur, a.taban, a.yeni)
