@@ -107,7 +107,7 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   **Okuma (2026-11-17):** taban 1 (N40: h4 kısalmış, mânâ kaybolmuş, Risale'den yorumsuz alıntı; h3 "böyledir" deyip
   geçiyor), eşit 1 (N01), yeni 1 (N17: "Zemahşerî'den alıntı alıp sıyrılma furyası artık yok"; ama kartın sorusu
   paragraflarla alakasızdı, okuma standardına kural eklendi). Kullanıcı: "bu sefer durum karışık." Kural 4.4: kullanıcı
-  kararsız, eleştirmen hafif: başka birimde bir kez daha. Bulgu: Zemahşerî'ye yaslanma giderildi; Risale'nin dersi iki
+  kararsız, eleştirmen hafif: başka birimde bir kez daha. **Karar (kullanıcı, 2026-11-17): h4 taban.** Bulgu: Zemahşerî'ye yaslanma giderildi; Risale'nin dersi iki
   kolda da açılmıyor (h3 anıp geçiyor, h4 yorumsuz alıntılıyor): talimat biçimi değiştirdi, düşünceyi değil. Karar
   bekliyor.
 - **D14.2 Düzeltme (k3):** netleşince yazılır (taslak: D14.1'in kazananı üzerinde; eleştirmen dosyanın Risale bölümünü
