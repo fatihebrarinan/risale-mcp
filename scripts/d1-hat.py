@@ -50,11 +50,19 @@ E = _load("d1_elestiri", "d1-elestiri.py")
 
 HAT_PROMPT = ROOT / "docs" / "d1" / "hat-istemi.md"
 IZAH_PROMPT = ROOT / "docs" / "d1" / "izah-istemi.md"
-SURUM = "h2"          # istem dosyası yalnız son sürümü taşır; h1'in kopyası data/interim/d1-prova/<birim>/istem-hat-h1.md
-# altı taslağın hepsinin okuduğu müfessirler (D8, 31–33); öbürleri araçla
+SURUM = "h3"          # istem dosyası yalnız son sürümü taşır; eski sürümlerin kopyası data/interim/d1-prova/<birim>/istem-hat-<sürüm>.md
+# D13 (me'haz): dosyada tam metniyle yalnız Zemahşerî (nazmın i'câzı); öbür müfessirler yalnız araçla (kullanıcının kararı)
+DOSYA_TEFSIR_H3 = ("kessaf",)
+# D13: Risale-i Nur'un konuya dair yerleri (kullanıcı: "sonuçların yarısı falan"): konu başına ilk 100, üst yarısı
+KONU_ILK, KONU_AL = 100, 50
+PARA_PENCERE = 6       # uzun paragrafta bulunan cümlelerin iki yanından alınan cümle sayısı
+RISALE_DISI_GRUP = ("osmanlica", "hizb")   # Osmanlıca Türkçeyi tekrar eder; Hizbler dua metnidir
+# h2'ye kadar: altı taslağın hepsinin okuduğu müfessirler (D8, 31–33); öbürleri araçla
 DOSYA_TEFSIR = ("kessaf", "beyzavi", "ebussuud", "alusi")
 # usul özetinden kısa isteme giren bölümler: "Bir âyette izlenen sıra" ve "Mukaddime ne zaman gelir"
 OZET_BOLUM = ("## 4. Bir âyette izlenen sıra", "## 5. Mukaddime ve meseleler ne zaman gelir")
+# D13 (h3): Muhâkemât (usul 2.7) yazara da gider
+OZET_MUHAKEMAT = ("### 2.7 Aslı: Muhâkemât'ın \"Unsur-u Belâğat\"ı", "## 3. İlkeler")
 
 
 def out_dir(unit: str) -> Path:
@@ -121,77 +129,179 @@ def _is_formula(text: str) -> bool:
     return latin < 25
 
 
+KONU_PROMPT = """Aşağıda {sura_name} Sûresi {ayahs}. âyetler, Arapça metni ve Türkiye Diyanet Vakfı mealiyle.
+
+Bu âyetlerin **mânâ ve ders** bakımından işlediği konuları çıkar: Risale-i Nur'da bu konuların işlendiği yerler
+anlamsal aramayla bulunacak ve bu âyetler üzerine yazacak birine me'haz olarak verilecek. Kelime, harf ve i'râb
+tahlili değil; imanî, ahlâkî ve ruhî ders (âyet neyi anlatıyor, neyi kötülüyor, neye çağırıyor, insanın içinde neyi
+gösteriyor).
+
+- 6–8 konu; her biri âyetin bir sözüne ya da cümlesine dayansın (`neden`).
+- Her konu için iki arama ifadesi (`sorgular`): biri günümüz Türkçesiyle, bir iki cümlelik tarif ya da soru; biri
+  Risale-i Nur'un kullandığı kelimelerle (Osmanlı Türkçesi terimleriyle), yine bir iki cümle.
+- Konular birbirini tekrar etmesin; geniş bir konuyu (ör. "iman") değil, bu âyetlerin söylediği yönü yaz.
+
+Cevabın yalnız tek bir ```json kod bloğudur:
+
+```json
+{{"konular": [{{"konu": "kısa ad", "neden": "âyetin hangi sözünden", "sorgular": ["…", "…"]}}]}}
+```
+
+# Âyetler
+
+{ayetler}
+"""
+
+
+def konular(unit: str, again: bool = False) -> list[dict]:
+    """D13.2: âyetlerin mânâ ve ders konuları (yalnız âyetler ve meal; İşârât'ı ve müfessirleri görmez)."""
+    cfg = P.UNITS[unit]
+    stem = out_dir(unit) / "konular"
+    if stem.with_suffix(".json").exists() and not again:
+        return json.loads(stem.with_suffix(".json").read_text(encoding="utf-8"))["konular"]
+    ayah = M.Ayah(unit)
+    text = "\n\n".join(f"{v['text']} ({v['ref']})\nMeâl ({v['meal_by']}): {v['meal']}" for v in ayah.verses)
+    prompt = KONU_PROMPT.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])), ayetler=text)
+    data = Y.run_model(prompt, "opus", stem, {"gorev": "konular", "istem_sha": P._sha(KONU_PROMPT)})
+    if not data or not data.get("konular"):
+        sys.exit("konular çıkarılamadı")
+    return data["konular"]
+
+
+def risale_works(conn: sqlite3.Connection) -> set[str]:
+    """D13: konuya göre aranan eserler: külliyat (Muhâkemât dahil), İşârât, Osmanlıca ve Hizbler hariç."""
+    return {w for w, g, c in conn.execute("SELECT slug, group_name, collection FROM works WHERE built = 1")
+            if c == "risale/kulliyat" and g not in RISALE_DISI_GRUP and not w.startswith("isaratul-icaz")}
+
+
+def risale_konu(unit: str, topics: list[dict]) -> tuple[list[dict], dict]:
+    """Konu başına anlamsal aramanın ilk `KONU_ILK` sonucu (iki sorgunun en iyisi), benzerliğe göre üst `KONU_AL`
+    cümlesi; ve âyetin geçtiği yerler. Paragraflarıyla, kitap sırasıyla: [{node, ref, paras: [{konu, s: [(id, t)]}]}]."""
+    from risale_mcp.env import load_env
+    from risale_mcp.semantic import SemanticIndex
+    load_env()                                     # VOYAGE_API_KEY (.env)
+    conn = sqlite3.connect(f"file:{P.GENEL_DB}?mode=ro", uri=True)
+    index = SemanticIndex(conn)
+    works = risale_works(conn)
+    hit_topics: dict[str, set] = defaultdict(set)
+    stats = {}
+    for t in topics:
+        best: dict[str, float] = {}
+        for q in t["sorgular"]:
+            hits, _ = index.search(q, works, limit=KONU_ILK)
+            for h in hits:
+                best[h.sentence_id] = max(best.get(h.sentence_id, 0.0), h.score)
+        top = sorted(best, key=lambda k: -best[k])[:KONU_ILK][:KONU_AL]
+        stats[t["konu"]] = {"cumle": len(top), "benzerlik": [round(best[top[0]], 3), round(best[top[-1]], 3)] if top else []}
+        for sid in top:
+            hit_topics[sid].add(t["konu"])
+    for r in M.risale(unit):                       # âyetin geçtiği yerler (dua ve hatime cümleleri hariç)
+        if not all(_is_formula(x["t"]) for x in r.get("s", []) if x["id"] == r["id"]):
+            hit_topics[r["id"]].add(f"âyet {r['ayah']}")
+    paras: dict[str, dict] = {}
+    for sid, tops in hit_topics.items():
+        row = conn.execute("SELECT paragraph_id, node_id, seq FROM sentences WHERE id = ?", (sid,)).fetchone()
+        if not row:
+            continue
+        pid, node, seq = row
+        p = paras.setdefault(pid, {"pid": pid, "node": node, "hits": set(), "konu": set()})
+        p["hits"].add(seq)
+        p["konu"] |= tops
+    out_nodes: dict[str, dict] = {}
+    for p in paras.values():
+        sents = conn.execute("SELECT id, text, seq FROM sentences WHERE paragraph_id = ? ORDER BY seq", (p["pid"],)).fetchall()
+        if len(sents) > 2 * PARA_PENCERE + 1:           # uzun paragraf: bulunan cümlelerin iki yanı, aralar "…"
+            keep = {s for _, _, s in sents if any(abs(s - h) <= PARA_PENCERE for h in p["hits"])}
+            sents = [x for x in sents if x[2] in keep]
+        p["s"] = sents
+        p["ord"] = sents[0][2] if sents else 0
+        out_nodes.setdefault(p["node"], {"node": p["node"], "paras": []})["paras"].append(p)
+    for n in out_nodes.values():
+        n["ref"] = conn.execute("SELECT ref FROM nodes WHERE id = ?", (n["node"],)).fetchone()[0]
+        n["paras"].sort(key=lambda p: p["ord"])
+        n["ord"] = n["paras"][0]["ord"]
+    nodes = sorted(out_nodes.values(), key=lambda n: n["ord"])
+    stats["toplam"] = {"cumle_isabet": len(hit_topics), "paragraf": len(paras), "bolum": len(nodes),
+                       "eser": len({n["node"].split("/")[0] for n in nodes})}
+    return nodes, stats
+
+
 def dosya(unit: str) -> Path:
+    """Kaynak dosyası, h3 (D13, me'haz hiyerarşisi; kullanıcının kararları 2026-11-17): (1) İşârât'ın önceki birimi,
+    (2) Risale-i Nur'un bu âyetlerin konularına dair yerleri, çok sayıda, (3) nazmın i'câzı: Zemahşerî tam ve belâgat
+    eserleri, (4) klasik tefsirler dosyada yok, yalnız araçla. h2'nin dosyası (dört müfessir tam önde, Risale yalnız
+    âyetin geçtiği yerler) 9–10 için `dosya-h2.md`'de durur."""
     cfg = P.UNITS[unit]
     ayah = M.Ayah(unit)
+    topics = konular(unit)
     L = [f"# Kaynak dosyası: {cfg['sura_name']} {'–'.join(map(str, cfg['ayahs']))}", "",
-         "Program topladı (bu birim için; senin araştırman değil). Her cümlenin başında kimliği: `cite` ve `get_passage` "
-         "bu kimliklerle çalışır. Burada olmayanı eklentilerde oku: öbür müfessirler (Taberî, Mâtürîdî, Râzî, Kurtubî, "
-         "Nesefî, İbn Kesîr, Celâleyn, Süyûtî, Bursevî), İşârât'ın öbür birimleri, Risale'nin bölümlerinin tamamı, "
-         "hadis kitapları, klasik eserlerin öbür yerleri.", ""]
+         "Program topladı (bu birim için; senin araştırman değil). Sıra me'hazın sırasıdır: önce İşârât, sonra "
+         "Risale-i Nur, sonra nazmın i'câzını gösteren eserler (Zemahşerî ve belâgat eserleri); klasik tefsirler dosyada "
+         "yok, eklentiyle açılır. Her cümlenin başında kimliği: `cite` ve `get_passage` bu kimliklerle çalışır, "
+         "`read_section` bölümün tamamını verir.", ""]
     L += ["## Âyetler", ""]
     for v in ayah.verses:
         L += [f"> {v['text']} ({v['ref']})", f"> Meâl ({v['meal_by']}): {v['meal']}", ""]
-    L += ["## Müfessirler: bu âyetlerdeki birimleri (tam)", ""]
+    L += ["## 1. İşârâtü'l-İ'câz: önceki birim (Arapça asıl)", "",
+          "Aynı türden öbür birimler `risale` eklentisinde (`work: \"isaratul-icaz-arabi\"`; kimlikleri Ek 2'de).", "",
+          _isarat_prev(unit), ""]
+    nodes, stats = risale_konu(unit, topics)
+    L += ["## 2. Risale-i Nur: bu âyetlerin konularına dair yerler", "",
+          "Program bu âyetlerin konularını çıkardı ve her konu için Risale-i Nur'da anlamsal arama yaptı (konu başına "
+          f"ilk {KONU_ILK} sonucun benzerliğe göre üst yarısı); bulunan cümleler paragraflarıyla, kitap sırasıyla. "
+          "Âyetin kendisinin geçtiği yerler de burada. Her paragrafın üstünde hangi konudan geldiği yazılı. Bir yerin "
+          "devamını `read_section` ile oku.", "", "Konular:", ""]
+    L += [f"- **{t['konu']}** ({t.get('neden', '')})" for t in topics] + [""]
+    try:
+        pconn = sqlite3.connect(out_dir(unit) / "risale.db")
+        a, b = cfg["ayahs"]
+        links = pconn.execute("SELECT kind, strength, node_id, evidence_id, ayah_start, ayah_end FROM ayah_links "
+                              "WHERE sura = ? AND ayah_start <= ? AND ayah_end >= ?", (cfg["sura"], b, a)).fetchall()
+    except sqlite3.Error:
+        links = []
+    if links:
+        L += ["Âyetle bağ kuran yerler (kural çıkardı; tür ve güç):", ""]
+        L += [f"- `{n}` ({k}, {s}; kanıt `{e}`; âyet {x}–{y})" for k, s, n, e, x, y in links] + [""]
+    for n in nodes:
+        L += [f"### {n['ref']}  (`{n['node']}`)", ""]
+        for p in n["paras"]:
+            L.append(f"_Konu: {', '.join(sorted(p['konu']))}_")
+            prev = None
+            parts = []
+            for sid, text, seq in p["s"]:
+                if prev is not None and seq != prev + 1:
+                    parts.append("…")
+                parts.append(f"[{sid}] {text}")
+                prev = seq
+            L += [" ".join(parts), ""]
+    L += ["## 3. Nazmın i'câzı: Zemahşerî ve belâgat eserleri", ""]
     for w in M.tefsir(unit):
-        if w["work"] not in DOSYA_TEFSIR:
+        if w["work"] not in DOSYA_TEFSIR_H3:
             continue
         for u in w["units"]:
             L += [f"### {w['author']}, {w['title']}: {u['ref']}  (`{u['id']}`)", ""]
             for r in u["rows"]:
                 L.append(" ".join(f"[{s['id']}] {s['t']}" for s in r.get("s", [])) if r.get("s") else r.get("t", ""))
                 L.append("")
-    L += ["## İşârâtü'l-İ'câz: önceki birim (Arapça asıl)", "", _isarat_prev(unit), ""]
-    rs = M.risale(unit)
-    formula = [r for r in rs if all(_is_formula(s["t"]) for s in r["s"] if s["id"] == r["id"])]
-    L += ["## Risale-i Nur: âyetin geçtiği yerler (bir cümle bağlamla)", ""]
-    try:
-        links = []
-        conn = sqlite3.connect(out_dir(unit) / "risale.db")
-        a, b = cfg["ayahs"]
-        links = conn.execute("SELECT kind, strength, node_id, evidence_id, ayah_start, ayah_end FROM ayah_links "
-                             "WHERE sura = ? AND ayah_start <= ? AND ayah_end >= ?", (cfg["sura"], b, a)).fetchall()
-    except sqlite3.Error:
-        pass
-    if links:
-        L += ["Âyetle bağ kuran yerler (kural çıkardı; tür ve güç):", ""]
-        L += [f"- `{n}` ({k}, {s}; kanıt `{e}`; âyet {x}–{y})" for k, s, n, e, x, y in links] + [""]
-    gconn = sqlite3.connect(f"file:{P.GENEL_DB}?mode=ro", uri=True)
-    heads_done = set()
-    for r in rs:
-        if r in formula:
-            continue
-        seq, node = gconn.execute("SELECT seq, node_id FROM sentences WHERE id = ?", (r["id"],)).fetchone()
-        L += [f"### {r['ref']} (âyet {r['ayah']})", ""]
-        if node not in heads_done:          # bölümün ana tezi: başlığı, alt başlığı ve ilk üç cümlesi
-            heads_done.add(node)
-            ref, sub = gconn.execute("SELECT ref, subtitle FROM nodes WHERE id = ?", (node,)).fetchone()
-            first = gconn.execute("SELECT id, text, seq FROM sentences WHERE node_id = ? ORDER BY seq LIMIT 3",
-                                  (node,)).fetchall()
-            head = [f"[{i}] {t}" for i, t, s in first if s < seq - 2]   # bağlamla örtüşmeyenler
-            L += [f"Bölüm: {ref}" + (f" ({sub})" if sub else "") + f"; baştan sona `read_section {node}`.", ""]
-            if head:
-                L += ["Bölümün başı:"] + head + ["", "Âyetin geçtiği yer:"]
-        ctx = gconn.execute("SELECT id, text FROM sentences WHERE node_id = ? AND seq BETWEEN ? AND ? ORDER BY seq",
-                            (node, seq - 2, seq + 2)).fetchall()
-        L += [f"[{i}] {t}" for i, t in ctx] + [""]
-    if formula:
-        L += [f"Âyet ayrıca {len(formula)} yerde yalnız kendisi olarak geçer (risale sonlarında dua ve hatime): "
-              + ", ".join(f"`{r['id']}`" for r in formula), ""]
-    L += ["## Klasik eserler: âyetten üç kelimelik bir dizinin geçtiği yerler", ""]
+    L += ["### Belâgat ve lügat eserleri: âyetten üç kelimelik bir dizinin geçtiği yerler", ""]
     for k in M.klasik(ayah):
-        L += [f"### {k['author']}, {k['title']}: {k['ref']}", ""] + [f"[{s['id']}] {s['t']}" for s in k["s"]] + [""]
+        L += [f"#### {k['author']}, {k['title']}: {k['ref']}", ""] + [f"[{s['id']}] {s['t']}" for s in k["s"]] + [""]
+    L += ["## 4. Klasik tefsirler", "",
+          "Dosyada yok. Beyzâvî, Ebüssuûd, Âlûsî, Râzî, Taberî, Mâtürîdî, Kurtubî, Nesefî, İbn Kesîr, Celâleyn, Süyûtî ve "
+          "Bursevî `tefsir` eklentisinde (`find_ayah` ile bu âyetlerdeki birimleri); ihtilafı ve yoklamayı görmek için "
+          "gerektikçe oku.", ""]
     path = out_dir(unit) / "dosya.md"
     path.write_text("\n".join(L), encoding="utf-8")
-    sizes = {}
-    cur = None
+    (out_dir(unit) / "dosya-sayilar.json").write_text(json.dumps(stats, ensure_ascii=False, indent=1), encoding="utf-8")
+    sizes, cur = {}, None
     for line in L:
         if line.startswith("## "):
             cur = line[3:]
         sizes[cur] = sizes.get(cur, 0) + len(line) + 1
-    print(f"{path.relative_to(ROOT)}: {path.stat().st_size // 1024} KB, {len(''.join(L)):,} harf")
+    print(f"{path.relative_to(ROOT)}: {path.stat().st_size // 1024} KB, {len(' '.join(L).split()):,} kelime")
     for k, v in sizes.items():
-        print(f"  {v:7,}  {k}")
+        print(f"  {v:9,} harf  {k}")
+    print(json.dumps(stats, ensure_ascii=False, indent=1))
     return path
 
 
@@ -212,13 +322,15 @@ def hazirla(unit: str) -> Path:
     ozet = P.apply_edits(P.OZET.read_text(encoding="utf-8"), cfg["ozet"], "özet")
     cizelge = P.apply_edits(P.CIZELGE.read_text(encoding="utf-8"), cfg["cizelge"], "çizelge")
     ek1 = _section(ozet, OZET_BOLUM[0], "## 6. Anlatım biçimi")
+    if SURUM >= "h3":                                  # D13: Muhâkemât (usul 2.7) yazara da gider
+        ek1 = _section(ozet, *OZET_MUHAKEMAT) + "\n\n" + ek1
     ek2 = _section(cizelge, "## Çizelge: Bakara", "## Çizelge: Fâtiha")
     h = hedef(unit)
     body = HAT_PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
     body = body.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])),
                        en_az=f"{h['en_az']:,}".replace(",", "."), en_cok=f"{h['en_cok']:,}".replace(",", "."),
                        kelime_az=f"{h['kelime_az']:,}".replace(",", "."), kelime_cok=f"{h['kelime_cok']:,}".replace(",", "."))
-    prompt = (f"{body}\n\n---\n\n# Ek 1: Usul özeti, 4. ve 5. bölüm (prova kopyası)\n\n{ek1}\n\n---\n\n"
+    prompt = (f"{body}\n\n---\n\n# Ek 1: Usul özeti, {'2.7 (Muhâkemât), ' if SURUM >= 'h3' else ''}4. ve 5. bölüm (prova kopyası)\n\n{ek1}\n\n---\n\n"
               f"# Ek 2: Birim çizelgesi, Bakara (prova kopyası)\n\n{ek2}\n\n---\n\n# Ek 3: "
               + dosya_path.read_text(encoding="utf-8").removeprefix("# "))
     name, report = P.istem_files("hat", SURUM)

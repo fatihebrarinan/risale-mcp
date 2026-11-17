@@ -85,7 +85,13 @@ bir cümle); Muhâkemât (usul 2.7) yazara gitmiyor; ölçüler me'hazı görmü
 - **Kör eleştirmene "Risale çizgisi" sorusu** (o3; iki kola birden). Birim **9–10**; taban taslak 1 (h2), yeni taslak 5.
 - **d2 bırakıldı;** düzeltme d1 hatta kalır, eleştirmeni (k3) D13 kazanırsa aynı me'haz anlayışına çekilir.
 - Adımlar D13.1–D13.8 (planın 3. bölümü); D13.2'den sonra kısa durak (konu listesi, dosyanın sayıları). ≈11–14 $.
-- **D13.1 Plan (onaylandı, 2026-11-17).** Sırada D13.2 (dosyanın yeni kuruluşu, sonra kısa durak).
+- **D13.1 Plan (onaylandı, 2026-11-17).**
+- **D13.2 Dosya (kuruldu, 2026-11-17; kısa durakta):** `d1-hat.py dosya` h3 (`konular`, `risale_konu`): 8 konu (Opus,
+  yalnız âyetler ve meal, 0,08 $), konu başına iki sorgunun en iyisiyle ilk 100'ün üst 50'si; 377 cümle, 267 paragraf,
+  152 bölüm, 25 eser; dosya 27.367 kelime (Risale bölümü 21.177; h2'nin dosyası 11.845, kopyası `dosya-h2.md`).
+- **D13.3 İstem h3 (yazıldı, 2026-11-17):** `hat-istemi.md` h3 (me'haz bölümü, istinbat etiketi, Ek 1'e usul 2.7);
+  istem 283 bin harf (h2 ≈94 bin), sızıntı testi temiz. Etiket "istinbat" D9.1, D7 raporu ve masada "kendi tespiti"
+  gibi sayılır.
 
 **D14. Taslak hattının turları** (kullanıcının kararı, 2026-11-17: D12'nin kalanı ayrı aşama). **Sırası D13'ün
 sonunda belirlenir** (şimdi yazılmaz). Tur sayısına tavan konmaz: taslağın hazır ya da hazıra yakın olduğu okumada

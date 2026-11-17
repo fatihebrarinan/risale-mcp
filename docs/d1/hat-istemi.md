@@ -14,6 +14,11 @@ Sürümler:
 - h2 (2026-11-16, D12.5 Tur 0; kullanıcının kararı): takdir işareti. Türkçede "…" yalnız kaynağın sözü, «…» takdir ve
   beklenen söz (D12.3: modelin hiç tırnak kullanamaması takdiri göstermeyi engelliyordu). Yalnız "Tırnak ve takdir"
   maddesi değişti. D12.5'in taban hattıdır.
+- h3 (2026-11-17, D13 me'haz; kullanıcının kararları): me'haz hiyerarşisi. Kaynak dosyasının sırası İşârât, Risale-i
+  Nur'un konuya dair yerleri (çok sayıda, anlamsal aramayla), Zemahşerî ve belâgat eserleri; öbür tefsirler dosyada
+  yok, yalnız araçla. "Me'haz" bölümü yeniden yazıldı; "kendi tespiti" etiketinin yerine **istinbat** (lafızdan,
+  hey'etten, makamdan ve usulden çıkan nükte; bir müfessirde de bulunması onu nakil yapmaz); Ek 1'e usulün 2.7'si
+  (Muhâkemât). Görev, usul, uzunluk, şablon ve tırnak kuralları h2'nin aynısı.
 -->
 
 ---- İSTEM ----
@@ -41,22 +46,36 @@ hatırlıyorsan ona dayanma ve ibarelerini yazma; usulü eklerden ve me'hazdan �
 
 ## Me'haz
 
-- **Kaynak dosyası** (Ek 3): bu âyetler için program topladı: âyetler, Zemahşerî, Beyzâvî, Ebüssuûd ve Âlûsî'nin bu
-  âyetlerdeki birimleri tam, İşârât'ın önceki birimi, Risale-i Nur'da âyetin geçtiği yerler, klasik eserlerde âyetin
-  sözlerinin geçtiği yerler. Cümle kimlikleriyle; `cite` ve `get_passage` bu kimliklerle çalışır.
-- **Eklentiler** (dosyada olmayan her şey; ihtiyaç duydukça oku, sınır yok):
-  - `risale`: İşârât'ın Arapça aslının ve Türkçe tercümesinin öbür birimleri, Risale-i Nur'un bütün eserleri.
-  - `tefsir`: öbür müfessirler (Taberî, Mâtürîdî, Râzî, Kurtubî, Nesefî, İbn Kesîr, Celâleyn, Süyûtî, Bursevî).
-  - `klasik`: Delâilü'l-İ'câz, Esrârü'l-Belâğa, Miftâhu'l-Ulûm, el-Müfredât, et-Ta'rîfât.
-  - `hadis`: hadis kitapları.
-- Âyeti ve alıntılarını eklentinin verdiği gibi, harf harf aynı yaz.
+Müellif İşârât'ı ve Risale-i Nur'u bu işe me'haz diye gösterdi. Me'hazın sırası budur; kaynak dosyası (Ek 3) da bu
+sırayla dizildi:
 
-Her iddia bir kaynağa, her nükte âyetin bir lafzına ya da hey'etine bağlanır. Bir müfessirin sözünü İşârât'a ya da
-müellife mal etme. Kaynağı aklındaki nükteyi doğrulamak için değil, ne dediğini görmek için oku; aradığın cümlenin
-yanındaki soru, cevap ve çekince cümleleri çoğu zaman asıl nükteyi taşır. Kaynaktan hükmü değil, oraya nasıl
-varıldığını al; ihtimal ve çekince sözlerini ("قد", "يحتمل", "قيل") düşürme. Risale-i Nur'da bir yer bu âyeti
-işliyorsa o bölümün ana tezini (başlığı, alt başlığı, ilk cümleleri) gör; mesele orada işlenmişse yeniden kurma,
-atıfla hülâsa et. Bir belâgat terimini kullanmadan önce tanımını terim eserinde gör; uymuyorsa kullanma.
+1. **İşârâtü'l-İ'câz:** usul ve nazîr. Önceki birim dosyada; aynı türden öbür birimler `risale` eklentisinde
+   (kimlikleri Ek 2'de). Usulün aslı Muhâkemât'tır (Ek 1, 2.7).
+2. **Risale-i Nur:** mânâ ve ders. Dosyada bu âyetlerin konularına dair çok sayıda yer var (program anlamsal aramayla
+   buldu); devamı ve öbür yerler `risale` eklentisinde. Âyetin söylediği şeyi Risale-i Nur nerede, nasıl işliyorsa
+   oradan konuş: ders, temsil, mizan ve hükmü oradan al, Risale-i Nur'un sözünü adıyla ve kaynağıyla an.
+3. **Nazmın i'câzı:** Zemahşerî'nin Keşşâf'ı (bu âyetlerdeki birimi dosyada tam) ve belâgat ve lügat eserleri
+   (Delâilü'l-İ'câz, Esrârü'l-Belâğa, Miftâhu'l-Ulûm, el-Müfredât, et-Ta'rîfât; `klasik` eklentisi). Müellif nazmın
+   i'câzını gösterirken bunların yöntemini izler.
+4. **Klasik tefsirler** (Beyzâvî, Ebüssuûd, Âlûsî, Râzî ve öbürleri; `tefsir` eklentisi): dosyada yok. İhtilafı ve
+   yoklamayı görmek için gerektikçe oku. Taslağın sözü onlardan kurulmaz.
+- `hadis` eklentisi: hadis kitapları. Âyeti ve alıntılarını eklentinin verdiği gibi, harf harf aynı yaz.
+
+**Nakil ve istinbat.** İşârât'ta nükteler büyük çoğunlukla müellifin istinbatıdır; cümlelerinin %1,3'ünde bir kaynak
+adı geçer, o da çoğu zaman "قيل" ile. Taslak da böyle yazılır:
+- **İstinbat:** âyetin lafzından, hey'etinden, makamından ve usulden senin vardığın nükte. Bir müfessirde de bulunması
+  onu nakil yapmaz; etiketi "nereden vardım"ı söyler, yenilik iddia etmez. Gerekçesi lafza bağlıdır; derecesi
+  (sarih, işaret, remiz, îmâ) ve ihtimali söylenir.
+- **Nakil:** bir kaynağa mal ettiğin söz. Risale-i Nur ve İşârât adıyla anılır. Bir müfessir yalnız onun kendine has
+  bir sözünü (bir görüşünü, bir vechini) alıyorsan adıyla anılır; ihtilafı göstermek için çoğu zaman "قيل" ya da
+  "وقيل" yeter. Bir müfessirin sözünü İşârât'a ya da müellife mal etme. Bir kaynağa onun kendi görüşü olmayanı
+  (naklettiği, itiraz ettiği ya da reddettiği vechi) mal etme.
+
+Kaynağı aklındaki nükteyi doğrulamak için değil, ne dediğini görmek için oku; aradığın cümlenin yanındaki soru,
+cevap ve çekince cümleleri çoğu zaman asıl nükteyi taşır. Kaynaktan hükmü değil, oraya nasıl varıldığını al; ihtimal
+ve çekince sözlerini ("قد", "يحتمل", "قيل") düşürme. Risale-i Nur'da bir yer bu âyeti ya da konusunu işliyorsa o
+bölümün ana tezini gör; mesele orada işlenmişse yeniden kurma, atıfla hülâsa et. Bir belâgat terimini kullanmadan önce
+tanımını terim eserinde gör; uymuyorsa kullanma.
 
 ## Usul (Ek 1 ve Ek 2'nin özü)
 
@@ -84,15 +103,19 @@ atıfla hülâsa et. Bir belâgat terimini kullanmadan önce tanımını terim e
 
 ## Çalışma sırası
 
-1. Ek 1'i, Ek 2'yi ve Ek 3'ü (kaynak dosyası) oku.
+1. Ek 1'i, Ek 2'yi ve Ek 3'ü (kaynak dosyası) oku; Risale-i Nur'un yerlerini (Ek 3'ün 2. bölümü) baştan sona.
 2. İşârât'ın aynı türden bir iki birimini `risale` eklentisinde `read_section` ile oku (kimlikleri Ek 2'de); bir
    edatın ya da üslûbun kaidesine dayanacaksan onu İşârât'ın kendisinde ara (`search`, `semantic_search`,
-   `work: "isaratul-icaz-arabi"`). Dosyada olmayan bir müfessiri ya da Risale bölümünü gerekirse oku.
-3. Yazmadan önce kendin için çıkar: âyetin cümleleri, asıl maksadı, öncesiyle bağı, mukaddime gerekip gerekmediği,
-   üslûbun beklenenden ayrıldığı yerler, müfessirlerin ayrıldığı yerler.
+   `work: "isaratul-icaz-arabi"`). Risale-i Nur'da bir yerin devamını ya da dosyada olmayan bir konuyu gerekirse
+   oku; bir müfessiri ihtilafı görmek için gerekirse aç.
+3. Yazmadan önce kendin için çıkar: âyetin cümleleri, asıl maksadı, öncesiyle bağı, Risale-i Nur'un bu âyetlerin
+   konusunda verdiği ders, mukaddime gerekip gerekmediği, üslûbun beklenenden ayrıldığı yerler, müfessirlerin
+   ayrıldığı yerler.
 4. Taslağı yaz (şablon aşağıda), uzunluk hedefine uyarak.
-5. Öz denetim: tırnak içindeki her söz araçların döndürdüğü metin mi? "Kendi tespiti" dediğin söz okuduğun bir
-   kaynakta geçiyor mu? İnhisar kalıplarını kaynak mı söylüyor? Arapça uzunluk hedefte mi?
+5. Öz denetim: tırnak içindeki her söz araçların döndürdüğü metin mi? Bir kaynağa mal ettiğin söz o kaynağın kendi
+   görüşü mü (naklettiği, itiraz ettiği ya da reddettiği vecih değil mi)? Nükteyi bir müfessirin adıyla mı
+   söylüyorsun, oysa lafızdan istinbat edilebilir mi? İnhisar kalıplarını kaynak mı söylüyor? Arapça uzunluk
+   hedefte mi?
 6. Her eklentinin `cite` aracını, dayandığın ve alıntıladığın her cümle ya da aralıkla bir kez çağır; işaret ettiği
    sorunları düzelt. Tek "Kaynaklar" listesi ver (eklentiler sırayla: `first` ile numara sürer).
 
@@ -120,10 +143,9 @@ Cevabın yalnız taslaktır; önüne ve ardına açıklama yazma. Biçim:
 - Bir kaynaktan alıntı ancak eklentinin ya da dosyanın verdiği metinle, ayrı satırda blok alıntı olarak ve
   numarasıyla [n] verilir; alıntıların tercümesi de "Yapay zekâ tercümesi:" damgalıdır.
 - **İşaretler** (yalnız Türkçe tercüme paragraflarında, iddianın hemen ardından): `[dil]` sarf, nahiv, lügat;
-  `[belâgat]` meânî, beyân, bedî'; kaynaktan geliyorsa numarası (`[belâgat; 3]`); kendi tespitinse
-  `[belâgat; kendi tespiti]`. "Kendi tespiti" yalnız okuduğun hiçbir kaynakta bulunmayan söz içindir; nazîrden
-  taşıyıp buraya uyguladığın nükte `[belâgat; 7, buraya tatbiki kendi tespiti]`. Tercüme Arapçada olmayan cümle
-  eklemez.
+  `[belâgat]` meânî, beyân, bedî'; nakilse numarası (`[belâgat; 3]`); istinbatsa `[belâgat; istinbat]`
+  (yukarıdaki "Nakil ve istinbat"); nazîrden taşıyıp buraya uyguladığın nükte `[belâgat; 7, buraya tatbiki istinbat]`.
+  Tercüme Arapçada olmayan cümle eklemez.
 - **Tırnak ve takdir: iki ayrı işaret.** Türkçe tercümede:
   - "…" (ya da “…”) **yalnız kaynağın sözü** içindir: araçların ya da dosyanın döndürdüğü metin, harfi harfine.
     Bir kaynağı mealen aktarıyorsan tırnak kullanma.

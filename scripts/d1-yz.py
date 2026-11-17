@@ -843,7 +843,7 @@ def d2_veri(unit: str, d1: list[int], d2: list[int], info: list[int] = ()) -> No
             continue
         by = Counter(srv for srv, _ in P.draft_sources(log).values())
         text = "\n".join(t for _, lang, _, t in draft_blocks(unit, n)[0] if lang == "tr")
-        own = len(re.findall(r"kendi tespiti\]", text))
+        own = len(re.findall(r"(?:kendi tespiti|istinbat)\]", text))   # h3'ten beri etiket "istinbat"
         sourced = len(re.findall(r"\[(?:dil|belâgat);\s*\d", text))
         L.append(f"| taslak-{n} | {'D1' if n in d1 else 'D2' if n in d2 else 'D1 (tam, bilgi)'} | {by['risale']} | {by['tefsir']} | {by['hadis']} | "
                  f"{by['klasik']} | {sum(by.values())} | {sourced} / {own} |")

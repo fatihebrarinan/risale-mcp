@@ -420,7 +420,7 @@ def check_overlap(d: dict, ids: dict, index: GramIndex) -> list[dict]:
         cited = set().union(*(ids[k] for k in nums if k in ids))
         sents = split_ar(p["ar_text"])
         tr = p["tr_text"]
-        own = [pos / max(1, len(tr)) for pos, body in marks_of(tr)[1] if "kendi tespiti" in body]
+        own = [pos / max(1, len(tr)) for pos, body in marks_of(tr)[1] if "kendi tespiti" in body or "istinbat" in body]
         plain = MARK.sub("", p["ar_text"])
         for s in sents:
             found = index.best(s)
@@ -538,7 +538,7 @@ def check_scope(d: dict) -> list[dict]:
             continue
         for sent in re.split(r"(?<=[.!?])\s+", p["tr_text"]):
             m = SCOPE.search(sent)
-            if m and "kendi tespiti" in sent:
+            if m and ("kendi tespiti" in sent or "istinbat" in sent):
                 out.append({"capa": p["tr"], "kalip": m.group(1)[:40], "cumle": sent.strip()})
     return out
 
@@ -889,7 +889,7 @@ def claims(unit: str, n: int) -> list[dict]:
             if kind:
                 nums = re.findall(r"\d+", body.split("burada")[0])
                 out.append({"taslak": f"taslak-{n}", "capa": anchor, "ar_capa": Y.ar_of(pr, anchor),
-                            "tur": kind, "kaynak": "kendi" if "kendi tespiti" in body else "kaynakli",
+                            "tur": kind, "kaynak": "kendi" if "kendi tespiti" in body or "istinbat" in body else "kaynakli",
                             "isaret": body, "iddia": _claim(text, m.start(), prev), "tercume": MARK.sub("", text),
                             "arapca": MARK.sub("", by.get(pr.get(anchor, ""), "")),
                             "kaynaklar": [{"no": k, "atif": sources.get(k, ""), "id": (ids.get(k) or (None, None))[1],

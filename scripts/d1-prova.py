@@ -873,7 +873,7 @@ def _inline(text: str, sources: dict, lang: str = "ar") -> str:
             nums = [n.strip() for n in clean.split(",")]
             title = html.escape(" | ".join(f"[{n}] {sources.get(n, '')}" for n in nums), quote=True)
             return f'<span class="ref" data-n="{",".join(nums)}" title="{title}">[{clean}]</span>'
-        cls = "own" if "kendi tespiti" in clean else "src"
+        cls = "own" if "kendi tespiti" in clean or "istinbat" in clean else "src"
         nums = re.findall(r"\b\d+\b", clean)
         title = html.escape(" | ".join(f"[{n}] {sources.get(n, '')}" for n in nums), quote=True)
         data = f' data-n="{",".join(nums)}"' if nums else ""
