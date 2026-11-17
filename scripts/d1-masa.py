@@ -164,9 +164,12 @@ class Ayah:
     def heads(self, blocks: list) -> dict[str, list[str]]:
         """Taslak paragrafının yeri {çapa: [yer]}: birinci ve ikinci vecih düzeyleri, üçüncüde paragrafın başlığı."""
         out, head = {}, [OTHER]
-        for a, lang, _, text in blocks:
+        for a, lang, quote, text in blocks:
             sec = a.split("/")[0]
             if lang != "ar":
+                continue
+            if quote and sec == "V3":                    # kaynaktan alıntı yeni başlık açmaz, paragrafının yerindedir
+                out[a] = head
                 continue
             if sec in LEVELS:
                 out[a] = [LEVELS[sec]]
@@ -182,9 +185,11 @@ class Ayah:
             elif re.match(r"و?أما\b", start):
                 head = [OTHER]
             out[a] = head
-        for a, lang, _, _ in blocks:
+        pr, last = Y.pairs(blocks), ["L:genel"]
+        for a, lang, _, _ in blocks:                     # Türkçe eşinin yerinde; eşsiz Türkçe önündeki paragrafın
             if lang == "tr":
-                out[a] = out.get(a.replace("/tr/", "/ar/"), ["L:genel"])
+                out[a] = out.get(pr.get(a, ""), last)
+            last = out.get(a, last)
         return out
 
 
@@ -299,6 +304,7 @@ def drafts(unit: str, ayah: Ayah) -> dict:
     for n in Y.drafts_of(unit):
         meta = json.loads((keep / f"taslak-{n}.json").read_text())
         blocks, cites = Y.draft_blocks(unit, n)
+        pr = Y.pairs(blocks)                                   # paragrafın eşi (çapanın sıra numarası değil)
         log = keep / f"taslak-{n}.jsonl"
         ids = P.draft_sources(log) if log.exists() else {}
         sources = {}
@@ -319,7 +325,8 @@ def drafts(unit: str, ayah: Ayah) -> dict:
         iz = {x["capa"]: x["metin"] for x in json.loads(izah.read_text(encoding="utf-8")).get("izah", [])} if izah.exists() else {}
         out[f"taslak-{n}"] = {
             "label": f"Taslak {n}", "about": about,
-            "blocks": [{"a": a, "l": lang, "q": quote, "t": text, **({"iz": iz[a]} if a in iz else {})}
+            "blocks": [{"a": a, "l": lang, "q": quote, "t": text, **({"p": pr[a]} if a in pr else {}),
+                        **({"iz": iz[a]} if a in iz else {})}
                        for a, lang, quote, text in blocks],
             "heads": ayah.heads(blocks), "sources": sources}
     return out

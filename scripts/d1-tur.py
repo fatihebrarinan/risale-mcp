@@ -4,8 +4,7 @@
     uv run python scripts/d1-tur.py yaz 9-10              # T1 kolu: okuma (araçlı) → denetim → tamamla → yazım (yalnız cite)
     uv run python scripts/d1-tur.py kapsam 9-10 --taslak 1 2   # âyetin kelime ve harflerinin taslakta ele alınma oranı
     uv run python scripts/d1-tur.py olc 9-10 --tur T1 --taban 1 --yeni 2   # eşleştirme (tek okuyucu), D9.1, kör A/B, sayılar
-    uv run python scripts/d1-tur.py okuma 9-10 --tur T1 --yer W3 W7 L:nazim   # masadaki tur okuması (kör A/B, 3 yer)
-    uv run python scripts/d1-tur.py fark 9-10 --tur T1     # aynı yerler fark kartı biçiminde: masa/fark-9-10-T1.html
+    uv run python scripts/d1-tur.py okuma 9-10 --tur T1 --taban 1 --yeni 2 --yerler yerler.json   # okuma sayfası (standart)
     uv run python scripts/d1-tur.py sonuc 9-10 --tur T1 ~/İndirilenler/d1-notlar-*.json   # kullanıcının A/B'si
 
 Taban kol `d1-hat.py yazdir` (o anki en iyi hat; T1'de h2). Yeni kol bu betikte. Kararlar:
@@ -479,84 +478,93 @@ def sayilar(unit: str, tur: str, taban: int, yeni: int) -> dict:
 
 # ---------------------------------------------------------------- tur okuması (masa)
 
+# ---------------------------------------------------------------- tur okuması (standart, 2026-11-17)
+# Plan belgesi 4.10 "Okuma standardı" (kullanıcının kararları): turda tek sayfa `masa/tur-<birim>-<tur>.html`; bir yer
+# envanterin tek bir nüktesidir; yan başına en çok 2 paragraf ve ≈250 kelime (Türkçe; Türkçesi yoksa Arapça); Türkçe
+# önde, Arapça açılır kutuda; sarı fark yalnız düzeltme turunda (D); İşârât'ın sözü "Aç"tan sonra.
+
+READ_MAX_PARAS, READ_MAX_WORDS = 2, 250
+READ_KINDS = {"hipotez": "değişikliğin sınandığı yer", "ayrilik": "iki ölçünün ayrıldığı yer",
+              "elestirmen": "kör eleştirmenin açık hüküm verdiği yer"}
 TUR_GIRIS = ("<b>Ne okuyorsunuz:</b> aynı âyetler için iki yapay zekâ taslağı, <b>A</b> ve <b>B</b>; hangisinin nasıl "
-             "yazıldığı gizli. Aşağıdaki her yerde (yerin adına tıklayınca masa o yere gider, kör kipte iki taslak yan "
-             "yana açılır) <b>hangisi daha iyi</b> (doğruluk, İşârât'a yakınlık, kaynak disiplini, îcâz) ve bir iki "
-             "cümle gerekçe. Sonra <b>Aç</b>. Bitince <b>Dışa aktar</b>.")
+             "yazıldığı gizli. Her kart İşârât'ın tek bir nüktesinin yeridir: her taslaktan o nükteyi işleyen paragraflar "
+             "(en çok iki), Türkçesiyle; Arapçası altında açılır. Her kartta <b>hangisi daha iyi</b> (doğruluk, "
+             "İşârât'a yakınlık, kaynak disiplini, îcâz) ve bir iki cümle gerekçe; sonra <b>Aç</b>: hangisi hangisi, "
+             "ölçülerin dediği ve İşârât'ın o yerdeki sözü. Bitince <b>Dışa aktar</b>.")
+
+
+def read_side(unit: str, n: int, nid: str, rows: dict, sources: dict) -> dict:
+    """Bir taslağın o nükteyi işleyen paragrafları (eşleştiricinin çapaları), eşleriyle; sınır `READ_MAX_*`."""
+    blocks, _ = Y.draft_blocks(unit, n)
+    pr, by = Y.pairs(blocks), {a: (lang, q, t) for a, lang, q, t in blocks}
+    order = {a: i for i, (a, *_) in enumerate(blocks)}
+    row = {m: x for m, x in (rows.get(nid) or {}).items() if isinstance(x, dict)}   # okuyucu başına {d, a}
+    durum = {m: (x or {}).get("d") for m, x in row.items()}
+    anchors = sorted({Y.ar_of(pr, a) for x in row.values() if x for a in x.get("a") or [] if a in by},
+                     key=lambda a: order[a])
+    paras, words = [], 0
+    for a in anchors:
+        lang, q, t = by[a]
+        tr = by[pr[a]][2] if a in pr and lang == "ar" else (t if lang == "tr" else "")
+        ar = t if lang == "ar" else ""
+        paras.append({"a": a, "q": q, "ar": ar, "tr": tr})
+        words += len((tr or ar).split())
+    nums = sorted({x for p in paras for m in re.finditer(r"\[([^\[\]\n]{1,80})\]", p["ar"] + " " + p["tr"])
+                   for x in re.findall(r"\d+", m.group(1))}, key=int)
+    srcs = {k: {"c": sources[k]["c"], "t": (sources[k]["t"] or "")[:1500]} for k in nums if k in sources}
+    return {"paras": paras, "words": words, "durum": durum, "sources": srcs}
 
 
 def okuma(unit: str, tur: str, taban: int, yeni: int, yerler: list[dict]) -> Path:
+    """Turun okuma sayfası (standart): `provalar/<birim>/tur-<tur>.json` ve `masa/tur-<birim>-<tur>.html`.
+
+    `yerler`: [{id: envanter kalemi, tur: hipotez|ayrilik|elestirmen, baslik, soru, acik}]; soru nükteyi söylemez
+    (İşârât'ın sözü "Aç"tan sonra). Sınırı aşan yer kabul edilmez: başka nükte seçilir.
+    """
     order = [taban, yeni]
     random.Random(f"d12-5-{unit}-{tur}").shuffle(order)
+    env = json.loads((Y.out_dir(unit) / "envanter.json").read_text(encoding="utf-8"))
+    items = {i["id"]: i for i in env["kalemler"]}
+    h = Y.hidden(unit)
+    pd = Y.page_data(unit)
+    ayah = M.Ayah(unit)
+    dr = M.drafts(unit, ayah)
+    cards, bad = [], []
+    for y in yerler:
+        it = items[y["id"]]
+        sides = {}
+        for lab, n in zip("AB", order):
+            dk = f"taslak-{n}"
+            sides[lab] = read_side(unit, n, y["id"], pd["drafts"][dk]["rows"], dr[dk]["sources"])
+            sd = sides[lab]
+            if len(sd["paras"]) > READ_MAX_PARAS or sd["words"] > READ_MAX_WORDS:
+                bad.append(f"{y['id']} {lab}: {len(sd['paras'])} paragraf, {sd['words']} kelime")
+        cards.append(dict(y, tur_ad=READ_KINDS[y["tur"]], nukte=it["nukte"], lafiz=it.get("lafiz", ""),
+                          isarat_ar=Y.hidden_text(h, it.get("ar") or []), isarat_tr=Y.hidden_text(h, it.get("tr") or []),
+                          A=sides["A"], B=sides["B"]))
+    if bad:
+        raise SystemExit("okuma sınırını aşan yer (yan başına 2 paragraf, 250 kelime): " + "; ".join(bad))
+    words = sum(c[s]["words"] for c in cards for s in "AB")
+    page = f"tur-{unit}-{tur}.html"
     data = {"ad": tur, "a": f"taslak-{order[0]}", "b": f"taslak-{order[1]}", "taban": f"taslak-{taban}",
-            "yeni": f"taslak-{yeni}", "giris": TUR_GIRIS, "yerler": yerler, "at": datetime.now().isoformat()}
+            "yeni": f"taslak-{yeni}", "giris": TUR_GIRIS, "sayfa": page, "kelime": words,
+            "dakika": round(words / 100 + 2 * len(cards)),
+            "yerler": [{k: c[k] for k in ("id", "tur", "baslik", "soru", "acik")} for c in cards],
+            "at": datetime.now().isoformat()}
     path = P.DRAFTS / unit / f"tur-{tur}.json"
     path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+    page_data = dict(data, unit=unit, title=M.title(unit), masa=f"{unit}.html", cards=cards,
+                     about={k: dr[k]["about"] for k in (data["a"], data["b"])})
+    blob = json.dumps(page_data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    out = M.OUT_DIR / page
+    out.write_text(READ_TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
     print(f"{path.relative_to(ROOT)}: A = {data['a']}, B = {data['b']}")
-    return path
-
-
-FARK_TEMPLATE = Path(__file__).with_name("d1-tur-fark-sablon.html")
-FARK_GIRIS = ("<b>Ne okuyorsunuz:</b> turun okuma yerleri, her biri bir kartta; solda <b>A</b>, sağda <b>B</b>, masadaki "
-              "kör A/B ile aynı harfler (hangisinin nasıl yazıldığı gizli). Her yanda o yere bağlı paragraflar, taslaktaki "
-              "sırasıyla (masanın o yerde gösterdikleri). <b>Sarı</b>: öbür yanın o yerinde hiç geçmeyen kelimeler (iki "
-              "taslak ayrı yazıldığı için sıra gözetilmez; üstten değiştirilebilir). Her kartta <b>hangisi daha iyi</b> "
-              "(doğruluk, İşârât'a yakınlık, kaynak disiplini, îcâz) ve bir iki cümle gerekçe; sonra <b>Aç</b>. İşaretler "
-              "masadaki tur kutusuyla ortaktır (aynı tarayıcıda); bitince <b>Dışa aktar</b>.")
-
-
-def fark(unit: str, tur: str) -> Path:
-    """Turun okuma yerleri, fark kartı biçiminde (`data/d1/masa/fark-<birim>-<tur>.html`; D12.2'nin sarı farkıyla).
-
-    Her yerde iki taslağın paragrafları masanın o yerde gösterdikleridir (`blocksAt`'ın aynısı: yerin başlığı ve
-    eşleştirme, eleştiri ve bilirkişi maddelerinin bağlandığı paragraflar). İşaretler masanın `d1-masa-ab` kaydına
-    aynı anahtarla yazılır.
-    """
-    t = json.loads((P.DRAFTS / unit / f"tur-{tur}.json").read_text(encoding="utf-8"))
-    env = json.loads((Y.out_dir(unit) / "envanter.json").read_text(encoding="utf-8"))
-    ayah = M.Ayah(unit)
-    places = ayah.build_chips(env["kalemler"])
-    dr = M.drafts(unit, ayah)
-    yz = M.layer(unit, ayah, places, dr)
-
-    def anchors_at(dk: str, loc: str) -> set[str]:          # masa şablonundaki blocksAt (kör kip, odak yok)
-        want: set[str] = set()
-        yd = yz["drafts"].get(dk, {"rows": {}, "extras": []})
-        for iid, it in yz["items"].items():
-            if loc in it["loc"]:
-                for m in yz["models"]:
-                    want.update(((yd["rows"].get(iid) or {}).get(m) or {}).get("a") or [])
-        want.update(a for f in yd["extras"] if loc in f.get("loc", []) for a in f["a"])
-        want.update(n["a"] for n in (yz["critic"].get(dk) or {}).get("notes", []) if loc in n.get("loc", []))
-        want.update(x["a"] for xs in yz["bilirkisi"].values() for x in xs if x["t"] == dk and loc in x.get("loc", []))
-        want |= {a.replace("/tr/", "/ar/") for a in want}
-        d = dr[dk]
-        return {b["a"] for b in d["blocks"] if b["l"] == "ar" and (b["a"] in want or loc in d["heads"].get(b["a"], []))}
-
-    def side(dk: str, loc: str) -> dict:
-        d = dr[dk]
-        keep = anchors_at(dk, loc)
-        tr = {b["a"]: b for b in d["blocks"] if b["l"] == "tr"}
-        blocks = []
-        for b in d["blocks"]:
-            if b["l"] == "ar" and b["a"] in keep:
-                tb = tr.get(b["a"].replace("/ar/", "/tr/"))
-                blocks.append({"a": b["a"], "q": bool(b["q"]), "ar": b["t"], "tr": tb["t"] if tb else ""})
-        nums = sorted({x for b in blocks for m in re.finditer(r"\[([^\[\]\n]{1,80})\]", b["ar"] + " " + b["tr"])
-                       for x in re.findall(r"\d+", m.group(1))}, key=int)
-        srcs = {n: {"c": d["sources"][n]["c"], "t": (d["sources"][n]["t"] or "")[:1500]} for n in nums if n in d["sources"]}
-        return {"blocks": blocks, "sources": srcs}
-
-    cards = [dict(y, A=side(t["a"], y["loc"]), B=side(t["b"], y["loc"])) for y in t["yerler"]]
-    data = {"unit": unit, "title": M.title(unit), "tur": tur, "a": t["a"], "b": t["b"],
-            "about": {k: dr[k]["about"] for k in (t["a"], t["b"])}, "giris": FARK_GIRIS, "cards": cards,
-            "masa": f"{unit}.html"}
-    blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    out = M.OUT_DIR / f"fark-{unit}-{tur}.html"
-    out.write_text(FARK_TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
-    print(f"{out.relative_to(ROOT)}: " + "; ".join(
-        f"{c['baslik']} A {len(c['A']['blocks'])}, B {len(c['B']['blocks'])} paragraf" for c in cards))
+    print(f"{out.relative_to(ROOT)}: {len(cards)} yer, ≈{words} kelime, ≈{data['dakika']} dk; " + "; ".join(
+        f"{c['id']} A {len(c['A']['paras'])}/{c['A']['words']}, B {len(c['B']['paras'])}/{c['B']['words']}" for c in cards))
     return out
+
+
+READ_TEMPLATE = Path(__file__).with_name("d1-tur-okuma-sablon.html")
 
 
 def main() -> None:
@@ -581,10 +589,7 @@ def main() -> None:
     p.add_argument("--tur", required=True)
     p.add_argument("--taban", type=int, required=True)
     p.add_argument("--yeni", type=int, required=True)
-    p.add_argument("--yerler", required=True, help="JSON: [{id, loc, baslik, soru, acik}]")
-    p = sub.add_parser("fark")                        # turun yerleri fark kartı biçiminde (sarı fark)
-    p.add_argument("unit", choices=P.UNITS)
-    p.add_argument("--tur", required=True)
+    p.add_argument("--yerler", required=True, help="JSON: [{id: envanter kalemi, tur, baslik, soru, acik}]")
     a = ap.parse_args()
     if a.cmd == "hazirla":
         hazirla(a.unit)
@@ -600,9 +605,6 @@ def main() -> None:
         run_cmd(["scripts/d1-masa.py", a.unit])
     elif a.cmd == "sayilar":
         sayilar(a.unit, a.tur, a.taban, a.yeni)
-    elif a.cmd == "fark":
-        fark(a.unit, a.tur)
-        run_cmd(["scripts/d1-masa.py", a.unit])       # masanın üstündeki bağlantı
 
 
 if __name__ == "__main__":

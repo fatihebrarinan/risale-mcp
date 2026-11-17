@@ -820,6 +820,7 @@ def check_critic(unit: str, n: int, data: dict) -> dict:
     """Her not: taslak alıntısı çapasında mı, dayanaklar veritabanında ve eleştirmenin okuduklarında mı."""
     blocks, _ = Y.draft_blocks(unit, n)
     by_anchor = {a: t for a, _, _, t in blocks}
+    pr = Y.pairs(blocks)
     whole = " ".join(by_anchor.values())
     read = Read(log=Y.out_dir(unit) / f"elestiri-taslak-{n}.jsonl")
     read_ids = {k[1] for k in read.items}
@@ -828,8 +829,7 @@ def check_critic(unit: str, n: int, data: dict) -> dict:
         q, capa = note.get("taslak_alinti"), note.get("capa") or "genel"
         d = {}
         if q:
-            pair = [by_anchor.get(capa, ""), by_anchor.get(capa.replace("/tr/", "/ar/"), ""),
-                    by_anchor.get(capa.replace("/ar/", "/tr/"), "")]
+            pair = [by_anchor.get(capa, ""), by_anchor.get(pr.get(capa, ""), "")]
             d["alinti"] = Y.quote_found(q, " ".join(pair)) or ("baska_capada" if Y.quote_found(q, whole) else False)
         if capa != "genel":
             d["capa"] = capa in by_anchor
@@ -870,13 +870,14 @@ def claims(unit: str, n: int) -> list[dict]:
     """Taslağın `[dil]` ve `[belâgat]` iddiaları: tercüme paragrafındaki her işaret bir iddia."""
     blocks, sources = Y.draft_blocks(unit, n)
     by = {a: t for a, _, _, t in blocks}
+    pr = Y.pairs(blocks)
     ids = P.draft_sources(P.DRAFTS / unit / f"taslak-{n}.jsonl")
     crit_path = Y.out_dir(unit) / f"elestiri-taslak-{n}.denetim.json"
     crit = json.loads(crit_path.read_text(encoding="utf-8"))["notlar"] if crit_path.exists() else []
     objected: dict[str, list[str]] = defaultdict(list)
     for x in crit:
         if x.get("tur") in BK_OBJECT or x.get("ehline_sor"):
-            objected[(x.get("capa") or "").replace("/ar/", "/tr/")].append(Y.critic_key(n, x))
+            objected[Y.tr_of(pr, x.get("capa") or "") or (x.get("capa") or "")].append(Y.critic_key(n, x))
     out = []
     for anchor, lang, quote, text in blocks:
         if lang != "tr" or quote:
@@ -887,10 +888,10 @@ def claims(unit: str, n: int) -> list[dict]:
             kind = "dil" if body.startswith("dil") else "belagat" if body.startswith("belâgat") else None
             if kind:
                 nums = re.findall(r"\d+", body.split("burada")[0])
-                out.append({"taslak": f"taslak-{n}", "capa": anchor, "ar_capa": anchor.replace("/tr/", "/ar/"),
+                out.append({"taslak": f"taslak-{n}", "capa": anchor, "ar_capa": Y.ar_of(pr, anchor),
                             "tur": kind, "kaynak": "kendi" if "kendi tespiti" in body else "kaynakli",
                             "isaret": body, "iddia": _claim(text, m.start(), prev), "tercume": MARK.sub("", text),
-                            "arapca": MARK.sub("", by.get(anchor.replace("/tr/", "/ar/"), "")),
+                            "arapca": MARK.sub("", by.get(pr.get(anchor, ""), "")),
                             "kaynaklar": [{"no": k, "atif": sources.get(k, ""), "id": (ids.get(k) or (None, None))[1],
                                            "sunucu": (ids.get(k) or (None, None))[0]} for k in nums],
                             "itiraz": objected.get(anchor, [])})
@@ -964,6 +965,7 @@ def bilirkisi_b(unit: str) -> None:
             continue
         blocks, _ = Y.draft_blocks(unit, n)
         by = {a: t for a, _, _, t in blocks}
+        pr = Y.pairs(blocks)
         for x in json.loads(path.read_text(encoding="utf-8"))["notlar"]:
             key = Y.critic_key(n, x)
             if (decisions.get(f"{unit}|taslak-{n}|{key}") or {}).get("v") != "ehline":
@@ -972,8 +974,8 @@ def bilirkisi_b(unit: str) -> None:
             items.append({"id": f"B{len(items) + 1:02d}", "taslak": f"taslak-{n}", "capa": capa, "not_anahtari": key,
                           "tur": x.get("tur"), "elestiri": x.get("metin", ""), "soru": x.get("soru"),
                           "dayanak": x.get("dayanak") or [],
-                          "arapca": MARK.sub("", by.get(capa.replace("/tr/", "/ar/"), "")),
-                          "tercume": MARK.sub("", by.get(capa.replace("/ar/", "/tr/"), ""))})
+                          "arapca": MARK.sub("", by.get(Y.ar_of(pr, capa), "")),
+                          "tercume": MARK.sub("", by.get(Y.tr_of(pr, capa) or "", ""))})
     path = Y.out_dir(unit) / "bilirkisi-B.json"
     path.write_text(json.dumps({"birim": unit, "kisim": "B", "at": datetime.now().isoformat(timespec="seconds"),
                                 "maddeler": items}, ensure_ascii=False, indent=1), encoding="utf-8")

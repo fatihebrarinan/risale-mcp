@@ -278,6 +278,14 @@ let ACCOUNT = null;                              // sitede girişli hesabın ad�
 function reader() { return ACCOUNT || $('#reader').value.trim(); }
 function needReader() { if (reader()) return false; say('Önce okuyucu adınızı yazın.'); $('#reader').focus(); return true; }
 function locName(l) { return CHIP[l] ? `<span class="arw" dir="rtl">${esc(CHIP[l].text)}</span>` : esc(LOC[l] || l); }
+// paragrafın eşi (`d1-yz.pairs`, blokta `p`): çapalar dil başına sayılır, /ar/k ile /tr/k eş olmayabilir
+function mate(dk, a) {
+  const d = DATA.drafts[dk]; if (!d) return null;
+  d._m = d._m || Object.fromEntries(d.blocks.filter(b => b.p).map(b => [b.a, b.p]));
+  return d._m[a] || null;
+}
+function arOf(dk, a) { return a.includes('/tr/') ? (mate(dk, a) || a) : a; }
+function trOf(dk, a) { return a.includes('/tr/') ? a : mate(dk, a); }
 function at(x) { return st.loc === 'L:tumu' || !!(x.loc && x.loc.includes(st.loc)); }
 
 
@@ -364,6 +372,9 @@ function abKey(y) { return `${U}|${TUR.ad}|${y.id}`; }
 function turHtml() {
   if (!TUR) return '';
   const done = TUR.yerler.filter(y => (abMarks[abKey(y)] || {}).secim).length;
+  if (TUR.sayfa)                                 // okuma standardı (2026-11-17): okuma turun kendi sayfasında
+    return `<div class="small" style="margin-top:8px"><b>Tur okuması: ${esc(TUR.ad)}</b> · ${done}/${TUR.yerler.length} yer ·
+      ≈${TUR.kelime} kelime, ≈${TUR.dakika} dk · <a href="${esc(TUR.sayfa)}">okuma sayfasını aç</a></div>`;
   const rows = TUR.yerler.map((y, i) => {
     const m = abMarks[abKey(y)] || {}, k = abKey(y);
     const opt = [['a', 'A daha iyi'], ['b', 'B daha iyi'], ['esit', 'eşit'], ['emin_degilim', 'emin değilim']].map(([v, l]) => {
@@ -521,7 +532,7 @@ function stripHtml(id) {
 // alıntılanan Arapça söz altında açılır.
 function draftSays(dk, anchors, q) {
   const blocks = DATA.drafts[dk].blocks;
-  const tr = st.lang === 'tr' ? [...new Set(anchors.map(a => a.replace('/ar/', '/tr/')))]
+  const tr = st.lang === 'tr' ? [...new Set(anchors.map(a => trOf(dk, a)).filter(Boolean))]
     .map(a => (blocks.find(b => b.a === a) || {}).t).filter(Boolean) : [];
   const go = `<button class="linkish" data-showdraft="${esc(anchors.join(','))}" data-quote="${esc(q || '')}" data-draftgo2="${esc(dk)}">taslakta göster</button>`;
   if (!tr.length) return `<div class="small"><b>Taslak:</b></div><div class="q ar">${esc(q)}</div>${go}`;
@@ -692,7 +703,7 @@ function bkCard(x) {
   if (isFolded(fid)) return `<div class="card small" data-bk="${esc(key)}">${cardHead(no, fid, `<span class="gist">${trEsc(x.q || x.c)}</span>`, bkMark(m))}</div>`;
   const tr = x.tr || '', r = locate(tr, x.c);
   const trHtml = r ? trEsc(tr.slice(0, r[0])) + `<span class="claim">${trEsc(tr.slice(r[0], r[1]))}</span>` + trEsc(tr.slice(r[1])) : trEsc(tr);
-  const anchor = x.a.replace('/tr/', '/ar/');
+  const anchor = arOf(x.t, x.a);
   const notes = ((Y.critic[x.t] || {}).notes || []).filter(n => n.a === anchor || n.a === x.a);
   const src = x.src.map(k => `<details><summary class="small">Taslağın kaynağı [${esc(k.n)}] ${esc(k.c)}</summary><p class="para ar">${esc(k.x || '(metni bulunamadı)')}</p></details>`).join('');
   const prim = st.lang === 'tr'
@@ -734,7 +745,7 @@ function welcome() {
 // ================================================================ taslak yanı
 function blocksAt(dk) {
   const d = DATA.drafts[dk];
-  const pairOf = b => ({ar: b, tr: d.blocks.find(x => x.a === b.a.replace('/ar/', '/tr/'))});
+  const pairOf = b => ({ar: b, tr: b.p ? d.blocks.find(x => x.a === b.p) : undefined});
   if (st.loc === 'L:tumu') return d.blocks.filter(b => b.l === 'ar').map(pairOf);
   const want = new Set(st.dfocus && st.dfocus.dk === dk ? st.dfocus.a : []);
   // bu yerdeki maddelerin bağlandığı paragraflar da (konu başka bir paragrafın içinde işlenmiş olabilir)
@@ -743,7 +754,7 @@ function blocksAt(dk) {
   for (const f of yd.extras.filter(at)) f.a.forEach(a => want.add(a));
   for (const n of ((Y.critic[dk] || {}).notes || []).filter(at)) want.add(n.a);
   for (const x of bkAll().filter(x => x.t === dk && at(x))) want.add(x.a);
-  for (const a of [...want]) want.add(a.replace('/tr/', '/ar/'));
+  for (const a of [...want]) want.add(arOf(dk, a));
   return d.blocks.filter(b => b.l === 'ar' && (want.has(b.a) || (d.heads[b.a] || []).includes(st.loc))).map(pairOf);
 }
 // Bir paragrafa bağlı olanlar: karşılaştırmanın nükteleri ve fazlaları, eleştirmenin notları, bilirkişi maddeleri
@@ -766,7 +777,7 @@ function mkr(p, key, layer, label, title) {
 function blockHtml(dk, pair, p) {
   const A = annot(dk, pair), L = p.L, key = pair.ar.a;
   const df = st.dfocus && st.dfocus.dk === dk ? st.dfocus : null;
-  const dfHit = df && df.a.some(a => a.replace('/tr/', '/ar/') === key);
+  const dfHit = df && df.a.some(a => arOf(dk, a) === key);
   const focused = dfHit || (st.focus && st.focus.item && A.items.includes(st.focus.item)) ||
     (st.focus && st.focus.extra && A.extras.some(f => f.k === st.focus.extra));
   let cls = '';
@@ -923,7 +934,7 @@ function openRowAnchors(p, id, extraKey) {
   const yd = Y.drafts[p.d] || {rows: {}, extras: []};
   const as = extraKey ? ((yd.extras || []).find(f => f.k === extraKey) || {a: []}).a
                       : Y.models.flatMap(m => ((yd.rows[id] || {})[m] || {}).a || []);
-  as.map(a => a.replace('/tr/', '/ar/')).forEach(a => { p.open[a + '|karsi'] = true; });
+  as.map(a => arOf(p.d, a)).forEach(a => { p.open[a + '|karsi'] = true; });
   return as.length > 0;
 }
 function focusItem(id) {
@@ -1001,7 +1012,7 @@ document.addEventListener('click', ev => {
     const [dk, k] = cg.dataset.critgo.split('|'), x = Y.critic_sample.find(y => y.t === dk && y.k === k);
     const i = paneFor(dk, 'critic'), n = critNote(x) || {};
     st.loc = x.loc[0]; st.focus = null; st.dfocus = null;
-    if (n.a && n.a !== 'genel') panes[i].open[n.a.replace('/tr/', '/ar/') + '|critic'] = true;
+    if (n.a && n.a !== 'genel') panes[i].open[arOf(dk, n.a) + '|critic'] = true;
     withDraft(dk, () => setFold(['not:' + k], false));
     render(); scrollIn(i, `[data-not="${CSS.escape(U + '|' + dk + '|' + k)}"]`); return;
   }
@@ -1019,7 +1030,7 @@ document.addEventListener('click', ev => {
     const [p2, id] = bg.dataset.bkgo.split('|'), x = Y.bilirkisi[p2].find(y => y.id === id);
     const i = paneFor(x.t, 'bk');
     st.loc = x.loc[0]; st.focus = null; st.dfocus = null;
-    panes[i].open[x.a.replace('/tr/', '/ar/') + '|bk'] = true;
+    panes[i].open[arOf(x.t, x.a) + '|bk'] = true;
     withDraft(x.t, () => setFold([`bk:${p2}|${id}`], false));
     render(); scrollIn(i, `[data-bk="${CSS.escape(U + '|' + p2 + '|' + id)}"]`); return;
   }

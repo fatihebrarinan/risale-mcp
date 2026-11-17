@@ -239,10 +239,17 @@ Adımlar (sıra, 2026-11-16):
     tek başına tabandan pahalı). Kural (4.4): hafif → başka birimde bir kez daha. **Bekleyen:** kullanıcının okuması
     (masa 9–10, tur kutusu, 3 yer: ikinci vecih, «فِى», «مَّرَضٌ») ve tekrar kararı. Ayrıştırıcı başlık önekine ve
     alıntılardan sonra gelen paragraf tercümesine göre esnetildi (`heading_key`, `quote_tr_is_paragraph`).
-    **Okuma sayfası** (kullanıcının isteği, 2026-11-17): aynı üç yer D12.2'nin fark kartı biçiminde,
-    `data/d1/masa/fark-9-10-T1.html` (`d1-tur.py fark 9-10 --tur T1`, şablon `d1-tur-fark-sablon.html`): yer başına A ve B
-    yan yana, masanın o yerde gösterdiği paragraflar; sarı = öbür yanın o yerinde geçmeyen kelime (taslaklar ayrı yazıldığı
-    için sırasız, ekler ve harf-i cerler gözetilmeden); işaretler masanın `d1-masa-ab` kaydına aynı anahtarla yazılır.
+    **Okuma standardı** (kullanıcının kararları, 2026-11-17; plan belgesi 4.10): turda tek sayfa, yer = envanterin tek
+    nüktesi, yan başına en çok 2 paragraf ve ≈250 kelime, Türkçe önde, İşârât'ın sözü "Aç"tan sonra, sarı fark yalnız D
+    turunda. İlk sayfa (`fark-9-10-T1.html`, "İkinci vecih" düzeyini yer saydığı için bir yanda 19 paragraf) kalktı;
+    yerine `data/d1/masa/tur-9-10-T1.html` (`d1-tur.py okuma`, şablon `d1-tur-okuma-sablon.html`): N26 «فِى» lafzı
+    (hipotez), N10 zincirin altıncı halkası (ayrılık), N32 «مَرَضٌ»'un tenvini (eleştirmen); ≈911 kelime, ≈15 dk.
+    **Eşleme hatası düzeltildi:** taslak çapaları dil başına sayıldığı için `/ar/k` ile `/tr/k` her zaman eş değil
+    (Türkçesiz Arapça alıntı ya da Arapçasız Türkçe alıntı sırayı kaydırır); masa ve denetimler sıra numarasıyla
+    eşliyordu. Yanlış Türkçe gösterilen taslaklar: 9–10'un 1 (9 paragraf) ve 2'si (51), 31–33'ün 1–4 ve 6'sı;
+    D12.3'ün okuduğu 31–33 taslak 7 ve 8 doğru. Eş artık paragraf sırasından (`d1-yz.pairs`; masa, izah ve not
+    denetimleri, bilirkişi ve iddia çıkarımı, eşleştirme raporu). Ölçümler (eşleştirme, kör ölçü, D9.1) çapaları
+    doğrudan kullandığı için etkilenmedi. Eşi olmayan Türkçe paragraf (Risale'den Türkçe alıntı) masada hâlâ görünmez.
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 

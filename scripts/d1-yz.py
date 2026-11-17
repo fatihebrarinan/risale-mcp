@@ -109,6 +109,44 @@ def draft_blocks(unit: str, n: int) -> tuple[list[tuple[str, str, bool, str]], d
     return blocks, sources
 
 
+def pairs(blocks: list) -> dict[str, str]:
+    """Paragrafın eşi, iki yönde: Arapça paragraf ↔ Türkçesi, Arapça alıntı ↔ tercümesi.
+
+    Çapalar dil başına ayrı sayılır; `/ar/k` ile `/tr/k` her zaman eş değildir: Türkçesi olmayan Arapça alıntı ya da
+    Arapçası olmayan Türkçe alıntı (Risale'den) sırayı kaydırır (9–10 taslak 2'de hemen her paragraf; 2026-11-17'ye
+    kadar masa ve denetimler sıra numarasıyla eşliyordu). Eş paragraf sırasından bulunur: tercüme alıntısının eşi hemen
+    önündeki Arapça alıntı; paragraf tercümesi aradaki alıntılardan sonra da gelebilir (`quote_tr_is_paragraph`), eşi
+    bölümdeki eşsiz son Arapça paragraftır. Eşi olmayan çapa sözlükte yoktur.
+    """
+    out: dict[str, str] = {}
+    sec, open_ar, prev = None, [], None
+    for a, lang, quote, _ in blocks:
+        s = a.split("/")[0]
+        if s != sec:
+            sec, open_ar, prev = s, [], None
+        if lang == "ar":
+            if not quote:
+                open_ar.append(a)
+        elif quote:
+            if prev and prev[1] == "ar" and prev[2] and prev[0] not in out:
+                out[a], out[prev[0]] = prev[0], a
+        elif open_ar:
+            x = open_ar.pop()
+            out[a], out[x] = x, a
+        prev = (a, lang, quote)
+    return out
+
+
+def ar_of(pr: dict[str, str], a: str) -> str:
+    """Çapanın Arapça tarafı (Türkçe çapa eşsizse kendisi)."""
+    return a if "/tr/" not in a else pr.get(a, a)
+
+
+def tr_of(pr: dict[str, str], a: str) -> str | None:
+    """Çapanın Türkçe tarafı (yoksa None)."""
+    return a if "/tr/" in a else pr.get(a)
+
+
 def render_draft(blocks: list, sources: dict) -> str:
     lines, current = [], None
     for anchor, _, quote, text in blocks:
@@ -347,10 +385,6 @@ def eslestir(unit: str, drafts: list[int], models: list[str], parallel: int, aga
 
 # ---------------------------------------------------------------- D7.4 denetim ve birleştirme
 
-def _ar_anchor(a: str) -> str:
-    return a.replace("/tr/", "/ar/")
-
-
 def check_match(result: dict, env: dict, blocks: list) -> dict:
     texts = {a: t for a, _, _, t in blocks}
     known = {i["id"] for i in env["kalemler"]}
@@ -375,15 +409,15 @@ def check_match(result: dict, env: dict, blocks: list) -> dict:
     return {"nukteler": by_id, "fazla": extras, "eksik_kalem": sorted(known - set(by_id))}
 
 
-def merge_extras(per_model: dict[str, list]) -> list[dict]:
+def merge_extras(per_model: dict[str, list], pr: dict[str, str] | None = None) -> list[dict]:
     """İki modelin fazlaları: Arapça çapası örtüşenler bir kayıtta (`okuyucular` ikisi), öbürleri tek okuyuculu."""
     models = list(per_model)
     merged = [dict(f, okuyucular=[models[0]], es={}) for f in per_model.get(models[0], [])]
     for m in models[1:]:
         for f in per_model[m]:
-            mine = {_ar_anchor(a) for a in f.get("taslak") or []}
+            mine = {ar_of(pr or {}, a) for a in f.get("taslak") or []}
             hit = next((g for g in merged if m not in g["okuyucular"]
-                        and mine & {_ar_anchor(a) for a in g.get("taslak") or []}), None)
+                        and mine & {ar_of(pr or {}, a) for a in g.get("taslak") or []}), None)
             if hit:
                 hit["okuyucular"].append(m)
                 hit["es"][m] = {k: f.get(k) for k in ("iddia", "isaret", "celiski", "gerekce", "alinti", "taslak")}
@@ -428,7 +462,7 @@ def sonuc(unit: str) -> dict:
             uyum = ("tek" if len(per) < 2 else "ayni" if len(vals) == 1 else
                     "yakin" if vals <= set(FOUND) else "ayrilik")
             rows.append({"id": item["id"], "durum": states, "uyum": uyum})
-        extras = merge_extras({m: per[m]["fazla"] for m in per})
+        extras = merge_extras({m: per[m]["fazla"] for m in per}, pairs(blocks))
         for f in extras:   # sınama işaretlerinin anahtarı: taslak, çapa ve iddiadan (yeniden üretimde sabit)
             f["k"] = hashlib.sha1(f"{n}|{','.join(f.get('taslak') or [])}|{f.get('iddia', '')}".encode()).hexdigest()[:10]
         out["taslaklar"][f"taslak-{n}"] = {"modeller": per, "satirlar": rows, "fazla": extras}
@@ -445,9 +479,10 @@ def _short(text: str, n: int = 140) -> str:
 
 
 def _tr_of(blocks: dict, anchors: list[str]) -> str:
-    """Çapanın Türkçe karşılığı (aynı sıradaki tercüme paragrafı), rapor için."""
+    """Çapanın Türkçe karşılığı (eşi, `pairs`), rapor için."""
+    pr = blocks.get("__pairs__") or {}
     for a in anchors:
-        t = blocks.get(a.replace("/ar/", "/tr/"))
+        t = blocks.get(tr_of(pr, a) or "")
         if t:
             return t
     return ""
@@ -534,7 +569,9 @@ def rapor(unit: str) -> None:
     for t in drafts:
         tr = res["taslaklar"][t]
         n = int(t.split("-")[1])
-        blocks = {a: txt for a, _, _, txt in draft_blocks(unit, n)[0]}
+        bl = draft_blocks(unit, n)[0]
+        blocks = {a: txt for a, _, _, txt in bl}
+        blocks["__pairs__"] = pairs(bl)                 # _tr_of eşi buradan alır
         ms = [m for m in models if m in tr["modeller"]]
         L += ["", f"## {t.replace('taslak-', 'Taslak ')}", ""]
         if len(ms) < len(models):

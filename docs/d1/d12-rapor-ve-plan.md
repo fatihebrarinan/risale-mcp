@@ -194,6 +194,23 @@ ve karar belirsiz kalınca.
 
 - **Örneklem en az:** turda **3 yer**; ölçüler ayrılırsa en çok 5. Program seçer: iki ölçünün ayrıldığı yerler ve
   değişikliğin dokunduğu (hipotezin sınandığı) yerler.
+- **Okuma standardı** (kullanıcının kararları, 2026-11-17; T1'in ilk okuma sayfası "İkinci vecih" düzeyini yer saydı,
+  bir yanda 19 paragraf geldi):
+  1. **Sayfa:** turda tek sayfa, `risalemcp.com/taslak/tur-<birim>-T<n>.html` (`d1-tur.py okuma`). Okumanın tamamı
+     orada; masa yalnız bağlam için, tur kutusu sayfaya bağlantı verir.
+  2. **Yer = envanterin tek bir nüktesi** (vecih ya da kelime düzeyi değil). Her taslaktan eşleştiricinin o nükteye
+     bağladığı paragraflar, eşleriyle (Türkçesi); taslak işlememişse "bu taslakta yok".
+  3. **Sınır:** yan başına en çok 2 paragraf ve ≈250 kelime (Türkçe; Türkçesi yoksa Arapça); bütün okuma ≈1.500
+     kelimeyi geçmez (≈15 dk). Sınırı aşan nükte seçilmez, program reddeder. Kelime ve süre sayfanın başında.
+  4. **Seçim:** (a) değişikliğin sınandığı yer, (b) iki ölçünün ayrıldığı yer, (c) kör eleştirmenin açık hüküm verdiği
+     yer; kartın sorusu nükteyi söylemez.
+  5. **Kart:** A solda, B sağda; **Türkçe önde, Arapça açılır kutuda**; andığı kaynaklar kapalı kutuda; seçim ve
+     gerekçe; "Aç"tan sonra hangisi hangisi, neden seçildiği, envanterin o yer için dediği ve **İşârât'ın sözü**
+     (Abdülmecid Nursî tercümesi, Arapçası açılır).
+  6. **Sarı fark yalnız düzeltme turunda (D):** orada bir taslak öbürünün düzeltilmişidir; yazım turlarında iki taslak
+     ayrı yazıldığı için sarı her yeri kaplar.
+  7. **Haber:** "Tur N okumaya hazır: bağlantı · 3 yer · ≈X kelime, ≈Y dk · bu turda aranan". Dışa aktarma tek dosya
+     (`d1-tur-<birim>-T<n>-<ad>.json`); işaretler masanın A/B kaydıyla ortaktır.
 - **Karar:** kural açıksa (eleştirmen ve kullanıcı aynı yönde) yeni taban olur ve Claude sonraki tura kendisi geçer.
   Kullanıcıya sorulur: eleştirmenle ayrılınca, sonuç kıl payıysa (tekrar mı, bırak mı), bütçe tavana yaklaşınca.
 - **Beklemesiz:** yazım turları birbirine bağlıdır (taban önceki kararla belirlenir); kullanıcı okurken Claude sonraki

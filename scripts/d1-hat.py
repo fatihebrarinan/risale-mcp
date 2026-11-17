@@ -260,12 +260,13 @@ def izah(unit: str, n: int, again: bool = False) -> dict | None:
 def izah_check(blocks: list, data: dict) -> dict:
     """İzahta taslakta olmayan [n] ve tırnak (paragraf çiftinde geçmeyen söz); eksik ve fazla çapalar."""
     text = {a: t for a, _, _, t in blocks}
+    pr = Y.pairs(blocks)
     tr = [a for a, lang, q, _ in blocks if lang == "tr" and not q]
     got = {x.get("capa"): x.get("metin", "") for x in data.get("izah", [])}
     out = {"kayit": len(got), "eksik": [a for a in tr if a not in got], "fazla": [a for a in got if a not in text],
            "numara": [], "tirnak": []}
     for a, m in got.items():
-        pair = text.get(a, "") + " " + text.get(a.replace("/tr/", "/ar/"), "")
+        pair = text.get(a, "") + " " + text.get(Y.ar_of(pr, a), "")
         nums = set(re.findall(r"\[(\d+)", m)) - set(re.findall(r"\[(\d+)", pair))
         if nums:
             out["numara"].append({"capa": a, "n": sorted(nums)})
@@ -337,6 +338,7 @@ def check_notes(unit: str, n: int, notes: list, log: Path) -> None:
     """`d1-elestiri.check_critic`in aynısı, döküm dosyası verilerek (bölüm çağrısının okudukları)."""
     blocks, _ = Y.draft_blocks(unit, n)
     by_anchor = {a: t for a, _, _, t in blocks}
+    pr = Y.pairs(blocks)
     whole = " ".join(by_anchor.values())
     read_ids = {k[1] for k in E.Read(log=log).items}
     conns: dict = {}
@@ -344,8 +346,7 @@ def check_notes(unit: str, n: int, notes: list, log: Path) -> None:
         q, capa = note.get("taslak_alinti"), note.get("capa") or "genel"
         d = {}
         if q:
-            pair = [by_anchor.get(capa, ""), by_anchor.get(capa.replace("/tr/", "/ar/"), ""),
-                    by_anchor.get(capa.replace("/ar/", "/tr/"), "")]
+            pair = [by_anchor.get(capa, ""), by_anchor.get(pr.get(capa, ""), "")]
             d["alinti"] = Y.quote_found(q, " ".join(pair)) or ("baska_capada" if Y.quote_found(q, whole) else False)
         if capa != "genel":
             d["capa"] = capa in by_anchor
