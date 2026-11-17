@@ -239,6 +239,9 @@ Adımlar (sıra, 2026-11-16):
     tek başına tabandan pahalı). Kural (4.4): hafif → başka birimde bir kez daha. **Bekleyen:** kullanıcının okuması
     (masa 9–10, tur kutusu, 3 yer: ikinci vecih, «فِى», «مَّرَضٌ») ve tekrar kararı. Ayrıştırıcı başlık önekine ve
     alıntılardan sonra gelen paragraf tercümesine göre esnetildi (`heading_key`, `quote_tr_is_paragraph`).
+    **Okuma (2026-11-17):** taban 2 (N26 «فِى», N10 halka), yeni 0, emin değil 1 (N32 tenvin); gerekçe: taban daha
+    kapsamlı ve anlaşılır, zinciri akıcı. Kural 4.4: kullanıcı yeniye karşı, eleştirmen yeniyi hafif tercih ediyordu;
+    kullanıcının hükmü geçer, **T1 değişikliği taban olmaz** (kullanıcının onayı bekleniyor).
     **Okuma standardı** (kullanıcının kararları, 2026-11-17; plan belgesi 4.10): turda tek sayfa, yer = envanterin tek
     nüktesi, yan başına en çok 2 paragraf ve ≈250 kelime, Türkçe önde, İşârât'ın sözü "Aç"tan sonra, sarı fark yalnız D
     turunda. İlk sayfa (`fark-9-10-T1.html`, "İkinci vecih" düzeyini yer saydığı için bir yanda 19 paragraf) kalktı;
