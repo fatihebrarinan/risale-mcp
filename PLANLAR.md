@@ -65,7 +65,7 @@ işler"e taşındı. Yol: D14 → D15 → D5.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D14 | Taslak hattının turları (taban h3; sırada D14.1, dosyanın düzeni) | |
+| 1 | D14 | Taslak hattının turları (taban h4; sırada D14.2, ders adayları ve tek kaide) | |
 | 2 | D15 | Saklı birimlerde son ölçüm: ar-genin sonu, D5'ten önceki son düzlük (eski D12.6) | |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı (D11'in kalanı) | D1.8 |
 
@@ -84,7 +84,7 @@ geçilir (kullanıcı); harcama tavanı ≈250 $ (D12.5 ve D13'te ≈60 $ harcan
    silsilesi" de büyük ihtimalle dosyasındaki müfessirlerdendi; asıl eksik İşârât'ın kendi yolu (takdir zinciri,
    mukadder sual, "neden şu lafız").
 
-**Kararlar (kullanıcı, 2026-11-17):** sıra önce D14.1 (ilk geçiş), sonra D14.2 (düzeltme); Risale'nin dersi **Arapça
+**Kararlar (kullanıcı, 2026-11-17):** sıra önce D14.1 (ilk geçiş), sonra düzeltme (k3; 2026-11-17'de D14.2 ders adaylarına verildi, düzeltme D14.3 oldu); Risale'nin dersi **Arapça
 metinde, kendi sözüyle ve atıfla** açılır, Türkçe tercümede gerekirse Risale'nin Türkçe aslından kısa alıntı;
 Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
 
@@ -116,9 +116,29 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   yerinde (altı birimin beşinde; biçimi soru–cevap ya da "إشارة إلى"; lafız başına %3–11, birim başına ≈%10); iman
   rükünlerinde (17–33) mukaddime ve mesele olarak, çoğu kez V1'den önce (%13–45). 9–10'da sonda olması «يَكْذِبُونَ»'un
   son kelime olmasından. D14.2'nin kararı bu sonuçla (kullanıcı).
-- **D14.2 Düzeltme (k3):** netleşince yazılır (taslak: D14.1'in kazananı üzerinde; eleştirmen dosyanın Risale bölümünü
-  de görür; iki soru: ders anılmış ama açılmamış mı, akıl yürütme bir kaynağa bırakılmış mı; "kaynakta var, adını
-  ver" notları kalkar).
+- **D14.2 Ders adayları ve tek kaide** (kullanıcının kararları, 2026-11-17; sürüm h5; 9–10; taban taslak 6 (h4), yeni
+  taslak 7). Hazırlığın sonucu (yukarıda) ve kullanıcı: taslağı İşârât'ın usulüne yaklaştırmak ve Risale-i Nur'u daha
+  çok dahil etmek için gerekli yerlere dersler ya da izahlar; Risale-i Nur'dan ve modelin kendi istinbatından, gerekirse
+  öbür eserlerden; yeri, biçimi ve payı münasebete göre. **İşârât Risale-i Nur'dan önce yazıldı**: müellifin elinde
+  külliyat yoktu, bizim var; İşârât'taki ders sıklığı üst sınır değildir.
+  - **Tek kaide** (mukaddime kuralıyla birleşik): ders, meseleyi doğuran şeyin yanında verilir. Bir lafızdan doğuyorsa
+    o lafzın yerinde (çoğu kez V3, cümleler arasıysa V2; soru–cevap ya da "إشارة إلى"); âyetin bütün meâlinden ya da
+    bir iman rükününden doğuyorsa vecihlerden önce mukaddime, bir lafza bağlı büyük meseleyse vecihlerin arasında
+    mesele. Uzunluk meselenin genişliğine göre; **bütçe toplamda** (Arapça İşârât'ın 1–2 katı), derse ayrı pay yok.
+  - **Ders adayları programla** (`d1-hat.py`, yazımdan önce): her konunun iki sorgusunun ilk 100 sonucunda isabetlerin
+    **yoğunlaştığı bölüm** birinci tetikleyici, **âyeti anan bölüm** ikinci; **eşiği aşan her aday** gelir (ilk eşik:
+    bölümde en az 12 isabet; sonra ayarlanır); aynı metnin kopyaları (Tarihçe'deki Hutbe gibi) tek aday. Adaylar dosyada
+    lafzın başlığı altında, bölümün ana teziyle. Konu adımı konunun kapsamını da yazar (lafız ya da âyetin bütünü); 9–10'un
+    sekiz konusu önceki gibi (hepsi lafız; Risale seçimi h4'le aynı kalsın diye yeniden çıkarılmaz).
+  - **Yazar** aday lafzı işlerken orada durur: münasebet güçlüyse dersi açar (Risale-i Nur'un dersi ve kendi istinbatı,
+    Arapçada kendi sözüyle, atıfla), zayıfsa kısa atıfla geçer; biçim ve uzunluk onun. İstemde İşârât'tan ders örnekleri
+    (sınanan birim dışındaki geliştirme birimlerinden, prova kuralıyla).
+  - **Yazımdan sonra program sayar:** hangi adaylarda ders açılmış, Risale'ye atıf, yazarın kendi Arapça sözü mü yalnız
+    alıntı mı.
+  - **Yedek adım** (kullanıcı): yazar dersi ısrarla açmazsa program aday lafızlar için başlığı kendisi açar, yazar altını
+    doldurmak zorunda kalır.
+  - Ölçü: kör eleştirmen o3, envanter (N41–N47), D9.1, me'haz dağılımı ve ders sayımı, uzunluk; okuma standardıyla.
+- **D14.3 Düzeltme (k3):** sonra (D14.2'nin kazananı üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
 
