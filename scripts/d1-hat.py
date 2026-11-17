@@ -50,9 +50,11 @@ E = _load("d1_elestiri", "d1-elestiri.py")
 
 HAT_PROMPT = ROOT / "docs" / "d1" / "hat-istemi.md"
 IZAH_PROMPT = ROOT / "docs" / "d1" / "izah-istemi.md"
-SURUM = "h3"          # istem dosyası yalnız son sürümü taşır; eski sürümlerin kopyası data/interim/d1-prova/<birim>/istem-hat-<sürüm>.md
+SURUM = "h4"          # istem dosyası yalnız son sürümü taşır; eski sürümlerin kopyası data/interim/d1-prova/<birim>/istem-hat-<sürüm>.md
 # D13 (me'haz): dosyada tam metniyle yalnız Zemahşerî (nazmın i'câzı); öbür müfessirler yalnız araçla (kullanıcının kararı)
 DOSYA_TEFSIR_H3 = ("kessaf",)
+# D14.1 (h4; kullanıcının kararı, 2026-11-17): Zemahşerî de dosyadan çıkar, tefsirlerin başında araçla
+DOSYA_TEFSIR_H4: tuple[str, ...] = ()
 # D13: Risale-i Nur'un konuya dair yerleri (kullanıcı: "sonuçların yarısı falan"): konu başına ilk 100, üst yarısı
 KONU_ILK, KONU_AL = 100, 50
 PARA_PENCERE = 6       # uzun paragrafta bulunan cümlelerin iki yanından alınan cümle sayısı
@@ -184,6 +186,7 @@ def risale_konu(unit: str, topics: list[dict]) -> tuple[list[dict], dict]:
     index = SemanticIndex(conn)
     works = risale_works(conn)
     hit_topics: dict[str, set] = defaultdict(set)
+    hit_score: dict[tuple[str, str], float] = {}       # (cümle, konu) → benzerlik (h4: konu altında sıralama)
     stats = {}
     for t in topics:
         best: dict[str, float] = {}
@@ -195,6 +198,7 @@ def risale_konu(unit: str, topics: list[dict]) -> tuple[list[dict], dict]:
         stats[t["konu"]] = {"cumle": len(top), "benzerlik": [round(best[top[0]], 3), round(best[top[-1]], 3)] if top else []}
         for sid in top:
             hit_topics[sid].add(t["konu"])
+            hit_score[(sid, t["konu"])] = best[sid]
     for r in M.risale(unit):                       # âyetin geçtiği yerler (dua ve hatime cümleleri hariç)
         if not all(_is_formula(x["t"]) for x in r.get("s", []) if x["id"] == r["id"]):
             hit_topics[r["id"]].add(f"âyet {r['ayah']}")
@@ -204,9 +208,11 @@ def risale_konu(unit: str, topics: list[dict]) -> tuple[list[dict], dict]:
         if not row:
             continue
         pid, node, seq = row
-        p = paras.setdefault(pid, {"pid": pid, "node": node, "hits": set(), "konu": set()})
+        p = paras.setdefault(pid, {"pid": pid, "node": node, "hits": set(), "konu": set(), "skor": {}})
         p["hits"].add(seq)
         p["konu"] |= tops
+        for k in tops:
+            p["skor"][k] = max(p["skor"].get(k, 0.0), hit_score.get((sid, k), 0.0))
     out_nodes: dict[str, dict] = {}
     for p in paras.values():
         sents = conn.execute("SELECT id, text, seq FROM sentences WHERE paragraph_id = ? ORDER BY seq", (p["pid"],)).fetchall()
@@ -216,6 +222,8 @@ def risale_konu(unit: str, topics: list[dict]) -> tuple[list[dict], dict]:
         p["s"] = sents
         p["ord"] = sents[0][2] if sents else 0
         out_nodes.setdefault(p["node"], {"node": p["node"], "paras": []})["paras"].append(p)
+    for p in paras.values():
+        p["ref"] = conn.execute("SELECT ref FROM nodes WHERE id = ?", (p["node"],)).fetchone()[0]
     for n in out_nodes.values():
         n["ref"] = conn.execute("SELECT ref FROM nodes WHERE id = ?", (n["node"],)).fetchone()[0]
         n["paras"].sort(key=lambda p: p["ord"])
@@ -223,7 +231,45 @@ def risale_konu(unit: str, topics: list[dict]) -> tuple[list[dict], dict]:
     nodes = sorted(out_nodes.values(), key=lambda n: n["ord"])
     stats["toplam"] = {"cumle_isabet": len(hit_topics), "paragraf": len(paras), "bolum": len(nodes),
                        "eser": len({n["node"].split("/")[0] for n in nodes})}
+    stats["_paras"] = list(paras.values())               # h4: konu konu dizmek için (dosyaya yazılmaz)
     return nodes, stats
+
+
+def _para_text(p: dict) -> str:
+    parts, prev = [], None
+    for sid, text, seq in p["s"]:
+        if prev is not None and seq != prev + 1:
+            parts.append("…")
+        parts.append(f"[{sid}] {text}")
+        prev = seq
+    return " ".join(parts)
+
+
+def risale_by_word(topics: list[dict], paras: list[dict]) -> list[str]:
+    """h4 (D14.1): Risale-i Nur'un yerleri âyetin sözüne göre: söz → konu → paragraflar benzerlik sırasıyla. Bir paragraf
+    en yüksek benzerlikle bulunduğu konunun altında bir kez durur; öbür konuları yanında yazılır. Âyetin kendisinin geçtiği
+    yerler ayrı alt bölümde."""
+    L = []
+    home: dict[str, list] = defaultdict(list)
+    ayet = []
+    for p in paras:
+        if p["skor"]:
+            k = max(p["skor"], key=p["skor"].get)
+            home[k].append(p)
+        else:
+            ayet.append(p)
+    for t in topics:
+        ps = sorted(home.get(t["konu"], []), key=lambda p: -p["skor"][t["konu"]])
+        L += [f"### {t.get('neden', '')}", "", f"Konu: **{t['konu']}** ({len(ps)} yer, benzerlik sırasıyla)", ""]
+        for p in ps:
+            also = sorted(k for k in p["konu"] if k != t["konu"])
+            L.append(f"_{p['ref']}_ (`{p['node']}`)" + (f"; ayrıca: {', '.join(also)}" if also else ""))
+            L += [_para_text(p), ""]
+    if ayet:
+        L += ["### Âyetin kendisinin geçtiği yerler", ""]
+        for p in sorted(ayet, key=lambda p: p["ord"]):
+            L += [f"_{p['ref']}_ (`{p['node']}`; {', '.join(sorted(p['konu']))})", _para_text(p), ""]
+    return L
 
 
 def dosya(unit: str) -> Path:
@@ -236,7 +282,8 @@ def dosya(unit: str) -> Path:
     topics = konular(unit)
     L = [f"# Kaynak dosyası: {cfg['sura_name']} {'–'.join(map(str, cfg['ayahs']))}", "",
          "Program topladı (bu birim için; senin araştırman değil). Sıra me'hazın sırasıdır: önce İşârât, sonra "
-         "Risale-i Nur, sonra nazmın i'câzını gösteren eserler (Zemahşerî ve belâgat eserleri); klasik tefsirler dosyada "
+         "Risale-i Nur, sonra nazmın i'câzını gösteren eserler (" + ("belâgat eserleri; Zemahşerî tefsirlerin başında, "
+         "eklentide" if SURUM >= "h4" else "Zemahşerî ve belâgat eserleri") + "); klasik tefsirler dosyada "
          "yok, eklentiyle açılır. Her cümlenin başında kimliği: `cite` ve `get_passage` bu kimliklerle çalışır, "
          "`read_section` bölümün tamamını verir.", ""]
     L += ["## Âyetler", ""]
@@ -246,12 +293,7 @@ def dosya(unit: str) -> Path:
           "Aynı türden öbür birimler `risale` eklentisinde (`work: \"isaratul-icaz-arabi\"`; kimlikleri Ek 2'de).", "",
           _isarat_prev(unit), ""]
     nodes, stats = risale_konu(unit, topics)
-    L += ["## 2. Risale-i Nur: bu âyetlerin konularına dair yerler", "",
-          "Program bu âyetlerin konularını çıkardı ve her konu için Risale-i Nur'da anlamsal arama yaptı (konu başına "
-          f"ilk {KONU_ILK} sonucun benzerliğe göre üst yarısı); bulunan cümleler paragraflarıyla, kitap sırasıyla. "
-          "Âyetin kendisinin geçtiği yerler de burada. Her paragrafın üstünde hangi konudan geldiği yazılı. Bir yerin "
-          "devamını `read_section` ile oku.", "", "Konular:", ""]
-    L += [f"- **{t['konu']}** ({t.get('neden', '')})" for t in topics] + [""]
+    paras = stats.pop("_paras")
     try:
         pconn = sqlite3.connect(out_dir(unit) / "risale.db")
         a, b = cfg["ayahs"]
@@ -259,24 +301,33 @@ def dosya(unit: str) -> Path:
                               "WHERE sura = ? AND ayah_start <= ? AND ayah_end >= ?", (cfg["sura"], b, a)).fetchall()
     except sqlite3.Error:
         links = []
-    if links:
-        L += ["Âyetle bağ kuran yerler (kural çıkardı; tür ve güç):", ""]
-        L += [f"- `{n}` ({k}, {s}; kanıt `{e}`; âyet {x}–{y})" for k, s, n, e, x, y in links] + [""]
-    for n in nodes:
-        L += [f"### {n['ref']}  (`{n['node']}`)", ""]
-        for p in n["paras"]:
-            L.append(f"_Konu: {', '.join(sorted(p['konu']))}_")
-            prev = None
-            parts = []
-            for sid, text, seq in p["s"]:
-                if prev is not None and seq != prev + 1:
-                    parts.append("…")
-                parts.append(f"[{sid}] {text}")
-                prev = seq
-            L += [" ".join(parts), ""]
-    L += ["## 3. Nazmın i'câzı: Zemahşerî ve belâgat eserleri", ""]
+    link_lines = (["Âyetle bağ kuran yerler (kural çıkardı; tür ve güç):", ""]
+                  + [f"- `{n}` ({k}, {s}; kanıt `{e}`; âyet {x}–{y})" for k, s, n, e, x, y in links] + [""]) if links else []
+    if SURUM >= "h4":            # D14.1: âyetin sözüne göre, benzerlik sırasıyla; Zemahşerî dosyada yok
+        L += ["## 2. Risale-i Nur: âyetin sözlerine göre dersi", "",
+              "Program bu âyetlerin konularını âyetin sözlerinden çıkardı ve her konu için Risale-i Nur'da anlamsal arama "
+              f"yaptı (konu başına ilk {KONU_ILK} sonucun benzerliğe göre üst yarısı). Burada âyetin her sözünün altında "
+              "o sözün konusu ve Risale-i Nur'da o konunun işlendiği yerler var, **en yakından başlayarak**. Âyetin bir "
+              "sözünü işlerken onun dersini buradan al ve Arapça metinde kendi sözünle aç. Bir yerin devamını "
+              "`read_section` ile oku.", ""] + link_lines
+        L += risale_by_word(topics, paras)
+        L += ["## 3. Nazmın i'câzı: belâgat ve lügat eserleri", ""]
+        tefsir_tam = DOSYA_TEFSIR_H4
+    else:                        # h3 (D13): kitap sırasıyla; Zemahşerî dosyada tam
+        L += ["## 2. Risale-i Nur: bu âyetlerin konularına dair yerler", "",
+              "Program bu âyetlerin konularını çıkardı ve her konu için Risale-i Nur'da anlamsal arama yaptı (konu başına "
+              f"ilk {KONU_ILK} sonucun benzerliğe göre üst yarısı); bulunan cümleler paragraflarıyla, kitap sırasıyla. "
+              "Âyetin kendisinin geçtiği yerler de burada. Her paragrafın üstünde hangi konudan geldiği yazılı. Bir yerin "
+              "devamını `read_section` ile oku.", "", "Konular:", ""]
+        L += [f"- **{t['konu']}** ({t.get('neden', '')})" for t in topics] + [""] + link_lines
+        for n in nodes:
+            L += [f"### {n['ref']}  (`{n['node']}`)", ""]
+            for p in n["paras"]:
+                L += [f"_Konu: {', '.join(sorted(p['konu']))}_", _para_text(p), ""]
+        L += ["## 3. Nazmın i'câzı: Zemahşerî ve belâgat eserleri", ""]
+        tefsir_tam = DOSYA_TEFSIR_H3
     for w in M.tefsir(unit):
-        if w["work"] not in DOSYA_TEFSIR_H3:
+        if w["work"] not in tefsir_tam:
             continue
         for u in w["units"]:
             L += [f"### {w['author']}, {w['title']}: {u['ref']}  (`{u['id']}`)", ""]
@@ -286,10 +337,17 @@ def dosya(unit: str) -> Path:
     L += ["### Belâgat ve lügat eserleri: âyetten üç kelimelik bir dizinin geçtiği yerler", ""]
     for k in M.klasik(ayah):
         L += [f"#### {k['author']}, {k['title']}: {k['ref']}", ""] + [f"[{s['id']}] {s['t']}" for s in k["s"]] + [""]
-    L += ["## 4. Klasik tefsirler", "",
-          "Dosyada yok. Beyzâvî, Ebüssuûd, Âlûsî, Râzî, Taberî, Mâtürîdî, Kurtubî, Nesefî, İbn Kesîr, Celâleyn, Süyûtî ve "
-          "Bursevî `tefsir` eklentisinde (`find_ayah` ile bu âyetlerdeki birimleri); ihtilafı ve yoklamayı görmek için "
-          "gerektikçe oku.", ""]
+    if SURUM >= "h4":
+        L += ["## 4. Klasik tefsirler", "",
+              "Dosyada yok; `tefsir` eklentisinde (`find_ayah` bu âyetlerdeki birimleri verir). Bakacaksan **önce "
+              "Zemahşerî'nin Keşşâf'ı** (`kessaf`; nazmın i'câzında müellif onun yolunu izler), sonra gerekirse öbürleri "
+              "(Beyzâvî, Ebüssuûd, Âlûsî, Râzî, Taberî, Mâtürîdî, Kurtubî, Nesefî, İbn Kesîr, Celâleyn, Süyûtî, Bursevî): "
+              "ihtilafı ve yoklamayı görmek için. Akıl yürütmeyi onlara bırakma; nükteyi lafızdan ve usulden kendin kur.", ""]
+    else:
+        L += ["## 4. Klasik tefsirler", "",
+              "Dosyada yok. Beyzâvî, Ebüssuûd, Âlûsî, Râzî, Taberî, Mâtürîdî, Kurtubî, Nesefî, İbn Kesîr, Celâleyn, Süyûtî ve "
+              "Bursevî `tefsir` eklentisinde (`find_ayah` ile bu âyetlerdeki birimleri); ihtilafı ve yoklamayı görmek için "
+              "gerektikçe oku.", ""]
     path = out_dir(unit) / "dosya.md"
     path.write_text("\n".join(L), encoding="utf-8")
     (out_dir(unit) / "dosya-sayilar.json").write_text(json.dumps(stats, ensure_ascii=False, indent=1), encoding="utf-8")

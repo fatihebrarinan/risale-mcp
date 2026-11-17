@@ -19,6 +19,10 @@ Sürümler:
   yok, yalnız araçla. "Me'haz" bölümü yeniden yazıldı; "kendi tespiti" etiketinin yerine **istinbat** (lafızdan,
   hey'etten, makamdan ve usulden çıkan nükte; bir müfessirde de bulunması onu nakil yapmaz); Ek 1'e usulün 2.7'si
   (Muhâkemât). Görev, usul, uzunluk, şablon ve tırnak kuralları h2'nin aynısı.
+- h4 (2026-11-17, D14.1 dosyanın düzeni; kullanıcının kararları): dosyada Risale-i Nur'un yerleri âyetin sözüne göre
+  (söz → konu → paragraflar, en yakından başlayarak); Zemahşerî dosyadan çıktı, tefsirlerin başında eklentide ("önce
+  Zemahşerî"); Risale-i Nur'un dersi Arapça metinde kendi sözüyle ve atıfla açılır, Türkçe tercümede gerekirse Türkçe
+  aslından kısa blok alıntı. Yalnız "Me'haz" bölümünün 2–4. maddeleri değişti.
 -->
 
 ---- İSTEM ----
@@ -51,14 +55,18 @@ sırayla dizildi:
 
 1. **İşârâtü'l-İ'câz:** usul ve nazîr. Önceki birim dosyada; aynı türden öbür birimler `risale` eklentisinde
    (kimlikleri Ek 2'de). Usulün aslı Muhâkemât'tır (Ek 1, 2.7).
-2. **Risale-i Nur:** mânâ ve ders. Dosyada bu âyetlerin konularına dair çok sayıda yer var (program anlamsal aramayla
-   buldu); devamı ve öbür yerler `risale` eklentisinde. Âyetin söylediği şeyi Risale-i Nur nerede, nasıl işliyorsa
-   oradan konuş: ders, temsil, mizan ve hükmü oradan al, Risale-i Nur'un sözünü adıyla ve kaynağıyla an.
-3. **Nazmın i'câzı:** Zemahşerî'nin Keşşâf'ı (bu âyetlerdeki birimi dosyada tam) ve belâgat ve lügat eserleri
-   (Delâilü'l-İ'câz, Esrârü'l-Belâğa, Miftâhu'l-Ulûm, el-Müfredât, et-Ta'rîfât; `klasik` eklentisi). Müellif nazmın
-   i'câzını gösterirken bunların yöntemini izler.
-4. **Klasik tefsirler** (Beyzâvî, Ebüssuûd, Âlûsî, Râzî ve öbürleri; `tefsir` eklentisi): dosyada yok. İhtilafı ve
-   yoklamayı görmek için gerektikçe oku. Taslağın sözü onlardan kurulmaz.
+2. **Risale-i Nur:** mânâ ve ders. Dosyada âyetin her sözünün altında o sözün konusu ve Risale-i Nur'da işlendiği
+   yerler var, en yakından başlayarak (program anlamsal aramayla buldu); devamı ve öbür yerler `risale` eklentisinde.
+   Âyetin bir sözünü işlerken onun dersini oradan al ve **aç**: dersi, temsili, mizanı ve hükmü Arapça metinde kendi
+   sözünle söyle ve Risale-i Nur'a atıf ver; Türkçe tercümede gerekirse Risale-i Nur'un Türkçe aslından kısa bir blok
+   alıntı koy (numarasıyla). "Risale-i Nur'da da böyledir" deyip geçmek yetmez.
+3. **Nazmın i'câzı:** belâgat ve lügat eserleri (Delâilü'l-İ'câz, Esrârü'l-Belâğa, Miftâhu'l-Ulûm, el-Müfredât,
+   et-Ta'rîfât; dosyada âyetin geçtiği yerler, `klasik` eklentisi). Müellif nazmın i'câzını gösterirken bunların ve
+   Zemahşerî'nin yöntemini izler.
+4. **Klasik tefsirler** (`tefsir` eklentisi): dosyada yok. Bakacaksan **önce Zemahşerî'nin Keşşâf'ı**, sonra gerekirse
+   öbürleri (Beyzâvî, Ebüssuûd, Âlûsî, Râzî…), ihtilafı ve yoklamayı görmek için. Taslağın sözü onlardan kurulmaz:
+   akıl yürütmeyi onlara bırakma, nükteyi lafızdan, makamdan ve usulden (takdir zinciri, mukadder sual, "neden şu
+   lafız, şu değil") kendin kur.
 - `hadis` eklentisi: hadis kitapları. Âyeti ve alıntılarını eklentinin verdiği gibi, harf harf aynı yaz.
 
 **Nakil ve istinbat.** İşârât'ta nükteler büyük çoğunlukla müellifin istinbatıdır; cümlelerinin %1,3'ünde bir kaynak
