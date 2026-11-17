@@ -436,6 +436,50 @@ def olc(unit: str, tur: str, taban: int, yeni: int) -> None:
     sayilar(unit, tur, taban, yeni)
 
 
+# D13: me'haz dağılımı (kullanıcının kararı, 2026-11-17: taslak İşârât ve Risale-i Nur'dan mı, müfessirlerden mi konuşuyor)
+MUFESSIR_ADLARI = ("أبو السعود", "أبي السعود", "الآلوسي", "الألوسي", "الرازي", "الزمخشري", "الكشاف", "البيضاوي",
+                   "الطبري", "القرطبي", "ابن كثير", "الماتريدي", "النسفي", "البروسوي", "حقي", "الجلالين", "السيوطي")
+
+
+def _kind(server: str | None, work: str) -> str:
+    if server == "risale":
+        return "isarat" if work.startswith("isaratul-icaz") else "risale"
+    if server == "tefsir":
+        return "kessaf" if work == "kessaf" else "tefsir"
+    return {"klasik": "belagat", "hadis": "hadis"}.get(server or "", "bilinmeyen")
+
+
+def mehaz(unit: str, n: int) -> dict:
+    """Taslağın me'haz dağılımı: atıfların kaynak türüne göre sayısı (metindeki her [n] geçişi), Arapça metinde
+    (alıntılar hariç) müfessir adı ve İşârât adı, Risale-i Nur'a (İşârât dışı) dayanan paragraf çifti, blok alıntılar."""
+    blocks, _ = Y.draft_blocks(unit, n)
+    ids = dict(P.draft_sources(P.DRAFTS / unit / f"taslak-{n}.jsonl"))
+    kp = P.DRAFTS / unit / f"taslak-{n}.kaynak.json"
+    if kp.exists():
+        ids.update({k: tuple(v) for k, v in json.loads(kp.read_text(encoding="utf-8")).items()})
+    kind_of = {k: _kind(sv, (sid or "").split("/")[0]) for k, (sv, sid) in ids.items()}
+    pr = Y.pairs(blocks)
+
+    def nums(t: str) -> list[str]:
+        return [x for m in re.finditer(r"\[([^\[\]\n]{1,80})\]", t) for x in re.findall(r"\d+", m.group(1))]
+
+    atif, alinti = Counter(), Counter()
+    for a, lang, q, t in blocks:
+        for k in nums(t):
+            atif[kind_of.get(k, "bilinmeyen")] += 1
+        if q and lang == "ar":
+            alinti[next((kind_of.get(k, "bilinmeyen") for k in nums(t)), "numarasiz")] += 1
+    own_ar = " ".join(t for a, lang, q, t in blocks if lang == "ar" and not q)
+    by = {a: t for a, _, _, t in blocks}
+    risale_par = sum(1 for a, lang, q, t in blocks if lang == "ar" and not q
+                     and any(kind_of.get(k) == "risale" for k in nums(t + " " + by.get(pr.get(a, ""), ""))))
+    ar_par = sum(1 for a, lang, q, t in blocks if lang == "ar" and not q)
+    return {"atif": dict(atif), "blok_alinti": dict(alinti),
+            "mufessir_adi_ar": sum(own_ar.count(x) for x in MUFESSIR_ADLARI),
+            "isarat_adi_ar": own_ar.count("الإشارات") + own_ar.count("إشارات الإعجاز"),
+            "risale_paragraf": risale_par, "arapca_paragraf": ar_par}
+
+
 def sayilar(unit: str, tur: str, taban: int, yeni: int) -> dict:
     out = {"birim": unit, "tur": tur, "taban": taban, "yeni": yeni, "taslaklar": {}}
     h = H.hedef(unit)
@@ -455,6 +499,7 @@ def sayilar(unit: str, tur: str, taban: int, yeni: int) -> dict:
             "kendi_tespiti_adayi": sum(1 for x in mek["ortak"] if x["tur"] == "kendi_tespiti"),
             "kapsam_adayi": len(mek.get("kapsam", [])),
             "numara_sorunu": len(mek["numaralar"]["metinde_kaynakcada_yok"]) + len(mek["numaralar"]["metinde_cite_yok"]),
+            "mehaz": mehaz(unit, n),
         }
         if meta.get("adimlar"):
             out["taslaklar"][n]["adimlar"] = {k: {"cost": v["cost"], "seconds": v["seconds"],
@@ -466,8 +511,9 @@ def sayilar(unit: str, tur: str, taban: int, yeni: int) -> dict:
         km = json.loads(Path(str(kor) + ".meta.json").read_text(encoding="utf-8"))
         kd = json.loads(Path(str(kor) + ".json").read_text(encoding="utf-8"))
         who = {"A": km["A"], "B": km["B"], "esit": "esit"}
-        out["kor"] = {"A": km["A"], "B": km["B"], "maliyet": km.get("cost_usd"),
+        out["kor"] = {"A": km["A"], "B": km["B"], "maliyet": km.get("cost_usd"), "surum": km.get("surum"),
                       "butun": dict(kd.get("butun", {}), taslak=who.get(kd.get("butun", {}).get("tercih"))),
+                      **({"mehaz": dict(kd["mehaz"], taslak=who.get(kd["mehaz"].get("tercih")))} if kd.get("mehaz") else {}),
                       "bolumler": [dict(b, taslak=who.get(b.get("tercih"))) for b in kd.get("bolumler", [])],
                       "yalniz_A": kd.get("yalniz_A_kusurlari", []), "yalniz_B": kd.get("yalniz_B_kusurlari", [])}
     path = P.DRAFTS / unit / f"d12-5-{tur}-sayilar.json"

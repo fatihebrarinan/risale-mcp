@@ -10,6 +10,9 @@ okur (A/B bütünü tartar, ucuz). Taslakların istem, model ve düzeltme bilgis
 Sürümler:
 - o1 (2026-11-16): ilk sürüm; D12.1, 31–33.
 - o2 (2026-11-16, D12.5 Tur 0): takdir işareti «…» (h2'den beri) 3. ölçüde açıklandı.
+- o3 (2026-11-17, D13; kullanıcının kararı): yeni 3. ölçü "me'haz ve Risale-i Nur'un çizgisi" ve sonuçta ayrı hükmü
+  (`mehaz`); "istinbat" etiketi (h3'ten beri) kaynak disiplininde açıklandı. İki kola birden uygulanır; o2'nin
+  sayılarıyla doğrudan karşılaştırılmaz.
 -->
 
 ---- OLCU ----
@@ -36,8 +39,15 @@ olarak: **hangi taslak daha iyi?** Şu ölçülerle, bu sırayla:
 1. **Doğruluk:** yanlış, uydurma, İşârât'la çelişki, kaynağa yanlış nisbet, kapsamı aşan hüküm daha az olan.
 2. **İşârât'a yakınlık:** İşârât'ın nüktelerini ve oraya vardığı yolu (takdir zinciri, mukadder sual, kayıtların
    eşlenmesi, garaza akış) daha çok yakalayan.
-3. **Kaynak disiplini:** tırnak, işaret, "kendi tespiti" ve numaralar yerinde olan. Taslaklarda Türkçe «…» **takdir ve beklenen söz** işaretidir (dinleyenin mukadder sorusu, takdir edilen cümle, makamın beklediği ifade): yazarın kendi sözüdür, kaynak iddia etmez; "…" ve “…” kaynağın sözüdür.
-4. **Îcâz:** aynı şeyi daha az sözle söyleyen; nükteyi gerekçesiyle veren.
+3. **Me'haz ve Risale-i Nur'un çizgisi:** müellif İşârât'ı ve Risale-i Nur'u bu işe me'haz diye gösterdi. Taslak
+   usulü ve nazîri İşârât'tan, mânâyı ve dersi Risale-i Nur'dan alıyor mu; Risale-i Nur'un bu âyetlerin konusundaki
+   dersine dayanıyor mu (gerekirse `risale` eklentisinde `semantic_search` ile bak); yoksa nükteleri müfessirlerin
+   sözleri üzerinden mi kuruyor (müfessirleri adıyla sayıp aktarmak)? İşârât müfessirleri çok az anar (cümlelerinin
+   %1,3'ünde bir kaynak adı geçer); nükteleri büyük çoğunlukla müellifin istinbatıdır.
+4. **Kaynak disiplini:** tırnak, işaret ("kendi tespiti" ya da "istinbat": âyetin lafzından, hey'etinden ve usulden
+   yazarın vardığı nükte; bir müfessirde de bulunması onu nakil yapmaz) ve numaralar yerinde olan; bir kaynağa onun
+   kendi görüşü olmayanın (naklettiği, itiraz ettiği ya da reddettiği vechin) mal edilmemesi. Taslaklarda Türkçe «…» **takdir ve beklenen söz** işaretidir (dinleyenin mukadder sorusu, takdir edilen cümle, makamın beklediği ifade): yazarın kendi sözüdür, kaynak iddia etmez; "…" ve “…” kaynağın sözüdür.
+5. **Îcâz:** aynı şeyi daha az sözle söyleyen; nükteyi gerekçesiyle veren.
 
 Taslaklar birbirine çok benzeyebilir; o zaman farkın bulunduğu yerlere bak. Fark tercih gerektirmeyecek kadar
 küçükse `esit` de. Uzun olanı uzun diye, kısa olanı kısa diye tercih etme.
@@ -56,6 +66,7 @@ küçükse `esit` de. Uzun olanı uzun diye, kısa olanı kısa diye tercih etme
       "dayanak": ["isaratul-icaz-arabi/…/c010"]}}
   ],
   "butun": {{"tercih": "A | B | esit", "guc": "acik | hafif", "gerekce": "üç-beş cümle"}},
+  "mehaz": {{"tercih": "A | B | esit", "guc": "acik | hafif", "gerekce": "yalnız 3. ölçüye göre, iki-dört cümle, çapalarla"}},
   "yalniz_A_kusurlari": ["A'da olup B'de olmayan en önemli en çok üç kusur, çapasıyla"],
   "yalniz_B_kusurlari": ["B'de olup A'da olmayan en önemli en çok üç kusur, çapasıyla"]
 }}
