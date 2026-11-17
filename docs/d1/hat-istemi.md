@@ -23,6 +23,9 @@ Sürümler:
   (söz → konu → paragraflar, en yakından başlayarak); Zemahşerî dosyadan çıktı, tefsirlerin başında eklentide ("önce
   Zemahşerî"); Risale-i Nur'un dersi Arapça metinde kendi sözüyle ve atıfla açılır, Türkçe tercümede gerekirse Türkçe
   aslından kısa blok alıntı. Yalnız "Me'haz" bölümünün 2–4. maddeleri değişti.
+- h5 (2026-11-17, D14.2 ders adayları ve tek kaide; kullanıcının kararları): usulün 3. maddesi "Mukaddime" yerine "Ders
+  ve mukaddime: tek kaide" (ders, meseleyi doğuran şeyin yanında; bütçe toplamda); dosyada lafızların altında programın
+  seçtiği ders adayları; Ek 4: İşârât'tan ders örnekleri (sınanan birim dışındaki geliştirme birimlerinden).
 -->
 
 ---- İSTEM ----
@@ -92,9 +95,19 @@ tanımını terim eserinde gör; uymuyorsa kullanma.
    kendi geçiş cümlesiyle açılır.
 2. **Dört maksat:** asıl maksat her zaman söylenir; tevhid, nübüvvet, haşir ve adaletten öbürleri yalnız bu âyete
    özgü bir lafza ya da hey'ete dayanıyorsa ve derecesiyle (sarih, işaret, remiz, îmâ, telvih). Tutamak yoksa anma.
-3. **Mukaddime** yalnız şu durumlarda: âyetin meâli dört maksattan ya da iman rükünlerinden biridir; altında büyük
-   bir kelâm ihtilafı vardır; bir üslûp türü ilk kez toplu gelir; bir lafız tahkik ister. Kısa tutulur; Risale-i Nur'da
-   ya da İşârât'ta işlenmişse oraya atıfla hülâsa edilir.
+3. **Ders ve mukaddime: tek kaide.** İşârât'ta üç vechin olağan tahlili dışındaki her kısım bir meselenin dersidir ve
+   **meseleyi doğuran şeyin yanında** verilir:
+   - Mesele **bir lafızdan** doğuyorsa, o lafzın yerinde: çoğu kez üçüncü vecihte o lafız işlenirken, cümleler
+     arasındaysa ikinci vecihte. Çoğu kez soru–cevap ("فإن قلت … قيل لك") ya da "… إشارة إلى" ile; gerekirse okuyucuya
+     hitapla. Örnekleri Ek 4'te.
+   - Mesele **âyetin bütün meâlinden** ya da bir iman rükününden doğuyorsa (dört maksattan biri, büyük bir kelâm
+     ihtilafı, ilk kez toplu gelen bir üslûp türü), vecihlerden önce **mukaddime**; bir lafza bağlı büyük bir meseleyse
+     vecihlerin arasında **mesele**.
+   - **Ne zaman:** dosyada bir lafzın altında **ders adayı** varsa (Risale-i Nur o konuyu orada yoğun işliyor), o lafzı
+     işlerken dur: münasebet güçlüyse dersi aç; zayıfsa kısa bir atıfla geç. Ders, Risale-i Nur'un dersi ve senin
+     istinbatındır; Arapça metinde kendi sözünle, atıfla; gerekirse öbür eserlerden.
+   - **Ne kadar:** meselenin genişliğine göre. Ayrı bir pay yok; sınır taslağın toplam uzunluğudur: ders uzarsa öbür
+     nükteleri kısalt.
 4. **Kabul ölçüsü:** Arap dili ilimlerinin reddetmediği, belâgatin güzel bulduğu, şeriatin maksatlarına uygun;
    delâlet derecesi Arapçada söylenir ve gerekçesi bellidir. Gerekçesini gösteremediğin nükteyi ihtimal diliyle söyle
    ya da bırak.

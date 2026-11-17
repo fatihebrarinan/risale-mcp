@@ -449,6 +449,10 @@ def _kind(server: str | None, work: str) -> str:
     return {"klasik": "belagat", "hadis": "hadis"}.get(server or "", "bilinmeyen")
 
 
+DERS_KELIME = 60        # kaba ölçü: adayın atfının Arapçada taşıdığı söz (önceki atıftan bu atfa) en az bu kadar kelimeyse
+                       # ders açılmış sayılır; asıl ölçü okumadır
+
+
 def mehaz(unit: str, n: int) -> dict:
     """Taslağın me'haz dağılımı: atıfların kaynak türüne göre sayısı (metindeki her [n] geçişi), Arapça metinde
     (alıntılar hariç) müfessir adı ve İşârât adı, Risale-i Nur'a (İşârât dışı) dayanan paragraf çifti, blok alıntılar."""
@@ -477,7 +481,35 @@ def mehaz(unit: str, n: int) -> dict:
     risale_par = sum(1 for a, lang, q, t in blocks if lang == "ar" and not q
                      and any(kind_of.get(k) == "risale" for k in nums(t + " " + by.get(pr.get(a, ""), ""))))
     ar_par = sum(1 for a, lang, q, t in blocks if lang == "ar" and not q)
-    return {"atif": dict(atif), "blok_alinti": dict(alinti),
+    # D14.2: ders adayları (`d1-hat.py dosya`, yazımdan önce) taslakta açılmış mı: alıntı olmayan Arapça paragrafta
+    # adayın atfının taşıdığı söz en az DERS_KELIME kelimeyse "açıldı" (kaba ölçü)
+    ders = None
+    ap = P.OUT / unit / "ders-adaylari.json"
+    if ap.exists():
+        adaylar = json.loads(ap.read_text(encoding="utf-8"))
+        node_of = {k: (sid or "").split("..")[0].rsplit("/", 1)[0] for k, (sv, sid) in ids.items() if sv == "risale"}
+        def carried(t: str, node: str) -> int:
+            """Paragrafta adayın atıflarının taşıdığı söz: bir önceki atıftan (ya da paragraf başından) bu atfa kadar."""
+            total, prev = 0, 0
+            for m in re.finditer(r"\[([^\[\]\n]{1,80})\]", t):
+                if any(node_of.get(k) == node for k in re.findall(r"\d+", m.group(1))):
+                    total += len(t[prev:m.start()].split())
+                prev = m.end()
+            return total
+
+        rows = []
+        for konu, xs in adaylar.items():
+            for x in xs:
+                own = [max(carried(t, x["node"]), carried(by.get(pr.get(a, ""), ""), x["node"]))   # numaralar çoğu kez tercümede
+                       for a, lang, q, t in blocks if lang == "ar" and not q]
+                quoted = sum(1 for a, lang, q, t in blocks if q and any(node_of.get(k) == x["node"] for k in nums(t)))
+                w = max(own, default=0)
+                rows.append({"konu": konu, "node": x["node"], "atif_paragraf": sum(1 for o in own if o),
+                             "tasinan_kelime": w, "blok_alinti": quoted, "acildi": w >= DERS_KELIME})
+        ders = {"aday": len(rows), "anildi": sum(1 for r in rows if r["atif_paragraf"] or r["blok_alinti"]),
+                "acildi": sum(1 for r in rows if r["acildi"]),
+                "acilan_konu": len({r["konu"] for r in rows if r["acildi"]}), "konu": len(adaylar), "satirlar": rows}
+    return {"atif": dict(atif), "blok_alinti": dict(alinti), "ders": ders,
             "mufessir_adi_ar": sum(own_ar.count(x) for x in MUFESSIR_ADLARI),
             "isarat_adi_ar": own_ar.count("الإشارات") + own_ar.count("إشارات الإعجاز"),
             "risale_paragraf": risale_par, "arapca_paragraf": ar_par}
