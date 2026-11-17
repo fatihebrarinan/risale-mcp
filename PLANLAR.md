@@ -239,6 +239,10 @@ Adımlar (sıra, 2026-11-16):
     tek başına tabandan pahalı). Kural (4.4): hafif → başka birimde bir kez daha. **Bekleyen:** kullanıcının okuması
     (masa 9–10, tur kutusu, 3 yer: ikinci vecih, «فِى», «مَّرَضٌ») ve tekrar kararı. Ayrıştırıcı başlık önekine ve
     alıntılardan sonra gelen paragraf tercümesine göre esnetildi (`heading_key`, `quote_tr_is_paragraph`).
+    **Okuma sayfası** (kullanıcının isteği, 2026-11-17): aynı üç yer D12.2'nin fark kartı biçiminde,
+    `data/d1/masa/fark-9-10-T1.html` (`d1-tur.py fark 9-10 --tur T1`, şablon `d1-tur-fark-sablon.html`): yer başına A ve B
+    yan yana, masanın o yerde gösterdiği paragraflar; sarı = öbür yanın o yerinde geçmeyen kelime (taslaklar ayrı yazıldığı
+    için sırasız, ekler ve harf-i cerler gözetilmeden); işaretler masanın `d1-masa-ab` kaydına aynı anahtarla yazılır.
 - D12.6 Saklı birimlerde son ölçüm; sonra D11'in kuyruğu ve D5. S6'nın kalanı (katmanlar, "Metinlerin tamamı")
   D12.5'ten önce.
 

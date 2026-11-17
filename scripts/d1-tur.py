@@ -5,6 +5,7 @@
     uv run python scripts/d1-tur.py kapsam 9-10 --taslak 1 2   # âyetin kelime ve harflerinin taslakta ele alınma oranı
     uv run python scripts/d1-tur.py olc 9-10 --tur T1 --taban 1 --yeni 2   # eşleştirme (tek okuyucu), D9.1, kör A/B, sayılar
     uv run python scripts/d1-tur.py okuma 9-10 --tur T1 --yer W3 W7 L:nazim   # masadaki tur okuması (kör A/B, 3 yer)
+    uv run python scripts/d1-tur.py fark 9-10 --tur T1     # aynı yerler fark kartı biçiminde: masa/fark-9-10-T1.html
     uv run python scripts/d1-tur.py sonuc 9-10 --tur T1 ~/İndirilenler/d1-notlar-*.json   # kullanıcının A/B'si
 
 Taban kol `d1-hat.py yazdir` (o anki en iyi hat; T1'de h2). Yeni kol bu betikte. Kararlar:
@@ -495,6 +496,69 @@ def okuma(unit: str, tur: str, taban: int, yeni: int, yerler: list[dict]) -> Pat
     return path
 
 
+FARK_TEMPLATE = Path(__file__).with_name("d1-tur-fark-sablon.html")
+FARK_GIRIS = ("<b>Ne okuyorsunuz:</b> turun okuma yerleri, her biri bir kartta; solda <b>A</b>, sağda <b>B</b>, masadaki "
+              "kör A/B ile aynı harfler (hangisinin nasıl yazıldığı gizli). Her yanda o yere bağlı paragraflar, taslaktaki "
+              "sırasıyla (masanın o yerde gösterdikleri). <b>Sarı</b>: öbür yanın o yerinde hiç geçmeyen kelimeler (iki "
+              "taslak ayrı yazıldığı için sıra gözetilmez; üstten değiştirilebilir). Her kartta <b>hangisi daha iyi</b> "
+              "(doğruluk, İşârât'a yakınlık, kaynak disiplini, îcâz) ve bir iki cümle gerekçe; sonra <b>Aç</b>. İşaretler "
+              "masadaki tur kutusuyla ortaktır (aynı tarayıcıda); bitince <b>Dışa aktar</b>.")
+
+
+def fark(unit: str, tur: str) -> Path:
+    """Turun okuma yerleri, fark kartı biçiminde (`data/d1/masa/fark-<birim>-<tur>.html`; D12.2'nin sarı farkıyla).
+
+    Her yerde iki taslağın paragrafları masanın o yerde gösterdikleridir (`blocksAt`'ın aynısı: yerin başlığı ve
+    eşleştirme, eleştiri ve bilirkişi maddelerinin bağlandığı paragraflar). İşaretler masanın `d1-masa-ab` kaydına
+    aynı anahtarla yazılır.
+    """
+    t = json.loads((P.DRAFTS / unit / f"tur-{tur}.json").read_text(encoding="utf-8"))
+    env = json.loads((Y.out_dir(unit) / "envanter.json").read_text(encoding="utf-8"))
+    ayah = M.Ayah(unit)
+    places = ayah.build_chips(env["kalemler"])
+    dr = M.drafts(unit, ayah)
+    yz = M.layer(unit, ayah, places, dr)
+
+    def anchors_at(dk: str, loc: str) -> set[str]:          # masa şablonundaki blocksAt (kör kip, odak yok)
+        want: set[str] = set()
+        yd = yz["drafts"].get(dk, {"rows": {}, "extras": []})
+        for iid, it in yz["items"].items():
+            if loc in it["loc"]:
+                for m in yz["models"]:
+                    want.update(((yd["rows"].get(iid) or {}).get(m) or {}).get("a") or [])
+        want.update(a for f in yd["extras"] if loc in f.get("loc", []) for a in f["a"])
+        want.update(n["a"] for n in (yz["critic"].get(dk) or {}).get("notes", []) if loc in n.get("loc", []))
+        want.update(x["a"] for xs in yz["bilirkisi"].values() for x in xs if x["t"] == dk and loc in x.get("loc", []))
+        want |= {a.replace("/tr/", "/ar/") for a in want}
+        d = dr[dk]
+        return {b["a"] for b in d["blocks"] if b["l"] == "ar" and (b["a"] in want or loc in d["heads"].get(b["a"], []))}
+
+    def side(dk: str, loc: str) -> dict:
+        d = dr[dk]
+        keep = anchors_at(dk, loc)
+        tr = {b["a"]: b for b in d["blocks"] if b["l"] == "tr"}
+        blocks = []
+        for b in d["blocks"]:
+            if b["l"] == "ar" and b["a"] in keep:
+                tb = tr.get(b["a"].replace("/ar/", "/tr/"))
+                blocks.append({"a": b["a"], "q": bool(b["q"]), "ar": b["t"], "tr": tb["t"] if tb else ""})
+        nums = sorted({x for b in blocks for m in re.finditer(r"\[([^\[\]\n]{1,80})\]", b["ar"] + " " + b["tr"])
+                       for x in re.findall(r"\d+", m.group(1))}, key=int)
+        srcs = {n: {"c": d["sources"][n]["c"], "t": (d["sources"][n]["t"] or "")[:1500]} for n in nums if n in d["sources"]}
+        return {"blocks": blocks, "sources": srcs}
+
+    cards = [dict(y, A=side(t["a"], y["loc"]), B=side(t["b"], y["loc"])) for y in t["yerler"]]
+    data = {"unit": unit, "title": M.title(unit), "tur": tur, "a": t["a"], "b": t["b"],
+            "about": {k: dr[k]["about"] for k in (t["a"], t["b"])}, "giris": FARK_GIRIS, "cards": cards,
+            "masa": f"{unit}.html"}
+    blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
+    out = M.OUT_DIR / f"fark-{unit}-{tur}.html"
+    out.write_text(FARK_TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
+    print(f"{out.relative_to(ROOT)}: " + "; ".join(
+        f"{c['baslik']} A {len(c['A']['blocks'])}, B {len(c['B']['blocks'])} paragraf" for c in cards))
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -518,6 +582,9 @@ def main() -> None:
     p.add_argument("--taban", type=int, required=True)
     p.add_argument("--yeni", type=int, required=True)
     p.add_argument("--yerler", required=True, help="JSON: [{id, loc, baslik, soru, acik}]")
+    p = sub.add_parser("fark")                        # turun yerleri fark kartı biçiminde (sarı fark)
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--tur", required=True)
     a = ap.parse_args()
     if a.cmd == "hazirla":
         hazirla(a.unit)
@@ -533,6 +600,9 @@ def main() -> None:
         run_cmd(["scripts/d1-masa.py", a.unit])
     elif a.cmd == "sayilar":
         sayilar(a.unit, a.tur, a.taban, a.yeni)
+    elif a.cmd == "fark":
+        fark(a.unit, a.tur)
+        run_cmd(["scripts/d1-masa.py", a.unit])       # masanın üstündeki bağlantı
 
 
 if __name__ == "__main__":
