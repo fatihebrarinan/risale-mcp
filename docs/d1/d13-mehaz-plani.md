@@ -107,15 +107,18 @@ gerekirse parçalarına ayrılarak bakılır.
 **Maliyet tahmini:** konu adımı ≈0,3 $; taslak 5 ≈6–9 $ (dosya büyüdüğü için tabandan pahalı olabilir); eşleştirme ≈2 $;
 kör ölçü ≈2 $: **≈11–14 $**. Anlamsal arama sorguları birkaç kuruş.
 
-## 4. Sonrası: D14
+## 4. Sonrası: D14, D15, D5
 
-D13'ten sonra **D14** (taslak hattının turları ve saklı birimlerde son ölçüm; PLANLAR.md): düzeltme eleştirmeni k3
-aynı me'haz anlayışına çekilir ("kaynakta var, adını ver" notları kalkar; yalnız gerçek nisbet hatası işaretlenir;
-Risale-i Nur'un ilgili dersine dayanmayan yer sorulur); nisbet denetimi, yazarın notu tartması, uzunluk, garaz, takdir
-zinciri, üslûp belgesi; son adım saklı birimlerde ölçüm (eski D12.6). Düzeltme (d1) hatta kalır; **d2 bırakıldı**
-(kullanıcı, 2026-11-17: kazancı d1'in çok azı, birim başına ≈5 $). Sonra D5.
+- **D14** (taslak hattının turları; sırası D13'ün sonunda belirlenir, tur tavanı yok): adaylar düzeltme eleştirmeni
+  k3'ün aynı me'haz anlayışına çekilmesi ("kaynakta var, adını ver" notları kalkar; yalnız gerçek nisbet hatası
+  işaretlenir; Risale-i Nur'un ilgili dersine dayanmayan yer sorulur), nisbet denetimi, yazarın notu tartması, uzunluk,
+  garaz, takdir zinciri, üslûp belgesi. Düzeltme (d1) hatta kalır; **d2 bırakıldı** (kullanıcı, 2026-11-17: kazancı
+  d1'in çok azı, birim başına ≈5 $). Taslak hazır ya da hazıra yakın hissedilince D15'e geçilir.
+- **D15** saklı birimlerde son ölçüm (eski D12.6): ar-genin sonu, D5'ten önceki son düzlük.
+- **D5** asıl iş; ilk adımı D5.0 üretim hazırlığı (D11'in kalanı: kuyruk, uzunluk hedefi, izah).
 
 ## 5. Nerede duruyoruz (2026-11-17)
 
-- **D12 bitti** (D12.1–D12.4; D12.5'in Tur 0, T1 ve D turu). Taban: h2; düzeltme d1.
-- **Şimdi: D13** (plan onaylandı; sırada D13.2). Sonra **D14**, sonra **D5**.
+- **D12 ve D11 bitti** (D12: D12.1–D12.4, D12.5'in Tur 0, T1 ve D turu; D11'in hattı tabana dönüştü). Taban: h2;
+  düzeltme d1.
+- **Şimdi: D13** (plan onaylandı; sırada D13.2). Yol: **D13 → D14 → D15 → D5**.
