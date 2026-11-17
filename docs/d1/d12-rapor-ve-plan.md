@@ -1,5 +1,9 @@
 # D12.5'e kadar öğrendiklerimiz ve D12.5 planı (2026-11-16)
 
+> **Durum (2026-11-17):** D12.5'te Tur 0, T1 (yeni kol taban olmadı) ve D turu (d1 kalır, d2 bırakıldı) bitti. T2
+> (nakil–istinbat) yeni aşama **D13**'e (me'haz: taslak İşârât ve Risale-i Nur'dan konuşsun; `d13-mehaz-plani.md`)
+> katıldı; T3–T5 D13'ten sonra yeni tabanla yeniden değerlendirilir.
+
 Kullanıcının isteği (2026-11-16): D12.5'ten önceki hazırlıklar bitti; buraya kadar öğrenilenlerin raporu ve D12.5'in
 yolu ve yöntemi. Kararlar ve durum `PLANLAR.md` D12'dedir; bu belge onların okunur özeti ve D12.5'in tarifidir.
 Ayrıntılı raporlar: `data/d1/provalar/11-12/` (D6, D7, D9), `data/d1/provalar/31-33/` (D8, D11, D12.1, D12.3).
