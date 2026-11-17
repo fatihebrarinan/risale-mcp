@@ -110,6 +110,12 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   kararsız, eleştirmen hafif: başka birimde bir kez daha. **Karar (kullanıcı, 2026-11-17): h4 taban.** Bulgu: Zemahşerî'ye yaslanma giderildi; Risale'nin dersi iki
   kolda da açılmıyor (h3 anıp geçiyor, h4 yorumsuz alıntılıyor): talimat biçimi değiştirdi, düşünceyi değil. Karar
   bekliyor.
+- **D14.2'nin hazırlığı: İşârât'ta üç vecih dışındaki kısımlar (bitti, 2026-11-17; ≈3,5 $; kullanıcının isteği:
+  "dersin sabit bir yeri var mı, ne kadar uzun"):** `scripts/d1-yapi.py`, istem `docs/d1/yapi-istemi.md` y1, sonuç
+  `data/d1/isarat-yapi/sonuc.md`. Sabit yer yok: münafıklar bahsinde (9–16) ders V3'ün içinde, kendisini doğuran lafzın
+  yerinde (altı birimin beşinde; biçimi soru–cevap ya da "إشارة إلى"; lafız başına %3–11, birim başına ≈%10); iman
+  rükünlerinde (17–33) mukaddime ve mesele olarak, çoğu kez V1'den önce (%13–45). 9–10'da sonda olması «يَكْذِبُونَ»'un
+  son kelime olmasından. D14.2'nin kararı bu sonuçla (kullanıcı).
 - **D14.2 Düzeltme (k3):** netleşince yazılır (taslak: D14.1'in kazananı üzerinde; eleştirmen dosyanın Risale bölümünü
   de görür; iki soru: ders anılmış ama açılmamış mı, akıl yürütme bir kaynağa bırakılmış mı; "kaynakta var, adını
   ver" notları kalkar).
