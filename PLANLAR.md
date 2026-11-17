@@ -138,6 +138,11 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   - **Yedek adım** (kullanıcı): yazar dersi ısrarla açmazsa program aday lafızlar için başlığı kendisi açar, yazar altını
     doldurmak zorunda kalır.
   - Ölçü: kör eleştirmen o3, envanter (N41–N47), D9.1, me'haz dağılımı ve ders sayımı, uzunluk; okuma standardıyla.
+  - **Yazıldı ve ölçüldü (2026-11-17; ≈7,9 $ ve hazırlık 3,5 $; rapor `data/d1/provalar/9-10/d14-2-rapor.md`):**
+    taslak 7 (h5). Risale'ye atıf 19 → 39, adaylara atfın taşıdığı söz her yerde arttı (Hutbe 0 → 31, İkinci Lem'a
+    17 → 56) ama 60 kelimeyi bir yerde geçti; envanter %74 → %53, iki İşârât çelişkisi (elîm "mü'lim"; mü'minler zâhirde
+    aldanır); kör eleştirmen bütünde tabanı, me'hazda yeniyi hafif tercih etti; "altı cümle" ilk kez yok. Okuma
+    `tur-9-10-D14.2.html` (N40, N17, N38; ≈825 kelime).
 - **D14.3 Düzeltme (k3):** sonra (D14.2'nin kazananı üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
