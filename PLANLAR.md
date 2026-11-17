@@ -101,8 +101,8 @@ bir cümle); Muhâkemât (usul 2.7) yazara gitmiyor; ölçüler me'hazı görmü
   (N39, N17, N24; ≈808 kelime).
 - **D13.7 Okuma (2026-11-17):** yeni 2 (N39 "açık ara": müfessir sayımı yerine usulle kelime ve mânâ; N24 "çok daha
   iyi": vâv, nazîr, Risale'den alıntı), taban 1 (N17: tabanın usul ve mantık silsilesi, yeninde yalnız Zemahşerî).
-  Kullanıcı: "sonuçlar ümit verici." Kural 4.4: eleştirmen ve kullanıcı aynı yönde, **h3 yeni taban** (D13.8, onay
-  bekliyor). Dersler: Risale-i Nur anılıyor ama açılmıyor; yazar akıl yürütmesini kuramadığı yerde Zemahşerî'ye yaslanıyor.
+  Kullanıcı: "sonuçlar ümit verici." Kural 4.4: eleştirmen ve kullanıcı aynı yönde, **h3 yeni taban** (D13.8, kullanıcı
+  onayladı: "sonuçlar çok iyi"; D13 bitti; D14'ün ilk adımı konuşuluyor). Dersler: Risale-i Nur anılıyor ama açılmıyor; yazar akıl yürütmesini kuramadığı yerde Zemahşerî'ye yaslanıyor.
 
 **D14. Taslak hattının turları** (kullanıcının kararı, 2026-11-17: D12'nin kalanı ayrı aşama). **Sırası D13'ün
 sonunda belirlenir** (şimdi yazılmaz). Tur sayısına tavan konmaz: taslağın hazır ya da hazıra yakın olduğu okumada
