@@ -99,6 +99,11 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
      gerekirse Türkçe aslından kısa blok alıntı (numarasıyla). Anıp geçmek yetmez.
   Ölçü: kör eleştirmen o3, envanter, D9.1, me'haz dağılımı (Risale'ye dayanan paragraf, Keşşâf'a atıf), uzunluk;
   okuma standardıyla 3 nükte. ≈10 $.
+  **Yazıldı ve ölçüldü (2026-11-17; ≈9,6 $; rapor `data/d1/provalar/9-10/d14-1-rapor.md`):** taslak 6 (h4). Envanter
+  %60 → **%74**; kör eleştirmen (o3) yeniyi bütün olarak ve me'hazda hafif tercih etti (V3'te İşârât'ın dört temel
+  nüktesi; hasrın sualine cevap ilk kez); taban Mukaddime (dört maksat) ve V2'de (yedi cümle; yeni "altı cümle")
+  hafif. Keşşâf atfı 16 → 10, belâgat atfı 7 → 13; Risale'ye dayanan paragraf oranı aynı (≈%28). "Altı cümle" 9–10'da
+  üçüncü kez. Okuma `tur-9-10-D14.1.html` (N40, N01, N17; ≈708 kelime).
 - **D14.2 Düzeltme (k3):** netleşince yazılır (taslak: D14.1'in kazananı üzerinde; eleştirmen dosyanın Risale bölümünü
   de görür; iki soru: ders anılmış ama açılmamış mı, akıl yürütme bir kaynağa bırakılmış mı; "kaynakta var, adını
   ver" notları kalkar).
