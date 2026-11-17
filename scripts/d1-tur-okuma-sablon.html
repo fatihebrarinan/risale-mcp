@@ -154,6 +154,7 @@ function words(text, srcs, tr, mk, pi) {             // sarılı metin: kelime k
   });
   flush(); return out;
 }
+const arw = t => esc(t).replace(ARUN, m => `<bdi class="arw" dir="rtl">${m.trim()}</bdi>` + (/\s$/.test(m) ? ' ' : ''));   // başlık ve soruda Arapça öbek
 function paraHtml(p, srcs, mk, pi) {
   const body = (t, tr, set) => DATA.sari ? words(t, srcs, tr, set, pi) : inline(t, srcs, tr);
   const lab = p.q ? '<div class="lab">kaynaktan alıntı</div>' : '';
@@ -187,7 +188,7 @@ function cardHtml(c, idx) {
         ${c.isarat_ar ? `<details><summary class="small muted">Arapçası</summary><div class="ar" dir="rtl">${esc(c.isarat_ar)}</div></details>` : ''}</div></div>`;
   }
   return `<div class="card${m.secim ? ' done' : ''}" id="card-${idx}">
-    <h2>${idx + 1}. ${esc(c.baslik)}</h2><p class="soru">${esc(c.soru || '')}</p>
+    <h2>${idx + 1}. ${arw(c.baslik)}</h2><p class="soru">${arw(c.soru || '')}</p>
     <div class="cols">${colHtml('A', c.A, M.A)}${colHtml('B', c.B, M.B)}</div>
     <div class="ask"><b class="small">Hangisi daha iyi?</b>${opts}
       <textarea data-i="${idx}" data-f="gerekce" placeholder="Kısa gerekçe (bir iki cümle)">${esc(m.gerekce || '')}</textarea>

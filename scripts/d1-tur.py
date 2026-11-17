@@ -452,12 +452,15 @@ def _kind(server: str | None, work: str) -> str:
 def mehaz(unit: str, n: int) -> dict:
     """Taslağın me'haz dağılımı: atıfların kaynak türüne göre sayısı (metindeki her [n] geçişi), Arapça metinde
     (alıntılar hariç) müfessir adı ve İşârât adı, Risale-i Nur'a (İşârât dışı) dayanan paragraf çifti, blok alıntılar."""
-    blocks, _ = Y.draft_blocks(unit, n)
+    blocks, cites = Y.draft_blocks(unit, n)
     ids = dict(P.draft_sources(P.DRAFTS / unit / f"taslak-{n}.jsonl"))
     kp = P.DRAFTS / unit / f"taslak-{n}.kaynak.json"
     if kp.exists():
         ids.update({k: tuple(v) for k, v in json.loads(kp.read_text(encoding="utf-8")).items()})
     kind_of = {k: _kind(sv, (sid or "").split("/")[0]) for k, (sv, sid) in ids.items()}
+    for k, line in cites.items():                      # âyet atıfları (get_ayah; kaynak kimliği yok)
+        if k not in kind_of and re.match(r"[^›]*Sûresi, \d+:\d+", line):
+            kind_of[k] = "ayet"
     pr = Y.pairs(blocks)
 
     def nums(t: str) -> list[str]:

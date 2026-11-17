@@ -92,6 +92,13 @@ bir cümle); Muhâkemât (usul 2.7) yazara gitmiyor; ölçüler me'hazı görmü
 - **D13.3 İstem h3 (yazıldı, 2026-11-17):** `hat-istemi.md` h3 (me'haz bölümü, istinbat etiketi, Ek 1'e usul 2.7);
   istem 283 bin harf (h2 ≈94 bin), sızıntı testi temiz. Etiket "istinbat" D9.1, D7 raporu ve masada "kendi tespiti"
   gibi sayılır.
+- **D13.4 Ölçü (2026-11-17):** kör eleştirmen o3 (`kor-olcu-istemi.md`: me'haz ve Risale çizgisi ayrı ölçü ve ayrı
+  hüküm `mehaz`), me'haz dağılımı (`d1-tur.py mehaz`).
+- **D13.5–D13.6 Taslak 5 ve ölçüm (2026-11-17; ≈9 $; rapor `data/d1/provalar/9-10/d13-rapor.md`):** müfessir adı
+  64 → 8, öbür tefsirlere atıf 51 → 7, Risale-i Nur'un öbür eserlerine atıf 5 → 17, Arapça 18.997 → 12.448 harf,
+  envanter %57 → %60, farklı görüş adayı 4 → 0; kör eleştirmen (o3) yeniyi bütün olarak hafif, **me'hazda açık**
+  tercih etti (tabanda iki nisbet hatası). İşârât'ın kizb ve sıdk dersi (N41–N47) yine yok. Okuma `tur-9-10-D13.html`
+  (N39, N17, N24; ≈808 kelime).
 
 **D14. Taslak hattının turları** (kullanıcının kararı, 2026-11-17: D12'nin kalanı ayrı aşama). **Sırası D13'ün
 sonunda belirlenir** (şimdi yazılmaz). Tur sayısına tavan konmaz: taslağın hazır ya da hazıra yakın olduğu okumada
