@@ -48,7 +48,7 @@ durur, "Kayıt"taki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E6, S6, A3, D15, B8 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -65,9 +65,10 @@ işler"e taşındı. Yol: D14 → D15 → D5.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D14 | Taslak hattının turları (taban h7; D14.5 bitti; D5 hazırlığı konuşuluyor) | |
+| 1 | D14 | Taslak hattının turları (taban h7; sırada D14.6: uzunluk sınırı yok, Risale yerleri konu başına ilk 10) | |
 | 2 | D15 | Saklı birimlerde son ölçüm: ar-genin sonu, D5'ten önceki son düzlük (eski D12.6) | |
-| 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı (D11'in kalanı) | D1.8 |
+| 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
+| 4 | S7 | Âyet masasının üçüncü hâli: Kur'ân paneli, tek uygulama, kuyruk görünümü (D5.0'la paralel) | |
 
 **D14. Taslak hattının turları** (kullanıcının kararı, 2026-11-17: D12'nin kalanı ayrı aşama). **Taban h3** (D13; 9–10
 taslak 5: me'haz hiyerarşisi, istinbat etiketi). İşleyiş D12.5'inki: her tur tek değişiklik, taban ve yeni kol, kör
@@ -208,9 +209,25 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
     istenmiyor), h7 0: kalite denk. Kural 4.4: eleştirmen hafif, kullanıcı kararsız; h6'nın uzunluk bayrağı var, h7'nin
     yok. **Karar (kullanıcı, 2026-11-18): h7 taban**, üslûp notuyla (İşârât'ın öbür birimleri "Müellif … saymıştır"
     diye anılmaz; istemde, ayrıca sınanmadı). D14.5 bitti.
+- **D14.6 D5'e hazırlık için iki deneme** (kullanıcının kararları, 2026-11-18; 13; taban taslak 3 (h7)). D5'te
+  İşârât olmayacağı için uzunluk hedefinin dayanağı kalkıyor (D11'in oranı birimden birime 138–1.238 harf);
+  yazar dosyadan yalnız en yakın Risale yerlerini kullanıyor (kullanılanların konu içi sırası çoğunlukla 1–5; ilk 10
+  ≈%93'ünü karşılıyor); istemin büyüklüğü maliyete az yansıyor (3 kat istem, %5–40 maliyet).
+  - **D14.6a Uzunluk sınırı yok** (h8a, taslak 4): h7'nin aynısı, uzunluk hedefi yok (îcâz kuralı kalır). Soru: model
+    doğal olarak ne kadar yazıyor, kalite değişiyor mu. Kullanıcının kısa okuması.
+  - **D14.6b Risale yerleri konu başına ilk 10** (h8b, taslak 5): h7'nin aynısı, dosyada konu başına benzerlikçe ilk 10
+    paragraf (ders adayları aynı: ilk 100'deki yoğunluktan). Soru: odak ve maliyet; mekanik ölçü ve kör eleştirmen,
+    eleştirmen düşüş görürse okuma.
 - **Genel düzeltme (k3) ertelendi** (2026-11-18): D15'te h6'nın çözemediği türden kusurlar çıkarsa yeniden açılır.
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
+
+**S7. Âyet masasının üçüncü hâli** (kullanıcının fikri ve kabulü, 2026-11-18; D5 için): bugünkü masa ar-ge için,
+birim başına ayrı ve büyük (1,5–3 MB) sayfa; yüzlerce birimde taşımaz. (1) **Solda açılır kapanır Kur'ân paneli:**
+sûreler, âyetler, birim sınırları, birimin durumu renkle (taslak yok / var / okundu / ehil okudu); âyete tıklayınca
+birimin masası. (2) **Tek uygulama, istek üzerine veri** (birim verisi ayrı dosyalarda; `review_ui` gibi). (3)
+**Kuyruk görünümü.** (4) İleride işaretlerin sunucuda toplanması (birden çok okuyucu; dondurulan heyet akışına dokunur,
+ayrı karar). D5.0'la paralel.
 
 **D15. Saklı birimlerde son ölçüm** (kullanıcının kararı, 2026-11-17: kendi aşaması; "D5'ten önceki son düzlük, o
 aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) bir kez, aynı
@@ -218,6 +235,12 @@ aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21�
 tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilmez; açık çıkarsa D14'e dönülür.
 
 **D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; D15'ten çıkan hatla (2026-11-17).
+- **D5.0 eklemeleri** (kullanıcı kabul etti, 2026-11-18; zamanı gelince ayrıntılı konuşulur): (4) **birim bölümlemesi**
+  (İşârât'ın olmadığı yerde: müfessirlerin âyet grupları, cümle bağları ya da Risale'nin âyet bağları; küçük bir
+  karşılaştırma ve kullanıcının kararı); (5) **önceki birim:** birinci vecih için İşârât'ın önceki birimi yerine önceki
+  birimin taslağı; (6) **kalite kapısı:** nisbet denetçisi (D14.5b) ve mekanik denetimler (envanter ve İşârât yok);
+  (7) birim başına maliyet (h7): taslak ≈3,7–4,7 $, konu ≈0,1 $, nisbet ≈0,5–1 $; Bakara'nın kalanı ≈140 birim
+  (≈650–750 $ liste fiyatı, ≈14 kullanım penceresi), bütün Kur'ân ≈3.400 birim.
 - **D5.0 Üretim hazırlığı** (D11'in kalanı, kullanıcının kararı, 2026-11-17): (1) kuyruk (eski D11.4: birimleri sırayla
   yazdırmak, kullanım sınırına takılınca sıfırlanmayı bekleyip sürmek, pencere başına sığan işi ölçmek; sıra önerisi:
   önce Risale-i Nur'un bağ kurduğu âyetler); (2) İşârât'ın olmadığı âyetlerde uzunluk hedefi (D11.2: âyet kelimesi
