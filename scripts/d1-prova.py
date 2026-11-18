@@ -732,7 +732,9 @@ def draft_sources(log: Path) -> dict[str, tuple[str, str]]:
     side = log.with_suffix(".kaynak.json")
     if side.exists():
         return {k: tuple(v) for k, v in json.loads(side.read_text(encoding="utf-8")).items()}
-    last: dict[str, dict] = {}
+    # Bütün `cite` çağrıları sırayla birleşir, aynı numarada sonraki öncekini ezer (2026-11-18'e kadar her sunucunun yalnız
+    # son çağrısı okunuyordu: 9–10 taslak 8'de Risale'nin ilk çağrısı (2–21) ikincisiyle (14) kayboldu)
+    out = {}
     for line in log.read_text(encoding="utf-8").splitlines():
         try:
             event = json.loads(line)
@@ -742,13 +744,10 @@ def draft_sources(log: Path) -> dict[str, tuple[str, str]]:
             continue
         for block in event["message"].get("content", []):
             if block.get("type") == "tool_use" and block["name"].endswith("__cite"):
-                last[block["name"].split("__")[1]] = block.get("input") or {}
-    out = {}
-    for server, inp in last.items():
-        first = int(inp.get("first") or 1)
-        items = inp.get("sources") or inp.get("ids") or []
-        for i, item in enumerate(items):
-            out[str(first + i)] = (server, item["id"] if isinstance(item, dict) else item)
+                server, inp = block["name"].split("__")[1], block.get("input") or {}
+                first = int(inp.get("first") or 1)
+                for i, item in enumerate(inp.get("sources") or inp.get("ids") or []):
+                    out[str(first + i)] = (server, item["id"] if isinstance(item, dict) else item)
     return out
 
 

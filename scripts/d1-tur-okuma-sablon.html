@@ -161,8 +161,14 @@ function paraHtml(p, srcs, mk, pi) {
   if (!p.tr) return `<div class="blk${p.q ? ' quote' : ''}">${lab}<div class="ar" dir="rtl">${body(p.ar, false, mk.ar)}</div>
     ${p.q ? '' : '<div class="small muted">(bu paragrafın Türkçesi taslakta yok)</div>'}</div>`;
   const arOpen = DATA.sari && [...mk.ar].some(x => x.startsWith(pi + ':')) && ![...mk.tr].some(x => x.startsWith(pi + ':'));
-  return `<div class="blk${p.q ? ' quote' : ''}">${lab}<div class="serif">${body(p.tr, true, mk.tr)}</div>
-    ${p.ar ? `<details${arOpen ? ' open' : ''}><summary class="small muted">Arapçası (taslağın aslı)${DATA.sari && [...mk.ar].some(x => x.startsWith(pi + ':')) ? ' · değişiklik var' : ''}</summary><div class="ar" dir="rtl">${body(p.ar, false, mk.ar)}</div></details>` : ''}</div>`;
+  // paragrafın devamı (`ek`): Türkçe parçalar ve Türkçe alıntılar sırayla; Arapça alıntılar Arapçanın yanında
+  const ek = p.ek || [];
+  const ekTr = ek.filter(e => e.l === 'tr').map(e => e.q
+    ? `<div class="blk quote"><div class="lab">kaynaktan alıntı</div><div class="serif">${inline(e.t, srcs, true)}</div></div>`
+    : `<div class="serif" style="margin-top:6px">${inline(e.t, srcs, true)}</div>`).join('');
+  const ekAr = ek.filter(e => e.l === 'ar').map(e => `<div class="ar" dir="rtl" style="border-top:1px dashed var(--line)">${inline(e.t, srcs, false)}</div>`).join('');
+  return `<div class="blk${p.q ? ' quote' : ''}">${lab}<div class="serif">${body(p.tr, true, mk.tr)}</div>${ekTr}
+    ${p.ar ? `<details${arOpen ? ' open' : ''}><summary class="small muted">Arapçası (taslağın aslı)${DATA.sari && [...mk.ar].some(x => x.startsWith(pi + ':')) ? ' · değişiklik var' : ''}</summary><div class="ar" dir="rtl">${body(p.ar, false, mk.ar)}</div>${ekAr}</details>` : ''}</div>`;
 }
 function colHtml(lab, s, mk) {
   const body = s.paras.length ? s.paras.map((p, i) => paraHtml(p, s.sources, mk, i)).join('')

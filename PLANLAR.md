@@ -159,6 +159,12 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   Alıntı en çok dayanak; bütçe toplamda, üst kısmı derse kullanılabilir (h5 bütçenin üçte birini kullanmadı). İkinci
   vecihte temsil serbest. Ek 4'e 31–33'ün mukaddimesinden bir parça eklenir (sınanan birim dışından). Ölçü: N41–N47,
   başlıkların doluluğu ve kendi sözü, kör eleştirmen o3, envanter (D14.2'deki düşüş izlenir), okuma.
+  **Yazıldı ve ölçüldü (2026-11-18; ≈8,6 $; rapor `data/d1/provalar/9-10/d14-3-rapor.md`):** taslak 8 (h6). Dört
+  başlığın dördü dolu; **İşârât'ın kizb ve sıdk dersinin yedi nüktesinden altısı ilk kez "kısmen"** (bugüne kadar
+  sıfır); açılan ders 1 → 6, Hutbe'ye atfın taşıdığı söz 31 → 160 kelime; envanter %53 → %60; kör eleştirmen yeniyi
+  **bütünde ve me'hazda açık** tercih etti. Ölçüm düzeltmesi: kaynak eşlemesi her sunucunun yalnız son `cite`
+  çağrısını okuyordu, artık hepsini birleştiriyor. Okuma sayfası paragrafın devamını (alıntı ve tercüme parçaları)
+  da gösteriyor. Okuma `tur-9-10-D14.3.html` (N40, N38, N16; ≈1.140 kelime).
 - **D14.4 Düzeltme (k3):** sonra (kazananın üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).

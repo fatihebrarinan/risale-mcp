@@ -622,9 +622,20 @@ def read_side(unit: str, n: int, nid: str, rows: dict, sources: dict) -> dict:
         lang, q, t = by[a]
         tr = by[pr[a]][2] if a in pr and lang == "ar" else (t if lang == "tr" else "")
         ar = t if lang == "ar" else ""
-        paras.append({"a": a, "q": q, "ar": ar, "tr": tr})
-        words += len((tr or ar).split())
-    nums = sorted({x for p in paras for m in re.finditer(r"\[([^\[\]\n]{1,80})\]", p["ar"] + " " + p["tr"])
+        # 2026-11-18: paragrafın devamı: ardından gelen alıntılar ve tercüme parçaları, bir sonraki Arapça paragrafa
+        # kadar (D14.3'ün «يَكْذِبُونَ» dersi: Arapça, tercümesi, Hutbe'den alıntı, tercümenin devamı; devam düşüyordu)
+        ek = []
+        if lang == "ar" and not q:
+            i = order[a] + 1
+            sec = a.split("/")[0]
+            while i < len(blocks) and blocks[i][0].split("/")[0] == sec and not (blocks[i][1] == "ar" and not blocks[i][2]):
+                b_a, b_l, b_q, b_t = blocks[i]
+                if b_a != pr.get(a):
+                    ek.append({"l": b_l, "q": b_q, "t": b_t})
+                i += 1
+        paras.append({"a": a, "q": q, "ar": ar, "tr": tr, "ek": ek})
+        words += len((tr or ar).split()) + sum(len(e["t"].split()) for e in ek if e["l"] == "tr")
+    nums = sorted({x for p in paras for m in re.finditer(r"\[([^\[\]\n]{1,80})\]", " ".join([p["ar"], p["tr"]] + [e["t"] for e in p["ek"]]))
                    for x in re.findall(r"\d+", m.group(1))}, key=int)
     srcs = {k: {"c": sources[k]["c"], "t": (sources[k]["t"] or "")[:1500]} for k in nums if k in sources}
     return {"paras": paras, "words": words, "durum": durum, "sources": srcs}
