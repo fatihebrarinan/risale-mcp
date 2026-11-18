@@ -32,7 +32,8 @@ Sürümler:
   üst kısmı derse kullanılabilir; Ek 4'e geniş ders örneği (31–33'ün mukaddimesi).
 - h7 (2026-11-18, D14.5a; kullanıcının kararı: "uzunluğu kısacağız diye kaliteden kaybetmek istemiyorum"): uzunluk
   hedefi yalnız nazım kısmına (üç vechin tahlili); dersler hedefin dışında, meselenin genişliğine göre, îcâzla; her
-  dersin sonunda `### Dersin sonu` işareti.
+  dersin sonunda `### Dersin sonu` işareti. Üslûp notu (kullanıcı, D14.5a'nın okuması): İşârât'ın öbür birimleri
+  "Müellif … saymıştır / zikretmiştir" diye anılmaz; nükte kendi sözüyle söylenir, numarası verilir.
 -->
 
 ---- İSTEM ----
@@ -89,6 +90,9 @@ adı geçer, o da çoğu zaman "قيل" ile. Taslak da böyle yazılır:
   bir sözünü (bir görüşünü, bir vechini) alıyorsan adıyla anılır; ihtilafı göstermek için çoğu zaman "قيل" ya da
   "وقيل" yeter. Bir müfessirin sözünü İşârât'a ya da müellife mal etme. Bir kaynağa onun kendi görüşü olmayanı
   (naklettiği, itiraz ettiği ya da reddettiği vechi) mal etme.
+
+İşârât'ın öbür birimlerinden aldığını "Müellif … saymıştır", "Müellif … zikretmiştir" diye anlatma: nükteyi kendi
+sözünle söyle, numarasını ver (nazîrden tatbikse etiketiyle).
 
 Kaynağı aklındaki nükteyi doğrulamak için değil, ne dediğini görmek için oku; aradığın cümlenin yanındaki soru,
 cevap ve çekince cümleleri çoğu zaman asıl nükteyi taşır. Kaynaktan hükmü değil, oraya nasıl varıldığını al; ihtimal

@@ -65,7 +65,7 @@ işler"e taşındı. Yol: D14 → D15 → D5.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D14 | Taslak hattının turları (taban h6; sırada D14.5: uzunluk kuralı ve nisbet denetçisi) | |
+| 1 | D14 | Taslak hattının turları (taban h7; D14.5 bitti; D5 hazırlığı konuşuluyor) | |
 | 2 | D15 | Saklı birimlerde son ölçüm: ar-genin sonu, D5'ten önceki son düzlük (eski D12.6) | |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı (D11'in kalanı) | D1.8 |
 
@@ -206,7 +206,8 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
     Okuma `tur-13-D14.5a.html` (N43, N03, N46; A = h6, B = h7).
     **Okuma (2026-11-18):** emin değil 2, h6 1 ("İkisi de ayrı güzel"; h7'nin "Müellif … saymıştır" cümleleri
     istenmiyor), h7 0: kalite denk. Kural 4.4: eleştirmen hafif, kullanıcı kararsız; h6'nın uzunluk bayrağı var, h7'nin
-    yok. Karar bekliyor (önerim h7).
+    yok. **Karar (kullanıcı, 2026-11-18): h7 taban**, üslûp notuyla (İşârât'ın öbür birimleri "Müellif … saymıştır"
+    diye anılmaz; istemde, ayrıca sınanmadı). D14.5 bitti.
 - **Genel düzeltme (k3) ertelendi** (2026-11-18): D15'te h6'nın çözemediği türden kusurlar çıkarsa yeniden açılır.
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
