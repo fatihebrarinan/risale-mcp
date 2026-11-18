@@ -179,6 +179,9 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   **bütünde ve me'hazda açık** tercih etti (V3 açık; V1'de h2 hafif); envanter %62 → %74; Risale atfı 2 → 31, öbür
   tefsirlere atıf 37 → 4; iki ders başlığı dolu; h6 uzunluk hedefini %13 aştı (kısa birim). Okuma `tur-13-D14.4.html`
   (N43, N01, N21; A = h6, B = h2). Okuma kartına `ek_capa` (dersin nazım paragrafı) ve `sinir_asimi` seçenekleri.
+  **Okuma (2026-11-18): h6 3, h2 0** (N43: "cümlenin parça parça nazmını vermede, Risale-i Nur'lara bağlamada, mantık
+  silsilesini kurmada daha iyi"; N01: "yoruma gerek yok", eleştirmen burada h2'yi tercih etmişti). **h6'nın kazancı yeni
+  birimde doğrulandı.**
 - **D14.5 Düzeltme (k3):** sonra (kazananın üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
