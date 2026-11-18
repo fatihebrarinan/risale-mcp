@@ -65,7 +65,7 @@ işler"e taşındı. Yol: D14 → D15 → D5.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D14 | Taslak hattının turları (taban h5; sırada D14.3, zorunlu ders başlıkları) | |
+| 1 | D14 | Taslak hattının turları (taban h6; sırada D14.4, yeni birimde sınama: 13) | |
 | 2 | D15 | Saklı birimlerde son ölçüm: ar-genin sonu, D5'ten önceki son düzlük (eski D12.6) | |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı (D11'in kalanı) | D1.8 |
 
@@ -169,7 +169,13 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   türlü baştan sona B daha iyi"; N16: "açık ara, silsile yerinde"). Kural 4.4: eleştirmen ve kullanıcı aynı yönde, açık:
   **h6 taban.** N40'ın kartı nazım ile dersi karşılaştırdı (B'de ikisi beraberdi, kart yalnız dersi gösterdi): okuma
   standardına kural eklendi.
-- **D14.4 Düzeltme (k3):** sonra (kazananın üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
+- **D14.4 Yeni birimde sınama: 13'te h2 ile h6** (kullanıcının kararı, 2026-11-18; dokuz taslağın hepsi 9–10'da
+  yazıldı, ayar riski). Taban taslak 1 (h2, Tur 0'da kurulan istemle), yeni taslak 2 (h6). D13 ve D14'ün bütün kazancı
+  tek A/B'de. Kurulumda konu adımına Arapça `lafiz` alanı eklendi (13'te konu modeli "neden"i Latin harfli okunuşla
+  yazdı, başlığa cümle girdi) ve âyetin bütününe dair konunun ders başlığı mukaddimeye (tek kaide). 13'te iki zorunlu
+  başlık: «ٱلنَّاسُ» (Yirmi Üçüncü Söz, 54 isabet), «أَلَآ إِنَّهُمْ هُمُ ٱلسُّفَهَآءُ» (Otuz İkinci Söz). Gerekirse sonra
+  h6 üzerinde kapalı eleştirmenin zaaf profili.
+- **D14.5 Düzeltme (k3):** sonra (kazananın üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
 
