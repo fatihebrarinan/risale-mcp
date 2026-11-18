@@ -65,7 +65,7 @@ işler"e taşındı. Yol: D14 → D15 → D5.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D14 | Taslak hattının turları (taban h6; sırada D14.4, yeni birimde sınama: 13) | |
+| 1 | D14 | Taslak hattının turları (taban h6; sırada D14.5: uzunluk kuralı ve nisbet denetçisi) | |
 | 2 | D15 | Saklı birimlerde son ölçüm: ar-genin sonu, D5'ten önceki son düzlük (eski D12.6) | |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı (D11'in kalanı) | D1.8 |
 
@@ -182,7 +182,22 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   **Okuma (2026-11-18): h6 3, h2 0** (N43: "cümlenin parça parça nazmını vermede, Risale-i Nur'lara bağlamada, mantık
   silsilesini kurmada daha iyi"; N01: "yoruma gerek yok", eleştirmen burada h2'yi tercih etmişti). **h6'nın kazancı yeni
   birimde doğrulandı.**
-- **D14.5 Düzeltme (k3):** sonra (kazananın üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
+- **D14.5 Uzunluk kuralı ve nisbet denetçisi** (kullanıcının kararları, 2026-11-18). Konuşma: kalan zaaflar (uzunluk,
+  birkaç nisbet hatası, İşârât'la gerilimli istinbatlar, kaçırılan nükteler) için genel düzeltme yanlış ya da büyük
+  alet (düzeltme uzatır; birim başına ≈11 $; k2 nakle iter); gerilimli istinbat ve kaçırılan nükteler ehlin okumasının
+  (D5.1) konusu. Kullanıcı: "uzunluğu kısacağız diye kaliteden kaybetmek istemiyorum"; ders sayısına sınır yok.
+  - **D14.5a Dersler uzunluk hedefinin dışında** (h7; 13; taban taslak 2 (h6), yeni taslak 3): hedef (İşârât'ın 1–2
+    katı) yalnız nazım kısmına (üç vechin tahlili) uygulanır, çünkü İşârât'la kıyaslanabilir olan odur; dersler hedefin
+    dışında, meselenin genişliğine göre, îcâzla, alıntı dayanak. Her dersin sonunda `### Dersin sonu` işareti (dersin
+    uzunluğu ayrı ölçülsün). Ölçü: nazım kısmının uzunluğu, ders başına kelime ve alıntı, kör eleştirmen o3, envanter,
+    okuma. Soru: dersler serbest kalınca ne kadar yazılıyor, nazım kısmı ve kalite ne oluyor.
+  - **D14.5b Nisbet denetçisi** (`scripts/d1-nisbet.py`; mevcut taslaklarda: 9–10 taslak 8, 13 taslak 2, kontrol 13
+    taslak 1): atıf verilen her kaynak için atıf verilen yer bağlamıyla ve ona atıf veren taslak cümleleri tek model
+    çağrısında; hüküm: doğru nisbet, kaynağın naklettiği görüş, itirazı, reddettiği vecih, kaynakta yok, kaynağın sözünü
+    aşıyor. Doğruluğu kör eleştirmenin bulduğu nisbet hatalarıyla ölçülür (Lem'alar'daki zamir; Âlûsî'nin naklettiği
+    istidlal; adı anılmadan alınan Ebüssuûd tespiti). Güvenilirse D5.0'da üretim hattının kalite kapısı; cümle düzeyinde
+    düzeltme adımı sonra.
+- **Genel düzeltme (k3) ertelendi** (2026-11-18): D15'te h6'nın çözemediği türden kusurlar çıkarsa yeniden açılır.
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
 
