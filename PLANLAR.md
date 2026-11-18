@@ -143,6 +143,10 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
     17 → 56) ama 60 kelimeyi bir yerde geçti; envanter %74 → %53, iki İşârât çelişkisi (elîm "mü'lim"; mü'minler zâhirde
     aldanır); kör eleştirmen bütünde tabanı, me'hazda yeniyi hafif tercih etti; "altı cümle" ilk kez yok. Okuma
     `tur-9-10-D14.2.html` (N40, N17, N38; ≈825 kelime).
+    **Okuma (2026-11-18):** yeni 2 (N40: "konuyu daha iyi açıklamış… ama bizim istediğimiz mânâda bir Risale dersi
+    burada yok"; N38: düşünce akışı net, Risale'nin fikri iyi söylenmiş), taban 1 (N17). Kural 4.4: eleştirmenle
+    ayrılık, kullanıcının hükmü geçer: **h5 taban** (onay bekliyor). Yedek adımın şartı oluştu: ders en güçlü adayda
+    bile açılmıyor.
 - **D14.3 Düzeltme (k3):** sonra (D14.2'nin kazananı üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
