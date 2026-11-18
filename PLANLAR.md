@@ -65,7 +65,7 @@ işler"e taşındı. Yol: D14 → D15 → D5.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D14 | Taslak hattının turları (taban h4; sırada D14.2, ders adayları ve tek kaide) | |
+| 1 | D14 | Taslak hattının turları (taban h5; sırada D14.3, zorunlu ders başlıkları) | |
 | 2 | D15 | Saklı birimlerde son ölçüm: ar-genin sonu, D5'ten önceki son düzlük (eski D12.6) | |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı (D11'in kalanı) | D1.8 |
 
@@ -145,9 +145,21 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
     `tur-9-10-D14.2.html` (N40, N17, N38; ≈825 kelime).
     **Okuma (2026-11-18):** yeni 2 (N40: "konuyu daha iyi açıklamış… ama bizim istediğimiz mânâda bir Risale dersi
     burada yok"; N38: düşünce akışı net, Risale'nin fikri iyi söylenmiş), taban 1 (N17). Kural 4.4: eleştirmenle
-    ayrılık, kullanıcının hükmü geçer: **h5 taban** (onay bekliyor). Yedek adımın şartı oluştu: ders en güçlü adayda
+    ayrılık, kullanıcının hükmü geçer: **h5 taban** (kullanıcı onayladı, 2026-11-18). Yedek adımın şartı oluştu: ders en güçlü adayda
     bile açılmıyor.
-- **D14.3 Düzeltme (k3):** sonra (D14.2'nin kazananı üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
+- **D14.3 Zorunlu ders başlıkları** (D14.2'nin yedek adımı; kullanıcının kararları, 2026-11-18; sürüm h6; 9–10; taban
+  taslak 7 (h5), yeni taslak 8). Okuma: ders en güçlü adayda bile açılmadı. **Program başlığı açar:** ders adayının
+  isabeti en az 25 olan lafızlar için üçüncü vecihte lafzın yerinde `### Ders: «…»` (9–10'da dört: يَكْذِبُونَ,
+  مَرَضٌ, فَزَادَهُمُ, يُخَادِعُونَ اللّٰهَ); yazar altını doldurmak zorunda. **Dersin tarifi** (kullanıcının 9–10 ve
+  31–33 örneklerinden): lafızdan kalkıp okuyucuya döner; lafzın nüktesinden insana, İslâm âlemine, beşere dair umumî bir
+  hakikate geçer; müellifin biçimleriyle (temsil, soru–cevap, silsile, taksim, hitap) kurulur; kısa değildir; müellifin
+  sözüdür. **Bu derslerin genişi Risale-i Nur'dadır** (9–10'un kizb ve sıdk dersi Hutbe-i Şâmiye'nin "Sıdk" kelimesi;
+  31–33'ün mukaddimesi Yirminci Söz'ün İkinci Makamı): yazarın işi Risale'deki dersi telhis edip lafza bağlamaktır; D5'in
+  işi de budur. 9–10 temiz sınav: gizli olan İşârât'ın kizb ve sıdk dersi (N41–N47), yazarın elindeki onun genişi.
+  Alıntı en çok dayanak; bütçe toplamda, üst kısmı derse kullanılabilir (h5 bütçenin üçte birini kullanmadı). İkinci
+  vecihte temsil serbest. Ek 4'e 31–33'ün mukaddimesinden bir parça eklenir (sınanan birim dışından). Ölçü: N41–N47,
+  başlıkların doluluğu ve kendi sözü, kör eleştirmen o3, envanter (D14.2'deki düşüş izlenir), okuma.
+- **D14.4 Düzeltme (k3):** sonra (kazananın üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
 
