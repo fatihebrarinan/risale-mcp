@@ -619,7 +619,8 @@ TUR_GIRIS_D = ("<b>Ne okuyorsunuz:</b> aynı taslağın iki düzeltilmiş hâli,
                "kaynak disiplini, îcâz, kendi sözü) ve bir iki cümle gerekçe; sonra <b>Aç</b>. Bitince <b>Dışa aktar</b>.")
 
 
-def read_side(unit: str, n: int, nid: str, rows: dict, sources: dict, extra: list[str] | None = None) -> dict:
+def read_side(unit: str, n: int, nid: str, rows: dict, sources: dict, extra: list[str] | None = None,
+              only: list[str] | None = None) -> dict:
     """Bir taslağın o nükteyi işleyen paragrafları (eşleştiricinin çapaları), eşleriyle; sınır `READ_MAX_*`."""
     blocks, _ = Y.draft_blocks(unit, n)
     pr, by = Y.pairs(blocks), {a: (lang, q, t) for a, lang, q, t in blocks}
@@ -627,7 +628,9 @@ def read_side(unit: str, n: int, nid: str, rows: dict, sources: dict, extra: lis
     row = {m: x for m, x in (rows.get(nid) or {}).items() if isinstance(x, dict)}   # okuyucu başına {d, a}
     durum = {m: (x or {}).get("d") for m, x in row.items()}
     anchors = sorted({Y.ar_of(pr, a) for x in row.values() if x for a in x.get("a") or [] if a in by}
-                     | {a for a in (extra or []) if a in by}, key=lambda a: order[a])   # extra: kartın elle eklediği
+                     | {a for a in (extra or []) if a in by}, key=lambda a: order[a])
+    if only:   # kartın `capa`sı: eşleştiricinin çapaları yerine yalnız bunlar (soru iki tarafta aynı paragrafları istediğinde)
+        anchors = sorted({a for a in only if a in by}, key=lambda a: order[a])   # extra: kartın elle eklediği
                                                                                         # paragraf (dersin nazım paragrafı)
     paras, words = [], 0
     for a in anchors:
@@ -674,7 +677,8 @@ def okuma(unit: str, tur: str, taban: int, yeni: int, yerler: list[dict], sari: 
         for lab, n in zip("AB", order):
             dk = f"taslak-{n}"
             extra = (y.get("ek_capa") or {}).get(str(n))
-            sides[lab] = read_side(unit, n, y["id"], pd["drafts"][dk]["rows"], dr[dk]["sources"], extra)
+            only = (y.get("capa") or {}).get(str(n))
+            sides[lab] = read_side(unit, n, y["id"], pd["drafts"][dk]["rows"], dr[dk]["sources"], extra, only)
             sd = sides[lab]
             if not y.get("sinir_asimi") and (len(sd["paras"]) > READ_MAX_PARAS or sd["words"] > READ_MAX_WORDS):
                 bad.append(f"{y['id']} {lab}: {len(sd['paras'])} paragraf, {sd['words']} kelime")
@@ -689,7 +693,7 @@ def okuma(unit: str, tur: str, taban: int, yeni: int, yerler: list[dict], sari: 
             "yeni": f"taslak-{yeni}", "giris": TUR_GIRIS_D if sari else TUR_GIRIS, "sayfa": page, "kelime": words,
             "sari": sari,
             "dakika": round(words / 100 + 2 * len(cards)),
-            "yerler": [{k: c.get(k) for k in ("id", "tur", "baslik", "soru", "acik", "ek_capa", "sinir_asimi")} for c in cards],
+            "yerler": [{k: c.get(k) for k in ("id", "tur", "baslik", "soru", "acik", "ek_capa", "capa", "sinir_asimi")} for c in cards],
             "at": datetime.now().isoformat()}
     path = P.DRAFTS / unit / f"tur-{tur}.json"
     path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
