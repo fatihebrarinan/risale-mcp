@@ -271,6 +271,11 @@ program uygular (h6'nın başlıkları gibi).
   Tarama'yı taslaktan ayırır (`taslak-N.tarama.md`), eksik satırları raporlar, kaçırılan her nükte için "tabloda yok /
   yazar taşımıyor dedi / taşıyor deyip yazmadı" ayrımını ölçer. Ayrı tarama çağrısı önerilmedi (maliyet; notları
   yine atlayabilir).
+- **D14.7 ölçüldü (2026-11-18; ≈18,3 $; rapor `data/d1/provalar/14-15/d14-7-rapor.md`):** 14–15, taslak 1 (h9), taslak
+  2 (h10). **Envanter %52 → %67**; kör eleştirmen h10'u bütünde ve me'hazda hafif tercih etti (te'kid nükteleri
+  İşârât'la uyumlu; V2'de h9 hafif); Tarama 60 satır, hepsi cevaplı, taşıyor 57 (zorlama riski); çelişki 1 → 3, müfessir
+  adı 5 → 11; h10'un kusurları: Âlûsî'ye nisbet, "meşkûk küfür"ü kapsamını aşarak uygulamak. Okuma
+  `tur-14-15-D14.7.html` (N35, N09, N64; A = h10, B = h9).
 
 **D15. Saklı birimlerde son ölçüm** (kullanıcının kararı, 2026-11-17: kendi aşaması; "D5'ten önceki son düzlük, o
 aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) bir kez, aynı

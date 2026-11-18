@@ -54,6 +54,7 @@ gerekirse **kör noktayı ara** (D6), **dersleri genel usul olarak istemin yeni 
 | D14.5a (2026-11-18) | h6 (2) ve h7 (3): uzunluk hedefi yalnız nazım kısmına, dersler dışında, ders sonu işareti | 13 | 1 + 1 | tek okuyucu: %74, %64 | 3 nükte: emin değil 2, h6 1 (kalite denk) | Kör (o3): h7 bütün hafif, me'haz hafif; toplam hedefe girdi (13.581 → 11.613) (`provalar/13/d14-5a-rapor.md`) |
 | D14.6a (2026-11-18) | h7 (3) ve h8a (4): uzunluk hedefi yok | 13 | 1 + 1 | tek okuyucu: %64, %70 | 3 nükte: eşit 1, emin değil 2 (kalite denk; B'de paragraf düzeyinde uzatma) | Kör (o3): h7 hafif, me'haz h7 hafif; toplam aynı (11.506) (`provalar/13/d14-6-rapor.md`) |
 | D14.6b (2026-11-18) | h7 (3) ve h8b (5): Risale yerleri konu başına ilk 10 | 13 | 1 + 1 | tek okuyucu: %64, %68 | Gerekmiyor | Kör (o3): h8b bütün hafif, me'haz eşit; maliyet −%11, dersler uzadı (`provalar/13/d14-6-rapor.md`) |
+| D14.7 (2026-11-18) | h9 (1) ve h10 (2): soru kalıpları (Ek 5) ve tarama tablosu | 14–15 | 1 + 1 | tek okuyucu: %52, %67 | Bekliyor (3 nükte) | Kör (o3): h10 bütün hafif, me'haz hafif; taşıyor 57/60 (`provalar/14-15/d14-7-rapor.md`) |
 
 1. tur ayrıntıları: `data/d1/provalar/11-12/` (`rapor.md`, `d2-rapor.md`, `yz-karsilastirma.md`, `d9-rapor.md`,
 `d6-rapor.md`). 1. turda D1 ile D2'nin farkı yalnız eserlerdi (klasik eserler kapsamayı artırmadı, dayanağı

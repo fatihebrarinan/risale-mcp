@@ -235,9 +235,48 @@ def kontrol(unit: str, n: int) -> dict:
     return out
 
 
+def _iskelet(t: str) -> set[str]:
+    from risale_mcp.quran import skeleton
+    return {skeleton(w) for w in re.findall(r"[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF]+", t) if len(skeleton(w)) >= 2}
+
+
+def kayip(unit: str, n: int) -> dict:
+    """Envanterin nükteleri (vecih 2 ve 3) için: taslakta var mı (eşleştirme), lafzı tabloda mı, yazar ne dedi.
+    Kaçırılan nükte üç türe ayrılır: tabloda yok / yazar taşımıyor dedi / taşıyor deyip yazmadı (ya da cevapsız)."""
+    pd = Y.page_data(unit)
+    rows = pd["drafts"][f"taslak-{n}"]["rows"]
+    tp = P.DRAFTS / unit / f"taslak-{n}.tarama.md"
+    ans = {m.group(1): m.group(2) for m in TARAMA_RE.finditer(tp.read_text(encoding="utf-8"))} if tp.exists() else {}
+    tab = tablo(unit)
+    out, L = {"tabloda_yok": [], "tasimiyor": [], "yazmadi": [], "var": []}, []
+    for nid, it in pd["items"].items():
+        if it.get("v") not in ("V2", "V3"):
+            continue
+        d = ((rows.get(nid) or {}).get("opus") or {}).get("d")
+        sk = _iskelet(it.get("l", ""))
+        hits = [r for r in tab if sk & _iskelet(r["lafiz"])]
+        if d in ("aynen", "kismen"):
+            out["var"].append(nid)
+            continue
+        if not hits:
+            kind = "tabloda_yok"
+        elif any(re.search("taşıyor", ans.get(r["id"], ""), re.I) and not re.search("taşımıyor", ans.get(r["id"], ""), re.I)
+                 for r in hits):
+            kind = "yazmadi"
+        else:
+            kind = "tasimiyor"
+        out[kind].append(nid)
+        L.append(f"- {nid} [{kind}] {it.get('l', '')}: {it.get('n', '')[:90]} | satırlar: "
+                 + ", ".join(f"{r['id']} {r['kalip']} → {ans.get(r['id'], '—')[:60]}" for r in hits[:4]))
+    print(f"{unit} taslak {n}: var {len(out['var'])}; kaçırılan: tabloda yok {len(out['tabloda_yok'])}, "
+          f"taşımıyor {len(out['tasimiyor'])}, taşıyor deyip yazmadı {len(out['yazmadi'])}")
+    (P.DRAFTS / unit / f"taslak-{n}.kayip.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["liste", "sizinti", "yaz", "tablo", "kontrol"])
+    ap.add_argument("cmd", choices=["liste", "sizinti", "yaz", "tablo", "kontrol", "kayip"])
     ap.add_argument("unit", nargs="?")
     ap.add_argument("taslak", nargs="?", type=int)
     ap.add_argument("--yeniden", action="store_true")
@@ -246,6 +285,8 @@ def main() -> None:
         tablo(a.unit, a.yeniden)
     elif a.cmd == "kontrol":
         kontrol(a.unit, a.taslak)
+    elif a.cmd == "kayip":
+        kayip(a.unit, a.taslak)
     else:
         {"liste": liste, "sizinti": sizinti, "yaz": yaz}[a.cmd]()
 
