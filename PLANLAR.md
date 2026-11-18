@@ -204,6 +204,9 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
     Dersleri sınırdan çıkarınca toplam kısaldı ve hedefe girdi (13.581 → 11.613; nazım 8.558, dersler ≈1.500'er harf,
     derli toplu, işaretle kapanmış); kör eleştirmen h7'yi bütünde ve me'hazda hafif tercih etti; envanter %74 → %64.
     Okuma `tur-13-D14.5a.html` (N43, N03, N46; A = h6, B = h7).
+    **Okuma (2026-11-18):** emin değil 2, h6 1 ("İkisi de ayrı güzel"; h7'nin "Müellif … saymıştır" cümleleri
+    istenmiyor), h7 0: kalite denk. Kural 4.4: eleştirmen hafif, kullanıcı kararsız; h6'nın uzunluk bayrağı var, h7'nin
+    yok. Karar bekliyor (önerim h7).
 - **Genel düzeltme (k3) ertelendi** (2026-11-18): D15'te h6'nın çözemediği türden kusurlar çıkarsa yeniden açılır.
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
