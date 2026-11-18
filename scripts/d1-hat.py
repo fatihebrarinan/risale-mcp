@@ -64,7 +64,9 @@ RISALE_DISI_GRUP = ("osmanlica", "hizb")   # Osmanlıca Türkçeyi tekrar eder; 
 ADAY_ESIK = 12
 ADAY_KOPYA = 0.5
 # D14.3 (h6): ders adayının isabeti en az bu kadar olan lafızlar için program üçüncü vecihte ders başlığı açar
-ZORUNLU_ESIK = 25       # bu orandan çok cümlesi daha güçlü bir adayla aynı olan bölüm onun kopyasıdır (Tarihçe'deki Hutbe)
+ZORUNLU_ESIK = 25
+# D14.6 denemeleri (h7'nin varyantları; `hazirla --surum h8a --uzunluk-yok`, `--surum h8b --risale-ilk 10`)
+RISALE_ILK: int | None = None      # dosyada konu başına gösterilen Risale paragrafı (None: hepsi, ilk 100'ün üst yarısı)       # bu orandan çok cümlesi daha güçlü bir adayla aynı olan bölüm onun kopyasıdır (Tarihçe'deki Hutbe)
 # h2'ye kadar: altı taslağın hepsinin okuduğu müfessirler (D8, 31–33); öbürleri araçla
 DOSYA_TEFSIR = ("kessaf", "beyzavi", "ebussuud", "alusi")
 # usul özetinden kısa isteme giren bölümler: "Bir âyette izlenen sıra" ve "Mukaddime ne zaman gelir"
@@ -327,6 +329,8 @@ def risale_by_word(topics: list[dict], paras: list[dict], adaylar: dict | None =
             ayet.append(p)
     for t in topics:
         ps = sorted(home.get(t["konu"], []), key=lambda p: -p["skor"][t["konu"]])
+        if RISALE_ILK:
+            ps = ps[:RISALE_ILK]
         L += [f"### {(t['lafiz'] + ' — ') if t.get('lafiz') else ''}{t.get('neden', '')}", "", f"Konu: **{t['konu']}**"
               + (" (âyetin bütününden)" if t.get("kapsam") == "ayet" else "") + f" ({len(ps)} yer, benzerlik sırasıyla)", ""]
         if adaylar and adaylar.get(t["konu"]):
@@ -506,7 +510,19 @@ def ders_ornekleri(unit: str) -> str:
     return "\n".join(L).strip()
 
 
-def hazirla(unit: str) -> Path:
+UZUNLUK_YOK = [   # D14.6a: istemden uzunluk hedefi çıkar (îcâz kuralı kalır)
+    (re.compile(r"- \*\*Uzunluk:\*\* \*\*nazım kısmının\*\*.*?Dersler\s+\(usul 3\) bu hedefin dışındadır\.", re.S),
+     "- **Uzunluk:** sabit bir hedef yok; uzunluğu meselenin gerektirdiği kadar tut."),
+    (re.compile(r"Dersler uzunluk hedefinin dışındadır:"), "Uzunluk hedefi yok:"),
+    (re.compile(r"Nazım kısmının Arapça\s+uzunluğu hedefte mi \(dersler hariç\)\?"), "Gereksiz uzatma, tekrar ya da uzun nakil var mı?"),
+    (re.compile(r"Taslağı yaz \(şablon aşağıda\), uzunluk hedefine uyarak\."), "Taslağı yaz (şablon aşağıda)."),
+]
+
+
+def hazirla(unit: str, surum: str | None = None, uzunluk_yok: bool = False, risale_ilk: int | None = None) -> Path:
+    global RISALE_ILK
+    surum = surum or SURUM
+    RISALE_ILK = risale_ilk
     cfg = P.UNITS[unit]
     out = out_dir(unit)
     if not (out / "risale.db").exists():
@@ -520,6 +536,10 @@ def hazirla(unit: str) -> Path:
     ek2 = _section(cizelge, "## Çizelge: Bakara", "## Çizelge: Fâtiha")
     h = hedef(unit)
     body = HAT_PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
+    if uzunluk_yok:
+        for rx, rep in UZUNLUK_YOK:
+            body, k = rx.subn(rep, body)
+            assert k == 1, rx.pattern
     body = body.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])),
                        ders_basliklari=ders_basliklari(unit),
                        en_az=f"{h['en_az']:,}".replace(",", "."), en_cok=f"{h['en_cok']:,}".replace(",", "."),
@@ -529,7 +549,7 @@ def hazirla(unit: str) -> Path:
               f"# Ek 2: Birim çizelgesi, Bakara (prova kopyası)\n\n{ek2}\n\n---\n\n# Ek 3: "
               + dosya_path.read_text(encoding="utf-8").removeprefix("# ")
               + (f"\n\n---\n\n# Ek 4: İşârât'tan ders örnekleri\n\n{ek4}" if ek4 else ""))
-    name, report = P.istem_files("hat", SURUM)
+    name, report = P.istem_files("hat", surum)
     (out / name).write_text(prompt, encoding="utf-8")
     print(f"istem: {len(prompt):,} harf (gövde {len(body):,}, Ek 1 {len(ek1):,}, Ek 2 {len(ek2):,}); hedef {h}")
     ok = P.leak_report(unit, cfg, out, prompt, report)
@@ -745,8 +765,12 @@ def main() -> None:
     p = sub.add_parser("oran")
     p = sub.add_parser("hazirla")
     p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--surum", help="istem sürümünün adı (varsayılan SURUM); D14.6 varyantları için")
+    p.add_argument("--uzunluk-yok", action="store_true", help="D14.6a: uzunluk hedefi yok")
+    p.add_argument("--risale-ilk", type=int, help="D14.6b: dosyada konu başına ilk N Risale paragrafı")
     p = sub.add_parser("yazdir")
     p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--surum")
     p.add_argument("--model", default="claude-opus-5-5")
     p.add_argument("--effort", default="high")
     p = sub.add_parser("izah")
@@ -765,9 +789,9 @@ def main() -> None:
     if a.cmd == "dosya":
         dosya(a.unit)
     elif a.cmd == "hazirla":
-        hazirla(a.unit)
+        hazirla(a.unit, a.surum, a.uzunluk_yok, a.risale_ilk)
     elif a.cmd == "yazdir":
-        P.yazdir(a.unit, 1, a.model, a.effort, "hat", SURUM)
+        P.yazdir(a.unit, 1, a.model, a.effort, "hat", a.surum or SURUM)
     elif a.cmd == "izah":
         izah(a.unit, a.taslak, a.yeniden)
     elif a.cmd == "bolum":
