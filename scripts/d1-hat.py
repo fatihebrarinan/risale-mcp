@@ -51,7 +51,7 @@ E = _load("d1_elestiri", "d1-elestiri.py")
 
 HAT_PROMPT = ROOT / "docs" / "d1" / "hat-istemi.md"
 IZAH_PROMPT = ROOT / "docs" / "d1" / "izah-istemi.md"
-SURUM = "h6"          # istem dosyası yalnız son sürümü taşır; eski sürümlerin kopyası data/interim/d1-prova/<birim>/istem-hat-<sürüm>.md
+SURUM = "h7"          # istem dosyası yalnız son sürümü taşır; eski sürümlerin kopyası data/interim/d1-prova/<birim>/istem-hat-<sürüm>.md
 # D13 (me'haz): dosyada tam metniyle yalnız Zemahşerî (nazmın i'câzı); öbür müfessirler yalnız araçla (kullanıcının kararı)
 DOSYA_TEFSIR_H3 = ("kessaf",)
 # D14.1 (h4; kullanıcının kararı, 2026-11-17): Zemahşerî de dosyadan çıkar, tefsirlerin başında araçla

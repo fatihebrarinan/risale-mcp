@@ -518,9 +518,17 @@ def mehaz(unit: str, n: int) -> dict:
         if not blk:
             continue
         first = blk.split("\n")[0]
+        if first.startswith("### ") and first[4:].strip().startswith("Dersin sonu"):   # h7: dersin bittiği yer
+            if cur is not None:
+                cur["sonu_isaretli"] = True
+            cur = None
+            blk = "\n".join(blk.split("\n")[1:]).strip()
+            if not blk:
+                continue
+            first = blk.split("\n")[0]
         if first.startswith("### "):
-            cur = {"baslik": first[4:].strip(), "ar_kelime": 0, "tr_kelime": 0, "alinti": 0, "risale_atif": 0} \
-                if first[4:].strip().startswith("Ders") else None
+            cur = {"baslik": first[4:].strip(), "ar_kelime": 0, "ar_harf": 0, "tr_kelime": 0, "alinti": 0,
+                   "risale_atif": 0, "sonu_isaretli": False} if first[4:].strip().startswith("Ders") else None
             if cur is not None:
                 basliklar.append(cur)
             blk = "\n".join(blk.split("\n")[1:]).strip()
@@ -537,6 +545,7 @@ def mehaz(unit: str, n: int) -> dict:
             cur["tr_kelime"] += len(blk.split())
         else:
             cur["ar_kelime"] += len(blk.split())
+            cur["ar_harf"] += len(blk)
         cur["risale_atif"] += sum(1 for k in nums(blk) if kind_of.get(k) == "risale")
     return {"atif": dict(atif), "blok_alinti": dict(alinti), "ders": ders, "ders_basliklari": basliklar,
             "mufessir_adi_ar": sum(own_ar.count(x) for x in MUFESSIR_ADLARI),
@@ -555,6 +564,8 @@ def sayilar(unit: str, tur: str, taban: int, yeni: int) -> dict:
             "istem": f"{meta.get('istem')} {meta.get('surum')}", "maliyet": meta.get("cost_usd"),
             "sure": meta.get("seconds"), "arac": sum((meta.get("calls") or {}).values()),
             "ar_harf": D.ar_chars(unit, n), "hedef": [h["en_az"], h["en_cok"]],
+            # h7: nazım kısmı = Arapça toplam − ders başlıklarının altı (işaretsiz derste bir sonraki başlığa kadar sayılır)
+            "ar_harf_nazim": D.ar_chars(unit, n) - sum(b.get("ar_harf", 0) for b in mehaz(unit, n)["ders_basliklari"]),
             "kapsama": D.coverage(unit, n), "kelime_kapsami": kapsam(unit, n),
             "tirnak_tr_bulunmadi": sum(1 for x in t if x["tur"] == "satir_ici" and x["dil"] == "tr" and x["durum"] == "bulunmadi"),
             "tirnak_ar_nisbetli_yok": sum(1 for x in t if x["dil"] == "ar" and x["durum"] == "bulunmadi"

@@ -30,6 +30,9 @@ Sürümler:
   lafızlar için üçüncü vecihte `### Ders: «…»` başlığını açar, yazar altını doldurur; dersin tarifi (kullanıcının
   örneklerinden: lafızdan okuyucuya, umumî hakikat, müellifin biçimleri, kısa değil, Risale'deki dersin telhîsi); bütçenin
   üst kısmı derse kullanılabilir; Ek 4'e geniş ders örneği (31–33'ün mukaddimesi).
+- h7 (2026-11-18, D14.5a; kullanıcının kararı: "uzunluğu kısacağız diye kaliteden kaybetmek istemiyorum"): uzunluk
+  hedefi yalnız nazım kısmına (üç vechin tahlili); dersler hedefin dışında, meselenin genişliğine göre, îcâzla; her
+  dersin sonunda `### Dersin sonu` işareti.
 -->
 
 ---- İSTEM ----
@@ -49,8 +52,9 @@ hatırlıyorsan ona dayanma ve ibarelerini yazma; usulü eklerden ve me'hazdan �
 - Taslak **Arapça** yazılır. Her Arapça paragrafın hemen altında onun **Türkçe tercümesi** durur; her tercüme
   paragrafı "Yapay zekâ tercümesi:" diye başlar. Tercümenin dili Abdülmecid Nursî tercümesine yakındır: asla muvafık,
   terimleri koruyan, Osmanlı Türkçesi üslûbunda (örnekleri Ek 1'deki "Tercümede" alıntıları).
-- **Uzunluk:** Arapça paragrafların toplamı **{en_az}–{en_cok} harf** (≈{kelime_az}–{kelime_cok} kelime). Bu,
-  İşârât'ın bu boydaki bir birimine denktir. İşârât îcâzlıdır: bir nükte bir iki cümlede söylenir, gerekçesiyle.
+- **Uzunluk:** **nazım kısmının** (üç vechin tahlili; dersler hariç) Arapça paragraflarının toplamı **{en_az}–{en_cok}
+  harf** (≈{kelime_az}–{kelime_cok} kelime). Bu, İşârât'ın bu boydaki bir biriminin nazım tahliline denktir. Dersler
+  (usul 3) bu hedefin dışındadır. İşârât îcâzlıdır: bir nükte bir iki cümlede söylenir, gerekçesiyle.
   Kaynağın sözünü uzun nakletme; nükteyi kendi cümlenle söyle, kaynağın numarasını ver, gerekirse kısa bir ibaresini
   alıntıla. Az sayıda nükteyi gerekçesiyle söylemek, çok sayıda nükteyi gerekçesiz saymaktan iyidir. Tercüme ve
   kaynakça uzunluğa sayılmaz.
@@ -118,8 +122,9 @@ tanımını terim eserinde gör; uymuyorsa kullanma.
      **telhis et**, âyetin lafzına bağla; Arapça metinde kendi sözünle, atıfla. Alıntı en çok dayanaktır; ders senin
      sözündür. "Risale-i Nur'da da böyledir" deyip geçmek ya da yorumsuz alıntı koymak ders değildir. Gerekirse öbür
      eserlerden.
-   - **Ne kadar:** meselenin genişliğine göre. Ayrı bir pay yok; sınır taslağın toplam uzunluğudur. Bütçenin üst kısmını
-     derse kullanabilirsin; nükteleri derse feda etme.
+   - **Ne kadar:** meselenin genişliğine göre. Dersler uzunluk hedefinin dışındadır: nazmın nüktelerini derse feda
+     etme, dersi de nazım için kısma. Ama ders de îcâzlıdır: Risale-i Nur'un dersini telhis edersin, nakletmezsin;
+     alıntı dayanaktır, dersin gövdesi değil.
 4. **Kabul ölçüsü:** Arap dili ilimlerinin reddetmediği, belâgatin güzel bulduğu, şeriatin maksatlarına uygun;
    delâlet derecesi Arapçada söylenir ve gerekçesi bellidir. Gerekçesini gösteremediğin nükteyi ihtimal diliyle söyle
    ya da bırak.
@@ -147,8 +152,8 @@ tanımını terim eserinde gör; uymuyorsa kullanma.
 4. Taslağı yaz (şablon aşağıda), uzunluk hedefine uyarak.
 5. Öz denetim: tırnak içindeki her söz araçların döndürdüğü metin mi? Bir kaynağa mal ettiğin söz o kaynağın kendi
    görüşü mü (naklettiği, itiraz ettiği ya da reddettiği vecih değil mi)? Nükteyi bir müfessirin adıyla mı
-   söylüyorsun, oysa lafızdan istinbat edilebilir mi? İnhisar kalıplarını kaynak mı söylüyor? Arapça uzunluk
-   hedefte mi?
+   söylüyorsun, oysa lafızdan istinbat edilebilir mi? İnhisar kalıplarını kaynak mı söylüyor? Nazım kısmının Arapça
+   uzunluğu hedefte mi (dersler hariç)?
 6. Her eklentinin `cite` aracını, dayandığın ve alıntıladığın her cümle ya da aralıkla bir kez çağır; işaret ettiği
    sorunları düzelt. Tek "Kaynaklar" listesi ver (eklentiler sırayla: `first` ile numara sürer).
 
@@ -175,7 +180,7 @@ Cevabın yalnız taslaktır; önüne ve ardına açıklama yazma. Biçim:
 
 - **Ders başlıkları** (program açtı; her birinin yeri yanında: çoğu üçüncü vecihte, o lafız işlenirken, lafzın
   nüktelerinden sonra; âyetin bütününe dair olanı mukaddimede; başlığı aynen yaz, altına dersi, Arapça paragraf ve
-  tercümesiyle; dersten sonra vechin devamına geçerken başlıksız sür):
+  tercümesiyle; dersin bitince ayrı satırda `### Dersin sonu` yaz, vechin devamı onun ardından başlıksız gelir):
 {ders_basliklari}
 - Bir kaynaktan alıntı ancak eklentinin ya da dosyanın verdiği metinle, ayrı satırda blok alıntı olarak ve
   numarasıyla [n] verilir; alıntıların tercümesi de "Yapay zekâ tercümesi:" damgalıdır.
