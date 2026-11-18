@@ -51,7 +51,7 @@ E = _load("d1_elestiri", "d1-elestiri.py")
 
 HAT_PROMPT = ROOT / "docs" / "d1" / "hat-istemi.md"
 IZAH_PROMPT = ROOT / "docs" / "d1" / "izah-istemi.md"
-SURUM = "h5"          # istem dosyası yalnız son sürümü taşır; eski sürümlerin kopyası data/interim/d1-prova/<birim>/istem-hat-<sürüm>.md
+SURUM = "h6"          # istem dosyası yalnız son sürümü taşır; eski sürümlerin kopyası data/interim/d1-prova/<birim>/istem-hat-<sürüm>.md
 # D13 (me'haz): dosyada tam metniyle yalnız Zemahşerî (nazmın i'câzı); öbür müfessirler yalnız araçla (kullanıcının kararı)
 DOSYA_TEFSIR_H3 = ("kessaf",)
 # D14.1 (h4; kullanıcının kararı, 2026-11-17): Zemahşerî de dosyadan çıkar, tefsirlerin başında araçla
@@ -62,7 +62,9 @@ PARA_PENCERE = 6       # uzun paragrafta bulunan cümlelerin iki yanından alın
 RISALE_DISI_GRUP = ("osmanlica", "hizb")   # Osmanlıca Türkçeyi tekrar eder; Hizbler dua metnidir
 # D14.2 (h5): ders adayı: bir konunun iki sorgusunun ilk 100 sonucunda en az bu kadar isabet alan bölüm (ilk eşik)
 ADAY_ESIK = 12
-ADAY_KOPYA = 0.5       # bu orandan çok cümlesi daha güçlü bir adayla aynı olan bölüm onun kopyasıdır (Tarihçe'deki Hutbe)
+ADAY_KOPYA = 0.5
+# D14.3 (h6): ders adayının isabeti en az bu kadar olan lafızlar için program üçüncü vecihte ders başlığı açar
+ZORUNLU_ESIK = 25       # bu orandan çok cümlesi daha güçlü bir adayla aynı olan bölüm onun kopyasıdır (Tarihçe'deki Hutbe)
 # h2'ye kadar: altı taslağın hepsinin okuduğu müfessirler (D8, 31–33); öbürleri araçla
 DOSYA_TEFSIR = ("kessaf", "beyzavi", "ebussuud", "alusi")
 # usul özetinden kısa isteme giren bölümler: "Bir âyette izlenen sıra" ve "Mukaddime ne zaman gelir"
@@ -450,7 +452,33 @@ def _section(text: str, start: str, end: str | None) -> str:
 DERS_ORNEKLERI = [("11-12-ayetlerin-tefsiri", "c024", "c028", "soru–cevap"),
                   ("13", "c027", "c030", "إشارة إلى"),
                   ("16", "c012", "c014", "إشارة إلى ve hitap"),
-                  ("9-10-ayetlerin-tefsiri", "c080", "c086", "hitapla ders ve içinde soru–cevap")]
+                  ("9-10-ayetlerin-tefsiri", "c080", "c086", "hitapla ders ve içinde soru–cevap"),
+                  # D14.3: geniş ders (mesele) örneği; genişi Yirminci Söz'ün İkinci Makamı
+                  ("31-33-ayetlerin-tefsiri", "mukaddime/c001", "mukaddime/c011", "mukaddime: geniş ders, taksimle")]
+
+
+def zorunlu_dersler(unit: str) -> list[dict]:
+    """D14.3 (h6): en güçlü adayının isabeti `ZORUNLU_ESIK`'i aşan konular: lafız ve aday bölümler (dosyanın adaylarından)."""
+    adaylar = json.loads((out_dir(unit) / "ders-adaylari.json").read_text(encoding="utf-8"))
+    topics = {t["konu"]: t for t in konular(unit)}
+    out = []
+    for konu, xs in adaylar.items():
+        strong = [x for x in xs if (x.get("isabet") or 0) >= ZORUNLU_ESIK]
+        if konu in topics and strong:
+            lafiz = re.split(r"\s+[—–-]\s+", topics[konu].get("neden", ""), maxsplit=1)[0].strip()
+            out.append({"konu": konu, "lafiz": lafiz, "adaylar": strong})
+    return out
+
+
+def ders_basliklari(unit: str) -> str:
+    rows = zorunlu_dersler(unit) if SURUM >= "h6" else []
+    if not rows:
+        return "(Bu birim için program ders başlığı açmadı.)"
+    L = []
+    for r in rows:
+        refs = "; ".join(f"{x['ref']} (`{x['node']}`, {x['isabet']} isabet)" for x in r["adaylar"])
+        L.append(f"- `### Ders: «{r['lafiz']}»`: Risale-i Nur'da {refs}")
+    return "\n".join(L)
 
 
 def ders_ornekleri(unit: str) -> str:
@@ -463,7 +491,8 @@ def ders_ornekleri(unit: str) -> str:
         node = f"isaratul-icaz-arabi/sure-i-bakara/{u}"
         if node == hidden or hidden.startswith(node) or node.startswith(hidden):
             continue
-        rows = conn.execute("SELECT id, text FROM sentences WHERE node_id = ? ORDER BY seq", (node,)).fetchall()
+        rows = conn.execute("SELECT id, text FROM sentences WHERE node_id = ? OR node_id LIKE ? ORDER BY seq",
+                            (node, node + "/%")).fetchall()
         ids = [r[0] for r in rows]
         i, j = ids.index(f"{node}/{a}"), ids.index(f"{node}/{b}")
         ref = conn.execute("SELECT ref FROM nodes WHERE id = ?", (node,)).fetchone()[0]
@@ -486,6 +515,7 @@ def hazirla(unit: str) -> Path:
     h = hedef(unit)
     body = HAT_PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
     body = body.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])),
+                       ders_basliklari=ders_basliklari(unit),
                        en_az=f"{h['en_az']:,}".replace(",", "."), en_cok=f"{h['en_cok']:,}".replace(",", "."),
                        kelime_az=f"{h['kelime_az']:,}".replace(",", "."), kelime_cok=f"{h['kelime_cok']:,}".replace(",", "."))
     ek4 = ders_ornekleri(unit) if SURUM >= "h5" else ""

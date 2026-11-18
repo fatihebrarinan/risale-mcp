@@ -26,6 +26,10 @@ Sürümler:
 - h5 (2026-11-17, D14.2 ders adayları ve tek kaide; kullanıcının kararları): usulün 3. maddesi "Mukaddime" yerine "Ders
   ve mukaddime: tek kaide" (ders, meseleyi doğuran şeyin yanında; bütçe toplamda); dosyada lafızların altında programın
   seçtiği ders adayları; Ek 4: İşârât'tan ders örnekleri (sınanan birim dışındaki geliştirme birimlerinden).
+- h6 (2026-11-18, D14.3 zorunlu ders başlıkları; kullanıcının kararları): program, ders adayı güçlü (en az 25 isabet)
+  lafızlar için üçüncü vecihte `### Ders: «…»` başlığını açar, yazar altını doldurur; dersin tarifi (kullanıcının
+  örneklerinden: lafızdan okuyucuya, umumî hakikat, müellifin biçimleri, kısa değil, Risale'deki dersin telhîsi); bütçenin
+  üst kısmı derse kullanılabilir; Ek 4'e geniş ders örneği (31–33'ün mukaddimesi).
 -->
 
 ---- İSTEM ----
@@ -104,10 +108,18 @@ tanımını terim eserinde gör; uymuyorsa kullanma.
      ihtilafı, ilk kez toplu gelen bir üslûp türü), vecihlerden önce **mukaddime**; bir lafza bağlı büyük bir meseleyse
      vecihlerin arasında **mesele**.
    - **Ne zaman:** dosyada bir lafzın altında **ders adayı** varsa (Risale-i Nur o konuyu orada yoğun işliyor), o lafzı
-     işlerken dur: münasebet güçlüyse dersi aç; zayıfsa kısa bir atıfla geç. Ders, Risale-i Nur'un dersi ve senin
-     istinbatındır; Arapça metinde kendi sözünle, atıfla; gerekirse öbür eserlerden.
-   - **Ne kadar:** meselenin genişliğine göre. Ayrı bir pay yok; sınır taslağın toplam uzunluğudur: ders uzarsa öbür
-     nükteleri kısalt.
+     işlerken dur: münasebet güçlüyse dersi aç; zayıfsa kısa bir atıfla geç. Adayı güçlü lafızlar için program aşağıda
+     (Şablon) **ders başlıklarını açtı**: bunların altını doldurmak zorunludur.
+   - **Ders nedir:** lafızdan kalkar ve okuyucuya döner; lafzın nüktesinden insana, İslâm âlemine, beşere dair umumî bir
+     hakikate geçer; müellifin biçimleriyle kurulur: temsil (bir nasihat sahnesi), soru–cevap (gerçek bir itiraz ve
+     cevabı), silsile ("X, …dir; X, …dir" diye sıralanan hükümler ve sonunda "bu âyet … dikkate davet eder"), taksim
+     ya da hitap. Kısa değildir: bir meseleyi gerekçesiyle açar. Bu derslerin genişi çoğu kez Risale-i Nur'dadır:
+     müellif İşârât'ta dersi kendi öbür sözünden telhis eder. Senin işin de budur: Risale-i Nur'daki dersi bul,
+     **telhis et**, âyetin lafzına bağla; Arapça metinde kendi sözünle, atıfla. Alıntı en çok dayanaktır; ders senin
+     sözündür. "Risale-i Nur'da da böyledir" deyip geçmek ya da yorumsuz alıntı koymak ders değildir. Gerekirse öbür
+     eserlerden.
+   - **Ne kadar:** meselenin genişliğine göre. Ayrı bir pay yok; sınır taslağın toplam uzunluğudur. Bütçenin üst kısmını
+     derse kullanabilirsin; nükteleri derse feda etme.
 4. **Kabul ölçüsü:** Arap dili ilimlerinin reddetmediği, belâgatin güzel bulduğu, şeriatin maksatlarına uygun;
    delâlet derecesi Arapçada söylenir ve gerekçesi bellidir. Gerekçesini gösteremediğin nükteyi ihtimal diliyle söyle
    ya da bırak.
@@ -161,6 +173,9 @@ Cevabın yalnız taslaktır; önüne ve ardına açıklama yazma. Biçim:
 ## Kaynaklar
 ```
 
+- **Ders başlıkları** (program açtı; üçüncü vecihte, o lafız işlenirken, lafzın nüktelerinden sonra; başlığı aynen yaz,
+  altına dersi, Arapça paragraf ve tercümesiyle):
+{ders_basliklari}
 - Bir kaynaktan alıntı ancak eklentinin ya da dosyanın verdiği metinle, ayrı satırda blok alıntı olarak ve
   numarasıyla [n] verilir; alıntıların tercümesi de "Yapay zekâ tercümesi:" damgalıdır.
 - **İşaretler** (yalnız Türkçe tercüme paragraflarında, iddianın hemen ardından): `[dil]` sarf, nahiv, lügat;

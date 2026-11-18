@@ -509,7 +509,36 @@ def mehaz(unit: str, n: int) -> dict:
         ders = {"aday": len(rows), "anildi": sum(1 for r in rows if r["atif_paragraf"] or r["blok_alinti"]),
                 "acildi": sum(1 for r in rows if r["acildi"]),
                 "acilan_konu": len({r["konu"] for r in rows if r["acildi"]}), "konu": len(adaylar), "satirlar": rows}
-    return {"atif": dict(atif), "blok_alinti": dict(alinti), "ders": ders,
+    # D14.3 (h6): programın açtığı "### Ders: «…»" başlıkları: altındaki Arapça (alıntı hariç) kelime, alıntı, Risale atfı
+    basliklar = []
+    raw = (P.DRAFTS / unit / f"taslak-{n}.md").read_text(encoding="utf-8")
+    cur = None
+    for blk in re.split(r"\n\s*\n", raw):
+        blk = blk.strip()
+        if not blk:
+            continue
+        first = blk.split("\n")[0]
+        if first.startswith("### "):
+            cur = {"baslik": first[4:].strip(), "ar_kelime": 0, "tr_kelime": 0, "alinti": 0, "risale_atif": 0} \
+                if first[4:].strip().startswith("Ders") else None
+            if cur is not None:
+                basliklar.append(cur)
+            blk = "\n".join(blk.split("\n")[1:]).strip()
+            if not blk:
+                continue
+        elif first.startswith("## "):
+            cur = None
+            continue
+        if cur is None:
+            continue
+        if blk.startswith(">"):
+            cur["alinti"] += 1
+        elif blk.startswith("Yapay zekâ tercümesi:"):
+            cur["tr_kelime"] += len(blk.split())
+        else:
+            cur["ar_kelime"] += len(blk.split())
+        cur["risale_atif"] += sum(1 for k in nums(blk) if kind_of.get(k) == "risale")
+    return {"atif": dict(atif), "blok_alinti": dict(alinti), "ders": ders, "ders_basliklari": basliklar,
             "mufessir_adi_ar": sum(own_ar.count(x) for x in MUFESSIR_ADLARI),
             "isarat_adi_ar": own_ar.count("الإشارات") + own_ar.count("إشارات الإعجاز"),
             "risale_paragraf": risale_par, "arapca_paragraf": ar_par}
