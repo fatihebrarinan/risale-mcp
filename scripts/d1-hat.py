@@ -144,7 +144,8 @@ anlamsal aramayla bulunacak ve bu âyetler üzerine yazacak birine me'haz olarak
 tahlili değil; imanî, ahlâkî ve ruhî ders (âyet neyi anlatıyor, neyi kötülüyor, neye çağırıyor, insanın içinde neyi
 gösteriyor).
 
-- 6–8 konu; her biri âyetin bir sözüne ya da cümlesine dayansın (`neden`).
+- 6–8 konu; her biri âyetin bir sözüne ya da cümlesine dayansın: `lafiz` o söz, **Arapça, âyetteki yazılışıyla
+  harfi harfine** (âyetin bütününe dair konuda null); `neden` onun Türkçe açıklaması.
 - Her konu için iki arama ifadesi (`sorgular`): biri günümüz Türkçesiyle, bir iki cümlelik tarif ya da soru; biri
   Risale-i Nur'un kullandığı kelimelerle (Osmanlı Türkçesi terimleriyle), yine bir iki cümle.
 - Konular birbirini tekrar etmesin; geniş bir konuyu (ör. "iman") değil, bu âyetlerin söylediği yönü yaz.
@@ -154,7 +155,7 @@ gösteriyor).
 Cevabın yalnız tek bir ```json kod bloğudur:
 
 ```json
-{{"konular": [{{"konu": "kısa ad", "kapsam": "lafiz | ayet", "neden": "âyetin hangi sözünden", "sorgular": ["…", "…"]}}]}}
+{{"konular": [{{"konu": "kısa ad", "kapsam": "lafiz | ayet", "lafiz": "Arapça söz ya da null", "neden": "Türkçe: bu sözden neden", "sorgular": ["…", "…"]}}]}}
 ```
 
 # Âyetler
@@ -326,7 +327,7 @@ def risale_by_word(topics: list[dict], paras: list[dict], adaylar: dict | None =
             ayet.append(p)
     for t in topics:
         ps = sorted(home.get(t["konu"], []), key=lambda p: -p["skor"][t["konu"]])
-        L += [f"### {t.get('neden', '')}", "", f"Konu: **{t['konu']}**"
+        L += [f"### {(t['lafiz'] + ' — ') if t.get('lafiz') else ''}{t.get('neden', '')}", "", f"Konu: **{t['konu']}**"
               + (" (âyetin bütününden)" if t.get("kapsam") == "ayet" else "") + f" ({len(ps)} yer, benzerlik sırasıyla)", ""]
         if adaylar and adaylar.get(t["konu"]):
             L += _aday_lines(adaylar[t["konu"]])
@@ -465,8 +466,9 @@ def zorunlu_dersler(unit: str) -> list[dict]:
     for konu, xs in adaylar.items():
         strong = [x for x in xs if (x.get("isabet") or 0) >= ZORUNLU_ESIK]
         if konu in topics and strong:
-            lafiz = re.split(r"\s+[—–-]\s+", topics[konu].get("neden", ""), maxsplit=1)[0].strip()
-            out.append({"konu": konu, "lafiz": lafiz, "adaylar": strong})
+            t = topics[konu]
+            lafiz = t.get("lafiz") or re.split(r"\s+[—–-]\s+", t.get("neden", ""), maxsplit=1)[0].strip()
+            out.append({"konu": konu, "lafiz": lafiz, "kapsam": t.get("kapsam", "lafiz"), "adaylar": strong})
     return out
 
 
@@ -477,7 +479,11 @@ def ders_basliklari(unit: str) -> str:
     L = []
     for r in rows:
         refs = "; ".join(f"{x['ref']} (`{x['node']}`, {x['isabet']} isabet)" for x in r["adaylar"])
-        L.append(f"- `### Ders: «{r['lafiz']}»`: Risale-i Nur'da {refs}")
+        if r["kapsam"] == "ayet":                      # tek kaide: âyetin bütününden doğan ders mukaddimededir
+            L.append(f"- `### Ders: {r['konu']}`: **vecihlerden önce, mukaddime olarak** (`## Mukaddime` başlığının altında); "
+                     f"Risale-i Nur'da {refs}")
+        else:
+            L.append(f"- `### Ders: «{r['lafiz']}»`: üçüncü vecihte, o lafız işlenirken; Risale-i Nur'da {refs}")
     return "\n".join(L)
 
 

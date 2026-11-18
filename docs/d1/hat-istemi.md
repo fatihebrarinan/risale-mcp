@@ -173,8 +173,9 @@ Cevabın yalnız taslaktır; önüne ve ardına açıklama yazma. Biçim:
 ## Kaynaklar
 ```
 
-- **Ders başlıkları** (program açtı; üçüncü vecihte, o lafız işlenirken, lafzın nüktelerinden sonra; başlığı aynen yaz,
-  altına dersi, Arapça paragraf ve tercümesiyle):
+- **Ders başlıkları** (program açtı; her birinin yeri yanında: çoğu üçüncü vecihte, o lafız işlenirken, lafzın
+  nüktelerinden sonra; âyetin bütününe dair olanı mukaddimede; başlığı aynen yaz, altına dersi, Arapça paragraf ve
+  tercümesiyle; dersten sonra vechin devamına geçerken başlıksız sür):
 {ders_basliklari}
 - Bir kaynaktan alıntı ancak eklentinin ya da dosyanın verdiği metinle, ayrı satırda blok alıntı olarak ve
   numarasıyla [n] verilir; alıntıların tercümesi de "Yapay zekâ tercümesi:" damgalıdır.
