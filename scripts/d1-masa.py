@@ -393,6 +393,7 @@ def build(unit: str, units: list[dict]) -> Path:
             "isarat": isarat(unit), "tefsir": tefsir(unit), "klasik": klasik(ayah), "risale": risale(unit),
             "drafts": dr, "yz": layer(unit, ayah, places, dr),
             "fark": sorted(p.name for p in OUT_DIR.glob(f"fark-{unit}-*.html")),   # D12.2 fark kartları
+            "turlar": tur_pages(),                                                  # bütün birimlerin tur okumaları
             "tur": tur_data(unit)}                                                  # D12.5 tur okuması (kör A/B)
     blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     out = OUT_DIR / f"{unit}.html"
@@ -407,6 +408,17 @@ def build(unit: str, units: list[dict]) -> Path:
     return out
 
 
+def tur_pages() -> list[dict]:
+    """Bütün birimlerin tur okuma sayfaları (`masa/tur-<birim>-<tur>.html`), en yenisi başta: her masada üstte bağlantı
+    (2026-11-18: D14.4 13'ün masasındaydı, 9–10'un masasında görünmüyordu)."""
+    out = []
+    for path in (P.DRAFTS).glob("*/tur-*.json"):
+        t = json.loads(path.read_text(encoding="utf-8"))
+        if t.get("sayfa") and (OUT_DIR / t["sayfa"]).exists():
+            out.append({"sayfa": t["sayfa"], "birim": title(path.parent.name), "ad": t.get("ad"), "at": t.get("at", "")})
+    return sorted(out, key=lambda x: x["at"], reverse=True)
+
+
 def tur_data(unit: str) -> dict | None:
     """Birimin son tur okuması (`provalar/<birim>/tur-<tur>.json`, `d1-tur.py okuma` yazar; en son kaydedilen):
     {ad, a, b, giris, yerler, sayfa}."""
@@ -416,7 +428,8 @@ def tur_data(unit: str) -> dict | None:
 
 def title(unit: str) -> str:
     cfg = P.UNITS[unit]
-    return f"{cfg['sura_name']} {'–'.join(map(str, cfg['ayahs']))}"
+    a, b = cfg["ayahs"]
+    return f"{cfg['sura_name']} {a}" if a == b else f"{cfg['sura_name']} {a}–{b}"      # tek âyet: "Bakara 13"
 
 
 def main() -> None:

@@ -898,7 +898,8 @@ function progress() {
   $('#progress').textContent = `İşaretler: örneklem ${ns}/${(Y.sample || []).length} · karşılaştırma ${n1} · eleştiri örneklemi ${nc}/${(Y.critic_sample || []).length} · başlık ${nz}/${(Y.systemic || []).length} · eleştiri ${n2} · bilirkişi ${n3}/${bkAll().length}`;
 }
 function render() {
-  $('#farklar').innerHTML = (DATA.fark || []).map(f => { const m = f.match(/-(\d+)-(\d+)\.html$/), t = f.match(/-(T\d+)\.html$/);
+  const turl = (DATA.turlar || []).slice(0, 6).map((t, i) => `<a class="btn" style="text-decoration:none;color:var(--fg)${i ? '' : ';font-weight:600'}" href="${esc(t.sayfa)}">Tur okuması: ${esc(t.birim)} · ${esc(t.ad)}</a>`).join(' ');
+  $('#farklar').innerHTML = turl + ' ' + (DATA.fark || []).map(f => { const m = f.match(/-(\d+)-(\d+)\.html$/), t = f.match(/-(T\d+)\.html$/);
     const lab = t ? `tur ${t[1]} (kör A/B)` : m ? `taslak ${m[1]} ile ${m[2]}` : f;   // D12.5 turunun fark sayfası
     return `<a class="btn" style="text-decoration:none;color:var(--fg)" href="${esc(f)}">Fark okuması: ${lab}</a>`; }).join(' ');
   $('#unit').innerHTML = (DATA.units || [{unit: U, title: DATA.title}]).map(u =>
