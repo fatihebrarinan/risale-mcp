@@ -65,7 +65,7 @@ işler"e taşındı. Yol: D14 → D15 → D5.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D14 | Taslak hattının turları (taban h7; sırada D14.6: uzunluk sınırı yok, Risale yerleri konu başına ilk 10) | |
+| 1 | D14 | Taslak hattının turları (taban h9; sırada D14.7: İşârât'ın soru kalıpları ve tarama tablosu, 14–15'te) | |
 | 2 | D15 | Saklı birimlerde son ölçüm: ar-genin sonu, D5'ten önceki son düzlük (eski D12.6) | |
 | 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
 | 4 | S7 | Âyet masasının üçüncü hâli: Kur'ân paneli, tek uygulama, kuyruk görünümü (D5.0'la paralel) | |
@@ -239,11 +239,32 @@ birimin masası. (2) **Tek uygulama, istek üzerine veri** (birim verisi ayrı d
 **Kuyruk görünümü.** (4) İleride işaretlerin sunucuda toplanması (birden çok okuyucu; dondurulan heyet akışına dokunur,
 ayrı karar). D5.0'la paralel.
 
+**D14.7 İşârât'ın soru kalıpları ve tarama tablosu** (kullanıcının kararı, 2026-11-18: ar-ge adımı; tutarsa D15'in
+hattı h10, tutmazsa h9). Sebep: üç taslağın üçü de 13'te İşârât'ın aynı nüktelerini kaçırdı (cumhura ittiba, fâsıla,
+i'raz): oynaklık değil, yazar bazı soruları hiç sormuyor; usul özetinde bu kalıplar yok ("fâsıla", "i'râz", "iltifat",
+"meçhul", "hazf" hiç geçmiyor). Kullanıcı: istemde liste durursa model takip etmeyebilir (h5'in dersleri gibi); bu yüzden
+program uygular (h6'nın başlıkları gibi).
+- **(1) Liste:** İşârât'ın birimden birime tekrar ettiği soru kalıpları (≈20–30; her biri soru, İşârât'ın tipik
+  cevapları, örnek yerler). Kaynak yalnız geliştirme birimleri: 9–10, 11–12, 13, 31–33'ün envanterleri ve metni;
+  Fâtiha, 1–8, 17–20, 23–24'ün metni. 14–15 (sınanan), 16 (yedek temiz birim) ve saklı birimler (21–22, 25, 26–27, 28,
+  29, 30) girmez; sızıntı testi hepsine karşı. Kalıp cümle değil türdür. Kullanıcı onaylar.
+- **(2) Tarama tablosu:** yazımdan önce program birimin lafızlarına sorulabilecek kalıpları çıkarır (kurallı: fâsıla,
+  tarif lâmı, te'kid edatları, ayırma zamiri, meçhul fiil; küçük model çağrısı: hazf, iltifat, sîga). Âyetin kendisinden
+  kurulur, İşârât'tan değil.
+- **(3) Yazar:** taslaktan önce "Tarama" çalışma bölümünde her satıra "taşıyor" (nükte bir cümle, taslakta yerinde
+  açılır) ya da "taşımıyor" (yarım cümle gerekçe) der; "taşımıyor" meşrudur. Program Tarama'yı yayımlanan taslaktan
+  çıkarır, ölçü için saklar (kaçırılan nükte tabloda yok muydu, yoksa yazar "taşımıyor" mu dedi).
+- **(4) Sınama:** 14–15 (hiç dokunulmamış geliştirme birimi; konu, ders adayları, envanter kurulur), h9 ve h10 (h9 + liste
+  + tarama). Ölçü: envanterde kaçırılan nükteler azaldı mı, zorlama var mı (kör eleştirmen ve kullanıcının okuması).
+  ≈20 $.
+
 **D15. Saklı birimlerde son ölçüm** (kullanıcının kararı, 2026-11-17: kendi aşaması; "D5'ten önceki son düzlük, o
 aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) bir kez, aynı
 ölçüyle: kör eleştirmen, envanter (ayar), kullanıcının okuması. D5'e geçiş ölçütü plan belgesi 4.7 (yeni hat çoğunlukla
 tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilmez; açık çıkarsa D14'e dönülür.
-- **Hat h9** (kullanıcının kararı, 2026-11-18; bkz. D14.6). Okumada h2'ye karşı A/B kartlarına ek olarak her birimde **h9'u
+- **Kapsam** (2026-11-18 önerisi): her türden bir birim: 21–22 (maksat), 28 (lafız tahkiki), 26–27 (mağlata cevabı);
+  25, 29, 30 gerekirse. Hat D14.7'den sonra donar.
+- **Hat h9 ya da h10** (kullanıcının kararı, 2026-11-18; bkz. D14.6, D14.7). Okumada h2'ye karşı A/B kartlarına ek olarak her birimde **h9'u
   doğrudan İşârât'la karşılaştıran bir kart** (kullanıcı kabul etti, 2026-11-18): D5'te soru "eskisinden iyi mi" değil,
   "kendi başına yeterli mi" olacak. Uzunluk hedefi kalktığı için geçiş ölçütündeki "uzunluk hedefte" yerine derslerin
   şişmesi izlenir.
