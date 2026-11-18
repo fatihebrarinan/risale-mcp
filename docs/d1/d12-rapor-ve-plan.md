@@ -221,6 +221,9 @@ ve karar belirsiz kalınca.
      Her kartta iki yanın paragrafları okunur: ikisi de kartın nüktesini gerçekten işlemiyorsa (eşleştirici geniş bir
      paragrafı bağlamış olabilir) o nükte seçilmez; soru nükteden değil paragrafların işlediği şeyden yazılır (D14.1'in
      N17'si, 2026-11-17: "soru yanlış").
+     Ders sınanırken yeni tarafta lafzın nazım paragrafı da dersle birlikte gösterilir: ikisi taslakta beraberdir,
+     yalnız ders gösterilirse karşılaştırma eşit olmaz; gerekirse sınır o kart için aşılır ve sayfada söylenir (D14.3'ün
+     N40'ı, 2026-11-18: "bu ikisinin beraber olması lazım").
   5. **Kart:** A solda, B sağda; **Türkçe önde, Arapça açılır kutuda**; andığı kaynaklar kapalı kutuda; seçim ve
      gerekçe; "Aç"tan sonra hangisi hangisi, neden seçildiği, envanterin o yer için dediği ve **İşârât'ın sözü**
      (Abdülmecid Nursî tercümesi, Arapçası açılır).

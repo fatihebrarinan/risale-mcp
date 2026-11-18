@@ -165,6 +165,10 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   **bütünde ve me'hazda açık** tercih etti. Ölçüm düzeltmesi: kaynak eşlemesi her sunucunun yalnız son `cite`
   çağrısını okuyordu, artık hepsini birleştiriyor. Okuma sayfası paragrafın devamını (alıntı ve tercüme parçaları)
   da gösteriyor. Okuma `tur-9-10-D14.3.html` (N40, N38, N16; ≈1.140 kelime).
+  **Okuma (2026-11-18): yeni 3, taban 0** (N40: "Risale'den alınmış çok çok iyi bir ders, gerçekten bravo"; N38: "her
+  türlü baştan sona B daha iyi"; N16: "açık ara, silsile yerinde"). Kural 4.4: eleştirmen ve kullanıcı aynı yönde, açık:
+  **h6 taban.** N40'ın kartı nazım ile dersi karşılaştırdı (B'de ikisi beraberdi, kart yalnız dersi gösterdi): okuma
+  standardına kural eklendi.
 - **D14.4 Düzeltme (k3):** sonra (kazananın üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
