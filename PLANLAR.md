@@ -223,6 +223,9 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
     %64 → %70; okuma `tur-13-D14.6a.html` (N43 ders, N35, N17; A = h7, B = h8a). (b) h8b: maliyet %11 düştü (3,72 →
     3,29 $), kör eleştirmen h8b'yi bütünde hafif tercih etti (me'haz eşit), envanter %68; dersler uzadı (2.519 ve 3.066
     harf), toplam 14.217; okuma gerekmiyor.
+    **D14.6a okuması (2026-11-18):** eşit 1, emin değil 2: kalite denk; sınırsız tarafta paragraf düzeyinde uzatma
+    (sefehin lügat mânâsı) ve tekrar kalıbı (art arda üç "Denilmiştir ki"); "îcâz söz konusuysa A'yı tercih ederim".
+    Taslaklar arası farkları doğal fark sayıyor. Karar bekliyor.
 - **Genel düzeltme (k3) ertelendi** (2026-11-18): D15'te h6'nın çözemediği türden kusurlar çıkarsa yeniden açılır.
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
