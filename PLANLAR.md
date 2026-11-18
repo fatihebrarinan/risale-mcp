@@ -197,6 +197,13 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
     aşıyor. Doğruluğu kör eleştirmenin bulduğu nisbet hatalarıyla ölçülür (Lem'alar'daki zamir; Âlûsî'nin naklettiği
     istidlal; adı anılmadan alınan Ebüssuûd tespiti). Güvenilirse D5.0'da üretim hattının kalite kapısı; cümle düzeyinde
     düzeltme adımı sonra.
+  - **D14.5b bitti (2026-11-18; ≈4 $; rapor `data/d1/d14-5b-nisbet.md`):** isabet ≈%80 (beş bulgudan dördü doğru),
+    yakalama ≈%45 (bilinen 13 hatadan 6'sı; kaçırılanların çoğu atıf verilen yerin dışında); **h6 taslaklarında nisbet
+    hatası az** (2 ve 1; h2'de 11 ve 8). D5.0'da kalite kapısı; yakalama için bağlam genişletilebilir.
+  - **D14.5a yazıldı ve ölçüldü (2026-11-18; ≈6,5 $; rapor `data/d1/provalar/13/d14-5a-rapor.md`):** taslak 3 (h7).
+    Dersleri sınırdan çıkarınca toplam kısaldı ve hedefe girdi (13.581 → 11.613; nazım 8.558, dersler ≈1.500'er harf,
+    derli toplu, işaretle kapanmış); kör eleştirmen h7'yi bütünde ve me'hazda hafif tercih etti; envanter %74 → %64.
+    Okuma `tur-13-D14.5a.html` (N43, N03, N46; A = h6, B = h7).
 - **Genel düzeltme (k3) ertelendi** (2026-11-18): D15'te h6'nın çözemediği türden kusurlar çıkarsa yeniden açılır.
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
