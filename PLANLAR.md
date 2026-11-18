@@ -218,6 +218,11 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   - **D14.6b Risale yerleri konu başına ilk 10** (h8b, taslak 5): h7'nin aynısı, dosyada konu başına benzerlikçe ilk 10
     paragraf (ders adayları aynı: ilk 100'deki yoğunluktan). Soru: odak ve maliyet; mekanik ölçü ve kör eleştirmen,
     eleştirmen düşüş görürse okuma.
+  - **D14.6 ölçüldü (2026-11-18; ≈13,3 $; rapor `data/d1/provalar/13/d14-6-rapor.md`).** (a) h8a: sınırsız model
+    şişmiyor (toplam 11.613 → 11.506; nazım kısaldı, dersler uzadı); kör eleştirmen h7'yi hafif tercih etti, envanter
+    %64 → %70; okuma `tur-13-D14.6a.html` (N43 ders, N35, N17; A = h7, B = h8a). (b) h8b: maliyet %11 düştü (3,72 →
+    3,29 $), kör eleştirmen h8b'yi bütünde hafif tercih etti (me'haz eşit), envanter %68; dersler uzadı (2.519 ve 3.066
+    harf), toplam 14.217; okuma gerekmiyor.
 - **Genel düzeltme (k3) ertelendi** (2026-11-18): D15'te h6'nın çözemediği türden kusurlar çıkarsa yeniden açılır.
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
