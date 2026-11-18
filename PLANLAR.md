@@ -257,6 +257,11 @@ program uygular (h6'nın başlıkları gibi).
 - **(4) Sınama:** 14–15 (hiç dokunulmamış geliştirme birimi; konu, ders adayları, envanter kurulur), h9 ve h10 (h9 + liste
   + tarama). Ölçü: envanterde kaçırılan nükteler azaldı mı, zorlama var mı (kör eleştirmen ve kullanıcının okuması).
   ≈20 $.
+- **(1) bitti (2026-11-18; ≈4,3 $):** `docs/d1/soru-kaliplari.md` k1, 35 kalıp (kelime 18, cümle 8, cümleler arası 4,
+  âyetin bütünü 5); sızıntı testi temiz; dört örnek kaynakla doğrulandı. Kullanıcı onayladı. **Kararlar:** (a) üç kalıp
+  tabloya girmez, yalnız listede kalır: vecihlerin çokluğu, kayıtların tek garaza akması, dört esas maksadın remzi
+  (bütün âyete bakan usuller; zorlama riski); (b) **h10 taban olursa D5.0'da liste bütün İşârât'tan yeniden kurulur**
+  (bugün yalnız geliştirme birimleri; D15'ten sonra saklı birimler de girebilir).
 
 **D15. Saklı birimlerde son ölçüm** (kullanıcının kararı, 2026-11-17: kendi aşaması; "D5'ten önceki son düzlük, o
 aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) bir kez, aynı
