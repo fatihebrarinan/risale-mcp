@@ -194,7 +194,7 @@ function cardHtml(c, idx) {
         ${c.isarat_ar ? `<details><summary class="small muted">Arapçası</summary><div class="ar" dir="rtl">${esc(c.isarat_ar)}</div></details>` : ''}</div></div>`;
   }
   return `<div class="card${m.secim ? ' done' : ''}" id="card-${idx}">
-    <h2>${idx + 1}. ${arw(c.baslik)}</h2><p class="soru">${arw(c.soru || '')}</p>
+    <h2>${idx + 1}. ${arw(c.baslik)}</h2><p class="soru">${arw(c.soru || '')}</p>${c.sinir_asimi ? `<p class="small muted">Bu kartta kelime sınırı aşıldı: ${esc(c.sinir_asimi)}</p>` : ''}
     <div class="cols">${colHtml('A', c.A, M.A)}${colHtml('B', c.B, M.B)}</div>
     <div class="ask"><b class="small">Hangisi daha iyi?</b>${opts}
       <textarea data-i="${idx}" data-f="gerekce" placeholder="Kısa gerekçe (bir iki cümle)">${esc(m.gerekce || '')}</textarea>

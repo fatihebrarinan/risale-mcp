@@ -175,6 +175,10 @@ Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
   yazdı, başlığa cümle girdi) ve âyetin bütününe dair konunun ders başlığı mukaddimeye (tek kaide). 13'te iki zorunlu
   başlık: «ٱلنَّاسُ» (Yirmi Üçüncü Söz, 54 isabet), «أَلَآ إِنَّهُمْ هُمُ ٱلسُّفَهَآءُ» (Otuz İkinci Söz). Gerekirse sonra
   h6 üzerinde kapalı eleştirmenin zaaf profili.
+  **Yazıldı ve ölçüldü (2026-11-18; ≈11,5 $; rapor `data/d1/provalar/13/d14-4-rapor.md`):** kör eleştirmen h6'yı
+  **bütünde ve me'hazda açık** tercih etti (V3 açık; V1'de h2 hafif); envanter %62 → %74; Risale atfı 2 → 31, öbür
+  tefsirlere atıf 37 → 4; iki ders başlığı dolu; h6 uzunluk hedefini %13 aştı (kısa birim). Okuma `tur-13-D14.4.html`
+  (N43, N01, N21; A = h6, B = h2). Okuma kartına `ek_capa` (dersin nazım paragrafı) ve `sinir_asimi` seçenekleri.
 - **D14.5 Düzeltme (k3):** sonra (kazananın üzerinde; eleştirmen dosyanın Risale bölümünü de görür).
 - Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
   Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
