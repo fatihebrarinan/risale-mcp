@@ -34,6 +34,14 @@ Sürümler:
   hedefi yalnız nazım kısmına (üç vechin tahlili); dersler hedefin dışında, meselenin genişliğine göre, îcâzla; her
   dersin sonunda `### Dersin sonu` işareti. Üslûp notu (kullanıcı, D14.5a'nın okuması): İşârât'ın öbür birimleri
   "Müellif … saymıştır / zikretmiştir" diye anılmaz; nükte kendi sözüyle söylenir, numarası verilir.
+- h8a, h8b (2026-11-18, D14.6; h7'nin varyantları, programla): h8a uzunluk hedefi yok; h8b dosyada konu başına ilk 10
+  Risale paragrafı.
+- h9 (2026-11-18, kullanıcının kararı, D14.6): h7 + uzunluk hedefi yok (h8a) + konu başına ilk 10 Risale yeri (h8b,
+  `d1-hat.RISALE_ILK`) + îcâz notları (kullanıcının D14.6a okumasından: lügat mânâsı bir iki cümle; aynı kalıp art
+  arda kullanılmaz; nükte bir yerde söylenir).
+- h10 (2026-11-18, D14.7): h9 + İşârât'ın soru kalıpları (Ek 5, `docs/d1/soru-kaliplari.md`) + program kurduğu
+  tarama tablosu (usulden sonra); yazar çıktısının başında `## Tarama`'yı doldurur (iş sırası, şablon);
+  program onu taslaktan ayırır. h9'da bu yer tutucular boştur.
 -->
 
 ---- İSTEM ----
@@ -53,12 +61,12 @@ hatırlıyorsan ona dayanma ve ibarelerini yazma; usulü eklerden ve me'hazdan �
 - Taslak **Arapça** yazılır. Her Arapça paragrafın hemen altında onun **Türkçe tercümesi** durur; her tercüme
   paragrafı "Yapay zekâ tercümesi:" diye başlar. Tercümenin dili Abdülmecid Nursî tercümesine yakındır: asla muvafık,
   terimleri koruyan, Osmanlı Türkçesi üslûbunda (örnekleri Ek 1'deki "Tercümede" alıntıları).
-- **Uzunluk:** **nazım kısmının** (üç vechin tahlili; dersler hariç) Arapça paragraflarının toplamı **{en_az}–{en_cok}
-  harf** (≈{kelime_az}–{kelime_cok} kelime). Bu, İşârât'ın bu boydaki bir biriminin nazım tahliline denktir. Dersler
-  (usul 3) bu hedefin dışındadır. İşârât îcâzlıdır: bir nükte bir iki cümlede söylenir, gerekçesiyle.
-  Kaynağın sözünü uzun nakletme; nükteyi kendi cümlenle söyle, kaynağın numarasını ver, gerekirse kısa bir ibaresini
-  alıntıla. Az sayıda nükteyi gerekçesiyle söylemek, çok sayıda nükteyi gerekçesiz saymaktan iyidir. Tercüme ve
-  kaynakça uzunluğa sayılmaz.
+- **Uzunluk ve îcâz:** sabit bir uzunluk hedefi yok; meselenin gerektirdiği kadar yaz. İşârât îcâzlıdır: bir nükte
+  bir iki cümlede söylenir, gerekçesiyle; bir yerde söylenir, aynı işaret başka sözlerle tekrarlanmaz. Kaynağın sözünü
+  uzun nakletme; nükteyi kendi cümlenle söyle, kaynağın numarasını ver, gerekirse kısa bir ibaresini alıntıla. Bir
+  kelimenin lügat mânâsı bir iki cümleyle verilir; mesele lügatte değilse tarifleri sıralama. Aynı kalıbı ("قيل",
+  "وقيل", "Denilmiştir ki") art arda kullanma. Az sayıda nükteyi gerekçesiyle söylemek, çok sayıda nükteyi gerekçesiz
+  saymaktan iyidir.
 
 ## Me'haz
 
@@ -126,8 +134,7 @@ tanımını terim eserinde gör; uymuyorsa kullanma.
      **telhis et**, âyetin lafzına bağla; Arapça metinde kendi sözünle, atıfla. Alıntı en çok dayanaktır; ders senin
      sözündür. "Risale-i Nur'da da böyledir" deyip geçmek ya da yorumsuz alıntı koymak ders değildir. Gerekirse öbür
      eserlerden.
-   - **Ne kadar:** meselenin genişliğine göre. Dersler uzunluk hedefinin dışındadır: nazmın nüktelerini derse feda
-     etme, dersi de nazım için kısma. Ama ders de îcâzlıdır: Risale-i Nur'un dersini telhis edersin, nakletmezsin;
+   - **Ne kadar:** meselenin genişliğine göre: nazmın nüktelerini derse feda etme, dersi de nazım için kısma. Ama ders de îcâzlıdır: Risale-i Nur'un dersini telhis edersin, nakletmezsin;
      alıntı dayanaktır, dersin gövdesi değil.
 4. **Kabul ölçüsü:** Arap dili ilimlerinin reddetmediği, belâgatin güzel bulduğu, şeriatin maksatlarına uygun;
    delâlet derecesi Arapçada söylenir ve gerekçesi bellidir. Gerekçesini gösteremediğin nükteyi ihtimal diliyle söyle
@@ -137,13 +144,13 @@ tanımını terim eserinde gör; uymuyorsa kullanma.
    aç, her halkayı yaz. Dinleyenin zihnindeki soruyu ve makamın neyi iktiza ettiğini birlikte kullan.
 6. **Üçüncü vecih:** bakılacak yerleri önce say (harfler dahil); "neden şu lafız, şu değil" diye sor; mukadder
    cümleleri aç; her kaydın mânâya ne kattığını ve muhatabın vicdanında ne iş gördüğünü söyle; sonunda kayıtların asıl
-   garaza nasıl aktığını topla.
+   garaza nasıl aktığını topla.{tarama_usul}
 7. **Müfessirler ayrıldığında** birini seçme, "hepsi olabilir" deyip de geçme; her görüşün hangi itibarla doğru
    olduğunu sor.
 8. **Kapsam:** kendi tespitini vecihlerden biri olarak yaz ("… olabilir"). İnhisar ve mutlaklık kalıplarını ("ancak",
    "daima", "X değil Y'dir") ancak kaynak öyle diyorsa kullan; ara halkaları atlayıp ilişkiyi mahiyet hükmüne çevirme.
 
-## Çalışma sırası
+{tarama_bolum}## Çalışma sırası
 
 1. Ek 1'i, Ek 2'yi ve Ek 3'ü (kaynak dosyası) oku; Risale-i Nur'un yerlerini (Ek 3'ün 2. bölümü) baştan sona.
 2. İşârât'ın aynı türden bir iki birimini `risale` eklentisinde `read_section` ile oku (kimlikleri Ek 2'de); bir
@@ -153,20 +160,20 @@ tanımını terim eserinde gör; uymuyorsa kullanma.
 3. Yazmadan önce kendin için çıkar: âyetin cümleleri, asıl maksadı, öncesiyle bağı, Risale-i Nur'un bu âyetlerin
    konusunda verdiği ders, mukaddime gerekip gerekmediği, üslûbun beklenenden ayrıldığı yerler, müfessirlerin
    ayrıldığı yerler.
-4. Taslağı yaz (şablon aşağıda), uzunluk hedefine uyarak.
+4. {tarama_adim}Taslağı yaz (şablon aşağıda).
 5. Öz denetim: tırnak içindeki her söz araçların döndürdüğü metin mi? Bir kaynağa mal ettiğin söz o kaynağın kendi
    görüşü mü (naklettiği, itiraz ettiği ya da reddettiği vecih değil mi)? Nükteyi bir müfessirin adıyla mı
-   söylüyorsun, oysa lafızdan istinbat edilebilir mi? İnhisar kalıplarını kaynak mı söylüyor? Nazım kısmının Arapça
-   uzunluğu hedefte mi (dersler hariç)?
+   söylüyorsun, oysa lafızdan istinbat edilebilir mi? İnhisar kalıplarını kaynak mı söylüyor? Gereksiz uzatma, tekrar ya
+   da uzun nakil var mı?{tarama_denetim}
 6. Her eklentinin `cite` aracını, dayandığın ve alıntıladığın her cümle ya da aralıkla bir kez çağır; işaret ettiği
    sorunları düzelt. Tek "Kaynaklar" listesi ver (eklentiler sırayla: `first` ile numara sürer).
 
 ## Şablon
 
-Cevabın yalnız taslaktır; önüne ve ardına açıklama yazma. Biçim:
+{cevap} Biçim:
 
 ```
-# Yapay zekâ taslağı: {sura_name} {ayahs}
+{tarama_baslik}# Yapay zekâ taslağı: {sura_name} {ayahs}
 > Bu bir yapay zekâ taslağıdır, tefsir değildir. İşârâtü'l-İ'câz'ın usulüyle, ehlinin incelemesi için yazıldı.
 
 ## Âyet

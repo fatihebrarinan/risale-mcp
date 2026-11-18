@@ -51,7 +51,7 @@ E = _load("d1_elestiri", "d1-elestiri.py")
 
 HAT_PROMPT = ROOT / "docs" / "d1" / "hat-istemi.md"
 IZAH_PROMPT = ROOT / "docs" / "d1" / "izah-istemi.md"
-SURUM = "h7"          # istem dosyası yalnız son sürümü taşır; eski sürümlerin kopyası data/interim/d1-prova/<birim>/istem-hat-<sürüm>.md
+SURUM = "h9"          # (sürüm karşılaştırmaları dizedir: "h10" < "h3"; h10 yalnız `hazirla --tarama` ile) istem dosyası yalnız son sürümü taşır; eski sürümlerin kopyası data/interim/d1-prova/<birim>/istem-hat-<sürüm>.md
 # D13 (me'haz): dosyada tam metniyle yalnız Zemahşerî (nazmın i'câzı); öbür müfessirler yalnız araçla (kullanıcının kararı)
 DOSYA_TEFSIR_H3 = ("kessaf",)
 # D14.1 (h4; kullanıcının kararı, 2026-11-17): Zemahşerî de dosyadan çıkar, tefsirlerin başında araçla
@@ -62,11 +62,10 @@ PARA_PENCERE = 6       # uzun paragrafta bulunan cümlelerin iki yanından alın
 RISALE_DISI_GRUP = ("osmanlica", "hizb")   # Osmanlıca Türkçeyi tekrar eder; Hizbler dua metnidir
 # D14.2 (h5): ders adayı: bir konunun iki sorgusunun ilk 100 sonucunda en az bu kadar isabet alan bölüm (ilk eşik)
 ADAY_ESIK = 12
-ADAY_KOPYA = 0.5
+ADAY_KOPYA = 0.5       # bu orandan çok cümlesi daha güçlü bir adayla aynı olan bölüm onun kopyasıdır (Tarihçe'deki Hutbe)
 # D14.3 (h6): ders adayının isabeti en az bu kadar olan lafızlar için program üçüncü vecihte ders başlığı açar
 ZORUNLU_ESIK = 25
-# D14.6 denemeleri (h7'nin varyantları; `hazirla --surum h8a --uzunluk-yok`, `--surum h8b --risale-ilk 10`)
-RISALE_ILK: int | None = None      # dosyada konu başına gösterilen Risale paragrafı (None: hepsi, ilk 100'ün üst yarısı)       # bu orandan çok cümlesi daha güçlü bir adayla aynı olan bölüm onun kopyasıdır (Tarihçe'deki Hutbe)
+RISALE_ILK: int | None = 10        # dosyada konu başına gösterilen Risale paragrafı (h9, D14.6b; None: ilk 100'ün üst yarısı)
 # h2'ye kadar: altı taslağın hepsinin okuduğu müfessirler (D8, 31–33); öbürleri araçla
 DOSYA_TEFSIR = ("kessaf", "beyzavi", "ebussuud", "alusi")
 # usul özetinden kısa isteme giren bölümler: "Bir âyette izlenen sıra" ve "Mukaddime ne zaman gelir"
@@ -510,19 +509,29 @@ def ders_ornekleri(unit: str) -> str:
     return "\n".join(L).strip()
 
 
-UZUNLUK_YOK = [   # D14.6a: istemden uzunluk hedefi çıkar (îcâz kuralı kalır)
-    (re.compile(r"- \*\*Uzunluk:\*\* \*\*nazım kısmının\*\*.*?Dersler\s+\(usul 3\) bu hedefin dışındadır\.", re.S),
-     "- **Uzunluk:** sabit bir hedef yok; uzunluğu meselenin gerektirdiği kadar tut."),
-    (re.compile(r"Dersler uzunluk hedefinin dışındadır:"), "Uzunluk hedefi yok:"),
-    (re.compile(r"Nazım kısmının Arapça\s+uzunluğu hedefte mi \(dersler hariç\)\?"), "Gereksiz uzatma, tekrar ya da uzun nakil var mı?"),
-    (re.compile(r"Taslağı yaz \(şablon aşağıda\), uzunluk hedefine uyarak\."), "Taslağı yaz (şablon aşağıda)."),
-]
+KALIP_DOC = ROOT / "docs" / "d1" / "soru-kaliplari.md"
+TARAMA_PROMPT = ROOT / "docs" / "d1" / "tarama-istemi.md"   # D14.7 (h10)
+TARAMA_ALANLAR = ("tarama_usul", "tarama_bolum", "tarama_adim", "tarama_denetim", "cevap", "tarama_baslik")
+CEVAP_H9 = "Cevabın yalnız taslaktır; önüne ve ardına açıklama yazma."
 
 
-def hazirla(unit: str, surum: str | None = None, uzunluk_yok: bool = False, risale_ilk: int | None = None) -> Path:
-    global RISALE_ILK
-    surum = surum or SURUM
-    RISALE_ILK = risale_ilk
+def tarama_parcalari(unit: str | None) -> dict:
+    """h10: tarama-istemi.md'nin bölümleri ve birimin tablosu; h9 (unit None): boş, cevap cümlesi h9'unki."""
+    if unit is None:
+        return {k: "" for k in TARAMA_ALANLAR} | {"cevap": CEVAP_H9}
+    K = _load("d1_kalip", "d1-kalip.py")
+    raw = TARAMA_PROMPT.read_text(encoding="utf-8")
+    out = {}
+    for k in TARAMA_ALANLAR:
+        part = raw.split(f"---- {k} ----\n", 1)[1]
+        part = part.split("\n---- ", 1)[0]
+        out[k] = part.rstrip("\n") if k not in ("tarama_bolum", "tarama_baslik") else part.rstrip("\n") + "\n\n"
+    out["tarama_bolum"] = out["tarama_bolum"].replace("{tablo}", K.tablo_md(unit))
+    return out
+
+
+def hazirla(unit: str, surum: str | None = None, tarama: bool = False) -> Path:
+    surum = surum or ("h10" if tarama else SURUM)
     cfg = P.UNITS[unit]
     out = out_dir(unit)
     if not (out / "risale.db").exists():
@@ -536,11 +545,7 @@ def hazirla(unit: str, surum: str | None = None, uzunluk_yok: bool = False, risa
     ek2 = _section(cizelge, "## Çizelge: Bakara", "## Çizelge: Fâtiha")
     h = hedef(unit)
     body = HAT_PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
-    if uzunluk_yok:
-        for rx, rep in UZUNLUK_YOK:
-            body, k = rx.subn(rep, body)
-            assert k == 1, rx.pattern
-    body = body.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])),
+    body = body.format(**tarama_parcalari(unit if tarama else None),sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])),
                        ders_basliklari=ders_basliklari(unit),
                        en_az=f"{h['en_az']:,}".replace(",", "."), en_cok=f"{h['en_cok']:,}".replace(",", "."),
                        kelime_az=f"{h['kelime_az']:,}".replace(",", "."), kelime_cok=f"{h['kelime_cok']:,}".replace(",", "."))
@@ -548,7 +553,9 @@ def hazirla(unit: str, surum: str | None = None, uzunluk_yok: bool = False, risa
     prompt = (f"{body}\n\n---\n\n# Ek 1: Usul özeti, {'2.7 (Muhâkemât), ' if SURUM >= 'h3' else ''}4. ve 5. bölüm (prova kopyası)\n\n{ek1}\n\n---\n\n"
               f"# Ek 2: Birim çizelgesi, Bakara (prova kopyası)\n\n{ek2}\n\n---\n\n# Ek 3: "
               + dosya_path.read_text(encoding="utf-8").removeprefix("# ")
-              + (f"\n\n---\n\n# Ek 4: İşârât'tan ders örnekleri\n\n{ek4}" if ek4 else ""))
+              + (f"\n\n---\n\n# Ek 4: İşârât'tan ders örnekleri\n\n{ek4}" if ek4 else "")
+              + (f"\n\n---\n\n# Ek 5: İşârât'ın soru kalıpları\n\n{'## ' + KALIP_DOC.read_text(encoding='utf-8').split(chr(10) + '## ', 1)[1]}"
+                 if tarama else ""))
     name, report = P.istem_files("hat", surum)
     (out / name).write_text(prompt, encoding="utf-8")
     print(f"istem: {len(prompt):,} harf (gövde {len(body):,}, Ek 1 {len(ek1):,}, Ek 2 {len(ek2):,}); hedef {h}")
@@ -765,9 +772,8 @@ def main() -> None:
     p = sub.add_parser("oran")
     p = sub.add_parser("hazirla")
     p.add_argument("unit", choices=P.UNITS)
-    p.add_argument("--surum", help="istem sürümünün adı (varsayılan SURUM); D14.6 varyantları için")
-    p.add_argument("--uzunluk-yok", action="store_true", help="D14.6a: uzunluk hedefi yok")
-    p.add_argument("--risale-ilk", type=int, help="D14.6b: dosyada konu başına ilk N Risale paragrafı")
+    p.add_argument("--surum", help="istem sürümünün adı (varsayılan SURUM, --tarama ile h10)")
+    p.add_argument("--tarama", action="store_true", help="D14.7 (h10): soru kalıpları (Ek 5) ve tarama tablosu")
     p = sub.add_parser("yazdir")
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("--surum")
@@ -789,7 +795,7 @@ def main() -> None:
     if a.cmd == "dosya":
         dosya(a.unit)
     elif a.cmd == "hazirla":
-        hazirla(a.unit, a.surum, a.uzunluk_yok, a.risale_ilk)
+        hazirla(a.unit, a.surum, a.tarama)
     elif a.cmd == "yazdir":
         P.yazdir(a.unit, 1, a.model, a.effort, "hat", a.surum or SURUM)
     elif a.cmd == "izah":

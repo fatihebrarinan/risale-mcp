@@ -508,6 +508,11 @@ def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam", s
             meta = {"model": model, "effort": effort, "istem": istem, "surum": surum, "prompt_sha": _sha(prompt), "seconds": round(time.monotonic() - started),
                     "returncode": done.returncode, "calls": calls, "cost_usd": cost, "at": datetime.now().isoformat()}
             (out / f"taslak-{n}.json").write_text(json.dumps(meta, ensure_ascii=False, indent=1), encoding="utf-8")
+            # D14.7 (h10): cevabın başındaki "## Tarama" yazarın çalışma bölümüdür; taslaktan ayrılır, ölçü için saklanır
+            m = re.search(r"^# Yapay zekâ taslağı", answer, flags=re.M)
+            if m and re.search(r"^## Tarama", answer[:m.start()], flags=re.M):
+                (out / f"taslak-{n}.tarama.md").write_text(answer[:m.start()].strip() + "\n", encoding="utf-8")
+                answer = answer[m.start():]
             (out / f"taslak-{n}.md").write_text(answer, encoding="utf-8")
             print(f"  {meta['seconds']} sn, {sum(calls.values())} araç çağrısı, çıkış {done.returncode}", flush=True)
 

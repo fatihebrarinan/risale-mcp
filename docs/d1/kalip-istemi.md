@@ -62,3 +62,41 @@ Cevabın yalnız tek bir ```json kod bloğudur:
 # Metinler
 
 {kaynaklar}
+
+---- TABLO ----
+
+# Görev: tarama tablosu ({sura_name} {ayahs})
+
+Aşağıda {sura_name} Sûresi {ayahs}. âyetlerin metni ve İşârâtü'l-İ'câz'ın soru kalıplarının listesi (her kalıbın
+sorusu, tanıma yolu ve dikkat notu) var. Bu âyetler için İşârât'ın usulüyle bir taslak yazılacak; yazar önce bir
+**tarama tablosunu** dolduracak: her satır bir lafız ve ona sorulacak bir kalıptır.
+
+Senin işin yalnız tabloyu kurmak: **hangi lafza hangi kalıp sorulabilir?** Soruları cevaplama, nükte yazma; bu
+âyetlerin herhangi bir tefsirini ya da İşârât'ın bu âyetlerde ne dediğini hatırlıyorsan ona dayanma. Tabloyu âyetin
+metninden ve kalıpların tanıma yolundan kur.
+
+- **`kural` ile tanınan kalıplarda kapsayıcı ol:** metinde o yapı varsa satırı koy (her meçhul fiil, her tekid edatı,
+  her şart edatı, her istifham, her ayırma zamiri, her isim cümlesi, cümleler arasındaki her atıf ve her atıfsız
+  geçiş, her mevsul, her işaret ismi, her âyetin fâsılası). Tenkir, lâm-ı tarif, harf-i cer, cemi-müfred ve sîgada
+  yalnız dikkat notunun izin verdiği yerleri koy (bir karşıtlık, seçim imkânı ya da beklenenden ayrılış).
+- **`model` ile tanınan kalıplarda** (müradife tercih, unvan, istiare, isnad, takdim, hazf, mukadder cümleler, tertip,
+  cumhur, iltifat…) lafız soruyu makul olarak taşıyabiliyorsa koy; dikkat notunu gözet.
+- Lafız âyetteki yazılışıyla, gerekirse iki üç kelimelik ibare olarak; âyet sırasıyla.
+- Bir lafza birden çok kalıp sorulabilir: her biri ayrı satır.
+- İki âyetlik bir birimde 40–90 satır beklenir.
+
+Cevabın yalnız tek bir ```json kod bloğudur:
+
+```json
+{{"satirlar": [{{"ayet": 14, "lafiz": "وَإِذَا", "kalip": "Şart edatı seçimi"}}]}}
+```
+
+`kalip` listedeki adıyla aynen yazılır.
+
+# Âyetler
+
+{ayetler}
+
+# Soru kalıpları
+
+{kaliplar}

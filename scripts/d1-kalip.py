@@ -3,6 +3,8 @@
     uv run python scripts/d1-kalip.py liste            # geliştirme birimlerinden kalıp listesi (tek model çağrısı)
     uv run python scripts/d1-kalip.py sizinti          # listeyi yasak birimlere karşı dener
     uv run python scripts/d1-kalip.py yaz              # docs/d1/soru-kaliplari.md (kullanıcının okuması, istemin eki)
+    uv run python scripts/d1-kalip.py tablo 14-15      # birimin tarama tablosu (h10; âyetin metninden, İşârât'sız)
+    uv run python scripts/d1-kalip.py kontrol 14-15 7  # taslağın Tarama'sı: cevapsız satırlar, taşıyor/taşımıyor
 
 Kaynak yalnız geliştirme birimleri: Fâtiha, Bakara 1–8, 9–10, 11–12, 13, 17–20, 23–24, 31–33 (Arapça metin, kişisel
 veritabanından) ve envanteri olanların (9–10, 11–12, 13, 31–33) okumayla çıkarılmış nükteleri. 14–15 (D14.7'de sınanan),
@@ -14,7 +16,9 @@ denetler. Model İşârât'ı ezberinden de bilebilir: bu yüzden test listenin 
 import argparse
 import importlib.util
 import json
+import re
 import sqlite3
+from pathlib import Path
 
 from risale_mcp.normalize import match_words
 from risale_mcp.paths import DATA_DIR, ROOT
@@ -61,6 +65,12 @@ def text_of(conn, work: str, node: str) -> str:
     return "\n\n".join(r[0] for r in rows)
 
 
+def _bolum(ad: str) -> str:
+    raw = PROMPT.read_text(encoding="utf-8")
+    body = raw.split(f"---- {ad} ----", 1)[1]
+    return body.split("\n---- ", 1)[0].strip()
+
+
 def kaynaklar() -> str:
     conn = sqlite3.connect(DB)
     L = []
@@ -76,7 +86,7 @@ def kaynaklar() -> str:
 
 def liste() -> None:
     OUT.mkdir(parents=True, exist_ok=True)
-    raw = PROMPT.read_text(encoding="utf-8").split("---- KALIP ----", 1)[1].strip()
+    raw = _bolum("KALIP")
     prompt = raw.format(kaynaklar=kaynaklar())
     stem = OUT / f"liste-{SURUM}"
     (OUT / f"istem-{SURUM}.md").write_text(prompt, encoding="utf-8")
@@ -142,11 +152,102 @@ def yaz() -> None:
     print(DOC.relative_to(ROOT), len(data["kaliplar"]), "kalıp")
 
 
+# ---------------------------------------------------------------- tarama tablosu (D14.7, h10)
+
+YALNIZ_LISTE = ("Vecihlerin çokluğu (ihtimal)", "Kayıtların tek garaza akması", "Dört esas maksadın remzi")   # kullanıcı
+
+
+def kaliplar() -> list[dict]:
+    data = json.loads((OUT / f"liste-{SURUM}.json").read_text(encoding="utf-8"))
+    return [k for k in data["kaliplar"] if k["ad"] not in YALNIZ_LISTE]
+
+
+def tablo_path(unit: str) -> Path:
+    return P.OUT / unit / "tarama-tablosu.json"
+
+
+def tablo(unit: str, again: bool = False) -> list[dict]:
+    path = tablo_path(unit)
+    if path.exists() and not again:
+        return json.loads(path.read_text(encoding="utf-8"))["satirlar"]
+    cfg = P.UNITS[unit]
+    a, b = cfg["ayahs"]
+    conn = sqlite3.connect(P.OUT / unit / "risale.db")
+    ayat = conn.execute("SELECT ayah, text FROM quran_ayahs WHERE sura = ? AND ayah BETWEEN ? AND ? ORDER BY ayah",
+                        (cfg["sura"], a, b)).fetchall()
+    ks = kaliplar()
+    klist = "\n".join(f"- **{k['ad']}** ({DUZEY[k['duzey']]}; tanıma: {k['tanima']}"
+                       + (f", kural `{k['kural']}`" if k.get("kural") else "") + f"): {k['soru']} Dikkat: {k.get('dikkat', '')}"
+                       for k in ks)
+    prompt = _bolum("TABLO").format(sura_name=cfg["sura_name"], ayahs=f"{a}" if a == b else f"{a}–{b}",
+                                    ayetler="\n".join(f"({n}) {t}" for n, t in ayat), kaliplar=klist)
+    data = Y.run_model(prompt, "opus", P.OUT / unit / "tarama-tablosu-model", {"gorev": "tarama-tablosu", "surum": SURUM})
+    if not data:
+        raise SystemExit("tablo kurulamadı")
+    adlar = {k["ad"] for k in ks}
+    rows, seen = [], set()
+    for r in data.get("satirlar", []):
+        key = (r.get("ayet"), r.get("lafiz", "").strip(), r.get("kalip"))
+        if r.get("kalip") not in adlar or key in seen:
+            print(f"  atıldı: {r}")
+            continue
+        seen.add(key)
+        rows.append({"ayet": r.get("ayet"), "lafiz": key[1], "kalip": r["kalip"]})
+    # kural: her âyetin fâsılası tabloda (son kelime)
+    for n, t in ayat:
+        if not any(r["ayet"] == n and r["kalip"] == "Fâsıla" for r in rows):
+            last = t.split()[-1]
+            rows.append({"ayet": n, "lafiz": last, "kalip": "Fâsıla", "program": True})
+    rows.sort(key=lambda r: (r["ayet"] or 0,))   # âyet sırası; âyet içinde modelin sırası korunur (sort kararlı)
+    for i, r in enumerate(rows, 1):
+        r["id"] = f"T{i:02d}"
+    path.write_text(json.dumps({"surum": SURUM, "satirlar": rows}, ensure_ascii=False, indent=1), encoding="utf-8")
+    print(f"{path.relative_to(ROOT)}: {len(rows)} satır")
+    return rows
+
+
+def tablo_md(unit: str) -> str:
+    L = ["| # | Âyet | Lafız | Kalıp |", "|---|---:|---|---|"]
+    L += [f"| {r['id']} | {r['ayet']} | {r['lafiz']} | {r['kalip']} |" for r in tablo(unit)]
+    return "\n".join(L)
+
+
+TARAMA_RE = re.compile(r"^\s*-\s*(T\d+)\b(.*)$", re.M)
+
+
+def kontrol(unit: str, n: int) -> dict:
+    """Taslağın Tarama'sı: her satırın cevabı (taşıyor / taşımıyor / yok)."""
+    tp = P.DRAFTS / unit / f"taslak-{n}.tarama.md"
+    text = tp.read_text(encoding="utf-8") if tp.exists() else ""
+    rows = tablo(unit)
+    ans = {m.group(1): m.group(2) for m in TARAMA_RE.finditer(text)}
+    out = {"satir": len(rows), "tasiyor": 0, "tasimiyor": 0, "cevapsiz": []}
+    for r in rows:
+        t = ans.get(r["id"], "")
+        if re.search(r"taşımıyor", t, re.I):
+            out["tasimiyor"] += 1
+        elif re.search(r"taşıyor", t, re.I):
+            out["tasiyor"] += 1
+        else:
+            out["cevapsiz"].append(r["id"])
+    print(f"{unit} taslak {n}: {out['satir']} satır; taşıyor {out['tasiyor']}, taşımıyor {out['tasimiyor']}, "
+          f"cevapsız {len(out['cevapsiz'])} {out['cevapsiz'][:10]}")
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("cmd", choices=["liste", "sizinti", "yaz"])
+    ap.add_argument("cmd", choices=["liste", "sizinti", "yaz", "tablo", "kontrol"])
+    ap.add_argument("unit", nargs="?")
+    ap.add_argument("taslak", nargs="?", type=int)
+    ap.add_argument("--yeniden", action="store_true")
     a = ap.parse_args()
-    {"liste": liste, "sizinti": sizinti, "yaz": yaz}[a.cmd]()
+    if a.cmd == "tablo":
+        tablo(a.unit, a.yeniden)
+    elif a.cmd == "kontrol":
+        kontrol(a.unit, a.taslak)
+    else:
+        {"liste": liste, "sizinti": sizinti, "yaz": yaz}[a.cmd]()
 
 
 if __name__ == "__main__":

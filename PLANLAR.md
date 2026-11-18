@@ -262,6 +262,15 @@ program uygular (h6'nın başlıkları gibi).
   tabloya girmez, yalnız listede kalır: vecihlerin çokluğu, kayıtların tek garaza akması, dört esas maksadın remzi
   (bütün âyete bakan usuller; zorlama riski); (b) **h10 taban olursa D5.0'da liste bütün İşârât'tan yeniden kurulur**
   (bugün yalnız geliştirme birimleri; D15'ten sonra saklı birimler de girebilir).
+- **Listenin modele verilişi** (kullanıcı onayladı, 2026-11-18): üç parça. (a) **Ek 5:** listenin tamamı (dağarcık:
+  cevap türleri ve dikkat notları). (b) **Tarama tablosu** istemin gövdesinde, birime özel: program âyetin metninden
+  kurar (fâsıla her âyette kuralla; öbürleri küçük bir model çağrısıyla, İşârât'sız), satırlar `T01…` (lafız, kalıp).
+  (c) **Yazar çıktısında doldurur:** iş sırası kaynakları oku → Tarama → taslak; çıktı `## Tarama` bölümüyle başlar,
+  her satıra "taşıyor: …" (taslakta yerinde açılır: kelime üçüncü vecihte, cümleler arası ikinci vecihte) ya da
+  "taşımıyor: …" (meşru; dikkat notuna uyuyorsa doğru cevap); tablo taban, tavan değil; Türkçe ve kısa. Program
+  Tarama'yı taslaktan ayırır (`taslak-N.tarama.md`), eksik satırları raporlar, kaçırılan her nükte için "tabloda yok /
+  yazar taşımıyor dedi / taşıyor deyip yazmadı" ayrımını ölçer. Ayrı tarama çağrısı önerilmedi (maliyet; notları
+  yine atlayabilir).
 
 **D15. Saklı birimlerde son ölçüm** (kullanıcının kararı, 2026-11-17: kendi aşaması; "D5'ten önceki son düzlük, o
 aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) bir kez, aynı
