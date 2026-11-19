@@ -777,6 +777,8 @@ def main() -> None:
     p.add_argument("--surum")
     p.add_argument("--model", default="claude-opus-5-5")
     p.add_argument("--effort", default="high")
+    p.add_argument("--yoksa", action="store_true",
+                   help="birimde bu sürümün taslağı varsa yazdırma (iş yeniden başlatılınca aynı taslak iki kez yazılmasın)")
     p = sub.add_parser("izah")
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("--taslak", type=int, required=True)
@@ -795,7 +797,14 @@ def main() -> None:
     elif a.cmd == "hazirla":
         hazirla(a.unit, a.surum, a.tarama)
     elif a.cmd == "yazdir":
-        P.yazdir(a.unit, 1, a.model, a.effort, "hat", a.surum or SURUM)
+        surum = a.surum or SURUM
+        have = [q.stem for q in sorted((P.DRAFTS / a.unit).glob("taslak-*.json"))
+                if q.stem.split("-")[1].isdigit()
+                and json.loads(q.read_text(encoding="utf-8")).get("surum") == surum]
+        if a.yoksa and have:
+            print(f"{a.unit}: {surum} taslağı var ({', '.join(have)}); yazdırılmadı (--yoksa)")
+        else:
+            P.yazdir(a.unit, 1, a.model, a.effort, "hat", surum)
     elif a.cmd == "izah":
         izah(a.unit, a.taslak, a.yeniden)
     elif a.cmd == "bolum":

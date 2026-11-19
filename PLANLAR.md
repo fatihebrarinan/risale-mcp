@@ -161,8 +161,16 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
     doluluğunu öğrenir (`rate_limit_event`), eşiğin üstündeyse (taslak %75, eleştirmen ve ölçüler %85) sıfırlanmaya
     kadar bekler; çağrı yine takılırsa (`usage_limit_reached`) döküm `basarisiz/`'e alınır, beklenir, yeniden yapılır
     (en çok 4 deneme); yedi günlük pencere %98 doluysa durur. Ölçü (21–22): taslak pencerenin ≈%18'ini, İşârât
-    karşılaştırması ≈%7'sini, kapalı eleştirmen ≈%12'sini yiyor. Kalan: `yazdir` idempotent değil (her çağrı yeni
-    taslak numarası), kuyrukta "yarım kalan adımdan sürmek" bunu ister.
+    karşılaştırması ≈%7'sini, kapalı eleştirmen ≈%12'sini yiyor.
+    **Arka plan işleri (yapıldı, 2026-11-19):** `scripts/d1-arka.sh` (`systemd --user`, terminal ve oturumdan bağımsız,
+    uyku engellenir; `baslat`, `liste`, `log`, `bekle`, `yeniden`, `durdur`), koşturucu `scripts/d1-arka-is.sh` (iş
+    bitince `data/d1` commit ve push, masaüstü bildirimi). Yarıda kalan iş `yeniden` ile aynı komuttan sürer; adımlar
+    biteni atlar, taslak yazdırma `d1-hat.py yazdir … --yoksa` ile (o sürümün taslağı varsa yazmaz).
+    **Sonraya** (kullanıcının kararı, 2026-11-19; zamanı gelince): (a) **iş başına maliyet tavanı** (ör. "bu iş 15 $'ı
+    aşarsa dur"; sınır koruması bekletir ama durdurmaz; D5'te kuyruk günlerce dönerken önemli); (b) **telefona
+    bildirim** (masaüstü bildirimi yalnız bilgisayar başında işe yarar; iki yol: bir bildirim servisi (ör. ntfy; iş
+    adı ve "bitti" dışarı gider, taslak gitmez) ya da kendi sunucumuzda kurulan bildirim servisi (dışarıya hiçbir şey
+    çıkmaz); D5 sunucuya taşınınca daha anlamlı).
     **Bilgisayardan bağımsız çalışma** (kullanıcı kabul etti, 2026-11-19; karar yeri gelince): D5'te birimler günlerce
     sürer; iş sunucuda döner. Parçalar: `claude setup-token` (aboneliğin uzun ömürlü giriş anahtarı, tarayıcısız;
     kullanım aynı pencereden düşer, `claude_p`'nin koruması orada da çalışır); genel ve hadis veritabanları, Kur'ân,
