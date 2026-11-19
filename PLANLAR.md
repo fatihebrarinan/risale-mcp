@@ -300,7 +300,8 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   konu ve tablo ≈0,3, h10 taslağı ≈4,5, h2 taslağı ≈3,5, iki eşleştirme ≈3,5, kör ≈2,3) ve kurulum emeği. Üç dilim:
   **D15.1** 21–22, **D15.2** 28, **D15.3** 26–27 ve D15'in toplu raporu; bir pencerede en çok iki dilim (önerilen:
   1. pencere D15.1 + D15.2, 2. pencere D15.3). Her dilim kendi okumasıyla biter.
-- **Açık soru (D15'in başında kullanıcıya):** h2 kolu kalsın mı? Saklı birimlerde h2 yazdırmak için eski hat yeniden
+- **h2 kolu yok** (kullanıcının kararı, 2026-11-19): h2 yeniden kurulmaz; h10 tek başına, İşârât kartı ve kör
+  eleştirmenin İşârât'a karşı mutlak değerlendirmesiyle. Aşağıdaki not soru açıkken yazılmıştı. Önceki açık soru: h2 kolu kalsın mı? Saklı birimlerde h2 yazdırmak için eski hat yeniden
   kurulmalı: istem şablonu yalnız son sürümü taşıyor, h2'nin metni git'te (`bae30fd`, Tur 0) ve birim kopyalarında
   (`data/interim/d1-prova/<birim>/istem-hat-h2.md`); `d1-hat`'in dosya kodu sürüm karşılaştırmalarını global `SURUM`'a
   göre yapar (h2 için geçici olarak `SURUM = "h2"`, `RISALE_ILK = None`). Kazancı: kazancın ezber olmadığının temiz
