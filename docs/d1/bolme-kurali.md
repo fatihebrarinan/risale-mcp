@@ -1,8 +1,16 @@
-# Birim bölümlemesi: İşârât'ın kuralı (b1)
+# Birim bölümlemesi: İşârât'ın kuralı (b4)
 
 D5.0 (4) (PLANLAR.md D5; kullanıcının kararı, 2026-11-19: önce İşârât'ın âyetleri neden birleştirip ayırdığı, sonra bütün
 Kur'ân). Kaynak: Bakara 1–33'ün 32 geçişi ve her geçişte müellifin sözü (`data/d1/bolme/gecisler.md`, Opus okuması,
 alıntılar programla denetlendi). Kuralı kullanıcı onaylar.
+
+Sürümler: b1 (2026-11-19) ilk sürüm; b2 (2026-11-19) işlenebilirlik sınamasından sonra (`data/d1/bolme/sina.md`):
+iki koşunun ikisi de 9|10'u (seriyi yeni üye sandı) ve 18|19'u (ikinci temsili ayrı birim sandı) ayırdı; 3. ve 4. alt
+kural netleştirildi. b3 (2026-11-19): b2'nin üç koşusu da 6|7 ve 8|9'u birleştirdi (4. kuralın "netice ya da ceza"
+eki fazla geniş); 1. kuralda dil bilgisindeki cezâ ile amele terettüp eden ukûbet ayrıldı («ترتّب العقاب على العمل»,
+`B/7/mukaddime-2/c039`), 4. kuralda zümreyi tanıtan söz ile ilk fiil ayrıldı (`B/9-10-ayetlerin-tefsiri/c007`..`c009`). b4 (2026-11-19): b3'ün
+üç koşusu da 14|15'i ukûbet sayıp ayırdı; aktarılan söze verilen karşılık («قابلَهم», `B/14-15-ayetlerin-tefsiri/c015`)
+ile bir hâlin ardından gelen ukûbet ayrıldı.
 
 İki parça: **Kural** (genel; işlenebilirlik sınamasında modele yalnız bu gider, Bakara 1–33'ün bölmesini anmaz) ve
 **Dayanak** (kimlikli örnekler; yalnız bizim için). `scripts/d1-bolme.py` Kural'ı `---- KURAL ----` ile
@@ -33,19 +41,26 @@ sevkedilen garazın farkına bakar."
 ## Alt kurallar
 
 1. **Cevap, red, cezâ birleştirir.** İkinci âyet birincideki açık bir söze verilen red ya da karşılıksa, bir şartın
-   cezâsıysa, kıssa içinde karşılıklı konuşmanın devamıysa (dedi, dediler) aynı birimdir. Dinleyicinin zihnindeki
+   cezâsıysa (dil bilgisindeki şart ve cevabı), kıssa içinde karşılıklı konuşmanın devamıysa (dedi, dediler) aynı
+   birimdir. **Aktarılan bir söze verilen karşılık** (onların "dediler"ine Allah'ın mukabelesi, çoğu zaman aynı
+   lafızla: istihzaya istihza) da aynı birimdir. Buna karşılık bir hâlin ya da amelin **anlatımından** sonra ayrı
+   âyette gelen **ukûbet** (amele terettüp eden ceza: "onlar iman etmez; Allah da kalplerini mühürledi") cevap değildir,
+   amelden ukûbete geçiştir: **sınırdır**. Dinleyicinin zihnindeki
    takdirî bir soruya cevap ise ve bu cevap **yeni bir mevzu açıyorsa** (bir maksattan öbürüne geçiş) sınırdır;
    cevap aynı sahnenin içinde doğuyorsa birlikte kalır.
 2. **Sıfat ve ism-i mevsûl ancak mevsûfunu açıklıyorsa birleştirir.** Sıfat mevsûfun ne olduğunu şerh ve keşf ediyor ya
    da emrin delilini veriyor ve aynı garaza hizmet ediyorsa aynı birimdir. Sıfat yeni bir maksat açıyorsa (övgüyü yeni
    bir özneye aktarıyor, umumdan sonra husus getirip başlı başına bir iman esasına yöneliyor) dil bilgisi bağına rağmen
    ayrı birimdir.
-3. **Temsil ve kıssa sahnesi bölünmez.** Bir temsil, temsilin tekrarı (aynı hâlin ikinci tasviri) ve bir kıssanın tek
-   sahnesi tek birimdir. Hakikatten temsile, temsilden hakikate, bir kıssadan öbür kıssaya, bir sahneden öbürüne
+3. **Temsil ve kıssa sahnesi bölünmez.** Bir temsil ve bir kıssanın tek sahnesi tek birimdir. Aynı hâl için ikinci bir
+   temsil getirilmişse (ör. "ya da" ile: aynı kimselerin aynı hâlinin ikinci tasviri) o da **aynı birimdedir**:
+   ikincisi birincinin tekmilesidir; birim içinde iki temsil ayrı ayrı tahlil edilebilir, ama birim bir. Hakikatten temsile, temsilden hakikate, bir kıssadan öbür kıssaya, bir sahneden öbürüne
    geçiş sınırdır.
 4. **Sayılan bir serinin her üyesi ayrı birimdir.** Âyetler bir üst garazın altında bir seri sayıyorsa (insanların
    kısımları, bir zümrenin cinayetleri, nimetler, deliller) her üye ayrı birimdir; bir üye birden çok âyete
-   yayılabilir (o zaman o âyetler birlikte).
+   yayılabilir (o zaman o âyetler birlikte). **Yeni üye yeni bir fiil getirir;** aynı fiilin kalpteki iç sebebini
+   (fiilin kaynağı olan hâl) bildiren âyet yeni üye değildir, o üyenin devamıdır. Bir zümreyi sözüyle ya da
+   iddiasıyla **tanıtan** âyet serinin başıdır; o sözün altındaki ilk fiil (ne yaptıkları) yeni üyedir.
 5. **Büyük mesele ayırır.** Tek garazın parçası olsa da kendi başına büyük bir ilmî ya da kelâmî mesele taşıyan
    âyet (uzun bir tahkik isteyen) ayrı birim olabilir. Bunu yalnız açık gerekçeyle uygula.
 6. **Hurûf-u mukattaa** sûre başında ayrı tahlil edilir; ardından gelen âyet ayrı birimdir.
@@ -74,9 +89,10 @@ sevkedilen garazın farkına bakar."
 |---|---|---|
 | 1 cevap, red, cezâ | 11–12 (red, «المعالجة» `B/11-12-ayetlerin-tefsiri/c011`), 14–15 (karşılık, `B/14-15-ayetlerin-tefsiri/c015`), 23–24 (şart ve cezâ, `B/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-07/c083`), 31–33 (مقاولة, `B/31-33-ayetlerin-tefsiri/mukaddime/c033`), 19\|20 (sahne içinde takdirî soru, `B/17-20-ayetlerin-tefsiri/mesele-10/c179`) | 4\|5 (istînaf, takdirî sorular, `B/5/c005`), 22\|23 (ibadetten nübüvvete, `B/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-07/c062`) |
 | 2 sıfat ve mevsûl | 21–22 (delil, `B/21-22-ayetlerin-tefsiri/mukaddime/c142`, `c150`), 26–27 («شرحٌ وكشفٌ للفسق», `B/26-27-ayetlerin-tefsiri/c100`) | 2\|3 (Kur'ân'ın medhinden mü'minlerin medhine «انصباب», `B/3/c001`), 3\|4 («التخصيص بعد التعميم», `B/4/c006`) |
-| 3 temsil ve kıssa | 17–20 (temsil ve tekrarı «كالتكملة والتتمة», `B/17-20-ayetlerin-tefsiri/mesele-10/c152`; İşârât içinde 17–18, 19–20), 31–33 | 16\|17 (hakikatten temsile, `B/17-20-ayetlerin-tefsiri/mesele-10/c023`), 20\|21, 7\|8 (kıssadan kıssaya, `B/8/c001`) |
-| 4 seri | 9–10 (ilk cinayetin cümleleri, `B/9-10-ayetlerin-tefsiri/c011`) | 8\|9, 10\|11, 12\|13, 13\|14 (dört cinayet, `B/9-10-ayetlerin-tefsiri/c009`), 5\|6, 7\|8 (insanların kısımları), 27\|28, 28\|29 (nimetler, `B/28/c002`, `B/29/c003`) |
-| 5 büyük mesele | | 6\|7: müellif iki âyeti tek garaz sayar (`B/6/c083`), 7'nin önünde cebir ve ihtiyar mukaddimesi (`B/7/mukaddime/c001`); kuralın tek dayanağı, tahmin |
+| 3 temsil ve kıssa | 17–20 (temsil ve tekrarı «كالتكملة والتتمة», `B/17-20-ayetlerin-tefsiri/mesele-10/c152`; İşârât içinde 17–18, 19–20 ayrı üç vecihle), 31–33 | 16\|17 (hakikatten temsile, `B/17-20-ayetlerin-tefsiri/mesele-10/c023`), 20\|21, 7\|8 (kıssadan kıssaya, `B/8/c001`) |
+| 4 seri | 9–10 (ilk cinayetin cümleleri, `B/9-10-ayetlerin-tefsiri/c011`; 10 «أردفه … لترذيلهم بانفساد الجوهر», `B/9-10-ayetlerin-tefsiri/c032`) | 8\|9, 10\|11, 12\|13, 13\|14 (dört cinayet, `B/9-10-ayetlerin-tefsiri/c009`), 5\|6, 7\|8 (insanların kısımları), 27\|28, 28\|29 (nimetler, `B/28/c002`, `B/29/c003`) |
+| 1 (ukûbet, b3) | | 6\|7: «ربطَ ختم ب لا يؤمنون … نظيرُ ترتّب العقابِ على العمل» (`B/7/mukaddime-2/c039`) |
+| 5 büyük mesele | | 6\|7 ayrıca: müellif iki âyeti tek garaz sayar (`B/6/c083`), 7'nin önünde cebir ve ihtiyar mukaddimesi (`B/7/mukaddime/c001`); tahmin |
 | 6 hurûf | | 1\|2 (`B/2/mukaddime/c031`) |
 | Öbür sınırlar | | 15\|16 (icmal, «فذلكة», `B/16/c001`), 24\|25 (terhibden tergibe, `B/25/c008`), 25\|26 (itiraza cevap; mâkabli 17–20 ve 23–24, `B/26-27-ayetlerin-tefsiri/c004`) |
 

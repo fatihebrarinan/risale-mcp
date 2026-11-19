@@ -64,7 +64,8 @@ DUZELTME_PROMPT = ROOT / "docs" / "d1" / "duzeltme-istemi.md"
 OLCU_PROMPT = ROOT / "docs" / "d1" / "kor-olcu-istemi.md"
 NOT_PROMPT = ROOT / "docs" / "d1" / "not-karsilastirma-istemi.md"
 IKINCI_PROMPT = ROOT / "docs" / "d1" / "elestiri-ikinci-istemi.md"
-SURUM = {"kapali": "k2", "duzeltme": "d1", "olcu": "o3", "notlar": "n1", "ikinci": "i1"}
+ISARAT_PROMPT = ROOT / "docs" / "d1" / "isarat-karsilastirma-istemi.md"
+SURUM = {"kapali": "k2", "duzeltme": "d1", "olcu": "o3", "notlar": "n1", "ikinci": "i1", "isarat": "i1"}
 PROVA_SERVERS = ("risale", "tefsir", "hadis", "klasik")
 OPUS = "claude-opus-5-5"
 STAMP = E.STAMP
@@ -78,6 +79,15 @@ Taslağın tamamı yukarıda bağlam için duruyor; bu çağrıda **yalnız "{ba
 oku: her paragraf için yukarıdaki soruları sor; paragrafın dayandığı kaynakları aç. Notlarını yalnız bu bölümün
 çapalarına yaz. Bir nükte bu bölümde yoksa ama taslağın başka bir bölümünde varsa onu eksik sayma. `sistemli`
 alanına yalnız bu bölümden çıkanları yaz; `ozet` bu bölümün özetidir. Çıktı biçimi yukarıdakinin aynısıdır."""
+# D15 (kullanıcının kararı, 2026-11-19): kör aletlerin ayarında kapalı eleştirmen bütün taslağa tek çağrıyla (ucuz;
+# D5'te birim başına bu çalışacak). Notların bölümü çapadan.
+KAPALI_BUTUN = """
+
+# Bu çağrıda bakacağın yer: taslağın tamamı
+
+Taslağın bütün bölümlerini (Mukaddime varsa, üç vecih ve dersler) bu tek çağrıda eleştiriyorsun. Paragrafları sırayla
+oku, her biri için yukarıdaki soruları sor; dayandığı kaynakları aç. Önceliği yanlışlara, çelişkilere, yanlış
+nisbetlere ve kaçan önemli nüktelere ver. Çıktı biçimi yukarıdakinin aynısıdır."""
 
 
 def body(path: Path, marker: str) -> tuple[str, str]:
@@ -152,6 +162,11 @@ def run_claude(prompt: str, stem: Path, mcp: Path | None, allowed: tuple[str, ..
 
 # ---------------------------------------------------------------- kapalı kitap eleştiri
 
+def _bolum_of(capa: str | None) -> str:
+    head = (capa or "").split("/", 1)[0]
+    return head if head in P.SECTION_TITLES else "genel"
+
+
 def mekanik_kapali(unit: str, n: int) -> str:
     """D9.1'in bulguları, ipucu adayları hariç (onlar envanterden, yani gizli metinden çıkar)."""
     lines = [x for x in E.mekanik_text(unit, n).split("\n") if not x.startswith("- İpucu adayı")]
@@ -170,7 +185,7 @@ def kapali_prompt(unit: str, n: int) -> tuple[str, str]:
     return text, sha
 
 
-def kapali(unit: str, n: int, again: bool = False, kabul: str | None = None) -> None:
+def kapali(unit: str, n: int, again: bool = False, kabul: str | None = None, butun: bool = False) -> None:
     cfg = P.UNITS[unit]
     out = P.OUT / unit
     prompt, sha = kapali_prompt(unit, n)
@@ -180,13 +195,13 @@ def kapali(unit: str, n: int, again: bool = False, kabul: str | None = None) -> 
         raise SystemExit("sızıntı raporunu oku; kalıp ibareyse --sizinti-kabul '<gerekçe>' ile sür")
     if not ok:
         print(f"  sızıntı uyarısı kabul edildi: {kabul}")
-    keys = H._sections(unit, n)
+    keys = ["butun"] if butun else H._sections(unit, n)
 
     def one(key: str):
         stem = Y.out_dir(unit) / f"kapali-elestiri-taslak-{n}-{key}"
         if Path(str(stem) + ".json").exists() and not again:
             return key, json.loads(Path(str(stem) + ".json").read_text(encoding="utf-8"))
-        p = prompt + KAPALI_BOLUM.format(baslik=P.SECTION_TITLES[key], key=key)
+        p = prompt + (KAPALI_BUTUN if key == "butun" else KAPALI_BOLUM.format(baslik=P.SECTION_TITLES[key], key=key))
         return key, run_claude(p, stem, out / "mcp-klasik.json", PROVA_SERVERS,
                                {"gorev": "kapali-elestiri", "surum": SURUM["kapali"], "istem_sha": sha, "taslak": n,
                                 "bolum": key})
@@ -200,7 +215,7 @@ def kapali(unit: str, n: int, again: bool = False, kabul: str | None = None) -> 
             continue
         notes = data.get("notlar", [])
         for x in notes:
-            x["bolum"] = key
+            x["bolum"] = key if key != "butun" else _bolum_of(x.get("capa"))
         H.check_notes(unit, n, notes, Y.out_dir(unit) / f"kapali-elestiri-taslak-{n}-{key}.jsonl")
         merged["bolumler"][key] = len(notes)
         merged["notlar"] += notes
@@ -215,6 +230,8 @@ def kapali(unit: str, n: int, again: bool = False, kabul: str | None = None) -> 
 
 NOTE_FILES = {"kapali": ("kapali-elestiri-taslak-{n}.json", "K", "kapalı kitap: İşârât'ın bu âyetlerdeki kısmını o da görmedi"),
               "acik": ("bolum-elestiri-taslak-{n}.json", "A", "açık kitap: İşârât'ın bu âyetlerdeki kısmını okuyarak"),
+              # D15: İşârât karşılaştırması (`isarat`), kör aletlerin ayarında açık taraf
+              "isarat": ("isarat-karsilastirma-taslak-{n}.json", "A", "açık kitap: İşârât'ın bu âyetlerdeki kısmını okuyarak"),
               # D turu (d2): yalnız düzeltmenin değiştirdiği paragraflara, yan etkileri için (`ikinci`)
               "ikinci": ("ikinci-elestiri-taslak-{n}.json", "Y", "ikinci kapalı kitap eleştiri: yalnız bir önceki "
                          "düzeltmenin değiştirdiği paragraflara, yan etkileri için (düşen fikir, belirsiz gönderme, "
@@ -532,19 +549,47 @@ def olc(unit: str, pairs: list[tuple[int, int]], again: bool = False) -> None:
 
 # ---------------------------------------------------------------- iki eleştirmenin notları
 
-def notlar(unit: str, n: int) -> None:
+def notlar(unit: str, n: int, acik: str = "acik") -> None:
     cfg = P.UNITS[unit]
     k_notes, _ = notes_of(unit, n, "kapali")
-    a_notes, _ = notes_of(unit, n, "acik")
+    a_notes, _ = notes_of(unit, n, acik)
     k_notes = [x for x in k_notes if x.get("tur") != "dogru"]
     a_notes = [x for x in a_notes if x.get("tur") != "dogru"]
     h = Y.hidden(unit)
     text, sha = body(NOT_PROMPT, "KARSILASTIRMA")
     text = text.format(sura_name=cfg["sura_name"], ayahs=ayahs(cfg), arapca=Y.render_hidden(h["ar"]),
                        turkce=Y.render_hidden(h["tr"]), acik=render_notes(a_notes), kapali=render_notes(k_notes))
-    stem = Y.out_dir(unit) / f"not-karsilastirma-taslak-{n}"
+    stem = Y.out_dir(unit) / (f"not-karsilastirma-taslak-{n}" + ("" if acik == "acik" else f"-{acik}"))
     run_claude(text, stem, None, (), {"gorev": "not-karsilastirma", "surum": SURUM["notlar"], "istem_sha": sha,
-                                      "taslak": n})
+                                      "taslak": n, "acik": acik})
+
+
+# ---------------------------------------------------------------- İşârât karşılaştırması (D15)
+
+def isarat(unit: str, n: int, again: bool = False) -> dict | None:
+    """Tek taslak İşârât'ın kendisiyle: mutlak hüküm ve notlar (`docs/d1/isarat-karsilastirma-istemi.md`)."""
+    cfg = P.UNITS[unit]
+    stem = Y.out_dir(unit) / f"isarat-karsilastirma-taslak-{n}"
+    if Path(str(stem) + ".json").exists() and not again:
+        print(f"{stem.name}: var")
+        return json.loads(Path(str(stem) + ".json").read_text(encoding="utf-8"))
+    text, sha = body(ISARAT_PROMPT, "KARSILASTIRMA")
+    ar = next(x for x in cfg["nodes"] if x.startswith("isaratul-icaz-arabi/"))
+    trs = [x for x in cfg["nodes"] if x.startswith("isaratul-icaz/")]
+    tr_read = " ve ".join(f'`read_section("{x}")`' for x in trs)
+    prompt = text.format(sura_name=cfg["sura_name"], ayahs=ayahs(cfg), gizli_ar=ar, gizli_tr_okuma=tr_read,
+                         taslak=draft_text(unit, n))
+    data = run_claude(prompt, stem, E.critic_mcp(unit), tuple(E.CRITIC_SERVERS),
+                      {"gorev": "isarat-karsilastirma", "surum": SURUM["isarat"], "istem_sha": sha, "taslak": n})
+    if data:
+        for x in data.get("notlar", []):
+            x["bolum"] = _bolum_of(x.get("capa"))
+        H.check_notes(unit, n, data.get("notlar", []), Path(str(stem) + ".jsonl"))
+        Path(str(stem) + ".json").write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
+        b = data.get("butun", {})
+        print(f"taslak {n}: İşârât karşılaştırması bütün: {b.get('hukum')}; bölümler "
+              f"{[(x.get('bolum'), x.get('hukum')) for x in data.get('bolumler', [])]}; {len(data.get('notlar', []))} not")
+    return data
 
 
 # ---------------------------------------------------------------- sayılar
@@ -714,6 +759,11 @@ def main() -> None:
     p.add_argument("--taslak", type=int, required=True)
     p.add_argument("--yeniden", action="store_true")
     p.add_argument("--sizinti-kabul", help="sızıntı uyarısı elle incelendi: gerekçe")
+    p.add_argument("--butun", action="store_true", help="D15: bütün taslağa tek çağrı (bölüm bölüm değil)")
+    p = sub.add_parser("isarat")                      # D15: tek taslak İşârât'la, mutlak hüküm ve notlar
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--taslak", type=int, required=True)
+    p.add_argument("--yeniden", action="store_true")
     p = sub.add_parser("ikinci")                      # D turu (d2): düzeltilmiş taslağın değişen yerlerine ikinci eleştiri
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("--taslak", type=int, required=True, help="düzeltilmiş taslak (registry'de kaynağı olan)")
@@ -736,6 +786,7 @@ def main() -> None:
     p = sub.add_parser("notlar")
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("--taslak", type=int, required=True)
+    p.add_argument("--acik", choices=("acik", "isarat"), default="acik")
     p = sub.add_parser("rapor")
     p.add_argument("unit", choices=P.UNITS)
     p = sub.add_parser("fark")                        # D12.2 fark kartları: data/d1/masa/fark-<birim>-<eski>-<yeni>.html
@@ -744,7 +795,9 @@ def main() -> None:
     p.add_argument("--yeni", type=int, required=True)
     a = ap.parse_args()
     if a.cmd == "kapali":
-        kapali(a.unit, a.taslak, a.yeniden, a.sizinti_kabul)
+        kapali(a.unit, a.taslak, a.yeniden, a.sizinti_kabul, a.butun)
+    elif a.cmd == "isarat":
+        isarat(a.unit, a.taslak, a.yeniden)
     elif a.cmd == "ikinci":
         ikinci(a.unit, a.taslak, a.yeniden, a.sizinti_kabul)
     elif a.cmd == "istem":
@@ -763,7 +816,7 @@ def main() -> None:
     elif a.cmd == "olc":
         olc(a.unit, [tuple(map(int, c.split("-"))) for c in a.cift], a.yeniden)
     elif a.cmd == "notlar":
-        notlar(a.unit, a.taslak)
+        notlar(a.unit, a.taslak, a.acik)
     elif a.cmd == "rapor":
         rapor(a.unit)
     elif a.cmd == "fark":
