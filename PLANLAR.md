@@ -105,6 +105,17 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
 - **D15 yazılırken yan yana** (kullanıcının isteği, 2026-11-19; aynı gün geri alındı: "birkaç işi aynı anda yapabilirim
   diye düşünmüştüm, fakat bunda çok zorlandım"): D5.0.4 birim bölmesi yapıldı ve plana yazıldı, S7 konuşulup plana
   yazıldı; ikisi de yeri gelince sürer. D15 boyunca önde tek iş.
+- **h9 ikinci kol** (kullanıcının kararı, 2026-11-19: "h10'dan biraz şüpheliyim"): üç birimde de h9 yazılır (21–22
+  dahil). Sebep: h10'un lehine kanıt tek birim (D14.7); Tarama'da zorlama işareti ("taşımıyor" hemen hiç yok: 57/60,
+  59/59), 14–15'te çelişki 1 → 3 ve müfessir adı 5 → 11, 21–22'de tercümeyi topluca verme. h10 = h9 + liste + Tarama:
+  tek farklı temiz kıyas (h2 kolunun vereceği cevabı daha ucuz verir). h9 kolunun ölçüsü: eşleştirme, İşârât
+  karşılaştırması, kör A/B (o3); kapalı eleştirmen ve nisbet yalnız h10'da (işleri aletleri ayarlamak). Birim başına
+  ≈12–13 $; D15'in kalanı ≈80 $, muhtemelen üç pencere. **Okuma tek oturum:** kartta A, B (h9 ve h10, kör) ve İşârât
+  yan yana; iki soru: hangisi daha iyi, daha iyisi kendi başına yeterli mi; "Aç"tan sonra hangisi hangisi ve aletler;
+  yerler iki taslağın en çok ayrıldığı ve "düzeltilecek" yerler, birim başına 6–8 kart. 21–22'nin tek taslaklı sayfası
+  (`tur-21-22-D15.1.html`) okunmadan h9'la birleşik sayfaya döner. **Karar kuralı:** üç birimin en az ikisinde kör
+  eleştirmen ve kullanıcının okuması h9'u eşit ya da üstün bulursa D5 h9 ile; değilse h10, Tarama'nın zorlaması D5.0'da
+  (ara yol: liste kalır, Tarama çıkar).
 - **Aletler** (2026-11-19): kapalı eleştirmen bütün taslağa tek çağrı (`d1-duzelt.py kapali <birim> --taslak n
   --butun`); kör aletlerin ayarı `d1-duzelt.py notlar <birim> --taslak n --acik isarat` (kapalı notlar İşârât
   karşılaştırmasının notlarıyla) ve nisbet denetçisinin bulguları aynı notlarla.
