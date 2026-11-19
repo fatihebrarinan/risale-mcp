@@ -493,6 +493,9 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   (önce Haiku yoklamasıyla 5 saatlik pencerenin doluluğu, eşiğin üstündeyse sıfırlanmaya kadar bekleme; sınıra
   takılırsa döküm `basarisiz/`'e, bekleme, yeniden deneme). Bir birimin durumu ve sıradaki adımı
   `uv run python scripts/d1-durum.py [birim]`; okuma sayfası siteye `scripts/taslak-gonder.sh <sayfa>`.
+  Uzun işler terminalden bağımsız: `scripts/d1-arka.sh baslat <ad> <komut …>` (`systemd --user` hizmeti `d1-<ad>`,
+  `loginctl enable-linger` açık, iş sürerken uyku engellenir; günlük `data/interim/d1-isler/<ad>.log`; `liste`, `log`,
+  `durdur`). Bilgisayar kapanırsa iş durur; bilgisayardan bağımsız çalışma PLANLAR.md D5.0.1'de.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

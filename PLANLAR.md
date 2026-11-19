@@ -62,6 +62,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **Sonra:** D15.2 (26–27), D15.3 (28; D5.0.5'in sınaması), D15'in toplu raporu ve karar (h9 mı h10 mu).
 - **Bekleyen yan işler** (yeri gelince; D15 sürerken açılmaz): D5.0.4 bölmenin kalanı, S7.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
+  Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
@@ -159,6 +160,14 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
     (en çok 4 deneme); yedi günlük pencere %98 doluysa durur. Ölçü (21–22): taslak pencerenin ≈%18'ini, İşârât
     karşılaştırması ≈%7'sini, kapalı eleştirmen ≈%12'sini yiyor. Kalan: `yazdir` idempotent değil (her çağrı yeni
     taslak numarası), kuyrukta "yarım kalan adımdan sürmek" bunu ister.
+    **Bilgisayardan bağımsız çalışma** (kullanıcı kabul etti, 2026-11-19; karar yeri gelince): D5'te birimler günlerce
+    sürer; iş sunucuda döner. Parçalar: `claude setup-token` (aboneliğin uzun ömürlü giriş anahtarı, tarayıcısız;
+    kullanım aynı pencereden düşer, `claude_p`'nin koruması orada da çalışır); genel ve hadis veritabanları, Kur'ân,
+    vektörler sunucuya (deploy betiğinin uzantısı); `data/d1` sunucuda her adımda commit ve push, yerelde `git pull`;
+    okuma sayfaları sunucudan doğrudan `/taslak/`'a. **Açık karar:** tefsir sunucusu (4 çekirdek, 7 GB, tefsir ve
+    klasik veritabanları orada; genel tefsir ve klasik bağlayıcılarını yavaşlatabilir, `nice` ile) ya da D5'e ayrı
+    küçük sunucu (≈7 €/ay; genel hizmet etkilenmez). Güvenlik: abonelik anahtarı sunucuda (SSH yalnız Tailscale'den),
+    git'e girmez. Kurulum ≈yarım gün. Bugünkü ara çözüm: `scripts/d1-arka.sh` (terminalden bağımsız, bilgisayar açık).
     **Tek komutla birim hattı** (kullanıcı kabul etti, 2026-11-19): bugün bir birim on küsur komut (kurulum, taslak,
     eşleştirme, eleştirmenler, kör A/B, okuma sayfası); tek komuta bağlanır.
   - **D5.0.2 Uzunluk hedefi:** kapandı, gerek yok (h9'da hedef kalktı, D14.6; derslerin şişmesi D15'te izleniyor).
