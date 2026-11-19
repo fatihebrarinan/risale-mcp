@@ -434,6 +434,7 @@ Metin–yorum ayrımı, özetin doğruluğu ve tuzak sorulardaki davranış elle
 - Belirsiz durumlarda en makul varsayımı yap, ama bunu açıkça belirt.
 - Kaynak sitelere nazik davran: isteklerin arasında bekle, ham yanıtı kaydet, aynı sayfayı ikinci kez indirme.
 - Kod tanımlayıcıları İngilizce, açıklamalar ve kullanıcıyla iletişim Türkçe.
+- **`data/d1` her adımın sonunda commit ve push edilir** (kullanıcının kararı, 2026-11-19): kendi git deposudur, uzak kopyası özel depo `fatihebrarinan/risale-mcp-taslak`; taslaklar, envanterler ve okumalar yeniden üretilemez. `git -C data/d1 add -A && git -C data/d1 commit -m "…" && git -C data/d1 push`. Sormadan yapılır; ana depoya push kullanıcıdadır.
 
 ## Altyapının kalıcı parçaları (H, T, MVP)
 
