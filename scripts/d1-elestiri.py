@@ -772,9 +772,7 @@ def run_critic(unit: str, n: int, model: str, again: bool) -> None:
                "--allowedTools", ",".join(f"mcp__{s}" for s in CRITIC_SERVERS), "--no-session-persistence"]
     started = time.monotonic()
     print(f"{stem.name}: {Y.MODELS[model]} ({datetime.now():%H:%M})", flush=True)
-    with tempfile.TemporaryDirectory(prefix="d1-elestiri-") as tmp, stem.with_suffix(".jsonl").open("w") as log:
-        done = subprocess.run(command, input=prompt, cwd=tmp, env=env, stdout=log, stderr=subprocess.PIPE, text=True,
-                              timeout=Y.TIMEOUT, check=False)
+    done = P.claude_p(command, prompt, stem.with_suffix(".jsonl"), env, Y.TIMEOUT, esik=0.85, prefix="d1-elestiri-")
     answer, calls, cost = P.transcript(stem.with_suffix(".jsonl"))
     data = Y.extract_json(answer)
     meta = {"model": Y.MODELS[model], "effort": Y.EFFORT, "istem_sha": sha, "taslak": n,

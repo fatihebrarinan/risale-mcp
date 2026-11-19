@@ -489,6 +489,10 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   `KLASIK_INSTRUCTIONS` (tefsirinkiyle aynı araç seti), tefsir makinesinde 8003, `klasik.risalemcp.com/mcp`
   (`PROFIL=klasik scripts/tefsir-sunucu.sh gonder`), çağrı seti `tests/golden/tool_calls_klasik.json`. Kalan dilimler
   ve bekleyenler `docs/eserler/klasik.md` (b), (c), E5.
+- **Taslak hattı ve kullanım sınırı:** `scripts/d1-*.py`'nin bütün `claude -p` çağrıları `d1-prova.claude_p`'den geçer
+  (önce Haiku yoklamasıyla 5 saatlik pencerenin doluluğu, eşiğin üstündeyse sıfırlanmaya kadar bekleme; sınıra
+  takılırsa döküm `basarisiz/`'e, bekleme, yeniden deneme). Bir birimin durumu ve sıradaki adımı
+  `uv run python scripts/d1-durum.py [birim]`; okuma sayfası siteye `scripts/taslak-gonder.sh <sayfa>`.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

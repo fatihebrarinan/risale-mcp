@@ -585,9 +585,8 @@ def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam", s
             log = out / f"taslak-{n}.jsonl"
             started = time.monotonic()
             print(f"taslak {n}: {model}, {effort}, istem {istem} {surum} ({datetime.now():%H:%M})", flush=True)
-            with log.open("w", encoding="utf-8") as stdout:
-                done = subprocess.run(command, input=prompt, cwd=tmp, env=env, stdout=stdout, stderr=subprocess.PIPE,
-                                      text=True, timeout=TIMEOUT, check=False)
+            # taslak pencerenin ≈%18'ini yer (21–22, 2026-11-19): eşik %75
+            done = claude_p(command, prompt, log, env, TIMEOUT, esik=0.75, prefix="d1-prova-")
             if done.returncode or done.stderr.strip():
                 (out / f"taslak-{n}.stderr.txt").write_text(done.stderr, encoding="utf-8")
             answer, calls, cost = transcript(log)
@@ -606,6 +605,110 @@ def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam", s
 def _sha(text: str) -> str:
     import hashlib
     return hashlib.sha1(text.encode()).hexdigest()[:12]
+
+
+# ---------------------------------------------------------------- kullanım sınırı (kullanıcının isteği, 2026-11-19)
+# 5 saatlik pencere bir işin ortasında doluyordu: yarıda kesilen çağrı boşa gidiyor (11-12'de ≈5,5 $), `&&` zinciri
+# duruyordu. `claude -p` dökümü her turda `rate_limit_event` taşır (pencerenin doluluğu `utilization`, sıfırlanma
+# `resetsAt`); sınıra takılan çağrının sonucu `api_error: usage_limit_reached`. İki önlem: (1) çağrıdan önce küçük bir
+# yoklama (Haiku) doluluğu öğrenir; eşiğin üstündeyse sıfırlanmaya kadar beklenir (eşik çağrının büyüklüğüne göre:
+# taslak ≈%18, eleştirmen ≈%7–12 yiyor, 21–22'de ölçüldü); (2) çağrı yine takılırsa döküm `basarisiz/`'e alınır,
+# sıfırlanmaya kadar beklenir, çağrı yeniden yapılır. Yedi günlük pencere dolmuşsa beklenmez, durulur.
+LIMIT_PROBE_MODEL = "claude-haiku-5-5"
+LIMIT_MARGIN = 120                     # sıfırlanmadan sonra bu kadar saniye daha beklenir
+LIMIT_TRIES = 4
+LIMIT_STATE = OUT / "sinir.json"       # son yoklama (paralel çağrılar hepsi yoklamasın)
+
+
+def limit_info(log: Path) -> dict:
+    """Dökümdeki son kullanım bilgisi: {hit, five, five_reset, week, week_reset}."""
+    info = {"hit": False}
+    try:
+        lines = log.read_text(encoding="utf-8").splitlines()
+    except OSError:
+        return info
+    for line in lines:
+        if '"rate_limit_event"' in line or '"usage_limit_reached"' in line:
+            try:
+                e = json.loads(line)
+            except json.JSONDecodeError:
+                continue
+            if e.get("type") == "rate_limit_event":
+                r = e.get("rate_limit_info", {})
+                w = r.get("unifiedWindows", {})
+                five, week = w.get("five_hour", {}), w.get("seven_day", {})
+                info.update(five=five.get("utilization"), five_reset=five.get("resetsAt") or r.get("resetsAt"),
+                            week=week.get("utilization"), week_reset=week.get("resetsAt"))
+                if r.get("status") == "rejected":
+                    info["hit"] = True
+            if e.get("type") == "result" and e.get("api_error") == "usage_limit_reached":
+                info["hit"] = True
+    return info
+
+
+def _wait_until(epoch: float | None, why: str) -> None:
+    if not epoch:
+        epoch = time.time() + 30 * 60
+    secs = max(0, epoch + LIMIT_MARGIN - time.time())
+    print(f"  ⏸ {why}; {datetime.fromtimestamp(epoch + LIMIT_MARGIN):%H:%M}'e kadar bekleniyor ({secs / 60:.0f} dk)",
+          flush=True)
+    time.sleep(secs)
+
+
+def limit_probe(env: dict, max_age: int = 120) -> dict:
+    """Pencerenin bugünkü doluluğu: küçük bir Haiku çağrısının dökümünden (son yoklama `max_age` saniyeden yeniyse o)."""
+    try:
+        st = json.loads(LIMIT_STATE.read_text(encoding="utf-8"))
+        if time.time() - st.get("at", 0) < max_age:
+            return st
+    except (OSError, ValueError):
+        pass
+    with tempfile.TemporaryDirectory(prefix="d1-sinir-") as tmp:
+        log = Path(tmp) / "yoklama.jsonl"
+        with log.open("w", encoding="utf-8") as out:
+            subprocess.run(["claude", "-p", "--model", LIMIT_PROBE_MODEL, "--output-format", "stream-json", "--verbose",
+                            "--strict-mcp-config", "--tools", "", "--no-session-persistence"],
+                           input="ok", cwd=tmp, env=env, stdout=out, stderr=subprocess.PIPE, text=True, timeout=300,
+                           check=False)
+        st = limit_info(log) | {"at": time.time()}
+    try:
+        LIMIT_STATE.parent.mkdir(parents=True, exist_ok=True)
+        LIMIT_STATE.write_text(json.dumps(st), encoding="utf-8")
+    except OSError:
+        pass
+    return st
+
+
+def claude_p(command: list[str], prompt: str, log: Path, env: dict, timeout: int, esik: float = 0.8,
+             prefix: str = "d1-") -> subprocess.CompletedProcess:
+    """`claude -p` çağrısı, kullanım sınırına karşı korumalı. `esik`: çağrıdan önce 5 saatlik pencerenin en çok bu
+    kadarı dolu olmalı (büyük çağrı küçük eşik). Döküm `log`'a yazılır; sınıra takılan deneme `basarisiz/`'e alınır."""
+    for attempt in range(1, LIMIT_TRIES + 1):
+        st = limit_probe(env)
+        if st.get("week") is not None and st["week"] >= 0.98:
+            raise SystemExit(f"yedi günlük kullanım penceresi dolu ({st['week']:.0%}); "
+                             f"{datetime.fromtimestamp(st.get('week_reset') or 0):%Y-%m-%d %H:%M}'de açılır")
+        if st.get("hit") or (st.get("five") is not None and st["five"] >= esik):
+            _wait_until(st.get("five_reset"), f"5 saatlik pencere {st.get('five', 1):.0%} dolu (eşik {esik:.0%})")
+            LIMIT_STATE.unlink(missing_ok=True)
+            continue
+        with tempfile.TemporaryDirectory(prefix=prefix) as tmp, log.open("w", encoding="utf-8") as out:
+            done = subprocess.run(command, input=prompt, cwd=tmp, env=env, stdout=out, stderr=subprocess.PIPE,
+                                  text=True, timeout=timeout, check=False)
+        info = limit_info(log)
+        if not info["hit"]:
+            if info.get("five") is not None:      # sonraki çağrılar yeniden yoklamasın
+                try:
+                    LIMIT_STATE.write_text(json.dumps(info | {"at": time.time()}), encoding="utf-8")
+                except OSError:
+                    pass
+            return done
+        failed = log.parent / "basarisiz" / f"{log.stem}.sinir-{datetime.now():%Y%m%d-%H%M}{log.suffix}"
+        failed.parent.mkdir(exist_ok=True)
+        shutil.copy2(log, failed)
+        LIMIT_STATE.unlink(missing_ok=True)
+        _wait_until(info.get("five_reset"), f"çağrı kullanım sınırına takıldı (deneme {attempt}; döküm {failed.name})")
+    raise SystemExit(f"kullanım sınırı: {LIMIT_TRIES} denemede de takıldı ({log.name})")
 
 
 def transcript(log: Path) -> tuple[str, dict, float | None]:

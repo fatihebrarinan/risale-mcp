@@ -144,9 +144,7 @@ def call(unit: str, prompt: str, log: Path, only_cite: bool = False) -> tuple[st
         cmd += ["--allowedTools", ",".join(f"mcp__{s}" for s in SERVERS)]
     started = time.monotonic()
     print(f"{log.name}: {OPUS} ({datetime.now():%H:%M})", flush=True)
-    with tempfile.TemporaryDirectory(prefix="d1-tur-") as tmp, log.open("w", encoding="utf-8") as out:
-        done = subprocess.run(cmd, input=prompt, cwd=tmp, env=env, stdout=out, stderr=subprocess.PIPE, text=True,
-                              timeout=P.TIMEOUT, check=False)
+    done = P.claude_p(cmd, prompt, log, env, P.TIMEOUT, esik=0.75, prefix="d1-tur-")
     answer, calls, cost = P.transcript(log)
     secs = round(time.monotonic() - started)
     print(f"  {secs} sn, {sum(calls.values())} araç çağrısı, ≈{cost or 0:.2f} $, çıkış {done.returncode}", flush=True)

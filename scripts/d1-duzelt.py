@@ -139,9 +139,7 @@ def run_claude(prompt: str, stem: Path, mcp: Path | None, allowed: tuple[str, ..
     started = time.monotonic()
     print(f"{stem.name}: {model} ({datetime.now():%H:%M})", flush=True)
     log_path = Path(str(stem) + ".jsonl")
-    with tempfile.TemporaryDirectory(prefix="d1-duzelt-") as tmp, log_path.open("w") as log:
-        done = subprocess.run(command, input=prompt, cwd=tmp, env=env, stdout=log, stderr=subprocess.PIPE, text=True,
-                              timeout=Y.TIMEOUT, check=False)
+    done = P.claude_p(command, prompt, log_path, env, Y.TIMEOUT, esik=0.85, prefix="d1-duzelt-")
     answer, calls, cost = P.transcript(log_path)
     data = Y.extract_json(answer) or repair_json(answer)
     meta = {"model": model, "effort": effort, "seconds": round(time.monotonic() - started),

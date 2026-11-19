@@ -177,9 +177,7 @@ def run_model(prompt: str, model: str, stem: Path, meta_extra: dict) -> dict | N
                "--verbose", "--strict-mcp-config", "--tools", "", "--no-session-persistence"]
     started = time.monotonic()
     print(f"{stem.name}: {MODELS[model]} ({datetime.now():%H:%M})", flush=True)
-    with tempfile.TemporaryDirectory(prefix="d1-yz-") as tmp, stem.with_suffix(".jsonl").open("w") as log:
-        done = subprocess.run(command, input=prompt, cwd=tmp, env=env, stdout=log, stderr=subprocess.PIPE, text=True,
-                              timeout=TIMEOUT, check=False)
+    done = P.claude_p(command, prompt, stem.with_suffix(".jsonl"), env, TIMEOUT, esik=0.85, prefix="d1-yz-")
     answer, calls, cost = P.transcript(stem.with_suffix(".jsonl"))
     data = extract_json(answer)
     meta = {"model": MODELS[model], "effort": EFFORT, "seconds": round(time.monotonic() - started),
