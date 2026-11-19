@@ -154,6 +154,8 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   makineden gelir, insan okuması (D5.1, D5.2) hattın kalitesini ölçen örneklemdir, kapı değil.
   - **D5.0.1 Kuyruk** (eski D11.4): birimleri sırayla yazdırmak, kullanım sınırına takılınca sıfırlanmayı bekleyip
     sürmek, pencere başına sığan işi ölçmek. Sıra önerisi: önce Risale-i Nur'un bağ kurduğu âyetler (D5.2'nin çekincesiyle).
+    **Tek komutla birim hattı** (kullanıcı kabul etti, 2026-11-19): bugün bir birim on küsur komut (kurulum, taslak,
+    eşleştirme, eleştirmenler, kör A/B, okuma sayfası); tek komuta bağlanır.
   - **D5.0.2 Uzunluk hedefi:** kapandı, gerek yok (h9'da hedef kalktı, D14.6; derslerin şişmesi D15'te izleniyor).
   - **D5.0.3 İzah katmanı** (günümüz Türkçesiyle, `d1-hat.py izah`; izahları birleştirme "Sonra"da). Okuma platformunda
     (S7) geniş okuyucu için önem kazandı.
@@ -179,7 +181,8 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   - **D5.0.6 Kalite kapısı: denetle, düzelt, yayımla** (2026-11-19'da yeniden tarif: insan onayı olmadığı için kör
     aletler insanı yönlendirmek için değil otomatik düzeltme için): nisbet denetçisi (D14.5b), kapalı eleştirmen (tek
     çağrı), düzeltme turu (D12.1: kapalı notlarla düzeltme işe yaradı ama uzattı; sınanmalı), mekanik denetimler ve
-    **biçim denetimi** (her Arapça paragrafın tercümesi hemen arkasında mı; D15.1'de taslak tercümeyi topluca verdi).
+    **biçim denetimi** (her Arapça paragrafın tercümesi hemen arkasında mı; D15.1'de taslak tercümeyi topluca verdi;
+    yazımdan hemen sonra çalışır, kullanıcı kabul etti 2026-11-19).
     Ayar verisi D15'ten (D15.1: kapalı İşârât'sız görülebileni kaçırmıyor, nisbet onu tamamlıyor).
   - **D5.0.7 Maliyet:** taslak ≈4,5–5,5 $, konu ve tablo ≈0,3 $, nisbet ≈1 $, kapalı ≈3 $, düzeltme (ölçülecek);
     Bakara'nın kalanı **153 birim** (b5), bütün Kur'ân ≈3.400 birim tahmini (bölmeden sonra güncellenir).
@@ -211,6 +214,22 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   envanter olmayan birimlerde kör aletlerin notları, tercümeyi topluca veren taslaklarda eşleştirme (`Y.pairs`),
   birim başına büyük sayfa yerine istek üzerine veri). 2026-11-19'da önerilen "önce buraya bak", durum ve okuma
   işaretleri dilimi D5'te insan onayı olmayacağı için düştü.
+- **Özellikler** (kullanıcı kabul etti, 2026-11-19; sıra zamanı gelince belirlenir):
+  - İkisinde de: **atıfa tıklayınca kaynak yerinde açılır** (Risale'nin, müfessirin, klasik eserin o cümlesi
+    paragrafın altında; yan seçmeden); **Arapça ile tercümesi paragraf paragraf hizalı**, isteğe bağlı üçüncü satırda
+    izah (D5.0.3; platformda Türkçe ve izah önde, Arapça açılır; masada önce `Y.pairs` düzelmeli); **ders başlığından
+    Risale'deki genişine tek tık**; **bütün taslaklarda arama** (platformda konu araması, masada tutarlılık: aynı nükte
+    iki birimde çelişiyor mu).
+  - Okuma platformunda: **sûre boyunca kesintisiz okuma kipi** (masada da birimler arası tekrar ve kopukluk denetimi
+    için); **âyetin Risale'deki yerleri** müellifin kendi sözüyle (âyet ilişkileri, `find_ayah`; Risale'nin eksen
+    oluşu okuyucuya böyle görünür); **"bu taslak nasıl yazıldı" künyesi** (hat sürümü, model, tarih, kaynaklar, geçtiği
+    denetimler; birinci gayenin dürüstlük kısmı); **kalıcı bağlantı** (birime ve paragrafa doğrudan adres; ileride
+    heyetin notları buna bağlanır); **müfessirler paneli** (aynı âyette on üç müfessirin birimi, Arapça, kapalı başlık);
+    **davetli okuyucunun kısa notu** ("bu paragrafta sorun var"; sunucuda veri tutar).
+  - Ar-ge masasında: **pano** (kuyruk, pencere başına birim, harcama, aletlerin işaret oranları; Risale'si az
+    birimlerdeki düşüşü erken yakalamak için; platformda en çok tek satırlık ilerleme); **bir birimin taslakları
+    arasında fark** (yeniden yazma ya da düzeltme gelince; D12.2'nin fark kartları); **okuma sonuçlarının sunucuda
+    toplanması** (`/taslak/` hesabıyla, dışa aktarma adımı kalkar; heyet akışından ayrı, tek okuyucu için).
 
 ## Bekleyen (başkasının cevabı)
 
