@@ -67,7 +67,7 @@ başlayacak (`/clear`), D15'in başlangıç tarifi aşağıda D15'te.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D15 | Saklı birimlerde son ölçüm (hat h10; 21–22, 28, 26–27; üç dilim, iki kullanım penceresi) | |
+| 1 | D15 | Saklı birimlerde son ölçüm (hat h10; 21–22, 26–27, 28; üç dilim, iki kullanım penceresi) | |
 | 2 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
 | 3 | S7 | Âyet masasının üçüncü hâli: Kur'ân paneli, tek uygulama, kuyruk görünümü (D5.0'la paralel) | |
 
@@ -298,7 +298,7 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   "taşımıyor" oranı (`d1-kalip.py kontrol`, `kayip`), çelişki ve müfessir adı.
 - **Pencere** (kullanıcı, 2026-11-19: ≈50 $ tek kullanım penceresine sığmaz). Birim başına tahmin ≈16 $ (envanter ≈2,
   konu ve tablo ≈0,3, h10 taslağı ≈4,5, h2 taslağı ≈3,5, iki eşleştirme ≈3,5, kör ≈2,3) ve kurulum emeği. Üç dilim:
-  **D15.1** 21–22, **D15.2** 28, **D15.3** 26–27 ve D15'in toplu raporu; bir pencerede en çok iki dilim (önerilen:
+  **D15.1** 21–22, **D15.2** 26–27, **D15.3** 28 (2026-11-19'da sıra değişti, bkz. aşağıda) ve D15'in toplu raporu; bir pencerede en çok iki dilim (önerilen:
   1. pencere D15.1 + D15.2, 2. pencere D15.3). Her dilim kendi okumasıyla biter.
 - **h2 kolu yok** (kullanıcının kararı, 2026-11-19): h2 yeniden kurulmaz; h10 tek başına, İşârât kartı ve kör
   eleştirmenin İşârât'a karşı mutlak değerlendirmesiyle. Aşağıdaki not soru açıkken yazılmıştı. Önceki açık soru: h2 kolu kalsın mı? Saklı birimlerde h2 yazdırmak için eski hat yeniden
@@ -307,6 +307,16 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   göre yapar (h2 için geçici olarak `SURUM = "h2"`, `RISALE_ILK = None`). Kazancı: kazancın ezber olmadığının temiz
   kanıtı. Bedeli: birim başına ≈7 $ ve kurulum. h2'siz: h10 tek başına, envanterin mutlak kapsaması, İşârât kartı
   ve kör eleştirmenin İşârât'a karşı mutlak değerlendirmesi (yeni istem gerekir); üç birim ≈27 $, tek pencere.
+- **D15'e üç ek** (kullanıcının kararları, 2026-11-19; sebep: saklı birimlerde cevap elde ama gizli, D5'te kalacak kör
+  aletler burada doğru cevapla ayarlanır): (1) **kör aletlerin ayarı:** her birimde h10 taslağına nisbet denetçisi
+  (≈1 $) ve kapalı eleştirmen (bütün taslağa tek çağrı, ≈2–3 $ tahmin); bulduklarıyla İşârât kartının ve envanterin
+  bulduğu karşılaştırılır: D5'te gerçek kusurların ne kadarını makine yakalıyor, insan okuması nereye gitmeli.
+  (2) **D5'in şartı 28'de:** dilim sırası 21–22 → 26–27 → 28; 28'in birinci vechine önceki birim olarak İşârât'ın 26–27'si
+  yerine 26–27'nin h10 taslağı verilir (D5.0 (5)); istem değişmez, birinci vecih raporda ayrı ölçülür. (3) **30 yedekte:**
+  D5.0'ın kabul birimi; D15'e, soru kalıpları listesinin yeniden kuruluşuna ve hiçbir denemeye girmez (25 ve 29
+  harcanabilir). Maliyet birim başına ≈14–15 $, toplam ≈45 $: iki pencere.
+- **D15 yazılırken yan yana** (kullanıcının isteği, 2026-11-19; pencere harcamaz): D5.0 (4) birim bölümlemesi
+  (Bakara 1–33'te müfessirlerin âyet grupları İşârât'ın sınırlarıyla karşılaştırılır, programla), kuyruğun kodu, S7.
 - **Birim kurulumu (her dilimin başı):** saklı birimler `d1-prova.UNITS`'te yok. `_dev_unit` gibi kayıt: Arapça ve
   Türkçe düğümler (Türkçede 21 ve 22 ayrı bölüm), vecihlerin ilk cümleleri (`sections`), ince Ek 3 için komşu
   birimler, usul özeti ve birim çizelgesinden o birimin örneklerini çıkaran düzeltmeler (`ozet`, `cizelge`; usul
@@ -327,6 +337,11 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   başına 138–1238 harf, tek oran yetmez); (3) izah katmanı (günümüz Türkçesiyle, `d1-hat.py izah`; izahları birleştirme
   "Sonra"da).
 - D5.1 Bakara 34, tek birim, ehlin okuması.
+- **D5.2 Risale'si az iki birim, kuyruk büyümeden önce** (kullanıcının kararı, 2026-11-19): bir kıssa (İsrâiloğulları,
+  40–74) ve bir ahkâm birimi (178–283) okunur. Sebep: D15'in saklı birimlerinin hepsi Risale'ce zengin (Risale'deki
+  doğrudan alıntı 21–22'de 30, 26–27'de 14, 28'de 7); Bakara 34–283'te âyetlerin ≈%78'inde doğrudan alıntı yok (34–39:
+  6'da 5, 40–74: 35'te 26, 178–283: 106'da 86; konu üzerinden gelen yerler sayılmadı). h10'un kazancı büyük ölçüde
+  Risale dersinden; kuyruk "önce Risale'nin bağ kurduğu âyetler" sırasıyla başlarsa düşüş geç görülür.
 
 ## Bekleyen (başkasının cevabı)
 
