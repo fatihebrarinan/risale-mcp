@@ -276,6 +276,9 @@ program uygular (h6'nın başlıkları gibi).
   İşârât'la uyumlu; V2'de h9 hafif); Tarama 60 satır, hepsi cevaplı, taşıyor 57 (zorlama riski); çelişki 1 → 3, müfessir
   adı 5 → 11; h10'un kusurları: Âlûsî'ye nisbet, "meşkûk küfür"ü kapsamını aşarak uygulamak. Okuma
   `tur-14-15-D14.7.html` (N35, N09, N64; A = h10, B = h9).
+  **Okuma (2026-11-19):** h10 1 (N09: "soruya A daha iyi cevap veriyor … daha derli toplu"), emin değil 2 (N35'te
+  h10'a "his olarak"; N64'te h9'un dersi, ama kart h10'un «يَعْمَهُونَ» dersini göstermemişti: kart hatası). Kural 4.4:
+  eleştirmen ve kullanıcı aynı yönde (h10). Karar bekliyor (önerim h10).
 
 **D15. Saklı birimlerde son ölçüm** (kullanıcının kararı, 2026-11-17: kendi aşaması; "D5'ten önceki son düzlük, o
 aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) bir kez, aynı
