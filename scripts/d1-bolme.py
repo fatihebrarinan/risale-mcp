@@ -248,6 +248,99 @@ def rapor() -> None:
     print(f"{(OUT / 'gecisler.md').relative_to(ROOT)}; alıntı sorunu {bad}")
 
 
+# ---------------------------------------------------------------- işlenebilirlik sınaması (b1)
+
+KURAL_DOC = ROOT / "docs" / "d1" / "bolme-kurali.md"
+SINA_ISTEM = """Kur'ân âyetlerini tahlil birimlerine böleceksin: her birim, nazmı birlikte tahlil edilecek âyet ya da
+âyetlerdir (bir tefsirde tek başlık altında işlenecek kısım). {talimat}
+
+Bölünecek kısım: {sura_name} {a}–{b}. Her âyet ya kendinden önceki birime katılır ya da yeni birim başlatır. Her
+geçiş (k|k+1) için kararını ve bir cümle gerekçeni yaz{kural_no}.
+
+Cevabın yalnız şu JSON:
+```json
+{{"birimler": [[1, 1], [2, 3]], "gecisler": [{{"gecis": "1|2", "karar": "sinir|birlikte", {kural_alan}"gerekce": "..."}}]}}
+```
+
+# Âyetler
+
+{ayetler}
+{kural}"""
+TALIMAT = {
+    "kural": "Aşağıdaki kurala göre böl; kural bir müfessirin (Bediüzzaman, İşârâtü'l-İ'câz) usulünden çıkarıldı.",
+    "yalin": "Bediüzzaman'ın İşârâtü'l-İ'câz'daki usulüyle böl: o eserde âyetler bazen tek tek, bazen gruplar hâlinde "
+             "tahlil edilir.",
+}
+
+
+def kural_text() -> str:
+    raw = KURAL_DOC.read_text(encoding="utf-8")
+    return raw.split("\n---- KURAL ----\n", 1)[1].split("\n---- DAYANAK ----\n", 1)[0].strip()
+
+
+def sina_prompt(kol: str, a: int = 1, b: int = LAST) -> str:
+    q = json.loads(QURAN.read_text(encoding="utf-8"))
+    rows = [x for x in q["suras"][1]["ayahs"] if a <= x["ayah"] <= b]
+    vakif = next(k for k in rows[0]["translations"] if "vakf" in k.lower() or "tdv" in k.lower())
+    ayetler = "\n\n".join(f"{x['ayah']}. {x['text']}\nMeâl (Diyanet Vakfı): {x['translations'][vakif]}" for x in rows)
+    kural = kol == "kural"
+    return SINA_ISTEM.format(talimat=TALIMAT[kol], sura_name="Bakara", a=a, b=b, ayetler=ayetler,
+                             kural_no=" (hangi kurala dayandığıyla: asıl ölçüt ya da 1–6)" if kural else "",
+                             kural_alan='"kural": "…", ' if kural else "",
+                             kural=f"\n# Kural\n\n{kural_text()}\n" if kural else "")
+
+
+def sina(kollar: list[str], kez: int, again: bool = False) -> None:
+    from concurrent.futures import ThreadPoolExecutor
+    jobs = []
+    for kol in kollar:
+        prompt = sina_prompt(kol)
+        (OUT / f"sina-{kol}-istem.md").write_text(prompt, encoding="utf-8")
+        for i in range(1, kez + 1):
+            stem = OUT / f"sina-{kol}-{i}"
+            if stem.with_suffix(".json").exists() and not again:
+                continue
+            jobs.append((prompt, stem, {"gorev": "bolme-sina", "kol": kol, "istem_sha": Y.P._sha(prompt),
+                                        "kural_sha": Y.P._sha(kural_text())}))
+    with ThreadPoolExecutor(4) as ex:
+        list(ex.map(lambda j: Y.run_model(j[0], "opus", j[1], j[2]), jobs))
+    sina_rapor()
+
+
+def sina_rapor() -> None:
+    data = json.loads((OUT / "gecisler.json").read_text(encoding="utf-8"))
+    truth = {r["gecis"]: r["isarat"] for r in data["gecisler"]}
+    L = ["# Bölme kuralının işlenebilirlik sınaması (b1)", "",
+         "İşârât'ın bölmesini görmeyen model Bakara 1–33'ü böler. `kural`: `docs/d1/bolme-kurali.md`'nin Kural kısmıyla; "
+         "`yalin`: yalnız \"İşârât'ın usulüyle böl\". Ölçü İşârât'ın 21 sınırı (18|19 İşârât'ta birlikte sayılır). "
+         "Kural Bakara 1–33'ten çıktığı için bu genelleme değil, kuralın yazıldığı gibi uygulanabilirliği sınamasıdır.", "",
+         "| Koşu | Tutan sınır | Fazla sınır (İşârât birleştiriyor) | Kaçan sınır (İşârât ayırıyor) | Birim |", "|---|---|---|---|---|"]
+    runs = sorted(OUT.glob("sina-*-[0-9].json"))
+    detail = []
+    for f in runs:
+        d = json.loads(f.read_text(encoding="utf-8"))
+        got = {}
+        for a, b in d.get("birimler", []):
+            for k in range(a, b):
+                got[f"{k}|{k + 1}"] = "birlikte"
+            if b < LAST:
+                got[f"{b}|{b + 1}"] = "sinir"
+        fazla = [g for g, v in truth.items() if v == "birlikte" and got.get(g) == "sinir"]
+        kacan = [g for g, v in truth.items() if v == "sinir" and got.get(g) == "birlikte"]
+        n_sinir = sum(v == "sinir" for v in truth.values())
+        L.append(f"| {f.stem} | {n_sinir - len(kacan)}/{n_sinir} | {', '.join(fazla) or '—'} | {', '.join(kacan) or '—'} | "
+                 f"{len(d.get('birimler', []))} |")
+        gerekce = {g.get("gecis"): g for g in d.get("gecisler", [])}
+        for g in fazla + kacan:
+            x = gerekce.get(g, {})
+            detail.append(f"- **{f.stem} {g}** (İşârât: {truth[g]}; model: {x.get('karar', '?')}"
+                          + (f", kural {x['kural']}" if x.get("kural") else "") + f"): {x.get('gerekce', '')}")
+    L += ["", "## Ayrılan geçişlerde modelin gerekçesi", ""] + detail
+    (OUT / "sina.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"{(OUT / 'sina.md').relative_to(ROOT)}")
+    print("\n".join(L[5:5 + len(runs) + 1]))
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -255,11 +348,20 @@ def main() -> None:
     p = sub.add_parser("oku")
     p.add_argument("--yeniden", action="store_true")
     sub.add_parser("rapor")
+    p = sub.add_parser("sina", help="işlenebilirlik sınaması: Bakara 1–33'ü İşârât'ı görmeden böl")
+    p.add_argument("--kollar", nargs="+", default=["kural", "yalin"], choices=list(TALIMAT))
+    p.add_argument("--kez", type=int, default=2)
+    p.add_argument("--yeniden", action="store_true")
+    sub.add_parser("sina-rapor")
     a = ap.parse_args()
     if a.cmd == "tablo":
         tablo()
     elif a.cmd == "oku":
         oku(a.yeniden)
+    elif a.cmd == "sina":
+        sina(a.kollar, a.kez, a.yeniden)
+    elif a.cmd == "sina-rapor":
+        sina_rapor()
     else:
         rapor()
 
