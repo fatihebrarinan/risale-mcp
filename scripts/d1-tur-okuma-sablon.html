@@ -58,7 +58,9 @@ mark.d { background: var(--diff); color: var(--diff-fg); border-radius: 2px; }
 .box.env { background: var(--warn-soft); }
 details.srcs { margin-top: 8px; }
 details.srcs .box .ar { font-size: 1.05rem; }
-@media (max-width: 820px) { .cols { grid-template-columns: 1fr; } }
+.cols.c3 { grid-template-columns: 1fr 1fr 1fr; }
+.ask .row { display: block; margin: 4px 0; }
+@media (max-width: 820px) { .cols, .cols.c3 { grid-template-columns: 1fr; } }
 </style></head>
 <body>
 <header>
@@ -98,10 +100,10 @@ function save(c, patch) {
   if (!store.set(KEY, marks)) say('Tarayıcı işareti kaydedemedi; dışa aktarın.');
   progress();
 }
-const CHOICE = DATA.tek
-  ? [['yeterli', 'Yeterli'], ['duzeltmeyle', 'Düzeltmeyle yeterli'], ['yetersiz', 'Yetersiz'], ['emin_degilim', 'Emin değilim']]
-  : [['a', 'A daha iyi'], ['b', 'B daha iyi'], ['esit', 'Eşit'], ['emin_degilim', 'Emin değilim']];
-const val = v => DATA.tek ? v : v === 'a' ? DATA.a : v === 'b' ? DATA.b : v;
+const YETER = [['yeterli', 'Yeterli'], ['duzeltmeyle', 'Düzeltmeyle yeterli'], ['yetersiz', 'Yetersiz'], ['emin_degilim', 'Emin değilim']];
+const AB = [['a', 'A daha iyi'], ['b', 'B daha iyi'], ['esit', 'Eşit'], ['emin_degilim', 'Emin değilim']];
+const CHOICE = DATA.tek && !DATA.ab ? YETER : AB;
+const val = v => DATA.tek && !DATA.ab ? v : v === 'a' ? DATA.a : v === 'b' ? DATA.b : v;
 const DURUM = {aynen: 'aynen buldu', kismen: 'kısmen buldu', farkli_gerekce: 'farklı gerekçeyle', yok: 'bulamadı'};
 
 const AR = /[؀-ۿﭐ-﷿ﹰ-﻿]/;
@@ -191,29 +193,41 @@ function isaratCol(c) {
     ${c.isarat_ar ? `<details${c.isarat_tr ? '' : ' open'}><summary class="small muted">Arapça aslı</summary><div class="ar" dir="rtl">${esc(c.isarat_ar)}</div></details>` : ''}</div>`;
 }
 function toolsHtml(c) {
-  const t = c.araclar || {}, li = xs => xs.length ? `<ul>${xs.join('')}</ul>` : '<div class="small muted">Bu yer için bir şey demedi.</div>';
-  const env = Object.entries(c.envanter || {}).map(([k, v]) => `${esc(k)}: ${esc(v.join(', '))}`).join(' · ');
-  return `<div class="reveal">
+  const labs = DATA.ab ? ['A', 'B'] : ['A'];
+  const who = l => DATA.ab ? `<b>${l}</b> = ${esc(l === 'A' ? DATA.a : DATA.b)} (${esc(DATA.about[l === 'A' ? DATA.a : DATA.b] || '')})` : '';
+  const envOf = l => Object.entries((c.envanter || {})[l] || {}).map(([k, v]) => `${esc(k)}: ${esc(v.join(', '))}`).join(' · ');
+  return `<div class="reveal">${DATA.ab ? `<div>${who('A')}</div><div>${who('B')}</div>` : ''}
     <div class="box env"><b>Neden seçildi:</b> ${esc(c.tur_ad)}. ${esc(c.acik || '')}</div>
     <div class="box isr"><div class="small muted">İşârât'ın nüktesi (envanterin özeti${c.lafiz ? ', ' + esc(c.lafiz) : ''})</div><div>${esc(c.nukte)}</div>
-      <div class="small">Envanter okuyucusu taslakta: ${env || '—'}</div></div>
+      ${labs.map(l => `<div class="small">Envanter okuyucusu ${DATA.ab ? l + "'da" : 'taslakta'}: ${envOf(l) || '—'}</div>`).join('')}</div>
+    ${labs.map(l => sideTools(l, (c.araclar || {})[l] || {})).join('')}</div>`;
+}
+function sideTools(l, t) {
+  const li = xs => xs.length ? `<ul>${xs.join('')}</ul>` : '<div class="small muted">Bu yer için bir şey demedi.</div>';
+  return `${DATA.ab ? `<h3 style="margin:10px 0 2px">${l} için aletler</h3>` : ''}
     <div class="box"><b>İşârât karşılaştırması</b> (İşârât'ı okuyarak)
       ${li((t.isarat_nukte || []).map(x => `<li>Ana nükte, taslakta ${esc(TASLAKTA[x.taslakta] || x.taslakta)}: ${esc(x.nukte)}</li>`)
           .concat((t.isarat || []).map(x => `<li><b>${esc(x.tur)}</b> (${esc(x.oncelik || '')}): ${esc(x.metin)}</li>`)))}</div>
     <div class="box"><b>Kapalı eleştirmen</b> (İşârât'ı görmeden; D5'te bu çalışacak)
       ${li((t.kapali || []).map(x => `<li><b>${esc(x.tur)}</b> (${esc(x.oncelik || '')}): ${esc(x.metin)}</li>`))}</div>
     <div class="box"><b>Nisbet denetçisi</b>
-      ${li((t.nisbet || []).map(x => `<li><b>${esc(HUKUM[x.hukum] || x.hukum)}</b>: «${esc(x.alinti || '')}» ${esc(x.gerekce)}</li>`))}</div></div>`;
+      ${li((t.nisbet || []).map(x => `<li><b>${esc(HUKUM[x.hukum] || x.hukum)}</b>: «${esc(x.alinti || '')}» ${esc(x.gerekce)}</li>`))}</div>`;
 }
 function cardHtmlTek(c, idx) {
   const m = marks[kOf(c)] || {}, none = {ar: new Set(), tr: new Set()};
-  const opts = CHOICE.map(([v, l]) => `<label><input type="radio" name="c-${idx}" value="${esc(v)}" data-i="${idx}" data-f="secim"${m.secim === v ? ' checked' : ''}>${l}</label>`).join('');
+  const radios = (set, f, cur) => set.map(([v, l]) => `<label><input type="radio" name="c-${idx}-${f}" value="${esc(val(v))}" data-i="${idx}" data-f="${f}"${cur === val(v) ? ' checked' : ''}>${l}</label>`).join('');
+  const cols = DATA.ab ? `<div class="cols c3">${colHtml('A', c.A, none)}${colHtml('B', c.B, none)}${isaratCol(c)}</div>`
+                       : `<div class="cols">${colHtml('Taslak', c.A, none)}${isaratCol(c)}</div>`;
+  const ask = DATA.ab
+    ? `<div class="row"><b class="small">Hangisi daha iyi?</b> ${radios(AB, 'secim', m.secim)}</div>
+       <div class="row"><b class="small">Daha iyi bulduğunuz bu yerde kendi başına yeterli mi?</b> ${radios(YETER, 'yeter', m.yeter)}</div>`
+    : `<b class="small">Taslak bu yerde kendi başına yeterli mi?</b>${radios(YETER, 'secim', m.secim)}`;
   return `<div class="card${m.secim ? ' done' : ''}" id="card-${idx}">
     <h2>${idx + 1}. ${arw(c.baslik)}</h2><p class="soru">${arw(c.soru || '')}</p>
-    <div class="cols">${colHtml('Taslak', c.A, none)}${isaratCol(c)}</div>
-    <div class="ask"><b class="small">Taslak bu yerde kendi başına yeterli mi?</b>${opts}
+    ${cols}
+    <div class="ask">${ask}
       <textarea data-i="${idx}" data-f="gerekce" placeholder="Kısa gerekçe (bir iki cümle)">${esc(m.gerekce || '')}</textarea>
-      ${m.acildi ? '' : `<button class="btn" data-open="${idx}" ${m.secim ? '' : 'disabled'}>Aç: aletlerin bu yer için dediği</button>`}
+      ${m.acildi ? '' : `<button class="btn" data-open="${idx}" ${m.secim ? '' : 'disabled'}>${DATA.ab ? "Aç: hangisi hangisi ve aletlerin dediği" : "Aç: aletlerin bu yer için dediği"}</button>`}
     </div>${m.acildi ? toolsHtml(c) : ''}</div>`;
 }
 function cardHtml(c, idx) {
@@ -255,10 +269,11 @@ document.addEventListener('change', ev => {
   const c = DATA.cards[+t.dataset.i];
   if (!reader()) { say('Önce okuyucu adınızı yazın.'); if (t.type === 'radio') t.checked = false; $('#reader').focus(); return; }
   if (f === 'secim') {
-    save(c, DATA.tek ? {secim: t.value} : {secim: t.value, harf: t.value === DATA.a ? 'A' : t.value === DATA.b ? 'B' : t.value});
+    save(c, DATA.tek && !DATA.ab ? {secim: t.value} : {secim: t.value, harf: t.value === DATA.a ? 'A' : t.value === DATA.b ? 'B' : t.value});
     const card = t.closest('.card'); card.classList.add('done');
     const b = card.querySelector('[data-open]'); if (b) b.disabled = false;
-  } else save(c, {gerekce: t.value});
+  } else if (f === 'yeter') save(c, {yeter: t.value});
+  else save(c, {gerekce: t.value});
 });
 document.addEventListener('click', ev => {
   const b = ev.target.closest('[data-open]');

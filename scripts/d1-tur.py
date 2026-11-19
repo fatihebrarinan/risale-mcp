@@ -730,7 +730,14 @@ TEK_GIRIS = ("<b>Ne okuyorsunuz:</b> İşârât'ı görmeden yazılmış tek bir
              "vecih kusur değildir. Her kartta hüküm (yeterli, düzeltmeyle, yetersiz) ve bir iki cümle gerekçe; sonra "
              "<b>Aç</b>: aletlerin bu yer için dediği (İşârât karşılaştırması, kapalı eleştirmen, nisbet denetçisi, "
              "envanter). Bitince <b>Dışa aktar</b>.")
-TEK_KINDS = {"duzeltilecek": "İşârât karşılaştırmasının ehline gitmeden düzeltilecek dediği yer",
+TEK_AB_GIRIS = ("<b>Ne okuyorsunuz:</b> İşârât'ı görmeden yazılmış iki yapay zekâ taslağı, <b>A</b> ve <b>B</b> "
+                "(hangisinin hangi hatla yazıldığı gizli), yanında aynı yerde İşârât'ın sözü. Her kartta iki soru: "
+                "<b>hangisi daha iyi</b> (doğruluk, İşârât'a yakınlık, kaynak disiplini, îcâz) ve <b>daha iyi "
+                "bulduğunuz bu yerde kendi başına yeterli mi</b> (İşârât olmayan âyetlerde ehline böyle gidebilir mi; "
+                "İşârât'ın her nüktesini bulmak beklenmez, farklı ama sağlam vecih kusur değildir). Sonra <b>Aç</b>: "
+                "hangisi hangisi ve aletlerin bu yer için dediği. Bitince <b>Dışa aktar</b>.")
+TEK_KINDS = {"ab": "kör eleştirmenin iki taslağı ayırdığı yer",
+             "duzeltilecek": "İşârât karşılaştırmasının ehline gitmeden düzeltilecek dediği yer",
              "ders": "Risale dersi", "ayrilik": "kapalı eleştirmenle nisbet denetçisinin ayrıldığı yer"}
 
 
@@ -748,9 +755,11 @@ def tool_notes(unit: str, n: int, anchors: set[str], texts: str, keys: list[str]
     else:
         hit = lambda capa, text="": (bool(capa) and Y.ar_of(pr, capa) in own) or loose(capa, text)
     d = Y.out_dir(unit)
-    isr = json.loads((d / f"isarat-karsilastirma-taslak-{n}.json").read_text(encoding="utf-8"))
-    kap = json.loads((d / f"kapali-elestiri-taslak-{n}.json").read_text(encoding="utf-8"))
-    nis = json.loads((d / f"nisbet-taslak-{n}.json").read_text(encoding="utf-8"))
+    def load(name: str) -> dict:         # kapalı eleştirmen ve nisbet yalnız h10'da (D15): yoksa boş
+        f = d / name
+        return json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+    isr, kap = load(f"isarat-karsilastirma-taslak-{n}.json"), load(f"kapali-elestiri-taslak-{n}.json")
+    nis = load(f"nisbet-taslak-{n}.json")
     flat = re.sub(r"\s+", " ", texts)
     out = {"isarat": [{"tur": x["tur"], "oncelik": x.get("oncelik"), "metin": x["metin"]} for x in isr.get("notlar", [])
                       if hit(x.get("capa"), x["metin"])],
@@ -764,10 +773,14 @@ def tool_notes(unit: str, n: int, anchors: set[str], texts: str, keys: list[str]
     return out
 
 
-def okuma_tek(unit: str, n: int, tur: str, yerler: list[dict]) -> Path:
-    """D15'in okuma sayfası: tek taslak ve İşârât; `provalar/<birim>/tur-<tur>.json`, `masa/tur-<birim>-<tur>.html`.
+def okuma_tek(unit: str, ns: list[int], tur: str, yerler: list[dict]) -> Path:
+    """D15'in okuma sayfası: taslak (ya da kör A/B iki taslak) ve İşârât yan yana; `provalar/<birim>/tur-<tur>.json`,
+    `masa/tur-<birim>-<tur>.html`.
 
-    `yerler`: [{ad, tur: duzeltilecek|ders|ayrilik, baslik, soru, acik, kalemler: [envanter kalemi…], capa: [çapa…]}].
+    `yerler`: [{ad, tur: duzeltilecek|ders|ayrilik|ab, baslik, soru, acik, kalemler: [envanter kalemi…], anahtar,
+    taslaklar: {"<n>": {capa: [çapa…], cift: {Arapça çapa: [Türkçe çapa…]}}}}]; tek taslakta `capa` ve `cift` üstte de
+    olabilir. İki taslakta (D15, kullanıcının kararı 2026-11-19: h9 ikinci kol) sıra sabit tohumla karışıktır, "A" ve
+    "B"; iki soru: hangisi daha iyi, daha iyisi bu yerde kendi başına yeterli mi.
     """
     env = json.loads((Y.out_dir(unit) / "envanter.json").read_text(encoding="utf-8"))
     items = {i["id"]: i for i in env["kalemler"]}
@@ -775,43 +788,55 @@ def okuma_tek(unit: str, n: int, tur: str, yerler: list[dict]) -> Path:
     pd = Y.page_data(unit)
     ayah = M.Ayah(unit)
     dr = M.drafts(unit, ayah)
-    dk = f"taslak-{n}"
+    order = list(ns)
+    if len(order) == 2:
+        random.Random(f"d15-{unit}-{tur}").shuffle(order)
+    labs = dict(zip("AB", order))
     cards, bad = [], []
     for y in yerler:
         its = [items[k] for k in y["kalemler"]]
-        side = read_side(unit, n, its[0]["id"], pd["drafts"][dk]["rows"], dr[dk]["sources"], None, y["capa"],
-                         y.get("cift"))
-        if not y.get("sinir_asimi") and (len(side["paras"]) > READ_MAX_PARAS or side["words"] > READ_MAX_WORDS):
-            bad.append(f"{y['ad']}: {len(side['paras'])} paragraf, {side['words']} kelime")
-        durum = {}
-        for it in its:
-            row = pd["drafts"][dk]["rows"].get(it["id"]) or {}
-            durum[it["id"]] = sorted({(x or {}).get("d") or "yok" for x in row.values() if isinstance(x, dict)}) or ["yok"]
-        texts = " ".join([p["ar"] + " " + p["tr"] + " " + " ".join(e["t"] for e in p["ek"]) for p in side["paras"]])
-        cards.append(dict(y, id=y["ad"], tur_ad=TEK_KINDS[y["tur"]], A=side,
-                          nukte=" · ".join(it["nukte"] for it in its), lafiz=" · ".join(it.get("lafiz", "") for it in its),
-                          isarat_ar=" ".join(Y.hidden_text(h, it.get("ar") or []) for it in its),
-                          isarat_tr=" ".join(Y.hidden_text(h, it.get("tr") or []) for it in its),
-                          envanter=durum, araclar=tool_notes(unit, n, set(y["capa"]), texts, y.get("anahtar"),
-                                             set(y["capa"]) | {x for v in (y.get("cift") or {}).values() for x in v}
-                                             if y.get("cift") else None)))
+        spec = y.get("taslaklar") or {str(order[0]): {"capa": y.get("capa", []), "cift": y.get("cift")}}
+        card = dict(y, id=y["ad"], tur_ad=TEK_KINDS[y["tur"]],
+                    nukte=" · ".join(it["nukte"] for it in its), lafiz=" · ".join(it.get("lafiz", "") for it in its),
+                    isarat_ar=" ".join(Y.hidden_text(h, it.get("ar") or []) for it in its),
+                    isarat_tr=" ".join(Y.hidden_text(h, it.get("tr") or []) for it in its),
+                    envanter={}, araclar={})
+        for lab, n in labs.items():
+            dk, sp = f"taslak-{n}", spec.get(str(n)) or {"capa": []}
+            side = read_side(unit, n, its[0]["id"], pd["drafts"][dk]["rows"], dr[dk]["sources"], None, sp["capa"],
+                             sp.get("cift"))
+            if not y.get("sinir_asimi") and (len(side["paras"]) > READ_MAX_PARAS or side["words"] > READ_MAX_WORDS):
+                bad.append(f"{y['ad']} {lab}: {len(side['paras'])} paragraf, {side['words']} kelime")
+            card[lab] = side
+            durum = {}
+            for it in its:
+                row = pd["drafts"][dk]["rows"].get(it["id"]) or {}
+                durum[it["id"]] = sorted({(x or {}).get("d") or "yok" for x in row.values() if isinstance(x, dict)}) or ["yok"]
+            card["envanter"][lab] = durum
+            texts = " ".join([p["ar"] + " " + p["tr"] + " " + " ".join(e["t"] for e in p["ek"]) for p in side["paras"]])
+            exact = (set(sp["capa"]) | {x for v in (sp.get("cift") or {}).values() for x in v}) if sp.get("cift") else None
+            card["araclar"][lab] = tool_notes(unit, n, set(sp["capa"]), texts, y.get("anahtar"), exact)
+        cards.append(card)
     if bad:
         raise SystemExit("okuma sınırını aşan yer (2 paragraf, 250 kelime): " + "; ".join(bad))
-    words = sum(c["A"]["words"] + len(c["isarat_tr"].split()) for c in cards)
+    words = sum(c[lab]["words"] for c in cards for lab in labs) + sum(len(c["isarat_tr"].split()) for c in cards)
     page = f"tur-{unit}-{tur}.html"
-    data = {"ad": tur, "tek": True, "a": dk, "b": "", "taslak": dk, "giris": TEK_GIRIS, "sayfa": page, "kelime": words,
-            "sari": False, "dakika": round(words / 100 + 2 * len(cards)),
-            "yerler": [{k: c.get(k) for k in ("ad", "tur", "baslik", "soru", "acik", "kalemler", "capa")} for c in cards],
+    data = {"ad": tur, "tek": True, "ab": len(labs) == 2, "a": f"taslak-{labs['A']}",
+            "b": f"taslak-{labs['B']}" if "B" in labs else "", "giris": TEK_AB_GIRIS if len(labs) == 2 else TEK_GIRIS,
+            "sayfa": page, "kelime": words, "sari": False, "dakika": round(words / 100 + 2 * len(cards)),
+            "yerler": [{k: c.get(k) for k in ("ad", "tur", "baslik", "soru", "acik", "kalemler", "taslaklar", "capa")}
+                       for c in cards],
             "at": datetime.now().isoformat()}
     path = P.DRAFTS / unit / f"tur-{tur}.json"
     path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     page_data = dict(data, unit=unit, title=M.title(unit), masa=f"{unit}.html", cards=cards,
-                     about={dk: dr[dk]["about"]})
+                     about={f"taslak-{n}": dr[f"taslak-{n}"]["about"] for n in labs.values()})
     blob = json.dumps(page_data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     out = M.OUT_DIR / page
     out.write_text(READ_TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
+    print(f"{path.relative_to(ROOT)}: " + ", ".join(f"{k} = taslak-{v}" for k, v in labs.items()))
     print(f"{out.relative_to(ROOT)}: {len(cards)} yer, ≈{words} kelime, ≈{data['dakika']} dk; " + "; ".join(
-        f"{c['ad']} {len(c['A']['paras'])}/{c['A']['words']}, araç {sum(len(v) for v in c['araclar'].values())}" for c in cards))
+        f"{c['ad']} " + " ".join(f"{lab} {len(c[lab]['paras'])}/{c[lab]['words']}" for lab in labs) for c in cards))
     return out
 
 
@@ -839,9 +864,9 @@ def main() -> None:
     p.add_argument("--yeni", type=int, required=True)
     p.add_argument("--yerler", required=True, help="JSON: [{id: envanter kalemi, tur, baslik, soru, acik}]")
     p.add_argument("--sari", action="store_true", help="sarı fark (yalnız D turu: aynı taslağın iki düzeltmesi)")
-    p = sub.add_parser("okuma-tek", help="D15: tek taslak ve İşârât, kartlarda yeterlilik hükmü")
+    p = sub.add_parser("okuma-tek", help="D15: taslak (ya da kör A/B iki taslak) ve İşârât, kartlarda yeterlilik hükmü")
     p.add_argument("unit", choices=P.UNITS)
-    p.add_argument("--taslak", type=int, required=True)
+    p.add_argument("--taslak", type=int, nargs="+", required=True)
     p.add_argument("--tur", required=True)
     p.add_argument("--yerler", required=True, help="JSON: [{ad, tur, baslik, soru, acik, kalemler, capa}]")
     a = ap.parse_args()

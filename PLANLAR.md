@@ -55,13 +55,10 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D15.1 (21–22). h10 (taslak 1) ölçüldü (İşârât karşılaştırması "düzeltmeyle"; kör aletlerin ayarı yapıldı).
-  h9 (taslak 2) yazıldı ve eşleştirildi; İşârât karşılaştırması ve kör A/B (1–2) bağımsız işte: `d1-h9-21-22`
-  (`scripts/d1-arka.sh log h9-21-22`; pencere doluysa sıfırlanmayı bekler; bitince `data/d1`'i commit ve push eder).
-  Yeni oturumda: `scripts/d1-arka.sh liste`; iş bittiyse birleşik okuma sayfası (A/B ve İşârât yan yana, kartlar
-  `provalar/21-22/yerler-D15.1.json`'dan genişletilir: iki taslağın en çok ayrıldığı yerler eklenir), `d1-tur.py`'ye
-  A/B'li tek taslak kipi gerekir, sonra `scripts/taslak-gonder.sh`.
-- **Kullanıcıdan beklenen:** 21–22'nin okuması, birleşik sayfa gelince (tek taslaklı `tur-21-22-D15.1.html` okunmaz).
+- **Önde:** D15.1 (21–22). h10 ve h9 yazıldı ve ölçüldü (h9 bütünde ve dört bölümde hafif, me'hazda açık önde;
+  kapsama %40 / %42; çelişki 1 / 0). Birleşik okuma sayfası sitede: https://risalemcp.com/taslak/tur-21-22-D15.1.html
+  (9 kart, ≈37 dk; A ve B kör, yanında İşârât).
+- **Kullanıcıdan beklenen:** 21–22'nin okuması; bitince "Dışa aktar", dosya `data/d1/notlar/`'a.
 - **Sonra:** D15.2 (26–27), D15.3 (28; D5.0.5'in sınaması), D15'in toplu raporu ve karar (h9 mı h10 mu).
 - **Bekleyen yan işler** (yeri gelince; D15 sürerken açılmaz): D5.0.4 bölmenin kalanı, S7.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
@@ -138,7 +135,16 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   `render_draft` sırayla verir). Kartlarda eşler elle (`cift`); D5.0'ın mekanik kapısına biçim denetimi adayı.
   **Okuma sayfası** `data/d1/masa/tur-21-22-D15.1.html` (`d1-tur.py okuma-tek`, kartlar `provalar/21-22/yerler-D15.1.json`;
   kullanıcı kartları onayladı): yedi yer (beş "düzeltilecek", bir Risale dersi, bir kapalı–nisbet ayrılığı), taslak ve
-  İşârât yan yana, hüküm yeterli / düzeltmeyle / yetersiz, aletler "Aç"tan sonra; ≈22 dk. Kalan: kullanıcının okuması.
+  İşârât yan yana, hüküm yeterli / düzeltmeyle / yetersiz, aletler "Aç"tan sonra; ≈22 dk (okunmadı, yerine birleşik sayfa).
+  **h9 kolu (2026-11-19):** taslak 2 (h9, ≈4,90 $; tercümeyi paragraf paragraf verdi, topluca verme h10'a özgü çıktı).
+  Kapsama %42 (mukaddimesiz %53), fazla 25, çelişki 0 (h10: %40, %50, 44, 1). İşârât karşılaştırması "düzeltmeyle"
+  (≈3,09 $; «لكم» ihtisası iki taslakta da; teâvün tefsirinin yanlış âyete nisbeti; vücud-vahdet-istihkak omurgası
+  eksik). **Kör A/B (o3, ≈2,20 $): h9 bütünde ve dört bölümün dördünde hafif, me'hazda açık** (h10'da iki tercüme hatası
+  «الآجلة» ve «الضمان», iltifatta İşârât'la çelişki, nükteleri müfessir adıyla kurma; h9 İşârât'ın nazîrlerini daha çok
+  kullanıyor; h10 «تجعلوا» ve «لله»da üstün; h9'un kusurları: Beyzâvî'nin zayıf dediği vechi kaydını düşürerek verme,
+  Keşşâf'taki bir nükteyi istinbat sayma, bir Risale sözünü değiştirme). **Birleşik okuma sayfası** (`d1-tur.py
+  okuma-tek 21-22 --taslak 1 2`, kartlar `provalar/21-22/yerler-D15.1-ab.json`): 9 kart (önceki yedi yer iki taslakla,
+  kör eleştirmenin ayırdığı iki yer: semânın iadesi, «لله»); A = h10, B = h9 (kör); iki soru. Birim ≈32,6 $.
 - **D15 bitince** (kullanıcının kararı, 2026-11-19): işi biten birimlerin prova veritabanları silinir
   (`data/interim/d1-prova/<birim>/risale.db`, `tefsir.db`; birim başına ≈1,5 GB, toplam ≈11 GB; yeniden üretilebilir,
   `d1-prova.py hazirla`). Envanter, taslaklar ve ölçüler `data/d1`'de kalır. 30'unki (kabul birimi) D5.0.9'a kadar.
