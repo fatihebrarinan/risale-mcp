@@ -438,7 +438,7 @@ Metin–yorum ayrımı, özetin doğruluğu ve tuzak sorulardaki davranış elle
 
 ## Altyapının kalıcı parçaları (H, T, MVP)
 
-Adımların geçmişi `PLANLAR.md` "Kayıt"tadır; burada her oturumda gereken kısa tarif durur.
+Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"); burada her oturumda gereken kısa tarif durur.
 
 - **Araç çıktısı kaydı (H0):** `uv run python -m risale_mcp.tool_snapshot record <ad> [--profile tefsir|hadis]` sabit
   çağrı setini (`tests/golden/tool_calls.json`, `tool_calls_tefsir.json`, `tool_calls_hadis.json`; talimat ve araç
@@ -494,7 +494,7 @@ Adımların geçmişi `PLANLAR.md` "Kayıt"tadır; burada her oturumda gereken k
 
 ## Planlar
 
-Bütün planlar, sıra, bekleyen ve dondurulan işler ve adım kaydı **`PLANLAR.md`**'dedir. Yeni plan, karar ve biten
+Bütün planlar, sıra, bekleyen ve dondurulan işler **`PLANLAR.md`**'dedir; başındaki **"Şimdi"** bloğu her adımda güncellenir (önde ne var, kullanıcıdan ne bekleniyor; oturum devri). Adım kaydı (biten işlerin ayrıntısı) **`KAYIT.md`**'dedir. Yeni plan, karar ve biten
 adım oraya tarihli yazılır; buraya yalnız kalıcı bağlam (ilke, veri modeli, komut, kural) girer. `docs/` altındaki
 plan belgeleri ayrıntı ve geçmiştir. İşler kimlikle anılır: alan harfi (E eserler, S sunum, A araç ve veri, D deneme,
 B bakım) ve artan numara (`E2`, alt adım `E2.1`); kimlik değişmez, sıra ayrı tablodadır (`PLANLAR.md` "Adlandırma").
