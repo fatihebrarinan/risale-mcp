@@ -62,13 +62,14 @@ işler"e taşındı (bitmişlerdi, "Sıradaki"de kalmışlardı).
 saklı birimlerde ölçüm kendi aşaması (D15). Yol: D13 → D14 → D15 → D5.
 **2026-11-17 (D13'ten sonra):** D13 bitti, h3 taban; biten D11, D12, D13 ve S6'nın ayrıntısı "Kayıt › Kimlikli
 işler"e taşındı. Yol: D14 → D15 → D5.
+**2026-11-19 (D14.7'den sonra):** D14 bitti, **h10 taban** (kullanıcının kararı). Sırada D15; kullanıcı yeni oturumda
+başlayacak (`/clear`), D15'in başlangıç tarifi aşağıda D15'te.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D14 | Taslak hattının turları (taban h9; sırada D14.7: İşârât'ın soru kalıpları ve tarama tablosu, 14–15'te) | |
-| 2 | D15 | Saklı birimlerde son ölçüm: ar-genin sonu, D5'ten önceki son düzlük (eski D12.6) | |
-| 3 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
-| 4 | S7 | Âyet masasının üçüncü hâli: Kur'ân paneli, tek uygulama, kuyruk görünümü (D5.0'la paralel) | |
+| 1 | D15 | Saklı birimlerde son ölçüm (hat h10; 21–22, 28, 26–27; üç dilim, iki kullanım penceresi) | |
+| 2 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
+| 3 | S7 | Âyet masasının üçüncü hâli: Kur'ân paneli, tek uygulama, kuyruk görünümü (D5.0'la paralel) | |
 
 **D14. Taslak hattının turları** (kullanıcının kararı, 2026-11-17: D12'nin kalanı ayrı aşama). **Taban h3** (D13; 9–10
 taslak 5: me'haz hiyerarşisi, istinbat etiketi). İşleyiş D12.5'inki: her tur tek değişiklik, taban ve yeni kol, kör
@@ -278,7 +279,10 @@ program uygular (h6'nın başlıkları gibi).
   `tur-14-15-D14.7.html` (N35, N09, N64; A = h10, B = h9).
   **Okuma (2026-11-19):** h10 1 (N09: "soruya A daha iyi cevap veriyor … daha derli toplu"), emin değil 2 (N35'te
   h10'a "his olarak"; N64'te h9'un dersi, ama kart h10'un «يَعْمَهُونَ» dersini göstermemişti: kart hatası). Kural 4.4:
-  eleştirmen ve kullanıcı aynı yönde (h10). Karar bekliyor (önerim h10).
+  eleştirmen ve kullanıcı aynı yönde (h10). **Karar (kullanıcı, 2026-11-19): h10 taban; D14 bitti.** Hat D15 boyunca
+  donar; zorlama (Tarama'da "taşımıyor" oranı), çelişki ve müfessir adı D15'te ölçülerek izlenir, düzeltme gerekirse
+  D5.0'da. Okuma kartları için ders kuralı: bir tarafın kartında bir lafzın dersi görünüyorsa öbür tarafın aynı lafız
+  dersi de karta girer (D14.7'nin N64 kartında h10'un dersi görünmemişti; D15'in başında `d1-tur okuma`'ya eklenir).
 
 **D15. Saklı birimlerde son ölçüm** (kullanıcının kararı, 2026-11-17: kendi aşaması; "D5'ten önceki son düzlük, o
 aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) bir kez, aynı
@@ -286,10 +290,28 @@ aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21�
 tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilmez; açık çıkarsa D14'e dönülür.
 - **Kapsam** (2026-11-18 önerisi): her türden bir birim: 21–22 (maksat), 28 (lafız tahkiki), 26–27 (mağlata cevabı);
   25, 29, 30 gerekirse. Hat D14.7'den sonra donar.
-- **Hat h9 ya da h10** (kullanıcının kararı, 2026-11-18; bkz. D14.6, D14.7). Okumada h2'ye karşı A/B kartlarına ek olarak her birimde **h9'u
-  doğrudan İşârât'la karşılaştıran bir kart** (kullanıcı kabul etti, 2026-11-18): D5'te soru "eskisinden iyi mi" değil,
-  "kendi başına yeterli mi" olacak. Uzunluk hedefi kalktığı için geçiş ölçütündeki "uzunluk hedefte" yerine derslerin
-  şişmesi izlenir.
+- **Hat h10** (kullanıcının kararı, 2026-11-19; bkz. D14.7): `d1-hat.py hazirla <birim> --tarama` (istem
+  `istem-hat-h10.md`; tarama tablosu `d1-kalip.py tablo <birim>`), yazdırma `d1-hat.py yazdir <birim> --surum h10`.
+  Okumada h2'ye karşı A/B kartlarına ek olarak her birimde **h10'u doğrudan İşârât'la karşılaştıran bir kart**
+  (kullanıcı kabul etti, 2026-11-18): D5'te soru "eskisinden iyi mi" değil, "kendi başına yeterli mi" olacak. Uzunluk
+  hedefi kalktığı için geçiş ölçütündeki "uzunluk hedefte" yerine derslerin şişmesi izlenir; ayrıca Tarama'nın
+  "taşımıyor" oranı (`d1-kalip.py kontrol`, `kayip`), çelişki ve müfessir adı.
+- **Pencere** (kullanıcı, 2026-11-19: ≈50 $ tek kullanım penceresine sığmaz). Birim başına tahmin ≈16 $ (envanter ≈2,
+  konu ve tablo ≈0,3, h10 taslağı ≈4,5, h2 taslağı ≈3,5, iki eşleştirme ≈3,5, kör ≈2,3) ve kurulum emeği. Üç dilim:
+  **D15.1** 21–22, **D15.2** 28, **D15.3** 26–27 ve D15'in toplu raporu; bir pencerede en çok iki dilim (önerilen:
+  1. pencere D15.1 + D15.2, 2. pencere D15.3). Her dilim kendi okumasıyla biter.
+- **Açık soru (D15'in başında kullanıcıya):** h2 kolu kalsın mı? Saklı birimlerde h2 yazdırmak için eski hat yeniden
+  kurulmalı: istem şablonu yalnız son sürümü taşıyor, h2'nin metni git'te (`bae30fd`, Tur 0) ve birim kopyalarında
+  (`data/interim/d1-prova/<birim>/istem-hat-h2.md`); `d1-hat`'in dosya kodu sürüm karşılaştırmalarını global `SURUM`'a
+  göre yapar (h2 için geçici olarak `SURUM = "h2"`, `RISALE_ILK = None`). Kazancı: kazancın ezber olmadığının temiz
+  kanıtı. Bedeli: birim başına ≈7 $ ve kurulum. h2'siz: h10 tek başına, envanterin mutlak kapsaması, İşârât kartı
+  ve kör eleştirmenin İşârât'a karşı mutlak değerlendirmesi (yeni istem gerekir); üç birim ≈27 $, tek pencere.
+- **Birim kurulumu (her dilimin başı):** saklı birimler `d1-prova.UNITS`'te yok. `_dev_unit` gibi kayıt: Arapça ve
+  Türkçe düğümler (Türkçede 21 ve 22 ayrı bölüm), vecihlerin ilk cümleleri (`sections`), ince Ek 3 için komşu
+  birimler, usul özeti ve birim çizelgesinden o birimin örneklerini çıkaran düzeltmeler (`ozet`, `cizelge`; usul
+  özeti maksat birimlerinden alıntı taşıyabilir: sızıntı testi gösterir). Sonra `d1-prova.py hazirla <birim>` (prova
+  veritabanları), `d1-yz.py envanter <birim>`, `d1-hat.py hazirla <birim> --tarama`, sızıntı testi temiz olmalı;
+  soru kalıpları listesi saklı birimlerden alınmadı (sızıntı testi temiz, `data/d1/kaliplar/sizinti-k1.md`).
 
 **D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; D15'ten çıkan hatla (2026-11-17).
 - **D5.0 eklemeleri** (kullanıcı kabul etti, 2026-11-18; zamanı gelince ayrıntılı konuşulur): (4) **birim bölümlemesi**
