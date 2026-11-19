@@ -115,7 +115,18 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   (zorlama işareti); nisbet denetçisi 57 hükümde 10 hata (≈0,85 $); İşârât karşılaştırması bütünde ve dört bölümde
   "düzeltmeyle" (≈2,95 $; uydurma yok, Risale dersleri sağlam; «لكم» ihtisası İşârât'la çelişki, fâ-i ta'kîb zinciri ve
   iltifat nüktesi yok, nübüvvet–tevhid nisbeti ters, üç mukadder sual eksik; nisbetleri doğru buldu: denetçiyle
-  ayrılık, ayarda bakılacak). Kalan: kapalı eleştirmen, kör aletlerin ayarı, okuma kartları, kullanıcının okuması.
+  ayrılık, ayarda bakılacak). **Kapalı eleştirmen** (tek çağrı, ≈2,96 $): 31 not. **Kör aletlerin ayarı** (`notlar --acik
+  isarat`, ≈0,73 $): İşârât karşılaştırmasının 18 kusur notundan kapalı 4'ünü (+1 kısmen) buldu, 13'ü "yalnız gizli
+  metinden" (üç yüksek öncelikli dahil: «لكم» ihtisası, fâ zinciri, iltifat nüktesi), **kapalının görebileceği hâlde
+  kaçırdığı 0**; kapalının tek kalan 20 notundan 18'i yerinde. Nisbet denetçisi öbür ikisini tamamlıyor (nübüvvet–tevhid
+  nisbetini kapalı kaçırdı, denetçi buldu); 10 bulgusunun 3'ü başka aletle doğrulandı. D5 için ilk okuma: kapalı ve
+  nisbet birlikte İşârât'sız görülebileni büyük ölçüde yakalıyor; insan okuması nüktenin derinliğine gider. **Biçim
+  bulgusu:** taslak tercümeyi paragraf paragraf değil, birkaç Arapça paragraftan sonra topluca verdi (14–15'te yoktu);
+  `Y.pairs` bunu ters eşliyor (masa ve bazı mekanik sayımlar etkilenir; eleştirmenlere giden metin etkilenmez,
+  `render_draft` sırayla verir). Kartlarda eşler elle (`cift`); D5.0'ın mekanik kapısına biçim denetimi adayı.
+  **Okuma sayfası** `data/d1/masa/tur-21-22-D15.1.html` (`d1-tur.py okuma-tek`, kartlar `provalar/21-22/yerler-D15.1.json`;
+  kullanıcı kartları onayladı): yedi yer (beş "düzeltilecek", bir Risale dersi, bir kapalı–nisbet ayrılığı), taslak ve
+  İşârât yan yana, hüküm yeterli / düzeltmeyle / yetersiz, aletler "Aç"tan sonra; ≈22 dk. Kalan: kullanıcının okuması.
 - **Birim kurulumu (her dilimin başı):** saklı birimler `d1-prova.UNITS`'te yok. `_dev_unit` gibi kayıt: Arapça ve
   Türkçe düğümler (Türkçede 21 ve 22 ayrı bölüm), vecihlerin ilk cümleleri (`sections`), ince Ek 3 için komşu
   birimler, usul özeti ve birim çizelgesinden o birimin örneklerini çıkaran düzeltmeler (`ozet`, `cizelge`; usul
@@ -144,8 +155,11 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   sınır (birinci vecih). (c) Kural `docs/d1/bolme-kurali.md`: b1'den b4'e dört tur işlenebilirlik sınaması (İşârât'ı
   görmeyen model, yalnız kuralla; kuralsız kol 17–19/21); **b4 üç koşuda üçünde 21/21, fazla yok** (≈3 $). Çekince: b4
   bu 32 geçişe uydurulmuş, genelleme kanıtı değil. **Kullanıcı b4'ü onayladı (2026-11-19)**; Bakara 34–286 b4 ile
-  bölünüyor (≈50 âyetlik parça, üç koşu, çoğunluk; koşuların ayrıldığı ve Râzî'den ayrılan yerler inceleme listesi:
-  `data/d1/bolme/bakara/bolme.md`). Sonra bütün Kur'ân; birim kimlikleri kalıcı adres olur.
+  bölündü (≈50 âyetlik parça, üç koşu, çoğunluk; ≈7 $): 157 birim, 253 geçişin 230'unda oybirliği. Koşuların en çok
+  ayrıldığı soru «ثم» ile gelen âyetti; **kullanıcının kararı (2026-11-19): önceki üyenin devamı** (b5; «ثم»li üç parça
+  yeniden koştu, ≈4 $): **153 birim** (86'sı tek âyetli, en büyüğü 5), oybirliği olmayan 20, Râzî'den ayrılan 80
+  (çoğunda biz birleştiriyoruz). İnceleme listesi `data/d1/bolme/bakara/bolme.md`; b4 hâli `bakara/b4/`. Sonra bütün
+  Kur'ân; birim kimlikleri kalıcı adres olur.
 - D5.1 Bakara 34, tek birim, ehlin okuması.
 - **D5.2 Risale'si az iki birim, kuyruk büyümeden önce** (kullanıcının kararı, 2026-11-19): bir kıssa (İsrâiloğulları,
   40–74) ve bir ahkâm birimi (178–283) okunur. Sebep: D15'in saklı birimlerinin hepsi Risale'ce zengin (Risale'deki
@@ -153,7 +167,9 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   6'da 5, 40–74: 35'te 26, 178–283: 106'da 86; konu üzerinden gelen yerler sayılmadı). h10'un kazancı büyük ölçüde
   Risale dersinden; kuyruk "önce Risale'nin bağ kurduğu âyetler" sırasıyla başlarsa düşüş geç görülür.
 
-**S7. Âyet masasının üçüncü hâli** (kullanıcının fikri ve kabulü, 2026-11-18; D5 için): bugünkü masa ar-ge için,
+**S7. Âyet masasının üçüncü hâli** (kullanıcının fikri ve kabulü, 2026-11-18; D5 için; 2026-11-19: önerilen ilk dilim
+(D5'in kör aletleri katman olarak, "önce buraya bak", durum, komşu birimler) kullanıcıya uygun değil, "vizyon farkı",
+konuşulacak): bugünkü masa ar-ge için,
 birim başına ayrı ve büyük (1,5–3 MB) sayfa; yüzlerce birimde taşımaz. (1) **Solda açılır kapanır Kur'ân paneli:**
 sûreler, âyetler, birim sınırları, birimin durumu renkle (taslak yok / var / okundu / ehil okudu); âyete tıklayınca
 birimin masası. (2) **Tek uygulama, istek üzerine veri** (birim verisi ayrı dosyalarda; `review_ui` gibi). (3)
