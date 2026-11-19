@@ -98,8 +98,10 @@ function save(c, patch) {
   if (!store.set(KEY, marks)) say('Tarayıcı işareti kaydedemedi; dışa aktarın.');
   progress();
 }
-const CHOICE = [['a', 'A daha iyi'], ['b', 'B daha iyi'], ['esit', 'Eşit'], ['emin_degilim', 'Emin değilim']];
-const val = v => v === 'a' ? DATA.a : v === 'b' ? DATA.b : v;
+const CHOICE = DATA.tek
+  ? [['yeterli', 'Yeterli'], ['duzeltmeyle', 'Düzeltmeyle yeterli'], ['yetersiz', 'Yetersiz'], ['emin_degilim', 'Emin değilim']]
+  : [['a', 'A daha iyi'], ['b', 'B daha iyi'], ['esit', 'Eşit'], ['emin_degilim', 'Emin değilim']];
+const val = v => DATA.tek ? v : v === 'a' ? DATA.a : v === 'b' ? DATA.b : v;
 const DURUM = {aynen: 'aynen buldu', kismen: 'kısmen buldu', farkli_gerekce: 'farklı gerekçeyle', yok: 'bulamadı'};
 
 const AR = /[؀-ۿﭐ-﷿ﹰ-﻿]/;
@@ -179,7 +181,43 @@ function colHtml(lab, s, mk) {
       <div class="${AR.test(x.t) ? 'ar' : 'small'}" dir="auto">${esc(x.t) || '<span class="muted">(metin bulunamadı)</span>'}</div></div>`).join('') + '</details>' : '';
   return `<div class="col"><h3>${lab} <span class="stat">${s.paras.length} paragraf · ${s.words} kelime</span></h3>${body}${sh}</div>`;
 }
+// D15: tek taslak ve İşârât yan yana; aletlerin hükmü "Aç"tan sonra
+const HUKUM = {dogru: 'doğru', asiyor: 'kaynağın sözünü aşıyor', kaynakta_yok: 'kaynakta yok', nisbet_yok: 'nisbet yok (istinbat)',
+               nakil: 'kaynağın naklettiği', itiraz: 'kaynağın itirazı', reddedilen: 'kaynağın reddettiği'};
+const TASLAKTA = {aynen: 'aynen', kismen: 'kısmen', baska_yoldan: 'başka yoldan', yok: 'yok'};
+function isaratCol(c) {
+  return `<div class="col"><h3>İşârât <span class="stat">bu yerdeki sözü</span></h3>
+    ${c.isarat_tr ? `<div class="blk"><div class="small muted">Abdülmecid Nursî tercümesi</div><div class="serif">${esc(c.isarat_tr)}</div></div>` : ''}
+    ${c.isarat_ar ? `<details${c.isarat_tr ? '' : ' open'}><summary class="small muted">Arapça aslı</summary><div class="ar" dir="rtl">${esc(c.isarat_ar)}</div></details>` : ''}</div>`;
+}
+function toolsHtml(c) {
+  const t = c.araclar || {}, li = xs => xs.length ? `<ul>${xs.join('')}</ul>` : '<div class="small muted">Bu yer için bir şey demedi.</div>';
+  const env = Object.entries(c.envanter || {}).map(([k, v]) => `${esc(k)}: ${esc(v.join(', '))}`).join(' · ');
+  return `<div class="reveal">
+    <div class="box env"><b>Neden seçildi:</b> ${esc(c.tur_ad)}. ${esc(c.acik || '')}</div>
+    <div class="box isr"><div class="small muted">İşârât'ın nüktesi (envanterin özeti${c.lafiz ? ', ' + esc(c.lafiz) : ''})</div><div>${esc(c.nukte)}</div>
+      <div class="small">Envanter okuyucusu taslakta: ${env || '—'}</div></div>
+    <div class="box"><b>İşârât karşılaştırması</b> (İşârât'ı okuyarak)
+      ${li((t.isarat_nukte || []).map(x => `<li>Ana nükte, taslakta ${esc(TASLAKTA[x.taslakta] || x.taslakta)}: ${esc(x.nukte)}</li>`)
+          .concat((t.isarat || []).map(x => `<li><b>${esc(x.tur)}</b> (${esc(x.oncelik || '')}): ${esc(x.metin)}</li>`)))}</div>
+    <div class="box"><b>Kapalı eleştirmen</b> (İşârât'ı görmeden; D5'te bu çalışacak)
+      ${li((t.kapali || []).map(x => `<li><b>${esc(x.tur)}</b> (${esc(x.oncelik || '')}): ${esc(x.metin)}</li>`))}</div>
+    <div class="box"><b>Nisbet denetçisi</b>
+      ${li((t.nisbet || []).map(x => `<li><b>${esc(HUKUM[x.hukum] || x.hukum)}</b>: «${esc(x.alinti || '')}» ${esc(x.gerekce)}</li>`))}</div></div>`;
+}
+function cardHtmlTek(c, idx) {
+  const m = marks[kOf(c)] || {}, none = {ar: new Set(), tr: new Set()};
+  const opts = CHOICE.map(([v, l]) => `<label><input type="radio" name="c-${idx}" value="${esc(v)}" data-i="${idx}" data-f="secim"${m.secim === v ? ' checked' : ''}>${l}</label>`).join('');
+  return `<div class="card${m.secim ? ' done' : ''}" id="card-${idx}">
+    <h2>${idx + 1}. ${arw(c.baslik)}</h2><p class="soru">${arw(c.soru || '')}</p>
+    <div class="cols">${colHtml('Taslak', c.A, none)}${isaratCol(c)}</div>
+    <div class="ask"><b class="small">Taslak bu yerde kendi başına yeterli mi?</b>${opts}
+      <textarea data-i="${idx}" data-f="gerekce" placeholder="Kısa gerekçe (bir iki cümle)">${esc(m.gerekce || '')}</textarea>
+      ${m.acildi ? '' : `<button class="btn" data-open="${idx}" ${m.secim ? '' : 'disabled'}>Aç: aletlerin bu yer için dediği</button>`}
+    </div>${m.acildi ? toolsHtml(c) : ''}</div>`;
+}
 function cardHtml(c, idx) {
+  if (DATA.tek) return cardHtmlTek(c, idx);
   const m = marks[kOf(c)] || {}, M = cardMarks(c);
   const opts = CHOICE.map(([v, l]) => `<label><input type="radio" name="c-${idx}" value="${esc(val(v))}" data-i="${idx}" data-f="secim"${m.secim === val(v) ? ' checked' : ''}>${l}</label>`).join('');
   let rev = '';
@@ -217,7 +255,7 @@ document.addEventListener('change', ev => {
   const c = DATA.cards[+t.dataset.i];
   if (!reader()) { say('Önce okuyucu adınızı yazın.'); if (t.type === 'radio') t.checked = false; $('#reader').focus(); return; }
   if (f === 'secim') {
-    save(c, {secim: t.value, harf: t.value === DATA.a ? 'A' : t.value === DATA.b ? 'B' : t.value});
+    save(c, DATA.tek ? {secim: t.value} : {secim: t.value, harf: t.value === DATA.a ? 'A' : t.value === DATA.b ? 'B' : t.value});
     const card = t.closest('.card'); card.classList.add('done');
     const b = card.querySelector('[data-open]'); if (b) b.disabled = false;
   } else save(c, {gerekce: t.value});
@@ -232,7 +270,7 @@ document.addEventListener('click', ev => {
 });
 $('#export').onclick = () => {
   const ab = Object.fromEntries(DATA.cards.map(c => [kOf(c), marks[kOf(c)]]).filter(([, v]) => v));
-  const out = {kind: 'd1-tur-okuma', unit: DATA.unit, tur: DATA.ad, a: DATA.a, b: DATA.b, reader: reader(),
+  const out = {kind: DATA.tek ? 'd1-tur-okuma-tek' : 'd1-tur-okuma', unit: DATA.unit, tur: DATA.ad, a: DATA.a, b: DATA.b, reader: reader(),
                exported: new Date().toISOString(), ab};
   const blob = new Blob([JSON.stringify(out, null, 1)], {type: 'application/json'});
   const a = document.createElement('a');

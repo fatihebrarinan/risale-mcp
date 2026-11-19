@@ -1,4 +1,4 @@
-# Birim bölümlemesi: İşârât'ın kuralı (b4)
+# Birim bölümlemesi: İşârât'ın kuralı (b5)
 
 D5.0 (4) (PLANLAR.md D5; kullanıcının kararı, 2026-11-19: önce İşârât'ın âyetleri neden birleştirip ayırdığı, sonra bütün
 Kur'ân). Kaynak: Bakara 1–33'ün 32 geçişi ve her geçişte müellifin sözü (`data/d1/bolme/gecisler.md`, Opus okuması,
@@ -10,7 +10,9 @@ kural netleştirildi. b3 (2026-11-19): b2'nin üç koşusu da 6|7 ve 8|9'u birle
 eki fazla geniş); 1. kuralda dil bilgisindeki cezâ ile amele terettüp eden ukûbet ayrıldı («ترتّب العقاب على العمل»,
 `B/7/mukaddime-2/c039`), 4. kuralda zümreyi tanıtan söz ile ilk fiil ayrıldı (`B/9-10-ayetlerin-tefsiri/c007`..`c009`). b4 (2026-11-19): b3'ün
 üç koşusu da 14|15'i ukûbet sayıp ayırdı; aktarılan söze verilen karşılık («قابلَهم», `B/14-15-ayetlerin-tefsiri/c015`)
-ile bir hâlin ardından gelen ukûbet ayrıldı.
+ile bir hâlin ardından gelen ukûbet ayrıldı. Kullanıcı b4'ü onayladı (2026-11-19). b5 (2026-11-19, kullanıcının kararı):
+Bakara 34–286'da koşuların en çok ayrıldığı soru (51|52, 55|56, 63|64): «ثم» ile gelen âyet önceki üyenin devamıdır
+(4. kurala eklendi; Bakara 1–33'te örneği yok).
 
 İki parça: **Kural** (genel; işlenebilirlik sınamasında modele yalnız bu gider, Bakara 1–33'ün bölmesini anmaz) ve
 **Dayanak** (kimlikli örnekler; yalnız bizim için). `scripts/d1-bolme.py` Kural'ı `---- KURAL ----` ile
@@ -60,7 +62,8 @@ sevkedilen garazın farkına bakar."
    kısımları, bir zümrenin cinayetleri, nimetler, deliller) her üye ayrı birimdir; bir üye birden çok âyete
    yayılabilir (o zaman o âyetler birlikte). **Yeni üye yeni bir fiil getirir;** aynı fiilin kalpteki iç sebebini
    (fiilin kaynağı olan hâl) bildiren âyet yeni üye değildir, o üyenin devamıdır. Bir zümreyi sözüyle ya da
-   iddiasıyla **tanıtan** âyet serinin başıdır; o sözün altındaki ilk fiil (ne yaptıkları) yeni üyedir.
+   iddiasıyla **tanıtan** âyet serinin başıdır; o sözün altındaki ilk fiil (ne yaptıkları) yeni üyedir. **«ثم» ile
+   başlayan âyet** (sonra affettik, sonra dirilttik, sonra yüz çevirdiniz…) önceki üyenin devamıdır, yeni üye değildir.
 5. **Büyük mesele ayırır.** Tek garazın parçası olsa da kendi başına büyük bir ilmî ya da kelâmî mesele taşıyan
    âyet (uzun bir tahkik isteyen) ayrı birim olabilir. Bunu yalnız açık gerekçeyle uygula.
 6. **Hurûf-u mukattaa** sûre başında ayrı tahlil edilir; ardından gelen âyet ayrı birimdir.
