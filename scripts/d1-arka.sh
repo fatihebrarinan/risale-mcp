@@ -8,6 +8,11 @@
 #   scripts/d1-arka.sh liste                      # d1-* işleri (çalışan, biten, düşen)
 #   scripts/d1-arka.sh log <ad> [-f]              # günlük: data/interim/d1-isler/<ad>.log
 #   scripts/d1-arka.sh durdur <ad>
+#   scripts/d1-arka.sh bekle <ad>                 # iş bitene kadar bekler, çıkış kodu ve günlüğün sonu (Claude Code
+#                                                 # bunu arka plan işi olarak çalıştırır: iş bitince haberi gelir)
+#
+# İş bitince masaüstüne bildirim düşer (`notify-send`). Süreç durdurmak için `pkill -f` kullanılmaz (komut satırının
+# kendisini de eşleştirir, 2026-11-19'da iki kez oldu): `durdur`.
 #
 # Model çağrıları kullanım sınırına karşı korumalıdır (`d1-prova.claude_p`): pencere doluysa iş bekler, ölmez.
 set -euo pipefail
@@ -25,7 +30,8 @@ case "$cmd" in
     systemctl --user reset-failed "d1-$ad" 2>/dev/null || true
     log="$LOGS/$ad.log"
     printf -v q '%q ' "$@"
-    body="echo \"== \$(date '+%F %T') başladı: $q\"; $q; rc=\$?; echo \"== \$(date '+%F %T') bitti, çıkış \$rc\"; exit \$rc"
+    note="command -v notify-send >/dev/null && notify-send -a d1 \"Taslak hattı: $ad\" \"bitti, çıkış \$rc\" || true"
+    body="echo \"== \$(date '+%F %T') başladı: $q\"; $q; rc=\$?; echo \"== \$(date '+%F %T') bitti, çıkış \$rc\"; $note; exit \$rc"
     inhibit=()
     if systemd-inhibit --what=sleep:idle --who=d1 --why=deneme true 2>/dev/null; then
         inhibit=(systemd-inhibit --what=sleep:idle --who="d1" --why="taslak hattı: $ad")
@@ -34,6 +40,7 @@ case "$cmd" in
     fi
     systemd-run --user --unit="d1-$ad" --collect --quiet --working-directory="$ROOT" \
         --setenv=PATH="$PATH" --setenv=HOME="$HOME" --setenv=LANG="${LANG:-C.UTF-8}" \
+        --setenv=DISPLAY="${DISPLAY:-:0}" --setenv=DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/$(id -u)/bus}" \
         --property=StandardOutput="append:$log" --property=StandardError="append:$log" \
         "${inhibit[@]}" bash -c "$body"
     echo "d1-$ad başladı; günlük $log"
@@ -46,12 +53,18 @@ case "$cmd" in
     ad=${1:?ad gerekli}
     if [[ ${2:-} == -f ]]; then tail -f "$LOGS/$ad.log"; else tail -n 30 "$LOGS/$ad.log"; fi
     ;;
+  bekle)
+    ad=${1:?ad gerekli}
+    while systemctl --user is-active --quiet "d1-$ad"; do sleep 60; done
+    tail -n 15 "$LOGS/$ad.log"
+    grep -q "bitti, çıkış 0$" <(tail -n 3 "$LOGS/$ad.log")
+    ;;
   durdur)
     ad=${1:?ad gerekli}
     systemctl --user stop "d1-$ad" && echo "d1-$ad durduruldu"
     ;;
   *)
-    sed -n '2,13p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,17p' "$0" | sed 's/^# \{0,1\}//'
     exit 2
     ;;
 esac

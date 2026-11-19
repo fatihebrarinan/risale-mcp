@@ -434,6 +434,7 @@ Metin–yorum ayrımı, özetin doğruluğu ve tuzak sorulardaki davranış elle
 - Belirsiz durumlarda en makul varsayımı yap, ama bunu açıkça belirt.
 - Kaynak sitelere nazik davran: isteklerin arasında bekle, ham yanıtı kaydet, aynı sayfayı ikinci kez indirme.
 - Kod tanımlayıcıları İngilizce, açıklamalar ve kullanıcıyla iletişim Türkçe.
+- **Taslak hattının uzun işleri (model çağrısı içeren her iş) `scripts/d1-arka.sh baslat <ad> …` ile başlatılır**, Claude Code'un arka plan işi (`run_in_background`) olarak değil (kullanıcının kararı, 2026-11-19): terminal ya da oturum kapansa da sürer. Haber almak için hemen ardından `scripts/d1-arka.sh bekle <ad>` Claude Code'un arka plan işi olarak çalıştırılır; iş bitince bildirim gelir (masaüstüne de düşer). Çok adımlı iş bir dosyaya yazılıp (`data/interim/d1-isler/<ad>.sh`) `bash` ile verilir. Süreç durdurmak için `pkill -f` kullanılmaz (kendi komut satırını eşleştirir); `d1-arka.sh durdur <ad>`. Yeni oturumda önce `scripts/d1-arka.sh liste`: süren ya da biten iş var mı.
 - **`data/d1` her adımın sonunda commit ve push edilir** (kullanıcının kararı, 2026-11-19): kendi git deposudur, uzak kopyası özel depo `fatihebrarinan/risale-mcp-taslak`; taslaklar, envanterler ve okumalar yeniden üretilemez. `git -C data/d1 add -A && git -C data/d1 commit -m "…" && git -C data/d1 push`. Sormadan yapılır; ana depoya push kullanıcıdadır.
 
 ## Altyapının kalıcı parçaları (H, T, MVP)

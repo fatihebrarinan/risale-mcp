@@ -56,8 +56,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
 - **Önde:** D15.1 (21–22). h10 (taslak 1) ölçüldü (İşârât karşılaştırması "düzeltmeyle"; kör aletlerin ayarı yapıldı).
-  h9 (taslak 2) yazıldı; ölçüleri arka planda: eşleştirme, İşârât karşılaştırması, kör A/B (1–2). Sonra birleşik
-  okuma sayfası (A/B ve İşârât yan yana), `scripts/taslak-gonder.sh` ile siteye.
+  h9 (taslak 2) yazıldı ve eşleştirildi; İşârât karşılaştırması ve kör A/B (1–2) bağımsız işte: `d1-h9-21-22`
+  (`scripts/d1-arka.sh log h9-21-22`; pencere doluysa sıfırlanmayı bekler; bitince `data/d1`'i commit ve push eder).
+  Yeni oturumda: `scripts/d1-arka.sh liste`; iş bittiyse birleşik okuma sayfası (A/B ve İşârât yan yana, kartlar
+  `provalar/21-22/yerler-D15.1.json`'dan genişletilir: iki taslağın en çok ayrıldığı yerler eklenir), `d1-tur.py`'ye
+  A/B'li tek taslak kipi gerekir, sonra `scripts/taslak-gonder.sh`.
 - **Kullanıcıdan beklenen:** 21–22'nin okuması, birleşik sayfa gelince (tek taslaklı `tur-21-22-D15.1.html` okunmaz).
 - **Sonra:** D15.2 (26–27), D15.3 (28; D5.0.5'in sınaması), D15'in toplu raporu ve karar (h9 mı h10 mu).
 - **Bekleyen yan işler** (yeri gelince; D15 sürerken açılmaz): D5.0.4 bölmenin kalanı, S7.
