@@ -64,225 +64,14 @@ saklı birimlerde ölçüm kendi aşaması (D15). Yol: D13 → D14 → D15 → D
 işler"e taşındı. Yol: D14 → D15 → D5.
 **2026-11-19 (D14.7'den sonra):** D14 bitti, **h10 taban** (kullanıcının kararı). Sırada D15; kullanıcı yeni oturumda
 başlayacak (`/clear`), D15'in başlangıç tarifi aşağıda D15'te.
+**2026-11-19 (D15'in başı):** D14'ün ayrıntısı "Kayıt › Kimlikli işler"e taşındı. D15.1 (21–22) başladı; yan yana
+D5.0 (4) birim bölümlemesi (kural b4 onaylandı, Bakara 34–286 bölünüyor).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
 | 1 | D15 | Saklı birimlerde son ölçüm (hat h10; 21–22, 26–27, 28; üç dilim, iki kullanım penceresi) | |
 | 2 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
 | 3 | S7 | Âyet masasının üçüncü hâli: Kur'ân paneli, tek uygulama, kuyruk görünümü (D5.0'la paralel) | |
-
-**D14. Taslak hattının turları** (kullanıcının kararı, 2026-11-17: D12'nin kalanı ayrı aşama). **Taban h3** (D13; 9–10
-taslak 5: me'haz hiyerarşisi, istinbat etiketi). İşleyiş D12.5'inki: her tur tek değişiklik, taban ve yeni kol, kör
-eleştirmen (o3), envanter (ayar), kullanıcının okuması (plan belgesi `docs/d1/d12-rapor-ve-plan.md` 4.3, 4.4; okuma
-standardı 4.10). Tur sayısına tavan konmaz: taslağın hazır ya da hazıra yakın olduğu okumada hissedilince D15'e
-geçilir (kullanıcı); harcama tavanı ≈250 $ (D12.5 ve D13'te ≈60 $ harcandı).
-
-**D13'ün okumasından çıkan iki sorun** (kullanıcı, 2026-11-17: "taslaktaki okumalarımda gördüğüm iki büyük problem"):
-1. **Risale-i Nur anılıyor ama açılmıyor** ("Risale-i Nur'da da böyledir" deyip bırakmak; kizb ve sıdk dersi N41–N47
-   yok; 22 Arapça paragrafın 6'sı Risale'ye dayanıyor). Üç sebep (kullanıcı: "çok kıymetli"): (a) dosyanın düzeni:
-   267 paragraf kitap sırasıyla, âyetin bir sözünün dersi dağınık; (b) dil: taslak Arapça, Risale Türkçe, dersi açmak
-   onu Arapçaya kendi sözüyle aktarmayı ister, kolayı adını anıp geçmek; (c) kural yazmak yetmez (D12'nin dersi).
-2. **Akıl yürütemediği yerde Zemahşerî'ye yaslanıyor:** Keşşâf dosyadaki tek tefsir. Tabanın beğenilen "mantık
-   silsilesi" de büyük ihtimalle dosyasındaki müfessirlerdendi; asıl eksik İşârât'ın kendi yolu (takdir zinciri,
-   mukadder sual, "neden şu lafız").
-
-**Kararlar (kullanıcı, 2026-11-17):** sıra önce D14.1 (ilk geçiş), sonra düzeltme (k3; 2026-11-17'de D14.2 ders adaylarına verildi, düzeltme D14.3 oldu); Risale'nin dersi **Arapça
-metinde, kendi sözüyle ve atıfla** açılır, Türkçe tercümede gerekirse Risale'nin Türkçe aslından kısa alıntı;
-Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
-
-- **D14.1 Dosyanın düzeni** (sürüm h4; 9–10; taban taslak 5, yeni taslak 6). Tek değişiklik, "yazarın Risale-i Nur'u ve
-  Zemahşerî'yi önünde nasıl bulduğu":
-  1. **Risale-i Nur'un yerleri âyetin sözüne göre:** âyetin sözü → konusu → o konunun Risale paragrafları, benzerlik
-     sırasıyla (kitap sırası değil). Yazar bir lafzı işlerken onun dersini tek yerde bulur. Seçim D13'ünkiyle aynı
-     (konu başına ilk 100'ün üst yarısı).
-  2. **Keşşâf dosyadan çıkar:** `tefsir` eklentisinde tefsirlerin başında; istemde "tefsirlere bakacaksan önce
-     Zemahşerî". Dosyada belâgat ve lügat eserleri kalır.
-  3. **İstemde dersin açılışı:** Risale-i Nur'un dersi Arapça metinde kendi sözüyle ve atıfla açılır; Türkçe tercümede
-     gerekirse Türkçe aslından kısa blok alıntı (numarasıyla). Anıp geçmek yetmez.
-  Ölçü: kör eleştirmen o3, envanter, D9.1, me'haz dağılımı (Risale'ye dayanan paragraf, Keşşâf'a atıf), uzunluk;
-  okuma standardıyla 3 nükte. ≈10 $.
-  **Yazıldı ve ölçüldü (2026-11-17; ≈9,6 $; rapor `data/d1/provalar/9-10/d14-1-rapor.md`):** taslak 6 (h4). Envanter
-  %60 → **%74**; kör eleştirmen (o3) yeniyi bütün olarak ve me'hazda hafif tercih etti (V3'te İşârât'ın dört temel
-  nüktesi; hasrın sualine cevap ilk kez); taban Mukaddime (dört maksat) ve V2'de (yedi cümle; yeni "altı cümle")
-  hafif. Keşşâf atfı 16 → 10, belâgat atfı 7 → 13; Risale'ye dayanan paragraf oranı aynı (≈%28). "Altı cümle" 9–10'da
-  üçüncü kez. Okuma `tur-9-10-D14.1.html` (N40, N01, N17; ≈708 kelime).
-  **Okuma (2026-11-17):** taban 1 (N40: h4 kısalmış, mânâ kaybolmuş, Risale'den yorumsuz alıntı; h3 "böyledir" deyip
-  geçiyor), eşit 1 (N01), yeni 1 (N17: "Zemahşerî'den alıntı alıp sıyrılma furyası artık yok"; ama kartın sorusu
-  paragraflarla alakasızdı, okuma standardına kural eklendi). Kullanıcı: "bu sefer durum karışık." Kural 4.4: kullanıcı
-  kararsız, eleştirmen hafif: başka birimde bir kez daha. **Karar (kullanıcı, 2026-11-17): h4 taban.** Bulgu: Zemahşerî'ye yaslanma giderildi; Risale'nin dersi iki
-  kolda da açılmıyor (h3 anıp geçiyor, h4 yorumsuz alıntılıyor): talimat biçimi değiştirdi, düşünceyi değil. Karar
-  bekliyor.
-- **D14.2'nin hazırlığı: İşârât'ta üç vecih dışındaki kısımlar (bitti, 2026-11-17; ≈3,5 $; kullanıcının isteği:
-  "dersin sabit bir yeri var mı, ne kadar uzun"):** `scripts/d1-yapi.py`, istem `docs/d1/yapi-istemi.md` y1, sonuç
-  `data/d1/isarat-yapi/sonuc.md`. Sabit yer yok: münafıklar bahsinde (9–16) ders V3'ün içinde, kendisini doğuran lafzın
-  yerinde (altı birimin beşinde; biçimi soru–cevap ya da "إشارة إلى"; lafız başına %3–11, birim başına ≈%10); iman
-  rükünlerinde (17–33) mukaddime ve mesele olarak, çoğu kez V1'den önce (%13–45). 9–10'da sonda olması «يَكْذِبُونَ»'un
-  son kelime olmasından. D14.2'nin kararı bu sonuçla (kullanıcı).
-- **D14.2 Ders adayları ve tek kaide** (kullanıcının kararları, 2026-11-17; sürüm h5; 9–10; taban taslak 6 (h4), yeni
-  taslak 7). Hazırlığın sonucu (yukarıda) ve kullanıcı: taslağı İşârât'ın usulüne yaklaştırmak ve Risale-i Nur'u daha
-  çok dahil etmek için gerekli yerlere dersler ya da izahlar; Risale-i Nur'dan ve modelin kendi istinbatından, gerekirse
-  öbür eserlerden; yeri, biçimi ve payı münasebete göre. **İşârât Risale-i Nur'dan önce yazıldı**: müellifin elinde
-  külliyat yoktu, bizim var; İşârât'taki ders sıklığı üst sınır değildir.
-  - **Tek kaide** (mukaddime kuralıyla birleşik): ders, meseleyi doğuran şeyin yanında verilir. Bir lafızdan doğuyorsa
-    o lafzın yerinde (çoğu kez V3, cümleler arasıysa V2; soru–cevap ya da "إشارة إلى"); âyetin bütün meâlinden ya da
-    bir iman rükününden doğuyorsa vecihlerden önce mukaddime, bir lafza bağlı büyük meseleyse vecihlerin arasında
-    mesele. Uzunluk meselenin genişliğine göre; **bütçe toplamda** (Arapça İşârât'ın 1–2 katı), derse ayrı pay yok.
-  - **Ders adayları programla** (`d1-hat.py`, yazımdan önce): her konunun iki sorgusunun ilk 100 sonucunda isabetlerin
-    **yoğunlaştığı bölüm** birinci tetikleyici, **âyeti anan bölüm** ikinci; **eşiği aşan her aday** gelir (ilk eşik:
-    bölümde en az 12 isabet; sonra ayarlanır); aynı metnin kopyaları (Tarihçe'deki Hutbe gibi) tek aday. Adaylar dosyada
-    lafzın başlığı altında, bölümün ana teziyle. Konu adımı konunun kapsamını da yazar (lafız ya da âyetin bütünü); 9–10'un
-    sekiz konusu önceki gibi (hepsi lafız; Risale seçimi h4'le aynı kalsın diye yeniden çıkarılmaz).
-  - **Yazar** aday lafzı işlerken orada durur: münasebet güçlüyse dersi açar (Risale-i Nur'un dersi ve kendi istinbatı,
-    Arapçada kendi sözüyle, atıfla), zayıfsa kısa atıfla geçer; biçim ve uzunluk onun. İstemde İşârât'tan ders örnekleri
-    (sınanan birim dışındaki geliştirme birimlerinden, prova kuralıyla).
-  - **Yazımdan sonra program sayar:** hangi adaylarda ders açılmış, Risale'ye atıf, yazarın kendi Arapça sözü mü yalnız
-    alıntı mı.
-  - **Yedek adım** (kullanıcı): yazar dersi ısrarla açmazsa program aday lafızlar için başlığı kendisi açar, yazar altını
-    doldurmak zorunda kalır.
-  - Ölçü: kör eleştirmen o3, envanter (N41–N47), D9.1, me'haz dağılımı ve ders sayımı, uzunluk; okuma standardıyla.
-  - **Yazıldı ve ölçüldü (2026-11-17; ≈7,9 $ ve hazırlık 3,5 $; rapor `data/d1/provalar/9-10/d14-2-rapor.md`):**
-    taslak 7 (h5). Risale'ye atıf 19 → 39, adaylara atfın taşıdığı söz her yerde arttı (Hutbe 0 → 31, İkinci Lem'a
-    17 → 56) ama 60 kelimeyi bir yerde geçti; envanter %74 → %53, iki İşârât çelişkisi (elîm "mü'lim"; mü'minler zâhirde
-    aldanır); kör eleştirmen bütünde tabanı, me'hazda yeniyi hafif tercih etti; "altı cümle" ilk kez yok. Okuma
-    `tur-9-10-D14.2.html` (N40, N17, N38; ≈825 kelime).
-    **Okuma (2026-11-18):** yeni 2 (N40: "konuyu daha iyi açıklamış… ama bizim istediğimiz mânâda bir Risale dersi
-    burada yok"; N38: düşünce akışı net, Risale'nin fikri iyi söylenmiş), taban 1 (N17). Kural 4.4: eleştirmenle
-    ayrılık, kullanıcının hükmü geçer: **h5 taban** (kullanıcı onayladı, 2026-11-18). Yedek adımın şartı oluştu: ders en güçlü adayda
-    bile açılmıyor.
-- **D14.3 Zorunlu ders başlıkları** (D14.2'nin yedek adımı; kullanıcının kararları, 2026-11-18; sürüm h6; 9–10; taban
-  taslak 7 (h5), yeni taslak 8). Okuma: ders en güçlü adayda bile açılmadı. **Program başlığı açar:** ders adayının
-  isabeti en az 25 olan lafızlar için üçüncü vecihte lafzın yerinde `### Ders: «…»` (9–10'da dört: يَكْذِبُونَ,
-  مَرَضٌ, فَزَادَهُمُ, يُخَادِعُونَ اللّٰهَ); yazar altını doldurmak zorunda. **Dersin tarifi** (kullanıcının 9–10 ve
-  31–33 örneklerinden): lafızdan kalkıp okuyucuya döner; lafzın nüktesinden insana, İslâm âlemine, beşere dair umumî bir
-  hakikate geçer; müellifin biçimleriyle (temsil, soru–cevap, silsile, taksim, hitap) kurulur; kısa değildir; müellifin
-  sözüdür. **Bu derslerin genişi Risale-i Nur'dadır** (9–10'un kizb ve sıdk dersi Hutbe-i Şâmiye'nin "Sıdk" kelimesi;
-  31–33'ün mukaddimesi Yirminci Söz'ün İkinci Makamı): yazarın işi Risale'deki dersi telhis edip lafza bağlamaktır; D5'in
-  işi de budur. 9–10 temiz sınav: gizli olan İşârât'ın kizb ve sıdk dersi (N41–N47), yazarın elindeki onun genişi.
-  Alıntı en çok dayanak; bütçe toplamda, üst kısmı derse kullanılabilir (h5 bütçenin üçte birini kullanmadı). İkinci
-  vecihte temsil serbest. Ek 4'e 31–33'ün mukaddimesinden bir parça eklenir (sınanan birim dışından). Ölçü: N41–N47,
-  başlıkların doluluğu ve kendi sözü, kör eleştirmen o3, envanter (D14.2'deki düşüş izlenir), okuma.
-  **Yazıldı ve ölçüldü (2026-11-18; ≈8,6 $; rapor `data/d1/provalar/9-10/d14-3-rapor.md`):** taslak 8 (h6). Dört
-  başlığın dördü dolu; **İşârât'ın kizb ve sıdk dersinin yedi nüktesinden altısı ilk kez "kısmen"** (bugüne kadar
-  sıfır); açılan ders 1 → 6, Hutbe'ye atfın taşıdığı söz 31 → 160 kelime; envanter %53 → %60; kör eleştirmen yeniyi
-  **bütünde ve me'hazda açık** tercih etti. Ölçüm düzeltmesi: kaynak eşlemesi her sunucunun yalnız son `cite`
-  çağrısını okuyordu, artık hepsini birleştiriyor. Okuma sayfası paragrafın devamını (alıntı ve tercüme parçaları)
-  da gösteriyor. Okuma `tur-9-10-D14.3.html` (N40, N38, N16; ≈1.140 kelime).
-  **Okuma (2026-11-18): yeni 3, taban 0** (N40: "Risale'den alınmış çok çok iyi bir ders, gerçekten bravo"; N38: "her
-  türlü baştan sona B daha iyi"; N16: "açık ara, silsile yerinde"). Kural 4.4: eleştirmen ve kullanıcı aynı yönde, açık:
-  **h6 taban.** N40'ın kartı nazım ile dersi karşılaştırdı (B'de ikisi beraberdi, kart yalnız dersi gösterdi): okuma
-  standardına kural eklendi.
-- **D14.4 Yeni birimde sınama: 13'te h2 ile h6** (kullanıcının kararı, 2026-11-18; dokuz taslağın hepsi 9–10'da
-  yazıldı, ayar riski). Taban taslak 1 (h2, Tur 0'da kurulan istemle), yeni taslak 2 (h6). D13 ve D14'ün bütün kazancı
-  tek A/B'de. Kurulumda konu adımına Arapça `lafiz` alanı eklendi (13'te konu modeli "neden"i Latin harfli okunuşla
-  yazdı, başlığa cümle girdi) ve âyetin bütününe dair konunun ders başlığı mukaddimeye (tek kaide). 13'te iki zorunlu
-  başlık: «ٱلنَّاسُ» (Yirmi Üçüncü Söz, 54 isabet), «أَلَآ إِنَّهُمْ هُمُ ٱلسُّفَهَآءُ» (Otuz İkinci Söz). Gerekirse sonra
-  h6 üzerinde kapalı eleştirmenin zaaf profili.
-  **Yazıldı ve ölçüldü (2026-11-18; ≈11,5 $; rapor `data/d1/provalar/13/d14-4-rapor.md`):** kör eleştirmen h6'yı
-  **bütünde ve me'hazda açık** tercih etti (V3 açık; V1'de h2 hafif); envanter %62 → %74; Risale atfı 2 → 31, öbür
-  tefsirlere atıf 37 → 4; iki ders başlığı dolu; h6 uzunluk hedefini %13 aştı (kısa birim). Okuma `tur-13-D14.4.html`
-  (N43, N01, N21; A = h6, B = h2). Okuma kartına `ek_capa` (dersin nazım paragrafı) ve `sinir_asimi` seçenekleri.
-  **Okuma (2026-11-18): h6 3, h2 0** (N43: "cümlenin parça parça nazmını vermede, Risale-i Nur'lara bağlamada, mantık
-  silsilesini kurmada daha iyi"; N01: "yoruma gerek yok", eleştirmen burada h2'yi tercih etmişti). **h6'nın kazancı yeni
-  birimde doğrulandı.**
-- **D14.5 Uzunluk kuralı ve nisbet denetçisi** (kullanıcının kararları, 2026-11-18). Konuşma: kalan zaaflar (uzunluk,
-  birkaç nisbet hatası, İşârât'la gerilimli istinbatlar, kaçırılan nükteler) için genel düzeltme yanlış ya da büyük
-  alet (düzeltme uzatır; birim başına ≈11 $; k2 nakle iter); gerilimli istinbat ve kaçırılan nükteler ehlin okumasının
-  (D5.1) konusu. Kullanıcı: "uzunluğu kısacağız diye kaliteden kaybetmek istemiyorum"; ders sayısına sınır yok.
-  - **D14.5a Dersler uzunluk hedefinin dışında** (h7; 13; taban taslak 2 (h6), yeni taslak 3): hedef (İşârât'ın 1–2
-    katı) yalnız nazım kısmına (üç vechin tahlili) uygulanır, çünkü İşârât'la kıyaslanabilir olan odur; dersler hedefin
-    dışında, meselenin genişliğine göre, îcâzla, alıntı dayanak. Her dersin sonunda `### Dersin sonu` işareti (dersin
-    uzunluğu ayrı ölçülsün). Ölçü: nazım kısmının uzunluğu, ders başına kelime ve alıntı, kör eleştirmen o3, envanter,
-    okuma. Soru: dersler serbest kalınca ne kadar yazılıyor, nazım kısmı ve kalite ne oluyor.
-  - **D14.5b Nisbet denetçisi** (`scripts/d1-nisbet.py`; mevcut taslaklarda: 9–10 taslak 8, 13 taslak 2, kontrol 13
-    taslak 1): atıf verilen her kaynak için atıf verilen yer bağlamıyla ve ona atıf veren taslak cümleleri tek model
-    çağrısında; hüküm: doğru nisbet, kaynağın naklettiği görüş, itirazı, reddettiği vecih, kaynakta yok, kaynağın sözünü
-    aşıyor. Doğruluğu kör eleştirmenin bulduğu nisbet hatalarıyla ölçülür (Lem'alar'daki zamir; Âlûsî'nin naklettiği
-    istidlal; adı anılmadan alınan Ebüssuûd tespiti). Güvenilirse D5.0'da üretim hattının kalite kapısı; cümle düzeyinde
-    düzeltme adımı sonra.
-  - **D14.5b bitti (2026-11-18; ≈4 $; rapor `data/d1/d14-5b-nisbet.md`):** isabet ≈%80 (beş bulgudan dördü doğru),
-    yakalama ≈%45 (bilinen 13 hatadan 6'sı; kaçırılanların çoğu atıf verilen yerin dışında); **h6 taslaklarında nisbet
-    hatası az** (2 ve 1; h2'de 11 ve 8). D5.0'da kalite kapısı; yakalama için bağlam genişletilebilir.
-  - **D14.5a yazıldı ve ölçüldü (2026-11-18; ≈6,5 $; rapor `data/d1/provalar/13/d14-5a-rapor.md`):** taslak 3 (h7).
-    Dersleri sınırdan çıkarınca toplam kısaldı ve hedefe girdi (13.581 → 11.613; nazım 8.558, dersler ≈1.500'er harf,
-    derli toplu, işaretle kapanmış); kör eleştirmen h7'yi bütünde ve me'hazda hafif tercih etti; envanter %74 → %64.
-    Okuma `tur-13-D14.5a.html` (N43, N03, N46; A = h6, B = h7).
-    **Okuma (2026-11-18):** emin değil 2, h6 1 ("İkisi de ayrı güzel"; h7'nin "Müellif … saymıştır" cümleleri
-    istenmiyor), h7 0: kalite denk. Kural 4.4: eleştirmen hafif, kullanıcı kararsız; h6'nın uzunluk bayrağı var, h7'nin
-    yok. **Karar (kullanıcı, 2026-11-18): h7 taban**, üslûp notuyla (İşârât'ın öbür birimleri "Müellif … saymıştır"
-    diye anılmaz; istemde, ayrıca sınanmadı). D14.5 bitti.
-- **D14.6 D5'e hazırlık için iki deneme** (kullanıcının kararları, 2026-11-18; 13; taban taslak 3 (h7)). D5'te
-  İşârât olmayacağı için uzunluk hedefinin dayanağı kalkıyor (D11'in oranı birimden birime 138–1.238 harf);
-  yazar dosyadan yalnız en yakın Risale yerlerini kullanıyor (kullanılanların konu içi sırası çoğunlukla 1–5; ilk 10
-  ≈%93'ünü karşılıyor); istemin büyüklüğü maliyete az yansıyor (3 kat istem, %5–40 maliyet).
-  - **D14.6a Uzunluk sınırı yok** (h8a, taslak 4): h7'nin aynısı, uzunluk hedefi yok (îcâz kuralı kalır). Soru: model
-    doğal olarak ne kadar yazıyor, kalite değişiyor mu. Kullanıcının kısa okuması.
-  - **D14.6b Risale yerleri konu başına ilk 10** (h8b, taslak 5): h7'nin aynısı, dosyada konu başına benzerlikçe ilk 10
-    paragraf (ders adayları aynı: ilk 100'deki yoğunluktan). Soru: odak ve maliyet; mekanik ölçü ve kör eleştirmen,
-    eleştirmen düşüş görürse okuma.
-  - **D14.6 ölçüldü (2026-11-18; ≈13,3 $; rapor `data/d1/provalar/13/d14-6-rapor.md`).** (a) h8a: sınırsız model
-    şişmiyor (toplam 11.613 → 11.506; nazım kısaldı, dersler uzadı); kör eleştirmen h7'yi hafif tercih etti, envanter
-    %64 → %70; okuma `tur-13-D14.6a.html` (N43 ders, N35, N17; A = h7, B = h8a). (b) h8b: maliyet %11 düştü (3,72 →
-    3,29 $), kör eleştirmen h8b'yi bütünde hafif tercih etti (me'haz eşit), envanter %68; dersler uzadı (2.519 ve 3.066
-    harf), toplam 14.217; okuma gerekmiyor.
-    **D14.6a okuması (2026-11-18):** eşit 1, emin değil 2: kalite denk; sınırsız tarafta paragraf düzeyinde uzatma
-    (sefehin lügat mânâsı) ve tekrar kalıbı (art arda üç "Denilmiştir ki"); "îcâz söz konusuysa A'yı tercih ederim".
-    Taslaklar arası farkları doğal fark sayıyor. **Karar (kullanıcı, 2026-11-18): h9 = h7 + uzunluk hedefi yok (h8a) +
-    konu başına ilk 10 Risale yeri (h8b) + îcâz notları** (lügat mânâsı bir iki cümle; aynı kalıp art arda kullanılmaz;
-    nükte bir yerde söylenir); ayrı sınama yok, derslerin uzaması D15'te izlenir. D14.6 bitti.
-- **Genel düzeltme (k3) ertelendi** (2026-11-18): D15'te h6'nın çözemediği türden kusurlar çıkarsa yeniden açılır.
-- Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
-  Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
-
-**S7. Âyet masasının üçüncü hâli** (kullanıcının fikri ve kabulü, 2026-11-18; D5 için): bugünkü masa ar-ge için,
-birim başına ayrı ve büyük (1,5–3 MB) sayfa; yüzlerce birimde taşımaz. (1) **Solda açılır kapanır Kur'ân paneli:**
-sûreler, âyetler, birim sınırları, birimin durumu renkle (taslak yok / var / okundu / ehil okudu); âyete tıklayınca
-birimin masası. (2) **Tek uygulama, istek üzerine veri** (birim verisi ayrı dosyalarda; `review_ui` gibi). (3)
-**Kuyruk görünümü.** (4) İleride işaretlerin sunucuda toplanması (birden çok okuyucu; dondurulan heyet akışına dokunur,
-ayrı karar). D5.0'la paralel.
-
-**D14.7 İşârât'ın soru kalıpları ve tarama tablosu** (kullanıcının kararı, 2026-11-18: ar-ge adımı; tutarsa D15'in
-hattı h10, tutmazsa h9). Sebep: üç taslağın üçü de 13'te İşârât'ın aynı nüktelerini kaçırdı (cumhura ittiba, fâsıla,
-i'raz): oynaklık değil, yazar bazı soruları hiç sormuyor; usul özetinde bu kalıplar yok ("fâsıla", "i'râz", "iltifat",
-"meçhul", "hazf" hiç geçmiyor). Kullanıcı: istemde liste durursa model takip etmeyebilir (h5'in dersleri gibi); bu yüzden
-program uygular (h6'nın başlıkları gibi).
-- **(1) Liste:** İşârât'ın birimden birime tekrar ettiği soru kalıpları (≈20–30; her biri soru, İşârât'ın tipik
-  cevapları, örnek yerler). Kaynak yalnız geliştirme birimleri: 9–10, 11–12, 13, 31–33'ün envanterleri ve metni;
-  Fâtiha, 1–8, 17–20, 23–24'ün metni. 14–15 (sınanan), 16 (yedek temiz birim) ve saklı birimler (21–22, 25, 26–27, 28,
-  29, 30) girmez; sızıntı testi hepsine karşı. Kalıp cümle değil türdür. Kullanıcı onaylar.
-- **(2) Tarama tablosu:** yazımdan önce program birimin lafızlarına sorulabilecek kalıpları çıkarır (kurallı: fâsıla,
-  tarif lâmı, te'kid edatları, ayırma zamiri, meçhul fiil; küçük model çağrısı: hazf, iltifat, sîga). Âyetin kendisinden
-  kurulur, İşârât'tan değil.
-- **(3) Yazar:** taslaktan önce "Tarama" çalışma bölümünde her satıra "taşıyor" (nükte bir cümle, taslakta yerinde
-  açılır) ya da "taşımıyor" (yarım cümle gerekçe) der; "taşımıyor" meşrudur. Program Tarama'yı yayımlanan taslaktan
-  çıkarır, ölçü için saklar (kaçırılan nükte tabloda yok muydu, yoksa yazar "taşımıyor" mu dedi).
-- **(4) Sınama:** 14–15 (hiç dokunulmamış geliştirme birimi; konu, ders adayları, envanter kurulur), h9 ve h10 (h9 + liste
-  + tarama). Ölçü: envanterde kaçırılan nükteler azaldı mı, zorlama var mı (kör eleştirmen ve kullanıcının okuması).
-  ≈20 $.
-- **(1) bitti (2026-11-18; ≈4,3 $):** `docs/d1/soru-kaliplari.md` k1, 35 kalıp (kelime 18, cümle 8, cümleler arası 4,
-  âyetin bütünü 5); sızıntı testi temiz; dört örnek kaynakla doğrulandı. Kullanıcı onayladı. **Kararlar:** (a) üç kalıp
-  tabloya girmez, yalnız listede kalır: vecihlerin çokluğu, kayıtların tek garaza akması, dört esas maksadın remzi
-  (bütün âyete bakan usuller; zorlama riski); (b) **h10 taban olursa D5.0'da liste bütün İşârât'tan yeniden kurulur**
-  (bugün yalnız geliştirme birimleri; D15'ten sonra saklı birimler de girebilir).
-- **Listenin modele verilişi** (kullanıcı onayladı, 2026-11-18): üç parça. (a) **Ek 5:** listenin tamamı (dağarcık:
-  cevap türleri ve dikkat notları). (b) **Tarama tablosu** istemin gövdesinde, birime özel: program âyetin metninden
-  kurar (fâsıla her âyette kuralla; öbürleri küçük bir model çağrısıyla, İşârât'sız), satırlar `T01…` (lafız, kalıp).
-  (c) **Yazar çıktısında doldurur:** iş sırası kaynakları oku → Tarama → taslak; çıktı `## Tarama` bölümüyle başlar,
-  her satıra "taşıyor: …" (taslakta yerinde açılır: kelime üçüncü vecihte, cümleler arası ikinci vecihte) ya da
-  "taşımıyor: …" (meşru; dikkat notuna uyuyorsa doğru cevap); tablo taban, tavan değil; Türkçe ve kısa. Program
-  Tarama'yı taslaktan ayırır (`taslak-N.tarama.md`), eksik satırları raporlar, kaçırılan her nükte için "tabloda yok /
-  yazar taşımıyor dedi / taşıyor deyip yazmadı" ayrımını ölçer. Ayrı tarama çağrısı önerilmedi (maliyet; notları
-  yine atlayabilir).
-- **D14.7 ölçüldü (2026-11-18; ≈18,3 $; rapor `data/d1/provalar/14-15/d14-7-rapor.md`):** 14–15, taslak 1 (h9), taslak
-  2 (h10). **Envanter %52 → %67**; kör eleştirmen h10'u bütünde ve me'hazda hafif tercih etti (te'kid nükteleri
-  İşârât'la uyumlu; V2'de h9 hafif); Tarama 60 satır, hepsi cevaplı, taşıyor 57 (zorlama riski); çelişki 1 → 3, müfessir
-  adı 5 → 11; h10'un kusurları: Âlûsî'ye nisbet, "meşkûk küfür"ü kapsamını aşarak uygulamak. Okuma
-  `tur-14-15-D14.7.html` (N35, N09, N64; A = h10, B = h9).
-  **Okuma (2026-11-19):** h10 1 (N09: "soruya A daha iyi cevap veriyor … daha derli toplu"), emin değil 2 (N35'te
-  h10'a "his olarak"; N64'te h9'un dersi, ama kart h10'un «يَعْمَهُونَ» dersini göstermemişti: kart hatası). Kural 4.4:
-  eleştirmen ve kullanıcı aynı yönde (h10). **Karar (kullanıcı, 2026-11-19): h10 taban; D14 bitti.** Hat D15 boyunca
-  donar; zorlama (Tarama'da "taşımıyor" oranı), çelişki ve müfessir adı D15'te ölçülerek izlenir, düzeltme gerekirse
-  D5.0'da. Okuma kartları için ders kuralı: bir tarafın kartında bir lafzın dersi görünüyorsa öbür tarafın aynı lafız
-  dersi de karta girer (D14.7'nin N64 kartında h10'un dersi görünmemişti; D15'in başında `d1-tur okuma`'ya eklenir).
 
 **D15. Saklı birimlerde son ölçüm** (kullanıcının kararı, 2026-11-17: kendi aşaması; "D5'ten önceki son düzlük, o
 aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) bir kez, aynı
@@ -292,21 +81,18 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   25, 29, 30 gerekirse. Hat D14.7'den sonra donar.
 - **Hat h10** (kullanıcının kararı, 2026-11-19; bkz. D14.7): `d1-hat.py hazirla <birim> --tarama` (istem
   `istem-hat-h10.md`; tarama tablosu `d1-kalip.py tablo <birim>`), yazdırma `d1-hat.py yazdir <birim> --surum h10`.
-  Okumada h2'ye karşı A/B kartlarına ek olarak her birimde **h10'u doğrudan İşârât'la karşılaştıran bir kart**
-  (kullanıcı kabul etti, 2026-11-18): D5'te soru "eskisinden iyi mi" değil, "kendi başına yeterli mi" olacak. Uzunluk
+  Okumada her birimde **h10'u doğrudan İşârât'la karşılaştıran kart** (kullanıcı kabul etti, 2026-11-18; h2 kolu
+  yok): D5'te soru "eskisinden iyi mi" değil, "kendi başına yeterli mi" olacak. Uzunluk
   hedefi kalktığı için geçiş ölçütündeki "uzunluk hedefte" yerine derslerin şişmesi izlenir; ayrıca Tarama'nın
   "taşımıyor" oranı (`d1-kalip.py kontrol`, `kayip`), çelişki ve müfessir adı.
 - **Pencere** (kullanıcı, 2026-11-19: ≈50 $ tek kullanım penceresine sığmaz). Birim başına tahmin ≈16 $ (envanter ≈2,
   konu ve tablo ≈0,3, h10 taslağı ≈4,5, h2 taslağı ≈3,5, iki eşleştirme ≈3,5, kör ≈2,3) ve kurulum emeği. Üç dilim:
   **D15.1** 21–22, **D15.2** 26–27, **D15.3** 28 (2026-11-19'da sıra değişti, bkz. aşağıda) ve D15'in toplu raporu; bir pencerede en çok iki dilim (önerilen:
   1. pencere D15.1 + D15.2, 2. pencere D15.3). Her dilim kendi okumasıyla biter.
-- **h2 kolu yok** (kullanıcının kararı, 2026-11-19): h2 yeniden kurulmaz; h10 tek başına, İşârât kartı ve kör
-  eleştirmenin İşârât'a karşı mutlak değerlendirmesiyle. Aşağıdaki not soru açıkken yazılmıştı. Önceki açık soru: h2 kolu kalsın mı? Saklı birimlerde h2 yazdırmak için eski hat yeniden
-  kurulmalı: istem şablonu yalnız son sürümü taşıyor, h2'nin metni git'te (`bae30fd`, Tur 0) ve birim kopyalarında
-  (`data/interim/d1-prova/<birim>/istem-hat-h2.md`); `d1-hat`'in dosya kodu sürüm karşılaştırmalarını global `SURUM`'a
-  göre yapar (h2 için geçici olarak `SURUM = "h2"`, `RISALE_ILK = None`). Kazancı: kazancın ezber olmadığının temiz
-  kanıtı. Bedeli: birim başına ≈7 $ ve kurulum. h2'siz: h10 tek başına, envanterin mutlak kapsaması, İşârât kartı
-  ve kör eleştirmenin İşârât'a karşı mutlak değerlendirmesi (yeni istem gerekir); üç birim ≈27 $, tek pencere.
+- **h2 kolu yok** (kullanıcının kararı, 2026-11-19): h2 yeniden kurulmaz (eski hat yeniden kurulmalıydı; birim başına
+  ≈7 $). h10 tek başına: envanterin mutlak kapsaması, İşârât kartı, İşârât karşılaştırması (`docs/d1/isarat-karsilastirma-istemi.md`
+  i1, `d1-duzelt.py isarat`: bölüm bölüm ve bütün "yeterli / düzeltmeyle / yetersiz", notlar kapalı eleştirmeninkiyle
+  aynı biçimde).
 - **D15'e üç ek** (kullanıcının kararları, 2026-11-19; sebep: saklı birimlerde cevap elde ama gizli, D5'te kalacak kör
   aletler burada doğru cevapla ayarlanır): (1) **kör aletlerin ayarı:** her birimde h10 taslağına nisbet denetçisi
   (≈1 $) ve kapalı eleştirmen (bütün taslağa tek çağrı, ≈2–3 $ tahmin); bulduklarıyla İşârât kartının ve envanterin
@@ -317,6 +103,19 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   harcanabilir). Maliyet birim başına ≈14–15 $, toplam ≈45 $: iki pencere.
 - **D15 yazılırken yan yana** (kullanıcının isteği, 2026-11-19; pencere harcamaz): D5.0 (4) birim bölümlemesi
   (Bakara 1–33'te müfessirlerin âyet grupları İşârât'ın sınırlarıyla karşılaştırılır, programla), kuyruğun kodu, S7.
+- **Aletler** (2026-11-19): kapalı eleştirmen bütün taslağa tek çağrı (`d1-duzelt.py kapali <birim> --taslak n
+  --butun`); kör aletlerin ayarı `d1-duzelt.py notlar <birim> --taslak n --acik isarat` (kapalı notlar İşârât
+  karşılaştırmasının notlarıyla) ve nisbet denetçisinin bulguları aynı notlarla.
+- **D15.1 21–22 (sürüyor, 2026-11-19):** birim kaydı (`d1-prova.UNITS`; Türkçe 21 ve 22 iki bölüm; usul özetinden ve
+  çizelgeden 21–22'nin örnekleri ve yalnız ona dayanan "her delil bir lafza bağlanır" kuralı çıktı); sızıntı testinde
+  kabul: Arapça Mesnevî'nin Nokta'sı (beş cümle, İhsan Kasım'ın tercümesi İşârât'ın Sâni'in delilleri ibaresini
+  kullanıyor; müellifin eseri, 9–10 emsali) ve meşhur beyit «وفي كل شيء له آية»; h10 istemi temiz. Üç zorunlu ders
+  (لعلكم تتقون، يا أيها الناس، اعبدوا ربكم). Envanter 127 kalem (≈4,5 $; büyük birim). Taslak 1 (h10, ≈5,45 $, 63 bin
+  harf). Ölçü: kapsama %40 (mukaddimesiz %50; iki uzun mukaddime), fazla 44, çelişki 1; Tarama 59/59 "taşıyor"
+  (zorlama işareti); nisbet denetçisi 57 hükümde 10 hata (≈0,85 $); İşârât karşılaştırması bütünde ve dört bölümde
+  "düzeltmeyle" (≈2,95 $; uydurma yok, Risale dersleri sağlam; «لكم» ihtisası İşârât'la çelişki, fâ-i ta'kîb zinciri ve
+  iltifat nüktesi yok, nübüvvet–tevhid nisbeti ters, üç mukadder sual eksik; nisbetleri doğru buldu: denetçiyle
+  ayrılık, ayarda bakılacak). Kalan: kapalı eleştirmen, kör aletlerin ayarı, okuma kartları, kullanıcının okuması.
 - **Birim kurulumu (her dilimin başı):** saklı birimler `d1-prova.UNITS`'te yok. `_dev_unit` gibi kayıt: Arapça ve
   Türkçe düğümler (Türkçede 21 ve 22 ayrı bölüm), vecihlerin ilk cümleleri (`sections`), ince Ek 3 için komşu
   birimler, usul özeti ve birim çizelgesinden o birimin örneklerini çıkaran düzeltmeler (`ozet`, `cizelge`; usul
@@ -336,12 +135,30 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   önce Risale-i Nur'un bağ kurduğu âyetler); (2) İşârât'ın olmadığı âyetlerde uzunluk hedefi (D11.2: âyet kelimesi
   başına 138–1238 harf, tek oran yetmez); (3) izah katmanı (günümüz Türkçesiyle, `d1-hat.py izah`; izahları birleştirme
   "Sonra"da).
+- **D5.0 (4) birim bölümlemesi (sürüyor, 2026-11-19):** kullanıcının kararı: önce İşârât'ın mantığı, sonra bütün
+  Kur'ân. `scripts/d1-bolme.py`; veriler `data/d1/bolme/`. (a) Müfessirlerin grupları: Râzî Bakara 1–33'te İşârât'ın
+  21 sınırının hepsini verir (3 fazla, temsil ve kıssa içinde), Suyûtî 19/21; Râzî'yle Bakara 34–286 ≈211 birim (D5.0
+  (7)'deki ≈140 tahmininden fazla). (b) Müellifin her geçişteki sözü (Opus okuması, alıntılar denetlendi,
+  `gecisler.md`): ölçüt müellifin kendisinde: atıf cümlede «الاتحاد في المقصد», kıssada «التناسب في الغرض»
+  (`isaratul-icaz-arabi/sure-i-bakara/8/c001`); bağ cümle seviyesindeyse birlikte (ikinci vecih), garaz seviyesindeyse
+  sınır (birinci vecih). (c) Kural `docs/d1/bolme-kurali.md`: b1'den b4'e dört tur işlenebilirlik sınaması (İşârât'ı
+  görmeyen model, yalnız kuralla; kuralsız kol 17–19/21); **b4 üç koşuda üçünde 21/21, fazla yok** (≈3 $). Çekince: b4
+  bu 32 geçişe uydurulmuş, genelleme kanıtı değil. **Kullanıcı b4'ü onayladı (2026-11-19)**; Bakara 34–286 b4 ile
+  bölünüyor (≈50 âyetlik parça, üç koşu, çoğunluk; koşuların ayrıldığı ve Râzî'den ayrılan yerler inceleme listesi:
+  `data/d1/bolme/bakara/bolme.md`). Sonra bütün Kur'ân; birim kimlikleri kalıcı adres olur.
 - D5.1 Bakara 34, tek birim, ehlin okuması.
 - **D5.2 Risale'si az iki birim, kuyruk büyümeden önce** (kullanıcının kararı, 2026-11-19): bir kıssa (İsrâiloğulları,
   40–74) ve bir ahkâm birimi (178–283) okunur. Sebep: D15'in saklı birimlerinin hepsi Risale'ce zengin (Risale'deki
   doğrudan alıntı 21–22'de 30, 26–27'de 14, 28'de 7); Bakara 34–283'te âyetlerin ≈%78'inde doğrudan alıntı yok (34–39:
   6'da 5, 40–74: 35'te 26, 178–283: 106'da 86; konu üzerinden gelen yerler sayılmadı). h10'un kazancı büyük ölçüde
   Risale dersinden; kuyruk "önce Risale'nin bağ kurduğu âyetler" sırasıyla başlarsa düşüş geç görülür.
+
+**S7. Âyet masasının üçüncü hâli** (kullanıcının fikri ve kabulü, 2026-11-18; D5 için): bugünkü masa ar-ge için,
+birim başına ayrı ve büyük (1,5–3 MB) sayfa; yüzlerce birimde taşımaz. (1) **Solda açılır kapanır Kur'ân paneli:**
+sûreler, âyetler, birim sınırları, birimin durumu renkle (taslak yok / var / okundu / ehil okudu); âyete tıklayınca
+birimin masası. (2) **Tek uygulama, istek üzerine veri** (birim verisi ayrı dosyalarda; `review_ui` gibi). (3)
+**Kuyruk görünümü.** (4) İleride işaretlerin sunucuda toplanması (birden çok okuyucu; dondurulan heyet akışına dokunur,
+ayrı karar). D5.0'la paralel.
 
 ## Bekleyen (başkasının cevabı)
 
@@ -470,6 +287,9 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- D14 Taslak hattının turları (2026-11-19): h3'ten h10'a yedi tur (Risale dersi, zorunlu ders başlıkları, uzunluk
+  hedefi kalktı, konu başına ilk 10 Risale yeri, soru kalıpları ve tarama tablosu); 9–10, 13, 14–15'te kör eleştirmen
+  ve kullanıcının okumasıyla. h10 taban; nisbet denetçisi (D14.5b) D5.0'ın kalite kapısı adayı.
 - D12 Taslak altyapısının ar-gesi (2026-11-17): düzeltme deneyi, fark okuması, üslûp ve Muhâkemât, D12.5'in Tur 0,
   T1 (okuma–yazım ayrımı taban olmadı) ve D turu (d1 kalır, d2 bırakıldı); kalanı D14'te.
 - S6 Âyet masasının ikinci hâli (2026-11-17, kullanıcının kararı).
@@ -862,6 +682,212 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   sunulmaz.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
+
+**D14. Taslak hattının turları** (bitti, 2026-11-19, kullanıcının kararı: h10 taban; aşağısı kayıttır) (kullanıcının kararı, 2026-11-17: D12'nin kalanı ayrı aşama). **Taban h3** (D13; 9–10
+taslak 5: me'haz hiyerarşisi, istinbat etiketi). İşleyiş D12.5'inki: her tur tek değişiklik, taban ve yeni kol, kör
+eleştirmen (o3), envanter (ayar), kullanıcının okuması (plan belgesi `docs/d1/d12-rapor-ve-plan.md` 4.3, 4.4; okuma
+standardı 4.10). Tur sayısına tavan konmaz: taslağın hazır ya da hazıra yakın olduğu okumada hissedilince D15'e
+geçilir (kullanıcı); harcama tavanı ≈250 $ (D12.5 ve D13'te ≈60 $ harcandı).
+
+**D13'ün okumasından çıkan iki sorun** (kullanıcı, 2026-11-17: "taslaktaki okumalarımda gördüğüm iki büyük problem"):
+1. **Risale-i Nur anılıyor ama açılmıyor** ("Risale-i Nur'da da böyledir" deyip bırakmak; kizb ve sıdk dersi N41–N47
+   yok; 22 Arapça paragrafın 6'sı Risale'ye dayanıyor). Üç sebep (kullanıcı: "çok kıymetli"): (a) dosyanın düzeni:
+   267 paragraf kitap sırasıyla, âyetin bir sözünün dersi dağınık; (b) dil: taslak Arapça, Risale Türkçe, dersi açmak
+   onu Arapçaya kendi sözüyle aktarmayı ister, kolayı adını anıp geçmek; (c) kural yazmak yetmez (D12'nin dersi).
+2. **Akıl yürütemediği yerde Zemahşerî'ye yaslanıyor:** Keşşâf dosyadaki tek tefsir. Tabanın beğenilen "mantık
+   silsilesi" de büyük ihtimalle dosyasındaki müfessirlerdendi; asıl eksik İşârât'ın kendi yolu (takdir zinciri,
+   mukadder sual, "neden şu lafız").
+
+**Kararlar (kullanıcı, 2026-11-17):** sıra önce D14.1 (ilk geçiş), sonra düzeltme (k3; 2026-11-17'de D14.2 ders adaylarına verildi, düzeltme D14.3 oldu); Risale'nin dersi **Arapça
+metinde, kendi sözüyle ve atıfla** açılır, Türkçe tercümede gerekirse Risale'nin Türkçe aslından kısa alıntı;
+Zemahşerî dosyadan çıkar, tefsirlerin başında araçla.
+
+- **D14.1 Dosyanın düzeni** (sürüm h4; 9–10; taban taslak 5, yeni taslak 6). Tek değişiklik, "yazarın Risale-i Nur'u ve
+  Zemahşerî'yi önünde nasıl bulduğu":
+  1. **Risale-i Nur'un yerleri âyetin sözüne göre:** âyetin sözü → konusu → o konunun Risale paragrafları, benzerlik
+     sırasıyla (kitap sırası değil). Yazar bir lafzı işlerken onun dersini tek yerde bulur. Seçim D13'ünkiyle aynı
+     (konu başına ilk 100'ün üst yarısı).
+  2. **Keşşâf dosyadan çıkar:** `tefsir` eklentisinde tefsirlerin başında; istemde "tefsirlere bakacaksan önce
+     Zemahşerî". Dosyada belâgat ve lügat eserleri kalır.
+  3. **İstemde dersin açılışı:** Risale-i Nur'un dersi Arapça metinde kendi sözüyle ve atıfla açılır; Türkçe tercümede
+     gerekirse Türkçe aslından kısa blok alıntı (numarasıyla). Anıp geçmek yetmez.
+  Ölçü: kör eleştirmen o3, envanter, D9.1, me'haz dağılımı (Risale'ye dayanan paragraf, Keşşâf'a atıf), uzunluk;
+  okuma standardıyla 3 nükte. ≈10 $.
+  **Yazıldı ve ölçüldü (2026-11-17; ≈9,6 $; rapor `data/d1/provalar/9-10/d14-1-rapor.md`):** taslak 6 (h4). Envanter
+  %60 → **%74**; kör eleştirmen (o3) yeniyi bütün olarak ve me'hazda hafif tercih etti (V3'te İşârât'ın dört temel
+  nüktesi; hasrın sualine cevap ilk kez); taban Mukaddime (dört maksat) ve V2'de (yedi cümle; yeni "altı cümle")
+  hafif. Keşşâf atfı 16 → 10, belâgat atfı 7 → 13; Risale'ye dayanan paragraf oranı aynı (≈%28). "Altı cümle" 9–10'da
+  üçüncü kez. Okuma `tur-9-10-D14.1.html` (N40, N01, N17; ≈708 kelime).
+  **Okuma (2026-11-17):** taban 1 (N40: h4 kısalmış, mânâ kaybolmuş, Risale'den yorumsuz alıntı; h3 "böyledir" deyip
+  geçiyor), eşit 1 (N01), yeni 1 (N17: "Zemahşerî'den alıntı alıp sıyrılma furyası artık yok"; ama kartın sorusu
+  paragraflarla alakasızdı, okuma standardına kural eklendi). Kullanıcı: "bu sefer durum karışık." Kural 4.4: kullanıcı
+  kararsız, eleştirmen hafif: başka birimde bir kez daha. **Karar (kullanıcı, 2026-11-17): h4 taban.** Bulgu: Zemahşerî'ye yaslanma giderildi; Risale'nin dersi iki
+  kolda da açılmıyor (h3 anıp geçiyor, h4 yorumsuz alıntılıyor): talimat biçimi değiştirdi, düşünceyi değil. Karar
+  bekliyor.
+- **D14.2'nin hazırlığı: İşârât'ta üç vecih dışındaki kısımlar (bitti, 2026-11-17; ≈3,5 $; kullanıcının isteği:
+  "dersin sabit bir yeri var mı, ne kadar uzun"):** `scripts/d1-yapi.py`, istem `docs/d1/yapi-istemi.md` y1, sonuç
+  `data/d1/isarat-yapi/sonuc.md`. Sabit yer yok: münafıklar bahsinde (9–16) ders V3'ün içinde, kendisini doğuran lafzın
+  yerinde (altı birimin beşinde; biçimi soru–cevap ya da "إشارة إلى"; lafız başına %3–11, birim başına ≈%10); iman
+  rükünlerinde (17–33) mukaddime ve mesele olarak, çoğu kez V1'den önce (%13–45). 9–10'da sonda olması «يَكْذِبُونَ»'un
+  son kelime olmasından. D14.2'nin kararı bu sonuçla (kullanıcı).
+- **D14.2 Ders adayları ve tek kaide** (kullanıcının kararları, 2026-11-17; sürüm h5; 9–10; taban taslak 6 (h4), yeni
+  taslak 7). Hazırlığın sonucu (yukarıda) ve kullanıcı: taslağı İşârât'ın usulüne yaklaştırmak ve Risale-i Nur'u daha
+  çok dahil etmek için gerekli yerlere dersler ya da izahlar; Risale-i Nur'dan ve modelin kendi istinbatından, gerekirse
+  öbür eserlerden; yeri, biçimi ve payı münasebete göre. **İşârât Risale-i Nur'dan önce yazıldı**: müellifin elinde
+  külliyat yoktu, bizim var; İşârât'taki ders sıklığı üst sınır değildir.
+  - **Tek kaide** (mukaddime kuralıyla birleşik): ders, meseleyi doğuran şeyin yanında verilir. Bir lafızdan doğuyorsa
+    o lafzın yerinde (çoğu kez V3, cümleler arasıysa V2; soru–cevap ya da "إشارة إلى"); âyetin bütün meâlinden ya da
+    bir iman rükününden doğuyorsa vecihlerden önce mukaddime, bir lafza bağlı büyük meseleyse vecihlerin arasında
+    mesele. Uzunluk meselenin genişliğine göre; **bütçe toplamda** (Arapça İşârât'ın 1–2 katı), derse ayrı pay yok.
+  - **Ders adayları programla** (`d1-hat.py`, yazımdan önce): her konunun iki sorgusunun ilk 100 sonucunda isabetlerin
+    **yoğunlaştığı bölüm** birinci tetikleyici, **âyeti anan bölüm** ikinci; **eşiği aşan her aday** gelir (ilk eşik:
+    bölümde en az 12 isabet; sonra ayarlanır); aynı metnin kopyaları (Tarihçe'deki Hutbe gibi) tek aday. Adaylar dosyada
+    lafzın başlığı altında, bölümün ana teziyle. Konu adımı konunun kapsamını da yazar (lafız ya da âyetin bütünü); 9–10'un
+    sekiz konusu önceki gibi (hepsi lafız; Risale seçimi h4'le aynı kalsın diye yeniden çıkarılmaz).
+  - **Yazar** aday lafzı işlerken orada durur: münasebet güçlüyse dersi açar (Risale-i Nur'un dersi ve kendi istinbatı,
+    Arapçada kendi sözüyle, atıfla), zayıfsa kısa atıfla geçer; biçim ve uzunluk onun. İstemde İşârât'tan ders örnekleri
+    (sınanan birim dışındaki geliştirme birimlerinden, prova kuralıyla).
+  - **Yazımdan sonra program sayar:** hangi adaylarda ders açılmış, Risale'ye atıf, yazarın kendi Arapça sözü mü yalnız
+    alıntı mı.
+  - **Yedek adım** (kullanıcı): yazar dersi ısrarla açmazsa program aday lafızlar için başlığı kendisi açar, yazar altını
+    doldurmak zorunda kalır.
+  - Ölçü: kör eleştirmen o3, envanter (N41–N47), D9.1, me'haz dağılımı ve ders sayımı, uzunluk; okuma standardıyla.
+  - **Yazıldı ve ölçüldü (2026-11-17; ≈7,9 $ ve hazırlık 3,5 $; rapor `data/d1/provalar/9-10/d14-2-rapor.md`):**
+    taslak 7 (h5). Risale'ye atıf 19 → 39, adaylara atfın taşıdığı söz her yerde arttı (Hutbe 0 → 31, İkinci Lem'a
+    17 → 56) ama 60 kelimeyi bir yerde geçti; envanter %74 → %53, iki İşârât çelişkisi (elîm "mü'lim"; mü'minler zâhirde
+    aldanır); kör eleştirmen bütünde tabanı, me'hazda yeniyi hafif tercih etti; "altı cümle" ilk kez yok. Okuma
+    `tur-9-10-D14.2.html` (N40, N17, N38; ≈825 kelime).
+    **Okuma (2026-11-18):** yeni 2 (N40: "konuyu daha iyi açıklamış… ama bizim istediğimiz mânâda bir Risale dersi
+    burada yok"; N38: düşünce akışı net, Risale'nin fikri iyi söylenmiş), taban 1 (N17). Kural 4.4: eleştirmenle
+    ayrılık, kullanıcının hükmü geçer: **h5 taban** (kullanıcı onayladı, 2026-11-18). Yedek adımın şartı oluştu: ders en güçlü adayda
+    bile açılmıyor.
+- **D14.3 Zorunlu ders başlıkları** (D14.2'nin yedek adımı; kullanıcının kararları, 2026-11-18; sürüm h6; 9–10; taban
+  taslak 7 (h5), yeni taslak 8). Okuma: ders en güçlü adayda bile açılmadı. **Program başlığı açar:** ders adayının
+  isabeti en az 25 olan lafızlar için üçüncü vecihte lafzın yerinde `### Ders: «…»` (9–10'da dört: يَكْذِبُونَ,
+  مَرَضٌ, فَزَادَهُمُ, يُخَادِعُونَ اللّٰهَ); yazar altını doldurmak zorunda. **Dersin tarifi** (kullanıcının 9–10 ve
+  31–33 örneklerinden): lafızdan kalkıp okuyucuya döner; lafzın nüktesinden insana, İslâm âlemine, beşere dair umumî bir
+  hakikate geçer; müellifin biçimleriyle (temsil, soru–cevap, silsile, taksim, hitap) kurulur; kısa değildir; müellifin
+  sözüdür. **Bu derslerin genişi Risale-i Nur'dadır** (9–10'un kizb ve sıdk dersi Hutbe-i Şâmiye'nin "Sıdk" kelimesi;
+  31–33'ün mukaddimesi Yirminci Söz'ün İkinci Makamı): yazarın işi Risale'deki dersi telhis edip lafza bağlamaktır; D5'in
+  işi de budur. 9–10 temiz sınav: gizli olan İşârât'ın kizb ve sıdk dersi (N41–N47), yazarın elindeki onun genişi.
+  Alıntı en çok dayanak; bütçe toplamda, üst kısmı derse kullanılabilir (h5 bütçenin üçte birini kullanmadı). İkinci
+  vecihte temsil serbest. Ek 4'e 31–33'ün mukaddimesinden bir parça eklenir (sınanan birim dışından). Ölçü: N41–N47,
+  başlıkların doluluğu ve kendi sözü, kör eleştirmen o3, envanter (D14.2'deki düşüş izlenir), okuma.
+  **Yazıldı ve ölçüldü (2026-11-18; ≈8,6 $; rapor `data/d1/provalar/9-10/d14-3-rapor.md`):** taslak 8 (h6). Dört
+  başlığın dördü dolu; **İşârât'ın kizb ve sıdk dersinin yedi nüktesinden altısı ilk kez "kısmen"** (bugüne kadar
+  sıfır); açılan ders 1 → 6, Hutbe'ye atfın taşıdığı söz 31 → 160 kelime; envanter %53 → %60; kör eleştirmen yeniyi
+  **bütünde ve me'hazda açık** tercih etti. Ölçüm düzeltmesi: kaynak eşlemesi her sunucunun yalnız son `cite`
+  çağrısını okuyordu, artık hepsini birleştiriyor. Okuma sayfası paragrafın devamını (alıntı ve tercüme parçaları)
+  da gösteriyor. Okuma `tur-9-10-D14.3.html` (N40, N38, N16; ≈1.140 kelime).
+  **Okuma (2026-11-18): yeni 3, taban 0** (N40: "Risale'den alınmış çok çok iyi bir ders, gerçekten bravo"; N38: "her
+  türlü baştan sona B daha iyi"; N16: "açık ara, silsile yerinde"). Kural 4.4: eleştirmen ve kullanıcı aynı yönde, açık:
+  **h6 taban.** N40'ın kartı nazım ile dersi karşılaştırdı (B'de ikisi beraberdi, kart yalnız dersi gösterdi): okuma
+  standardına kural eklendi.
+- **D14.4 Yeni birimde sınama: 13'te h2 ile h6** (kullanıcının kararı, 2026-11-18; dokuz taslağın hepsi 9–10'da
+  yazıldı, ayar riski). Taban taslak 1 (h2, Tur 0'da kurulan istemle), yeni taslak 2 (h6). D13 ve D14'ün bütün kazancı
+  tek A/B'de. Kurulumda konu adımına Arapça `lafiz` alanı eklendi (13'te konu modeli "neden"i Latin harfli okunuşla
+  yazdı, başlığa cümle girdi) ve âyetin bütününe dair konunun ders başlığı mukaddimeye (tek kaide). 13'te iki zorunlu
+  başlık: «ٱلنَّاسُ» (Yirmi Üçüncü Söz, 54 isabet), «أَلَآ إِنَّهُمْ هُمُ ٱلسُّفَهَآءُ» (Otuz İkinci Söz). Gerekirse sonra
+  h6 üzerinde kapalı eleştirmenin zaaf profili.
+  **Yazıldı ve ölçüldü (2026-11-18; ≈11,5 $; rapor `data/d1/provalar/13/d14-4-rapor.md`):** kör eleştirmen h6'yı
+  **bütünde ve me'hazda açık** tercih etti (V3 açık; V1'de h2 hafif); envanter %62 → %74; Risale atfı 2 → 31, öbür
+  tefsirlere atıf 37 → 4; iki ders başlığı dolu; h6 uzunluk hedefini %13 aştı (kısa birim). Okuma `tur-13-D14.4.html`
+  (N43, N01, N21; A = h6, B = h2). Okuma kartına `ek_capa` (dersin nazım paragrafı) ve `sinir_asimi` seçenekleri.
+  **Okuma (2026-11-18): h6 3, h2 0** (N43: "cümlenin parça parça nazmını vermede, Risale-i Nur'lara bağlamada, mantık
+  silsilesini kurmada daha iyi"; N01: "yoruma gerek yok", eleştirmen burada h2'yi tercih etmişti). **h6'nın kazancı yeni
+  birimde doğrulandı.**
+- **D14.5 Uzunluk kuralı ve nisbet denetçisi** (kullanıcının kararları, 2026-11-18). Konuşma: kalan zaaflar (uzunluk,
+  birkaç nisbet hatası, İşârât'la gerilimli istinbatlar, kaçırılan nükteler) için genel düzeltme yanlış ya da büyük
+  alet (düzeltme uzatır; birim başına ≈11 $; k2 nakle iter); gerilimli istinbat ve kaçırılan nükteler ehlin okumasının
+  (D5.1) konusu. Kullanıcı: "uzunluğu kısacağız diye kaliteden kaybetmek istemiyorum"; ders sayısına sınır yok.
+  - **D14.5a Dersler uzunluk hedefinin dışında** (h7; 13; taban taslak 2 (h6), yeni taslak 3): hedef (İşârât'ın 1–2
+    katı) yalnız nazım kısmına (üç vechin tahlili) uygulanır, çünkü İşârât'la kıyaslanabilir olan odur; dersler hedefin
+    dışında, meselenin genişliğine göre, îcâzla, alıntı dayanak. Her dersin sonunda `### Dersin sonu` işareti (dersin
+    uzunluğu ayrı ölçülsün). Ölçü: nazım kısmının uzunluğu, ders başına kelime ve alıntı, kör eleştirmen o3, envanter,
+    okuma. Soru: dersler serbest kalınca ne kadar yazılıyor, nazım kısmı ve kalite ne oluyor.
+  - **D14.5b Nisbet denetçisi** (`scripts/d1-nisbet.py`; mevcut taslaklarda: 9–10 taslak 8, 13 taslak 2, kontrol 13
+    taslak 1): atıf verilen her kaynak için atıf verilen yer bağlamıyla ve ona atıf veren taslak cümleleri tek model
+    çağrısında; hüküm: doğru nisbet, kaynağın naklettiği görüş, itirazı, reddettiği vecih, kaynakta yok, kaynağın sözünü
+    aşıyor. Doğruluğu kör eleştirmenin bulduğu nisbet hatalarıyla ölçülür (Lem'alar'daki zamir; Âlûsî'nin naklettiği
+    istidlal; adı anılmadan alınan Ebüssuûd tespiti). Güvenilirse D5.0'da üretim hattının kalite kapısı; cümle düzeyinde
+    düzeltme adımı sonra.
+  - **D14.5b bitti (2026-11-18; ≈4 $; rapor `data/d1/d14-5b-nisbet.md`):** isabet ≈%80 (beş bulgudan dördü doğru),
+    yakalama ≈%45 (bilinen 13 hatadan 6'sı; kaçırılanların çoğu atıf verilen yerin dışında); **h6 taslaklarında nisbet
+    hatası az** (2 ve 1; h2'de 11 ve 8). D5.0'da kalite kapısı; yakalama için bağlam genişletilebilir.
+  - **D14.5a yazıldı ve ölçüldü (2026-11-18; ≈6,5 $; rapor `data/d1/provalar/13/d14-5a-rapor.md`):** taslak 3 (h7).
+    Dersleri sınırdan çıkarınca toplam kısaldı ve hedefe girdi (13.581 → 11.613; nazım 8.558, dersler ≈1.500'er harf,
+    derli toplu, işaretle kapanmış); kör eleştirmen h7'yi bütünde ve me'hazda hafif tercih etti; envanter %74 → %64.
+    Okuma `tur-13-D14.5a.html` (N43, N03, N46; A = h6, B = h7).
+    **Okuma (2026-11-18):** emin değil 2, h6 1 ("İkisi de ayrı güzel"; h7'nin "Müellif … saymıştır" cümleleri
+    istenmiyor), h7 0: kalite denk. Kural 4.4: eleştirmen hafif, kullanıcı kararsız; h6'nın uzunluk bayrağı var, h7'nin
+    yok. **Karar (kullanıcı, 2026-11-18): h7 taban**, üslûp notuyla (İşârât'ın öbür birimleri "Müellif … saymıştır"
+    diye anılmaz; istemde, ayrıca sınanmadı). D14.5 bitti.
+- **D14.6 D5'e hazırlık için iki deneme** (kullanıcının kararları, 2026-11-18; 13; taban taslak 3 (h7)). D5'te
+  İşârât olmayacağı için uzunluk hedefinin dayanağı kalkıyor (D11'in oranı birimden birime 138–1.238 harf);
+  yazar dosyadan yalnız en yakın Risale yerlerini kullanıyor (kullanılanların konu içi sırası çoğunlukla 1–5; ilk 10
+  ≈%93'ünü karşılıyor); istemin büyüklüğü maliyete az yansıyor (3 kat istem, %5–40 maliyet).
+  - **D14.6a Uzunluk sınırı yok** (h8a, taslak 4): h7'nin aynısı, uzunluk hedefi yok (îcâz kuralı kalır). Soru: model
+    doğal olarak ne kadar yazıyor, kalite değişiyor mu. Kullanıcının kısa okuması.
+  - **D14.6b Risale yerleri konu başına ilk 10** (h8b, taslak 5): h7'nin aynısı, dosyada konu başına benzerlikçe ilk 10
+    paragraf (ders adayları aynı: ilk 100'deki yoğunluktan). Soru: odak ve maliyet; mekanik ölçü ve kör eleştirmen,
+    eleştirmen düşüş görürse okuma.
+  - **D14.6 ölçüldü (2026-11-18; ≈13,3 $; rapor `data/d1/provalar/13/d14-6-rapor.md`).** (a) h8a: sınırsız model
+    şişmiyor (toplam 11.613 → 11.506; nazım kısaldı, dersler uzadı); kör eleştirmen h7'yi hafif tercih etti, envanter
+    %64 → %70; okuma `tur-13-D14.6a.html` (N43 ders, N35, N17; A = h7, B = h8a). (b) h8b: maliyet %11 düştü (3,72 →
+    3,29 $), kör eleştirmen h8b'yi bütünde hafif tercih etti (me'haz eşit), envanter %68; dersler uzadı (2.519 ve 3.066
+    harf), toplam 14.217; okuma gerekmiyor.
+    **D14.6a okuması (2026-11-18):** eşit 1, emin değil 2: kalite denk; sınırsız tarafta paragraf düzeyinde uzatma
+    (sefehin lügat mânâsı) ve tekrar kalıbı (art arda üç "Denilmiştir ki"); "îcâz söz konusuysa A'yı tercih ederim".
+    Taslaklar arası farkları doğal fark sayıyor. **Karar (kullanıcı, 2026-11-18): h9 = h7 + uzunluk hedefi yok (h8a) +
+    konu başına ilk 10 Risale yeri (h8b) + îcâz notları** (lügat mânâsı bir iki cümle; aynı kalıp art arda kullanılmaz;
+    nükte bir yerde söylenir); ayrı sınama yok, derslerin uzaması D15'te izlenir. D14.6 bitti.
+- **Genel düzeltme (k3) ertelendi** (2026-11-18): D15'te h6'nın çözemediği türden kusurlar çıkarsa yeniden açılır.
+- Sonraki adaylar: garaz (kapanış dersi garazdan sapıyor), başka birim (13), takdir zinciri alanları, üslûp belgesi.
+  Nisbet denetimi ve uzunluk şimdilik gerekmiyor (h3'te nisbet hatası çıkmadı, uzunluk hedefte).
+
+**D14.7 İşârât'ın soru kalıpları ve tarama tablosu** (kullanıcının kararı, 2026-11-18: ar-ge adımı; tutarsa D15'in
+hattı h10, tutmazsa h9). Sebep: üç taslağın üçü de 13'te İşârât'ın aynı nüktelerini kaçırdı (cumhura ittiba, fâsıla,
+i'raz): oynaklık değil, yazar bazı soruları hiç sormuyor; usul özetinde bu kalıplar yok ("fâsıla", "i'râz", "iltifat",
+"meçhul", "hazf" hiç geçmiyor). Kullanıcı: istemde liste durursa model takip etmeyebilir (h5'in dersleri gibi); bu yüzden
+program uygular (h6'nın başlıkları gibi).
+- **(1) Liste:** İşârât'ın birimden birime tekrar ettiği soru kalıpları (≈20–30; her biri soru, İşârât'ın tipik
+  cevapları, örnek yerler). Kaynak yalnız geliştirme birimleri: 9–10, 11–12, 13, 31–33'ün envanterleri ve metni;
+  Fâtiha, 1–8, 17–20, 23–24'ün metni. 14–15 (sınanan), 16 (yedek temiz birim) ve saklı birimler (21–22, 25, 26–27, 28,
+  29, 30) girmez; sızıntı testi hepsine karşı. Kalıp cümle değil türdür. Kullanıcı onaylar.
+- **(2) Tarama tablosu:** yazımdan önce program birimin lafızlarına sorulabilecek kalıpları çıkarır (kurallı: fâsıla,
+  tarif lâmı, te'kid edatları, ayırma zamiri, meçhul fiil; küçük model çağrısı: hazf, iltifat, sîga). Âyetin kendisinden
+  kurulur, İşârât'tan değil.
+- **(3) Yazar:** taslaktan önce "Tarama" çalışma bölümünde her satıra "taşıyor" (nükte bir cümle, taslakta yerinde
+  açılır) ya da "taşımıyor" (yarım cümle gerekçe) der; "taşımıyor" meşrudur. Program Tarama'yı yayımlanan taslaktan
+  çıkarır, ölçü için saklar (kaçırılan nükte tabloda yok muydu, yoksa yazar "taşımıyor" mu dedi).
+- **(4) Sınama:** 14–15 (hiç dokunulmamış geliştirme birimi; konu, ders adayları, envanter kurulur), h9 ve h10 (h9 + liste
+  + tarama). Ölçü: envanterde kaçırılan nükteler azaldı mı, zorlama var mı (kör eleştirmen ve kullanıcının okuması).
+  ≈20 $.
+- **(1) bitti (2026-11-18; ≈4,3 $):** `docs/d1/soru-kaliplari.md` k1, 35 kalıp (kelime 18, cümle 8, cümleler arası 4,
+  âyetin bütünü 5); sızıntı testi temiz; dört örnek kaynakla doğrulandı. Kullanıcı onayladı. **Kararlar:** (a) üç kalıp
+  tabloya girmez, yalnız listede kalır: vecihlerin çokluğu, kayıtların tek garaza akması, dört esas maksadın remzi
+  (bütün âyete bakan usuller; zorlama riski); (b) **h10 taban olursa D5.0'da liste bütün İşârât'tan yeniden kurulur**
+  (bugün yalnız geliştirme birimleri; D15'ten sonra saklı birimler de girebilir).
+- **Listenin modele verilişi** (kullanıcı onayladı, 2026-11-18): üç parça. (a) **Ek 5:** listenin tamamı (dağarcık:
+  cevap türleri ve dikkat notları). (b) **Tarama tablosu** istemin gövdesinde, birime özel: program âyetin metninden
+  kurar (fâsıla her âyette kuralla; öbürleri küçük bir model çağrısıyla, İşârât'sız), satırlar `T01…` (lafız, kalıp).
+  (c) **Yazar çıktısında doldurur:** iş sırası kaynakları oku → Tarama → taslak; çıktı `## Tarama` bölümüyle başlar,
+  her satıra "taşıyor: …" (taslakta yerinde açılır: kelime üçüncü vecihte, cümleler arası ikinci vecihte) ya da
+  "taşımıyor: …" (meşru; dikkat notuna uyuyorsa doğru cevap); tablo taban, tavan değil; Türkçe ve kısa. Program
+  Tarama'yı taslaktan ayırır (`taslak-N.tarama.md`), eksik satırları raporlar, kaçırılan her nükte için "tabloda yok /
+  yazar taşımıyor dedi / taşıyor deyip yazmadı" ayrımını ölçer. Ayrı tarama çağrısı önerilmedi (maliyet; notları
+  yine atlayabilir).
+- **D14.7 ölçüldü (2026-11-18; ≈18,3 $; rapor `data/d1/provalar/14-15/d14-7-rapor.md`):** 14–15, taslak 1 (h9), taslak
+  2 (h10). **Envanter %52 → %67**; kör eleştirmen h10'u bütünde ve me'hazda hafif tercih etti (te'kid nükteleri
+  İşârât'la uyumlu; V2'de h9 hafif); Tarama 60 satır, hepsi cevaplı, taşıyor 57 (zorlama riski); çelişki 1 → 3, müfessir
+  adı 5 → 11; h10'un kusurları: Âlûsî'ye nisbet, "meşkûk küfür"ü kapsamını aşarak uygulamak. Okuma
+  `tur-14-15-D14.7.html` (N35, N09, N64; A = h10, B = h9).
+  **Okuma (2026-11-19):** h10 1 (N09: "soruya A daha iyi cevap veriyor … daha derli toplu"), emin değil 2 (N35'te
+  h10'a "his olarak"; N64'te h9'un dersi, ama kart h10'un «يَعْمَهُونَ» dersini göstermemişti: kart hatası). Kural 4.4:
+  eleştirmen ve kullanıcı aynı yönde (h10). **Karar (kullanıcı, 2026-11-19): h10 taban; D14 bitti.** Hat D15 boyunca
+  donar; zorlama (Tarama'da "taşımıyor" oranı), çelişki ve müfessir adı D15'te ölçülerek izlenir, düzeltme gerekirse
+  D5.0'da. Okuma kartları için ders kuralı: bir tarafın kartında bir lafzın dersi görünüyorsa öbür tarafın aynı lafız
+  dersi de karta girer (D14.7'nin N64 kartında h10'un dersi görünmemişti; D15'in başında `d1-tur okuma`'ya eklenir).
 
 **D13. Me'haz: taslak İşârât ve Risale-i Nur'dan konuşsun** (kullanıcının değerlendirmesi ve kararları, 2026-11-17;
 plan `docs/d1/d13-mehaz-plani.md`). D12.5'in T1 ve D turlarından sonra kullanıcı: d2 maliyetine değmez (kazancı d1'in
