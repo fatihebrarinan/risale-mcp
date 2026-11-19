@@ -4,6 +4,8 @@ kararı, 2026-11-19: önce İşârât'ın mantığı, sonra bütün Kur'ân).
     uv run python scripts/d1-bolme.py tablo     # Bakara 1–33'ün 32 geçişi, mekanik özellikler: data/d1/bolme/gecisler.json
     uv run python scripts/d1-bolme.py oku       # her geçişte müellifin sözü (tek model çağrısı): okuma.json
     uv run python scripts/d1-bolme.py rapor     # gecisler.md: tablo, müellifin sözü, alıntı denetimi
+    uv run python scripts/d1-bolme.py sina      # kuralın işlenebilirlik sınaması (Bakara 1–33, İşârât görülmeden)
+    uv run python scripts/d1-bolme.py bol       # b4 ile Bakara 34–286: bakara/bolme.md (üç koşu, çoğunluk, inceleme listesi)
 
 Geçiş `k|k+1`: İşârât k ile k+1'i ayrı birimde (`sinir`) ya da aynı birimde (`birlikte`) tahlil eder. Müellifin bağ
 hakkındaki sözü iki yerde aranır: sınırda sonraki birimin birinci vechi (mâkabliyle irtibat), birlikte olanda birimin
@@ -341,6 +343,146 @@ def sina_rapor() -> None:
     print("\n".join(L[5:5 + len(runs) + 1]))
 
 
+# ---------------------------------------------------------------- uygulama: Bakara 34–286 (b4)
+
+BOL_ISTEM = """Kur'ân âyetlerini tahlil birimlerine böleceksin: her birim, nazmı birlikte tahlil edilecek âyet ya da
+âyetlerdir (bir tefsirde tek başlık altında işlenecek kısım). Aşağıdaki kurala göre böl; kural Bediüzzaman'ın
+İşârâtü'l-İ'câz'ından (Bakara 1–33) çıkarıldı ve orada İşârât'ın bölmesini aynen verir. Dayanak ve İşârât'ın Bakara
+1–33 bölmesi örnek içindir.
+
+Bölünecek kısım: {sura_name} {a}–{b}. {baglam_notu}Her geçiş (k|k+1) için kararını, dayandığın kuralı (asıl ölçüt ya da
+1–6), bir cümle gerekçeni ve ne kadar emin olduğunu yaz. Geçişler {ilk}'den {son}'a kadar, hepsi.
+
+Cevabın yalnız şu JSON:
+```json
+{{"gecisler": [{{"gecis": "{ilk}", "karar": "sinir|birlikte", "kural": "…", "emin": "yuksek|orta|dusuk", "gerekce": "..."}}]}}
+```
+
+# Âyetler
+
+{ayetler}
+
+# Kural
+
+{kural}
+
+# Dayanak (İşârât'tan, Bakara 1–33)
+
+{dayanak}
+
+İşârât'ın Bakara 1–33 birimleri: {isarat_birimler}
+"""
+BOL_PARCA = 50
+BOL_BAGLAM = 3
+
+
+def dayanak_text() -> str:
+    raw = KURAL_DOC.read_text(encoding="utf-8")
+    return raw.split("\n---- DAYANAK ----\n", 1)[1].split("\n## Bilinen sınırlar", 1)[0].strip()
+
+
+def parcalar(a: int, b: int) -> list[tuple[int, int]]:
+    out, x = [], a
+    while x <= b:
+        y = min(x + BOL_PARCA - 1, b)
+        if b - y < 15:                     # kısa artığı son parçaya kat
+            y = b
+        out.append((x, y))
+        x = y + 1
+    return out
+
+
+def bol_prompt(a: int, b: int) -> str:
+    q = json.loads(QURAN.read_text(encoding="utf-8"))
+    rows = {x["ayah"]: x for x in q["suras"][1]["ayahs"]}
+    ctx = range(max(1, a - BOL_BAGLAM), a)
+    L = []
+    for k in list(ctx) + list(range(a, b + 1)):
+        x = rows[k]
+        tag = " (bağlam: önceki kısım)" if k < a else ""
+        L.append(f"{k}.{tag} {x['text']}\nMeâl (Diyanet Vakfı): {x['translations']['diyanet-vakfi']}")
+    data = json.loads((OUT / "gecisler.json").read_text(encoding="utf-8"))
+    birim = " | ".join(f"{u['ayahs'][0]}" + (f"–{u['ayahs'][1]}" if u['ayahs'][1] != u['ayahs'][0] else "")
+                       for u in data["birimler"])
+    return BOL_ISTEM.format(sura_name="Bakara", a=a, b=b, ilk=f"{a - 1}|{a}", son=f"{b - 1}|{b}",
+                            baglam_notu=(f"{ctx.start}–{a - 1}. âyetler yalnız bağlamdır; {a - 1}|{a} geçişine de karar ver. "
+                                         if a > 1 else ""),
+                            ayetler="\n\n".join(L), kural=kural_text(), dayanak=dayanak_text(),
+                            isarat_birimler=birim.replace("17–18 | 19–20", "17–20 (içinde 17–18 ve 19–20)"))
+
+
+def bol(a: int, b: int, kez: int, again: bool = False) -> None:
+    from concurrent.futures import ThreadPoolExecutor
+    d = OUT / "bakara"
+    d.mkdir(parents=True, exist_ok=True)
+    jobs = []
+    for x, y in parcalar(a, b):
+        prompt = bol_prompt(x, y)
+        (d / f"istem-{x}-{y}.md").write_text(prompt, encoding="utf-8")
+        for i in range(1, kez + 1):
+            stem = d / f"bol-{x}-{y}-{i}"
+            if stem.with_suffix(".json").exists() and not again:
+                continue
+            jobs.append((prompt, stem, {"gorev": "bolme", "aralik": [x, y], "kez": i, "kural_sha": Y.P._sha(kural_text())}))
+    print(f"{len(jobs)} çağrı")
+    with ThreadPoolExecutor(4) as ex:
+        list(ex.map(lambda j: Y.run_model(j[0], "opus", j[1], j[2]), jobs))
+    bol_rapor(a, b)
+
+
+def bol_rapor(a: int, b: int) -> None:
+    from collections import Counter
+    d = OUT / "bakara"
+    votes: dict[str, list[dict]] = {}
+    for f in sorted(d.glob("bol-*-[0-9].json")):
+        for g in json.loads(f.read_text(encoding="utf-8")).get("gecisler", []):
+            votes.setdefault(g.get("gecis"), []).append(g)
+    mf = {w: boundaries(w) for w in ("razi", "durr", "ibnkesir")}
+    rows, sinir = [], set()
+    for k in range(a - 1, b):
+        key = f"{k}|{k + 1}"
+        vs = votes.get(key, [])
+        c = Counter(v.get("karar") for v in vs)
+        karar = c.most_common(1)[0][0] if vs else "?"
+        if karar == "sinir":
+            sinir.add(k)
+        oy = f"{c.get('sinir', 0)}/{len(vs)}"
+        dusuk = sum(v.get("emin") == "dusuk" for v in vs)
+        muf = [w for w in mf if k in mf[w]]
+        rows.append({"gecis": key, "karar": karar, "oy": oy, "oybirligi": len(c) == 1, "dusuk": dusuk,
+                     "razi": k in mf["razi"], "mufessir": muf,
+                     "kural": Counter(v.get("kural", "") for v in vs).most_common(1)[0][0] if vs else "",
+                     "gerekce": [v.get("gerekce", "") for v in vs]})
+    units, x = [], a
+    for k in range(a, b + 1):
+        if k in sinir or k == b:
+            units.append((x, k))
+            x = k + 1
+    sizes = [y - x + 1 for x, y in units]
+    ayri = [r for r in rows if not r["oybirligi"]]
+    razi_fark = [r for r in rows if (r["karar"] == "sinir") != r["razi"]]
+    out = {"aralik": [a, b], "birimler": units, "gecisler": rows}
+    (d / "bolme.json").write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
+    L = [f"# Bakara {a}–{b}: b4 ile bölme", "",
+         f"Her geçiş üç koşunun çoğunluğuyla. Birim {len(units)}; tek âyetli {sum(s == 1 for s in sizes)}; en büyük "
+         f"{max(sizes)} âyet. Oybirliği olmayan geçiş {len(ayri)}; Râzî'nin bölmesiyle ayrılan {len(razi_fark)}.", "",
+         "## Birimler", "", ", ".join(f"{x}" + (f"–{y}" if y != x else "") for x, y in units), "",
+         "## İnceleme listesi: koşuların ayrıldığı geçişler", "",
+         "| Geçiş | Karar | Sınır oyu | Râzî sınır | Müfessir sınırı | Kural | Gerekçeler |", "|---|---|---|---|---|---|---|"]
+    for r in ayri:
+        L.append(f"| {r['gecis']} | {r['karar']} | {r['oy']} | {'✓' if r['razi'] else ''} | {', '.join(r['mufessir'])} | "
+                 f"{r['kural']} | {' / '.join(r['gerekce'])} |")
+    L += ["", "## Râzî'den ayrılan oybirlikli kararlar", "",
+          "| Geçiş | Karar | Râzî | Müfessir sınırı | Kural | Gerekçe |", "|---|---|---|---|---|---|"]
+    for r in razi_fark:
+        if r["oybirligi"]:
+            L.append(f"| {r['gecis']} | {r['karar']} | {'sınır' if r['razi'] else 'birlikte'} | {', '.join(r['mufessir'])} | "
+                     f"{r['kural']} | {r['gerekce'][0] if r['gerekce'] else ''} |")
+    (d / "bolme.md").write_text("\n".join(L) + "\n", encoding="utf-8")
+    print(f"{(d / 'bolme.md').relative_to(ROOT)}: birim {len(units)}, tek âyetli {sum(s == 1 for s in sizes)}, "
+          f"oybirliği olmayan {len(ayri)}, Râzî'den ayrılan {len(razi_fark)}")
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -353,6 +495,12 @@ def main() -> None:
     p.add_argument("--kez", type=int, default=2)
     p.add_argument("--yeniden", action="store_true")
     sub.add_parser("sina-rapor")
+    p = sub.add_parser("bol", help="b4 ile Bakara'yı böl (parça parça, üç koşu, çoğunluk)")
+    p.add_argument("--aralik", nargs=2, type=int, default=[34, 286])
+    p.add_argument("--kez", type=int, default=3)
+    p.add_argument("--yeniden", action="store_true")
+    p = sub.add_parser("bol-rapor")
+    p.add_argument("--aralik", nargs=2, type=int, default=[34, 286])
     a = ap.parse_args()
     if a.cmd == "tablo":
         tablo()
@@ -362,6 +510,10 @@ def main() -> None:
         sina(a.kollar, a.kez, a.yeniden)
     elif a.cmd == "sina-rapor":
         sina_rapor()
+    elif a.cmd == "bol":
+        bol(*a.aralik, a.kez, a.yeniden)
+    elif a.cmd == "bol-rapor":
+        bol_rapor(*a.aralik)
     else:
         rapor()
 
