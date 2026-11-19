@@ -212,6 +212,92 @@ UNITS["9-10"]["sizinti_kabul"] = {s: _DUSTUR for s in ("hutbe-i-samiye/cuz-01/c1
                                                        "mektubat-osmanlica/035/c125")}
 DEV_UNITS = ("9-10", "13", "14-15", "16")
 
+# D15'in saklı birimleri (PLANLAR.md D15; kullanıcının kararları 2026-11-17 ve 2026-11-19). 30 D5.0'ın kabul birimidir,
+# buraya girmez. Ek düzeltmeleri usul özetinden ve birim çizelgesinden yalnız o birimden alınmış örnekleri ve
+# yalnız ona dayanan kuralları çıkarır (11–12'nin ilkesi).
+_SATIR_MAKSAT_OZET = "4 (haşir), 21–22 (ibadet, tevhid), 23–24 (nübüvvet)"
+UNITS.update({
+    # 21–22 (maksat birimi; D15.1). Arapçada bütün birim `mukaddime` düğümündedir (iki mukaddime: ibadet c001,
+    # Sâni'in delilleri c046; vecihler c124, c129, c160; c273 sonraki âyetin satırı). Türkçede iki ayrı bölüm (21 ve
+    # 22, alt bölümlü); vecihler 22'nin "Delil-i İmkânî"sindedir. İnce Ek 3: 16 ve sonraki birim 23–24 (önceki birim
+    # 17–20 kaynak dosyasında tam), 11–12 gibi 17–20'nin nazarî girişi.
+    "21-22": {
+        "sura": 2, "ayahs": (21, 22), "sura_name": "Bakara", "olcu": "Bakara 17–20, 23–24",
+        "ince": (B_AR + "16", *(B_AR + "23-24-ayetlerin-tefsiri-nubuvvet-hakkinda" + x for x in
+                               ("", "/mukaddime", *(f"/mesele-0{k}" for k in range(1, 8))))) + _TEMSIL,
+        "nodes": (B_TR + "21", B_AR + "21-22-ayetlerin-tefsiri", B_TR + "22"),
+        "parcalar": {"isaratul-icaz": [(B_TR + "21", None, None), (B_TR + "22", None, None)]},
+        "sections": {
+            "isaratul-icaz-arabi": {"Mukaddime": "mukaddime/c001", "V1": "mukaddime/c124", "V2": "mukaddime/c129",
+                                    "V3": "mukaddime/c160", "son": "mukaddime/c273"},
+            "isaratul-icaz": {"Âyet": "c001", "Mukaddime": "mukaddime/c001", "V1": "delil-i-imkani/c011",
+                              "V2": "delil-i-imkani/c025", "V3": "delil-i-imkani/c073"},
+        },
+        "ozet": [
+            (None, "| 21–22 | V1, V2, V3 (sıralı)"),                                 # vecih düzeni çizelgesi
+            ("Bakara 4, 21–22, 23–24, 25, 28, 29, 30", "Bakara 4, 23–24, 25, 28, 29, 30"),
+            (_SATIR_MAKSAT_OZET, "4 (haşir), 23–24 (nübüvvet)"),
+            (" (yukarıdaki iki cümle; `isaratul-icaz-arabi/sure-i-bakara/21-22-ayetlerin-tefsiri/mukaddime/c051`)",
+             " (yukarıdaki iki cümle)"),
+            ("- Mukaddimedeki her delil âyetin bir lafzına bağlanır (`isaratul-icaz-arabi/sure-i-bakara/21-22-ayetlerin-"
+             "tefsiri/mukaddime/c075`, `isaratul-icaz-arabi/sure-i-bakara/21-22-ayetlerin-tefsiri/mukaddime/c076`): "
+             "mesele âyetten kopuk bir risale değildir.\n", ""),
+        ],
+        "cizelge": [
+            (None, "| 21–22 | `B/21-22"),                                            # çizelge satırı
+            ("dokuz yerde", "sekiz yerde"),
+            (", `B/21-22-ayetlerin-tefsiri/mukaddime/c123`", ""),
+            (_SATIR_MAKSAT_OZET, "4 (haşir), 23–24 (nübüvvet)"),
+            ("; `B/21-22-ayetlerin-tefsiri/mukaddime/c051`;", ";"),
+            ("(`B/4/c070`, `B/21-22-ayetlerin-tefsiri/mukaddime/c051`, ", "(`B/4/c070`, "),
+            ("- Mukaddimedeki her delil **âyetin bir lafzına bağlanır** (`B/21-22-ayetlerin-tefsiri/mukaddime/c075`, "
+             "`c076`): mesele âyetten kopuk bir risale değildir.\n", ""),
+            ("(7, 17–20, 21–22, 23–24, 30, 31–33)", "(7, 17–20, 23–24, 30, 31–33)"),
+            ("; `B/21-22-ayetlerin-tefsiri/mukaddime/c125`..`c127`: iltifat)", ")"),
+        ],
+    },
+})
+
+# 21–22'nin sızıntı testi (2026-11-19, elle incelendi): (1) müellifin Arapça Mesnevî'sindeki Nokta (İhsan Kasım'ın
+# Türkçeden tercümesi; İşârât'ın Sâni'in delilleri mukaddimesinin ibaresini kullanıyor); (2) İşârât'ın 21–22'de
+# naklettiği meşhur beyit «وفي كل شيء له آية تدل على أنه واحد», külliyatta onlarca yerde.
+_NOKTA = "müellifin Nokta'sı (Arapça Mesnevî, tercüme); İşârât'ın mukaddimesinin genişi, emsal 9–10"
+_BEYIT = "meşhur beyit «وفي كل شيء له آية»; kalıp ibare"
+UNITS["21-22"]["sizinti_kabul"] = {**{s: _NOKTA for s in (
+    "el-mesnevi-el-arabi/nokta/burhan-03/c030",
+    "el-mesnevi-el-arabi/nokta/burhan-02/c070",
+    "el-mesnevi-el-arabi/nokta/burhan-04/c022",
+    "el-mesnevi-el-arabi/nokta/burhan-02/c030",
+    "el-mesnevi-el-arabi/nokta/burhan-03/c019",
+)}, **{s: _BEYIT for s in (
+    "muhakemat/makale-03/maksad-01/delil-02/c153",
+    "isaratul-icaz/sure-i-bakara/26-27-ayetlerin-tefsiri/c044/h1/c007",
+    "suaat-i-marifetin-nebi/mukaddime/burhan-01/c007",
+    "el-mesnevi-el-arabi/mukaddime/nokta-01/c008",
+    "el-mesnevi-el-arabi/zuhre/tezyil/c122",
+    "mesnevi-i-nuriye/fihrist/1-lemalar/c002",
+    "sozler/konferans/c263",
+    "mektubat/26/mebhas-04/mesele-02/sual-01/c022",
+    "sualar/7/ayetul-kubra/bab-02/menzil-02/hakikat-05/c037",
+    "emirdag-lahikasi/emirdag-lahikasi-2/285/nokta-03/c007",
+    "emirdag-lahikasi/emirdag-lahikasi-2/285/nokta-03/c016",
+    "tarihce-i-hayat/birinci-kisim-ilk-hayati/bediuzzaman-yaninda-baska-kitaplar-bulundurmuyordu/c007/h1/c014",
+    "tarihce-i-hayat/altinci-kisim-emirdagi-hayati/emirdagindaki-hayati-soyle-hulasa-olunabilir/c031",
+    "mesnevi-i-nuriye/mukaddime/nokta-01/c014",
+    "mesnevi-i-nuriye/katre/zeyl/remz-15/c011",
+    "emirdag-lahikasi/emirdag-lahikasi-2/306/c050",
+    "mektubat-osmanlica/026/004/002/c031",
+    "sualar-osmanlica/007/002/c188",
+    "mesnevi-i-nuriye-osmanlica/001/c031",
+    "mesnevi-i-nuriye-osmanlica/005/001/c165",
+    "mesnevi-i-nuriye-osmanlica/016/c004",
+    "emirdag-lahikasi-2-osmanlica/017/c121",
+    "emirdag-lahikasi-2-osmanlica/017/c130",
+    "emirdag-lahikasi-2-osmanlica/027/c051",
+    "tarihce-i-hayat-osmanlica/003/c2188",
+    "tarihce-i-hayat-osmanlica/008/c096",
+)}}
+
 
 def _like_any(cols: list[str], needles: list[str]) -> tuple[str, list[str]]:
     where = " OR ".join(f'"{c}" LIKE ?' for c in cols for _ in needles)
