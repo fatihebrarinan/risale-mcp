@@ -318,6 +318,12 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   notlar ve geçmişi, jetonla görev açma ve dışa aktarma, ad yok); okuma sayfaları kararları sunucuya yazar, "Okumayı
   bitir" tarafları açar (`d1-tur.py okuma-tek`, görevsiz eski düzen `--gorevsiz`); `scripts/masa-gorev.py ac | al`
   (jeton `~taslak/.masa-token`, yerelde `.env` `MASA_TOKEN`).
+  **Kararlar (kullanıcı, 2026-11-21, oturum):** sıra: birimin ar-ge görünümü (hafif: ham notlar, nisbet, kapının
+  kabul ve retleri, düzeltme farkı, alarmlar) → S7.3 → S7.4; deneyler defteri, alet ayarı, arama sonra, D5'i
+  beklemeden. **Ar-ge masasında da** Kur'ân paneli ve okuma platformunun kolaylıkları olur (kullanıcı: "unutma").
+  Platform: aynı davetli hesaplar, ayrı yol (`/oku/`; masa `/taslak/`'ta). Yayın: D5'te bütün birimler; Bakara 1–33
+  vitrin (önce İşârât, yanında taslak); **okuma platformunda yalnız son taslak, ar-ge masasında hepsi.** İlk davetliler
+  kullanıcının işi.
   **Sıra:** S7.1 veri katmanı (yayın dosyası, kalıcı paragraf kimlikleri, sürümler) → S7.2 ar-ge masası (pano girişte,
   birim başına eleştiri, nisbet ve kapı) → S7.3 okuma platformu ilk sürüm (Kur'ân paneli, birim sayfası, izah, atıfta
   kaynağın metni, künye, işaretler) → S7.4 okuyucu notu (sunucuda, kalıcı adrese bağlı). S7.1 ve S7.2 D5 dönerken
