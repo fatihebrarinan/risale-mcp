@@ -333,6 +333,47 @@ UNITS.update({
     },
 })
 
+# 29 (lafız tahkiki; h11'in sınaması, 2026-11-20). Arapça: c001 genel giriş, V1 c002, V2 c010 (üç mesele: cemîan,
+# sümme, seb'a; mesele-03/c030'dan cümlelerin nazmı), V3 mesele-03/c051; mesele-03/c085'ten sonrası 30'un başı (âyet
+# satırı ve "مقدمة"; gizlenir, zararsız). Türkçe tercüme cümle cümle düzenli (cumle-01..04 nazmı ve hey'eti birlikte
+# verir): yalnız âyet c001, V1 c002, V2 c015 (geri kalanı). İnce Ek 3: 23–24 ve 17–20'nin nazarî girişi (28 ve 30
+# girmez). Usul özetinden ve çizelgeden 29'un örnekleri ve yalnız ona dayanan "tatbik" cümlesi çıkar.
+UNITS.update({
+    "29": {
+        "sura": 2, "ayahs": (29, 29), "sura_name": "Bakara", "olcu": "Bakara 23–24, 25",
+        "ince": tuple(B_AR + "23-24-ayetlerin-tefsiri-nubuvvet-hakkinda" + x for x in
+                      ("", "/mukaddime", *(f"/mesele-0{k}" for k in range(1, 8)))) + _TEMSIL,
+        "nodes": (B_TR + "29", B_AR + "29"),
+        "sections": {
+            "isaratul-icaz-arabi": {"V1": "c001", "V2": "c010", "V3": "mesele-03/c051", "son": "mesele-03/c085"},
+            "isaratul-icaz": {"Âyet": "c001", "V1": "c002", "V2": "c015"},
+        },
+        "ozet": [
+            (None, "`isaratul-icaz-arabi/sure-i-bakara/29/c011`"),
+            (None, "`isaratul-icaz/sure-i-bakara/29/c017`"),
+            (None, "| 29 | V1, V2, V3 (sıralı)"),
+            ("Bakara 4, 21–22, 23–24, 25, 28, 29, 30", "Bakara 4, 21–22, 23–24, 25, 28, 30"),
+            ("| (d) Bir lafız tahkik ister | 28 (her cümleye bir mesele), 29 (üç lafız) |", "| (d) Bir lafız tahkik ister | 28 (her cümleye bir mesele) |"),
+            ("4'te son cümlenin nüktelerinden önce; 28 ve 29'da V2'nin içinde.\n- Münafıklar", "4'te son cümlenin nüktelerinden önce; 28'de V2'nin içinde.\n- Münafıklar"),
+            (" Müellif yer yer zamanının fenniyle tatbik yapar ve bunu \"caizdir\" diye kayıtlar (`isaratul-icaz-arabi/sure-i-bakara/29/mesele-02/c010`); ardından ikinci cevabı verir: Kur'ân'ın maksadı hilkat tarihi dersi değildir (`isaratul-icaz-arabi/sure-i-bakara/29/mesele-02/c017`).", ""),
+        ],
+        "cizelge": [
+            (None, "| 29 | `B/29"),
+            ("dokuz yerde", "sekiz yerde"),
+            (", `B/29/c001`, `B/31-33", ", `B/31-33"),
+            ("| 29 (cemîan, sümme, seb'a), 28 (her cümleye bir mesele) | `B/29/c011`..`c012`; `B/28/c013` |",
+             "| 28 (her cümleye bir mesele) | `B/28/c013` |"),
+            ("4'te son cümlenin nüktelerinden önce; 28 ve 29'da V2'nin içinde.", "4'te son cümlenin nüktelerinden önce; 28'de V2'nin içinde."),
+            (", `B/4/c159`, `B/29/mesele-03/c051`)", ", `B/4/c159`)"),
+            (" Müellif yer yer zamanının fenniyle \"tatbik\" yapar ve bunu \"caizdir\" diye kayıtlar (`B/29/mesele-02/c010`); ardından ikinci cevabı verir: Kur'ân hilkat tarihi dersi değildir (`B/29/mesele-02/c017`).", ""),
+        ],
+    },
+})
+
+# 29'un sızıntı testi (2026-11-20, elle incelendi): 28'in ilk cümlesi, müellifin birim başı kalıbı.
+UNITS["29"]["sizinti_kabul"] = {"isaratul-icaz-arabi/sure-i-bakara/28/c001": "müellifin birim başı kalıbı; kalıp ibare"}
+UNITS["29"]["sizinti_kabul_ibare"] = {"اعلم أن لهذه الآية أيضاً الوجوه الثلاثة النظمية": "müellifin birim başı kalıbı"}
+
 # 28'in sızıntı testi (2026-11-20, elle incelendi): 29'un ilk cümlesi, müellifin birim başlarındaki kalıbı
 # («اعلم أن لهذه الآية أيضاً الوجوه الثلاثة النظمية»); usul özetinde de aynı kalıp başka birimlerden alıntılı.
 UNITS["28"]["sizinti_kabul"] = {"isaratul-icaz-arabi/sure-i-bakara/29/c001": "müellifin birim başı kalıbı; kalıp ibare"}
