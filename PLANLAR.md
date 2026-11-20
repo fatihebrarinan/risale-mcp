@@ -217,6 +217,21 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
     bildirim** (masaüstü bildirimi yalnız bilgisayar başında işe yarar; iki yol: bir bildirim servisi (ör. ntfy; iş
     adı ve "bitti" dışarı gider, taslak gitmez) ya da kendi sunucumuzda kurulan bildirim servisi (dışarıya hiçbir şey
     çıkmaz); D5 sunucuya taşınınca daha anlamlı).
+    **Asıl ürün altyapı; hesap ve kapsam** (kullanıcının değerlendirmesi, 2026-11-20): işin bu kadar uzun ve maliyetli
+    olacağı hesaba katılmamıştı; önemli olan hazır bir altyapı (hat, kalite kapısı, bölme, kuyruk, birim başına bilinen
+    maliyet), biri destek olursa o parayla işin yapılabilmesi. Kaba ölçü (D15.2, 26–27): bir ar-ge birimi 18,9 $ liste
+    fiyatı, 5 saatlik pencerenin ≈%25'i, haftalığın ≈%2'si, 56 dk. D5 birimi tahmini ≈13–16 $ (taslak, kapalı, nisbet,
+    düzeltme, izah), haftalığın ≈%1,5–3'ü: tek abonelikle haftada ≈35–60 birim; Bakara (153 birim) ≈3–5 hafta
+    (API'de ≈2.000–2.500 $), bütün Kur'ân (≈3.000–3.800 birim, tahmin) ≈1–2 yıl (API'de ≈40–60 bin $). Darboğaz saat
+    değil kota. Kotayı düşürme adayları (D5.0'da sınanır): hafif işler (nisbet, izah) Sonnet'e, düzeltme yalnız yüksek
+    öncelikli bulguda, kapalı eleştirmen yalnız işaretlenen paragraflara, taslakta düşünme "orta". **Kararlar
+    (kullanıcı kabul etti, 2026-11-20):** (a) kapsam ve hesap kararı D5.1 ve D5.2'den sonra, gerçek D5 zincirinin
+    ölçülen birim başı kotası ve maliyetiyle; (b) **sûre başına maliyet raporu** (destekçiye "şu kadar para, şu kadar
+    sûre"); (c) **hesap ayrımı:** iş kişisel hesaptan ayrılacak; iki yol: ayrı abonelik (ucuz; tüketici şartlarına
+    bakılmalı: kişinin ikinci hesabı ve aboneliğin sunucuda toplu işte kullanımı) ya da API hesabı (Console;
+    kullandıkça öde, harcama sınırı, fatura ve kullanım raporu, kota yok; Batch ve önbellek indirimleri hattın bir
+    kısmının yeniden yazılmasını ister); (d) **hat hesaptan bağımsız:** abonelik ya da API anahtarı tek ayarla
+    değişir; API'de sınır korumasının yerini iş başına harcama tavanı alır. D5.1 ve D5.2 bugünkü hesapla.
     **Bilgisayardan bağımsız çalışma** (kullanıcı kabul etti, 2026-11-19; karar yeri gelince): D5'te birimler günlerce
     sürer; iş sunucuda döner. Parçalar: `claude setup-token` (aboneliğin uzun ömürlü giriş anahtarı, tarayıcısız;
     kullanım aynı pencereden düşer, `claude_p`'nin koruması orada da çalışır); genel ve hadis veritabanları, Kur'ân,
