@@ -151,6 +151,15 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kullanıcının kararı: yapılacak; adaylar D15 raporundan: birinci vechin genişliği, ders seçiminde isabet ölçüsü,
   taalluk sorusu; saklı birim 29'da h9'a karşı); (4) tek komutla birim hattı (D5.0.1); (5) kabul birimi 30 (D5.0.9);
   (6) D5.1, D5.2. İzah (D5.0.3) S7 ile.
+- **h11'in tanımı** (kullanıcı kabul etti, 2026-11-20): (a) **birinci vechin genişliği:** kaynak dosyasına sûrenin
+  şimdiye kadarki birimlerinin kısa garaz özetleri (İşârât'tan; D5'te taslaklardan) ve sonraki 3–5 âyetin metni;
+  istemde birinci vecih için "önceki bahislere, sonraki âyetlere ve Kur'ân'ın bütününe uzanan hatları say"; (b)
+  **ders seçimi:** zorunlu ders başlığının isabeti en güçlü tek bölümden değil ilk birkaç bölümün toplamından (28'de
+  haşir konusu: Onuncu Söz 19, öbürleri 17, 15; Risale'nin en geniş işlediği konu tek bölümde 25'i bulamadığı için
+  ders açılmadı); (c) **taalluk:** istemde ikinci ve üçüncü vecih için üç soru (edat, kayıt ya da cümle neye bağlı;
+  zâhiren ne beklenirdi; neden bu geldi; bağ için söylenmemiş bir şey varsa takdiri), geliştirme birimlerinden iki
+  kısa İşârât örneğiyle; h10'daki gibi tablo yok (zorlama). Sınama: saklı birim 29'da h9'a karşı (kör A/B ve
+  kullanıcının okuması).
 - D5.1 Bakara 34, tek birim; **okumayı kullanıcı yapar** (2026-11-20).
 - **D5.2 Risale'si az iki birim, kuyruk büyümeden önce** (kullanıcının kararı, 2026-11-19): bir kıssa (İsrâiloğulları,
   40–74) ve bir ahkâm birimi (178–283) okunur. Sebep: D15'in saklı birimlerinin hepsi Risale'ce zengin (Risale'deki
