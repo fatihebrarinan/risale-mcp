@@ -169,7 +169,8 @@ def main() -> None:
     print(f"Birimler ({datetime.now():%Y-%m-%d %H:%M})\n")
     print("| Birim | Envanter | Taslaklar | Okuma | Harcanan | Sıradaki (D15) |")
     print("|---|---|---|---|---|---|")
-    for d in sorted((KEEP / "provalar").iterdir(), key=lambda p: [int(x) for x in p.name.split("-")]):
+    dirs = [p for p in (KEEP / "provalar").iterdir() if p.is_dir() and p.name.replace("-", "").isdigit()]
+    for d in sorted(dirs, key=lambda p: [int(x) for x in p.name.split("-")]):
         s = state(d.name)
         total, _ = cost_of(d.name)
         ts = ", ".join(f"{x['n']}:{x['surum']}" for x in s["taslaklar"])

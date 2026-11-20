@@ -1,6 +1,6 @@
 """Âyet masası (kullanıcının tasarımı, 2026-11-14): âyet üstte, lafızları tıklanır; altında yanlar.
 
-    uv run python scripts/d1-masa.py [11-12 …]    # data/d1/masa/<birim>.html ve index.html (kapalı depo)
+    uv run python scripts/d1-masa.py [11-12 …]    # data/d1/masa/<birim>.html (kapalı depo)
 
 **İkinci hâli (S6, 2026-11-16, kullanıcının tasarımı):** yan sayısı dinamik ("+ yan ekle", en çok 4; bir yan tam,
 iki yan ikiye, üç yan üçe; telefonda alt alta); her yan kendi seçicisiyle Kaynaklar, İşârât'ın metni ya da bir
@@ -12,7 +12,8 @@ tamamı" kutuları kalktı). Kör kip taslakları "Taslak A, B…" diye sabit to
 tarayıcıda birim başına saklanır (`d1-masa-yanlar-<birim>`); işaretlerin anahtarları ve dışa aktarma biçimi aynıdır.
 
 Her birim kendi sayfasıdır (2026-11-16: tek sayfa vardı, 31–33 kurulunca 11–12'ninkinin üzerine yazılmıştı); birim
-verilmezse envanteri olan bütün birimler kurulur. `index.html` son birimin kopyasıdır; "Âyet" seçicisi öbürlerine gider.
+verilmezse envanteri olan bütün birimler kurulur. "Âyet" seçicisi öbürlerine gider; giriş sayfası (`index.html`)
+`scripts/masa-giris.py`'dedir.
 
 `okuma-yz.html`'in yerine geçmek için kuruldu: o sayfa iş akışımıza göre dizilmişti (D7, D9, D6 ayrı katman ve kod),
 okur neyi neyle karşılaştıracağını bulamadı. Burada her şey âyetin bir yerine bağlıdır:
@@ -439,9 +440,7 @@ def main() -> None:
     units = [{"unit": u, "title": title(u)} for u in every]
     for unit in todo:
         build(unit, units)
-    last = OUT_DIR / f"{every[-1]}.html"
-    (OUT_DIR / "index.html").write_bytes(last.read_bytes())
-    print(f"{(OUT_DIR / 'index.html').relative_to(ROOT)} = {every[-1]}")
+    # index.html artık ar-ge masasının giriş sayfasıdır (scripts/masa-giris.py; S7.2, 2026-11-21)
 
 
 if __name__ == "__main__":

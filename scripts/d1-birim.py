@@ -272,6 +272,9 @@ HAFTA_ESIK = 0.90                                   # kullanıcının eşiği (2
 
 def durum_sayfasi() -> None:
     yayimla(S.durum_sayfasi())
+    G = _load("masa_giris", "masa-giris.py")      # ar-ge masasının girişi: pano.json (ve kabuk) her birimden sonra
+    for page in G.yaz():
+        yayimla(page)
 
 
 def kod_guncelle() -> None:
