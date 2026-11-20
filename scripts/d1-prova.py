@@ -298,6 +298,9 @@ UNITS.update({
 
 # 26–27'nin sızıntı testi (2026-11-20, elle incelendi): meşhur beyitler («وفي كل شيء له آية», «عباراتنا شتى»,
 # "cümlenin maksûdu bir"), müellifin Muhâkemât'taki kelâm düsturu (emsal 9–10).
+UNITS["26-27"]["sizinti_kabul_ibare"] = {
+    "عباراتنا شتى وحسنك واحد وكل إلى ذاك الجمال يشير": "meşhur beyit; usul özeti İşârât'ın üç yerinden alıntılıyor, 26–27 de nakleder",
+}
 UNITS["26-27"]["sizinti_kabul"] = {**{s: _DUSTUR for s in (
     "muhakemat/makale-02/mesele-04/c001",
 )}, **{s: "meşhur beyit; kalıp ibare" for s in (
@@ -582,14 +585,20 @@ def leak_report(unit: str, cfg: dict, out: Path, prompt: str, report: str = "siz
              f"Risale veritabanında ve istemde {LEAK_MIN} ve üstü sızıntı sayılır (1–2 kalıp ibare olur); tefsirde "
              "ortak ibare İşârât'ın kaynaklarından gelebilir, yalnız bilgi içindir.", ""]
     ok = True
-    prompt_hits = len(shingles(prompt) & hidden)
-    lines += [f"## İstem (ekler dahil): {prompt_hits} ortak dizi", ""]
+    # istemde kabul edilen ibareler (2026-11-20, 26–27: usul özetinin alıntıladığı meşhur beyit): {ibare: gerekçe}
+    ibare = cfg.get("sizinti_kabul_ibare", {})
+    kabul = set().union(*(shingles(x) for x in ibare)) if ibare else set()
+    common = shingles(prompt) & hidden
+    prompt_hits = len(common - kabul)
+    lines += [f"## İstem (ekler dahil): {prompt_hits} ortak dizi"
+              + (f" (kabul edilen ibarelerin {len(common & kabul)} dizisi hariç)" if common & kabul else ""), ""]
     if prompt_hits >= LEAK_MIN:
         ok = False
-    if prompt_hits:
+    if common:
         w = search_words(prompt)
-        found = sorted({" ".join(w[i:i + N]) for i in range(len(w) - N + 1) if tuple(w[i:i + N]) in hidden})
-        lines += [f"- {s}" for s in found[:50]] + [""]
+        found = sorted({" ".join(w[i:i + N]) for i in range(len(w) - N + 1) if tuple(w[i:i + N]) in common})
+        lines += [f"- {s}" + (" (kabul)" if tuple(s.split()) in kabul else "") for s in found[:50]]
+        lines += [f"- kabul edilen ibare: «{x}» ({r})" for x, r in ibare.items()] + [""]
     for name, db in (("risale", out / "risale.db"), ("tefsir", out / "tefsir.db")):
         hits = leak_scan(hidden, db)
         lines += [f"## {name}: {len(hits)} cümle", ""]
