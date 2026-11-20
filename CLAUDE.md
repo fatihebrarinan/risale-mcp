@@ -496,7 +496,11 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   `uv run python scripts/d1-durum.py [birim]`; okuma sayfası siteye `scripts/taslak-gonder.sh <sayfa>`.
   Uzun işler terminalden bağımsız: `scripts/d1-arka.sh baslat <ad> <komut …>` (`systemd --user` hizmeti `d1-<ad>`,
   `loginctl enable-linger` açık, iş sürerken uyku engellenir; günlük `data/interim/d1-isler/<ad>.log`; `liste`, `log`,
-  `durdur`). Bilgisayar kapanırsa iş durur; bilgisayardan bağımsız çalışma PLANLAR.md D5.0.1'de.
+  `durdur`). **D5 sunucuda döner** (kullanıcının kararı, 2026-11-20): tefsir makinesinde ayrı kullanıcı `taslak`
+  (`/home/taslak/risale-mcp`), `scripts/taslak-sunucu.sh` (`kur`, `gonder` yalnız kod, `veri` sunucudan sunucuya,
+  `ozet` yerelle aynı mı, `giris` aboneliğin anahtarı `~/.claude-token`, `d1` özel depoyu çeker, `calistir <komut>`,
+  `durum`). Orada da işler `d1-arka.sh` ile (Nice=10); `data/d1` iki makineden yazılır, koşturucu push'tan önce
+  `pull --rebase` yapar. Evden sunucuya bağlantı yavaş: büyük veri evden gönderilmez.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

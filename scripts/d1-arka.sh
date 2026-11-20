@@ -37,13 +37,13 @@ case "$cmd" in
     local inhibit=()
     if systemd-inhibit --what=sleep:idle --who=d1 --why=deneme true 2>/dev/null; then
         inhibit=(systemd-inhibit --what=sleep:idle --who="d1" --why="taslak hattı: $ad")
-    else
+    elif [[ -n ${DISPLAY:-}${WAYLAND_DISPLAY:-} ]]; then   # sunucuda uyku yok, uyarı gereksiz
         echo "uyarı: uyku engellenemedi; iş sürerken bilgisayarı uyutmayın"
     fi
     systemd-run --user --unit="d1-$ad" --collect --quiet --working-directory="$ROOT" \
         --setenv=PATH="$PATH" --setenv=HOME="$HOME" --setenv=LANG="${LANG:-C.UTF-8}" \
         --setenv=DISPLAY="${DISPLAY:-:0}" --setenv=DBUS_SESSION_BUS_ADDRESS="${DBUS_SESSION_BUS_ADDRESS:-unix:path=/run/user/$(id -u)/bus}" \
-        --property=StandardOutput="append:$log" --property=StandardError="append:$log" \
+        --property=StandardOutput="append:$log" --property=StandardError="append:$log" --property=Nice=10 \
         "${inhibit[@]}" bash "$ROOT/scripts/d1-arka-is.sh" "$ad" "$@"
     echo "d1-$ad başladı; günlük $log"
     ;;
