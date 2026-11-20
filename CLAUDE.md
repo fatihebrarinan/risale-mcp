@@ -501,6 +501,16 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   `ozet` yerelle aynı mı, `giris` aboneliğin anahtarı `~/.claude-token`, `d1` özel depoyu çeker, `calistir <komut>`,
   `durum`). Orada da işler `d1-arka.sh` ile (Nice=10); `data/d1` iki makineden yazılır, koşturucu push'tan önce
   `pull --rebase` yapar. Evden sunucuya bağlantı yavaş: büyük veri evden gönderilmez.
+- **D5 hattı (Bakara 34–286):** birimler `data/d1/bolme/bakara/birimler.json` (`d1-prova.d5_units`, D5 kipi: genel
+  veritabanlarına bağ, gizlenen yok); tek birim `uv run python scripts/d1-birim.py yaz <birim>` (istem `D5_SURUM`,
+  varsayılan h12; taslak, kapı d3, garaz özeti, izah, okuma sayfası `masa/d5-<birim>.html`, kayıt
+  `data/d1/d5/bakara.json`), kuyruk sunucuda kalıcı hizmet `d1-kuyruk` (`taslak-sunucu.sh kuyruk-kur` bir kez;
+  **`devam`**, **`dur`** (birim bitince), **`hemen-dur`**, **`durum`**). Kuyruk her birimden sonra `data/d1`'i push
+  eder, haftalık pencere %90'ı geçince sıfırlanmayı bekler, alarmları (`d1-birim.alarmlar`) birime yazar; durum sayfası
+  `https://risalemcp.com/taslak/d5.html`. Sayfaları sunucu kısıtlı anahtarla gönderir (`~/.ssh/site_gonder`, ana
+  makinede `rrsync -wo /var/www/ozel/taslak`, yalnız tefsir makinesinden); bildirimler ntfy.sh (konu
+  `~taslak/.d5-ntfy`, git'e girmez). Kuyruk sürerken `gonder` kodu `~/kod-bekleyen`'e koyar, sıradaki birimin başında
+  geçer. D5 sürerken yerelde `data/d1`'e yazılmaz (önce `git -C data/d1 pull`).
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 
