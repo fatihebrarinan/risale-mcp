@@ -25,6 +25,10 @@ main() {
         fi
     fi
     command -v notify-send >/dev/null && notify-send -a d1 "Taslak hattı: $ad" "bitti, çıkış $rc" || true
+    # sunucuda masaüstü yok: telefona (ntfy.sh; konu ~/.d5-ntfy, git'e girmez)
+    if [[ -f $HOME/.d5-ntfy ]]; then
+        curl -s -m 20 -d "Taslak hattı: $ad bitti, çıkış $rc" "https://ntfy.sh/$(<"$HOME/.d5-ntfy")" >/dev/null || true
+    fi
     return $rc
 }
 main "$@"; exit $?

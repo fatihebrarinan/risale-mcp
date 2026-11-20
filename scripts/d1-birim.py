@@ -151,8 +151,8 @@ def yaz(unit: str, surum: str = SURUM) -> int:
     save_state(unit, son_taslak=son)
     print(f"garaz: {garaz(unit, son)}")
     run("scripts/d1-hat.py", "izah", unit, "--taslak", str(son))
-    if (ROOT / "scripts" / "d1-d5-sayfa.py").exists():
-        run("scripts/d1-d5-sayfa.py", unit)
+    run("scripts/d1-d5-sayfa.py", unit)
+    yayimla(P.KEEP / "masa" / f"d5-{unit}.html")
     save_state(unit, bitti=datetime.now().isoformat(), maliyet=unit_cost(unit),
                sure_dk=round((time.monotonic() - started) / 60 + (st.get("sure_dk") or 0)))
     s = P.d5_state()["birimler"][unit]
@@ -160,16 +160,31 @@ def yaz(unit: str, surum: str = SURUM) -> int:
     return son
 
 
+SITE_KEY = Path.home() / ".ssh" / "site_gonder"      # sunucuda: yalnız /var/www/ozel/taslak'a yazar (rrsync -wo)
+SITE_HOST = os.environ.get("D5_SITE_HOST", "root@100.108.174.19")
+NTFY_FILE = Path.home() / ".d5-ntfy"                 # ntfy.sh konusu (tahmin edilemez ad; git'e girmez)
+
+
+def yayimla(page: Path) -> None:
+    """Okuma sayfası siteye (`/taslak/`, girişli): sunucuda kısıtlı anahtarla; anahtar yoksa (yerel) atlanır."""
+    if not SITE_KEY.exists():
+        print(f"siteye gönderilmedi (anahtar yok): scripts/taslak-gonder.sh {page.relative_to(ROOT)}")
+        return
+    p = subprocess.run(["rsync", "-rt", "--chmod=F640", "-e", f"ssh -i {SITE_KEY} -o BatchMode=yes", str(page),
+                        f"{SITE_HOST}:/"], text=True, capture_output=True)
+    print(f"https://risalemcp.com/taslak/{page.name}" if p.returncode == 0 else f"siteye gönderilemedi: {p.stderr.strip()}")
+
+
 def bildir(baslik: str, metin: str) -> None:
-    """Telefona bildirim (`D5_NTFY`: ntfy.sh konusu; yoksa yalnız günlük)."""
-    topic = os.environ.get("D5_NTFY")
+    """Telefona bildirim (ntfy.sh; konu `D5_NTFY` ya da `~/.d5-ntfy`; yoksa yalnız günlük)."""
+    topic = os.environ.get("D5_NTFY") or (NTFY_FILE.read_text().strip() if NTFY_FILE.exists() else None)
     if not topic:
         return
     import urllib.request
     try:
-        urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{topic}", data=metin.encode(),
-                                                      headers={"Title": baslik.encode("utf-8").decode("latin-1", "ignore")}),
-                               timeout=20)
+        # başlık HTTP başlığıdır (latin-1); Türkçesi bozulmasın diye başlık da gövdeye, ilk satır olarak
+        urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{topic}",
+                                                      data=f"{baslik}\n{metin}".encode("utf-8")), timeout=20)
     except OSError as e:
         print(f"bildirim gitmedi: {e}")
 
