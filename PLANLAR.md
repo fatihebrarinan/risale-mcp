@@ -154,6 +154,16 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
     **biçim denetimi** (her Arapça paragrafın tercümesi hemen arkasında mı; D15.1'de taslak tercümeyi topluca verdi;
     yazımdan hemen sonra çalışır, kullanıcı kabul etti 2026-11-19).
     Ayar verisi D15'ten (D15.1: kapalı İşârât'sız görülebileni kaçırmıyor, nisbet onu tamamlıyor).
+    **İlk sınama (2026-11-20, 26–27 ve 28'in h9 taslakları, istem d2):** ilk ölçüm geçersizdi (düzeltmeyi uygulayan kod
+    `###` alt başlıklarını sayıyordu, değişiklikler komşu paragrafa iniyordu; 28'de 51'in 47'si; onarıldı `7e0a5e5`,
+    D12'nin düzeltmeleri etkilenmemiş, taslaklar aynı model çıktısından yeniden kuruldu, hatalılar `hatali-capa/`).
+    Doğru kurulumla: nisbet hatası 26–27'de 11/71 → 7/96, 28'de 2/25 → 6/54; **eski hataların hepsi düzeldi, kalan
+    hataların hepsi düzeltmenin eklediği yeni kaynaklardan ya da yeniden yazdığı paragraflardan** (26–27: 7'si de yeni
+    kaynak; 28: 3 yeni kaynak, 2 değişen paragraf, 1 eskiden kalan). İşârât karşılaştırmasının hükmü ikisinde de
+    değişmedi (düzeltmeyle), "eksik" notları azalmadı (12 → 12, 7 → 10). Arapça %10,4 ve %12,8 uzadı (sınır %10).
+    Maliyet birim başına ≈6–7 $ (kapalı 2,3, nisbet 1, düzeltme 2,6–3,4). **Öneri (kullanıcının kararını bekliyor):**
+    d3: düzeltme yeni kaynak eklemez, yalnız düzeltir, daraltır, siler; eksik nükte notları düzeltmeye girmez (okuma
+    sayfasında not olarak durur); değişen paragraflara ucuz bir nisbet geçişi.
   - **D5.0.7 Maliyet:** taslak ≈4,5–5,5 $, konu ve tablo ≈0,3 $, nisbet ≈1 $, kapalı ≈3 $, düzeltme (ölçülecek);
     Bakara'nın kalanı **154 birim** (b6, kesin), bütün Kur'ân ≈3.400 birim tahmini (bölmeden sonra güncellenir).
   - **D5.0.8 Soru kalıpları listesinin bütün İşârât'tan yeniden kuruluşu:** gerek kalmadı (2026-11-20: hat h9,
