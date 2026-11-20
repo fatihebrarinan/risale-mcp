@@ -55,10 +55,9 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D15.2 (26–27), **hat h9** (kullanıcının kararı, 2026-11-20; h10 bırakıldı): birim kaydı, envanter, h9
-  taslağı, eşleştirme, İşârât karşılaştırması, kapalı eleştirmen, nisbet, aletlerin ayarı (`d1-arka.sh` ile), sonra
-  tek taslaklı okuma sayfası (taslak ve İşârât, "kendi başına yeterli mi").
-- **Kullanıcıdan beklenen:** okuma sayfası gelince 26–27'nin okuması.
+- **Önde:** D15.2 (26–27), hat h9: ölçüldü (kapsama %44, İşârât karşılaştırması "düzeltmeyle"). Okuma sayfası
+  sitede: https://risalemcp.com/taslak/tur-26-27-D15.2.html (7 kart, ≈29 dk; taslak ve İşârât, "kendi başına yeterli mi").
+- **Kullanıcıdan beklenen:** 26–27'nin okuması; bitince "Dışa aktar".
 - **Sonra:** D15.3 (28; D5.0.5'in sınaması: önceki birim olarak 26–27'nin h9 taslağı), D15'in toplu raporu.
 - **Bekleyen yan işler** (yeri gelince; D15 sürerken açılmaz): D5.0.4 bölmenin kalanı, S7.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
@@ -168,6 +167,16 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
 - **D15 bitince** (kullanıcının kararı, 2026-11-19): işi biten birimlerin prova veritabanları silinir
   (`data/interim/d1-prova/<birim>/risale.db`, `tefsir.db`; birim başına ≈1,5 GB, toplam ≈11 GB; yeniden üretilebilir,
   `d1-prova.py hazirla`). Envanter, taslaklar ve ölçüler `data/d1`'de kalır. 30'unki (kabul birimi) D5.0.9'a kadar.
+- **D15.2 26–27 (2026-11-20; hat h9; ≈18,9 $):** birim kaydı (iki dilde tek düğüm; usul özetinin 3.3 "saat
+  milleri" başlığı bütün dayanağı bu birimden olduğu için dayanağıyla çıktı); sızıntı testinde istem için kabul edilen
+  ibare listesi eklendi (`sizinti_kabul_ibare`: usul özetinin alıntıladığı «عباراتنا شتى» beyti). Envanter 120 kalem.
+  Taslak 1 (h9, ≈4,74 $; tercüme paragraf paragraf). Kapsama %44, fazla 57, çelişki 2. İşârât karşılaştırması
+  "düzeltmeyle" (≈2,42 $; garaz ve omurga doğru, Risale dersleri yerinde; eksik: itiraz silsilesi ve iki silsile,
+  «لا يستحيي»deki ilzam, tenezzülât-ı İlâhiye, teklif suali, nakzın tefriki; Müfredât'a aşan bir nisbet). **Kör aletler:**
+  açık notların 16'sından kapalı 5'ini (+1 kısmen) buldu, 10'u yalnız gizli metinden, **görebileceği hâlde kaçırdığı
+  yine 0**; kapalının tek kalan 20 notundan 13'ü yerinde, 6'sı şüpheli, 1'i yanlış (21–22'de 18/20: isabet düştü);
+  nisbet 71 hükümde 11 "aşıyor". Okuma sayfası `tur-26-27-D15.2.html` (7 kart: beş "düzeltilecek", iki Risale dersi;
+  tek taslak ve İşârât; ≈29 dk). Kalan: kullanıcının okuması.
 - **Birim kurulumu (her dilimin başı):** saklı birimler `d1-prova.UNITS`'te yok. `_dev_unit` gibi kayıt: Arapça ve
   Türkçe düğümler (Türkçede 21 ve 22 ayrı bölüm), vecihlerin ilk cümleleri (`sections`), ince Ek 3 için komşu
   birimler, usul özeti ve birim çizelgesinden o birimin örneklerini çıkaran düzeltmeler (`ozet`, `cizelge`; usul
