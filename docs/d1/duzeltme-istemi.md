@@ -12,6 +12,11 @@ Sürümler:
 - d2 (2026-11-20, D5.0.6 kalite kapısı): uzunluk hedefi İşârât'tan gelmez (h9'da hedef yok): Arapça toplamı şimdiki
   uzunluğun en çok %10 üstüne çıkar ({en_cok} harf); notlar kalite kapısınındır (kapalı eleştirmen, nisbet denetçisi,
   biçim denetimi). `{en_az}` kullanılmaz.
+- d3 (2026-11-21, kullanıcının kararı): d2'nin sınamasında düzeltme eski nisbet hatalarının hepsini giderdi ama
+  eklediği yeni kaynaklar yeni hata getirdi, "eksik" notlarını karşılamak hükmü değiştirmedi. Düzeltme **yeni kaynak
+  getirmez** (`cite` yok, yeni numara yok; program yeni numaralı değişikliği uygulamaz); kapalı eleştirmenin "eksik"
+  notları düzeltmeye girmez (okuma sayfasında not olarak kalır). Düzeltmenin değiştirdiği sözlerde nisbet denetçisi
+  hata bulursa yalnız onlarla ikinci, küçük bir tur (`kapi2`).
 -->
 
 ---- DUZELTME ----
@@ -34,10 +39,11 @@ düzeltmeni** istiyoruz.
 - Yazım kuralları yukarıdakilerin aynısı: işaretler (`[dil; 3]`, `[belâgat; kendi tespiti]`…), tırnak ve takdir,
   âyetin ve alıntıların harf harf aynı yazılışı. Tercüme paragrafını **"Yapay zekâ tercümesi:" olmadan** ver; program
   ekler. Blok alıntı paragrafını `> ` ile başlat.
-- **Kaynak numaraları:** eski numaralar değişmez (taslağın kaynakçası aşağıda, kimlikleriyle). Yeni bir kaynağa
-  dayanırsan numarasını **{sonraki}**'den sürdür; düzeltmeyi bitirince yalnız yeni kaynaklarla ilgili eklentinin
-  `cite` aracını `first` ile çağır (eklenti başına bir çağrı, numaralar art arda) ve döndürdüğü kaynakça satırlarını
-  `kaynaklar_ek`'e olduğu gibi yaz. Kullanılmayan eski numara kalabilir.
+- **Yeni kaynak getirme.** Düzeltme yanlışı düzeltir, kaynağın sözünü aşan iddiayı kaynağın dediğine indirir ya da
+  kendi tespitin, ihtimal olarak işaretler, dayanaksız sözü siler. Kaynak numaraları değişmez (taslağın kaynakçası
+  aşağıda, kimlikleriyle); yeni numara açma, `cite` çağırma, `kaynaklar_ek` boş kalır. Bir notu karşılamak yeni bir
+  nakil gerektiriyorsa onu `reddedilen`e "yeni kaynak gerekir" gerekçesiyle yaz. Kaynağı yeniden okumak serbesttir
+  (nisbeti düzeltmek için); yeni bir kaynaktan nakil eklemek değil.
 - Tür `dogru` olan notlar korunacak yerleri gösterir: oraya dokunma. `ehline_sor` notları ehline bırakılır;
   düzeltme gerektirmez, anman gerekmez.
 - **Her öbür not** ya bir değişikliğin `notlar` listesinde ya `reddedilen`de anılır.
