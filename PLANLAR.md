@@ -146,7 +146,12 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
     liste ve Tarama yalnız h10'daydı). Yerine D15'in açık sorusu: edatın ve kaydın taalluku (bkz. D15 "Hat h9").
   - **D5.0.9 Kabul birimi 30:** D5.0'ın değişiklikleri (D5.0.4–D5.0.8) bitince hattın son sınaması; 30 hiçbir denemeye
     ve listeye girmez.
-- D5.1 Bakara 34, tek birim, ehlin okuması.
+- **D5'in başlangıç sırası** (kullanıcı kabul etti, 2026-11-20): (1) Bakara bölmesinin 20 geçişi (D5.0.4); (2) kalite
+  kapısı D15'in taslakları üzerinde, İşârât doğru cevap olarak (D5.0.6); (3) **h9'a bir iyileştirme turu** (h11;
+  kullanıcının kararı: yapılacak; adaylar D15 raporundan: birinci vechin genişliği, ders seçiminde isabet ölçüsü,
+  taalluk sorusu; saklı birim 29'da h9'a karşı); (4) tek komutla birim hattı (D5.0.1); (5) kabul birimi 30 (D5.0.9);
+  (6) D5.1, D5.2. İzah (D5.0.3) S7 ile.
+- D5.1 Bakara 34, tek birim; **okumayı kullanıcı yapar** (2026-11-20).
 - **D5.2 Risale'si az iki birim, kuyruk büyümeden önce** (kullanıcının kararı, 2026-11-19): bir kıssa (İsrâiloğulları,
   40–74) ve bir ahkâm birimi (178–283) okunur. Sebep: D15'in saklı birimlerinin hepsi Risale'ce zengin (Risale'deki
   doğrudan alıntı 21–22'de 30, 26–27'de 14, 28'de 7); Bakara 34–283'te âyetlerin ≈%78'inde doğrudan alıntı yok (34–39:
