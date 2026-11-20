@@ -55,11 +55,8 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D5.0. Kapı d3 hazır (nisbet hatası 15% → 4% ve 8% → 0%). h11'in okuması: kullanıcı ikiye iki, bir eşit
-  (birinci vecihte h9: az ama derin hat; ikinci vecihte h11: «جَمِيعًا», «ثُمَّ»); "önceki" kartında h11 için yanlış
-  paragraflar seçilmişti. Öneri h12 (h11'in ders seçimi ve taalluk soruları; birinci vecihte hat listesi yerine garaz
-  merkezli bir-iki derin hat), sınaması kabul birimi 30'da h9'a karşı. Sunucuda giriş çalışıyor.
-- **Kullanıcıdan beklenen:** h12 kararı.
+- **Önde:** D5.0, "D5.1'den önce hepsi" listesi (aşağıda D5): h12 hazır; sırada D5 kipi ve tek komutla birim.
+- **Kullanıcıdan beklenen:** yok (birim 30'un okuması gelince).
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -176,6 +173,17 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
     liste ve Tarama yalnız h10'daydı). Yerine D15'in açık sorusu: edatın ve kaydın taalluku (bkz. D15 "Hat h9").
   - **D5.0.9 Kabul birimi 30:** D5.0'ın değişiklikleri (D5.0.4–D5.0.8) bitince hattın son sınaması; 30 hiçbir denemeye
     ve listeye girmez.
+- **D5.1'den önce hepsi** (kullanıcının kararı, 2026-11-21: "D5.1'de Bakara'nın tamamı yazdırılırken durum nasıl
+  olacak, onu görmek istiyorum"; D5.1 üretimin aynısı olmalı). Sıra: (a) h12 ✓ (`4393a54`); (b) **D5 kipi**: birimler
+  `bolme/bakara/birimler.json`'dan, prova veritabanı yok (genel veritabanlarına bağ), sızıntı testi yok, önceki birim
+  İşârât'sa (34'ün öncesi 31–33) İşârât, değilse önceki birimin son taslağı (D5.0.5), Ek 3b'nin garaz özetleri İşârât'ın
+  birimlerinden ve D5'te yazılmış taslaklardan (her birimden sonra bir özet); (c) **tek komutla birim** (`d1-birim.py`):
+  istem, taslak, kapı d3 (kapalı, nisbet, düzeltme, ikinci tur), garaz özeti, izah (D5.0.3), D5 okuma sayfası
+  (taslak, dersler, kapının düzelttikleri, eksik notları; İşârât yok), birim kaydı (son taslak, maliyet, süre);
+  (d) **kuyruk**: Bakara sırasıyla, kesintide kaldığı birimden, sunucuda `d1-arka.sh` ile; sayfalar sunucudan siteye;
+  (e) **telefona bildirim ve harcama tavanı** (D5.0.1'in "sonra"sı); (f) **kabul birimi 30** sunucuda, h12 ve h9 kör A/B
+  (kullanıcı 3 yeri okur: birinci vecih, bir taalluk yeri, Risale dersi; kartlar içeriğe göre seçilir, iki taraf
+  gönderilmeden okunur); h9 mı h12 mi orada belli olur. Sonra D5.1 (Bakara 34), D5.2.
 - **D5'in başlangıç sırası** (kullanıcı kabul etti, 2026-11-20): (1) Bakara bölmesinin 20 geçişi (D5.0.4); (2) kalite
   kapısı D15'in taslakları üzerinde, İşârât doğru cevap olarak (D5.0.6); (3) **h9'a bir iyileştirme turu** (h11;
   kullanıcının kararı: yapılacak; adaylar D15 raporundan: birinci vechin genişliği, ders seçiminde isabet ölçüsü,
