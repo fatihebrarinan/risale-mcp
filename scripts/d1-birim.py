@@ -15,7 +15,8 @@ Bir birimin adımları (her biri dosyası varsa atlanır; kesintiden sonra kald�
   3. kapı d3: kapalı eleştirmen (tek çağrı), nisbet denetçisi, düzeltme, gerekirse ikinci küçük tur (`d1-duzelt.py kapi`)
   4. garaz özeti: son taslaktan iki cümle (`data/d1/garaz/d5-bakara.json`; sonraki birimin Ek 3b'si)
   5. izah: son taslağın günümüz Türkçesiyle izahı (`d1-hat.py izah`, D5.0.3)
-  6. okuma sayfası (`d1-d5-sayfa.py`), birim kaydı (`data/d1/d5/bakara.json`)
+  6. yayın dosyası (`d1-yayin.py`, S7.1: değişmez sürüm, kalıcı paragraf kimlikleri), okuma sayfası
+     (`d1-d5-sayfa.py`), birim kaydı (`data/d1/d5/bakara.json`)
 Birimin sırası kesindir: her birim önceki birimin son taslağını bekler (D5.0.5).
 """
 from __future__ import annotations
@@ -169,6 +170,8 @@ def yaz(unit: str, surum: str = SURUM) -> int:
     save_state(unit, son_taslak=son)
     print(f"garaz: {garaz(unit, son)}")
     run("scripts/d1-hat.py", "izah", unit, "--taslak", str(son))
+    save_state(unit, alarmlar=alarmlar(unit, n, son))          # yayın dosyası künyesine girsin
+    run("scripts/d1-yayin.py", "yayinla", unit)                 # S7.1: değişmez sürüm (okuma platformu buradan)
     run("scripts/d1-d5-sayfa.py", unit)
     yayimla(P.KEEP / "masa" / f"d5-{unit}.html")
     save_state(unit, bitti=datetime.now().isoformat(), maliyet=unit_cost(unit), alarmlar=alarmlar(unit, n, son),
