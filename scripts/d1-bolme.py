@@ -483,6 +483,92 @@ def bol_rapor(a: int, b: int) -> None:
           f"oybirliği olmayan {len(ayri)}, Râzî'den ayrılan {len(razi_fark)}")
 
 
+# ---------------------------------------------------------------- inceleme sayfası (kullanıcının kararları için)
+
+INCELEME_HTML = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><title>Bakara bölmesi: inceleme</title>
+<style>
+:root { --bg:#fbfaf7; --fg:#222; --muted:#666; --line:#ddd; --card:#fff; --accent:#2f6f4f; }
+@media (prefers-color-scheme: dark) { :root { --bg:#161616; --fg:#e8e6e1; --muted:#9a968e; --line:#333; --card:#1e1e1e; --accent:#7fc4a0; } }
+body { background:var(--bg); color:var(--fg); font:16px/1.55 system-ui, sans-serif; margin:0; }
+header { position:sticky; top:0; background:var(--bg); border-bottom:1px solid var(--line); padding:8px 16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+main { max-width:980px; margin:0 auto; padding:16px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:8px; padding:14px 16px; margin:14px 0; }
+.card.done { border-color:var(--accent); }
+.ayet { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+@media (max-width:760px) { .ayet { grid-template-columns:1fr; } }
+.ar { font-family:'Amiri','Scheherazade New',serif; font-size:1.3rem; direction:rtl; line-height:2; }
+.small { font-size:.88rem; } .muted { color:var(--muted); }
+.box { border-left:3px solid var(--line); padding:4px 10px; margin:8px 0; }
+label { margin-right:14px; white-space:nowrap; } textarea { width:100%; min-height:44px; box-sizing:border-box; }
+button { padding:6px 12px; }
+</style></head><body>
+<header><b>Bakara 34–286: koşuların ayrıldığı geçişler</b><span class="small muted" id="sub"></span>
+<span style="flex:1"></span><span class="small" id="progress"></span><button id="export">Dışa aktar</button></header>
+<main><p class="small">Kural b5 (<code>docs/d1/bolme-kurali.md</code>). Her geçişte soru: <b>iki âyet aynı birimde mi
+(birlikte), ayrı birimde mi (sınır)?</b> Ölçüt: iki âyet tek bir maksadın parçalarıysa (cevap, red, açıklama, aynı
+sahne, aynı fiilin devamı) birlikte; ayrı maksatlar ve yalnız garazda münasebet varsa sınır. Kararınız kuralın bir
+eksiğini gösteriyorsa notta yazın.</p><div id="cards"></div></main>
+<script>
+const DATA = {data};
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const KEY = 'd1-bolme-bakara';
+const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch (e) { return {}; } };
+let marks = load();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(marks)); } catch (e) {} progress(); };
+const KARAR = [['birlikte','Birlikte (aynı birim)'],['sinir','Sınır (ayrı birim)'],['emin_degilim','Emin değilim']];
+function card(g, i) {
+  const m = marks[g.gecis] || {};
+  const radios = KARAR.map(([v,l]) => `<label><input type="radio" name="k${i}" value="${v}" data-g="${g.gecis}"${m.karar===v?' checked':''}> ${l}</label>`).join('');
+  const ay = a => `<div><div class="small muted">${a.n}. âyet</div><div class="ar">${esc(a.ar)}</div><div class="small">${esc(a.meal)}</div></div>`;
+  return `<div class="card${m.karar?' done':''}"><h3>${i+1}. ${esc(g.gecis)}</h3>
+    <div class="ayet">${ay(g.a)}${ay(g.b)}</div>
+    <div class="box small"><b>Bugünkü bölme:</b> ${esc(g.birimler)} · <b>Koşuların oyu:</b> ${esc(g.oy)} sınır (çoğunluk: ${g.karar==='sinir'?'sınır':'birlikte'})
+      · <b>Râzî:</b> ${g.razi?'sınır':'birlikte'} · <b>Sınır koyan müfessirler:</b> ${esc(g.mufessir.join(', ')||'yok')}</div>
+    <details class="small"><summary>Modelin gerekçeleri (${g.gerekce.length})</summary>${g.gerekce.map(x=>`<div class="box">${esc(x)}</div>`).join('')}</details>
+    <div style="margin-top:8px">${radios}</div>
+    <textarea data-n="${g.gecis}" placeholder="Not (isteğe bağlı)">${esc(m.not||'')}</textarea></div>`;
+}
+function render() { document.getElementById('cards').innerHTML = DATA.gecisler.map(card).join(''); progress(); }
+function progress() { const n = DATA.gecisler.filter(g => (marks[g.gecis]||{}).karar).length;
+  document.getElementById('progress').textContent = `İşaretlenen: ${n}/${DATA.gecisler.length}`; }
+document.addEventListener('change', e => { const t = e.target;
+  if (t.dataset.g) { marks[t.dataset.g] = Object.assign({}, marks[t.dataset.g], {karar: t.value, at: new Date().toISOString()}); save(); t.closest('.card').classList.add('done'); }
+  if (t.dataset.n) { marks[t.dataset.n] = Object.assign({}, marks[t.dataset.n], {not: t.value}); save(); } });
+document.getElementById('export').onclick = () => {
+  const blob = new Blob([JSON.stringify({kind:'d1-bolme-inceleme', kural: DATA.kural, exported: new Date().toISOString(), kararlar: marks}, null, 1)], {type:'application/json'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'd1-bolme-bakara.json'; a.click(); };
+document.getElementById('sub').textContent = `${DATA.gecisler.length} geçiş`;
+render();
+</script></body></html>"""
+
+
+def inceleme() -> Path:
+    """Koşuların ayrıldığı geçişler için kullanıcının karar sayfası: `data/d1/masa/bolme-bakara.html`."""
+    d = json.loads((OUT / "bakara" / "bolme.json").read_text(encoding="utf-8"))
+    q = json.loads(QURAN.read_text(encoding="utf-8"))
+    ay = {x["ayah"]: x for x in q["suras"][1]["ayahs"]}
+    units = [tuple(u) for u in d["birimler"]]
+    def unit_of(k):
+        return next(u for u in units if u[0] <= k <= u[1])
+    fmt = lambda u: f"{u[0]}" + (f"–{u[1]}" if u[1] != u[0] else "")
+    rows = []
+    for g in d["gecisler"]:
+        if g["oybirligi"]:
+            continue
+        k = int(g["gecis"].split("|")[0])
+        ua, ub = unit_of(k), unit_of(k + 1)
+        rows.append({"gecis": g["gecis"], "karar": g["karar"], "oy": g["oy"], "razi": g["razi"], "mufessir": g["mufessir"],
+                     "gerekce": g["gerekce"], "birimler": fmt(ua) if ua == ub else f"{fmt(ua)} | {fmt(ub)}",
+                     "a": {"n": k, "ar": ay[k]["text"], "meal": ay[k]["translations"]["diyanet-vakfi"]},
+                     "b": {"n": k + 1, "ar": ay[k + 1]["text"], "meal": ay[k + 1]["translations"]["diyanet-vakfi"]}})
+    blob = json.dumps({"gecisler": rows, "kural": "b5"}, ensure_ascii=False).replace("</", "<\\/")
+    out = ROOT / "data" / "d1" / "masa" / "bolme-bakara.html"
+    out.write_text(INCELEME_HTML.replace("{data}", blob), encoding="utf-8")
+    print(f"{out.relative_to(ROOT)}: {len(rows)} geçiş")
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
@@ -499,6 +585,7 @@ def main() -> None:
     p.add_argument("--aralik", nargs=2, type=int, default=[34, 286])
     p.add_argument("--kez", type=int, default=3)
     p.add_argument("--yeniden", action="store_true")
+    sub.add_parser("inceleme", help="koşuların ayrıldığı geçişler için karar sayfası (data/d1/masa/bolme-bakara.html)")
     p = sub.add_parser("bol-rapor")
     p.add_argument("--aralik", nargs=2, type=int, default=[34, 286])
     a = ap.parse_args()
@@ -512,6 +599,8 @@ def main() -> None:
         sina_rapor()
     elif a.cmd == "bol":
         bol(*a.aralik, a.kez, a.yeniden)
+    elif a.cmd == "inceleme":
+        inceleme()
     elif a.cmd == "bol-rapor":
         bol_rapor(*a.aralik)
     else:
