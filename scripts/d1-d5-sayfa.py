@@ -196,7 +196,7 @@ def sayfa(unit: str, n: int | None = None) -> Path:
             f"<title>{esc(cfg['sura_name'])} {rng} Taslağı</title><style>{CSS}</style></head><body><main>"
             + "\n".join(L) + "</main></body></html>\n")
     MASA.mkdir(parents=True, exist_ok=True)
-    out = MASA / f"d5-{unit}.html"
+    out = MASA / (f"d5-{unit}-t{son}.html" if n else f"d5-{unit}.html")   # --taslak: kabul biriminde iki kol
     out.write_text(page, encoding="utf-8")
     print(f"{out.relative_to(ROOT)} ({out.stat().st_size // 1024} KB)")
     return out
