@@ -363,15 +363,20 @@ def duzelt(unit: str, n: int, kind: str) -> int | None:
 
 def _blocks(raw: str) -> list[dict]:
     """Taslağın Markdown'ı `parse_draft` gibi bloklara: [{raw, anchor, section}], çapa `draft_blocks`'unkiyle aynı."""
-    out, current, count = [], None, {}
+    out, current, counts = [], None, {}     # sayaç bölüm anahtarı başına (iki başlık aynı anahtara düşebilir)
     for block in re.split(r"\n\s*\n", raw):
         block = block.strip()
         if not block:
             continue
         lines = block.split("\n")
+        if lines[0].startswith("### "):     # alt başlık çapa almaz (`parse_draft` gibi; 2026-11-20'ye kadar sayılıyordu,
+            out.append({"raw": lines[0], "anchor": None, "section": current})   # çapalar kayıyordu)
+            block = "\n".join(lines[1:]).strip()
+            if not block:
+                continue
+            lines = block.split("\n")
         if lines[0].startswith("## "):
             current = P.heading_key(lines[0][3:])
-            count = {}
             out.append({"raw": lines[0], "anchor": None, "section": current})
             block = "\n".join(lines[1:]).strip()
             if not block:
@@ -382,6 +387,7 @@ def _blocks(raw: str) -> list[dict]:
         quote = block.startswith(">")
         b = re.sub(r"^>\s?", "", block, flags=re.M) if quote else block
         lang = "tr" if b.startswith(STAMP) else ("ar" if P._arabic_ratio(b) > 0.5 else "tr")
+        count = counts.setdefault(current, {})
         anchor = f"{current}/{lang}/{count.get(lang, 0)}"
         count[lang] = count.get(lang, 0) + 1
         out.append({"raw": block, "anchor": anchor, "section": current, "lang": lang, "quote": quote,
@@ -399,7 +405,24 @@ def _raw(text: str, lang: str, quote: bool, stamped: bool) -> str:
     return "\n".join("> " + line for line in text.split("\n")) if q else text
 
 
+def check_anchors(raw: str) -> None:
+    """Düzeltmenin çapaları modelin gördüğü çapalarla (`parse_draft`) aynı olmalı; değilse durur."""
+    mine = [b["anchor"] for b in _blocks(raw) if b["anchor"]]
+    secs, _ = P.parse_draft(raw)
+    seen = []
+    for key, items in secs.items():
+        if key in P.SECTION_TITLES:
+            c = {}
+            for lang, _, _ in items:
+                seen.append(f"{key}/{lang}/{c.get(lang, 0)}"); c[lang] = c.get(lang, 0) + 1
+    if mine != seen:
+        i = next((k for k, (a, b) in enumerate(zip(mine, seen)) if a != b), min(len(mine), len(seen)))
+        raise SystemExit(f"çapalar uyuşmuyor ({len(mine)} / {len(seen)}), ilk fark {i}: "
+                         f"{mine[i] if i < len(mine) else '-'} / {seen[i] if i < len(seen) else '-'}")
+
+
 def apply_changes(raw: str, data: dict) -> tuple[str, list[str]]:
+    check_anchors(raw)
     blocks = _blocks(raw)
     by_anchor = {b["anchor"]: b for b in blocks if b["anchor"]}
     problems = []
