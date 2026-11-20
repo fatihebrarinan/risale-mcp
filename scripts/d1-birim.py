@@ -116,6 +116,19 @@ def garaz(unit: str, n: int) -> str:
     return res["ozet"]
 
 
+def kapi(unit: str, n: int) -> int:
+    """Kalite kapısı d3: kapalı eleştirmen (tek çağrı), nisbet denetçisi, düzeltme, gerekirse ikinci tur. Son taslak;
+    `<birim>/kapi-son-<n>.txt`'ye de yazılır (iş dosyaları okur)."""
+    if not (Y.out_dir(unit) / f"kapali-elestiri-taslak-{n}.json").exists():
+        run("scripts/d1-duzelt.py", "kapali", unit, "--taslak", str(n), "--butun")
+    if not (Y.out_dir(unit) / f"nisbet-taslak-{n}.json").exists():
+        run("scripts/d1-nisbet.py", "denetle", unit, "--taslak", str(n))
+    out = run("scripts/d1-duzelt.py", "kapi", unit, "--taslak", str(n))
+    son = int(next(l.split(":")[1] for l in out.splitlines() if l.startswith("kapının son taslağı:")))
+    (P.DRAFTS / unit / f"kapi-son-{n}.txt").write_text(f"{son}\n", encoding="utf-8")
+    return son
+
+
 def yaz(unit: str, surum: str = SURUM) -> int:
     cfg = P.UNITS.get(unit)
     if not cfg or not cfg.get("d5"):
@@ -134,12 +147,7 @@ def yaz(unit: str, surum: str = SURUM) -> int:
     if n is None:
         raise SystemExit("taslak yazılamadı")
     save_state(unit, taslak=n)
-    if not (Y.out_dir(unit) / f"kapali-elestiri-taslak-{n}.json").exists():
-        run("scripts/d1-duzelt.py", "kapali", unit, "--taslak", str(n), "--butun")
-    if not (Y.out_dir(unit) / f"nisbet-taslak-{n}.json").exists():
-        run("scripts/d1-nisbet.py", "denetle", unit, "--taslak", str(n))
-    out = run("scripts/d1-duzelt.py", "kapi", unit, "--taslak", str(n))
-    son = int(next(l.split(":")[1] for l in out.splitlines() if l.startswith("kapının son taslağı:")))
+    son = kapi(unit, n)
     save_state(unit, son_taslak=son)
     print(f"garaz: {garaz(unit, son)}")
     run("scripts/d1-hat.py", "izah", unit, "--taslak", str(son))
@@ -220,6 +228,9 @@ def main() -> None:
     p.add_argument("--kadar", type=int, help="en çok bu kadar birim")
     p.add_argument("--tavan", type=float, help="bu koşuda harcama tavanı ($, kullanım değeri)")
     sub.add_parser("durum")
+    p = sub.add_parser("kapi", help="bir taslağa kalite kapısı d3 (kabul biriminde)")
+    p.add_argument("unit")
+    p.add_argument("--taslak", type=int, required=True)
     p = sub.add_parser("garaz", help="bir taslağın garaz özeti (Ek 3b; kabul biriminde önceki birim için)")
     p.add_argument("unit")
     p.add_argument("--taslak", type=int, required=True)
@@ -228,6 +239,8 @@ def main() -> None:
         yaz(a.unit, a.surum)
     elif a.cmd == "kuyruk":
         kuyruk(a.kadar, a.tavan)
+    elif a.cmd == "kapi":
+        print(f"kapının son taslağı: {kapi(a.unit, a.taslak)}")
     elif a.cmd == "garaz":
         print(garaz(a.unit, a.taslak))
     else:
