@@ -65,7 +65,7 @@ OLCU_PROMPT = ROOT / "docs" / "d1" / "kor-olcu-istemi.md"
 NOT_PROMPT = ROOT / "docs" / "d1" / "not-karsilastirma-istemi.md"
 IKINCI_PROMPT = ROOT / "docs" / "d1" / "elestiri-ikinci-istemi.md"
 ISARAT_PROMPT = ROOT / "docs" / "d1" / "isarat-karsilastirma-istemi.md"
-SURUM = {"kapali": "k2", "duzeltme": "d1", "olcu": "o3", "notlar": "n1", "ikinci": "i1", "isarat": "i1"}
+SURUM = {"kapali": "k2", "duzeltme": "d2", "olcu": "o3", "notlar": "n1", "ikinci": "i1", "isarat": "i1"}
 PROVA_SERVERS = ("risale", "tefsir", "hadis", "klasik")
 OPUS = "claude-opus-5-5"
 STAMP = E.STAMP
@@ -228,6 +228,9 @@ def kapali(unit: str, n: int, again: bool = False, kabul: str | None = None, but
 
 NOTE_FILES = {"kapali": ("kapali-elestiri-taslak-{n}.json", "K", "kapalı kitap: İşârât'ın bu âyetlerdeki kısmını o da görmedi"),
               "acik": ("bolum-elestiri-taslak-{n}.json", "A", "açık kitap: İşârât'ın bu âyetlerdeki kısmını okuyarak"),
+              # D5.0.6: kalite kapısının notları (kapalı eleştirmen, nisbet denetçisi, biçim denetimi), `kapi`
+              "kapi": ("kapi-notlar-taslak-{n}.json", "Q", "kalite kapısı: kapalı kitap eleştirmen, nisbet denetçisi ve "
+                       "biçim denetimi; İşârât'ın bu âyetlerdeki kısmını görmediler"),
               # D15: İşârât karşılaştırması (`isarat`), kör aletlerin ayarında açık taraf
               "isarat": ("isarat-karsilastirma-taslak-{n}.json", "A", "açık kitap: İşârât'ın bu âyetlerdeki kısmını okuyarak"),
               # D turu (d2): yalnız düzeltmenin değiştirdiği paragraflara, yan etkileri için (`ikinci`)
@@ -273,6 +276,53 @@ def ar_chars(unit: str, n: int) -> int:
     return sum(len(t) for _, lang, q, t in blocks if lang == "ar" and not q)
 
 
+# ---------------------------------------------------------------- kalite kapısı (D5.0.6)
+# Kullanıcının kararı (2026-11-20): D5'te birim başına insan onayı yok; kapı "denetle, düzelt, yayımla". Notlar üç
+# kaynaktan tek listede: kapalı eleştirmen (`dogru` dışındakiler), nisbet denetçisi ("aşıyor", "kaynakta yok":
+# taslak alıntısının paragrafı programla bulunur) ve biçim denetimi (tercümesi arkasında olmayan Arapça paragraf).
+
+def bicim(unit: str, n: int) -> list[dict]:
+    """Biçim denetimi: her Arapça (alıntı olmayan) paragrafın tercümesi hemen arkasında mı (D15.1'de h10 topluca verdi)."""
+    blocks, _ = Y.draft_blocks(unit, n)
+    out = []
+    for i, (a, lang, quote, text) in enumerate(blocks):
+        if lang != "ar" or quote:
+            continue
+        nxt = blocks[i + 1] if i + 1 < len(blocks) else None
+        if not nxt or nxt[1] != "tr" or nxt[0].split("/")[0] != a.split("/")[0]:
+            out.append({"tur": "uslup", "capa": a, "taslak_alinti": None, "oncelik": "orta",
+                        "metin": "Bu Arapça paragrafın tercümesi hemen arkasında değil (tercüme topluca ya da hiç verilmemiş).",
+                        "oneri": "Paragrafın tercümesini hemen arkasına koy; topluca verilmiş tercümeyi paragraflara böl.",
+                        "kaynak": "bicim"})
+    return out
+
+
+def kapi_notlari(unit: str, n: int) -> Path:
+    """Kalite kapısının not listesi: `kapi-notlar-taslak-<n>.json`."""
+    d = Y.out_dir(unit)
+    notes = [dict(x, kaynak="kapali") for x in json.loads((d / f"kapali-elestiri-taslak-{n}.json").read_text(
+        encoding="utf-8"))["notlar"] if x.get("tur") != "dogru"]
+    blocks, _ = Y.draft_blocks(unit, n)
+    flat = [(a, re.sub(r"\s+", " ", t)) for a, _, _, t in blocks]
+    for h in json.loads((d / f"nisbet-taslak-{n}.json").read_text(encoding="utf-8"))["hukumler"]:
+        if h["hukum"] not in ("asiyor", "kaynakta_yok"):
+            continue
+        q = re.sub(r"\s+", " ", h.get("taslak_alinti") or "")
+        capa = next((a for a, t in flat if q and q[:40] in t), "genel")
+        notes.append({"tur": "kaynak", "capa": capa, "taslak_alinti": h.get("taslak_alinti"), "oncelik": "yuksek",
+                      "metin": f"Nisbet denetçisi ([{h['kaynak']}], {'kaynağın sözünü aşıyor' if h['hukum'] == 'asiyor' else 'kaynakta yok'}): {h['gerekce']}",
+                      "oneri": "Sözü kaynağın dediğine indir ya da kendi tespiti/ihtimal olarak işaretle; kaynakta yoksa atfı kaldır.",
+                      "kaynak": "nisbet"})
+    notes += bicim(unit, n)
+    for x in notes:
+        x["bolum"] = _bolum_of(x.get("capa"))
+    path = d / f"kapi-notlar-taslak-{n}.json"
+    path.write_text(json.dumps({"taslak": n, "notlar": notes}, ensure_ascii=False, indent=1), encoding="utf-8")
+    from collections import Counter
+    print(f"{path.relative_to(ROOT)}: {len(notes)} not {dict(Counter(x['kaynak'] for x in notes))}")
+    return path
+
+
 def registry(unit: str) -> Path:
     return P.DRAFTS / unit / "duzeltmeler.json"
 
@@ -292,11 +342,12 @@ def duzelt(unit: str, n: int, kind: str) -> int | None:
         print(f"  uyarı: taslak {n}'in istemi değişmiş; düzeltme bugünkü istemle")
     notes, prefix = notes_of(unit, n, kind)
     _, sources = Y.draft_blocks(unit, n)
-    h = H.hedef(unit)
+    simdi = ar_chars(unit, n)
+    h = {"en_az": simdi, "en_cok": round(simdi * 1.1)}   # d2: İşârât'tan hedef yok, en çok %10 uzama
     text, sha = body(DUZELTME_PROMPT, "DUZELTME")
     text = text.format(sura_name=cfg["sura_name"], ayahs=ayahs(cfg), not_kaynagi=NOTE_FILES[kind][2], onek=prefix,
                        en_az=f"{h['en_az']:,}".replace(",", "."), en_cok=f"{h['en_cok']:,}".replace(",", "."),
-                       simdi=f"{ar_chars(unit, n):,}".replace(",", "."), sonraki=max(map(int, sources)) + 1,
+                       simdi=f"{simdi:,}".replace(",", "."), sonraki=max(map(int, sources)) + 1,
                        taslak=draft_text(unit, n, with_ids=True), notlar=render_notes(notes))
     prompt = istem + "\n\n---\n\n" + text
     reg[str(m)] = {"kaynak": n, "notlar": kind, "surum": SURUM["duzeltme"], "at": datetime.now().isoformat()}
@@ -758,6 +809,10 @@ def main() -> None:
     p.add_argument("--yeniden", action="store_true")
     p.add_argument("--sizinti-kabul", help="sızıntı uyarısı elle incelendi: gerekçe")
     p.add_argument("--butun", action="store_true", help="D15: bütün taslağa tek çağrı (bölüm bölüm değil)")
+    p = sub.add_parser("kapi")                        # D5.0.6: kalite kapısının notları ve düzeltme turu
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--taslak", type=int, required=True)
+    p.add_argument("--yalniz-notlar", action="store_true")
     p = sub.add_parser("isarat")                      # D15: tek taslak İşârât'la, mutlak hüküm ve notlar
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("--taslak", type=int, required=True)
@@ -794,6 +849,11 @@ def main() -> None:
     a = ap.parse_args()
     if a.cmd == "kapali":
         kapali(a.unit, a.taslak, a.yeniden, a.sizinti_kabul, a.butun)
+    elif a.cmd == "kapi":
+        kapi_notlari(a.unit, a.taslak)
+        if not a.yalniz_notlar:
+            m = duzelt(a.unit, a.taslak, "kapi")
+            print(f"düzeltilmiş taslak: {m}")
     elif a.cmd == "isarat":
         isarat(a.unit, a.taslak, a.yeniden)
     elif a.cmd == "ikinci":

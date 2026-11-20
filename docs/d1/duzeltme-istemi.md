@@ -9,6 +9,9 @@ gerekçesiyle reddedebilir (retler notların kalitesini de ölçer); her not ya 
 
 Sürümler:
 - d1 (2026-11-16): ilk sürüm; D12.1, 31–33 taslak 7 (kapalı ve açık kitap notlarıyla).
+- d2 (2026-11-20, D5.0.6 kalite kapısı): uzunluk hedefi İşârât'tan gelmez (h9'da hedef yok): Arapça toplamı şimdiki
+  uzunluğun en çok %10 üstüne çıkar ({en_cok} harf); notlar kalite kapısınındır (kapalı eleştirmen, nisbet denetçisi,
+  biçim denetimi). `{en_az}` kullanılmaz.
 -->
 
 ---- DUZELTME ----
@@ -24,8 +27,8 @@ düzeltmeni** istiyoruz.
   da usule aykırı bir şey istiyorsa gerekçesiyle reddet. Eleştirmen de yanılabilir: bir notu kabul etmeden önce
   dayandığı kaynağı oku; bir nükte ekleyeceksen onu da bir kaynağa ya da âyetin lafzına bağla.
 - **Düzeltmek uzatmak değildir.** Bir notu karşılamak çoğu zaman bir cümleyi değiştirmek, bir takdiri açmak, bir
-  iddiayı ihtimal diliyle söylemek ya da çıkarmaktır. Arapça paragrafların toplamı hedefte kalır: {en_az}–{en_cok}
-  harf; taslak şu an {simdi} harf.
+  iddiayı ihtimal diliyle söylemek ya da çıkarmaktır. Taslak şu an {simdi} harf; Arapça paragrafların toplamı en çok
+  {en_cok} harfe çıkabilir (şimdikinin %10 fazlası). Bir nükte eklerken başka bir yerde kısalt.
 - **Yalnız değişen paragrafları ver**; değişmeyene dokunma. Değiştirdiğin paragrafı tam ver. Arapçayı değiştirdiysen
   tercümesini de değiştir (ikisi ayrı değişiklik); tercüme Arapçada olmayan cümle eklemez.
 - Yazım kuralları yukarıdakilerin aynısı: işaretler (`[dil; 3]`, `[belâgat; kendi tespiti]`…), tırnak ve takdir,
