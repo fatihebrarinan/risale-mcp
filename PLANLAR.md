@@ -55,10 +55,11 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D5.0. Bakara bölmesi kesinleşti (176 birim, `data/d1/bolme/bakara/birimler.json`). Arka planda iki iş:
-  **kalite kapısı** (`d1-kapi`: 26–27 ve 28'in h9 taslakları kapı notlarıyla düzeltilir ve yeniden ölçülür) ve **h11'in
-  sınaması** (`d1-h11-29`: 29'da h9 ve h11, kör A/B). İkisi bitince sonuçlar ve h11'in okuması.
-- **Kullanıcıdan beklenen:** yok (işler bitince okuma).
+- **Önde:** D5.0. Kapının ilk sınaması bitti (D5.0.6: düzeltme eski hataları gideriyor, yeni kaynak eklerken yeni
+  hata getiriyor; öneri d3). h11'in sınaması bitti (29: envanter kapsamı h9 49/96, h11 60/96; birinci vecih 5/7 → 7/7;
+  İşârât karşılaştırması ikisinde "düzeltmeyle"; kör eleştirmen hafif h9, bölüm bölüm ikiye iki); kullanıcının kör
+  okuması https://risalemcp.com/taslak/tur-29-D5-h11.html (5 yer, ≈31 dk). Sunucu kuruldu (tefsir makinesi, `taslak`).
+- **Kullanıcıdan beklenen:** h11 okuması; kapı için d3 kararı; sunucuda `scripts/taslak-sunucu.sh giris`.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
