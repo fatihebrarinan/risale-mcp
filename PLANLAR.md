@@ -55,12 +55,10 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D5.0. Kullanıcı Bakara bölmesinin 20 geçişini okuyor (https://risalemcp.com/taslak/bolme-bakara.html,
-  `d1-bolme.py inceleme`). Arka planda, kararı beklemeyen iki iş: **kalite kapısı** (`d1-kapi`: 26–27 ve 28'in h9
-  taslakları kapı notlarıyla düzeltilir, nisbet ve İşârât karşılaştırmasıyla yeniden ölçülür; `d1-duzelt.py kapi`,
-  istem d2) ve **h11'in sınaması** (`d1-h11-29`: saklı birim 29'da h9 ve h11, kör A/B; garaz özetleri
-  `data/d1/garaz/isarat-bakara.json`, ≈0,68 $).
-- **Kullanıcıdan beklenen:** bölme kararlarının dışa aktarılması (`d1-bolme-bakara.json`, İndirilenler).
+- **Önde:** D5.0. Bakara bölmesi kesinleşti (176 birim, `data/d1/bolme/bakara/birimler.json`). Arka planda iki iş:
+  **kalite kapısı** (`d1-kapi`: 26–27 ve 28'in h9 taslakları kapı notlarıyla düzeltilir ve yeniden ölçülür) ve **h11'in
+  sınaması** (`d1-h11-29`: 29'da h9 ve h11, kör A/B). İkisi bitince sonuçlar ve h11'in okuması.
+- **Kullanıcıdan beklenen:** yok (işler bitince okuma).
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -134,8 +132,12 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   yeniden koştu, ≈4 $): **153 birim** (86'sı tek âyetli, en büyüğü 5), oybirliği olmayan 20, Râzî'den ayrılan 80
   (çoğunda biz birleştiriyoruz). İnceleme listesi `data/d1/bolme/bakara/bolme.md`; b4 hâli `bakara/b4/`. Sonra bütün
   Kur'ân; birim kimlikleri kalıcı adres olur.
-    **Kalan:** inceleme listesindeki 20 geçiş (kullanıcıyla), sonra bütün Kur'ân (b5 ile; kısa sûreler ve ahkâm
-    için kuralın uzatması ayrıca konuşulur).
+    **Bakara kesinleşti (2026-11-20):** kullanıcı 20 geçişi okudu (`d1-bolme.py inceleme`, sayfa `bolme-bakara.html`);
+    19'unda koşuların çoğunluğuyla aynı, 73|74'te "sınır" (74 uzun, yeni bir misal getiriyor: "72–74 tek başına
+    incelendiğinde 74'ün kendine has nükteleri kaçırılabilir"): kural b6 (5. kural genişledi). **Bakara 176 birim**
+    (1–33 İşârât'ın 22 birimi, 34–286 154 birim), kimlik âyet aralığı (`34`, `35-37`…): `data/d1/bolme/bakara/birimler.json`
+    (kalıcı adres). Kararlar `bakara/karar/`. **Kalan:** bütün Kur'ân (b6 ile; kısa sûreler ve ahkâm için kuralın
+    uzatması ayrıca konuşulur); sırası gelince.
   - **D5.0.5 Önceki birim:** birinci vecih için İşârât'ın önceki birimi yerine önceki birimin taslağı; D15.3'te 28'de
     sınanır (26–27'nin h9 taslağı).
   - **D5.0.6 Kalite kapısı: denetle, düzelt, yayımla** (2026-11-19'da yeniden tarif: insan onayı olmadığı için kör

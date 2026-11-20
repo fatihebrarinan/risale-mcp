@@ -1,4 +1,4 @@
-# Birim bölümlemesi: İşârât'ın kuralı (b5)
+# Birim bölümlemesi: İşârât'ın kuralı (b6)
 
 D5.0 (4) (PLANLAR.md D5; kullanıcının kararı, 2026-11-19: önce İşârât'ın âyetleri neden birleştirip ayırdığı, sonra bütün
 Kur'ân). Kaynak: Bakara 1–33'ün 32 geçişi ve her geçişte müellifin sözü (`data/d1/bolme/gecisler.md`, Opus okuması,
@@ -12,7 +12,10 @@ eki fazla geniş); 1. kuralda dil bilgisindeki cezâ ile amele terettüp eden uk
 üç koşusu da 14|15'i ukûbet sayıp ayırdı; aktarılan söze verilen karşılık («قابلَهم», `B/14-15-ayetlerin-tefsiri/c015`)
 ile bir hâlin ardından gelen ukûbet ayrıldı. Kullanıcı b4'ü onayladı (2026-11-19). b5 (2026-11-19, kullanıcının kararı):
 Bakara 34–286'da koşuların en çok ayrıldığı soru (51|52, 55|56, 63|64): «ثم» ile gelen âyet önceki üyenin devamıdır
-(4. kurala eklendi; Bakara 1–33'te örneği yok).
+(4. kurala eklendi; Bakara 1–33'te örneği yok). b6 (2026-11-20, kullanıcının Bakara 34–286 incelemesi: 20 geçişin
+19'unda koşuların çoğunluğuyla aynı; ayrıldığı tek yer 73|74): 5. kural genişledi: uzun ve kendi başına çok nükte
+taşıyan, yeni bir misal getiren âyet ayrı birimdir (74: kalplerin taşa benzetilmesi; "72–74 tek başına incelendiğinde
+74'ün içindeki kendine has nükteler kaçırılabilir").
 
 İki parça: **Kural** (genel; işlenebilirlik sınamasında modele yalnız bu gider, Bakara 1–33'ün bölmesini anmaz) ve
 **Dayanak** (kimlikli örnekler; yalnız bizim için). `scripts/d1-bolme.py` Kural'ı `---- KURAL ----` ile
@@ -65,7 +68,9 @@ sevkedilen garazın farkına bakar."
    iddiasıyla **tanıtan** âyet serinin başıdır; o sözün altındaki ilk fiil (ne yaptıkları) yeni üyedir. **«ثم» ile
    başlayan âyet** (sonra affettik, sonra dirilttik, sonra yüz çevirdiniz…) önceki üyenin devamıdır, yeni üye değildir.
 5. **Büyük mesele ayırır.** Tek garazın parçası olsa da kendi başına büyük bir ilmî ya da kelâmî mesele taşıyan
-   âyet (uzun bir tahkik isteyen) ayrı birim olabilir. Bunu yalnız açık gerekçeyle uygula.
+   âyet (uzun bir tahkik isteyen) ayrı birim olabilir. Uzun ve kendi başına çok nükte taşıyan, özellikle yeni bir
+   misal ya da temsil getiren âyet de öyledir: önceki âyetlerle birleşirse kendi nükteleri kaçar. Bunu yalnız açık
+   gerekçeyle uygula.
 6. **Hurûf-u mukattaa** sûre başında ayrı tahlil edilir; ardından gelen âyet ayrı birimdir.
 
 ## Notlar
