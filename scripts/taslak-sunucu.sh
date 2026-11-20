@@ -59,6 +59,9 @@ veri)
         for d in tefsir klasik; do rsync -a --delete /home/risale/risale-mcp/data/dist/\$d/ $DEST/data/dist/\$d/; done
         cp /home/risale/risale-mcp/data/library/kuran/quran.json $DEST/data/library/kuran/
         for d in genel hadis; do rsync -az --delete -e 'ssh -o StrictHostKeyChecking=accept-new' root@${ANA:-100.108.174.19}:/home/risale/risale-mcp/data/dist/\$d/ $DEST/data/dist/\$d/; done
+        # anlamsal arama varsayılan olarak asıl depoyu (kisisel/vectors) okur; prova ve D5 veritabanları genelden
+        # türediği için genel vektörler yeter (2026-11-21: kabul-30 ilk denemede bunda durdu)
+        mkdir -p $DEST/data/dist/kisisel && ln -sfn $DEST/data/dist/genel/vectors $DEST/data/dist/kisisel/vectors
         chown -R $U:$U $DEST/data; du -sh $DEST/data/dist/*"
     ;;
 ozet)
