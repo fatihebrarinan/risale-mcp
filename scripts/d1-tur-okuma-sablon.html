@@ -70,6 +70,7 @@ details.srcs .box .ar { font-size: 1.05rem; }
   <span id="who" class="small muted" hidden></span>
   <span class="spacer"></span>
   <span id="progress" class="small muted"></span>
+  <button class="btn" id="bitir" hidden>Okumayı bitir</button>
   <button class="btn" id="export">Dışa aktar</button>
   <a class="btn" id="masa" href="./">Âyet masası</a>
   <span class="msg" id="msg"></span>
@@ -91,19 +92,34 @@ const KEY = 'd1-masa-ab';
 let marks = store.get(KEY, {});
 const kOf = c => `${DATA.unit}|${DATA.ad}|${c.id}`;
 let ACCOUNT = null;
+// S7.2: görevli sayfa (DATA.gorev): kararlar ar-ge masasının sunucusuna yazılır; kör okumada A ile B'nin hangi taslak
+// olduğu sayfada yoktur, sunucudadır ve "Okumayı bitir"den sonra gelir (MAP). Görevsiz eski sayfalar eskisi gibi.
+const API = '/taslak/api/';
+let SERVER = false, MAP = null, DONE = false;
+const BLIND = !!DATA.gorev && DATA.ab && !DATA.a;
+const nameOf = l => BLIND ? (MAP ? MAP[l] : null) : (l === 'A' ? DATA.a : DATA.b);
+const aboutOf = l => { const d = nameOf(l); return d ? ((MAP && MAP.about) || DATA.about || {})[d] || '' : ''; };
 function reader() { return ACCOUNT || $('#reader').value.trim(); }
 function say(t) { $('#msg').textContent = t; setTimeout(() => { $('#msg').textContent = ''; }, 4000); }
 function save(c, patch) {
   marks = store.get(KEY, {});
   const k = kOf(c);
   marks[k] = Object.assign({}, marks[k] || {}, patch, {at: new Date().toISOString(), reader: reader()});
-  if (!store.set(KEY, marks)) say('Tarayıcı işareti kaydedemedi; dışa aktarın.');
+  if (!store.set(KEY, marks) && !SERVER) say('Tarayıcı işareti kaydedemedi; dışa aktarın.');
+  if (SERVER) {
+    const {reader: _r, ...body} = marks[k];
+    fetch(`${API}okuma/${encodeURIComponent(DATA.gorev)}/karar/${encodeURIComponent(c.id)}`, {method: 'PUT',
+      credentials: 'same-origin', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)})
+      .then(r => { if (!r.ok) say('Sunucuya kaydedilemedi; tarayıcıda duruyor.'); })
+      .catch(() => say('Sunucuya kaydedilemedi; tarayıcıda duruyor.'));
+  }
   progress();
 }
 const YETER = [['yeterli', 'Yeterli'], ['duzeltmeyle', 'Düzeltmeyle yeterli'], ['yetersiz', 'Yetersiz'], ['emin_degilim', 'Emin değilim']];
 const AB = [['a', 'A daha iyi'], ['b', 'B daha iyi'], ['esit', 'Eşit'], ['emin_degilim', 'Emin değilim']];
 const CHOICE = DATA.tek && !DATA.ab ? YETER : AB;
-const val = v => DATA.tek && !DATA.ab ? v : v === 'a' ? DATA.a : v === 'b' ? DATA.b : v;
+const val = v => DATA.tek && !DATA.ab ? v : BLIND ? (v === 'a' ? 'A' : v === 'b' ? 'B' : v)
+                                                    : v === 'a' ? DATA.a : v === 'b' ? DATA.b : v;
 const DURUM = {aynen: 'aynen buldu', kismen: 'kısmen buldu', farkli_gerekce: 'farklı gerekçeyle', yok: 'bulamadı'};
 
 const AR = /[؀-ۿﭐ-﷿ﹰ-﻿]/;
@@ -194,7 +210,8 @@ function isaratCol(c) {
 }
 function toolsHtml(c) {
   const labs = DATA.ab ? ['A', 'B'] : ['A'];
-  const who = l => DATA.ab ? `<b>${l}</b> = ${esc(l === 'A' ? DATA.a : DATA.b)} (${esc(DATA.about[l === 'A' ? DATA.a : DATA.b] || '')})` : '';
+  const who = l => !DATA.ab ? '' : nameOf(l) ? `<b>${l}</b> = ${esc(nameOf(l))} (${esc(aboutOf(l))})`
+                                             : `<b>${l}</b>: hangi taslak olduğu okumayı bitirince açılır`;
   const envOf = l => Object.entries((c.envanter || {})[l] || {}).map(([k, v]) => `${esc(k)}: ${esc(v.join(', '))}`).join(' · ');
   return `<div class="reveal">${DATA.ab ? `<div>${who('A')}</div><div>${who('B')}</div>` : ''}
     <div class="box env"><b>Neden seçildi:</b> ${esc(c.tur_ad)}. ${esc(c.acik || '')}</div>
@@ -236,7 +253,7 @@ function cardHtml(c, idx) {
   const opts = CHOICE.map(([v, l]) => `<label><input type="radio" name="c-${idx}" value="${esc(val(v))}" data-i="${idx}" data-f="secim"${m.secim === val(v) ? ' checked' : ''}>${l}</label>`).join('');
   let rev = '';
   if (m.acildi) {
-    const who = d => `${esc(d)} (${esc(DATA.about[d] || '')})`;
+    const who = d => `${esc(d)} (${esc((DATA.about || {})[d] || '')})`;
     const dur = s => Object.values(s.durum || {}).map(d => DURUM[d] || d || 'bulamadı').join(', ') || 'bulamadı';
     rev = `<div class="reveal"><div><b>A</b> = ${who(DATA.a)}</div><div><b>B</b> = ${who(DATA.b)}</div>
       <div class="box env"><b>Neden seçildi:</b> ${esc(c.tur_ad)}. ${esc(c.acik || '')}
@@ -261,7 +278,34 @@ function render() {
 }
 function progress() {
   const n = DATA.cards.filter(c => (marks[kOf(c)] || {}).secim).length;
-  $('#progress').textContent = `İşaretlenen: ${n}/${DATA.cards.length}`;
+  $('#progress').textContent = `İşaretlenen: ${n}/${DATA.cards.length}` + (SERVER ? (DONE ? ' · bitti, sunucuda' : ' · sunucuya kaydediliyor') : '');
+  const b = $('#bitir');
+  b.hidden = !SERVER || DONE;
+  b.disabled = n < DATA.cards.length;
+}
+$('#bitir').onclick = () => {
+  const b = $('#bitir');
+  if (b.dataset.sure !== '1') { b.dataset.sure = '1'; b.textContent = 'Emin misiniz? Bitir'; return; }
+  fetch(`${API}okuma/${encodeURIComponent(DATA.gorev)}/bitir`, {method: 'POST', credentials: 'same-origin'})
+    .then(r => r.ok ? r.json() : Promise.reject(r.status)).then(t => {
+      DONE = true; MAP = t.gizli || MAP; render(); say('Okuma bitti; sonuçlar sunucuda.');
+    }).catch(() => say('Bitirilemedi; yeniden deneyin.'));
+};
+function loadServer() {
+  if (!DATA.gorev || !location.protocol.startsWith('http')) return;
+  fetch(`${API}okuma/${encodeURIComponent(DATA.gorev)}`, {credentials: 'same-origin', cache: 'no-store'})
+    .then(r => r.ok ? r.json() : null).then(t => {
+      if (!t) return;
+      SERVER = true; DONE = t.durum === 'bitti'; MAP = t.gizli || null;
+      marks = store.get(KEY, {});
+      for (const c of DATA.cards) {
+        const k = kOf(c), srv = (t.kararlar || {})[c.id];
+        if (srv) marks[k] = Object.assign({}, marks[k] || {}, srv);
+        else if (marks[k]) save(c, {});                 // sunucu yokken tarayıcıda kalmış işaret: sunucuya
+      }
+      store.set(KEY, marks);
+      render();
+    }).catch(() => {});
 }
 document.addEventListener('change', ev => {
   const t = ev.target, f = t.dataset.f;
@@ -269,7 +313,8 @@ document.addEventListener('change', ev => {
   const c = DATA.cards[+t.dataset.i];
   if (!reader()) { say('Önce okuyucu adınızı yazın.'); if (t.type === 'radio') t.checked = false; $('#reader').focus(); return; }
   if (f === 'secim') {
-    save(c, DATA.tek && !DATA.ab ? {secim: t.value} : {secim: t.value, harf: t.value === DATA.a ? 'A' : t.value === DATA.b ? 'B' : t.value});
+    save(c, DATA.tek && !DATA.ab ? {secim: t.value} : BLIND ? {secim: t.value, harf: t.value}
+         : {secim: t.value, harf: t.value === DATA.a ? 'A' : t.value === DATA.b ? 'B' : t.value});
     const card = t.closest('.card'); card.classList.add('done');
     const b = card.querySelector('[data-open]'); if (b) b.disabled = false;
   } else if (f === 'yeter') save(c, {yeter: t.value});
@@ -285,7 +330,7 @@ document.addEventListener('click', ev => {
 });
 $('#export').onclick = () => {
   const ab = Object.fromEntries(DATA.cards.map(c => [kOf(c), marks[kOf(c)]]).filter(([, v]) => v));
-  const out = {kind: DATA.tek ? 'd1-tur-okuma-tek' : 'd1-tur-okuma', unit: DATA.unit, tur: DATA.ad, a: DATA.a, b: DATA.b, reader: reader(),
+  const out = {kind: DATA.tek ? 'd1-tur-okuma-tek' : 'd1-tur-okuma', unit: DATA.unit, tur: DATA.ad, a: nameOf('A'), b: nameOf('B'), reader: reader(),
                exported: new Date().toISOString(), ab};
   const blob = new Blob([JSON.stringify(out, null, 1)], {type: 'application/json'});
   const a = document.createElement('a');
@@ -304,5 +349,6 @@ if (location.protocol.startsWith('http')) {
   }).catch(() => {});
 }
 render();
+loadServer();
 </script>
 </body></html>

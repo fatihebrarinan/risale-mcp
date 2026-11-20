@@ -17,8 +17,10 @@ def store(tmp_path):
 
 
 @pytest.fixture
-def client(store):
-    return TestClient(build_app(store), base_url="https://risalemcp.com", follow_redirects=False)
+def client(store, tmp_path):
+    from risale_mcp.masa import MasaStore
+    return TestClient(build_app(store, MasaStore(tmp_path / "masa.db")), base_url="https://risalemcp.com",
+                      follow_redirects=False)
 
 
 def test_db_private(store):

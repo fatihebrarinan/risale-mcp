@@ -216,7 +216,7 @@ def safe_next(target: str | None) -> str:
     return PREFIX
 
 
-def build_app(store: Store):
+def build_app(store: Store, masa_store=None):
     from starlette.applications import Starlette
     from starlette.requests import Request
     from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse
@@ -266,8 +266,10 @@ def build_app(store: Store):
         response.delete_cookie(COOKIE, path=PREFIX)
         return response
 
+    from risale_mcp import masa                     # S7.2: ar-ge masası (okumalar, kararlar, notlar)
     return Starlette(routes=[Route("/_auth", check), Route(f"{PREFIX}giris", login, methods=["GET", "POST"]),
-                             Route(f"{PREFIX}cikis", logout, methods=["GET", "POST"]), Route(f"{PREFIX}ben", me)])
+                             Route(f"{PREFIX}cikis", logout, methods=["GET", "POST"]), Route(f"{PREFIX}ben", me),
+                             *masa.routes(store, masa_store or masa.MasaStore())])
 
 
 # ---------------------------------------------------------------- komut satırı

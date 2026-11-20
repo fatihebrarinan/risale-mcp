@@ -773,7 +773,7 @@ def tool_notes(unit: str, n: int, anchors: set[str], texts: str, keys: list[str]
     return out
 
 
-def okuma_tek(unit: str, ns: list[int], tur: str, yerler: list[dict]) -> Path:
+def okuma_tek(unit: str, ns: list[int], tur: str, yerler: list[dict], gorev: bool = True) -> Path:
     """D15'in okuma sayfası: taslak (ya da kör A/B iki taslak) ve İşârât yan yana; `provalar/<birim>/tur-<tur>.json`,
     `masa/tur-<birim>-<tur>.html`.
 
@@ -831,6 +831,19 @@ def okuma_tek(unit: str, ns: list[int], tur: str, yerler: list[dict]) -> Path:
     path.write_text(json.dumps(data, ensure_ascii=False, indent=1), encoding="utf-8")
     page_data = dict(data, unit=unit, title=M.title(unit), masa=f"{unit}.html", cards=cards,
                      about={f"taslak-{n}": dr[f"taslak-{n}"]["about"] for n in labs.values()})
+    if gorev:
+        # S7.2: ar-ge masasının görevi; kararlar sunucuya yazılır, kör okumada taraflar sayfada değil sunucuda
+        gid = f"tur-{unit}-{tur}"
+        task = {"id": gid, "tur": "ab" if len(labs) == 2 else "tek", "birim": unit,
+                "baslik": f"{M.title(unit)}: {tur}" + (" (kör A/B)" if len(labs) == 2 else ""), "sayfa": f"/taslak/{page}",
+                "veri": {"yerler": [{"ad": c["ad"], "baslik": c["baslik"]} for c in cards], "dakika": data["dakika"],
+                         "kelime": words},
+                "gizli": {**{lab: f"taslak-{n}" for lab, n in labs.items()}, "about": page_data["about"]}, "kaynak": tur}
+        (P.DRAFTS / unit / f"gorev-{tur}.json").write_text(json.dumps(task, ensure_ascii=False, indent=1), encoding="utf-8")
+        page_data["gorev"] = gid
+        if len(labs) == 2:
+            for k in ("a", "b", "about"):
+                page_data.pop(k, None)
     blob = json.dumps(page_data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     out = M.OUT_DIR / page
     out.write_text(READ_TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
@@ -869,6 +882,7 @@ def main() -> None:
     p.add_argument("--taslak", type=int, nargs="+", required=True)
     p.add_argument("--tur", required=True)
     p.add_argument("--yerler", required=True, help="JSON: [{ad, tur, baslik, soru, acik, kalemler, capa}]")
+    p.add_argument("--gorevsiz", action="store_true", help="eski düzen: sunucu yok, taraflar sayfada, dışa aktarma")
     a = ap.parse_args()
     if a.cmd == "hazirla":
         hazirla(a.unit)
@@ -882,7 +896,7 @@ def main() -> None:
     elif a.cmd == "okuma":
         okuma(a.unit, a.tur, a.taban, a.yeni, json.loads(Path(a.yerler).read_text(encoding="utf-8")), a.sari)
     elif a.cmd == "okuma-tek":
-        okuma_tek(a.unit, a.taslak, a.tur, json.loads(Path(a.yerler).read_text(encoding="utf-8")))
+        okuma_tek(a.unit, a.taslak, a.tur, json.loads(Path(a.yerler).read_text(encoding="utf-8")), not a.gorevsiz)
         run_cmd(["scripts/d1-masa.py", a.unit])
     elif a.cmd == "sayilar":
         sayilar(a.unit, a.tur, a.taban, a.yeni)

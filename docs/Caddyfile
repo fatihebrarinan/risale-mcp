@@ -97,6 +97,12 @@ risalemcp.com {
 	handle /taslak/ben {
 		reverse_proxy 127.0.0.1:8009
 	}
+	# S7.2: ar-ge masasının sunucu tarafı (src/risale_mcp/masa.py; aynı servis): okumalar, kararlar, notlar. Oturumu
+	# (ya da makine jetonunu) uygulama kendisi denetler.
+	handle /taslak/api/* {
+		header Cache-Control "no-store"
+		reverse_proxy 127.0.0.1:8009
+	}
 	handle /taslak* {
 		forward_auth 127.0.0.1:8009 {
 			uri /_auth
