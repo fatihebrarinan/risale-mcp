@@ -55,10 +55,10 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D15.3 (28) ölçüldü (kapsama %64; D5'in şartı: öncesiyle bağ sağlam). Okuma sayfası sitede:
-  https://risalemcp.com/taslak/tur-28-D15.3.html (7 kart, ≈27 dk).
-- **Kullanıcıdan beklenen:** 28'in okuması; bitince "Dışa aktar".
-- **Sonra:** D15'in toplu raporu (üç birim) ve D5.0.
+- **Önde:** D15'in üç birimi okundu ve raporu yazıldı (`data/d1/d15-rapor.md`). Kullanıcıdan "D15 bitti" onayı
+  bekleniyor; sonra D5.0 (alt adımları ve D15'ten çıkan adaylar).
+- **Kullanıcıdan beklenen:** raporun okunması ve D15'in kapanışı.
+- **Sonra:** D5.0, sonra D5.1 (Bakara 34) ve D5.2 (Risale'si az iki birim).
 - **Bekleyen yan işler** (yeri gelince; D15 sürerken açılmaz): D5.0.4 bölmenin kalanı, S7.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
@@ -197,7 +197,18 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   olan İşârât'ın ileriye bakan ekseni (bu âyet ve sonraki üç âyet delil taşıyan nimetleri sayar), önceki birimle ilgili
   değil. Kör aletler: kapalı ilk kez İşârât'sız görülebilecek bir notu kaçırdı (1), yalnız gizli 8, eşleşen 3; kapalının
   tek notlarından 22/24 yerinde; nisbet 25 hükümde 2 "aşıyor". Okuma sayfası `tur-28-D15.3.html` (7 kart: öncesiyle bağ
-  (D5'in şartı), nimetler ekseni, silsile, «كنتم/تكفرون», berzah, rücû, ölüm dersi; ≈27 dk). Kalan: kullanıcının okuması.
+  (D5'in şartı), nimetler ekseni, silsile, «كنتم/تكفرون», berzah, rücû, ölüm dersi; ≈27 dk). **Okuma (2026-11-20):
+  yeterli 2 (rücû, ölüm dersi), düzeltmeyle 1 (öncesiyle bağ: "İşârât yalnız önceki âyete değil, önceden geçen bütün
+  bahislere bakıyor; bizimki önceki iki âyete"), emin değil 2 (nimetler ekseni: "inâyete ve ibadete delil" tespiti yok;
+  silsile: rücû açıklanmamış), yetersiz 2 («كنتم»: İşârât "âlem-i zerrâtta bir nevi vücud", taslak "yalnız mevtin
+  mahalli", «تكفرون» nüktesi yok; berzah: hayat-ı uhreviye taslakta yok, "Risale-i Nur'da çokça bahsedilen ve ders
+  verilmeye çok müsait"). **D15.3 bitti.**
+- **D15'in raporu** (`data/d1/d15-rapor.md`, 2026-11-20): üç birimde 23 yer: yeterli 8, düzeltmeyle 3, emin değil 6,
+  yetersiz 6 (kartlar bilerek zayıf yerlerden). Taslak garazı, omurgayı ve Risale dersini kuruyor; İşârât'ın takdir
+  zincirlerini, taallukunu, temsil ve îcâzını, birinci vechin genişliğini yapamıyor. Kapalı eleştirmen İşârât'sız
+  görülebileni neredeyse hiç kaçırmıyor (46 notta 1; kendi notlarında isabet %83), nisbet tamamlıyor. D5'in şartı yakın
+  bağda tuttu. D5.0'a çıkanlar: hat h9; kalite kapısı (düzeltme en çok nisbet ve çelişki için); birinci vechin genişliği
+  (önceki birimlerin garazı, sonraki âyetler); konu düzeyinde ders; taalluk sorusu; biçim denetimi. Harcama ≈64 $.
 - **Birim kurulumu (her dilimin başı):** saklı birimler `d1-prova.UNITS`'te yok. `_dev_unit` gibi kayıt: Arapça ve
   Türkçe düğümler (Türkçede 21 ve 22 ayrı bölüm), vecihlerin ilk cümleleri (`sections`), ince Ek 3 için komşu
   birimler, usul özeti ve birim çizelgesinden o birimin örneklerini çıkaran düzeltmeler (`ozet`, `cizelge`; usul
