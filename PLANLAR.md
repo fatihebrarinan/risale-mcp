@@ -55,8 +55,12 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D5 başladı (2026-11-20, D15 kapandı). İlk iş D5.0: sıra kullanıcıyla konuşuluyor.
-- **Kullanıcıdan beklenen:** D5.0'ın sırası ve açık kararlar (h9'a bir iyileştirme turu mu, D5.1'in ehil okuyucusu).
+- **Önde:** D5.0. Kullanıcı Bakara bölmesinin 20 geçişini okuyor (https://risalemcp.com/taslak/bolme-bakara.html,
+  `d1-bolme.py inceleme`). Arka planda, kararı beklemeyen iki iş: **kalite kapısı** (`d1-kapi`: 26–27 ve 28'in h9
+  taslakları kapı notlarıyla düzeltilir, nisbet ve İşârât karşılaştırmasıyla yeniden ölçülür; `d1-duzelt.py kapi`,
+  istem d2) ve **h11'in sınaması** (`d1-h11-29`: saklı birim 29'da h9 ve h11, kör A/B; garaz özetleri
+  `data/d1/garaz/isarat-bakara.json`, ≈0,68 $).
+- **Kullanıcıdan beklenen:** bölme kararlarının dışa aktarılması (`d1-bolme-bakara.json`, İndirilenler).
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
