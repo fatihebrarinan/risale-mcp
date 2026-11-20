@@ -90,7 +90,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
     adı ve "bitti" dışarı gider, taslak gitmez) ya da kendi sunucumuzda kurulan bildirim servisi (dışarıya hiçbir şey
     çıkmaz); D5 sunucuya taşınınca daha anlamlı).
     **Sunucuya taşıma: karar verildi** (kullanıcı, 2026-11-20): bilgisayar bir ay açık kalmasın; D5'in yazdırması
-    sunucuda döner (ayrıntı aşağıda "Bilgisayardan bağımsız çalışma"; hangi sunucu kullanıcıyla). **Bakara bu planla**
+    sunucuda döner (ayrıntı aşağıda "Bilgisayardan bağımsız çalışma"). **Bakara bu planla**
     (kaba hesap, 2026-11-20): haftalık pencere %40 dolu, 23 Kasım'da sıfırlanır; 11 Aralık'a kadar ≈4,5 haftalık kota
     (bu haftanın kalanı, üç hafta, bir ücretsiz sıfırlama); D5 birimi haftalığın ≈%1,5–3'ü: 160–270 birim, gereken
     154; dar ama mümkün. Şartlar: D5.0 bir haftada biter, iş kesintisiz döner, öbür kullanım az, ücretsiz sıfırlama sona
@@ -114,10 +114,12 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
     sürer; iş sunucuda döner. Parçalar: `claude setup-token` (aboneliğin uzun ömürlü giriş anahtarı, tarayıcısız;
     kullanım aynı pencereden düşer, `claude_p`'nin koruması orada da çalışır); genel ve hadis veritabanları, Kur'ân,
     vektörler sunucuya (deploy betiğinin uzantısı); `data/d1` sunucuda her adımda commit ve push, yerelde `git pull`;
-    okuma sayfaları sunucudan doğrudan `/taslak/`'a. **Açık karar:** tefsir sunucusu (4 çekirdek, 7 GB, tefsir ve
-    klasik veritabanları orada; genel tefsir ve klasik bağlayıcılarını yavaşlatabilir, `nice` ile) ya da D5'e ayrı
-    küçük sunucu (≈7 €/ay; genel hizmet etkilenmez). Güvenlik: abonelik anahtarı sunucuda (SSH yalnız Tailscale'den),
-    git'e girmez. Kurulum ≈yarım gün. Bugünkü ara çözüm: `scripts/d1-arka.sh` (terminalden bağımsız, bilgisayar açık).
+    okuma sayfaları sunucudan doğrudan `/taslak/`'a. **Kuruldu (2026-11-20, kullanıcının seçimi "A": tefsir
+    makinesi; yük ≈0, 5 GB boş bellek):** ayrı kullanıcı `taslak`, `scripts/taslak-sunucu.sh` (CLAUDE.md "Taslak hattı
+    ve kullanım sınırı"); veri sunucudan sunucuya (yayındaki kopyalar yereldekiyle aynı, `ozet`; evden yükleme ≈15
+    KB/s, kullanılmaz); özel depoya yazma izinli deploy anahtarı eklendi; işler Nice=10. **Kalan:** kullanıcının
+    `giris`'i (aboneliğin anahtarı), sunucuda ilk gerçek model çağrısı (yoklama ve bir taslak), okuma sayfalarının
+    sunucudan gönderilmesi (bugün yerelden `taslak-gonder.sh`).
     **Tek komutla birim hattı** (kullanıcı kabul etti, 2026-11-19): bugün bir birim on küsur komut (kurulum, taslak,
     eşleştirme, eleştirmenler, kör A/B, okuma sayfası); tek komuta bağlanır.
   - **D5.0.2 Uzunluk hedefi:** kapandı, gerek yok (h9'da hedef kalktı, D14.6; derslerin şişmesi D15'te izleniyor).
@@ -153,7 +155,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
     yazımdan hemen sonra çalışır, kullanıcı kabul etti 2026-11-19).
     Ayar verisi D15'ten (D15.1: kapalı İşârât'sız görülebileni kaçırmıyor, nisbet onu tamamlıyor).
   - **D5.0.7 Maliyet:** taslak ≈4,5–5,5 $, konu ve tablo ≈0,3 $, nisbet ≈1 $, kapalı ≈3 $, düzeltme (ölçülecek);
-    Bakara'nın kalanı **153 birim** (b5), bütün Kur'ân ≈3.400 birim tahmini (bölmeden sonra güncellenir).
+    Bakara'nın kalanı **154 birim** (b6, kesin), bütün Kur'ân ≈3.400 birim tahmini (bölmeden sonra güncellenir).
   - **D5.0.8 Soru kalıpları listesinin bütün İşârât'tan yeniden kuruluşu:** gerek kalmadı (2026-11-20: hat h9,
     liste ve Tarama yalnız h10'daydı). Yerine D15'in açık sorusu: edatın ve kaydın taalluku (bkz. D15 "Hat h9").
   - **D5.0.9 Kabul birimi 30:** D5.0'ın değişiklikleri (D5.0.4–D5.0.8) bitince hattın son sınaması; 30 hiçbir denemeye
