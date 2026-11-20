@@ -283,7 +283,11 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   → işlendi → kapandı, işleyen sürüme bağlı, silinmez; (e) **arama**: bütün taslaklarda ve notlarda (tutarlılık).
   Arayüz: Pano · Okumalar (n) · Birimler · Deneyler · Arama; telefonda da. Zemin: `/taslak/` girişinin servisinin
   (`site_auth.py`) yanında küçük bir veritabanı (okumalar, notlar, deneyler, kararlar), her gece taslak deposuna kopya.
-  Açık soru: okuyucu notundan düzeltme (kullanıcıya açıklandı, karar bekliyor).
+  (f) **okuyucu notundan düzeltme** (kullanıcı kabul etti, 2026-11-21): bir okumada bulunan hata, kapının notları gibi
+  düzeltmeye verilebilir; yalnız okuyucunun istediği birimde, elle başlatılır ("notlarımla düzelt"), kuyruk
+  kendiliğinden yapmaz. Yazar her notu karşılar ya da gerekçesiyle reddeder (kapı d3'ün kuralları: yeni kaynak yok);
+  yeni sürüm açılır, eski silinmez, fark masada. Sonraki birimler eski sürümü görerek yazılmış kalır (geri sarılmaz).
+  ≈1–3 $ bir tur.
   **Sıra:** S7.1 veri katmanı (yayın dosyası, kalıcı paragraf kimlikleri, sürümler) → S7.2 ar-ge masası (pano girişte,
   birim başına eleştiri, nisbet ve kapı) → S7.3 okuma platformu ilk sürüm (Kur'ân paneli, birim sayfası, izah, atıfta
   kaynağın metni, künye, işaretler) → S7.4 okuyucu notu (sunucuda, kalıcı adrese bağlı). S7.1 ve S7.2 D5 dönerken
