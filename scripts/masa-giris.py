@@ -40,7 +40,6 @@ P = _load("d1_prova", "d1-prova.py")
 DUR = _load("d1_durum", "d1-durum.py")
 MASA = P.KEEP / "masa"
 STOP = Path.home() / ".d5-dur"
-OKUMA_ARALIGI = 20            # d1-d5-sayfa.durum_sayfasi: alarmlı birimler ve her 20 birimden biri okunur
 
 
 def _num_key(uid: str) -> list[int]:
@@ -98,13 +97,7 @@ def veri() -> dict:
     lim = json.loads(P.LIMIT_STATE.read_text(encoding="utf-8")) if P.LIMIT_STATE.exists() else {}
     avg = sum(shares) / len(shares) if shares else None
     pages = _pages()
-    alarmed, to_read = [], []
-    for i, u in enumerate(d5):
-        x = st.get(u["id"]) or {}
-        if x.get("alarmlar"):
-            alarmed.append({"id": u["id"], "alarmlar": x["alarmlar"]})
-        if x.get("bitti") and (x.get("alarmlar") or i % OKUMA_ARALIGI == 0):
-            to_read.append(u["id"])
+    alarmed = [{"id": u["id"], "alarmlar": st[u["id"]]["alarmlar"]} for u in d5 if (st.get(u["id"]) or {}).get("alarmlar")]
     recent = sorted(done, key=lambda u: st[u]["bitti"], reverse=True)[:5]
     out_d5 = {
         "toplam": len(d5), "bitti": len(done), "suruyor": running, "siradaki": nxt,
@@ -115,7 +108,7 @@ def veri() -> dict:
         "kuyruk": _queue_state(),
         "son": [{"id": u, "bitti": st[u]["bitti"], "maliyet": st[u].get("maliyet"), "sure_dk": st[u].get("sure_dk"),
                  "alarm": len(st[u].get("alarmlar") or [])} for u in recent],
-        "alarmli": alarmed, "okunacak": to_read,
+        "alarmli": alarmed,
     }
     # Birimler: ar-ge birimleri (taslak deposunda klasörü olanlar) ve D5'in başlamış birimleri; sırayla
     arge = {p.name for p in P.DRAFTS.iterdir() if p.is_dir() and p.name.replace("-", "").isdigit()}
@@ -205,12 +198,11 @@ function pano(d, oks) {
   L.push(`<p class="small muted">Kuyruk: ${esc(x.kuyruk || 'bilinmiyor (sayfa yerelde üretildi)')}`
     + (x.yoklama ? ` · kota yoklaması ${when(x.yoklama)}` : '') + ' · <a href="d5.html">bütün tablo</a></p>');
   const bek = oks.filter(o => o.durum !== 'bitti');
-  L.push('<h2>Bekleyen okumalar</h2>');
+  L.push('<h2>Açık okumalar (deneyler)</h2>');
   L.push(bek.length ? bek.map(okuma).join('') : '<p class="muted">Bekleyen okuma yok.</p>');
-  L.push('<h2>Alarmlar</h2>');
+  L.push('<h2>Alarmlar</h2><p class="small muted">Programın gördüğü (birim yine yayımlandı); ar-ge bilgisidir, okuma görevi açmaz.</p>');
   L.push(x.alarmli.length ? x.alarmli.map(a => `<div class="row"><a href="d5-${esc(a.id)}.html">${esc(a.id)}</a> <span class="alarm">⚠ ${esc(a.alarmlar.join('; '))}</span></div>`).join('')
     : '<p class="muted">Alarm yok.</p>');
-  if (x.okunacak.length) L.push(`<p class="small">📖 Okuma listesi (alarmlılar ve her 20 birimden biri): ${x.okunacak.map(u => `<a href="d5-${esc(u)}.html">${esc(u)}</a>`).join(', ')}</p>`);
   if (x.son.length) {
     L.push('<h2>Son biten birimler</h2>');
     L.push(x.son.map(s => `<div class="row t"><span><a href="d5-${esc(s.id)}.html">Bakara ${esc(s.id)}</a>${s.alarm ? ' <span class="alarm">⚠</span>' : ''}</span>`

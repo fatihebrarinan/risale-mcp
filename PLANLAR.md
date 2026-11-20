@@ -64,14 +64,14 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (görevli sayfa: kararlar sunucuya, taraflar bitirince), `scripts/taslak-gonder.sh data/d1/masa/tur-30-D5-kabul.html`,
   `uv run python scripts/masa-gorev.py ac data/d1/provalar/30/gorev-D5-kabul.json`; ölçüler (envanter, İşârât
   karşılaştırması, kör A/B) kullanıcıya rakamlarla. Kullanıcı okuyunca `masa-gorev.py al` (sunucuda), h9 mı h12 mi →
-  `D5_SURUM` (d1-birim.py varsayılanı h12). (2) **S7'nin sırası onaylandı** (kullanıcı, 2026-11-21): masanın giriş sayfası, birimin ar-ge görünümü, okumaların
-  kendiliğinden akması D5.1'den önce (akış önce konuşulacak); deneyler defteri, S7.3, S7.4 D5 dönerken. **Giriş sayfası
+  `D5_SURUM` (d1-birim.py varsayılanı h12). (2) **S7'nin sırası onaylandı** (kullanıcı, 2026-11-21): masanın giriş sayfası, birimin ar-ge görünümü kuyruktan
+  önce; deneyler defteri, S7.3, S7.4 D5 dönerken. Okumaların kendiliğinden akması **düştü** (aşağıda "D5'te okuma"). **Giriş sayfası
   yapıldı** (`scripts/masa-giris.py`, `34873a6`: `/taslak/` = Pano · Okumalar · Birimler; kabuk + `pano.json`, okumalar
   canlı API'den; D5 kuyruğu her birimden sonra yeniler; sunucuya kodu 30 bitince `taslak-sunucu.sh gonder`). Sırada
   birimin ar-ge görünümü (30'un kapı d3 dosyalarıyla).
-  (3) Sonra D5.1: `taslak-sunucu.sh devam`
-  ardından hemen `dur` (34'ü yazıp durur).
-- **Kullanıcıdan beklenen:** okumaların kendiliğinden akışının kararları (sohbette soruldu); 30'un okuması (görev açılınca).
+  (3) Sonra kuyruk: `taslak-sunucu.sh devam`, 40'ı (ilk kıssa birimi) yazınca `dur`; kullanıcı 40'a göz atar (D5.2),
+  sonra `devam`.
+- **Kullanıcıdan beklenen:** 30'un okuması (görev açılınca); S7'nin devamını konuşmak.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -84,7 +84,16 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **D5.0 Üretim hazırlığı** (D11'in kalanı, kullanıcının kararları 2026-11-17 ve 2026-11-18; 2026-11-19'da alt adımlara
   bölündü, kullanıcının kararı: eski "D5.0 (n)" göndermeleri D5.0.n diye okunur). **D5'te birim başına insan onayı
   yoktur** (kullanıcı, 2026-11-19: bütün Kur'ân'ın taslağı birinin onayına sunulmak için değil, okunmak için): kalite
-  makineden gelir, insan okuması (D5.1, D5.2) hattın kalitesini ölçen örneklemdir, kapı değil.
+  makineden gelir.
+  **D5'te okuma** (kullanıcının kararı, 2026-11-21: "D5 ve S7'nin ortak amacı taslakları insanlarla buluşturmak …
+  okumalar ar-ge için taslağı geliştirmek için yok muydu?"): okumalar yalnız ar-ge içindir (hattı geliştirmek, bir
+  sürümü sınamak), onay değildir. Bu yüzden (1) kuyruk okuma görevi açmaz, "her 20 birimden biri" okuma listesi
+  kalktı; alarmlar ar-ge bilgisi olarak Panoda ve durum sayfasında durur, görev açmaz; (2) okuma görevleri (S7.2)
+  yalnız deneyler için, elle açılır (kabul 30, ileride bir istem değişikliği, belki ehil okuması); (3) D5.1'de
+  okuma yok (kabul 30 zaten D5 koşullarında: önceki birimin taslağını görür, kendi İşârât'ı gizli); 34'ü kuyruk
+  yazarken durum Panodan izlenir; (4) D5.2 bir kez yapılır (30'un kapsamadığı tek risk: Risale'si az birimler), okuma
+  yerine göz atmak yetebilir. Yanlışı görüp not etmek okuyucuların işi (S7.4); bir notu düzeltmeye vermek elle
+  (S7 (f)).
   - **D5.0.1 Kuyruk** (eski D11.4): birimleri sırayla yazdırmak, kullanım sınırına takılınca sıfırlanmayı bekleyip
     sürmek, pencere başına sığan işi ölçmek. Sıra önerisi: önce Risale-i Nur'un bağ kurduğu âyetler (D5.2'nin çekincesiyle).
     **Kullanım sınırına karşı koruma (yapıldı, 2026-11-19, kullanıcının isteği: "5 saatlik limitin dolması sık … büyük bir
@@ -203,13 +212,13 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   sonra `data/d1` commit ve push (kuyruk tek uzun iş); (2) kuyruk sunucunun açılışında başlayan, düşünce yeniden kalkan
   hizmet (`d1-kuyruk`); (3) **haftalık pencere koruması: %90** (kullanıcının eşiği; geçince durur, sıfırlanınca sürer,
   telefona haber); (4) kalite alarmları (kapıdan sonra kalan nisbet hatası, eksik vecih, Arapça uzunluk aykırı, Risale
-  dersi yok, kapı notların çoğunu reddetti, izah eksik): kuyruk durmaz, birim "okunmalı" işaretlenir, telefona düşer;
+  dersi yok, kapı notların çoğunu reddetti, izah eksik): kuyruk durmaz, alarm birime yazılır, telefona düşer (görev açmaz);
   (5) durum sayfası `/taslak/d5.html` (birimler, bağlantılar, alarmlar, maliyet, haftalık kota, bitiş tahmini) ve
   günlük özet bildirimi; (6) geçici hatada bir kez yeniden deneme; (7) kod güncellemesi yalnız birimler arasında
   (sunucuda bekleyen kod, sıradaki birimin başında geçer); (8) **kolay durdurma ve sürdürme** (kullanıcı: "önümüzdeki
   haftalarda sık kullanabilirim"): `scripts/taslak-sunucu.sh dur | devam | hemen-dur | durum` ya da telefondan Claude'a
-  söylemek; `dur` birimi bitirip durur, `hemen-dur` ortada keser (sürdürünce biten adımlar atlanır). Okuma listesi:
-  alarmlı birimler ve her ~20 birimden biri (kayma riskine karşı).
+  söylemek; `dur` birimi bitirip durur, `hemen-dur` ortada keser (sürdürünce biten adımlar atlanır). Okuma listesi
+  2026-11-21'de kalktı ("D5'te okuma").
 - **D5'in başlangıç sırası** (kullanıcı kabul etti, 2026-11-20): (1) Bakara bölmesinin 20 geçişi (D5.0.4); (2) kalite
   kapısı D15'in taslakları üzerinde, İşârât doğru cevap olarak (D5.0.6); (3) **h9'a bir iyileştirme turu** (h11;
   kullanıcının kararı: yapılacak; adaylar D15 raporundan: birinci vechin genişliği, ders seçiminde isabet ölçüsü,
@@ -224,8 +233,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   zâhiren ne beklenirdi; neden bu geldi; bağ için söylenmemiş bir şey varsa takdiri), geliştirme birimlerinden iki
   kısa İşârât örneğiyle; h10'daki gibi tablo yok (zorlama). Sınama: saklı birim 29'da h9'a karşı (kör A/B ve
   kullanıcının okuması).
-- D5.1 Bakara 34, tek birim; **okumayı kullanıcı yapar** (2026-11-20).
-- **D5.2 Risale'si az iki birim, kuyruk büyümeden önce** (kullanıcının kararı, 2026-11-19): bir kıssa (İsrâiloğulları,
+- D5.1 Bakara 34, kuyruğun ilk birimi; okuma yok (2026-11-21; önceden "okumayı kullanıcı yapar", 2026-11-20), durum
+  Panodan.
+- **D5.2 Risale'si az iki birim, kuyruk büyümeden önce** (kullanıcının kararı, 2026-11-19; 2026-11-21: göz atmak
+  yetebilir, bir kez; birimler sırayla yazıldığı için kıssa 40'ta erken gelir (kuyruk 40'tan sonra durur), ahkâm
+  178'den sonra, geldiğinde): bir kıssa (İsrâiloğulları,
   40–74) ve bir ahkâm birimi (178–283) okunur. Sebep: D15'in saklı birimlerinin hepsi Risale'ce zengin (Risale'deki
   doğrudan alıntı 21–22'de 30, 26–27'de 14, 28'de 7); Bakara 34–283'te âyetlerin ≈%78'inde doğrudan alıntı yok (34–39:
   6'da 5, 40–74: 35'te 26, 178–283: 106'da 86; konu üzerinden gelen yerler sayılmadı). h10'un kazancı büyük ölçüde
@@ -281,7 +293,7 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   kurulur. Ekler: telefona göre tasarım; harekeli Arapça için tam yazı tipi kendi sitemizden (Google Fonts yok);
   ar-ge'de kayma görünümü (ardışık birimlerin garaz özetleri, birinci vecihlerin bağları); D5 S7'yi beklemez (kimlikler
   değişmeyen taslaklardan sonradan üretilir). D5 okuma sayfası (`d1-d5-sayfa.py`) yeni platforma taşınır.
-  **Ar-ge masasının ekleri** (kullanıcı kabul etti, 2026-11-21): (a) **okuma görevleri** (kullanıcının fikri: "benim
+  **Ar-ge masasının ekleri** (kullanıcı kabul etti, 2026-11-21): (a) **okuma görevleri** (2026-11-21: yalnız deneyler için, elle açılır; bkz. D5 "D5'te okuma") (kullanıcının fikri: "benim
   veya ehil birinin yapması gereken okumalar ve gönderdiği notlar otomatikleşmeli"; dağınık okuma sayfaları toplanır):
   okumalar kutusu (atanmış okumalar, yer sayısı, süre, durum, sekmede bekleyen sayısı), yazdıkça sunucuya kayıt
   (dışa aktarma kalkar; telefonda yarım, bilgisayarda devam), bitince haber ve taslak deposuna kendiliğinden, okuyucu

@@ -184,8 +184,8 @@ def yaz(unit: str, surum: str = SURUM) -> int:
 
 
 # ---------------------------------------------------------------- kalite alarmları (model çağrısız)
-# Birim başına insan onayı yok (kullanıcının kararı): program her birimden sonra bakar; kuyruk durmaz, birim
-# "okunmalı" işaretlenir, telefona düşer.
+# Birim başına insan onayı yok (kullanıcının kararı): program her birimden sonra bakar; kuyruk durmaz, alarm birime
+# yazılır ve telefona düşer. Alarm ar-ge bilgisidir, okuma görevi açmaz (kullanıcının kararı, 2026-11-21).
 NISBET_ESIK = 0.08       # kapıdan sonra kalan nisbet hatası / hüküm
 RED_ESIK = 0.5           # kapının reddettiği / karşılanması gereken not
 

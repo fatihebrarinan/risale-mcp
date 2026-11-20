@@ -204,7 +204,7 @@ def sayfa(unit: str, n: int | None = None) -> Path:
 
 def durum_sayfasi() -> Path:
     """D5'in durum sayfası (`masa/d5.html`): birimler, okuma sayfaları, alarmlar, maliyet, haftalık kota ve tahmin.
-    Okuma listesi: alarmlı birimler ve her 20 birimden biri (kayma riskine karşı)."""
+    Okuma listesi yok (kullanıcının kararı, 2026-11-21: D5'te okuma onay değildir; alarmlar ar-ge bilgisidir)."""
     st = P.d5_state()
     b = st["birimler"]
     units = [u for u in P.d5_units() if u["kaynak"] != "isarat"]
@@ -224,19 +224,17 @@ def durum_sayfasi() -> Path:
         avg = sum(shares) / len(shares)
         L.append(f'<p class="small muted">Birim başına haftalık kotanın ≈%{avg * 100:.1f}\'i; kalan {left} birim ≈'
                  f'{left * avg / 0.9:.1f} haftalık kota (eşik %90).</p>')
-    L.append('<p class="small muted">⚠ alarm: program bir şey gördü (birim yine yayımlandı). 📖 okuma listesi: alarmlı '
-             "birimler ve her 20 birimden biri.</p>")
+    L.append('<p class="small muted">⚠ alarm: program bir şey gördü (birim yine yayımlandı); ar-ge bilgisidir, okuma görevi açmaz.</p>')
     L.append('<table style="width:100%;border-collapse:collapse;font-size:.88rem">'
              '<tr style="text-align:left"><th>Birim</th><th>Durum</th><th>$</th><th>dk</th><th>Not</th></tr>')
-    for i, u in enumerate(units):
+    for u in units:
         x = b.get(u["id"]) or {}
         al = x.get("alarmlar") or []
-        oku = bool(al) or (x.get("bitti") and i % 20 == 0)
         name = (f'<a href="d5-{u["id"]}.html">{u["id"]}</a>' if x.get("bitti") else u["id"])
         state = "bitti" if x.get("bitti") else ("sürüyor" if x.get("basladi") else "")
         L.append(f'<tr style="border-top:1px solid var(--line)"><td>{name}</td><td>{state}</td>'
                  f'<td>{x.get("maliyet") or ""}</td><td>{x.get("sure_dk") or ""}</td>'
-                 f'<td>{"📖 " if oku else ""}{"⚠ " + esc("; ".join(al)) if al else ""}</td></tr>')
+                 f'<td>{"⚠ " + esc("; ".join(al)) if al else ""}</td></tr>')
     L.append("</table>")
     L.append(f'<p class="small muted">Sayfa {datetime.now():%Y-%m-%d %H:%M}</p>')
     page = (f'<!doctype html>\n<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" '
