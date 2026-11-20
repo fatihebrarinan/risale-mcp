@@ -4,9 +4,9 @@ pencere planlaması için; D5.0.1'deki tek komutla birim hattının ilk parças�
     uv run python scripts/d1-durum.py 21-22          # bir birim
     uv run python scripts/d1-durum.py                # bütün birimler, kısa tablo
 
-Sıradaki adım D15'in akışına göredir (PLANLAR.md D15): kurulum → envanter → h10 → h9 → her taslakta eşleştirme ve
-İşârât karşılaştırması → h10'da kapalı eleştirmen, nisbet ve aletlerin ayarı → kör A/B → okuma sayfası → kullanıcının
-okuması. Geliştirme birimlerinde (D12–D14) akış başkaydı; onlarda yalnız var olan gösterilir.
+Sıradaki adım D15'in akışına göredir (PLANLAR.md D15). 2026-11-20'den beri hat h9, tek taslak: kurulum → envanter →
+h9 → eşleştirme → İşârât karşılaştırması → kapalı eleştirmen → nisbet → aletlerin ayarı → okuma sayfası →
+kullanıcının okuması. 21–22'de h10 ve h9 birlikteydi (eski akış). Geliştirme birimlerinde (D12–D14) akış başkaydı; onlarda yalnız var olan gösterilir.
 """
 
 import json
@@ -96,6 +96,23 @@ def next_step(unit: str, s: dict) -> str:
     if s["envanter"] is None:
         return f"`uv run python scripts/d1-yz.py envanter {unit}`"
     by_surum = {x["surum"]: x["n"] for x in s["taslaklar"]}
+    if unit != "21-22":                  # 2026-11-20'den beri hat h9, tek taslak (D15.2, D15.3)
+        if "h9" not in by_surum:
+            return (f"`uv run python scripts/d1-hat.py hazirla {unit} --surum h9` ve "
+                    f"`yazdir {unit} --surum h9 --yoksa`")
+        n, o = by_surum["h9"], s["olcu"][by_surum["h9"]]
+        for key, cmd in (("eslestirme", f"d1-yz.py eslestir {unit} --taslak {n} --modeller opus"),
+                         ("isarat", f"d1-duzelt.py isarat {unit} --taslak {n}"),
+                         ("kapali", f"d1-duzelt.py kapali {unit} --taslak {n} --butun"),
+                         ("nisbet", f"d1-nisbet.py denetle {unit} --taslak {n}"),
+                         ("ayar", f"d1-duzelt.py notlar {unit} --taslak {n} --acik isarat")):
+            if not o[key]:
+                return f"`uv run python scripts/{cmd}` (h9)"
+        if not s["turlar"]:
+            return "okuma sayfası (tek taslak): kartlar `provalar/<birim>/yerler-<tur>.json`, `d1-tur.py okuma-tek`, `taslak-gonder.sh`"
+        if not s["okumalar"]:
+            return "kullanıcının okuması (dışa aktarılan dosya `data/d1/notlar/`'a)"
+        return "dilimin raporu ve PLANLAR.md"
     if "h10" not in by_surum:
         return (f"`uv run python scripts/d1-kalip.py tablo {unit}`, `d1-hat.py hazirla {unit} --tarama`, "
                 f"`d1-hat.py yazdir {unit} --surum h10`")

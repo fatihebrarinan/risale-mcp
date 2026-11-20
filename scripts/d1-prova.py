@@ -258,6 +258,87 @@ UNITS.update({
     },
 })
 
+# 26–27 (mağlata cevabı; D15.2, 2026-11-20). İki dilde de tek düğüm. Arapçada c001 üç vechin genel girişi, V1 c002
+# (levâhık, sonra sevâbık; üç mağlataya cevap V1'in içinde), V2 c035, V3 c112; c204 sonraki âyetin (28) satırı.
+# Türkçede âyet ve meal c001–c007, V1 c008, V2 c105, V3 c239. İnce Ek 3: 23–24 ve 17–20'nin nazarî girişi (önceki birim
+# 25 kaynak dosyasında tam; 28 saklı birim, D15.3: girmez). Usul özetinin 3.3'ü ("saat milleri") bütünüyle bu
+# birimden: başlığıyla çıkar (21–22'nin "her delil bir lafza bağlanır" kuralı gibi).
+UNITS.update({
+    "26-27": {
+        "sura": 2, "ayahs": (26, 27), "sura_name": "Bakara", "olcu": "Bakara 23–24, 25",
+        "ince": tuple(B_AR + "23-24-ayetlerin-tefsiri-nubuvvet-hakkinda" + x for x in
+                      ("", "/mukaddime", *(f"/mesele-0{k}" for k in range(1, 8)))) + _TEMSIL,
+        "nodes": (B_TR + "26-27-ayetlerin-tefsiri", B_AR + "26-27-ayetlerin-tefsiri"),
+        "sections": {
+            "isaratul-icaz-arabi": {"V1": "c001", "V2": "c035", "V3": "c112", "son": "c204"},
+            "isaratul-icaz": {"Âyet": "c001", "V1": "c008", "V2": "c105", "V3": "c239"},
+        },
+        "ozet": [
+            (None, "`isaratul-icaz/sure-i-bakara/26-27-ayetlerin-tefsiri/c241`"),
+            (None, "`isaratul-icaz/sure-i-bakara/26-27-ayetlerin-tefsiri/c242`"),
+            (None, "`isaratul-icaz-arabi/sure-i-bakara/26-27-ayetlerin-tefsiri/c112`"),
+            ("### 3.3 Saat milleri: âyet, cümle ve hey'et aynı maksadın etrafında döner\n\n", ""),
+            (None, "`isaratul-icaz/sure-i-bakara/26-27-ayetlerin-tefsiri/c008`"),
+            (None, "`isaratul-icaz/sure-i-bakara/26-27-ayetlerin-tefsiri/c009`"),
+            (None, "`isaratul-icaz-arabi/sure-i-bakara/26-27-ayetlerin-tefsiri/c001`"),
+            (None, "| 26–27 | V1, V2, V3 (sıralı)"),
+            ("3.2'deki ilkenin beyti üç yerde geçer", "3.2'deki ilkenin beyti iki yerde geçer"),
+            (", `isaratul-icaz-arabi/sure-i-bakara/26-27-ayetlerin-tefsiri/c113`", ""),
+        ],
+        "cizelge": [
+            (None, "| 26–27 | `B/26-27"),
+            ("dokuz yerde", "sekiz yerde"),
+            (", `B/26-27-ayetlerin-tefsiri/c001`, `B/28/c001`", ", `B/28/c001`"),
+            ("; `B/26-27-ayetlerin-tefsiri/c001`..`c004`: sevâbık, levâhık, mecmû", ""),
+            ("- 26–27'de mukaddime yoktur: itirazlara cevap V1'in içindedir. 9–16'da", "- 9–16'da"),
+            ("; `B/26-27-ayetlerin-tefsiri/c155`..`c176`: iki silsile", ""),
+        ],
+    },
+})
+
+# 26–27'nin sızıntı testi (2026-11-20, elle incelendi): meşhur beyitler («وفي كل شيء له آية», «عباراتنا شتى»,
+# "cümlenin maksûdu bir"), müellifin Muhâkemât'taki kelâm düsturu (emsal 9–10).
+UNITS["26-27"]["sizinti_kabul"] = {**{s: _DUSTUR for s in (
+    "muhakemat/makale-02/mesele-04/c001",
+)}, **{s: "meşhur beyit; kalıp ibare" for s in (
+    "divan-i-harb-i-orfi/hurriyete-hitab/hakikat-05/c026",
+    "muhakemat/makale-03/maksad-01/delil-02/c153",
+    "isaratul-icaz/sure-i-bakara/2/misal-01/c007",
+    "isaratul-icaz/sure-i-bakara/22/tevhide-geciyoruz/c009",
+    "isaratul-icaz-arabi/sure-i-bakara/2/mukaddime/c002",
+    "isaratul-icaz-arabi/sure-i-bakara/17-20-ayetlerin-tefsiri/mesele-04/c002",
+    "isaratul-icaz-arabi/sure-i-bakara/21-22-ayetlerin-tefsiri/mukaddime/c108",
+    "suaat-i-marifetin-nebi/mukaddime/burhan-01/c007",
+    "el-mesnevi-el-arabi/mukaddime/nokta-01/c008",
+    "el-mesnevi-el-arabi/mukaddime/nokta-04/c007",
+    "el-mesnevi-el-arabi/habbe/c155",
+    "el-mesnevi-el-arabi/habbe/zeyl/c008",
+    "el-mesnevi-el-arabi/zuhre/tezyil/c029",
+    "el-mesnevi-el-arabi/zuhre/tezyil/c122",
+    "mesnevi-i-nuriye/habbe/misal-02/c074",
+    "mesnevi-i-nuriye/fihrist/1-lemalar/c002",
+    "sozler/konferans/c263",
+    "mektubat/26/mebhas-04/mesele-02/sual-01/c022",
+    "sualar/7/ayetul-kubra/bab-02/menzil-02/hakikat-05/c037",
+    "emirdag-lahikasi/emirdag-lahikasi-2/285/nokta-03/c007",
+    "emirdag-lahikasi/emirdag-lahikasi-2/285/nokta-03/c016",
+    "tarihce-i-hayat/birinci-kisim-ilk-hayati/bediuzzaman-yaninda-baska-kitaplar-bulundurmuyordu/c007/h1/c014",
+    "tarihce-i-hayat/altinci-kisim-emirdagi-hayati/emirdagindaki-hayati-soyle-hulasa-olunabilir/c031",
+    "mesnevi-i-nuriye/mukaddime/nokta-01/c014",
+    "mesnevi-i-nuriye/katre/zeyl/remz-15/c011",
+    "emirdag-lahikasi/emirdag-lahikasi-2/306/c050",
+    "mektubat-osmanlica/026/004/002/c031",
+    "sualar-osmanlica/007/002/c188",
+    "mesnevi-i-nuriye-osmanlica/001/c031",
+    "mesnevi-i-nuriye-osmanlica/005/001/c165",
+    "mesnevi-i-nuriye-osmanlica/016/c004",
+    "emirdag-lahikasi-2-osmanlica/017/c121",
+    "emirdag-lahikasi-2-osmanlica/017/c130",
+    "emirdag-lahikasi-2-osmanlica/027/c051",
+    "tarihce-i-hayat-osmanlica/003/c2188",
+    "tarihce-i-hayat-osmanlica/008/c096",
+)}}
+
 # 21–22'nin sızıntı testi (2026-11-19, elle incelendi): (1) müellifin Arapça Mesnevî'sindeki Nokta (İhsan Kasım'ın
 # Türkçeden tercümesi; İşârât'ın Sâni'in delilleri mukaddimesinin ibaresini kullanıyor); (2) İşârât'ın 21–22'de
 # naklettiği meşhur beyit «وفي كل شيء له آية تدل على أنه واحد», külliyatta onlarca yerde.

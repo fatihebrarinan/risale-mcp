@@ -55,18 +55,18 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D15.1 bitti (2026-11-20): 21–22'de kör eleştirmen ve kullanıcı h9'u tercih etti (okuma: h9 6, h10 1).
-  Sıradaki D15.2 (26–27): birim kaydı (`d1-prova.UNITS`, 21–22 örneği), envanter, h10 ve h9 taslakları ve ölçüler
-  (`d1-arka.sh` ile), kapalı eleştirmen ve nisbet (h10), aletlerin ayarı, kör A/B, birleşik okuma sayfası.
-- **Kullanıcıdan beklenen:** D15.2'ye başlama onayı (≈35–40 $; 26–27 büyük birim).
-- **Sonra:** D15.2 (26–27), D15.3 (28; D5.0.5'in sınaması), D15'in toplu raporu ve karar (h9 mı h10 mu).
+- **Önde:** D15.2 (26–27), **hat h9** (kullanıcının kararı, 2026-11-20; h10 bırakıldı): birim kaydı, envanter, h9
+  taslağı, eşleştirme, İşârât karşılaştırması, kapalı eleştirmen, nisbet, aletlerin ayarı (`d1-arka.sh` ile), sonra
+  tek taslaklı okuma sayfası (taslak ve İşârât, "kendi başına yeterli mi").
+- **Kullanıcıdan beklenen:** okuma sayfası gelince 26–27'nin okuması.
+- **Sonra:** D15.3 (28; D5.0.5'in sınaması: önceki birim olarak 26–27'nin h9 taslağı), D15'in toplu raporu.
 - **Bekleyen yan işler** (yeri gelince; D15 sürerken açılmaz): D5.0.4 bölmenin kalanı, S7.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D15 | Saklı birimlerde son ölçüm (hat h10; 21–22, 26–27, 28; üç dilim, iki kullanım penceresi) | |
+| 1 | D15 | Saklı birimlerde son ölçüm (hat h9; 21–22 bitti, 26–27, 28) | |
 | 2 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
 | 3 | S7 | Okuma platformu (girişli, davetle) ve ar-ge masasının D5'e göre güncellenmesi | |
 
@@ -95,13 +95,23 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   (≈1 $) ve kapalı eleştirmen (bütün taslağa tek çağrı, ≈2–3 $ tahmin); bulduklarıyla İşârât kartının ve envanterin
   bulduğu karşılaştırılır: D5'te gerçek kusurların ne kadarını makine yakalıyor, insan okuması nereye gitmeli.
   (2) **D5'in şartı 28'de:** dilim sırası 21–22 → 26–27 → 28; 28'in birinci vechine önceki birim olarak İşârât'ın 26–27'si
-  yerine 26–27'nin h10 taslağı verilir (D5.0.5); istem değişmez, birinci vecih raporda ayrı ölçülür. (3) **30 yedekte:**
+  yerine 26–27'nin h9 taslağı verilir (D5.0.5); istem değişmez, birinci vecih raporda ayrı ölçülür. (3) **30 yedekte:**
   D5.0'ın kabul birimi; D15'e, soru kalıpları listesinin yeniden kuruluşuna ve hiçbir denemeye girmez (25 ve 29
   harcanabilir). Maliyet birim başına ≈14–15 $, toplam ≈45 $: iki pencere.
 - **D15 yazılırken yan yana** (kullanıcının isteği, 2026-11-19; aynı gün geri alındı: "birkaç işi aynı anda yapabilirim
   diye düşünmüştüm, fakat bunda çok zorlandım"): D5.0.4 birim bölmesi yapıldı ve plana yazıldı, S7 konuşulup plana
   yazıldı; ikisi de yeri gelince sürer. D15 boyunca önde tek iş.
-- **h9 ikinci kol** (kullanıcının kararı, 2026-11-19: "h10'dan biraz şüpheliyim"): üç birimde de h9 yazılır (21–22
+- **Hat h9; h10 bırakıldı** (kullanıcının kararı, 2026-11-20, D15.1'den sonra: "h9 gerçekten daha akıcı ve açık bir
+  şekilde yazıyordu"). Gerekçe: kullanıcının okuması iki birimde de h10'dan yana değil (14–15: h10 1, emin değil 2;
+  21–22: h9 6, h10 1); h10'un tek açık kazancı (14–15'te envanter +15 puan) 21–22'de tekrar etmedi (%40 / %42),
+  kusurları tekrar etti (Tarama'da zorlama, çelişki, müfessir adı, tercümeyi topluca verme); okuma platformu
+  kararından sonra akıcılık asıl ürünün niteliği. "Üç birimde ikisi" kuralı erken bırakıldı (üçüncü birim tabloyu
+  ancak eşitlerdi). **D15.2 ve D15.3 yalnız h9:** envanter, İşârât karşılaştırması, kör aletlerin ayarı (kapalı
+  eleştirmen ve nisbet artık h9 taslağında: D5'in hattı), kullanıcının "kendi başına yeterli mi" okuması (tek
+  taslaklı kartlar). h10'un kodu (`--tarama`, soru kalıpları) durur. **D5'e açık soru** (kullanıcının 21–22 gözlemi):
+  İşârât fâ'nın gerçekten hangi cümleye, hangi kelimeye bağlandığını sorar, taslaklar fâya bir mânâ verir; model
+  edatın ve kaydın taallukunu sormuyor; liste de sordurmadı (D5.0'da konuşulur, D15 boyunca hat donuk).
+- **h9 ikinci kol** (kullanıcının kararı, 2026-11-19; 2026-11-20'de yerini yukarıdaki karara bıraktı: "h10'dan biraz şüpheliyim"): üç birimde de h9 yazılır (21–22
   dahil). Sebep: h10'un lehine kanıt tek birim (D14.7); Tarama'da zorlama işareti ("taşımıyor" hemen hiç yok: 57/60,
   59/59), 14–15'te çelişki 1 → 3 ve müfessir adı 5 → 11, 21–22'de tercümeyi topluca verme. h10 = h9 + liste + Tarama:
   tek farklı temiz kıyas (h2 kolunun vereceği cevabı daha ucuz verir). h9 kolunun ölçüsü: eşleştirme, İşârât
@@ -218,7 +228,7 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
     **Kalan:** inceleme listesindeki 20 geçiş (kullanıcıyla), sonra bütün Kur'ân (b5 ile; kısa sûreler ve ahkâm
     için kuralın uzatması ayrıca konuşulur).
   - **D5.0.5 Önceki birim:** birinci vecih için İşârât'ın önceki birimi yerine önceki birimin taslağı; D15.3'te 28'de
-    sınanır (26–27'nin h10 taslağı).
+    sınanır (26–27'nin h9 taslağı).
   - **D5.0.6 Kalite kapısı: denetle, düzelt, yayımla** (2026-11-19'da yeniden tarif: insan onayı olmadığı için kör
     aletler insanı yönlendirmek için değil otomatik düzeltme için): nisbet denetçisi (D14.5b), kapalı eleştirmen (tek
     çağrı), düzeltme turu (D12.1: kapalı notlarla düzeltme işe yaradı ama uzattı; sınanmalı), mekanik denetimler ve
@@ -227,8 +237,8 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
     Ayar verisi D15'ten (D15.1: kapalı İşârât'sız görülebileni kaçırmıyor, nisbet onu tamamlıyor).
   - **D5.0.7 Maliyet:** taslak ≈4,5–5,5 $, konu ve tablo ≈0,3 $, nisbet ≈1 $, kapalı ≈3 $, düzeltme (ölçülecek);
     Bakara'nın kalanı **153 birim** (b5), bütün Kur'ân ≈3.400 birim tahmini (bölmeden sonra güncellenir).
-  - **D5.0.8 Soru kalıpları listesinin bütün İşârât'tan yeniden kuruluşu** (D14.7'nin kararı (b): h10 taban olursa;
-    D15'ten sonra saklı birimler de girer, 30 hariç).
+  - **D5.0.8 Soru kalıpları listesinin bütün İşârât'tan yeniden kuruluşu:** gerek kalmadı (2026-11-20: hat h9,
+    liste ve Tarama yalnız h10'daydı). Yerine D15'in açık sorusu: edatın ve kaydın taalluku (bkz. D15 "Hat h9").
   - **D5.0.9 Kabul birimi 30:** D5.0'ın değişiklikleri (D5.0.4–D5.0.8) bitince hattın son sınaması; 30 hiçbir denemeye
     ve listeye girmez.
 - D5.1 Bakara 34, tek birim, ehlin okuması.
