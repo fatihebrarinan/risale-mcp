@@ -270,6 +270,20 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   kurulur. Ekler: telefona göre tasarım; harekeli Arapça için tam yazı tipi kendi sitemizden (Google Fonts yok);
   ar-ge'de kayma görünümü (ardışık birimlerin garaz özetleri, birinci vecihlerin bağları); D5 S7'yi beklemez (kimlikler
   değişmeyen taslaklardan sonradan üretilir). D5 okuma sayfası (`d1-d5-sayfa.py`) yeni platforma taşınır.
+  **Ar-ge masasının ekleri** (kullanıcı kabul etti, 2026-11-21): (a) **okuma görevleri** (kullanıcının fikri: "benim
+  veya ehil birinin yapması gereken okumalar ve gönderdiği notlar otomatikleşmeli"; dağınık okuma sayfaları toplanır):
+  okumalar kutusu (atanmış okumalar, yer sayısı, süre, durum, sekmede bekleyen sayısı), yazdıkça sunucuya kayıt
+  (dışa aktarma kalkar; telefonda yarım, bilgisayarda devam), bitince haber ve taslak deposuna kendiliğinden, okuyucu
+  hesabına bağlı (ad yayımlanmaz, sabit numara), kör okumada taraflar karar gönderilene kadar sunucuda saklı;
+  (b) **deneyler defteri**: her deneme bir kayıt (ne sınandı, kollar, maliyet, makinelerin ölçüleri, okuyucunun
+  kararları, verilen karar); **şimdiye kadarki bütün sürümler de yazılır** (kullanıcının isteği: istem h1–h12,
+  düzeltme d1–d3, eleştirmen ve ölçü sürümleri, D11–D15 ve D5.0'ın denemeleri; `docs/d1/*-istemi.md` "Sürümler",
+  KAYIT.md, `data/d1/provalar/*`), bundan sonrakiler de; (c) **alet ayarı**: okuyucunun kararlarıyla makinelerin
+  (kör eleştirmen, İşârât karşılaştırması, kapalı eleştirmen) örtüşmesi, okuma biriktikçe; (d) **notun hayatı**: açık
+  → işlendi → kapandı, işleyen sürüme bağlı, silinmez; (e) **arama**: bütün taslaklarda ve notlarda (tutarlılık).
+  Arayüz: Pano · Okumalar (n) · Birimler · Deneyler · Arama; telefonda da. Zemin: `/taslak/` girişinin servisinin
+  (`site_auth.py`) yanında küçük bir veritabanı (okumalar, notlar, deneyler, kararlar), her gece taslak deposuna kopya.
+  Açık soru: okuyucu notundan düzeltme (kullanıcıya açıklandı, karar bekliyor).
   **Sıra:** S7.1 veri katmanı (yayın dosyası, kalıcı paragraf kimlikleri, sürümler) → S7.2 ar-ge masası (pano girişte,
   birim başına eleştiri, nisbet ve kapı) → S7.3 okuma platformu ilk sürüm (Kur'ân paneli, birim sayfası, izah, atıfta
   kaynağın metni, künye, işaretler) → S7.4 okuyucu notu (sunucuda, kalıcı adrese bağlı). S7.1 ve S7.2 D5 dönerken
