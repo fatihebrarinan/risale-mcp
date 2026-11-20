@@ -55,10 +55,11 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D15.2 (26–27), hat h9: ölçüldü (kapsama %44, İşârât karşılaştırması "düzeltmeyle"). Okuma sayfası
-  sitede: https://risalemcp.com/taslak/tur-26-27-D15.2.html (7 kart, ≈29 dk; taslak ve İşârât, "kendi başına yeterli mi").
-- **Kullanıcıdan beklenen:** 26–27'nin okuması; bitince "Dışa aktar".
-- **Sonra:** D15.3 (28; D5.0.5'in sınaması: önceki birim olarak 26–27'nin h9 taslağı), D15'in toplu raporu.
+- **Önde:** D15.2 bitti (2026-11-20; okuma: yeterli 2, düzeltmeyle 2, emin değil 1, yetersiz 2). Sıradaki D15.3 (28):
+  birim kaydı; **D5'in şartı** (D5.0.5): birinci vecihte İşârât'ın önceki birimi (26–27) yerine 26–27'nin h9
+  taslağı (kaynak dosyasının 1. bölümü; `d1-hat` küçük bir değişiklik ister); envanter, h9, ölçüler, okuma.
+- **Kullanıcıdan beklenen:** D15.3'e başlama onayı (≈20 $).
+- **Sonra:** D15'in toplu raporu (üç birim) ve D5.0.
 - **Bekleyen yan işler** (yeri gelince; D15 sürerken açılmaz): D5.0.4 bölmenin kalanı, S7.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
@@ -176,7 +177,17 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   açık notların 16'sından kapalı 5'ini (+1 kısmen) buldu, 10'u yalnız gizli metinden, **görebileceği hâlde kaçırdığı
   yine 0**; kapalının tek kalan 20 notundan 13'ü yerinde, 6'sı şüpheli, 1'i yanlış (21–22'de 18/20: isabet düştü);
   nisbet 71 hükümde 11 "aşıyor". Okuma sayfası `tur-26-27-D15.2.html` (7 kart: beş "düzeltilecek", iki Risale dersi;
-  tek taslak ve İşârât; ≈29 dk). Kalan: kullanıcının okuması.
+  tek taslak ve İşârât; ≈29 dk). **Okuma (2026-11-20): yeterli 2, düzeltmeyle 2, emin değil 1, yetersiz 2.** Yeterli:
+  «لا يستحيي» ("«لا يترك» ile kıyas yok, fakat mânâ orada"), hüsran ve önceki âyetlerle bağ ("ana fikir orada"; asıl
+  sorun kaynak nisbeti, kapalı eleştirmenin bulduğu). Düzeltmeyle: «فيقولون» (mukabilin muktezası «فلا يعلمون» yok;
+  İşârât'ın îcâzı: "bilmez, tereddüde düşer, inkâra girer, istifham şeklinde istihkar eder"), halk ve kesb dersi
+  (İşârât'ın asıl mânâsı imtihanın gerekliliği; Risale'nin "Ebû Cehil ile Ebû Bekir arasındaki fark bilinsin"
+  kısımları da münasip düşerdi). Yetersiz: itiraz silsilesi ("İşârât'ın açıkladığı kadar kapsamlı değil"), nakz
+  ("İşârât'ın temsili ve hayali kapsayıcı anlatışının yanında"). Emin değil: sivrisinek dersi ("ders âyetle bağlantılı,
+  ama İşârât işin başka yerinde": İşârât zâhiren basit misallerin zikrinin hikmetini, taslak o varlıkların aslında
+  mânidar olduğunu anlatıyor). Gözlem: kullanıcı İşârât karşılaştırmasıyla bu birimde aynı ölçüde; taslak garazda ve
+  mânâda yeterli, İşârât'ın kendine has takdir zincirlerinde ve temsillerinde değil (21–22'deki iltifat ve nübüvvet
+  gibi). Okuma dosyası `data/d1/notlar/d1-tur-26-27-D15.2-Fatih-*.json`. **D15.2 bitti.**
 - **Birim kurulumu (her dilimin başı):** saklı birimler `d1-prova.UNITS`'te yok. `_dev_unit` gibi kayıt: Arapça ve
   Türkçe düğümler (Türkçede 21 ve 22 ayrı bölüm), vecihlerin ilk cümleleri (`sections`), ince Ek 3 için komşu
   birimler, usul özeti ve birim çizelgesinden o birimin örneklerini çıkaran düzeltmeler (`ozet`, `cizelge`; usul
