@@ -71,7 +71,11 @@ ozet)
 giris)
     # Kullanıcı kendi terminalinde çalıştırır (Claude Code'da `!` ile değil: anahtar sohbete girmesin). Tarayıcıda onay,
     # sonra komutun yazdığı anahtar yapıştırılır; ekrana basılmadan ~/.claude-token'a (yalnız taslak okur) yazılır.
-    ssh -i "$KEY" -t "$HOST" "su - $U -c '~/.local/bin/claude setup-token; umask 077; read -rsp \"Yukarıdaki anahtarı yapıştırıp Enter: \" t; echo; printf %s \"\$t\" > ~/.claude-token; echo kaydedildi'"
+    # Anahtar ekranda iki satıra bölünebilir (2026-11-21: yalnız ilk satırı alınmıştı, 79 harf): boş satıra kadar
+    # okunur, boşluklar atılır, sonra bir model çağrısıyla sınanır.
+    "${SSH[@]}" "$HOST" "mkdir -p $DEST/scripts"
+    rsync -az -e "${SSH[*]}" scripts/taslak-giris-uzak.sh "$HOST:$DEST/scripts/" && "${SSH[@]}" "$HOST" "chown $U:$U $DEST/scripts/taslak-giris-uzak.sh"
+    ssh -i "$KEY" -t "$HOST" "su - $U -c 'bash $DEST/scripts/taslak-giris-uzak.sh'"
     ;;
 d1)
     as_u "set -e; cd $DEST
