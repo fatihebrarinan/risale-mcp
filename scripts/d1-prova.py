@@ -466,6 +466,53 @@ UNITS["21-22"]["sizinti_kabul"] = {**{s: _NOKTA for s in (
 )}}
 
 
+# 30 (kabul birimi, D5.0.9; 2026-11-21): hattın son sınaması, h12 ve h9 kör A/B, D5'in şartıyla (önceki birim İşârât'ın
+# 29'u değil, 29'un h9 taslağı; İşârât'ın 29'u da gizli, `ek_gizle`). Arapça: başta mukaddime (melâike, c001), V1 c026,
+# V2 c033, V3 c038; c092 ("مقدمة") 31–33'ün başı. Türkçe: âyet c001, mukaddime "Melâike Rüknünü İsbât", V1 ve V2 "Cümlelerin
+# Arasındaki İrtibat" (dört vecih ve cümleler arası; ayrılmaz), V3 hey'et ve nükteler. Usul özetinden ve çizelgeden 30'un
+# örnekleri çıkar.
+UNITS.update({
+    "30": {
+        "sura": 2, "ayahs": (30, 30), "sura_name": "Bakara", "olcu": "Bakara 23–24, 25",
+        "ince": tuple(B_AR + "23-24-ayetlerin-tefsiri-nubuvvet-hakkinda" + x for x in
+                      ("", "/mukaddime", *(f"/mesele-0{k}" for k in range(1, 8)))) + _TEMSIL,
+        "nodes": (B_TR + "30", B_AR + "30"),
+        "ek_gizle": (B_TR + "29", B_AR + "29"),
+        "onceki_taslak": ("29", 1),
+        "sections": {
+            "isaratul-icaz-arabi": {"Mukaddime": "mukaddime/c001", "V1": "mukaddime/c026", "V2": "mukaddime/c033",
+                                    "V3": "mukaddime/c038", "son": "mukaddime/c091"},
+            "isaratul-icaz": {"Âyet": "c001", "Mukaddime": "melaike-ruknunu-isbat-ve-izah/c001",
+                              "V1": "cumlelerin-arasindaki-irtibata-geldik/c001",
+                              "V3": "cumlelerin-heyet-ve-nuktelerine-geldik/c001"},
+        },
+        "ozet": [
+            (None, "`isaratul-icaz-arabi/sure-i-bakara/30/mukaddime/c036`"),
+            (None, "`isaratul-icaz/sure-i-bakara/30/cumlelerin-arasindaki-irtibata-geldik/vecih-04/c017`"),
+            (None, "`isaratul-icaz-arabi/sure-i-bakara/30/mukaddime/c047`"),
+            (None, "`isaratul-icaz/sure-i-bakara/30/cumlelerin-heyet-ve-nuktelerine-geldik/c014`"),
+            (None, "| 30 | V1, V2, V3 (sıralı)"),
+            ("Bakara 4, 21–22, 23–24, 25, 28, 29, 30)", "Bakara 4, 21–22, 23–24, 25, 28, 29)"),
+            ("23–24 (nübüvvet), 25 (haşir), 30 (melâike) |", "23–24 (nübüvvet), 25 (haşir) |"),
+        ],
+        "cizelge": [
+            (None, "| 30 | `B/30"),
+            ("23–24 (nübüvvet), 25 (haşir), 30 (melâike) |", "23–24 (nübüvvet), 25 (haşir) |"),
+            ("; `B/25/mukaddime/c001`; `B/30/mukaddime/c001` |", "; `B/25/mukaddime/c001` |"),
+            ("(7, 17–20, 21–22, 23–24, 30, 31–33)", "(7, 17–20, 21–22, 23–24, 31–33)"),
+            (", `B/30/mukaddime/c047` (câil / hâlik)", ""),
+            ('; `B/30/mukaddime/c046`)', ")"),
+        ],
+    },
+})
+# 30'un sızıntı testi (2026-11-21, elle incelendi): istemdeki dört ortak dizi müellifin vecih başlarındaki kalıplardır
+# (usul özetinde başka birimlerden alıntılı: 23–24, 26–27, 21–22); risale ve tefsir veritabanlarında 3'ü bulan yok.
+UNITS["30"]["sizinti_kabul_ibare"] = {
+    "وأما نظم الجمل بعضها مع بعض فهو": "müellifin ikinci vecih kalıbı (23–24'te de)",
+    "أما نظم هيئات جملة جملة، فاعلم أن": "müellifin üçüncü vecih kalıbı (26–27'de de)",
+    "إشارة إلى أنْ لا واسطة في": "kalıp ibare (21–22'de de)",
+}
+
 # ---------------------------------------------------------------- D5: asıl iş (Bakara 34–286)
 # Kullanıcının kararları (2026-11-21): D5 yalnız Bakara; birimler kesin bölmeden (`bolme/bakara/birimler.json`, b6);
 # D5.1'den önce üretimin hepsi hazır. Saklı birimden farkı: gizlenecek bir şey yok (prova veritabanı yerine genel

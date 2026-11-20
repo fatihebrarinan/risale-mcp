@@ -629,10 +629,18 @@ def ek3b(unit: str) -> str:
     data = json.loads(GARAZ.read_text(encoding="utf-8")) if GARAZ.exists() else sys.exit("önce: d1-hat.py garaz")
     L = ["Program topladı. Önceki birimlerin özetleri İşârât'tan çıkarıldı (modelin özeti, İşârât'ın sözü değil; "
          "atıf verilemez); her birimin aslı `risale` eklentisinde.", "", "## Önceki birimler: âyetler ve garaz", ""]
+    # D5'in şartı saklı birimde (30): önceki birimin İşârât'ı gizli, özeti de onun taslağından (`d1-birim.py garaz`)
+    hidden_prev = cfg["onceki_taslak"][0] if cfg.get("onceki_taslak") and not cfg.get("d5") else None
+    d5_sum = json.loads(GARAZ_D5.read_text(encoding="utf-8"))["ozetler"] if GARAZ_D5.exists() else {}
     for x in data["ozetler"]:
         first = int(str(x["birim"]).split("-")[0]) if str(x["birim"]).split("-")[0].isdigit() else None
         if first is not None and first < a:
-            L.append(f"- **{x['birim']}:** {x['ozet']}")
+            if str(x["birim"]) == hidden_prev:
+                if hidden_prev not in d5_sum:
+                    sys.exit(f"önce: {hidden_prev}'nin taslağından garaz özeti (d1-birim.py garaz {hidden_prev} <taslak>)")
+                L.append(f"- **{x['birim']}** (yapay zekâ taslağının özeti, İşârât'ın değil): {d5_sum[hidden_prev]}")
+            else:
+                L.append(f"- **{x['birim']}:** {x['ozet']}")
     if cfg.get("d5") and GARAZ_D5.exists():   # D5: önceki D5 birimleri (yapay zekâ taslaklarından özet)
         d5 = json.loads(GARAZ_D5.read_text(encoding="utf-8"))["ozetler"]
         rows = sorted(((int(k.split("-")[0]), k, v) for k, v in d5.items() if int(k.split("-")[0]) < a))

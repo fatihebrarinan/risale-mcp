@@ -220,11 +220,16 @@ def main() -> None:
     p.add_argument("--kadar", type=int, help="en çok bu kadar birim")
     p.add_argument("--tavan", type=float, help="bu koşuda harcama tavanı ($, kullanım değeri)")
     sub.add_parser("durum")
+    p = sub.add_parser("garaz", help="bir taslağın garaz özeti (Ek 3b; kabul biriminde önceki birim için)")
+    p.add_argument("unit")
+    p.add_argument("--taslak", type=int, required=True)
     a = ap.parse_args()
     if a.cmd == "yaz":
         yaz(a.unit, a.surum)
     elif a.cmd == "kuyruk":
         kuyruk(a.kadar, a.tavan)
+    elif a.cmd == "garaz":
+        print(garaz(a.unit, a.taslak))
     else:
         durum()
 
