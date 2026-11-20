@@ -64,10 +64,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | D5 | Asıl iş: Bakara 34 ve sonrası, küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
+| 1 | D5 | Asıl iş: Bakara 34–286 (154 birim), küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
 | 2 | S7 | Okuma platformu (girişli, davetle) ve ar-ge masasının D5'e göre güncellenmesi | |
 
-**D5. Asıl iş: Bakara 34 ve sonrası** (eski D1.8). Tek adım değil, küçük adımlar; D15'ten çıkan hatla (2026-11-17).
+**D5. Asıl iş: Bakara 34–286** (eski D1.8; 2026-11-20, kullanıcının kararı: D5 yalnız Bakara, Kur'ân'ın geri kalanı "Sonra"da). Tek adım değil, küçük adımlar; D15'ten çıkan hatla (2026-11-17).
 - **D5.0 Üretim hazırlığı** (D11'in kalanı, kullanıcının kararları 2026-11-17 ve 2026-11-18; 2026-11-19'da alt adımlara
   bölündü, kullanıcının kararı: eski "D5.0 (n)" göndermeleri D5.0.n diye okunur). **D5'te birim başına insan onayı
   yoktur** (kullanıcı, 2026-11-19: bütün Kur'ân'ın taslağı birinin onayına sunulmak için değil, okunmak için): kalite
@@ -89,6 +89,12 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
     bildirim** (masaüstü bildirimi yalnız bilgisayar başında işe yarar; iki yol: bir bildirim servisi (ör. ntfy; iş
     adı ve "bitti" dışarı gider, taslak gitmez) ya da kendi sunucumuzda kurulan bildirim servisi (dışarıya hiçbir şey
     çıkmaz); D5 sunucuya taşınınca daha anlamlı).
+    **Sunucuya taşıma: karar verildi** (kullanıcı, 2026-11-20): bilgisayar bir ay açık kalmasın; D5'in yazdırması
+    sunucuda döner (ayrıntı aşağıda "Bilgisayardan bağımsız çalışma"; hangi sunucu kullanıcıyla). **Bakara bu planla**
+    (kaba hesap, 2026-11-20): haftalık pencere %40 dolu, 23 Kasım'da sıfırlanır; 11 Aralık'a kadar ≈4,5 haftalık kota
+    (bu haftanın kalanı, üç hafta, bir ücretsiz sıfırlama); D5 birimi haftalığın ≈%1,5–3'ü: 160–270 birim, gereken
+    154; dar ama mümkün. Şartlar: D5.0 bir haftada biter, iş kesintisiz döner, öbür kullanım az, ücretsiz sıfırlama sona
+    saklanır. Taslaklar sırayla yazılır (D5.0.5: her birim önceki birimin taslağını bekler). Kesin hesap D5.1'den sonra.
     **Asıl ürün altyapı; hesap ve kapsam** (kullanıcının değerlendirmesi, 2026-11-20): işin bu kadar uzun ve maliyetli
     olacağı hesaba katılmamıştı; önemli olan hazır bir altyapı (hat, kalite kapısı, bölme, kuyruk, birim başına bilinen
     maliyet), biri destek olursa o parayla işin yapılabilmesi. Kaba ölçü (D15.2, 26–27): bir ar-ge birimi 18,9 $ liste
@@ -236,6 +242,11 @@ A1 kaynakçada doğrudan bağlantı (Aşama 20), A2 Osmanlıca–Türkçe eşlem
 kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
 baskısı, `osmanlica` grubu). erisale'den alınabilirse baskı farkı kalkar, ama beklenmez. Şimdilik sırada kalır, sonra
 yeniden bakılır.
+
+**Kur'ân'ın geri kalanı** (kullanıcının kararı, 2026-11-20: D5 yalnız Bakara). Ön şartlar: bütün Kur'ân'ın bölmesi
+(D5.0.4, kural b6; kısa sûreler ve ahkâm için kuralın uzatılması), Bakara'nın gerçek maliyeti ve kalitesiyle kapsam ve
+hesap kararı (ayrı hesap ya da API; gerekirse destek). Fâtiha ve Bakara 1–33'te İşârât var; oralarda taslak yalnız
+okuma platformunun vitrini için (isteğe bağlı).
 
 **Küçük açıklar:**
 - B2 Risale talimatının öbür bağdaştırıcılara bilgi kipinde gönderme cümlesi (MVP'nin "Kalan"ı; tek kaynakça kuralı
