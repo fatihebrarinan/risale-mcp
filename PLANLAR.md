@@ -55,8 +55,14 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D5.0, "D5.1'den önce hepsi" listesi (aşağıda D5): h12 hazır; sırada D5 kipi ve tek komutla birim.
-- **Kullanıcıdan beklenen:** yok (birim 30'un okuması gelince).
+- **Önde:** D5.0, "D5.1'den önce hepsi": (a) h12 ✓; (b) D5 kipi ✓ (`c80761f`: 154 birim kayıtlı, 34'ün istemi
+  model çağrısız denendi); (c) tek komutla birim ✓ (`scripts/d1-birim.py yaz|kuyruk|durum|kapi|garaz`) ve D5 okuma
+  sayfası ✓ (`scripts/d1-d5-sayfa.py`); (f) **kabul birimi 30 sunucuda çalışıyor** (`d1-kabul-30`, tefsir makinesi,
+  iş dosyası `data/interim/d1-isler/kabul-30.sh`: h9 ve h12, ikisi kapı d3'ten, İşârât'la ölçü, izah, D5 sayfaları;
+  ≈35–40 $). Açık: (d) sayfaların sunucudan siteye gitmesi (ana makineye kısıtlı anahtar: güvenlik denetimi izin
+  vermedi, kullanıcıya soruldu; yoksa yerelden `git pull` + `taslak-gonder.sh`); (e) telefon bildirimi (`D5_NTFY`,
+  ntfy.sh; kullanıcının uygulaması gerekir).
+- **Kullanıcıdan beklenen:** (d) ve (e) kararları; 30 bitince 3 yerin kör okuması.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
