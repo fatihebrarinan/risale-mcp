@@ -45,6 +45,7 @@ def _load(name: str, file: str):
 P = _load("d1_prova", "d1-prova.py")
 Y = _load("d1_yz", "d1-yz.py")
 
+S = _load("d1_d5_sayfa", "d1-d5-sayfa.py")
 GARAZ_D5 = P.KEEP / "garaz" / "d5-bakara.json"
 GARAZ_ISTEM = """Aşağıda Bakara Sûresi {ayahs}. âyetler için yazılmış bir yapay zekâ taslağı var (İşârâtü'l-İ'câz usulüyle;
 Arapça). **İki cümleyi geçmeyen Türkçe bir özet** yaz: bu âyetler neyi anlatıyor ve taslağa göre **asıl garazı**
@@ -56,15 +57,32 @@ bağı) **yazma**; alıntı yapma; kendi yorumunu katma. Cevabın yalnız şu JS
 
 
 def run(*args: str) -> str:
-    """Bir hattın komutu; çıktısı günlüğe akar, döndürülür. Hata işi durdurur."""
+    """Bir hattın komutu; çıktısı günlüğe akar, döndürülür. Geçici hataya karşı bir kez yeniden denenir (adımlar biteni
+    atlar); ikincisinde iş durur."""
     cmd = ["uv", "run", "python", *args]
-    print(f"$ {' '.join(args)}", flush=True)
-    p = subprocess.run(cmd, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    sys.stdout.write(p.stdout)
-    sys.stdout.flush()
-    if p.returncode:
-        raise SystemExit(f"adım başarısız ({p.returncode}): {' '.join(args)}")
-    return p.stdout
+    for attempt in (1, 2):
+        print(f"$ {' '.join(args)}" + (" (yeniden)" if attempt == 2 else ""), flush=True)
+        p = subprocess.run(cmd, cwd=ROOT, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+        sys.stdout.write(p.stdout)
+        sys.stdout.flush()
+        if not p.returncode:
+            return p.stdout
+        if attempt == 1:
+            print(f"  adım başarısız ({p.returncode}); 2 dk sonra bir kez daha", flush=True)
+            time.sleep(120)
+    raise SystemExit(f"adım başarısız ({p.returncode}): {' '.join(args)}")
+
+
+def depo(msg: str) -> None:
+    """`data/d1` commit, öbür makinenin yazdıklarını çek, push (her birimden sonra; kuyruk tek uzun iş)."""
+    g = ["git", "-C", str(P.KEEP)]
+    if not subprocess.run(g + ["status", "--porcelain"], capture_output=True, text=True).stdout.strip():
+        return
+    ok = (subprocess.run(g + ["add", "-A"]).returncode == 0
+          and subprocess.run(g + ["commit", "-qm", msg]).returncode == 0
+          and subprocess.run(g + ["pull", "-q", "--rebase"]).returncode == 0
+          and subprocess.run(g + ["push", "-q"]).returncode == 0)
+    print("data/d1 commit ve push edildi" if ok else "UYARI: data/d1 commit ya da push edilemedi", flush=True)
 
 
 def save_state(unit: str, **kw) -> None:
@@ -153,11 +171,66 @@ def yaz(unit: str, surum: str = SURUM) -> int:
     run("scripts/d1-hat.py", "izah", unit, "--taslak", str(son))
     run("scripts/d1-d5-sayfa.py", unit)
     yayimla(P.KEEP / "masa" / f"d5-{unit}.html")
-    save_state(unit, bitti=datetime.now().isoformat(), maliyet=unit_cost(unit),
+    save_state(unit, bitti=datetime.now().isoformat(), maliyet=unit_cost(unit), alarmlar=alarmlar(unit, n, son),
                sure_dk=round((time.monotonic() - started) / 60 + (st.get("sure_dk") or 0)))
     s = P.d5_state()["birimler"][unit]
-    print(f"== {unit} bitti: son taslak {son}, ≈{s['maliyet']} $, {s['sure_dk']} dk")
+    print(f"== {unit} bitti: son taslak {son}, ≈{s['maliyet']} $, {s['sure_dk']} dk; alarm: {s['alarmlar'] or 'yok'}")
+    durum_sayfasi()
+    depo(f"D5: {unit} (son taslak {son})")
     return son
+
+
+# ---------------------------------------------------------------- kalite alarmları (model çağrısız)
+# Birim başına insan onayı yok (kullanıcının kararı): program her birimden sonra bakar; kuyruk durmaz, birim
+# "okunmalı" işaretlenir, telefona düşer.
+NISBET_ESIK = 0.08       # kapıdan sonra kalan nisbet hatası / hüküm
+RED_ESIK = 0.5           # kapının reddettiği / karşılanması gereken not
+
+
+def alarmlar(unit: str, n: int, son: int) -> list[str]:
+    out = []
+    d, keep = Y.out_dir(unit), P.DRAFTS / unit
+    reg = json.loads((keep / "duzeltmeler.json").read_text(encoding="utf-8")) if (keep / "duzeltmeler.json").exists() else {}
+    first = next((int(m) for m, r in reg.items() if r["kaynak"] == n and r["notlar"] == "kapi"), None)
+    if first and (d / f"nisbet-taslak-{first}.json").exists():
+        hs = json.loads((d / f"nisbet-taslak-{first}.json").read_text(encoding="utf-8"))["hukumler"]
+        err = sum(h["hukum"] in ("asiyor", "kaynakta_yok") for h in hs)
+        fixed = 0
+        if son != first:
+            fixed = json.loads((keep / f"taslak-{son}.json").read_text(encoding="utf-8"))["duzeltme"].get("karsilanan", 0)
+        if hs and (err - fixed) / len(hs) > NISBET_ESIK:
+            out.append(f"nisbet: kapıdan sonra {err - fixed}/{len(hs)} hata")
+    if first:
+        rep = json.loads((keep / f"taslak-{first}.json").read_text(encoding="utf-8"))["duzeltme"]
+        need = rep.get("karsilanmasi_gereken") or 0
+        if need and rep.get("reddedilen", 0) / need > RED_ESIK:
+            out.append(f"kapı notların çoğunu reddetti ({rep['reddedilen']}/{need})")
+        if rep.get("anilmayan"):
+            out.append(f"kapıda anılmayan not: {len(rep['anilmayan'])}")
+    blocks, sources = Y.draft_blocks(unit, son)
+    secs = {a.split("/")[0] for a, *_ in blocks}
+    missing = [k for k in ("V1", "V2", "V3") if k not in secs]
+    if missing:
+        out.append("eksik vecih: " + ", ".join(missing))
+    ids = P.draft_sources(keep / f"taslak-{son}.jsonl") if (keep / f"taslak-{son}.jsonl").exists() else {}
+    if not any(srv == "risale" for srv, _ in ids.values()):
+        out.append("Risale-i Nur'dan kaynak yok")
+    ar = sum(len(t) for _, lang, q, t in blocks if lang == "ar" and not q)
+    others = [x["ar_harf"] for k, x in P.d5_state()["birimler"].items() if k != unit and x.get("ar_harf")]
+    save_state(unit, ar_harf=ar)
+    if len(others) >= 5:
+        import statistics
+        med = statistics.median(others)
+        if ar < 0.5 * med or ar > 2 * med:
+            out.append(f"Arapça uzunluğu aykırı ({ar} harf; ortanca {med:.0f})")
+    izf = d / f"izah-taslak-{son}.json"
+    if izf.exists():
+        den = json.loads(izf.read_text(encoding="utf-8")).get("denetim", {})
+        if den.get("eksik"):
+            out.append(f"izahta eksik paragraf: {len(den['eksik'])}")
+    else:
+        out.append("izah yok")
+    return out
 
 
 SITE_KEY = Path.home() / ".ssh" / "site_gonder"      # sunucuda: yalnız /var/www/ozel/taslak'a yazar (rrsync -wo)
@@ -189,34 +262,107 @@ def bildir(baslik: str, metin: str) -> None:
         print(f"bildirim gitmedi: {e}")
 
 
+STOP = Path.home() / ".d5-dur"                     # `taslak-sunucu.sh dur`: birim bitince dur
+STAGING = Path.home() / "kod-bekleyen"              # `taslak-sunucu.sh gonder` kuyruk sürerken kodu buraya koyar
+HAFTA_ESIK = 0.90                                   # kullanıcının eşiği (2026-11-21): haftalık pencere %90
+
+
+def durum_sayfasi() -> None:
+    yayimla(S.durum_sayfasi())
+
+
+def kod_guncelle() -> None:
+    """Bekleyen kod varsa (birimler arasında) geçir ve kuyruğu yeni kodla yeniden başlat."""
+    if not (STAGING / ".hazir").exists():
+        return
+    print("bekleyen kod geçiriliyor", flush=True)
+    subprocess.run(["rsync", "-a", "--exclude", ".hazir", f"{STAGING}/", f"{ROOT}/"], check=True)
+    subprocess.run(["uv", "sync", "--frozen", "-q"], cwd=ROOT, check=True)
+    (STAGING / ".hazir").unlink()
+    bildir("D5: kod güncellendi", "kuyruk yeni kodla sürüyor")
+    os.execv(sys.executable, [sys.executable, *sys.argv])
+
+
+def bekle_hafta(env: dict) -> bool:
+    """Haftalık pencere eşiği aşıldıysa sıfırlanmaya kadar bekler (durdurma işaretine bakarak). False: durduruldu."""
+    st = P.limit_probe(env, max_age=0)
+    week = st.get("week")
+    if week is None or week < HAFTA_ESIK:
+        return True
+    reset = st.get("week_reset") or time.time() + 6 * 3600
+    when = datetime.fromtimestamp(reset)
+    bildir("D5 bekliyor: haftalık kota", f"%{week * 100:.0f} ≥ %{HAFTA_ESIK * 100:.0f}; {when:%d.%m %H:%M}'de sürer")
+    print(f"⏸ haftalık pencere %{week * 100:.0f}; {when:%d.%m %H:%M}'e kadar bekleniyor", flush=True)
+    while time.time() < reset + P.LIMIT_MARGIN:
+        if STOP.exists():
+            return False
+        time.sleep(300)
+    return True
+
+
+def gunluk_ozet() -> None:
+    st = P.d5_state()
+    last = st.get("son_ozet")
+    if last and time.time() - last < 24 * 3600:
+        return
+    b = st["birimler"]
+    units = [u["id"] for u in P.d5_units() if u["kaynak"] != "isarat"]
+    done = [u for u in units if (b.get(u) or {}).get("bitti")]
+    son24 = [u for u in done if time.time() - datetime.fromisoformat(b[u]["bitti"]).timestamp() < 24 * 3600]
+    al = [u for u in done if b[u].get("alarmlar")]
+    lim = json.loads(P.LIMIT_STATE.read_text(encoding="utf-8")) if P.LIMIT_STATE.exists() else {}
+    bildir("D5 günlük özet", f"son 24 saatte {len(son24)} birim; toplam {len(done)}/{len(units)}; alarmlı {len(al)}; "
+                             f"haftalık kota %{(lim.get('week') or 0) * 100:.0f}. https://risalemcp.com/taslak/d5.html")
+    st["son_ozet"] = time.time()
+    P.D5_STATE.write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
+
+
 def kuyruk(kadar: int | None, tavan: float | None) -> None:
-    done = 0
-    spent = 0.0
-    for u in P.d5_units():
-        if u["kaynak"] == "isarat":
-            continue
-        uid = u["id"]
-        if (P.d5_state()["birimler"].get(uid) or {}).get("bitti"):
-            continue
-        if kadar is not None and done >= kadar:
-            break
-        if tavan is not None and spent >= tavan:
-            bildir("D5 durdu: harcama tavanı", f"{spent:.0f} $ ≥ {tavan:.0f} $; sıradaki {uid}")
-            print(f"harcama tavanı: {spent:.2f} $ ≥ {tavan} $; durdu (sıradaki {uid})")
+    env = {k: v for k, v in os.environ.items() if k not in P.PARENT_ENV}
+    done, spent = 0, 0.0
+    if STOP.exists():
+        print("durdurma işareti var (~/.d5-dur): kuyruk başlamadı; `taslak-sunucu.sh devam`")
+        return
+    bildir("D5 kuyruğu başladı", "sıradaki birimden sürüyor")
+    while True:
+        kod_guncelle()
+        units = [u for u in P.d5_units() if u["kaynak"] != "isarat"]
+        uid = next((u["id"] for u in units if not (P.d5_state()["birimler"].get(u["id"]) or {}).get("bitti")), None)
+        if uid is None:
+            bildir("D5 kuyruğu bitti", f"Bakara'nın {len(units)} birimi yazıldı")
             return
-        P._d5_register()                       # önceki birimin son taslağı kayda girsin
+        if STOP.exists():
+            bildir("D5 durdu", f"isteğinizle; sıradaki {uid}. Sürdürmek: devam")
+            print(f"durdurma işareti: durdu (sıradaki {uid})")
+            return
+        if (kadar is not None and done >= kadar) or (tavan is not None and spent >= tavan):
+            bildir("D5 durdu: sınır", f"bu koşuda {done} birim, {spent:.0f} $; sıradaki {uid}")
+            return
+        if not bekle_hafta(env):
+            bildir("D5 durdu", f"isteğinizle (kota beklerken); sıradaki {uid}")
+            return
+        gunluk_ozet()
         P.UNITS.pop(uid, None)
-        P._d5_register()
+        P._d5_register()                       # önceki birimin son taslağı kayda girsin
+        before = (P.limit_probe(env, max_age=600) or {}).get("week")
+        save_state(uid, hafta_once=before)
         try:
             yaz(uid)
         except SystemExit as e:
-            bildir(f"D5 hata: {uid}", str(e))
+            depo(f"D5: {uid} yarıda ({e})")
+            bildir(f"D5 hata: {uid}", f"{e}. Kuyruk durdu; düzeltilince devam")
             raise
+        after = (P.limit_probe(env, max_age=0) or {}).get("week")
+        save_state(uid, hafta_sonra=after)
         s = P.d5_state()["birimler"][uid]
         spent += s.get("maliyet") or 0
         done += 1
-        bildir(f"D5: {uid} bitti", f"≈{s.get('maliyet')} $, {s.get('sure_dk')} dk; bu koşuda {done} birim, {spent:.0f} $")
-    bildir("D5 kuyruğu bitti", f"{done} birim, {spent:.0f} $")
+        al = s.get("alarmlar") or []
+        bildir(f"D5: {uid} bitti" + (" ⚠" if al else ""),
+               f"≈{s.get('maliyet')} $, {s.get('sure_dk')} dk" + (f"; alarm: {'; '.join(al)}" if al else "")
+               + f". https://risalemcp.com/taslak/d5-{uid}.html")
+        durum_sayfasi()
+        depo(f"D5: {uid} kaydı")
 
 
 def durum() -> None:
@@ -243,6 +389,7 @@ def main() -> None:
     p.add_argument("--kadar", type=int, help="en çok bu kadar birim")
     p.add_argument("--tavan", type=float, help="bu koşuda harcama tavanı ($, kullanım değeri)")
     sub.add_parser("durum")
+    sub.add_parser("sayfa", help="durum sayfasını yeniden kur ve gönder")
     p = sub.add_parser("kapi", help="bir taslağa kalite kapısı d3 (kabul biriminde)")
     p.add_argument("unit")
     p.add_argument("--taslak", type=int, required=True)
@@ -254,6 +401,8 @@ def main() -> None:
         yaz(a.unit, a.surum)
     elif a.cmd == "kuyruk":
         kuyruk(a.kadar, a.tavan)
+    elif a.cmd == "sayfa":
+        durum_sayfasi()
     elif a.cmd == "kapi":
         print(f"kapının son taslağı: {kapi(a.unit, a.taslak)}")
     elif a.cmd == "garaz":

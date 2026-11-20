@@ -11,7 +11,11 @@
 #   scripts/taslak-sunucu.sh giris      # aboneliğin giriş anahtarı (kullanıcı, kendi terminalinde; bir kez)
 #   scripts/taslak-sunucu.sh d1         # data/d1'i özel depodan klonlar ya da çeker (deploy anahtarı eklendikten sonra)
 #   scripts/taslak-sunucu.sh calistir <komut …>   # sunucuda, taslak kullanıcısıyla, depo kökünde (ör. scripts/d1-arka.sh liste)
-#   scripts/taslak-sunucu.sh durum      # bellek, disk, d1 işleri, kullanım penceresi
+#   scripts/taslak-sunucu.sh durum      # kuyruk, birimler, bellek, disk, d1 işleri
+#   scripts/taslak-sunucu.sh kuyruk-kur # D5 kuyruğu kalıcı hizmet (bir kez)
+#   scripts/taslak-sunucu.sh devam      # kuyruğu başlat ya da sürdür
+#   scripts/taslak-sunucu.sh dur        # sürmekte olan birim bitince dur
+#   scripts/taslak-sunucu.sh hemen-dur  # hemen kes (devamda yarım birim kaldığı adımdan sürer)
 #
 # Kullanıcının bir kez yapacağı: `giris` (tarayıcı onayı; anahtar sohbete girmez, `~/.claude-token`'a yazılır,
 # `d1-arka-is.sh` oradan okur). `kur`'un yazdığı açık anahtar özel depoya yazma izinli "deploy key" olarak eklendi
@@ -46,6 +50,13 @@ kur)
 gonder)
     # Evden yalnız kod gider (≈6 MB): ev bağlantısı sunucuya yavaş (2026-11-20: ≈15 KB/s, %30 yeniden gönderim).
     "${SSH[@]}" "$HOST" "mkdir -p $DEST && chown $U:$U $DEST"
+    if as_u "XDG_RUNTIME_DIR=/run/user/\$(id -u) systemctl --user is-active --quiet d1-kuyruk"; then
+        # kuyruk sürüyor: kod birimler arasında geçsin (kuyruk sıradaki birimin başında ~/kod-bekleyen'i uygular)
+        git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:/home/$U/kod-bekleyen/"
+        "${SSH[@]}" "$HOST" "touch /home/$U/kod-bekleyen/.hazir && chown -R $U:$U /home/$U/kod-bekleyen"
+        echo "kuyruk sürüyor: kod bekliyor, sıradaki birimin başında geçecek"
+        exit 0
+    fi
     git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DEST/"
     grep '^VOYAGE_API_KEY=' .env | "${SSH[@]}" "$HOST" "cat > $DEST/.env && chmod 600 $DEST/.env"
     "${SSH[@]}" "$HOST" "chown -R $U:$U $DEST"
@@ -90,9 +101,48 @@ calistir)
     shift
     as_u "cd $DEST && export PATH=\$HOME/.local/bin:\$PATH XDG_RUNTIME_DIR=/run/user/\$(id -u) && $(printf '%q ' "$@")"
     ;;
+kuyruk-kur)
+    # D5 kuyruğu kalıcı hizmet: sunucu açılınca başlar (linger), hata olursa 10 dk sonra yeniden (günde en çok 3)
+    as_u "mkdir -p ~/.config/systemd/user $DEST/data/interim/d1-isler && cat > ~/.config/systemd/user/d1-kuyruk.service <<EOT
+[Unit]
+Description=D5 kuyrugu (Bakara)
+StartLimitIntervalSec=1d
+StartLimitBurst=3
+[Service]
+WorkingDirectory=$DEST
+Environment=PATH=/home/$U/.local/bin:/usr/local/bin:/usr/bin:/bin
+Environment=LANG=C.UTF-8
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/bin/bash $DEST/scripts/d1-arka-is.sh kuyruk uv run python scripts/d1-birim.py kuyruk
+StandardOutput=append:$DEST/data/interim/d1-isler/kuyruk.log
+StandardError=append:$DEST/data/interim/d1-isler/kuyruk.log
+Nice=10
+Restart=on-failure
+RestartSec=600
+[Install]
+WantedBy=default.target
+EOT
+XDG_RUNTIME_DIR=/run/user/\$(id -u) systemctl --user daemon-reload && echo hizmet kuruldu"
+    ;;
+devam)
+    # durdurma işaretini kaldır, kuyruğu başlat (açılışta da başlasın)
+    as_u "rm -f ~/.d5-dur; export XDG_RUNTIME_DIR=/run/user/\$(id -u); systemctl --user reset-failed d1-kuyruk 2>/dev/null; systemctl --user enable --now d1-kuyruk && echo 'kuyruk sürüyor'"
+    ;;
+dur)
+    # sürmekte olan birim bitince durur (yarım iş bırakmaz)
+    as_u "touch ~/.d5-dur && echo 'durdurma işareti kondu: sürmekte olan birim bitince durur'"
+    ;;
+hemen-dur)
+    # hemen keser; devam edince yarım birim kaldığı adımdan sürer (biten adımlar atlanır)
+    as_u "touch ~/.d5-dur; export XDG_RUNTIME_DIR=/run/user/\$(id -u); systemctl --user stop d1-kuyruk && echo 'kuyruk durduruldu'"
+    ;;
 durum)
     "${SSH[@]}" "$HOST" "free -m | sed -n 2p; df -h / | tail -1; uptime"
-    as_u "cd $DEST && export PATH=\$HOME/.local/bin:\$PATH XDG_RUNTIME_DIR=/run/user/\$(id -u) && (scripts/d1-arka.sh liste 2>/dev/null | head -8 || true)"
+    as_u "cd $DEST && export PATH=\$HOME/.local/bin:\$PATH XDG_RUNTIME_DIR=/run/user/\$(id -u)
+        echo \"kuyruk: \$(systemctl --user is-active d1-kuyruk 2>/dev/null)\$( [ -f ~/.d5-dur ] && echo ', durdurma işareti var')\"
+        uv run python scripts/d1-birim.py durum 2>/dev/null | head -3
+        tail -n 3 data/interim/d1-isler/kuyruk.log 2>/dev/null
+        (scripts/d1-arka.sh liste 2>/dev/null | head -6 || true)"
     ;;
 *)
     sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 2 ;;

@@ -202,6 +202,52 @@ def sayfa(unit: str, n: int | None = None) -> Path:
     return out
 
 
+def durum_sayfasi() -> Path:
+    """D5'in durum sayfası (`masa/d5.html`): birimler, okuma sayfaları, alarmlar, maliyet, haftalık kota ve tahmin.
+    Okuma listesi: alarmlı birimler ve her 20 birimden biri (kayma riskine karşı)."""
+    st = P.d5_state()
+    b = st["birimler"]
+    units = [u for u in P.d5_units() if u["kaynak"] != "isarat"]
+    done = [u["id"] for u in units if (b.get(u["id"]) or {}).get("bitti")]
+    cost = sum(b[u].get("maliyet") or 0 for u in done)
+    shares = [b[u]["hafta_sonra"] - b[u]["hafta_once"] for u in done
+              if b[u].get("hafta_once") is not None and b[u].get("hafta_sonra") is not None
+              and b[u]["hafta_sonra"] >= b[u]["hafta_once"]]
+    lim = json.loads(P.LIMIT_STATE.read_text(encoding="utf-8")) if P.LIMIT_STATE.exists() else {}
+    left = len(units) - len(done)
+    L = ["<h1>D5 · Bakara 34–286</h1>",
+         f'<p><b>{len(done)}/{len(units)}</b> birim bitti · ≈{cost:.0f} $ (kullanım değeri) · haftalık kota '
+         f'%{(lim.get("week") or 0) * 100:.0f}'
+         + (f' (sıfırlanma {datetime.fromtimestamp(lim["week_reset"]):%d.%m %H:%M})' if lim.get("week_reset") else "")
+         + "</p>"]
+    if shares:
+        avg = sum(shares) / len(shares)
+        L.append(f'<p class="small muted">Birim başına haftalık kotanın ≈%{avg * 100:.1f}\'i; kalan {left} birim ≈'
+                 f'{left * avg / 0.9:.1f} haftalık kota (eşik %90).</p>')
+    L.append('<p class="small muted">⚠ alarm: program bir şey gördü (birim yine yayımlandı). 📖 okuma listesi: alarmlı '
+             "birimler ve her 20 birimden biri.</p>")
+    L.append('<table style="width:100%;border-collapse:collapse;font-size:.88rem">'
+             '<tr style="text-align:left"><th>Birim</th><th>Durum</th><th>$</th><th>dk</th><th>Not</th></tr>')
+    for i, u in enumerate(units):
+        x = b.get(u["id"]) or {}
+        al = x.get("alarmlar") or []
+        oku = bool(al) or (x.get("bitti") and i % 20 == 0)
+        name = (f'<a href="d5-{u["id"]}.html">{u["id"]}</a>' if x.get("bitti") else u["id"])
+        state = "bitti" if x.get("bitti") else ("sürüyor" if x.get("basladi") else "")
+        L.append(f'<tr style="border-top:1px solid var(--line)"><td>{name}</td><td>{state}</td>'
+                 f'<td>{x.get("maliyet") or ""}</td><td>{x.get("sure_dk") or ""}</td>'
+                 f'<td>{"📖 " if oku else ""}{"⚠ " + esc("; ".join(al)) if al else ""}</td></tr>')
+    L.append("</table>")
+    L.append(f'<p class="small muted">Sayfa {datetime.now():%Y-%m-%d %H:%M}</p>')
+    page = (f'<!doctype html>\n<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" '
+            f'content="width=device-width, initial-scale=1"><meta name="robots" content="noindex, nofollow">'
+            f"<title>D5 Durumu</title><style>{CSS}</style></head><body><main>" + "\n".join(L) + "</main></body></html>\n")
+    out = MASA / "d5.html"
+    MASA.mkdir(parents=True, exist_ok=True)
+    out.write_text(page, encoding="utf-8")
+    return out
+
+
 def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("unit", choices=P.UNITS)
