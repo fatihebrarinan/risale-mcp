@@ -55,10 +55,10 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D15.2 bitti (2026-11-20; okuma: yeterli 2, düzeltmeyle 2, emin değil 1, yetersiz 2). Sıradaki D15.3 (28):
-  birim kaydı; **D5'in şartı** (D5.0.5): birinci vecihte İşârât'ın önceki birimi (26–27) yerine 26–27'nin h9
-  taslağı (kaynak dosyasının 1. bölümü; `d1-hat` küçük bir değişiklik ister); envanter, h9, ölçüler, okuma.
-- **Kullanıcıdan beklenen:** D15.3'e başlama onayı (≈20 $).
+- **Önde:** D15.3 (28), hat h9, **D5'in şartıyla** (D5.0.5): kaynak dosyasının 1. bölümü 26–27'nin h9 taslağı,
+  İşârât'ın 26–27'si prova veritabanından da gizli. İş `d1-d15-3` (`scripts/d1-arka.sh log d15-3`): istem, envanter,
+  h9, eşleştirme, İşârât karşılaştırması, kapalı, nisbet, ayar; bitince okuma sayfası.
+- **Kullanıcıdan beklenen:** okuma sayfası gelince 28'in okuması.
 - **Sonra:** D15'in toplu raporu (üç birim) ve D5.0.
 - **Bekleyen yan işler** (yeri gelince; D15 sürerken açılmaz): D5.0.4 bölmenin kalanı, S7.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
@@ -188,6 +188,10 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   mânidar olduğunu anlatıyor). Gözlem: kullanıcı İşârât karşılaştırmasıyla bu birimde aynı ölçüde; taslak garazda ve
   mânâda yeterli, İşârât'ın kendine has takdir zincirlerinde ve temsillerinde değil (21–22'deki iltifat ve nübüvvet
   gibi). Okuma dosyası `data/d1/notlar/d1-tur-26-27-D15.2-Fatih-*.json`. **D15.2 bitti.**
+- **D15.3 28 (2026-11-20, başladı):** birim kaydı; D5.0.5 için `onceki_taslak` (kaynak dosyasının 1. bölümü: önceki
+  birimin taslağı, "İşârât değil, atıf verilemez" notuyla; `d1-hat._taslak_prev`) ve `ek_gizle` (İşârât'ın 26–27'si
+  prova veritabanından da silinir; sızıntı testi yalnız 28'e bakar). Usul özeti ve çizelgeden 28'in örnekleri çıktı;
+  kabul: müellifin birim başı kalıbı «اعلم أن لهذه الآية أيضاً الوجوه الثلاثة النظمية». ≈20 $ bekleniyor.
 - **Birim kurulumu (her dilimin başı):** saklı birimler `d1-prova.UNITS`'te yok. `_dev_unit` gibi kayıt: Arapça ve
   Türkçe düğümler (Türkçede 21 ve 22 ayrı bölüm), vecihlerin ilk cümleleri (`sections`), ince Ek 3 için komşu
   birimler, usul özeti ve birim çizelgesinden o birimin örneklerini çıkaran düzeltmeler (`ozet`, `cizelge`; usul
