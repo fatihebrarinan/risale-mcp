@@ -64,11 +64,14 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (görevli sayfa: kararlar sunucuya, taraflar bitirince), `scripts/taslak-gonder.sh data/d1/masa/tur-30-D5-kabul.html`,
   `uv run python scripts/masa-gorev.py ac data/d1/provalar/30/gorev-D5-kabul.json`; ölçüler (envanter, İşârât
   karşılaştırması, kör A/B) kullanıcıya rakamlarla. Kullanıcı okuyunca `masa-gorev.py al` (sunucuda), h9 mı h12 mi →
-  `D5_SURUM` (d1-birim.py varsayılanı h12). (2) **S7'nin sırası kullanıcıya önerildi** (onay bekliyor): masanın giriş
-  sayfası (Pano · Okumalar · Birimler), birimin ar-ge görünümü, okumaların kendiliğinden akması (kuyruk görev açar,
-  sonuçlar her gece) D5.1'den önce; deneyler defteri, S7.3, S7.4 D5 dönerken. (3) Sonra D5.1: `taslak-sunucu.sh devam`
+  `D5_SURUM` (d1-birim.py varsayılanı h12). (2) **S7'nin sırası onaylandı** (kullanıcı, 2026-11-21): masanın giriş sayfası, birimin ar-ge görünümü, okumaların
+  kendiliğinden akması D5.1'den önce (akış önce konuşulacak); deneyler defteri, S7.3, S7.4 D5 dönerken. **Giriş sayfası
+  yapıldı** (`scripts/masa-giris.py`, `34873a6`: `/taslak/` = Pano · Okumalar · Birimler; kabuk + `pano.json`, okumalar
+  canlı API'den; D5 kuyruğu her birimden sonra yeniler; sunucuya kodu 30 bitince `taslak-sunucu.sh gonder`). Sırada
+  birimin ar-ge görünümü (30'un kapı d3 dosyalarıyla).
+  (3) Sonra D5.1: `taslak-sunucu.sh devam`
   ardından hemen `dur` (34'ü yazıp durur).
-- **Kullanıcıdan beklenen:** S7 sırasının onayı; 30'un okuması (görev açılınca).
+- **Kullanıcıdan beklenen:** okumaların kendiliğinden akışının kararları (sohbette soruldu); 30'un okuması (görev açılınca).
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
