@@ -55,11 +55,11 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D5.0. Kapının ilk sınaması bitti (D5.0.6: düzeltme eski hataları gideriyor, yeni kaynak eklerken yeni
-  hata getiriyor; öneri d3). h11'in sınaması bitti (29: envanter kapsamı h9 49/96, h11 60/96; birinci vecih 5/7 → 7/7;
-  İşârât karşılaştırması ikisinde "düzeltmeyle"; kör eleştirmen hafif h9, bölüm bölüm ikiye iki); kullanıcının kör
-  okuması https://risalemcp.com/taslak/tur-29-D5-h11.html (5 yer, ≈31 dk). Sunucu kuruldu (tefsir makinesi, `taslak`).
-- **Kullanıcıdan beklenen:** h11 okuması; kapı için d3 kararı; sunucuda `scripts/taslak-sunucu.sh giris`.
+- **Önde:** D5.0. Kapı d3 hazır (nisbet hatası 15% → 4% ve 8% → 0%). h11'in okuması: kullanıcı ikiye iki, bir eşit
+  (birinci vecihte h9: az ama derin hat; ikinci vecihte h11: «جَمِيعًا», «ثُمَّ»); "önceki" kartında h11 için yanlış
+  paragraflar seçilmişti. Öneri h12 (h11'in ders seçimi ve taalluk soruları; birinci vecihte hat listesi yerine garaz
+  merkezli bir-iki derin hat), sınaması kabul birimi 30'da h9'a karşı. Sunucuda giriş çalışıyor.
+- **Kullanıcıdan beklenen:** h12 kararı.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -165,6 +165,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
     Maliyet birim başına ≈6–7 $ (kapalı 2,3, nisbet 1, düzeltme 2,6–3,4). **Öneri (kullanıcının kararını bekliyor):**
     d3: düzeltme yeni kaynak eklemez, yalnız düzeltir, daraltır, siler; eksik nükte notları düzeltmeye girmez (okuma
     sayfasında not olarak durur); değişen paragraflara ucuz bir nisbet geçişi.
+    **d3 kabul edildi ve sınandı (2026-11-21):** nisbet hatası 26–27'de 11/71 → **3/79** (ikinci tura not çıkmadı;
+    kalan üçü düzeltmenin dokunmadığı sözlerde), 28'de 2/25 → 2/37 → ikinci turdan sonra **0/37**; Arapça %9,3 ve %6,6
+    uzadı (sınırın içinde); İşârât karşılaştırmasında "kaynak" notları 26–27'de 3 → 0, hüküm ikisinde de "düzeltmeyle"
+    (beklenen: kapı nükte eklemez). Yazar 14 ve 9 notu gerekçesiyle reddetti. Maliyet birim başına ≈6–7,5 $ (kapalı
+    2,3, nisbet 1, düzeltme 2,2–2,9, ikinci nisbet 0,6, gerekirse ikinci tur 1,2). **Kapı d3 ile hatta girer.**
   - **D5.0.7 Maliyet:** taslak ≈4,5–5,5 $, konu ve tablo ≈0,3 $, nisbet ≈1 $, kapalı ≈3 $, düzeltme (ölçülecek);
     Bakara'nın kalanı **154 birim** (b6, kesin), bütün Kur'ân ≈3.400 birim tahmini (bölmeden sonra güncellenir).
   - **D5.0.8 Soru kalıpları listesinin bütün İşârât'tan yeniden kuruluşu:** gerek kalmadı (2026-11-20: hat h9,
