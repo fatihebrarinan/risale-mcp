@@ -96,7 +96,7 @@ def body(path: Path, marker: str) -> tuple[str, str]:
 
 
 def ayahs(cfg: dict) -> str:
-    return "–".join(map(str, cfg["ayahs"]))
+    return P.ayah_range(cfg)
 
 
 def draft_text(unit: str, n: int, with_ids: bool = False) -> str:

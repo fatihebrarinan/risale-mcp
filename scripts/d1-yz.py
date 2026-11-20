@@ -163,7 +163,7 @@ def build_prompt(task: str, unit: str, **extra) -> tuple[str, str]:
     parts, sha = prompt_parts()
     cfg = P.UNITS[unit]
     h = hidden(unit)
-    values = {"sura_name": cfg["sura_name"], "ayahs": "–".join(map(str, cfg["ayahs"])),
+    values = {"sura_name": cfg["sura_name"], "ayahs": P.ayah_range(cfg),
               "arapca": render_hidden(h["ar"]), "turkce": render_hidden(h["tr"]), **extra}
     return parts["ORTAK"].format(**values) + "\n" + parts[task].format(**values), sha
 

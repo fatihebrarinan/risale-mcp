@@ -749,7 +749,7 @@ def critic_prompt(unit: str, n: int) -> tuple[str, str]:
     stamped = {x["tr"] for x in draft(unit, n)["pairs"] if x.get("stamped")}
     # damga taslakta tercüme paragrafının başındadır; `draft_blocks` onu atar, eleştirmen görmeli (v1'in hatası)
     blocks = [(a, lang, q, (STAMP + " " + t) if a in stamped else t) for a, lang, q, t in blocks]
-    text = body.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])), gizli_ar=ar, gizli_tr=tr,
+    text = body.format(sura_name=cfg["sura_name"], ayahs=P.ayah_range(cfg), gizli_ar=ar, gizli_tr=tr,
                        klasik_not=", belâgat ve terim eserlerini" if P.uses_klasik(meta.get("istem")) else "",
                        d7=d7_text(unit, n), mekanik=mekanik_text(unit, n))
     text += "\n\n# Taslak\n\nHer paragrafın başında okuma sayfasındaki çapası var (`V3/ar/5`: üçüncü vecih, Arapça, " \

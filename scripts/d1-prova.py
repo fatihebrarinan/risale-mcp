@@ -466,6 +466,49 @@ UNITS["21-22"]["sizinti_kabul"] = {**{s: _NOKTA for s in (
 )}}
 
 
+# ---------------------------------------------------------------- D5: asıl iş (Bakara 34–286)
+# Kullanıcının kararları (2026-11-21): D5 yalnız Bakara; birimler kesin bölmeden (`bolme/bakara/birimler.json`, b6);
+# D5.1'den önce üretimin hepsi hazır. Saklı birimden farkı: gizlenecek bir şey yok (prova veritabanı yerine genel
+# veritabanlarına bağ, sızıntı testi yok, eklerde düzeltme yok); birinci vecih için önceki birim İşârât'sa (34'ün
+# öncesi 31–33) İşârât, değilse önceki D5 biriminin **son** taslağı (D5.0.5). Birimin kaydı `D5_STATE`'tedir
+# (`d1-birim.py` yazar): son taslak, kapının zinciri, maliyet, süre.
+D5_BIRIMLER = KEEP / "bolme" / "bakara" / "birimler.json"
+D5_STATE = KEEP / "d5" / "bakara.json"
+
+
+def ayah_range(cfg: dict) -> str:
+    """"28–29"; D5'te tek âyet "34" (saklı birimlerin istemleri değişmesin diye onlarda "28–28" kalır)."""
+    a, b = cfg["ayahs"]
+    return str(a) if a == b and cfg.get("d5") else f"{a}–{b}"
+
+
+def d5_state() -> dict:
+    return json.loads(D5_STATE.read_text(encoding="utf-8")) if D5_STATE.exists() else {"birimler": {}}
+
+
+def d5_units() -> list[dict]:
+    """D5'in birimleri sırayla: {id, ayet, kaynak}; kaynak `isarat` olanlar İşârât'ın kendi birimleridir (yazılmaz)."""
+    return json.loads(D5_BIRIMLER.read_text(encoding="utf-8"))["birimler"] if D5_BIRIMLER.exists() else []
+
+
+def _d5_register() -> None:
+    units = d5_units()
+    state = d5_state()["birimler"]
+    for i, u in enumerate(units):
+        if u["kaynak"] == "isarat" or u["id"] in UNITS:
+            continue
+        prev = units[i - 1]
+        onceki = None
+        if prev["kaynak"] != "isarat":
+            son = (state.get(prev["id"]) or {}).get("son_taslak")
+            onceki = (prev["id"], son) if son else ("bekliyor", prev["id"])
+        a, b = u["ayet"]
+        UNITS[u["id"]] = {"sura": 2, "ayahs": (a, b), "sura_name": "Bakara", "olcu": "", "ince": (), "nodes": (),
+                          "sections": {}, "ozet": [], "cizelge": [], "d5": True, "onceki_taslak": onceki}
+
+
+_d5_register()
+
 def _like_any(cols: list[str], needles: list[str]) -> tuple[str, list[str]]:
     where = " OR ".join(f'"{c}" LIKE ?' for c in cols for _ in needles)
     return where, [f"%{n}%" for _ in cols for n in needles]
@@ -589,7 +632,7 @@ def prompt_text(unit: str, cfg: dict, ozet: str, cizelge: str, arabic: str, iste
                 surum: str = "v1") -> str:
     body = PROMPTS[surum].read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
     body = variant_lines(body, istem)
-    ayahs = "–".join(map(str, cfg["ayahs"]))
+    ayahs = ayah_range(cfg)
     body = body.format(sura_name=cfg["sura_name"], ayahs=ayahs, olcu=cfg["olcu"])
     if istem == "tam":
         ek3 = ("# Ek 3: İşârâtü'l-İ'câz'ın Arapça aslı (prova kopyası)\n\n"
@@ -706,6 +749,8 @@ def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False, surum: str =
     out = OUT / unit
     out.mkdir(parents=True, exist_ok=True)
     needles = list(cfg["nodes"]) + list(cfg.get("ek_gizle", ())) + list(DROP_WORKS)   # ek_gizle: D5.0.5 (28)
+    if cfg.get("d5"):
+        return d5_hazirla(unit, cfg, out)
     if db_yenile or not (out / "risale.db").exists() or not (out / "tefsir.db").exists():
         t = time.monotonic()
         print("risale:", scrub(GENEL_DB, out / "risale.db", needles))
@@ -738,6 +783,29 @@ def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False, surum: str =
     print(f"sızıntı testi: {'temiz' if ok else 'SORUN'} → {(out / report).relative_to(ROOT)}")
     if not ok:
         sys.exit(1)
+
+
+def d5_hazirla(unit: str, cfg: dict, out: Path) -> None:
+    """D5 birimi: genel veritabanlarına bağ (kopya yok, gizlenen yok), ekler düzeltmesiz, sızıntı testi yok."""
+    if cfg["onceki_taslak"] and cfg["onceki_taslak"][0] == "bekliyor":
+        sys.exit(f"önce önceki birim bitmeli: {cfg['onceki_taslak'][1]} (D5.0.5: birinci vecih onun son taslağına bakar)")
+    for name, db in (("risale.db", GENEL_DB), ("tefsir.db", TEFSIR_DB)):
+        link = out / name
+        if link.is_symlink() or link.exists():
+            link.unlink()
+        link.symlink_to(db)
+    (out / "ek-ozet.md").write_text(OZET.read_text(encoding="utf-8"), encoding="utf-8")
+    (out / "ek-cizelge.md").write_text(CIZELGE.read_text(encoding="utf-8"), encoding="utf-8")
+    uv = shutil.which("uv") or "uv"
+    base = [uv, "--directory", str(ROOT), "run", "risale-mcp"]
+    servers = {"risale": base + ["--profile", "genel"], "tefsir": base + ["--profile", "tefsir"],
+               "hadis": base + ["--profile", "hadis"]}
+    for name, extra in (("mcp.json", {}), ("mcp-klasik.json", {"klasik": base + ["--profile", "klasik"]})):
+        (out / name).write_text(json.dumps({"mcpServers": {n: {"type": "stdio", "command": a[0], "args": a[1:]}
+                                                           for n, a in {**servers, **extra}.items()}}, indent=2),
+                                encoding="utf-8")
+    print(f"D5 birimi {unit}: genel veritabanları; önceki birim "
+          f"{'İşârât' if not cfg['onceki_taslak'] else 'taslak ' + str(cfg['onceki_taslak'])}")
 
 
 def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam", surum: str = "v1") -> None:
@@ -1296,7 +1364,7 @@ def unit_data(unit: str, quran: set) -> dict | None:
                      f"{meta['seconds'] // 60} dk{cost}, {sum(meta['calls'].values())} araç çağrısı, "
                      f"{len(cites)} kaynak, ortak dizi: Arapça {len(draft_sh['ar'] & hidden_sh['ar'])}"),
             "blocks": blocks, "sources": sources, "hidden": hidden_html}
-    ayahs = "–".join(map(str, cfg["ayahs"]))
+    ayahs = ayah_range(cfg)
     return {"title": f"{cfg['sura_name']} {ayahs}", "sections": SECTION_TITLES, "drafts": drafts,
             "hidden_titles": {"ar": "İşârâtü'l-İ'câz (Arapça asıl)", "tr": "Abdülmecid Nursî tercümesi"}}
 

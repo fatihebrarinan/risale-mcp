@@ -137,11 +137,13 @@ def _isarat_prev(unit: str) -> str:
     cfg = P.UNITS[unit]
     conn = sqlite3.connect(out_dir(unit) / "risale.db")
     # önceki birim programla (D12.5 Tur 0): Bakara'nın Arapça birimlerinden, gizlenen birimden hemen önceki kardeş
-    me = P.unit_node(cfg, "isaratul-icaz-arabi")
     g = sqlite3.connect(f"file:{P.GENEL_DB}?mode=ro", uri=True)
     sibs = [r[0] for r in g.execute("SELECT id FROM nodes WHERE parent_id = 'isaratul-icaz-arabi/sure-i-bakara' "
                                     "ORDER BY ord")]
-    prev = sibs[sibs.index(me) - 1]
+    if cfg.get("d5"):                    # D5: İşârât'ın önceki birimi yalnız ilk D5 biriminde var (34 → 31–33)
+        prev = sibs[-1]
+    else:
+        prev = sibs[sibs.index(P.unit_node(cfg, "isaratul-icaz-arabi")) - 1]
     nodes = [r for r in conn.execute("SELECT id, ref FROM nodes WHERE id = ? OR id LIKE ? ORDER BY ord", (prev, prev + "/%"))]
     L = []
     for nid, ref in nodes:
@@ -214,7 +216,7 @@ def konular(unit: str, again: bool = False) -> list[dict]:
         return json.loads(stem.with_suffix(".json").read_text(encoding="utf-8"))["konular"]
     ayah = M.Ayah(unit)
     text = "\n\n".join(f"{v['text']} ({v['ref']})\nMeâl ({v['meal_by']}): {v['meal']}" for v in ayah.verses)
-    prompt = KONU_PROMPT.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])), ayetler=text)
+    prompt = KONU_PROMPT.format(sura_name=cfg["sura_name"], ayahs=P.ayah_range(cfg), ayetler=text)
     data = Y.run_model(prompt, "opus", stem, {"gorev": "konular", "istem_sha": P._sha(KONU_PROMPT)})
     if not data or not data.get("konular"):
         sys.exit("konular çıkarılamadı")
@@ -547,13 +549,13 @@ def ders_basliklari(unit: str, h11: bool = False) -> str:
 
 def ders_ornekleri(unit: str) -> str:
     cfg = P.UNITS[unit]
-    hidden = P.unit_node(cfg, "isaratul-icaz-arabi")
+    hidden = None if cfg.get("d5") else P.unit_node(cfg, "isaratul-icaz-arabi")   # D5: gizlenen birim yok
     conn = sqlite3.connect(f"file:{P.GENEL_DB}?mode=ro", uri=True)
     L = ["Müellif bir lafzı işlerken nazmın nüktesinden öte bir derse ya da hakikate geçer; ders o lafzın yerinde, kısa ve "
          "lafza bağlıdır. Aşağıdakiler İşârât'ın başka birimlerinden (Arapça asıl, cümle kimlikleriyle).", ""]
     for u, a, b, how in DERS_ORNEKLERI:
         node = f"isaratul-icaz-arabi/sure-i-bakara/{u}"
-        if node == hidden or hidden.startswith(node) or node.startswith(hidden):
+        if hidden and (node == hidden or hidden.startswith(node) or node.startswith(hidden)):
             continue
         rows = conn.execute("SELECT id, text FROM sentences WHERE node_id = ? OR node_id LIKE ? ORDER BY seq",
                             (node, node + "/%")).fetchall()
@@ -588,6 +590,8 @@ def tarama_parcalari(unit: str | None) -> dict:
 # ---------------------------------------------------------------- h11: Ek 3b (birinci vechin genişliği)
 
 GARAZ = ROOT / "data" / "d1" / "garaz" / "isarat-bakara.json"
+GARAZ_D5 = ROOT / "data" / "d1" / "garaz" / "d5-bakara.json"     # D5: yazılan birimlerin son taslaklarından
+D5_GARAZ_SON = 15
 SONRAKI = 5
 GARAZ_ISTEM = """Aşağıda Bediüzzaman'ın İşârâtü'l-İ'câz'ından Bakara Sûresi'nin birimleri var (Arapça asıl; her birimin başı:
 birinci vecih ve varsa mukaddime). Her birim için **iki cümleyi geçmeyen Türkçe bir özet** yaz: bu âyetler neyi
@@ -629,6 +633,15 @@ def ek3b(unit: str) -> str:
         first = int(str(x["birim"]).split("-")[0]) if str(x["birim"]).split("-")[0].isdigit() else None
         if first is not None and first < a:
             L.append(f"- **{x['birim']}:** {x['ozet']}")
+    if cfg.get("d5") and GARAZ_D5.exists():   # D5: önceki D5 birimleri (yapay zekâ taslaklarından özet)
+        d5 = json.loads(GARAZ_D5.read_text(encoding="utf-8"))["ozetler"]
+        rows = sorted(((int(k.split("-")[0]), k, v) for k, v in d5.items() if int(k.split("-")[0]) < a))
+        skipped = max(0, len(rows) - D5_GARAZ_SON)    # istem şişmesin: son birimler (İşârât'ınkiler hep var)
+        rows = rows[skipped:]
+        if rows:
+            L += ["", "Aşağıdakiler İşârât'ın değil, D5'te yazılmış **yapay zekâ taslaklarının** özetleridir"
+                  + (f" (son {len(rows)} birim; öncekiler {skipped} birim)" if skipped else "") + ":", ""]
+            L += [f"- **{k}:** {v}" for _, k, v in rows]
     q = json.loads((ROOT / "data" / "library" / "kuran" / "quran.json").read_text(encoding="utf-8"))
     ay = {v["ayah"]: v for v in q["suras"][cfg["sura"] - 1]["ayahs"]}
     L += ["", f"## Sonraki âyetler ({b + 1}–{min(b + SONRAKI, len(ay))})", ""]
@@ -654,14 +667,15 @@ def hazirla(unit: str, surum: str | None = None, tarama: bool = False) -> Path:
     ek2 = _section(cizelge, "## Çizelge: Bakara", "## Çizelge: Fâtiha")
     h = hedef(unit)
     body = HAT_PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
-    body = body.format(**tarama_parcalari(unit if tarama else None),sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])),
+    body = body.format(**tarama_parcalari(unit if tarama else None),sura_name=cfg["sura_name"], ayahs=P.ayah_range(cfg),
                        ders_basliklari=ders_basliklari(unit, h11),
                        h11_birinci=birinci if h11 else "", h11_taalluk=H11_TAALLUK if h11 else "",
                        en_az=f"{h['en_az']:,}".replace(",", "."), en_cok=f"{h['en_cok']:,}".replace(",", "."),
                        kelime_az=f"{h['kelime_az']:,}".replace(",", "."), kelime_cok=f"{h['kelime_cok']:,}".replace(",", "."))
     ek4 = ders_ornekleri(unit) if SURUM >= "h5" else ""
-    prompt = (f"{body}\n\n---\n\n# Ek 1: Usul özeti, {'2.7 (Muhâkemât), ' if SURUM >= 'h3' else ''}4. ve 5. bölüm (prova kopyası)\n\n{ek1}\n\n---\n\n"
-              f"# Ek 2: Birim çizelgesi, Bakara (prova kopyası)\n\n{ek2}\n\n---\n\n# Ek 3: "
+    kopya = "" if cfg.get("d5") else " (prova kopyası)"      # D5: ekler düzeltmesiz, asıl belgeler
+    prompt = (f"{body}\n\n---\n\n# Ek 1: Usul özeti, {'2.7 (Muhâkemât), ' if SURUM >= 'h3' else ''}4. ve 5. bölüm{kopya}\n\n{ek1}\n\n---\n\n"
+              f"# Ek 2: Birim çizelgesi, Bakara{kopya}\n\n{ek2}\n\n---\n\n# Ek 3: "
               + dosya_path.read_text(encoding="utf-8").removeprefix("# ")
               + (f"\n\n---\n\n# Ek 3b: Sûrenin şimdiye kadarki birimleri ve sonraki âyetler\n\n{ek3b(unit)}" if h11 else "")
               + (f"\n\n---\n\n# Ek 4: İşârât'tan ders örnekleri\n\n{ek4}" if ek4 else "")
@@ -690,7 +704,7 @@ def izah(unit: str, n: int, again: bool = False) -> dict | None:
         return json.loads(stem.with_suffix(".json").read_text(encoding="utf-8"))
     blocks, sources = Y.draft_blocks(unit, n)
     raw = IZAH_PROMPT.read_text(encoding="utf-8").split("---- İZAH ----", 1)[1].strip()
-    text = raw.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])),
+    text = raw.format(sura_name=cfg["sura_name"], ayahs=P.ayah_range(cfg),
                       taslak=Y.render_draft(blocks, {}))
     data = Y.run_model(text, "opus", stem, {"gorev": "izah", "taslak": n, "istem_sha": P._sha(raw)})
     if data is None:

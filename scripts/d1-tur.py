@@ -78,7 +78,7 @@ def h2_body(unit: str) -> dict[str, str]:
     h = H.hedef(unit)
     body = H.HAT_PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
     fmt = lambda x: f"{x:,}".replace(",", ".")
-    body = body.format(sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])), en_az=fmt(h["en_az"]),
+    body = body.format(sura_name=cfg["sura_name"], ayahs=P.ayah_range(cfg), en_az=fmt(h["en_az"]),
                        en_cok=fmt(h["en_cok"]), kelime_az=fmt(h["kelime_az"]), kelime_cok=fmt(h["kelime_cok"]))
     chunks = re.split(r"(?m)^(?=## )", body)
     out = {"giris": chunks[0].strip()}
