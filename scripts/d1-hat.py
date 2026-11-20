@@ -74,6 +74,14 @@ H11_BIRINCI = (
     "(Ek 2: \"V1 yalnız bir önceki âyete bakmaz\"). Ek 3b'de sûrenin şimdiye kadarki birimlerinin garazı ve sonraki "
     "âyetler var: bu âyetin o bahislerin hangisini tamamladığını, sonraki âyetlere neyi hazırladığını söyle; zorlama hat "
     "kurma.")
+# h12 (2026-11-21, kullanıcının 29 okuması: birinci vecihte h11'in hat listesi ince kaldı, h9'un az ama derin hattı
+# tercih edildi): hatlar sayılmaz; garaz merkezli bir iki hat, izahıyla. Ders seçimi ve taalluk h11'deki gibi.
+H12_BIRINCI = (
+    "\n   **Birinci vecih: garaz merkezli bağ.** Öncesiyle nazım yalnız bir önceki âyet değildir: Ek 3b'de sûrenin "
+    "şimdiye kadarki birimlerinin garazı ve sonraki âyetler var. Önce bu âyetin **asıl garazını** bul ve onun bu "
+    "bahisler zincirinde nereye oturduğunu göster: hangi bahsi tamamlıyor, hangi suale cevap veriyor, sonraki âyetlere "
+    "neyi hazırlıyor. Bunu **bir, en çok iki hat** üzerinden kur ve her hattı izahıyla aç (takdir edilen sual, iki "
+    "âyetin ortak noktası, neden bu sırayla geldiği). Hat sayma; kısa kısa geçilen hat listesi yazma. Zorlama hat kurma.")
 H11_TAALLUK = (
     "\n   **Taalluk:** ikinci ve üçüncü vecihte her harf, kayıt ve cümle için sor: (a) **neye bağlı** (neyi takip ediyor, "
     "neyin hâli, neye atfedilmiş, neyin cevabı; müteallakı söylenmemişse nedir); (b) **zâhiren ne beklenirdi**; (c) "
@@ -631,7 +639,8 @@ def ek3b(unit: str) -> str:
 
 def hazirla(unit: str, surum: str | None = None, tarama: bool = False) -> Path:
     surum = surum or ("h10" if tarama else SURUM)
-    h11 = surum == "h11"                 # 2026-11-20: birinci vechin genişliği, ders seçimi, taalluk (PLANLAR D5)
+    h11 = surum in ("h11", "h12")        # 2026-11-20: birinci vechin genişliği, ders seçimi, taalluk (PLANLAR D5)
+    birinci = H12_BIRINCI if surum == "h12" else H11_BIRINCI   # h12: hat listesi yerine garaz merkezli derin bağ
     cfg = P.UNITS[unit]
     out = out_dir(unit)
     if not (out / "risale.db").exists():
@@ -647,7 +656,7 @@ def hazirla(unit: str, surum: str | None = None, tarama: bool = False) -> Path:
     body = HAT_PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
     body = body.format(**tarama_parcalari(unit if tarama else None),sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])),
                        ders_basliklari=ders_basliklari(unit, h11),
-                       h11_birinci=H11_BIRINCI if h11 else "", h11_taalluk=H11_TAALLUK if h11 else "",
+                       h11_birinci=birinci if h11 else "", h11_taalluk=H11_TAALLUK if h11 else "",
                        en_az=f"{h['en_az']:,}".replace(",", "."), en_cok=f"{h['en_cok']:,}".replace(",", "."),
                        kelime_az=f"{h['kelime_az']:,}".replace(",", "."), kelime_cok=f"{h['kelime_cok']:,}".replace(",", "."))
     ek4 = ders_ornekleri(unit) if SURUM >= "h5" else ""

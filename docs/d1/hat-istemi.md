@@ -42,6 +42,11 @@ Sürümler:
 - h10 (2026-11-18, D14.7): h9 + İşârât'ın soru kalıpları (Ek 5, `docs/d1/soru-kaliplari.md`) + program kurduğu
   tarama tablosu (usulden sonra); yazar çıktısının başında `## Tarama`'yı doldurur (iş sırası, şablon);
   program onu taslaktan ayırır. h9'da bu yer tutucular boştur.
+- h11 (2026-11-20, D5'in iyileştirme turu; `--surum h11`, h9'un metni değişmez): {h11_birinci} birinci vechin
+  genişliği (hatlar; Ek 3b: sûrenin önceki birimlerinin garaz özetleri ve sonraki beş âyet), ders seçiminde isabet ilk
+  üç bölümün toplamı, {h11_taalluk} taalluk soruları (İşârât'tan iki örnek). Sınama 29'da h9'a karşı.
+- h12 (2026-11-21, kullanıcının 29 okuması: h11'in hat listesi ince kaldı): h11'in aynısı, yalnız {h11_birinci} "garaz
+  merkezli bağ": hatlar sayılmaz, bir en çok iki hat izahıyla. Sınama kabul birimi 30'da h9'a karşı (3 yer).
 -->
 
 ---- İSTEM ----
