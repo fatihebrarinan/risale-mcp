@@ -288,6 +288,13 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   kendiliğinden yapmaz. Yazar her notu karşılar ya da gerekçesiyle reddeder (kapı d3'ün kuralları: yeni kaynak yok);
   yeni sürüm açılır, eski silinmez, fark masada. Sonraki birimler eski sürümü görerek yazılmış kalır (geri sarılmaz).
   ≈1–3 $ bir tur.
+  **Yapılanlar (2026-11-21):** S7.1 yayın dosyası (`scripts/d1-yayin.py`, `2846310`: değişmez sürümler
+  `data/d1/yayin/bakara/<birim>/v<k>.json`, içerikten paragraf kimliği, sahiplik, kalan kuşkulu atıflar, kapı özeti,
+  eksik notları, kaynak metinleri; her D5 biriminden sonra). S7.2'nin zemini (`9ab73f8`, ana makinede): masa servisi
+  `src/risale_mcp/masa.py` (`/taslak/api/`, `data/masa.db`: görevler, kararlar silinmez, kör eşleme sunucuda,
+  notlar ve geçmişi, jetonla görev açma ve dışa aktarma, ad yok); okuma sayfaları kararları sunucuya yazar, "Okumayı
+  bitir" tarafları açar (`d1-tur.py okuma-tek`, görevsiz eski düzen `--gorevsiz`); `scripts/masa-gorev.py ac | al`
+  (jeton `~taslak/.masa-token`, yerelde `.env` `MASA_TOKEN`).
   **Sıra:** S7.1 veri katmanı (yayın dosyası, kalıcı paragraf kimlikleri, sürümler) → S7.2 ar-ge masası (pano girişte,
   birim başına eleştiri, nisbet ve kapı) → S7.3 okuma platformu ilk sürüm (Kur'ân paneli, birim sayfası, izah, atıfta
   kaynağın metni, künye, işaretler) → S7.4 okuyucu notu (sunucuda, kalıcı adrese bağlı). S7.1 ve S7.2 D5 dönerken
