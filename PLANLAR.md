@@ -254,6 +254,27 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
     arasında fark** (yeniden yazma ya da düzeltme gelince; D12.2'nin fark kartları); **okuma sonuçlarının sunucuda
     toplanması** (`/taslak/` hesabıyla, dışa aktarma adımı kalkar; heyet akışından ayrı, tek okuyucu için).
 
+- **S7'nin yönü** (kullanıcı kabul etti, 2026-11-21; "ekleyecek çok şey çıkar"): (1) **durum sayfası ar-ge masasının
+  girişi** (pano); okuma platformunda yalnız tek satırlık ilerleme. (2) **Eleştiriler ve nisbet:** ar-ge masasında
+  hepsi ham hâliyle (kapalı eleştirmenin notları, nisbet hükümleri, kabul ve ret gerekçeleri, düzeltme farkı,
+  alarmlar); okuma platformunda ham not yok (eleştirmen de yapay zekâ, isabeti %83; iç dil), sonuçları var: atıfın
+  yanında işaret (kapının düzeltemediği kuşkulu atıf "kaynağın dediğini aşıyor olabilir"), "bu taslak nasıl yazıldı"
+  künyesi (notlar, düzeltilen, reddedilen, geçtiği denetimler), "eleştirmenin gördüğü ama taslağa eklenmeyenler"
+  (eksik notları, "yapay zekâ eleştirmeninin notu, denetlenmedi" diye). (3) **Katkıya açık platformun zemini:**
+  kalıcı adresler (birim âyet aralığı; paragraf yayımlanınca değişmeyen kimlik alır, sıra numarası değil); değişmeyen
+  sürümler (yayımlanan sürüm dondurulur, silinmez; not sürüme ve işaretlediği söze (önü ve ardıyla) bağlanır, yeni
+  sürümde söz duruyorsa taşınır; web'in not alma usulü, W3C Web Annotation gibi); kim, ne, hangi sıfatla (müellif,
+  müfessir, yapay zekâ, okuyucu, ileride ehil; not silinmez, geri çekilir; davet, hesap, rol: okuyucu → katkıcı →
+  ehil); tek veri biçimi, iki görünüm (birim başına yayın dosyası; masa ve platform ondan çizilir; notlar ana
+  makinede `/taslak/` hesaplarıyla, dışa aktarılabilir). Dondurulan heyet akışı (2026-11-09) açılmaz, yalnız zemini
+  kurulur. Ekler: telefona göre tasarım; harekeli Arapça için tam yazı tipi kendi sitemizden (Google Fonts yok);
+  ar-ge'de kayma görünümü (ardışık birimlerin garaz özetleri, birinci vecihlerin bağları); D5 S7'yi beklemez (kimlikler
+  değişmeyen taslaklardan sonradan üretilir). D5 okuma sayfası (`d1-d5-sayfa.py`) yeni platforma taşınır.
+  **Sıra:** S7.1 veri katmanı (yayın dosyası, kalıcı paragraf kimlikleri, sürümler) → S7.2 ar-ge masası (pano girişte,
+  birim başına eleştiri, nisbet ve kapı) → S7.3 okuma platformu ilk sürüm (Kur'ân paneli, birim sayfası, izah, atıfta
+  kaynağın metni, künye, işaretler) → S7.4 okuyucu notu (sunucuda, kalıcı adrese bağlı). S7.1 ve S7.2 D5 dönerken
+  (model çağrısız).
+
 ## Bekleyen (başkasının cevabı)
 
 | Kimlik | İş | Kimde | Eski adı |
