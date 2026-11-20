@@ -55,12 +55,20 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D5.0 bitti, yalnız kabul birimi 30 kaldı (sunucuda çalışıyor; sonra kullanıcının 3 yerlik kör okuması,
-  h9 mı h12 mi). Büyük işin kolaylıkları kuruldu (`cc2264f`): kuyruk hizmeti `d1-kuyruk` (kurulu, başlatılmadı),
-  `taslak-sunucu.sh devam | dur | hemen-dur | durum`, haftalık %90 koruması, alarmlar, durum sayfası, günlük özet,
-  birim başına push, bekleyen kod. Sayfalar sunucudan siteye (kısıtlı anahtar), bildirimler telefona (ntfy) çalışıyor.
-  D5.1: `devam` ardından hemen `dur` (34'ü yazıp durur), kullanıcı okur.
-- **Kullanıcıdan beklenen:** 30'un okuması (bitince).
+- **Önde (oturum devri, 2026-11-21):** (1) **Kabul birimi 30 sunucuda çalışıyor** (`d1-kabul-30`, tefsir makinesi;
+  durum `scripts/taslak-sunucu.sh durum`, günlük `scripts/taslak-sunucu.sh calistir scripts/d1-arka.sh log kabul-30`;
+  bitince telefona ntfy bildirimi). Bitince: yerelde `git -C data/d1 pull`; son taslaklar
+  `data/d1/provalar/30/kapi-son-<n>.txt` (h9 ve h12'nin ilk taslakları `taslak-*.json` `surum`); 3 kart **içeriğe göre**
+  seç (birinci vecih, bir taalluk yeri, Risale dersi; iki tarafı göndermeden kendin oku; 29'da "önceki" kartı h11'e
+  haksızdı), `uv run python scripts/d1-tur.py okuma-tek 30 --taslak <h9 son> <h12 son> --tur D5-kabul --yerler …`
+  (görevli sayfa: kararlar sunucuya, taraflar bitirince), `scripts/taslak-gonder.sh data/d1/masa/tur-30-D5-kabul.html`,
+  `uv run python scripts/masa-gorev.py ac data/d1/provalar/30/gorev-D5-kabul.json`; ölçüler (envanter, İşârât
+  karşılaştırması, kör A/B) kullanıcıya rakamlarla. Kullanıcı okuyunca `masa-gorev.py al` (sunucuda), h9 mı h12 mi →
+  `D5_SURUM` (d1-birim.py varsayılanı h12). (2) **S7'nin sırası kullanıcıya önerildi** (onay bekliyor): masanın giriş
+  sayfası (Pano · Okumalar · Birimler), birimin ar-ge görünümü, okumaların kendiliğinden akması (kuyruk görev açar,
+  sonuçlar her gece) D5.1'den önce; deneyler defteri, S7.3, S7.4 D5 dönerken. (3) Sonra D5.1: `taslak-sunucu.sh devam`
+  ardından hemen `dur` (34'ü yazıp durur).
+- **Kullanıcıdan beklenen:** S7 sırasının onayı; 30'un okuması (görev açılınca).
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
