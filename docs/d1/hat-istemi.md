@@ -112,7 +112,7 @@ tanımını terim eserinde gör; uymuyorsa kullanma.
 
 1. **Düzen:** âyet; gerekiyorsa mukaddime; **birinci vecih** (öncesiyle nazım); **ikinci vecih** (cümlelerin
    birbiriyle nazmı); **üçüncü vecih** (her cümlenin hey'etleri, kayıtları ve kelimeleri). Her vecih İşârât'taki gibi
-   kendi geçiş cümlesiyle açılır.
+   kendi geçiş cümlesiyle açılır.{h11_birinci}
 2. **Dört maksat:** asıl maksat her zaman söylenir; tevhid, nübüvvet, haşir ve adaletten öbürleri yalnız bu âyete
    özgü bir lafza ya da hey'ete dayanıyorsa ve derecesiyle (sarih, işaret, remiz, îmâ, telvih). Tutamak yoksa anma.
 3. **Ders ve mukaddime: tek kaide.** İşârât'ta üç vechin olağan tahlili dışındaki her kısım bir meselenin dersidir ve
@@ -141,7 +141,7 @@ tanımını terim eserinde gör; uymuyorsa kullanma.
    ya da bırak.
 5. **İkinci vecih: söylenmeyeni bul.** Âyetin üslûbu beklenenden ayrılıyorsa (cümle türü, emirden habere, gâibden
    muhataba geçiş; beklenen bir atfın ya da cevabın gelmemesi) altında takdir edilmiş bir cümle zinciri vardır: zinciri
-   aç, her halkayı yaz. Dinleyenin zihnindeki soruyu ve makamın neyi iktiza ettiğini birlikte kullan.
+   aç, her halkayı yaz. Dinleyenin zihnindeki soruyu ve makamın neyi iktiza ettiğini birlikte kullan.{h11_taalluk}
 6. **Üçüncü vecih:** bakılacak yerleri önce say (harfler dahil); "neden şu lafız, şu değil" diye sor; mukadder
    cümleleri aç; her kaydın mânâya ne kattığını ve muhatabın vicdanında ne iş gördüğünü söyle; sonunda kayıtların asıl
    garaza nasıl aktığını topla.{tarama_usul}

@@ -65,6 +65,23 @@ ADAY_ESIK = 12
 ADAY_KOPYA = 0.5       # bu orandan çok cümlesi daha güçlü bir adayla aynı olan bölüm onun kopyasıdır (Tarihçe'deki Hutbe)
 # D14.3 (h6): ders adayının isabeti en az bu kadar olan lafızlar için program üçüncü vecihte ders başlığı açar
 ZORUNLU_ESIK = 25
+# h11 (2026-11-20, D15'in raporu): ders seçiminde isabet ilk üç bölümün toplamı; Risale'nin en geniş işlediği konu
+# birçok bölüme dağıldığı için tek bölümde eşiği bulamıyordu (28'de haşir: 19 + 17 + 15).
+ZORUNLU_TOPLAM, ZORUNLU_ILK = 50, 3
+H11_BIRINCI = (
+    "\n   **Birinci vechin genişliği:** öncesiyle nazım yalnız bir önceki âyet değildir. İşârât bir âyetten önceki bütün "
+    "bahislere (sûrenin başına, geçen kısımlara), sonraki âyetlere ve Kur'ân'ın bütününe uzanan **hatları** sayar "
+    "(Ek 2: \"V1 yalnız bir önceki âyete bakmaz\"). Ek 3b'de sûrenin şimdiye kadarki birimlerinin garazı ve sonraki "
+    "âyetler var: bu âyetin o bahislerin hangisini tamamladığını, sonraki âyetlere neyi hazırladığını söyle; zorlama hat "
+    "kurma.")
+H11_TAALLUK = (
+    "\n   **Taalluk:** ikinci ve üçüncü vecihte her harf, kayıt ve cümle için sor: (a) **neye bağlı** (neyi takip ediyor, "
+    "neyin hâli, neye atfedilmiş, neyin cevabı; müteallakı söylenmemişse nedir); (b) **zâhiren ne beklenirdi**; (c) "
+    "**neden bu geldi**. Cevap çoğu zaman söylenmemiş bir cümlenin takdiridir: takdiri yaz. Bir edata yalnız bir ad "
+    "verip geçme (\"fâ ta'kîb içindir\"): gerçekten hangi cümleye bağlandığını sor. İşârât'tan iki örnek:"
+    "\n   - «" + 'ثم إن في متعلق ﴿ قَالُٓوا ﴾ وجوهاً ثلاثة مترتبة؛ أي قالوا لأنفسهم، ثم لأبناء جنسهم، ثم لمرشدهم' + "» (`isaratul-icaz-arabi/sure-i-bakara/13/c018`): söylenmemiş müteallak."
+    "\n   - «" + 'ثم بينما كان السامع منتظراً من انصباب الكلام مقابلةَ المؤمنين لهم، رأى أن الله قابلَهم بدلاً عن المؤمنين' + "» (`isaratul-icaz-arabi/sure-i-bakara/14-15-ayetlerin-tefsiri/c015`): "
+    "zâhiren beklenen ve gelen.")
 RISALE_ILK: int | None = 10        # dosyada konu başına gösterilen Risale paragrafı (h9, D14.6b; None: ilk 100'ün üst yarısı)
 # h2'ye kadar: altı taslağın hepsinin okuduğu müfessirler (D8, 31–33); öbürleri araçla
 DOSYA_TEFSIR = ("kessaf", "beyzavi", "ebussuud", "alusi")
@@ -487,13 +504,17 @@ DERS_ORNEKLERI = [("11-12-ayetlerin-tefsiri", "c024", "c028", "soru–cevap"),
                   ("31-33-ayetlerin-tefsiri", "mukaddime/c001", "mukaddime/c011", "mukaddime: geniş ders, taksimle")]
 
 
-def zorunlu_dersler(unit: str) -> list[dict]:
+def zorunlu_dersler(unit: str, h11: bool = False) -> list[dict]:
     """D14.3 (h6): en güçlü adayının isabeti `ZORUNLU_ESIK`'i aşan konular: lafız ve aday bölümler (dosyanın adaylarından)."""
     adaylar = json.loads((out_dir(unit) / "ders-adaylari.json").read_text(encoding="utf-8"))
     topics = {t["konu"]: t for t in konular(unit)}
     out = []
     for konu, xs in adaylar.items():
-        strong = [x for x in xs if (x.get("isabet") or 0) >= ZORUNLU_ESIK]
+        if h11:                          # ilk üç bölümün toplamı
+            top = sorted(xs, key=lambda x: -(x.get("isabet") or 0))[:ZORUNLU_ILK]
+            strong = top if sum(x.get("isabet") or 0 for x in top) >= ZORUNLU_TOPLAM else []
+        else:
+            strong = [x for x in xs if (x.get("isabet") or 0) >= ZORUNLU_ESIK]
         if konu in topics and strong:
             t = topics[konu]
             lafiz = t.get("lafiz") or re.split(r"\s+[—–-]\s+", t.get("neden", ""), maxsplit=1)[0].strip()
@@ -501,8 +522,8 @@ def zorunlu_dersler(unit: str) -> list[dict]:
     return out
 
 
-def ders_basliklari(unit: str) -> str:
-    rows = zorunlu_dersler(unit) if SURUM >= "h6" else []
+def ders_basliklari(unit: str, h11: bool = False) -> str:
+    rows = zorunlu_dersler(unit, h11) if SURUM >= "h6" else []
     if not rows:
         return "(Bu birim için program ders başlığı açmadı.)"
     L = []
@@ -556,8 +577,61 @@ def tarama_parcalari(unit: str | None) -> dict:
     return out
 
 
+# ---------------------------------------------------------------- h11: Ek 3b (birinci vechin genişliği)
+
+GARAZ = ROOT / "data" / "d1" / "garaz" / "isarat-bakara.json"
+SONRAKI = 5
+GARAZ_ISTEM = """Aşağıda Bediüzzaman'ın İşârâtü'l-İ'câz'ından Bakara Sûresi'nin birimleri var (Arapça asıl; her birimin başı:
+birinci vecih ve varsa mukaddime). Her birim için **iki cümleyi geçmeyen Türkçe bir özet** yaz: bu âyetler neyi
+anlatıyor ve **asıl garazı** (maksadı) ne (İşârât'ın kendi söylediğine göre). Kurallar: yalnız birimin kendisi; birimin
+**sonraki âyetlere** dair söylediğini (onları hazırlaması, onlarla bağı) **yazma**; İşârât'tan alıntı yapma; kendi
+yorumunu katma. Cevabın yalnız şu JSON: {{"ozetler": [{{"birim": "21-22", "ozet": "..."}}]}}
+
+{metin}
+"""
+
+
+def garaz_uret(again: bool = False) -> dict:
+    """İşârât'ın Bakara birimlerinin garaz özetleri (tek model çağrısı; Ek 3b için). D5'te özetler taslaklardan gelir."""
+    if GARAZ.exists() and not again:
+        return json.loads(GARAZ.read_text(encoding="utf-8"))
+    conn = sqlite3.connect(f"file:{P.GENEL_DB}?mode=ro", uri=True)
+    sibs = [r[0] for r in conn.execute("SELECT id FROM nodes WHERE parent_id = 'isaratul-icaz-arabi/sure-i-bakara' ORDER BY ord")]
+    L = []
+    for node in sibs:
+        label = node.rsplit("/", 1)[-1].split("-ayet")[0]
+        rows = conn.execute("SELECT text FROM sentences WHERE (node_id = ? OR node_id LIKE ?) AND id NOT LIKE '%/h_/%' "
+                            "ORDER BY seq LIMIT 25", (node, node + "/%")).fetchall()
+        L.append(f"## Birim {label}\n\n" + " ".join(t for (t,) in rows))
+    GARAZ.parent.mkdir(parents=True, exist_ok=True)
+    data = Y.run_model(GARAZ_ISTEM.format(metin="\n\n".join(L)), "opus", GARAZ.with_suffix(""), {"gorev": "garaz"})
+    if not data:
+        sys.exit("garaz özetleri çıkarılamadı")
+    return data
+
+
+def ek3b(unit: str) -> str:
+    """Sûrenin şimdiye kadarki birimlerinin garazı (İşârât'tan özet; sınanan birim ve sonrası yok) ve sonraki âyetler."""
+    cfg = P.UNITS[unit]
+    a, b = cfg["ayahs"]
+    data = json.loads(GARAZ.read_text(encoding="utf-8")) if GARAZ.exists() else sys.exit("önce: d1-hat.py garaz")
+    L = ["Program topladı. Önceki birimlerin özetleri İşârât'tan çıkarıldı (modelin özeti, İşârât'ın sözü değil; "
+         "atıf verilemez); her birimin aslı `risale` eklentisinde.", "", "## Önceki birimler: âyetler ve garaz", ""]
+    for x in data["ozetler"]:
+        first = int(str(x["birim"]).split("-")[0]) if str(x["birim"]).split("-")[0].isdigit() else None
+        if first is not None and first < a:
+            L.append(f"- **{x['birim']}:** {x['ozet']}")
+    q = json.loads((ROOT / "data" / "library" / "kuran" / "quran.json").read_text(encoding="utf-8"))
+    ay = {v["ayah"]: v for v in q["suras"][cfg["sura"] - 1]["ayahs"]}
+    L += ["", f"## Sonraki âyetler ({b + 1}–{min(b + SONRAKI, len(ay))})", ""]
+    for k in range(b + 1, min(b + SONRAKI, len(ay)) + 1):
+        L += [f"> {ay[k]['text']} ({cfg['sura_name']} {k})", f"> Meâl (Diyanet Vakfı): {ay[k]['translations']['diyanet-vakfi']}", ""]
+    return "\n".join(L).strip()
+
+
 def hazirla(unit: str, surum: str | None = None, tarama: bool = False) -> Path:
     surum = surum or ("h10" if tarama else SURUM)
+    h11 = surum == "h11"                 # 2026-11-20: birinci vechin genişliği, ders seçimi, taalluk (PLANLAR D5)
     cfg = P.UNITS[unit]
     out = out_dir(unit)
     if not (out / "risale.db").exists():
@@ -572,13 +646,15 @@ def hazirla(unit: str, surum: str | None = None, tarama: bool = False) -> Path:
     h = hedef(unit)
     body = HAT_PROMPT.read_text(encoding="utf-8").split("---- İSTEM ----", 1)[1].strip()
     body = body.format(**tarama_parcalari(unit if tarama else None),sura_name=cfg["sura_name"], ayahs="–".join(map(str, cfg["ayahs"])),
-                       ders_basliklari=ders_basliklari(unit),
+                       ders_basliklari=ders_basliklari(unit, h11),
+                       h11_birinci=H11_BIRINCI if h11 else "", h11_taalluk=H11_TAALLUK if h11 else "",
                        en_az=f"{h['en_az']:,}".replace(",", "."), en_cok=f"{h['en_cok']:,}".replace(",", "."),
                        kelime_az=f"{h['kelime_az']:,}".replace(",", "."), kelime_cok=f"{h['kelime_cok']:,}".replace(",", "."))
     ek4 = ders_ornekleri(unit) if SURUM >= "h5" else ""
     prompt = (f"{body}\n\n---\n\n# Ek 1: Usul özeti, {'2.7 (Muhâkemât), ' if SURUM >= 'h3' else ''}4. ve 5. bölüm (prova kopyası)\n\n{ek1}\n\n---\n\n"
               f"# Ek 2: Birim çizelgesi, Bakara (prova kopyası)\n\n{ek2}\n\n---\n\n# Ek 3: "
               + dosya_path.read_text(encoding="utf-8").removeprefix("# ")
+              + (f"\n\n---\n\n# Ek 3b: Sûrenin şimdiye kadarki birimleri ve sonraki âyetler\n\n{ek3b(unit)}" if h11 else "")
               + (f"\n\n---\n\n# Ek 4: İşârât'tan ders örnekleri\n\n{ek4}" if ek4 else "")
               + (f"\n\n---\n\n# Ek 5: İşârât'ın soru kalıpları\n\n{'## ' + KALIP_DOC.read_text(encoding='utf-8').split(chr(10) + '## ', 1)[1]}"
                  if tarama else ""))
@@ -791,6 +867,8 @@ def orneklem(unit: str, drafts: list[int], again: bool = False) -> None:
 def main() -> None:
     ap = argparse.ArgumentParser()
     sub = ap.add_subparsers(dest="cmd", required=True)
+    p = sub.add_parser("garaz", help="h11: İşârât'ın Bakara birimlerinin garaz özetleri (tek model çağrısı)")
+    p.add_argument("--yeniden", action="store_true")
     p = sub.add_parser("dosya")
     p.add_argument("unit", choices=P.UNITS)
     p = sub.add_parser("oran")
@@ -818,7 +896,9 @@ def main() -> None:
     p.add_argument("--taslak", type=int, nargs="+", required=True)
     p.add_argument("--yeniden", action="store_true")
     a = ap.parse_args()
-    if a.cmd == "dosya":
+    if a.cmd == "garaz":
+        print(len(garaz_uret(a.yeniden)["ozetler"]), "özet")
+    elif a.cmd == "dosya":
         dosya(a.unit)
     elif a.cmd == "hazirla":
         hazirla(a.unit, a.surum, a.tarama)
