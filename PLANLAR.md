@@ -55,10 +55,10 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde:** D15.1 (21–22). h10 ve h9 yazıldı ve ölçüldü (h9 bütünde ve dört bölümde hafif, me'hazda açık önde;
-  kapsama %40 / %42; çelişki 1 / 0). Birleşik okuma sayfası sitede: https://risalemcp.com/taslak/tur-21-22-D15.1.html
-  (9 kart, ≈37 dk; A ve B kör, yanında İşârât).
-- **Kullanıcıdan beklenen:** 21–22'nin okuması; bitince "Dışa aktar", dosya `data/d1/notlar/`'a.
+- **Önde:** D15.1 bitti (2026-11-20): 21–22'de kör eleştirmen ve kullanıcı h9'u tercih etti (okuma: h9 6, h10 1).
+  Sıradaki D15.2 (26–27): birim kaydı (`d1-prova.UNITS`, 21–22 örneği), envanter, h10 ve h9 taslakları ve ölçüler
+  (`d1-arka.sh` ile), kapalı eleştirmen ve nisbet (h10), aletlerin ayarı, kör A/B, birleşik okuma sayfası.
+- **Kullanıcıdan beklenen:** D15.2'ye başlama onayı (≈35–40 $; 26–27 büyük birim).
 - **Sonra:** D15.2 (26–27), D15.3 (28; D5.0.5'in sınaması), D15'in toplu raporu ve karar (h9 mı h10 mu).
 - **Bekleyen yan işler** (yeri gelince; D15 sürerken açılmaz): D5.0.4 bölmenin kalanı, S7.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
@@ -145,6 +145,16 @@ tercih ediliyor, kapsama düşmüyor, uzunluk hedefte). Burada hat değiştirilm
   Keşşâf'taki bir nükteyi istinbat sayma, bir Risale sözünü değiştirme). **Birleşik okuma sayfası** (`d1-tur.py
   okuma-tek 21-22 --taslak 1 2`, kartlar `provalar/21-22/yerler-D15.1-ab.json`): 9 kart (önceki yedi yer iki taslakla,
   kör eleştirmenin ayırdığı iki yer: semânın iadesi, «لله»); A = h10, B = h9 (kör); iki soru. Birim ≈32,6 $.
+  **Okuma (2026-11-20): h9 6, h10 1, eşit 1, emin değil 1** (h9: «لكم» "olay gayet iyi özetlenmiş", fâ "çok daha
+  oturaklı", mukadder sualler "olay akışı daha iyi", nimet dersi, semâ "İşârât'taki cihet mânâsını taşıyor", «لله»;
+  h10: iltifat; eşit: takva dersi; emin değil: nübüvvet bağı). **Yeterlilik** (daha iyi bulunan için): yeterli 4
+  («لكم», nimet dersi, takva, semâ), emin değil 3 (fâ, mukadder sualler, «لله»), yetersiz 2 (iltifat: İşârât'ın
+  "meşakkat hitabın lezzetiyle karşılanır" mantığı yok; nübüvvet: İşârât'ın bağı yok, "taslaklar bambaşka bir yönden").
+  Kullanıcının notları: "her şeyi de bulamazlar", modelin bir sınırı; fâ'da İşârât "fâ gerçekten hangi cümleye,
+  hangi kelimeye bağlı" sorusunu cevaplıyor, taslaklar fâya mânâ veriyor: "bambaşka bir dünya". Kural 4.4: kör
+  eleştirmen ve kullanıcı aynı yönde: **21–22'de h9.** Kullanıcı İşârât karşılaştırmasından (dört bölümde
+  "düzeltmeyle") daha cömert: dokuz yerin dördünde "yeterli". Okuma dosyası `data/d1/notlar/d1-tur-21-22-D15.1-Fatih-*.json`.
+  **D15.1 bitti.**
 - **D15 bitince** (kullanıcının kararı, 2026-11-19): işi biten birimlerin prova veritabanları silinir
   (`data/interim/d1-prova/<birim>/risale.db`, `tefsir.db`; birim başına ≈1,5 GB, toplam ≈11 GB; yeniden üretilebilir,
   `d1-prova.py hazirla`). Envanter, taslaklar ve ölçüler `data/d1`'de kalır. 30'unki (kabul birimi) D5.0.9'a kadar.
