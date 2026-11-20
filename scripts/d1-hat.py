@@ -131,6 +131,22 @@ def _isarat_prev(unit: str) -> str:
     return "\n".join(L).strip()
 
 
+def _taslak_prev(unit: str, n: int) -> str:
+    """Önceki birimin yapay zekâ taslağı, Arapça paragraflar (alıntılar dahil) bölüm başlıklarıyla (D5.0.5)."""
+    blocks, _ = Y.draft_blocks(unit, n)
+    L, sec = [], None
+    for a, lang, quote, text in blocks:
+        if lang != "ar":
+            continue
+        key = a.split("/")[0]
+        if key != sec:
+            L += ["", f"#### {P.SECTION_TITLES.get(key, key)}", ""]
+            sec = key
+        L.append(("> " if quote else "") + text)
+        L.append("")
+    return "\n".join(L).strip()
+
+
 def _is_formula(text: str) -> bool:
     """Âyetten ibaret cümle (risalelerin sonundaki "سبحانك لا علم لنا…" gibi): Türkçe kelimesi yok denecek kadar az."""
     letters = [c for c in text if c.isalpha()]
@@ -364,9 +380,19 @@ def dosya(unit: str) -> Path:
     L += ["## Âyetler", ""]
     for v in ayah.verses:
         L += [f"> {v['text']} ({v['ref']})", f"> Meâl ({v['meal_by']}): {v['meal']}", ""]
-    L += ["## 1. İşârâtü'l-İ'câz: önceki birim (Arapça asıl)", "",
-          "Aynı türden öbür birimler `risale` eklentisinde (`work: \"isaratul-icaz-arabi\"`; kimlikleri Ek 2'de).", "",
-          _isarat_prev(unit), ""]
+    if cfg.get("onceki_taslak"):         # D5.0.5 (D15.3'te sınanır): önceki birimin İşârât'ı yok, taslağı var
+        pu, pn = cfg["onceki_taslak"]
+        L += [f"## 1. Önceki birim: yapay zekâ taslağı ({cfg['sura_name']} {pu.replace('-', '–')}; Arapça)", "",
+              "Bu bölüm İşârât değildir: önceki âyetler için aynı usulle yazılmış bir **yapay zekâ taslağıdır**; "
+              "İşârât'ın bu birimi yok. Birinci vecihte öncesiyle nazmı kurarken önceki âyetlerin ne için geldiğini ve "
+              "nasıl işlendiğini buradan öğren. Ondan atıf verilemez (`cite` tanımaz), sözü İşârât'a ya da müellife mal "
+              "edilmez; yanlışı olabilir. İşârât'ın öbür birimleri `risale` eklentisinde (`work: \"isaratul-icaz-arabi\"`; "
+              "kimlikleri Ek 2'de).", "",
+              _taslak_prev(pu, pn), ""]
+    else:
+        L += ["## 1. İşârâtü'l-İ'câz: önceki birim (Arapça asıl)", "",
+              "Aynı türden öbür birimler `risale` eklentisinde (`work: \"isaratul-icaz-arabi\"`; kimlikleri Ek 2'de).", "",
+              _isarat_prev(unit), ""]
     nodes, stats = risale_konu(unit, topics)
     paras = stats.pop("_paras")
     adaylar = stats.pop("_adaylar")

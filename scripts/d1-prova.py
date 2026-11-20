@@ -296,6 +296,48 @@ UNITS.update({
     },
 })
 
+# 28 (lafız tahkiki; D15.3, 2026-11-20). Arapça: c001 genel giriş, V1 c002, V2 c007 (beş mesele V2'nin içinde,
+# mesele-01..05), V3 mesele-05/c011, mesele-05/c041 sonraki âyetin (29) satırı. Türkçe: âyet c001, V1 c005, V2 c019,
+# beş mesele, tetimme; V3 tetimme/c010. **D5'in şartı (D5.0.5, kullanıcının kararı 2026-11-19):** kaynak dosyasının 1.
+# bölümü İşârât'ın 26–27'si değil 26–27'nin h9 taslağı (`onceki_taslak`); İşârât'ın 26–27'si prova veritabanından da
+# gizlenir (`ek_gizle`; sızıntı testi yalnız 28'e bakar). İnce Ek 3: 23–24 ve 17–20'nin nazarî girişi.
+UNITS.update({
+    "28": {
+        "sura": 2, "ayahs": (28, 28), "sura_name": "Bakara", "olcu": "Bakara 23–24, 25",
+        "ince": tuple(B_AR + "23-24-ayetlerin-tefsiri-nubuvvet-hakkinda" + x for x in
+                      ("", "/mukaddime", *(f"/mesele-0{k}" for k in range(1, 8)))) + _TEMSIL,
+        "nodes": (B_TR + "28", B_AR + "28"),
+        "ek_gizle": (B_TR + "26-27-ayetlerin-tefsiri", B_AR + "26-27-ayetlerin-tefsiri"),
+        "onceki_taslak": ("26-27", 1),
+        "sections": {
+            "isaratul-icaz-arabi": {"V1": "c001", "V2": "c007", "V3": "mesele-05/c011", "son": "mesele-05/c041"},
+            "isaratul-icaz": {"Âyet": "c001", "V1": "c005", "V2": "c019", "V3": "tetimme/c010"},
+        },
+        "ozet": [
+            (None, "`isaratul-icaz/sure-i-bakara/28/c005`"),
+            (None, "`isaratul-icaz-arabi/sure-i-bakara/28/c001`"),
+            (None, "| 28 | V1, V2, V3 (sıralı)"),
+            ("Bakara 4, 21–22, 23–24, 25, 28, 29, 30", "Bakara 4, 21–22, 23–24, 25, 29, 30"),
+            ("| (d) Bir lafız tahkik ister | 28 (her cümleye bir mesele), 29 (üç lafız) |", "| (d) Bir lafız tahkik ister | 29 (üç lafız) |"),
+            ("4'te son cümlenin nüktelerinden önce; 28 ve 29'da V2'nin içinde.\n- Münafıklar", "4'te son cümlenin nüktelerinden önce; 29'da V2'nin içinde.\n- Münafıklar"),
+        ],
+        "cizelge": [
+            (None, "| 28 | `B/28"),
+            ("dokuz yerde", "sekiz yerde"),
+            (", `B/28/c001`, `B/29/c001`", ", `B/29/c001`"),
+            ("; `B/28/c002`..`c003`: sonraki üç âyetle dizi", ""),
+            ("| 29 (cemîan, sümme, seb'a), 28 (her cümleye bir mesele) | `B/29/c011`..`c012`; `B/28/c013` |",
+             "| 29 (cemîan, sümme, seb'a) | `B/29/c011`..`c012` |"),
+            ("4'te son cümlenin nüktelerinden önce; 28 ve 29'da V2'nin içinde.", "4'te son cümlenin nüktelerinden önce; 29'da V2'nin içinde."),
+        ],
+    },
+})
+
+# 28'in sızıntı testi (2026-11-20, elle incelendi): 29'un ilk cümlesi, müellifin birim başlarındaki kalıbı
+# («اعلم أن لهذه الآية أيضاً الوجوه الثلاثة النظمية»); usul özetinde de aynı kalıp başka birimlerden alıntılı.
+UNITS["28"]["sizinti_kabul"] = {"isaratul-icaz-arabi/sure-i-bakara/29/c001": "müellifin birim başı kalıbı; kalıp ibare"}
+UNITS["28"]["sizinti_kabul_ibare"] = {"اعلم أن لهذه الآية أيضاً الوجوه الثلاثة النظمية": "müellifin birim başı kalıbı"}
+
 # 26–27'nin sızıntı testi (2026-11-20, elle incelendi): meşhur beyitler («وفي كل شيء له آية», «عباراتنا شتى»,
 # "cümlenin maksûdu bir"), müellifin Muhâkemât'taki kelâm düsturu (emsal 9–10).
 UNITS["26-27"]["sizinti_kabul_ibare"] = {
@@ -622,7 +664,7 @@ def hazirla(unit: str, istem: str = "tam", db_yenile: bool = False, surum: str =
     cfg = UNITS[unit]
     out = OUT / unit
     out.mkdir(parents=True, exist_ok=True)
-    needles = list(cfg["nodes"]) + list(DROP_WORKS)
+    needles = list(cfg["nodes"]) + list(cfg.get("ek_gizle", ())) + list(DROP_WORKS)   # ek_gizle: D5.0.5 (28)
     if db_yenile or not (out / "risale.db").exists() or not (out / "tefsir.db").exists():
         t = time.monotonic()
         print("risale:", scrub(GENEL_DB, out / "risale.db", needles))
