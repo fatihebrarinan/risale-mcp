@@ -57,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E6, S8, A3, D15, B8 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E6, S9, A3, D15, B8 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -69,8 +69,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `docs/s8-sonuc-yazisi.md` (dağınık kayıtlardan toplandı; kullanıcı okuyacak). (3) **Kuyruk Bakara'nın sonuna kadar**
   sürüyor (kullanıcının kararı, 2026-11-21; hesap: 14 Aralık'a kadar ≈160 birim, kalan ≈150; haftalık pencere dolunca
   kullanıcı sıfırlama hakkını kullanabilir; Pro'dan önce `dur`). D5.1 okundu (bkz. D5 "İstem adayı").
-- **Kullanıcıdan beklenen:** S8'in okunması ve yeri (yenilikler mi, platformun usul sayfasının genişi mi, ikisi mi);
-  masadan platforma taşınacak kolaylıklar ("Sonra" › "Okuma platformu ve ar-ge masasının açıkları").
+- **Sıradaki iş:** S9 "Çalışmalar" (kullanıcının kararları, 2026-11-21): iskelet, İşârât'ın usulü son sürümüyle
+  herkese açık, S8'in platformu anmayan site sürümü (iç sürüm `docs/s8-sonuc-yazisi.md` kalır).
+- **Kullanıcıdan beklenen:** S8'in okunması (site sürümünde "okuyucu ehil değil" cümlesi); masadan platforma taşınacak
+  kolaylıklar ("Sonra" › "Okuma platformu ve ar-ge masasının açıkları").
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -78,6 +80,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 |---:|---|---|---|
 | 1 | D5 | Asıl iş: Bakara 34–286 (154 birim), küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
 | 2 | S8 | Sonuç yazısı: "Yapay zekâ İşârât'ın mislini yazabilir mi?" (usul, ölçüler, örnekler, sınırlar; ehil okuyucu için ilk kapı) | |
+| 3 | S9 | Sitede "Çalışmalar" kısmı (uzun, kaynaklı yazılar; ilk yazılar İşârât'ın usulü ve S8'in site sürümü) | |
 
 **S8. Sonuç yazısı** (kullanıcı kabul etti, 2026-11-21): taslak işinin cevabı tek ve kalıcı bir yazıda: "Yapay
 zekâ İşârât'ın mislini yazabilir mi?" Usul (hat, kapı, ölçüler), Bakara 1–33'teki İşârât karşılaştırmasının sonuçları
@@ -87,9 +90,36 @@ genişliği, tartma), okuma turlarının kararları, örnekler (34'te «kâne»,
 (yenilikler ya da platformun usul sayfasının genişi), kullanıcıyla kararlaştırılır.
 **Taslak yazıldı (2026-11-21):** `docs/s8-sonuc-yazisi.md`. Kaynakları yazının sonundaki "Kayıtlar"da (yayımlanmaz).
 Toplarken çıkan yeni sayı: İşârât karşılaştırması saklı beş birimin on iki taslağının on ikisinde bütün için
-"düzeltmeyle" dedi (45 bölümün 8'i "yeterli", hiç "yetersiz" yok). **Kullanıcıya açık:** (a) yer; (b) okuyucunun
-ehil olmadığını söyleyen cümle ("Ölçümün sınırları") kalsın mı, nasıl söylensin; (c) yenilikler yazısı olacaksa
-`docs/yenilikler-kilavuzu.md`'ye göre kısa bir sürümü ve bu uzun yazıya bağlantı.
+"düzeltmeyle" dedi (45 bölümün 8'i "yeterli", hiç "yetersiz" yok). **İki sürüm** (kullanıcının kararı, 2026-11-21): (1) **iç sürüm:** `docs/s8-sonuc-yazisi.md` bugünkü hâliyle
+kalır (okuma platformunu, kayıtları ve iç ayrıntıyı taşır); (2) **site sürümü:** S9'un "Çalışmalar" kısmında
+yayımlanmak üzere ayrı yazılır: okuma platformundan açıkça bahsetmez (platform davetle; "Bundan sonra"daki platform
+anlatımı ve okuyucu notu çıkar, yerine genel bir cümle), siteye uygun (programcı ayrıntısı, sürüm adları (h9, d3),
+dosya yolları ve "Kayıtlar" yok; S9'un iskeletine göre: kısa cevap kutusu, sınırlar, kaynaklar). Yer: S9.
+**Açık:** okuyucunun ehil olmadığını söyleyen cümle ("Ölçümün sınırları") site sürümünde nasıl söylenecek
+(kullanıcı okurken karar verir).
+
+**S9. Sitede "Çalışmalar" kısmı** (kullanıcının fikri ve kararları, 2026-11-21): Yenilikler'den ayrı, blog yazısı
+tarzında bir kısım; projenin ne denediğini ve ne öğrendiğini anlatan uzun, kaynaklı yazılar. Ad **"Çalışmalar"**
+(kullanıcı kabul etti). Yenilikler'den farkı: Yenilikler eklentide ne değiştiğini kısa, örnek soruyla, eklentiyi
+kullanan herkese anlatır; Çalışmalar ehil ve tefsirle ilgilenen okuyucu için uzun, sayılı ve kaynaklıdır, tarihli
+ama "son gözden geçirme" tarihiyle güncellenebilir. Bir çalışma yayımlanınca Yenilikler'e kısa bir duyuru düşer ve
+yazıya bağlanır.
+- **İskelet (her yazıda):** başlık, tarih, son gözden geçirme, okuma süresi; başta **"Kısa cevap"** kutusu; gövde;
+  **"Sınırlar"** kısmı (zorunlu); **Kaynaklar** (Risale ve İşârât alıntıları sitenin atıf biçimiyle); isteğe bağlı PDF
+  ve "Bu yazıya atıf" satırı; yapay zekâ taslağından alıntı varsa damga.
+- **Teknik:** `scripts/site-uret.py`'nin yolu: yazılar `docs/calismalar/<tarih>-<ad>.md` (üst bilgi Yenilikler'deki
+  gibi, ek olarak `gozden_gecirme`), çıktı `site/calismalar/<ad>.html` ve `site/calismalar.html`; menüye
+  "Çalışmalar"; Open Graph, RSS, site haritası aynı yoldan. Markdown çevirisi genişler: tablo, sağdan sola Arapça
+  alıntı (sitenin Naskh yazı tipiyle), "Kısa cevap" kutusu. CSS ya da JS değişirse `ASSET_VERSION`.
+- **İlk yazılar:** (1) **İşârât'ın usulü, son sürümüyle herkese açık** (kullanıcının kararı): bugün `/isarat-usul/`
+  yalnız bağlantıyla paylaşılıyor, `noindex`; sitedeki kopya `docs/d1/usul-ozeti.md`'nin son hâlinden eski (site
+  2026-11-16 08.54, özet 21.28): `scripts/d1-okur.py` son özetten yeniden üretir (HTML ve PDF), `noindex` kalkar,
+  menüde ve site haritasında Çalışmalar'ın yazısı olarak durur; eski adresler (`/isarat-usul/`, `/taslak/isarat-usulu.*`)
+  yeni yere yönlenir ya da sayfa yerinde kalıp listeye bağlanır (yapılırken seçilir; paylaşılmış bağlantılar
+  kırılmaz). Alıntılar `scripts/d1-usul-denetim.py` ile yeniden denetlenir. (2) **S8'in site sürümü** (bkz. S8).
+- **Sonraki adaylar** (karar yok): "Müellifin sözünden birim bölmek" (bölme kuralı), "Neden atıf birimi cümle"
+  (MCP'nin kaynağa bağlılık tasarımı).
+- **İngilizce sonra** (kullanıcının kararı). Deploy `scripts/deploy.sh --code` (site); araç çıktısı değişmez.
 
 **D5. Asıl iş: Bakara 34–286** (eski D1.8; 2026-11-20, kullanıcının kararı: D5 yalnız Bakara, Kur'ân'ın geri kalanı "Sonra"da). Tek adım değil, küçük adımlar; D15'ten çıkan hatla (2026-11-17).
 - **D5.0 Üretim hazırlığı** (D11'in kalanı, kullanıcının kararları 2026-11-17 ve 2026-11-18; 2026-11-19'da alt adımlara
