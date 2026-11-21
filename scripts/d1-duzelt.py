@@ -234,6 +234,9 @@ NOTE_FILES = {"kapali": ("kapali-elestiri-taslak-{n}.json", "K", "kapalı kitap:
               # D5.0.6 d3: ikinci kapı turu, düzeltmenin değiştirdiği sözlerde nisbet denetçisinin bulduğu hatalar
               "kapi2": ("kapi2-notlar-taslak-{n}.json", "R", "ikinci kapı: bir önceki düzeltmenin yazdığı sözlerde nisbet "
                         "denetçisinin bulduğu hatalar"),
+              # S7 (f): okuyucu notlarıyla düzeltme ("notlarımla düzelt"; elle, `d1-birim.py notlarla`)
+              "okuyucu": ("okuyucu-notlar-taslak-{n}.json", "O", "okuyucu notları: taslağı okuyan insanların ar-ge "
+                          "masasına bıraktığı notlar; İşârât'ın bu âyetlerdeki kısmını görmediler"),
               # D15: İşârât karşılaştırması (`isarat`), kör aletlerin ayarında açık taraf
               "isarat": ("isarat-karsilastirma-taslak-{n}.json", "A", "açık kitap: İşârât'ın bu âyetlerdeki kısmını okuyarak"),
               # D turu (d2): yalnız düzeltmenin değiştirdiği paragraflara, yan etkileri için (`ikinci`)
@@ -367,6 +370,22 @@ def kapi(unit: str, n: int) -> int | None:
         return m
     f = duzelt(unit, m, "kapi2")
     print(f"kapının son taslağı: {f}")
+    return f
+
+
+def okuyucu(unit: str, n: int) -> int | None:
+    """S7 (f): okuyucu notlarıyla düzeltme (not dosyası `okuyucu-notlar-taslak-<n>.json`, `d1-birim.py notlarla`
+    yazar), sonra kapının ikinci turu gibi: düzeltilmiş taslağa nisbet, düzeltmenin yazdıklarında hata varsa küçük tur.
+    Kapı d3'ün kuralları: yeni kaynak yok, her not karşılanır ya da gerekçesiyle reddedilir."""
+    import subprocess
+    m = duzelt(unit, n, "okuyucu")
+    if m is None:
+        return None
+    if not (Y.out_dir(unit) / f"nisbet-taslak-{m}.json").exists():
+        subprocess.run(["uv", "run", "python", str(ROOT / "scripts/d1-nisbet.py"), "denetle", unit, "--taslak", str(m)],
+                       check=True, cwd=ROOT)
+    f = duzelt(unit, m, "kapi2") if kapi2_notlari(unit, n, m) else m
+    print(f"okuyucu turunun son taslağı: {f}")
     return f
 
 
@@ -895,6 +914,9 @@ def main() -> None:
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("--taslak", type=int, required=True)
     p.add_argument("--yalniz-notlar", action="store_true")
+    p = sub.add_parser("okuyucu")                     # S7 (f): okuyucu notlarıyla düzeltme (not dosyası hazır)
+    p.add_argument("unit", choices=P.UNITS)
+    p.add_argument("--taslak", type=int, required=True)
     p = sub.add_parser("isarat")                      # D15: tek taslak İşârât'la, mutlak hüküm ve notlar
     p.add_argument("unit", choices=P.UNITS)
     p.add_argument("--taslak", type=int, required=True)
@@ -936,6 +958,8 @@ def main() -> None:
             kapi_notlari(a.unit, a.taslak)
         else:
             kapi(a.unit, a.taslak)
+    elif a.cmd == "okuyucu":
+        okuyucu(a.unit, a.taslak)
     elif a.cmd == "isarat":
         isarat(a.unit, a.taslak, a.yeniden)
     elif a.cmd == "ikinci":

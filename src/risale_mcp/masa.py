@@ -345,12 +345,24 @@ def routes(auth, store: MasaStore) -> list:
     async def disa(request: Request):
         return JSONResponse(store.export(), headers=H) if machine(request) else deny()
 
+    async def makine_not(request: Request):
+        """S7 (f) "notlarımla düzelt": düzeltme notu işleyince işaretler (işlendi, işleyen sürümle)."""
+        who = machine(request)
+        if not who:
+            return deny()
+        body = await request.json()
+        if body.get("durum") not in ("islendi", "acik", "kapandi"):
+            return JSONResponse({"error": "durum"}, status_code=400, headers=H)
+        ok = store.set_note_state(body.get("id", ""), f"makine:{who}", body["durum"], body.get("surum"))
+        return JSONResponse({"ok": True}, headers=H) if ok else deny(404)
+
     return [Route(f"{API}okumalar", okumalar), Route(API + "okuma/{tid}", okuma),
             Route(API + "okuma/{tid}/karar/{yer}", karar, methods=["PUT"]),
             Route(API + "okuma/{tid}/bitir", bitir, methods=["POST"]),
             Route(API + "notlar/{birim}", notlar, methods=["GET", "POST"]),
             Route(API + "not/{nid}/durum", not_durum, methods=["PUT"]),
-            Route(f"{API}gorev", gorev, methods=["POST"]), Route(f"{API}disa", disa)]
+            Route(f"{API}gorev", gorev, methods=["POST"]), Route(f"{API}disa", disa),
+            Route(f"{API}not-durum", makine_not, methods=["POST"])]
 
 
 def main(argv: list[str] | None = None) -> None:

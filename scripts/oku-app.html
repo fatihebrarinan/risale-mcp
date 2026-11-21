@@ -378,7 +378,7 @@ function kapiHTML() {
   const L = ['<p class="small muted">Ham hâliyle: kalite kapısının notları (kapalı eleştirmen, nisbet denetçisi, biçim) ve yazarın her nota cevabı; kapalı eleştirmenin bütün notları; "eksik" notları (taslağa eklenmedi).</p>'];
   for (const k of U.masa.kapi) {
     const c = {karşılandı: 0, kısmen: 0, reddedildi: 0, anılmadı: 0}; k.notlar.forEach(x => c[x.durum]++);
-    L.push(`<h3>${k.tur === 'kapi' ? 'Kalite kapısı' : 'İkinci tur'} (${esc(k.surum || '')}): taslak ${k.taslak} → ${k.yeni ?? '?'} <span class="small muted">(${k.notlar.length} not: ${c['karşılandı']} karşılandı, ${c['kısmen']} kısmen (karşılandı, bir kısmı gerekçesiyle reddedildi), ${c.reddedildi} reddedildi, ${c['anılmadı']} anılmadı)</span></h3>`);
+    L.push(`<h3>${{kapi: 'Kalite kapısı', kapi2: 'İkinci tur', okuyucu: 'Okuyucu notlarıyla düzeltme'}[k.tur] || esc(k.tur)} (${esc(k.surum || '')}): taslak ${k.taslak} → ${k.yeni ?? '?'} <span class="small muted">(${k.notlar.length} not: ${c['karşılandı']} karşılandı, ${c['kısmen']} kısmen (karşılandı, bir kısmı gerekçesiyle reddedildi), ${c.reddedildi} reddedildi, ${c['anılmadı']} anılmadı)</span></h3>`);
     for (const x of k.notlar)
       L.push(`<div class="note"><b>${esc(x.no)}</b> <span class="tag">${esc(x.kaynak || '')}</span><span class="tag">${esc(x.tur || '')}</span><span class="tag">${esc(x.oncelik || '')}</span> ${esc(x.capa || '')}`
         + (x.alinti ? `<br><i>«${esc(x.alinti)}»</i>` : '') + `<br>${esc(x.metin)}` + (x.oneri ? `<br><span class="small muted">Öneri: ${esc(x.oneri)}</span>` : '')
@@ -408,8 +408,9 @@ function nisbetHTML() {
   return L.join('');
 }
 function notesTabHTML() {
-  if (!NOTES.length) return '<p class="muted">Bu birimde okuyucu notu yok.</p>';
-  return '<p class="small muted">Okuyucu notları ve hayatı: açık → işlendi (işleyen sürümle) → kapandı; not silinmez, yazan geri çeker.</p>'
+  const how = '<p class="small muted">Notlarla düzeltme elle, yalnız bu birimde: <code>uv run python scripts/d1-birim.py notlarla ' + esc(U.birim) + '</code> (önce <code>--deneme</code>). Yayımlanan son sürüme bağlı açık notlar (soru hariç) kapı d3\'ün kurallarıyla düzeltmeye gider; karşılananlar "işlendi" olur, reddedilenler gerekçesiyle açık kalır; yeni sürüm açılır, eskisi silinmez.</p>';
+  if (!NOTES.length) return '<p class="muted">Bu birimde okuyucu notu yok.</p>' + how;
+  return '<p class="small muted">Okuyucu notları ve hayatı: açık → işlendi (işleyen sürümle) → kapandı; not silinmez, yazan geri çeker.</p>' + how
     + NOTES.map(n => `<div class="blk">${n.paragraf ? `<a href="#/${esc(U.birim)}/${esc(n.paragraf)}" class="small">${esc(n.paragraf)}</a>` : ''}${noteHTML(n)}</div>`).join('');
 }
 document.addEventListener('click', e => {

@@ -293,7 +293,8 @@ def masa_data(unit: str, base: dict) -> dict:
                                  "bloklar": [{"capa": a, "dil": lang, "alinti": q, "metin": x} for a, lang, q, x in blocks],
                                  "kaynaklar": sources})
         # kapının her düzeltmesi ayrı (aynı taslaktan birden çok deneme olabilir: 26–27, 28)
-        files = {"kapi": ("kapi-notlar-taslak-{n}.json", "Q"), "kapi2": ("kapi2-notlar-taslak-{n}.json", "R")}
+        files = {"kapi": ("kapi-notlar-taslak-{n}.json", "Q"), "kapi2": ("kapi2-notlar-taslak-{n}.json", "R"),
+                 "okuyucu": ("okuyucu-notlar-taslak-{n}.json", "O")}
         for new, r in sorted(((int(k), v) for k, v in reg.items() if v["kaynak"] == n), key=lambda kv: kv[0]):
             fname, prefix = files.get(r["notlar"], files["kapi"])
             f = yz / fname.format(n=n)

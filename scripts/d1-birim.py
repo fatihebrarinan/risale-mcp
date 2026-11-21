@@ -148,6 +148,79 @@ def kapi(unit: str, n: int) -> int:
     return son
 
 
+NOT_TURU = {"hata": "yanlis", "kaynak": "kaynak", "oneri": "oneri", "not": "not"}     # "soru" düzeltmeye girmez
+
+
+def notlarla(unit: str, deneme: bool = False) -> int | None:
+    """S7 (f) "notlarımla düzelt" (kullanıcının kararı, 2026-11-21): yalnız istenen birimde, elle. Masadaki açık
+    okuyucu notları (yayımlanan son sürüme bağlı olanlar; soru notları hariç) kapı d3'ün kurallarıyla düzeltmeye verilir;
+    yeni taslak, izah, yeni yayın sürümü (eski silinmez), okuma sayfaları; karşılanan notlar "işlendi" (işleyen sürümle),
+    reddedilenler gerekçesiyle açık kalır (masada görünür). Sonraki birimler eski sürümü görerek yazılmış kalır.
+    `deneme`: model çağırmadan not dosyasını yazar ve neyin gideceğini gösterir."""
+    G = _load("masa_gorev", "masa-gorev.py")
+    YAY = _load("d1_yayin", "d1-yayin.py")
+    idx = json.loads((YAY.YAYIN / "index.json").read_text(encoding="utf-8"))
+    if unit not in idx["birimler"]:
+        raise SystemExit(f"{unit}: yayımlanmış sürüm yok")
+    pub = json.loads((YAY.YAYIN / idx["birimler"][unit]["yol"]).read_text(encoding="utf-8"))
+    n, capa = pub["kunye"]["son_taslak"], {b["id"]: b["taslak_capa"] for b in pub["bloklar"]}
+    notes = [x for x in G.call("disa")["notlar"] if x["birim"] == unit and x["durum"] == "acik"
+             and x.get("surum") == pub["surum"] and x.get("tur") in NOT_TURU]
+    if not notes:
+        print(f"{unit}: sürüm {pub['surum']}'e bağlı açık okuyucu notu yok")
+        return None
+    rows = []
+    for x in notes:
+        a = capa.get(x.get("paragraf") or "", "genel")
+        rows.append({"tur": NOT_TURU[x["tur"]], "capa": a, "bolum": a.split("/")[0] if a != "genel" else None,
+                     "taslak_alinti": (x.get("secici") or {}).get("exact"), "oncelik": "yuksek", "kaynak": "okuyucu",
+                     "metin": f"Okuyucu notu ({x['tur']}): {x['metin']}", "not_id": x["id"]})
+    path = Y.out_dir(unit) / f"okuyucu-notlar-taslak-{n}.json"
+    path.write_text(json.dumps({"taslak": n, "surum": pub["surum"], "notlar": rows}, ensure_ascii=False, indent=1),
+                    encoding="utf-8")
+    print(f"{path.relative_to(ROOT)}: {len(rows)} okuyucu notu (taslak {n}, yayın sürümü {pub['surum']})")
+    if deneme:
+        for i, x in enumerate(rows, 1):
+            print(f"  O{i} {x['capa']}: {x['metin'][:120]}")
+        return None
+    out = run("scripts/d1-duzelt.py", "okuyucu", unit, "--taslak", str(n))
+    son = int(next(l.split(":")[1] for l in out.splitlines() if l.startswith("okuyucu turunun son taslağı:")))
+    run("scripts/d1-hat.py", "izah", unit, "--taslak", str(son))
+    d5 = bool(P.UNITS[unit].get("d5"))
+    if d5:
+        save_state(unit, son_taslak=son)
+    else:                                       # ar-ge birimi: platforma giden taslak seçimi
+        choice = P.KEEP / "oku" / "secim.json"
+        ch = json.loads(choice.read_text(encoding="utf-8")) if choice.exists() else {}
+        ch[unit] = son
+        choice.parent.mkdir(parents=True, exist_ok=True)
+        choice.write_text(json.dumps(ch, ensure_ascii=False, indent=1), encoding="utf-8")
+    run("scripts/d1-yayin.py", "yayinla", unit, "--taslak", str(son))
+    if d5:
+        run("scripts/d1-d5-sayfa.py", unit)
+        yayimla(P.KEEP / "masa" / f"d5-{unit}.html")
+    subprocess.run(["uv", "run", "python", "scripts/oku-veri.py", "--birim", unit, "--gonder"], cwd=ROOT)
+    new_ver = json.loads((YAY.YAYIN / "index.json").read_text(encoding="utf-8"))["birimler"][unit]["son"]
+    # okuyucu turundaki düzeltme: kaynağı n, notları "okuyucu" olan kayıt
+    reg = json.loads((P.DRAFTS / unit / "duzeltmeler.json").read_text(encoding="utf-8"))
+    m = max(int(k) for k, v in reg.items() if v["kaynak"] == n and v["notlar"] == "okuyucu")
+    dz = json.loads((P.DRAFTS / unit / f"taslak-{m}.duzeltme.json").read_text(encoding="utf-8"))
+    handled = {no for ch in dz.get("degisiklikler", []) for no in ch.get("notlar", [])}
+    rejected = {r.get("not"): r.get("gerekce") for r in dz.get("reddedilen", [])}
+    done = 0
+    for i, x in enumerate(rows, 1):
+        no = f"O{i}"
+        if no in handled:
+            G.call("not-durum", {"id": x["not_id"], "durum": "islendi", "surum": new_ver})
+            done += 1
+        print(f"  {no}: {'karşılandı' if no in handled else 'reddedildi'}"
+              + (f" (kısmen reddedildi: {rejected[no]})" if no in handled and no in rejected else
+                 (f": {rejected.get(no)}" if no not in handled else "")))
+    print(f"== {unit}: okuyucu notları {len(rows)}, karşılanan {done}; yeni taslak {son}, yayın sürümü {new_ver}")
+    depo(f"{unit}: okuyucu notlarıyla düzeltme (taslak {n} → {son}, yayın v{new_ver})")
+    return son
+
+
 def yaz(unit: str, surum: str = SURUM) -> int:
     cfg = P.UNITS.get(unit)
     if not cfg or not cfg.get("d5"):
@@ -400,6 +473,9 @@ def main() -> None:
     p.add_argument("--tavan", type=float, help="bu koşuda harcama tavanı ($, kullanım değeri)")
     sub.add_parser("durum")
     sub.add_parser("sayfa", help="durum sayfasını yeniden kur ve gönder")
+    p = sub.add_parser("notlarla", help="S7 (f): okuyucu notlarıyla düzelt (elle, tek birim)")
+    p.add_argument("unit")
+    p.add_argument("--deneme", action="store_true", help="model çağırmadan not dosyasını yaz ve göster")
     p = sub.add_parser("kapi", help="bir taslağa kalite kapısı d3 (kabul biriminde)")
     p.add_argument("unit")
     p.add_argument("--taslak", type=int, required=True)
@@ -413,6 +489,8 @@ def main() -> None:
         kuyruk(a.kadar, a.tavan)
     elif a.cmd == "sayfa":
         durum_sayfasi()
+    elif a.cmd == "notlarla":
+        notlarla(a.unit, a.deneme)
     elif a.cmd == "kapi":
         print(f"kapının son taslağı: {kapi(a.unit, a.taslak)}")
     elif a.cmd == "garaz":

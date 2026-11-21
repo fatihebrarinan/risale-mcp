@@ -84,3 +84,20 @@ def test_notes_lifecycle_and_export_without_names(env):
 
 def test_db_private(env):
     assert env[1].path.stat().st_mode & 0o077 == 0
+
+
+def test_machine_marks_note_processed(tmp_path):
+    from starlette.testclient import TestClient
+    from risale_mcp.masa import MasaStore
+    from risale_mcp.site_auth import Store, build_app
+    s = Store(tmp_path / "site.db")
+    m = MasaStore(tmp_path / "masa.db")
+    tok = m.new_token("taslak-sunucusu")
+    nid = m.add_note("okur@example.org", {"birim": "34", "metin": "hata var", "surum": 1, "paragraf": "p-x"})
+    c = TestClient(build_app(s, m), base_url="https://risalemcp.com")
+    assert c.post("/taslak/api/not-durum", json={"id": nid, "durum": "islendi", "surum": 2}).status_code == 401
+    r = c.post("/taslak/api/not-durum", json={"id": nid, "durum": "islendi", "surum": 2},
+               headers={"Authorization": f"Bearer {tok}"})
+    assert r.status_code == 200
+    n = m.export()["notlar"][0]
+    assert n["durum"] == "islendi" and n["isleyen_surum"] == 2
