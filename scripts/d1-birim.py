@@ -179,6 +179,10 @@ def yaz(unit: str, surum: str = SURUM) -> int:
     s = P.d5_state()["birimler"][unit]
     print(f"== {unit} bitti: son taslak {son}, ≈{s['maliyet']} $, {s['sure_dk']} dk; alarm: {s['alarmlar'] or 'yok'}")
     durum_sayfasi()
+    # S7.3: okuma platformu (/oku/) ve masanın birim görünümü; hata kuyruğu durdurmaz
+    p = subprocess.run(["uv", "run", "python", "scripts/oku-veri.py", "--birim", unit, "--gonder"], cwd=ROOT)
+    if p.returncode:
+        print(f"okuma platformu yenilenemedi (çıkış {p.returncode}); elle: uv run python scripts/oku-veri.py --gonder")
     depo(f"D5: {unit} (son taslak {son})")
     return son
 

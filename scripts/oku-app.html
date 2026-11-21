@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>__TITLE__</title>
+<!-- S7.3 okuma platformu ve ar-ge masasının birim görünümü: tek uygulama (scripts/oku-veri.py kurar). MASA kipinde
+     bütün taslaklar, yan yana, kapı, eleştirmen, nisbet ve notların hayatı da görünür. -->
+<style>
+@font-face { font-family: "Naskh"; src: url("__FONT__") format("truetype"); font-display: swap; }
+:root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --soft: #f3f1ec;
+  --accent: #1f5c3f; --ai: #5a4a8a; --ai-soft: #eeebf7; --bad: #a3271f; --src: #1f4f7a; --src-soft: #e3eef8;
+  --warn-soft: #fdf0dc; --q: #f6f2e8; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --soft: #26251f;
+  --accent: #7cc49d; --ai: #b9a8ee; --ai-soft: #2a2540; --bad: #f08a80; --src: #8cc0ef; --src-soft: #18293a;
+  --warn-soft: #3a2a14; --q: #24221c; } }
+:root[data-theme="dark"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b;
+  --soft: #26251f; --accent: #7cc49d; --ai: #b9a8ee; --ai-soft: #2a2540; --bad: #f08a80; --src: #8cc0ef;
+  --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 system-ui, "Noto Sans", sans-serif; }
+a { color: var(--src); }
+header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line);
+  display: flex; align-items: center; gap: 10px; padding: 8px 16px; }
+header .t { font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+header a, header button { font-size: .85rem; }
+button { font: inherit; background: none; border: 1px solid var(--line); border-radius: 6px; color: inherit;
+  padding: 2px 8px; cursor: pointer; }
+button.on { background: var(--soft); border-color: var(--accent); }
+.wrap { display: flex; max-width: 1180px; margin: 0 auto; }
+aside { width: 230px; flex: none; border-right: 1px solid var(--line); padding: 12px; height: calc(100vh - 45px);
+  position: sticky; top: 45px; overflow-y: auto; font-size: .9rem; }
+aside input { width: 100%; padding: 5px 8px; font: inherit; border: 1px solid var(--line); border-radius: 6px;
+  background: var(--card); color: var(--fg); }
+aside select { width: 100%; margin: 8px 0; font: inherit; padding: 4px; background: var(--card); color: var(--fg);
+  border: 1px solid var(--line); border-radius: 6px; }
+aside ul { list-style: none; padding: 0; margin: 6px 0; }
+aside li a { display: block; padding: 2px 6px; border-radius: 5px; text-decoration: none; color: var(--fg); }
+aside li a.cur { background: var(--soft); font-weight: 600; }
+aside li a.off { color: var(--muted); }
+.dot { display: inline-block; width: 1.1em; color: var(--accent); }
+main { flex: 1; min-width: 0; padding: 12px 16px 80px; max-width: 860px; }
+#menu { display: none; }
+@media (max-width: 760px) { aside { display: none; position: fixed; left: 0; top: 45px; z-index: 4; background: var(--bg);
+  width: 85vw; box-shadow: 2px 0 12px rgba(0,0,0,.15); } aside.open { display: block; } #menu { display: inline-block; } }
+h1 { font-size: 1.2rem; margin: 8px 0; } h2 { font-size: 1.05rem; margin: 26px 0 8px; color: var(--accent); }
+h3 { font-size: .95rem; margin: 18px 0 6px; }
+.muted { color: var(--muted); } .small { font-size: .82rem; }
+.ar { font-family: "Naskh", "Noto Naskh Arabic", "Amiri", serif; direction: rtl; text-align: right; font-size: 1.3rem;
+  line-height: 2.1; margin: 8px 0 2px; }
+.tr { font-family: "Noto Serif", "DejaVu Serif", Georgia, serif; margin: 2px 0; }
+.stamp { background: var(--warn-soft); border-radius: 8px; padding: 6px 12px; font-size: .85rem; margin: 8px 0 14px; }
+.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 14px 0 10px; overflow-x: auto; }
+.tabs a { padding: 6px 10px; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; }
+.tabs a.on { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
+.blk { position: relative; margin: 4px 0 12px; }
+.blk.hl { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 4px; }
+.lab { font-size: .72rem; color: var(--ai); }
+.qline { display: block; background: var(--q); border-left: 3px solid var(--line); padding: 2px 10px; margin: 4px 0; border-radius: 4px; }
+.quote { background: var(--q); border-left: 3px solid var(--line); padding: 4px 10px; border-radius: 4px; }
+.izah { background: var(--ai-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0; font-size: .93rem; }
+.acts { font-size: .75rem; color: var(--muted); } .acts a { color: var(--muted); margin-right: 10px; cursor: pointer; }
+a.n { color: var(--src); font-size: .72em; vertical-align: super; text-decoration: none; cursor: pointer; }
+.srcbox { background: var(--src-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0; font-size: .88rem; }
+.flag { background: var(--warn-soft); border-radius: 6px; padding: 3px 8px; font-size: .8rem; margin: 4px 0; }
+.box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; margin: 10px 0; }
+details { margin: 8px 0; } details > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+.note { border-top: 1px dashed var(--line); padding: 6px 0; font-size: .88rem; }
+.tag { display: inline-block; font-size: .72rem; border: 1px solid var(--line); border-radius: 10px; padding: 0 7px;
+  color: var(--muted); margin-right: 4px; }
+form.nf { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 8px; margin: 6px 0; }
+form.nf textarea { width: 100%; min-height: 70px; font: inherit; background: var(--bg); color: var(--fg);
+  border: 1px solid var(--line); border-radius: 6px; padding: 6px; }
+form.nf select { font: inherit; background: var(--bg); color: var(--fg); border: 1px solid var(--line); border-radius: 6px; }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; } .cols > div { min-width: 0; }
+@media (max-width: 760px) { .cols { grid-template-columns: 1fr; } }
+table.t { width: 100%; border-collapse: collapse; font-size: .85rem; } table.t td { border-top: 1px solid var(--line);
+  padding: 4px 6px; vertical-align: top; }
+.ok { color: var(--accent); } .bad { color: var(--bad); }
+</style></head><body>
+<header><button id="menu" aria-label="Kur'ân paneli">☰</button><span class="t" id="ttl"></span>
+<a href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
+<div class="wrap"><aside id="panel"></aside><main id="main"></main></div>
+<script>
+const MASA = __MASA__;
+const DATA = MASA ? 'birim/' : 'veri/', TDATA = MASA ? 'oku/veri/' : 'veri/', API = '/taslak/api/';
+const PLAT = 'https://risalemcp.com/oku/';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+               set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }};
+const rng = a => a[0] === a[1] ? String(a[0]) : a[0] + '–' + a[1];
+let INDEX = null, U = null, NOTES = [], ME = null, VIEW = {ar: false, izah: true};
+
+async function getJSON(u) { const r = await fetch(u, {cache: 'no-cache'}); if (!r.ok) throw new Error(r.status); return r.json(); }
+
+// ---------------------------------------------------------------- Kur'ân paneli
+function panel(cur) {
+  const b = INDEX.birimler;
+  const L = ['<input id="git" placeholder="Âyete git: 2:255" autocomplete="off">',
+    '<select id="sure">' + INDEX.sureler.map(s => `<option value="${s.n}"${s.n === 2 ? ' selected' : ' disabled'}>${s.n}. ${esc(s.ad)}${s.n === 2 ? '' : ' (henüz yok)'}</option>`).join('') + '</select>',
+    '<ul>'];
+  for (const x of b) {
+    const has = x.taslak || x.isarat || (MASA && x.masa_taslak);
+    const mark = x.taslak ? '●' : (x.isarat ? '◐' : '○');
+    L.push(`<li><a href="#/${esc(x.id)}" class="${x.id === cur ? 'cur' : ''} ${has ? '' : 'off'}"><span class="dot">${mark}</span>Bakara ${esc(rng(x.ayet))}</a></li>`);
+  }
+  L.push('</ul><p class="small muted">● taslak var · ◐ yalnız İşârât · ○ henüz yazılmadı</p>');
+  $('panel').innerHTML = L.join('');
+  $('git').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const m = e.target.value.trim().match(/^(?:(\d+)\s*[:.\/ ]\s*)?(\d+)$/);
+    if (!m) return;
+    const s = +(m[1] || 2), a = +m[2];
+    if (s !== 2) { e.target.value = ''; e.target.placeholder = 'Şimdilik yalnız Bakara'; return; }
+    const x = b.find(x => x.ayet[0] <= a && a <= x.ayet[1]);
+    if (x) location.hash = '#/' + x.id;
+  });
+  const c = document.querySelector('aside a.cur'); if (c) c.scrollIntoView({block: 'nearest'});
+}
+$('menu').onclick = () => $('panel').classList.toggle('open');
+
+// ---------------------------------------------------------------- metin
+const AR = '\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF';
+const AR_RUN = new RegExp(`[${AR}](?:[${AR}\\s]*[${AR}])?`, 'g');
+const bidi = h => h.replace(AR_RUN, '<bdi>$&</bdi>');
+function marks(t, srcs, pid) {
+  const h = bidi(esc(t)).replace(/\[(\d+)\]/g, (m, k) => srcs && srcs[k] ? `<a class="n" data-k="${k}" data-p="${esc(pid)}">[${k}]</a>` : m);
+  // taslağın içindeki alıntı satırları ("> …") alıntı olarak görünür; Türkçe içindeki Arapça yalıtılır (parantez dönmesin)
+  return h.split('\n').map(l => l.startsWith('&gt; ') ? `<span class="qline">${l.slice(5)}</span>` : l).join('<br>').replace(/<br>(<span class="qline">)/g, '$1').replace(/(<\/span>)<br>/g, '$1');
+}
+function srcBox(k) {
+  const s = U.taslak.kaynaklar[k];
+  if (!s) return '';
+  const name = s.kaynak && s.kaynak.ad ? (s.kaynak.bag ? `<a href="${esc(s.kaynak.bag)}" target="_blank" rel="noopener">${esc(s.kaynak.ad)}</a>` : esc(s.kaynak.ad)) : '';
+  const ar = /[؀-ۿ]/.test(s.metin || '') && !/[a-zçğışöü]{4}/i.test((s.metin || '').slice(0, 80));
+  return `<div class="srcbox"><b>[${k}]</b> ${esc(s.satir)}`
+    + (s.metin ? `<div class="${ar ? 'ar' : 'tr'}" style="font-size:${ar ? '1.15rem' : '.92rem'}">${bidi(esc(s.metin))}</div>` : '')
+    + `<div class="small muted">Kaynak: ${name || '—'}</div></div>`;
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('a.n');
+  if (!a) return;
+  e.preventDefault();
+  const holder = a.closest('.blk');
+  const id = 'src-' + a.dataset.p + '-' + a.dataset.k;
+  const ex = document.getElementById(id);
+  if (ex) { ex.remove(); return; }
+  holder.insertAdjacentHTML('beforeend', `<div id="${esc(id)}">${srcBox(a.dataset.k)}</div>`);
+});
+
+const KIND_LAB = {tercume: 'Yapay zekâ tercümesi', alinti_tercume: 'Yapay zekâ tercümesi (alıntının)',
+  alinti: 'Alıntı', tr: 'Taslağın Türkçe sözü (yapay zekâ)'};
+
+function draftHTML(t) {
+  const byId = Object.fromEntries(t.bloklar.map(b => [b.id, b]));
+  const paired = new Set(t.bloklar.filter(b => b.tercumesi).map(b => b.tercumesi));
+  const mine = id => NOTES.filter(n => n.paragraf === id);
+  const L = [`<p class="small"><button data-v="ar" class="${VIEW.ar ? 'on' : ''}">Arapça</button> <button data-v="izah" class="${VIEW.izah ? 'on' : ''}">İzah</button>
+    <span class="muted">· taslak sürüm ${t.surum} · <a href="#k-kunye">nasıl yazıldı</a></span></p>`];
+  let sec = null;
+  for (const b of t.bloklar) {
+    if (b.bolum !== sec) { sec = b.bolum; L.push(`<h2>${esc(U.bolum_adlari[sec] || sec)}</h2>`); }
+    const isAr = b.tur === 'ar' || b.tur === 'alinti_ar';
+    if (isAr && paired.has(b.id)) continue;               // eşi olan Arapça kendi Türkçesinin içinde açılır
+    const notes = mine(b.id);
+    let h = `<div class="blk" id="${esc(b.id)}">`;
+    if (isAr) h += `<div class="${b.tur === 'alinti_ar' ? 'quote' : ''}"><div class="lab">${b.tur === 'alinti_ar' ? 'Alıntı (Arapça)' : 'Taslağın Arapçası (yapay zekâ)'}</div><p class="ar">${marks(b.metin, t.kaynaklar, b.id)}</p></div>`;
+    else {
+      const ar = b.tercumesi && byId[b.tercumesi];
+      if (ar) h += `<div class="arpair" ${VIEW.ar ? '' : 'hidden'}><p class="ar">${marks(ar.metin, t.kaynaklar, b.id)}</p></div>`;
+      h += `<div class="${b.tur === 'alinti' ? 'quote' : ''}"><div class="lab">${KIND_LAB[b.tur] || ''}</div><p class="tr">${marks(b.metin, t.kaynaklar, b.id)}</p></div>`;
+      if (b.izah) h += `<div class="izah" ${VIEW.izah ? '' : 'hidden'}><div class="lab">İzah (günümüz Türkçesiyle, yapay zekâ)</div>${marks(b.izah.metin, t.kaynaklar, b.id)}</div>`;
+    }
+    for (const f of b.isaretler || [])
+      h += `<div class="flag">⚠ Bu atıf kaynağın dediğini aşıyor olabilir ([${esc(f.kaynak)}]; yapay zekâ denetçisinin hükmü, denetlenmedi) <details><summary class="small">gerekçe</summary>${esc(f.gerekce)}</details></div>`;
+    h += `<div class="acts"><a data-act="atif" data-p="${esc(b.id)}">atıf</a><a data-act="not" data-p="${esc(b.id)}">not${notes.length ? ' (' + notes.length + ')' : ''}</a><a href="#/${esc(U.birim)}/${esc(b.id)}">bağlantı</a></div>`;
+    h += notes.map(noteHTML).join('');
+    L.push(h + '</div>');
+  }
+  return L.join('\n');
+}
+function noteHTML(n) {
+  const st = {acik: 'açık', islendi: 'işlendi', kapandi: 'kapandı'}[n.durum] || n.durum;
+  return `<div class="note"><span class="tag">${esc(n.tur)}</span><span class="tag">${esc(st)}</span>`
+    + (n.secici && n.secici.exact ? `<i>«${esc(n.secici.exact)}»</i> ` : '') + esc(n.metin)
+    + `<span class="small muted"> · okuyucu ${esc(n.okuyucu_no)}${n.surum ? ' · sürüm ' + n.surum : ''}</span>`
+    + (n.benim ? ` <a class="small" data-act="geri" data-n="${esc(n.id)}">geri çek</a>` : '')
+    + (MASA ? ` · <a class="small" data-act="durum" data-n="${esc(n.id)}" data-d="islendi">işlendi</a> <a class="small" data-act="durum" data-n="${esc(n.id)}" data-d="kapandi">kapandı</a> <a class="small" data-act="durum" data-n="${esc(n.id)}" data-d="acik">açık</a>` : '')
+    + '</div>';
+}
+function citeLine(pid) {
+  const r = rng(U.ayet), v = U.taslak.surum;
+  return `Risale MCP yapay zekâ taslağı, ${U.sure_adi} ${U.sure}:${r}, sürüm ${v}, paragraf ${pid} (${PLAT}#/${U.birim}/${pid}). Tefsir değildir.`;
+}
+document.addEventListener('click', async e => {
+  const a = e.target.closest('[data-act]');
+  if (!a) return;
+  e.preventDefault();
+  const act = a.dataset.act, blk = a.closest('.blk');
+  if (act === 'atif') {
+    const line = citeLine(a.dataset.p);
+    try { await navigator.clipboard.writeText(line); a.textContent = 'kopyalandı'; } catch (err) {}
+    if (!blk.querySelector('.citeline')) blk.insertAdjacentHTML('beforeend', `<div class="srcbox citeline small">${esc(line)}</div>`);
+  } else if (act === 'not') {
+    if (blk.querySelector('form.nf')) return;
+    const sel = String(window.getSelection() || '').trim();
+    const txt = blk.innerText, i = sel ? txt.indexOf(sel) : -1;
+    const secici = i >= 0 ? {exact: sel.slice(0, 500), prefix: txt.slice(Math.max(0, i - 32), i), suffix: txt.slice(i + sel.length, i + sel.length + 32)} : null;
+    blk.insertAdjacentHTML('beforeend', `<form class="nf">${secici ? `<div class="small">İşaretlenen: «${esc(secici.exact)}»</div>` : '<div class="small muted">İsterseniz önce paragrafta bir yeri seçin, sonra "not"a basın.</div>'}
+      <select name="tur"><option value="hata">hata</option><option value="soru">soru</option><option value="oneri">öneri</option><option value="kaynak">kaynak</option><option value="not" selected>not</option></select>
+      <textarea name="metin" required placeholder="Notunuz"></textarea><button>Gönder</button> <a data-act="vazgec">vazgeç</a>
+      <div class="small muted">Not, taslağın bu sürümüne ve paragrafına bağlanır; adınız yayımlanmaz.</div></form>`);
+    const f = blk.querySelector('form.nf');
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const body = {birim: U.birim, surum: U.taslak.surum, paragraf: blk.id, secici, tur: f.tur.value, metin: f.metin.value.trim()};
+      if (!body.metin) return;
+      const r = await fetch(API + 'notlar/' + encodeURIComponent(U.birim), {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+      if (r.ok) { await loadNotes(); render(); } else f.insertAdjacentHTML('beforeend', '<div class="bad small">Gönderilemedi (oturum?).</div>');
+    };
+  } else if (act === 'vazgec') { a.closest('form').remove();
+  } else if (act === 'geri' || act === 'durum') {
+    const durum = act === 'geri' ? 'geri_cekildi' : a.dataset.d;
+    const r = await fetch(API + 'not/' + encodeURIComponent(a.dataset.n) + '/durum', {method: 'PUT', headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({durum, surum: durum === 'islendi' && U.taslak ? U.taslak.surum : null})});
+    if (r.ok) { await loadNotes(); render(); }
+  }
+});
+document.addEventListener('click', e => {
+  const b = e.target.closest('button[data-v]');
+  if (!b) return;
+  VIEW[b.dataset.v] = !VIEW[b.dataset.v];
+  store.set('oku-view', JSON.stringify({ar: VIEW.ar, izah: VIEW.izah, isar_ar: VIEW.isar_ar, masa_ar: VIEW.masa_ar}));
+  render();
+});
+async function loadNotes() {
+  NOTES = [];
+  try { NOTES = (await getJSON(API + 'notlar/' + encodeURIComponent(U.birim))).notlar; } catch (e) {}
+}
+
+// ---------------------------------------------------------------- birim
+function isaratHTML() {
+  const x = U.isarat, lang = VIEW.isar_ar ? 'ar' : 'tr';
+  const L = [`<p class="small"><button data-v="isar_ar" class="${VIEW.isar_ar ? 'on' : ''}">Arapça aslı</button>
+    <span class="muted">Müellifin sözü: İşârâtü'l-İ'câz${lang === 'tr' ? ' (Türkçesi: Abdülmecid Nursî tercümesi, e-Risale)' : ' (Arapça aslı, risaleoku.com)'}</span></p>`];
+  for (const part of x[lang] || []) {
+    L.push(`<p class="small muted">${esc(part.ref)}${part.bag ? ` · <a href="${esc(part.bag)}" target="_blank" rel="noopener">kaynakta aç</a>` : ''}</p>`);
+    for (const o of part.ogeler) {
+      if (o.k === 'baslik') L.push(`<h3>${esc(o.t)}</h3>`);
+      else L.push(`<p class="${lang === 'ar' || o.k === 'arabic' ? 'ar' : 'tr'}${o.h ? ' small muted' : ''}">${o.h ? 'Hâşiye: ' : ''}${bidi(esc(o.t))}</p>`);
+    }
+  }
+  return L.join('\n');
+}
+function extrasHTML() {
+  const L = [];
+  if (U.risale && U.risale.length) {
+    L.push(`<details><summary>Âyetin Risale-i Nur'daki yerleri (${U.risale.length})</summary><p class="small muted">Müellifin kendi sözüyle; bağın türü yazılıdır (âyet ilişkisi; bir yer "tefsir" diye anılmaz). Kaynak e-Risale.</p>`);
+    for (const r of U.risale)
+      L.push(`<div class="note"><span class="tag">${esc(r.ayet)}. âyet</span><span class="tag">${esc(r.tur_adi)}</span>${r.guc === 'strong' ? '<span class="tag">güçlü</span>' : ''}`
+        + `<br>${r.bag ? `<a href="${esc(r.bag)}" target="_blank" rel="noopener">${esc(r.ref)}</a>` : esc(r.ref)}`
+        + (r.metin ? `<div class="${/^[؀-ۿ]/.test(r.metin) ? 'ar' : 'tr'}" style="font-size:.95rem">${bidi(esc(r.metin))}</div>` : '') + '</div>');
+    L.push('</details>');
+  }
+  if (U.tefsir && U.tefsir.length) {
+    L.push(`<details><summary>Müfessirler (${U.tefsir.length})</summary><p class="small muted">Klasik tefsirlerin bu âyetleri işleyen birimleri, Arapça asıllarıyla, müellifin vefat sırasıyla. Metin: OpenITI (CC BY-NC-SA 4.0).</p>`);
+    for (const w of U.tefsir) for (const u of w.birimler)
+      L.push(`<details class="tf" data-f="${esc(u.dosya)}"><summary style="font-weight:400">${esc(w.ad)} · ${esc(w.musannif)} <span class="small muted">${esc(u.ref)}${u.basili ? ' · basılı ' + esc(u.basili.volume) + '/' + esc(u.basili.page) : ''}</span></summary><div class="tfx small muted">yükleniyor…</div></details>`);
+    L.push('</details>');
+  }
+  const t = U.taslak;
+  if (t) {
+    const k = t.kunye;
+    L.push(`<details id="k-kunye"><summary>Bu taslak nasıl yazıldı</summary><div class="box small">`
+      + `<p>Yazan: yapay zekâ (${esc(k.model)}, düşünme ${esc(k.effort)}), istem ${esc(k.istem)}, ${esc((k.yazildi || '').slice(0, 10))}. `
+      + `İşârât'ın bu âyetleri ${k['saklı'] ? 'yazarken ona gösterilmedi (saklı birim)' : 'zaten yok (D5)'}.</p>`
+      + (k.kapi || []).map(s => `<p>${s.tur === 'kapi' ? 'Kalite kapısı' : 'İkinci tur'}: ${esc(s.not)} not; ${esc(s.karsilanan)} karşılandı, ${esc(s.reddedilen)} gerekçesiyle reddedildi (taslak ${s.taslak[0]} → ${s.taslak[1]}).</p>`).join('')
+      + `<p>Yayın sürümü ${t.surum} (${esc((t.yayimlandi || '').slice(0, 10))})${t.onceki_surum ? `; önceki sürümle ${t.onceki_surum.ayni_paragraf} paragraf aynı` : ''}. <a href="__USUL__">Usul</a></p></div></details>`);
+    if (t.eksik && t.eksik.length) {
+      L.push(`<details><summary>Eleştirmenin gördüğü ama taslağa eklenmeyenler (${t.eksik.length})</summary><p class="small muted">Yapay zekâ eleştirmeninin notu, denetlenmedi. Eklemek yeni hata getirdiği için taslağa girmedi; okuyucuya yol göstermek için.</p>`);
+      L.push(t.eksik.map(x => `<div class="note">${x.paragraf ? `<a href="#/${esc(U.birim)}/${esc(x.paragraf)}">${esc(U.bolum_adlari[x.bolum] || x.bolum)}</a>: ` : ''}${esc(x.metin)}</div>`).join(''));
+      L.push('</details>');
+    }
+    L.push(`<details><summary>Kaynaklar (${Object.keys(t.kaynaklar).length})</summary><ol class="small">`
+      + Object.entries(t.kaynaklar).map(([n, s]) => `<li value="${esc(n)}">${esc(s.satir)} <span class="muted">— ${s.kaynak && s.kaynak.bag ? `<a href="${esc(s.kaynak.bag)}" target="_blank" rel="noopener">${esc(s.kaynak.ad)}</a>` : esc(s.kaynak ? s.kaynak.ad : '')}</span></li>`).join('') + '</ol></details>');
+    L.push(`<p class="small muted">İndir: <a href="${MASA ? 'oku/' : ''}indir/bakara-${esc(U.birim)}.txt">metin</a> · <a href="${MASA ? 'oku/veri/' : 'veri/'}${esc(U.birim)}.json">veri (JSON)</a> · sûrenin tamamı <a href="${MASA ? 'oku/' : ''}indir/bakara.txt">metin</a>, <a href="${MASA ? 'oku/' : ''}indir/bakara.json">JSON</a></p>`);
+  }
+  return L.join('\n');
+}
+document.addEventListener('toggle', async e => {
+  const d = e.target;
+  if (!d.classList || !d.classList.contains('tf') || !d.open || d.dataset.done) return;
+  d.dataset.done = 1;
+  try {
+    const x = await getJSON(TDATA + d.dataset.f);
+    d.querySelector('.tfx').outerHTML = x.ogeler.map(o => o.k === 'baslik' ? `<h3>${esc(o.t)}</h3>` : `<p class="ar" style="font-size:1.15rem">${esc(o.t)}</p>`).join('')
+      + `<p class="small muted">Kaynak: ${esc(x.kaynak.ad)}</p>`;
+  } catch (err) { d.querySelector('.tfx').textContent = 'yüklenemedi'; }
+}, true);
+
+function tabsHTML(tabs, cur) {
+  return '<div class="tabs">' + tabs.map(([k, lab]) => `<a href="#/${esc(U.birim)}/~${k}" class="${k === cur ? 'on' : ''}">${lab}</a>`).join('') + '</div>';
+}
+function render(focus) {
+  const parts = location.hash.slice(2).split('/');
+  let tab = (parts[1] || '').startsWith('~') ? parts[1].slice(1) : null;
+  const tabs = [];
+  if (U.isarat) tabs.push(['isarat', "Müellifin sözü (İşârât)"]);
+  if (U.taslak) tabs.push(['taslak', 'Yapay zekâ taslağı']);
+  if (MASA && U.masa) {
+    if (U.masa.taslaklar.length) tabs.push(['hepsi', `Taslaklar (${U.masa.taslaklar.length})`]);
+    if (U.masa.taslaklar.length > 1) tabs.push(['yan', 'Yan yana']);
+    if (U.masa.kapi.length || U.masa.kapali.length) tabs.push(['kapi', 'Kapı ve eleştiri']);
+    if (U.masa.nisbet.length) tabs.push(['nisbet', 'Nisbet']);
+    tabs.push(['notlar', `Notlar (${NOTES.length})`]);
+  }
+  if (!tab || !tabs.some(t => t[0] === tab)) tab = (focus || !U.isarat) && U.taslak ? 'taslak' : (tabs[0] || [''])[0];
+  const L = [`<h1>${esc(U.sure_adi)} ${esc(rng(U.ayet))}</h1>`,
+    '<div class="stamp"><b>Yapay zekâ taslağıdır; tefsir değildir</b>, müellife ya da İşârât\'a mal edilmez. Türkçe paragraflar yapay zekâ tercümesidir; izah da yapay zekânındır. Alıntılar kaynaklarının sözüdür, yanlarında kaynağı yazılıdır.</div>'];
+  for (const a of U.ayetler) L.push(`<p class="ar">${esc(a.metin)} ﴿${a.n}﴾</p><p class="tr small">Meal: ${esc(a.meal)}</p>`);
+  L.push(`<p class="small muted">Âyet: ${esc(U.ayet_kaynak.metin)} · meal: ${esc(U.ayet_kaynak.meal)}</p>`);
+  if (!tabs.length) L.push('<p class="muted">Bu birimin taslağı henüz yazılmadı.</p>');
+  else L.push(tabsHTML(tabs, tab));
+  if (tab === 'isarat') L.push(isaratHTML());
+  else if (tab === 'taslak') L.push(draftHTML(U.taslak));
+  else if (tab === 'hepsi') L.push(allDraftsHTML());
+  else if (tab === 'yan') L.push(sideHTML());
+  else if (tab === 'kapi') L.push(kapiHTML());
+  else if (tab === 'nisbet') L.push(nisbetHTML());
+  else if (tab === 'notlar') L.push(notesTabHTML());
+  if (tab === 'isarat' || tab === 'taslak') L.push(extrasHTML());
+  if (MASA && U.masa) {
+    if (U.masa.alarmlar.length) L.push(`<div class="flag">⚠ Alarm: ${esc(U.masa.alarmlar.join('; '))}</div>`);
+    if (U.masa.sayfalar.length) L.push('<p class="small muted">Eski sayfalar: ' + U.masa.sayfalar.map(p => `<a href="${esc(p)}">${esc(p.replace('.html', ''))}</a>`).join(' · ') + '</p>');
+  }
+  $('main').innerHTML = L.join('\n');
+  if (focus) { const el = document.getElementById(focus); if (el) { el.classList.add('hl'); el.scrollIntoView({block: 'center'}); } }
+  $('ttl').textContent = `${MASA ? 'Ar-ge masası · ' : ''}${U.sure_adi} ${rng(U.ayet)}`;
+}
+
+// ---------------------------------------------------------------- ar-ge masası
+function simpleDraft(d, lang) {
+  const L = []; let sec = null;
+  for (const b of d.bloklar) {
+    const key = b.capa.split('/')[0];
+    if (key === 'Âyet') continue;
+    if (key !== sec) { sec = key; L.push(`<h3>${esc(U.bolum_adlari[key] || key)}</h3>`); }
+    if (lang && b.dil !== lang) continue;
+    L.push(`<div class="blk"><div class="lab">${esc(b.capa)}${b.alinti ? ' · alıntı' : ''}</div><p class="${b.dil === 'ar' ? 'ar' : 'tr'}${b.alinti ? ' quote' : ''}" style="${b.dil === 'ar' ? 'font-size:1.15rem' : ''}">${esc(b.metin)}</p></div>`);
+  }
+  return L.join('');
+}
+function draftMeta(d) {
+  const z = d.duzeltme;
+  return `taslak ${d.n} · ${esc(d.surum)} · ${esc(d.model || '')} · ${esc(d.at)}${d.maliyet ? ' · ≈' + d.maliyet.toFixed(2) + ' $' : ''}`
+    + (z ? ` · düzeltme ${esc(z.surum)} (taslak ${z.kaynak}, ${esc(z.notlar)}: ${z.karsilanan}/${z.karsilanmasi_gereken ?? '?'} karşılandı, ${z.reddedilen} reddedildi)` : '');
+}
+function allDraftsHTML() {
+  const ds = U.masa.taslaklar, n = +(VIEW.n || ds[ds.length - 1].n);
+  const d = ds.find(x => x.n === n) || ds[ds.length - 1];
+  return '<p class="small">' + ds.map(x => `<button data-n="${x.n}" class="${x.n === d.n ? 'on' : ''}">${x.n}: ${esc(x.surum)}</button>`).join(' ')
+    + ` <button data-v="masa_ar" class="${VIEW.masa_ar ? 'on' : ''}">Arapça</button></p><p class="small muted">${draftMeta(d)}</p>`
+    + simpleDraft(d, VIEW.masa_ar ? null : 'tr');
+}
+function sideHTML() {
+  const ds = U.masa.taslaklar, last = ds[ds.length - 1].n;
+  const a = +(VIEW.a || (ds.length > 1 ? ds[ds.length - 2].n : last)), b = +(VIEW.b || last);
+  const A = ds.find(x => x.n === a) || ds[0], B = ds.find(x => x.n === b) || ds[ds.length - 1];
+  const sel = (k, cur) => `<select data-s="${k}">` + ds.map(x => `<option value="${x.n}"${x.n === cur ? ' selected' : ''}>${x.n}: ${esc(x.surum)}</option>`).join('') + '</select>';
+  const lang = VIEW.masa_ar ? 'ar' : 'tr';
+  const secs = [...new Set([...A.bloklar, ...B.bloklar].map(x => x.capa.split('/')[0]))].filter(k => k !== 'Âyet');
+  const col = (D, s) => D.bloklar.filter(x => x.capa.split('/')[0] === s && x.dil === lang)
+    .map(x => `<p class="${lang === 'ar' ? 'ar' : 'tr'}${x.alinti ? ' quote' : ''}" style="${lang === 'ar' ? 'font-size:1.1rem' : 'font-size:.92rem'}">${esc(x.metin)}</p>`).join('') || '<p class="muted small">— yok —</p>';
+  return `<p class="small">${sel('a', A.n)} ↔ ${sel('b', B.n)} <button data-v="masa_ar" class="${VIEW.masa_ar ? 'on' : ''}">Arapça</button>
+    <span class="muted">Aynı birimin iki taslağı vecih vecih (bölüm bölüm) yan yana: aynı vecih mi, farklı bir vecih mi.</span></p>`
+    + secs.map(s => `<h3>${esc(U.bolum_adlari[s] || s)}</h3><div class="cols"><div>${col(A, s)}</div><div>${col(B, s)}</div></div>`).join('');
+}
+function kapiHTML() {
+  const L = ['<p class="small muted">Ham hâliyle: kalite kapısının notları (kapalı eleştirmen, nisbet denetçisi, biçim) ve yazarın her nota cevabı; kapalı eleştirmenin bütün notları; "eksik" notları (taslağa eklenmedi).</p>'];
+  for (const k of U.masa.kapi) {
+    const c = {karşılandı: 0, kısmen: 0, reddedildi: 0, anılmadı: 0}; k.notlar.forEach(x => c[x.durum]++);
+    L.push(`<h3>${k.tur === 'kapi' ? 'Kalite kapısı' : 'İkinci tur'} (${esc(k.surum || '')}): taslak ${k.taslak} → ${k.yeni ?? '?'} <span class="small muted">(${k.notlar.length} not: ${c['karşılandı']} karşılandı, ${c['kısmen']} kısmen (karşılandı, bir kısmı gerekçesiyle reddedildi), ${c.reddedildi} reddedildi, ${c['anılmadı']} anılmadı)</span></h3>`);
+    for (const x of k.notlar)
+      L.push(`<div class="note"><b>${esc(x.no)}</b> <span class="tag">${esc(x.kaynak || '')}</span><span class="tag">${esc(x.tur || '')}</span><span class="tag">${esc(x.oncelik || '')}</span> ${esc(x.capa || '')}`
+        + (x.alinti ? `<br><i>«${esc(x.alinti)}»</i>` : '') + `<br>${esc(x.metin)}` + (x.oneri ? `<br><span class="small muted">Öneri: ${esc(x.oneri)}</span>` : '')
+        + `<br><span class="small ${x.durum === 'karşılandı' || x.durum === 'kısmen' ? 'ok' : (x.durum === 'reddedildi' ? 'bad' : 'muted')}">${esc(x.durum)}${x.nasil ? ': ' + esc(x.nasil.join(', ')) : ''}</span>${x.gerekce ? `<br><span class="small bad">Ret gerekçesi: ${esc(x.gerekce)}</span>` : ''}</div>`);
+  }
+  for (const k of U.masa.kapali) {
+    L.push(`<h3>Kapalı eleştirmen (İşârât'ı görmeden): taslak ${k.taslak} <span class="small muted">${esc(k.dosya)} · ${k.notlar.length} not</span></h3>`);
+    if (k.ozet) L.push(`<p class="small">${esc(typeof k.ozet === 'string' ? k.ozet : JSON.stringify(k.ozet))}</p>`);
+    for (const x of k.notlar)
+      L.push(`<div class="note"><span class="tag">${esc(x.tur)}</span><span class="tag">${esc(x.oncelik || '')}</span> ${esc(x.capa || '')}${x.taslak_alinti ? `<br><i>«${esc(x.taslak_alinti)}»</i>` : ''}<br>${esc(x.metin)}${x.oneri ? `<br><span class="small muted">Öneri: ${esc(x.oneri)}</span>` : ''}${x.ehline_sor ? `<br><span class="small">Ehline sor: ${esc(x.soru)}</span>` : ''}</div>`);
+  }
+  for (const k of U.masa.acik) {
+    L.push(`<h3>Eksik notları (taslak ${k.taslak}; taslağa eklenmedi)</h3>`);
+    for (const x of k.notlar) L.push(`<div class="note">${esc(x.capa || '')}: ${esc(x.metin)}${x.oneri ? `<br><span class="small muted">Öneri: ${esc(x.oneri)}</span>` : ''}</div>`);
+  }
+  return L.join('');
+}
+function nisbetHTML() {
+  const L = ['<p class="small muted">Nisbet denetçisi: taslağın kaynağa dayandırdığı her söz kaynakta var mı (dogru, asiyor: kaynağın dediğini aşıyor, kaynakta_yok, nisbet_yok: atıfsız hüküm, nakil).</p>'];
+  for (const k of U.masa.nisbet) {
+    const c = {}; k.hukumler.forEach(h => c[h.hukum] = (c[h.hukum] || 0) + 1);
+    L.push(`<h3>Taslak ${k.taslak} <span class="small muted">${Object.entries(c).map(([a, b]) => a + ' ' + b).join(' · ')}</span></h3><table class="t">`);
+    for (const h of k.hukumler.filter(h => h.hukum !== 'dogru'))
+      L.push(`<tr><td>[${esc(h.kaynak)}]</td><td class="bad">${esc(h.hukum)}</td><td>${h.taslak_alinti ? `<i>«${esc(h.taslak_alinti)}»</i><br>` : ''}${esc(h.gerekce)}</td></tr>`);
+    L.push('</table>');
+  }
+  return L.join('');
+}
+function notesTabHTML() {
+  if (!NOTES.length) return '<p class="muted">Bu birimde okuyucu notu yok.</p>';
+  return '<p class="small muted">Okuyucu notları ve hayatı: açık → işlendi (işleyen sürümle) → kapandı; not silinmez, yazan geri çeker.</p>'
+    + NOTES.map(n => `<div class="blk">${n.paragraf ? `<a href="#/${esc(U.birim)}/${esc(n.paragraf)}" class="small">${esc(n.paragraf)}</a>` : ''}${noteHTML(n)}</div>`).join('');
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('button[data-n]');
+  if (!b) return;
+  VIEW.n = b.dataset.n; render();
+});
+document.addEventListener('change', e => {
+  const s = e.target.closest('select[data-s]');
+  if (!s) return;
+  VIEW[s.dataset.s] = s.value; render();
+});
+
+// ---------------------------------------------------------------- yönlendirme
+function home() {
+  const last = store.get('oku-son');
+  $('ttl').textContent = MASA ? 'Ar-ge masası · birimler' : "Kur'ân · yapay zekâ taslakları";
+  $('main').innerHTML = `<h1>${MASA ? 'Birimler' : "Kur'ân'ın yapay zekâ taslakları"}</h1>
+    <div class="stamp"><b>Buradaki metinler yapay zekâ taslağıdır; tefsir değildir.</b> İşârâtü'l-İ'câz'ın usulüyle, kaynaklara (Risale-i Nur, klasik tefsirler, belâgat eserleri, hadis kitapları) bağlı kalarak yazıldılar; her atıfın kaynağı tıklayınca görünür. Nasıl yazıldıklarını <a href="__USUL__">usul sayfası</a> anlatır.</div>
+    ${last ? `<p>Kaldığınız yer: <a href="${esc(last)}">${esc(last.replace('#/', 'Bakara ').split('/').slice(0, 1).join(''))}</a></p>` : ''}
+    <p>Soldaki panelden bir birim seçin ya da âyete gidin ("2:255"). Bakara 1–33'te önce müellifin sözü (İşârâtü'l-İ'câz), yanında onu görmeden yazılmış taslak durur.</p>
+    <p class="small muted">Yanlış gördüğünüz yere paragrafın altındaki "not" ile not bırakabilirsiniz.</p>`;
+  panel(null);
+}
+async function route() {
+  const parts = location.hash.slice(2).split('/').filter(Boolean);
+  if (!parts.length) return home();
+  const uid = parts[0], focus = parts[1] && !parts[1].startsWith('~') ? parts[1] : null;
+  if (!U || U.birim !== uid) {
+    $('main').innerHTML = '<p class="muted">yükleniyor…</p>';
+    try { U = await getJSON(DATA + uid + '.json'); }
+    catch (e) {
+      const x = INDEX.birimler.find(x => x.id === uid);
+      panel(uid);
+      $('main').innerHTML = x ? `<h1>Bakara ${esc(rng(x.ayet))}</h1><p class="muted">Bu birimin taslağı henüz yazılmadı.</p>` : '<p class="muted">Böyle bir birim yok.</p>';
+      return;
+    }
+    await loadNotes();
+  }
+  panel(uid);
+  render(focus);
+  store.set('oku-son', '#/' + uid);
+  $('panel').classList.remove('open');
+}
+addEventListener('hashchange', route);
+(async () => {
+  try { VIEW = Object.assign(VIEW, JSON.parse(store.get('oku-view') || '{}')); } catch (e) {}
+  try { INDEX = await getJSON(DATA + 'index.json'); } catch (e) { $('main').textContent = 'Dizin okunamadı.'; return; }
+  try { ME = await getJSON('/taslak/ben'); $('ben').textContent = ME.name || ''; } catch (e) {}
+  route();
+})();
+</script></body></html>

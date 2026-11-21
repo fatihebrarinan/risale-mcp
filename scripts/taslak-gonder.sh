@@ -19,8 +19,8 @@ for f in "$@"; do
     [[ -f $f ]] || { echo "yok: $f"; exit 1; }
     [[ $(realpath "$f") == $(realpath data/d1/masa)/* ]] || { echo "data/d1/masa/ altında değil: $f"; exit 1; }
 done
-"${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel /var/www/ozel/taslak"
-rsync -az --chown=root:caddy --chmod=D750,F640 -e "${SSH[*]}" "$@" "$HOST:/var/www/ozel/taslak/"
+"${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel && install -d -o root -g caddy -m 2750 /var/www/ozel/taslak"
+rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" "$@" "$HOST:/var/www/ozel/taslak/"
 for f in "$@"; do
     echo "https://risalemcp.com/taslak/$(basename "$f")"
 done

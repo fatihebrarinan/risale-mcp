@@ -108,7 +108,8 @@ def build(unit: str, n: int | None = None) -> dict:
     ay = {v["ayah"]: v for v in q["suras"][cfg["sura"] - 1]["ayahs"]}
     a, b = cfg["ayahs"]
 
-    out_blocks, seen, last_ar = [], {}, None
+    out_blocks, seen, pid_of = [], {}, {}
+    pr = Y.pairs(blocks)          # Arapça paragraf ↔ Türkçesi (sıra numarasıyla değil; `d1-yz.pairs`)
     for anchor, lang, quote, text in blocks:
         key = anchor.split("/")[0]
         if key == "Âyet":
@@ -128,13 +129,14 @@ def build(unit: str, n: int | None = None) -> dict:
             owner = "yapay_zeka" if kind != "alinti" else "kaynak"
         blk = {"id": pid, "bolum": key, "tur": kind, "sahip": owner, "metin": text,
                "kaynaklar": sorted(set(re.findall(r"\[(\d+)\]", text)), key=int), "taslak_capa": anchor}
-        if kind in ("tercume", "alinti_tercume") and last_ar:
-            blk["tercumesi"] = last_ar
         if izah.get(anchor):
             blk["izah"] = {"metin": izah[anchor], "sahip": "yapay_zeka"}
-        if lang == "ar":
-            last_ar = pid
+        pid_of[anchor] = pid
         out_blocks.append(blk)
+    for blk in out_blocks:        # Türkçe paragrafın Arapçası (tercüme ya da alıntının tercümesi)
+        capa = blk["taslak_capa"]
+        if "/tr/" in capa and pr.get(capa) in pid_of:
+            blk["tercumesi"] = pid_of[pr[capa]]
 
     for f in residual_flags(unit, steps, raw_flat):
         q40 = flat(f["alinti"])[:40]

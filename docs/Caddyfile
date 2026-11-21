@@ -103,6 +103,23 @@ risalemcp.com {
 		header Cache-Control "no-store"
 		reverse_proxy 127.0.0.1:8009
 	}
+	# S7.3: okuma platformu (davetli; aynı hesaplar, `oku` kapsamı yalnız buraya girer). Dosyalar
+	# /var/www/ozel/taslak/oku/ altında (D5 sunucusunun kısıtlı anahtarı yalnız taslak klasörüne yazar); /oku/… oraya
+	# çevrilir, giriş servisi /taslak/oku/… yolunu `oku` kapsamına da açar.
+	redir /oku /oku/ 308
+	handle /oku/* {
+		rewrite * /taslak{uri}
+		forward_auth 127.0.0.1:8009 {
+			uri /_auth
+		}
+		header {
+			Cache-Control "private, no-cache"
+			X-Robots-Tag "noindex, nofollow"
+			Referrer-Policy "same-origin"
+		}
+		root * /var/www/ozel
+		file_server
+	}
 	handle /taslak* {
 		forward_auth 127.0.0.1:8009 {
 			uri /_auth

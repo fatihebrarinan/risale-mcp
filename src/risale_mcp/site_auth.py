@@ -10,6 +10,10 @@ Düzen: sayfalar statik dosyadır (`/var/www/ozel/taslak/`); Caddy her istekte b
 servistedir (`/taslak/giris`, `/taslak/cikis`). İşaretler sunucuda tutulmaz: tarayıcıda kalır, dışa aktarılır.
 `/taslak/ben` girişli kişinin adını verir (`name`, yoksa e-posta): sayfa işaretlere okuyucu adı olarak onu yazar.
 
+S7.3 (2026-11-21): okuma platformu `/oku/` aynı hesaplarla açılır; çerez bu yüzden bütün sitenin yolundadır (`/`;
+yalnız HttpOnly oturum jetonu). Hesabın kapsamı (`scope`): `masa` hem ar-ge masasına (`/taslak/`) hem platforma,
+`oku` yalnız platforma girer (davetli okuyucular; `add-user --oku`). Önceki hesaplar `masa`dır.
+
 Saklananlar (gizlilik politikası söyler): e-posta, parola özeti, yanlış deneme sayısı, son giriş zamanı; oturumun
 yalnız özeti, açılış ve son görülme zamanı. IP ve gezinti kaydı tutulmaz.
 
@@ -35,7 +39,10 @@ from risale_mcp.paths import DATA_DIR
 
 DB = DATA_DIR / "site_auth.db"
 PREFIX = "/taslak/"
+OKU = "/oku/"
 COOKIE = "taslak_oturum"
+COOKIE_PATH = "/"                                # /taslak/ ve /oku/ aynı oturumla (S7.3)
+SCOPES = ("masa", "oku")
 SESSION_DAYS = 30
 EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 _DUMMY = hash_password(secrets.token_hex(8))
@@ -44,6 +51,7 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
     email        TEXT PRIMARY KEY,
     name         TEXT,                     -- işaretlerdeki okuyucu adı (isteğe bağlı; yoksa e-posta)
+    scope        TEXT NOT NULL DEFAULT 'masa',   -- masa: /taslak/ ve /oku/; oku: yalnız /oku/
     password     TEXT NOT NULL,
     created      REAL NOT NULL,
     failures     INTEGER NOT NULL DEFAULT 0,
@@ -74,8 +82,11 @@ class Store:
         path.parent.mkdir(parents=True, exist_ok=True)
         with self._conn() as c:
             c.executescript(SCHEMA)
-            if "name" not in {r[1] for r in c.execute("PRAGMA table_info(users)")}:     # 2026-11-14'ten önceki dosya
+            cols = {r[1] for r in c.execute("PRAGMA table_info(users)")}
+            if "name" not in cols:                                                     # 2026-11-14'ten önceki dosya
                 c.execute("ALTER TABLE users ADD COLUMN name TEXT")
+            if "scope" not in cols:                                                    # 2026-11-21'den önceki dosya
+                c.execute("ALTER TABLE users ADD COLUMN scope TEXT NOT NULL DEFAULT 'masa'")
         path.chmod(0o600)                                # e-postalar ve parola özetleri: yalnız servisin kullanıcısı
 
     def _conn(self) -> sqlite3.Connection:
@@ -90,14 +101,27 @@ class Store:
 
     # ------------------------------------------------------------ hesaplar
 
-    def add_user(self, email: str, password: str, name: str | None = None) -> None:
+    def add_user(self, email: str, password: str, name: str | None = None, scope: str = "masa") -> None:
+        if scope not in SCOPES:
+            raise ValueError(f"kapsam: {scope}")
         email = norm_email(email)
         if not EMAIL.match(email):
             raise ValueError(f"e-posta adresi değil: {email}")
         if self._run("SELECT 1 FROM users WHERE email = ?", (email,)):
             raise ValueError(f"hesap zaten var: {email}")
-        self._run("INSERT INTO users (email, name, password, created) VALUES (?, ?, ?, ?)",
-                  (email, (name or "").strip() or None, hash_password(password), time.time()))
+        self._run("INSERT INTO users (email, name, password, created, scope) VALUES (?, ?, ?, ?, ?)",
+                  (email, (name or "").strip() or None, hash_password(password), time.time(), scope))
+
+    def scope(self, email: str) -> str:
+        rows = self._run("SELECT scope FROM users WHERE email = ?", (norm_email(email),))
+        return rows[0]["scope"] if rows else "oku"
+
+    def set_scope(self, email: str, scope: str) -> None:
+        if scope not in SCOPES:
+            raise ValueError(f"kapsam: {scope}")
+        if not self._run("SELECT 1 FROM users WHERE email = ?", (norm_email(email),)):
+            raise ValueError(f"hesap yok: {norm_email(email)}")
+        self._run("UPDATE users SET scope = ? WHERE email = ?", (scope, norm_email(email)))
 
     def set_name(self, email: str, name: str) -> None:
         email = norm_email(email)
@@ -123,7 +147,7 @@ class Store:
         self._run("DELETE FROM users WHERE email = ?", (email,))
 
     def users(self) -> list[sqlite3.Row]:
-        return self._run("SELECT email, name, created, last_login, failures, locked_until FROM users ORDER BY email")
+        return self._run("SELECT email, name, scope, created, last_login, failures, locked_until FROM users ORDER BY email")
 
     def login(self, email: str, password: str, now: float | None = None) -> tuple[bool, str | None]:
         now = now or time.time()
@@ -181,7 +205,7 @@ class Store:
 
 PAGE = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
-<title>Giriş · Taslak çalışma</title><style>
+<title>Giriş · Davetli bölüm</title><style>
 :root {{ --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --accent: #1f5c3f; --bad: #a3271f; }}
 @media (prefers-color-scheme: dark) {{ :root {{ --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f;
   --card: #1f1e1b; --accent: #7cc49d; --bad: #f08a80; }} }}
@@ -196,7 +220,7 @@ button {{ width: 100%; padding: 8px; font: inherit; border: 0; border-radius: 6p
 .err {{ color: var(--bad); font-size: .88rem; }} .ok {{ color: var(--accent); font-size: .88rem; }}
 a {{ color: inherit; }}
 </style></head><body><main>
-<h1>Taslak çalışma</h1>
+<h1>Davetli bölüm</h1>
 <p>Bu bölüm yalnız davet edilen kişilere açıktır. Hesabınız yoksa site yöneticisinden isteyin.</p>
 {message}
 <form method="post" action="{action}">
@@ -208,12 +232,19 @@ a {{ color: inherit; }}
 </main></body></html>"""
 
 
-def safe_next(target: str | None) -> str:
-    """Girişten sonra gidilecek yer yalnız bu bölümün içi olabilir (açık yönlendirme olmasın)."""
-    if target and target.startswith(PREFIX) and not target.startswith("//") and "\\" not in target \
+def safe_next(target: str | None, default: str = PREFIX) -> str:
+    """Girişten sonra gidilecek yer yalnız girişli bölümlerin (/taslak/, /oku/) içi olabilir (açık yönlendirme
+    olmasın)."""
+    if target and target.startswith((PREFIX, OKU)) and not target.startswith("//") and "\\" not in target \
             and not target.startswith(PREFIX + "giris"):
         return target
-    return PREFIX
+    return default
+
+
+def allowed(scope: str, uri: str) -> bool:
+    """`oku` kapsamı ar-ge masasına (/taslak/) giremez, platforma girer: /oku/… Caddy'de /taslak/oku/…'ya çevrilir
+    (dosyalar orada). API'yi uygulama kendisi denetler."""
+    return scope == "masa" or uri.startswith(("/oku", PREFIX + "oku/")) or not uri.startswith(PREFIX.rstrip("/"))
 
 
 def build_app(store: Store, masa_store=None):
@@ -232,16 +263,20 @@ def build_app(store: Store, masa_store=None):
         return request.headers.get("x-forwarded-proto", request.url.scheme) == "https"
 
     async def check(request: Request):
-        if store.check(request.cookies.get(COOKIE)):
-            return PlainTextResponse("ok", headers={"Cache-Control": "no-store"})
         uri = request.headers.get("x-forwarded-uri", PREFIX)
+        email = store.check(request.cookies.get(COOKIE))
+        if email:
+            if allowed(store.scope(email), uri):
+                return PlainTextResponse("ok", headers={"Cache-Control": "no-store"})
+            return RedirectResponse(OKU, status_code=302)        # yalnız okuyucu: masaya değil platforma
         return RedirectResponse(f"{PREFIX}giris?next={quote(safe_next(uri), safe='/')}", status_code=302)
 
     async def login(request: Request):
-        next_url = safe_next(request.query_params.get("next"))
+        next_url = safe_next(request.query_params.get("next"), default="")
         if request.method == "GET":
-            if store.check(request.cookies.get(COOKIE)):
-                return RedirectResponse(next_url, status_code=302)
+            email = store.check(request.cookies.get(COOKIE))
+            if email:
+                return RedirectResponse(next_url or (PREFIX if store.scope(email) == "masa" else OKU), status_code=302)
             msg = '<p class="ok">Oturum kapatıldı.</p>' if request.query_params.get("cikis") else ""
             return page(next_url, msg)
         form = await request.form()
@@ -249,8 +284,12 @@ def build_app(store: Store, masa_store=None):
         ok, error = store.login(email, password)
         if not ok:
             return page(next_url, f'<p class="err">{html.escape(error)}</p>', email, status=401)
+        scope = store.scope(email)
+        if not next_url or not allowed(scope, next_url):
+            next_url = PREFIX if scope == "masa" else OKU
         response = RedirectResponse(next_url, status_code=303)
-        response.set_cookie(COOKIE, store.open_session(email), max_age=SESSION_DAYS * 86400, path=PREFIX,
+        response.delete_cookie(COOKIE, path=PREFIX)                 # 2026-11-21'den önceki çerez (/taslak/ yolunda)
+        response.set_cookie(COOKIE, store.open_session(email), max_age=SESSION_DAYS * 86400, path=COOKIE_PATH,
                             httponly=True, secure=secure(request), samesite="lax")
         return response
 
@@ -258,12 +297,14 @@ def build_app(store: Store, masa_store=None):
         email = store.check(request.cookies.get(COOKIE))
         if not email:
             return JSONResponse({"error": "oturum yok"}, status_code=401, headers={"Cache-Control": "no-store"})
-        return JSONResponse({"email": email, "name": store.display_name(email)}, headers={"Cache-Control": "no-store"})
+        return JSONResponse({"email": email, "name": store.display_name(email), "scope": store.scope(email)},
+                            headers={"Cache-Control": "no-store"})
 
     async def logout(request: Request):
         store.close_session(request.cookies.get(COOKIE))
         response = RedirectResponse(f"{PREFIX}giris?cikis=1", status_code=303)
         response.delete_cookie(COOKIE, path=PREFIX)
+        response.delete_cookie(COOKIE, path=COOKIE_PATH)
         return response
 
     from risale_mcp import masa                     # S7.2: ar-ge masası (okumalar, kararlar, notlar)
@@ -302,6 +343,10 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--generate", action="store_true", help="parolayı üret ve göster")
         if name == "add-user":
             p.add_argument("--name", help="işaretlerde görünecek okuyucu adı (yoksa e-posta)")
+            p.add_argument("--oku", action="store_true", help="yalnız okuma platformu (/oku/); ar-ge masasına girmez")
+    p = sub.add_parser("set-scope")
+    p.add_argument("email")
+    p.add_argument("scope", choices=SCOPES)
     p = sub.add_parser("set-name")
     p.add_argument("email")
     p.add_argument("name")
@@ -316,8 +361,11 @@ def main(argv: list[str] | None = None) -> None:
         uvicorn.run(build_app(store), host="127.0.0.1", port=args.port, proxy_headers=True,
                     forwarded_allow_ips="127.0.0.1", access_log=False)
     elif args.command == "add-user":
-        store.add_user(args.email, _password(args.generate), args.name)
-        print(f"hesap açıldı: {norm_email(args.email)}")
+        store.add_user(args.email, _password(args.generate), args.name, "oku" if args.oku else "masa")
+        print(f"hesap açıldı: {norm_email(args.email)} ({'yalnız /oku/' if args.oku else '/taslak/ ve /oku/'})")
+    elif args.command == "set-scope":
+        store.set_scope(args.email, args.scope)
+        print(f"kapsam: {args.scope}")
     elif args.command == "passwd":
         store.set_password(args.email, _password(args.generate))
         print("parola değişti, açık oturumlar kapatıldı")
@@ -332,7 +380,7 @@ def main(argv: list[str] | None = None) -> None:
     elif args.command == "users":
         for u in store.users():
             lock = f" kilitli ({_when(u['locked_until'])}'e kadar)" if u["locked_until"] > time.time() else ""
-            print(f"{u['email']}  ({u['name'] or 'adsız'})  açıldı {_when(u['created'])}  son giriş {_when(u['last_login'])}{lock}")
+            print(f"{u['email']}  ({u['name'] or 'adsız'}, {u['scope']})  açıldı {_when(u['created'])}  son giriş {_when(u['last_login'])}{lock}")
     elif args.command == "sessions":
         for s in store.sessions():
             print(f"{s['email']}  açıldı {_when(s['created'])}  son görülme {_when(s['last_seen'])}  biter {_when(s['expires'])}")

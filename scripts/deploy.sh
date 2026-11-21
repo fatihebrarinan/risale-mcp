@@ -65,8 +65,14 @@ rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
 # /var/www/ozel/taslak/'a; site/ klasörüne girmez, yalnız Caddy okur, giriş servisi (aşağıda) kapıdır
 # Birim başına bir sayfa (<birim>.html; index.html son birim)
 if [[ -f data/d1/masa/index.html ]]; then
-    "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel /var/www/ozel/taslak"
-    rsync -az --chown=root:caddy --chmod=D750,F640 -e "${SSH[*]}" data/d1/masa/ "$HOST:/var/www/ozel/taslak/"
+    "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel && install -d -o root -g caddy -m 2750 /var/www/ozel/taslak"
+    rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/d1/masa/ "$HOST:/var/www/ozel/taslak/"
+fi
+# S7.3: okuma platformu (/oku/ → /var/www/ozel/taslak/oku/) ve masanın birim görünümü; `scripts/oku-veri.py` kurar
+if [[ -f data/interim/oku/index.html ]]; then
+    "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/oku"
+    rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/oku/ "$HOST:/var/www/ozel/taslak/oku/"
+    rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/oku-masa/ "$HOST:/var/www/ozel/taslak/"
 fi
 # Caddy yapılandırması (docs/Caddyfile) değiştiyse yeniden yüklenir
 rsync -az -e "${SSH[*]}" docs/Caddyfile "$HOST:/etc/caddy/Caddyfile.new"

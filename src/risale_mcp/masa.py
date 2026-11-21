@@ -275,6 +275,11 @@ def routes(auth, store: MasaStore) -> list:
     def who(request: Request) -> str | None:
         return auth.check(request.cookies.get(COOKIE))
 
+    def desk(request: Request) -> str | None:
+        """Ar-ge masasının kişisi (kapsam `masa`); platformun okuyucusu (`oku`) okuma görevlerini görmez."""
+        email = who(request)
+        return email if email and auth.scope(email) == "masa" else None
+
     def machine(request: Request) -> str | None:
         h = request.headers.get("authorization", "")
         return store.check_token(h[7:] if h.lower().startswith("bearer ") else None)
@@ -283,18 +288,18 @@ def routes(auth, store: MasaStore) -> list:
         return JSONResponse({"error": "oturum yok" if status == 401 else "bulunamadı"}, status_code=status, headers=H)
 
     async def okumalar(request: Request):
-        email = who(request)
+        email = desk(request)
         return JSONResponse({"okumalar": store.tasks_for(email)}, headers=H) if email else deny()
 
     async def okuma(request: Request):
-        email = who(request)
+        email = desk(request)
         if not email:
             return deny()
         t = store.task(request.path_params["tid"], email)
         return JSONResponse(t, headers=H) if t else deny(404)
 
     async def karar(request: Request):
-        email = who(request)
+        email = desk(request)
         if not email:
             return deny()
         body = await request.json()
@@ -302,7 +307,7 @@ def routes(auth, store: MasaStore) -> list:
         return JSONResponse({"ok": True}, headers=H) if ok else deny(404)
 
     async def bitir(request: Request):
-        email = who(request)
+        email = desk(request)
         if not email:
             return deny()
         t = store.finish(request.path_params["tid"], email)
@@ -317,13 +322,18 @@ def routes(auth, store: MasaStore) -> list:
             if not body.get("birim") or not body.get("metin"):
                 return JSONResponse({"error": "birim ve metin gerekli"}, status_code=400, headers=H)
             return JSONResponse({"id": store.add_note(email, body)}, headers=H)
-        return JSONResponse({"notlar": store.notes(request.path_params["birim"], email)}, headers=H)
+        notes = store.notes(request.path_params["birim"], email)
+        if auth.scope(email) != "masa":                 # platformun okuyucusu yalnız kendi notlarını görür
+            notes = [n for n in notes if n["benim"]]
+        return JSONResponse({"notlar": notes}, headers=H)
 
     async def not_durum(request: Request):
         email = who(request)
         if not email:
             return deny()
         body = await request.json()
+        if body.get("durum") != "geri_cekildi" and auth.scope(email) != "masa":
+            return deny(404)                               # işlendi/kapandı masanın işi; okuyucu yalnız geri çeker
         ok = store.set_note_state(request.path_params["nid"], email, body.get("durum"), body.get("surum"))
         return JSONResponse({"ok": True}, headers=H) if ok else deny(404)
 

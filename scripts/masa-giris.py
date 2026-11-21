@@ -52,7 +52,7 @@ def _pages() -> list[str]:
 
 def _unit_pages(uid: str, pages: list[str]) -> list[dict]:
     """Bir birimin masa sayfaları: masa sayfası, D5 okuma sayfası, okuma turları, fark kartları."""
-    out = []
+    out = [{"ad": "birim görünümü", "href": f"birim.html#/{uid}", "tur": "birim"}]
     for name in pages:
         stem = name[:-5]
         if stem == uid:
@@ -164,7 +164,8 @@ header.top { display: flex; justify-content: space-between; align-items: baselin
 header.top a { font-size: .85rem; color: var(--muted); }
 </style></head><body><main>
 <header class="top"><h1>Ar-ge Masası</h1><span class="small muted"><span id="ben"></span> · <a href="cikis">çıkış</a></span></header>
-<p class="small muted">Yapay zekâ taslaklarının iç çalışma masası. Buradaki hiçbir taslak tefsir değildir.</p>
+<p class="small muted">Yapay zekâ taslaklarının iç çalışma masası. Buradaki hiçbir taslak tefsir değildir.
+<a href="birim.html">Kur'ân paneli</a> · <a href="/oku/">okuma platformu</a></p>
 <nav class="tabs"><a href="#pano" data-t="pano">Pano</a><a href="#okumalar" data-t="okumalar">Okumalar<span id="nok"></span></a><a href="#birimler" data-t="birimler">Birimler</a></nav>
 <section id="pano"></section><section id="okumalar" hidden></section><section id="birimler" hidden></section>
 <p class="small muted" id="alt"></p>

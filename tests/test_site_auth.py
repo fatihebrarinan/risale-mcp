@@ -83,14 +83,65 @@ def test_gate_flow(client):
     r = client.post("/taslak/giris?next=https://kotu.example/",
                     data={"email": "okur@example.org", "password": "dogru-parola-123"})
     assert r.status_code == 303 and r.headers["location"] == "/taslak/"
-    cookie = r.headers["set-cookie"]
-    assert "HttpOnly" in cookie and "Secure" in cookie and "Path=/taslak/" in cookie and "samesite=lax" in cookie.lower()
+    cookie = next(c for c in r.headers.get_list("set-cookie") if "Max-Age=0" not in c and 'Max-Age="0"' not in c
+                  and "max-age=0" not in c.lower())
+    assert "HttpOnly" in cookie and "Secure" in cookie and "Path=/;" in cookie and "samesite=lax" in cookie.lower()
     token = r.cookies[COOKIE]
     # Caddy, tarayıcının /taslak/… isteğindeki çerezi olduğu gibi /_auth'a iletir
     assert client.get("/_auth", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 200
     r = client.get("/taslak/ben", headers={"Cookie": f"{COOKIE}={token}"})
-    assert r.json() == {"email": "okur@example.org", "name": "okur@example.org"}
+    assert r.json() == {"email": "okur@example.org", "name": "okur@example.org", "scope": "masa"}
     client.cookies.clear()
     assert client.get("/taslak/ben").status_code == 401
     assert client.get("/taslak/cikis", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 303
     assert client.get("/_auth", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 302
+
+
+def test_scopes_and_shared_cookie(store, client):
+    store.add_user("okuyucu@example.org", "okuyucu-parola-1", scope="oku")
+    r = client.post("/taslak/giris?next=/taslak/", data={"email": "okuyucu@example.org", "password": "okuyucu-parola-1"})
+    assert r.status_code == 303 and r.headers["location"] == "/oku/"          # masaya değil platforma
+    tok = client.cookies.get(COOKIE)
+    assert client.get("/_auth", headers={"x-forwarded-uri": "/oku/2/30"}, cookies={COOKIE: tok}).status_code == 200
+    assert client.get("/_auth", headers={"x-forwarded-uri": "/taslak/"}, cookies={COOKIE: tok}).headers["location"] == "/oku/"
+    assert client.get("/taslak/api/okumalar", cookies={COOKIE: tok}).status_code == 401
+    assert client.get("/taslak/ben", cookies={COOKIE: tok}).json()["scope"] == "oku"
+
+
+def test_masa_scope_reaches_both(store, client):
+    r = client.post("/taslak/giris", data={"email": "okur@example.org", "password": "dogru-parola-123"})
+    assert r.headers["location"] == "/taslak/"
+    tok = client.cookies.get(COOKIE)
+    for uri in ("/taslak/", "/oku/"):
+        assert client.get("/_auth", headers={"x-forwarded-uri": uri}, cookies={COOKIE: tok}).status_code == 200
+    assert safe_next("/oku/x") == "/oku/" + "x" and safe_next("//evil") == "/taslak/"
+
+
+def test_reader_sees_only_own_notes(store, client):
+    store.add_user("okuyucu@example.org", "okuyucu-parola-1", scope="oku")
+    client.post("/taslak/giris", data={"email": "okur@example.org", "password": "dogru-parola-123"})
+    masa_tok = client.cookies.get(COOKIE)
+    client.cookies.clear()
+    client.post("/taslak/giris", data={"email": "okuyucu@example.org", "password": "okuyucu-parola-1"})
+    oku_tok = client.cookies.get(COOKIE)
+    client.cookies.clear()
+    for tok, text in ((masa_tok, "masadan"), (oku_tok, "okuyucudan")):
+        client.cookies.set(COOKIE, tok)
+        assert client.post("/taslak/api/notlar/30", json={"birim": "30", "metin": text}).status_code == 200
+        client.cookies.clear()
+    client.cookies.set(COOKIE, oku_tok)
+    mine = client.get("/taslak/api/notlar/30").json()["notlar"]
+    assert [n["metin"] for n in mine] == ["okuyucudan"]
+    nid = mine[0]["id"]
+    assert client.put(f"/taslak/api/not/{nid}/durum", json={"durum": "kapandi"}).status_code == 404
+    assert client.put(f"/taslak/api/not/{nid}/durum", json={"durum": "geri_cekildi"}).status_code == 200
+    client.cookies.clear()
+    client.cookies.set(COOKIE, masa_tok)
+    assert [n["metin"] for n in client.get("/taslak/api/notlar/30").json()["notlar"]] == ["masadan"]
+
+
+def test_platform_path_behind_rewrite():
+    from risale_mcp.site_auth import allowed
+    assert allowed("oku", "/taslak/oku/veri/30.json") and allowed("oku", "/oku/")
+    assert not allowed("oku", "/taslak/") and not allowed("oku", "/taslak/birim/30.json")
+    assert allowed("masa", "/taslak/birim/30.json")
