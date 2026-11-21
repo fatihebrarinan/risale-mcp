@@ -395,6 +395,12 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   "yapay zekâ izahı" etiketi kalktı (platform ve masa); damga sayfa başında ve platformun üst çubuğunda her zaman
   ("yapay zekâ taslağı · tefsir değildir"; ekran görüntüsüne de girer). Kalanlar: alıntı, alıntının tercümesi (yapay zekâ
   ya da Abdülmecid Nursî), kaynakların Türkçesi; kopyalanan atıf satırı ve indirilen dosyalar kendi damgasını taşır.
+- **S7h Alıntının kaynağı (2026-11-21):** kullanıcının bulgusu: Arapça gizliyken müfessir alıntısının yalnız yapay zekâ
+  tercümesi kalıyordu, alıntı kutusunda değildi ve kaynağı belli değildi (numara Arapçadaydı). Platformda alıntı ve
+  Türkçesi tek kutuda, başında kaynağın adı ve tıklanır numarası ("Alıntı: İrşâdü'l-Akli's-Selîm [30] · yapay zekâ
+  tercümesi"); masada blok başlığında kaynak. Aynı gün: tam masa kurulumu sunucuda bitti ama son adımda yerelin gönderme
+  betiği (yerel anahtar) kullanıldığı için platform gönderilmedi; kabuk kurulumun başında yazıldığından S7g'siz kaldı;
+  ikisi elle düzeltildi.
 - Denendi: `node` ile her birim ve sekme çizildi (176/176), tarayıcıda yerel deneme sunucusunda not, kaynak kutusu,
   ders, arama, kesintisiz okuma; canlıda girişsiz istekler girişe yönleniyor, API 401. **Canlıda girişle denenmedi.**
 
