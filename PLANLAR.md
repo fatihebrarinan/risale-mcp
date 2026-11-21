@@ -64,10 +64,12 @@ Son verilen kimlikler: E6, S9, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde (oturum devri, 2026-11-21, onuncu kısım):** "Sıradaki"de iş yok. S7, S8, S9 ve **D5 bitti** (kullanıcının
+- **Önde (oturum devri, 2026-11-21, on birinci kısım):** küçük açıklar: B2, B5 kapandı; B4, B7, B8 yayında
+  (`yayin-20261121-193007`, klasik `2026-11-21` sürümü, tefsir kodu); B3 Aralık'ta. S7, S8, S9 ve **D5 bitti** (kullanıcının
   kararları; "Biten"de, ayrıntı `KAYIT.md`). D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine sürüyor
   (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
-- **Tarihli hatırlatmalar:** (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
+- **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
+  "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
   (`site-zamanli.timer`); yayımlandığına bakılır. (2) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
@@ -78,7 +80,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | B3 | Tefsirde uzun cümleler ve denetimden geçmeyen âyet birimleri: önce gerçek bir problem var mı | |
+| 1 | B3 | Tefsirde uzun cümlelerin yeniden bölünmesi ve kayan âyet birimleri: **Aralık'ta, D5 kuyruğu durunca** | |
 
 **Küçük açıklar** (kullanıcının kararı, 2026-11-21: "önerdiğin sıraya başla"; B3 için: "gerçekten bir problem var mı
 araştır, varsa düzelt"):
@@ -91,8 +93,15 @@ araştır, varsa düzelt"):
   yeniden bölmek bu eserlerin cümle kimliklerini değiştirir ("kimlikler değişmez"); tefsir bağları (âyet birimi
   43 bin, Kur'ân alıntısı 403 bin; `links_tefsir --mvp` ≈77 dk yeniden) ve taslak arşivi (yayın dosyaları,
   kaynak tercümeleri) bu kimlikleri anıyor; D5 kuyruğu sunucuda sürerken tefsir veritabanı değişirse eski ve yeni
-  taslaklar farklı kimliklere atıf yapar. **Kullanıcının kararını bekliyor** (seçenekler: kuyruk bitince yeniden
-  bölmek; kimlikleri koruyup uzun cümleye alt adres; şimdilik yalnız araçta uyarı). (2) **Âyet birimleri:** 367
+  taslaklar farklı kimliklere atıf yapar. **Karar (kullanıcı, 2026-11-21): Aralık'ta, D5 kuyruğu durunca yapılır**
+  (2026-12-13'te ya da Bakara daha önce biterse; o zamana kadar tefsir verisine dokunulmaz). Yapılacaklar: (a) uzun
+  cümle için ikinci bölme kuralı yalnız noktalaması seyrek eserlerde (eşik ve sınır işaretleri: önce ölçülür;
+  kaynakta işaret yoksa Bursevî'de kaynağın satır ya da sayfa sınırı); (b) kayan âyet birimleri (`razi/30/57`,
+  `razi/57/5`, `razi/68/23`, `bursevi/38/85`…; listeyi `verify`'ın düzeltilmiş hâli verir: kısa kelimeli âyet ve
+  hurûf-u mukattaa yanlış alarmı kalkar); (c) eski kimlikler yenilerine çözülür (takma ad, Rumuzat'taki gibi), kimlik
+  değişikliği raporu kullanıcıya; (d) tefsir bağları yeniden (`links_tefsir --mvp`, ≈77 dk), tefsir vektörleri,
+  taslak arşivinin tefsir atıflarının yeni kimliklere eşlenmesi (yayın dosyaları değişmez; eşleme tablosu);
+  (e) deploy (`scripts/tefsir-sunucu.sh gonder`, beklenen farklar). (2) **Âyet birimleri:** 367
   geçmeyenin çoğu yanlış alarm (âyetin kelimeleri birimde var; hurûf-u mukattaa ve kısa kelimeli âyetlerde ölçünün
   kendisi yanılıyor: `razi/53/4` "إن هو إلا وحي يوحى" birimin başında). Gerçek kayma birkaç düzine: âyetin kendi
   satırı önceki birimin sonunda, şerhi doğru birimde (`razi/30/57`, `razi/57/5`, `razi/68/23`); bir gerçek kaydırma
