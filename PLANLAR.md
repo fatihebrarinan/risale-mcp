@@ -33,12 +33,14 @@ konuşuldu:
 4. **Eser ekleme ölçütü** (aşağıda E2): her tavsiye edilen eser eklenmez; ölçütle seçilir.
 5. **Kendi model ve üyelik:** konuşuldu, karar yok (aşağıda "Fikirler").
 
-**Yön (kullanıcının kararı, 2026-11-21):** kullanıcının şahsi hedefi ("yapay zekâ neyi yapabilir, neyi yapamaz,
-İşârât'ın bir mislini yazabilir mi?") cevabını buldu; son üç haftanın yoğun mesaisi bundan sonra harcanmayacak.
-(1) Taslak işi tamamlanmış bir fikir: D5 Max planı süresince sürer, Bakara biterse ne âlâ (plan boşa gitmesin diye).
-(2) Odak: MCP sunucularının iyileşmesi, taslakların ve sunucuların insanlara, özellikle ehil ve tefsirle ilgilenenlere
-ulaşması; geliştirme sürer ama daha yavaş, ara ara. (3) Kullanıcı Pro plana dönecek (Max yenilenmeyecek). (4) Taslak
-usulünün değişmesi ve vecih haritası "Fikirler"de.
+**Yön (kullanıcının kararı, 2026-11-21; 2026-11-21'de düzeltildi):** taslak işinin **geliştirme aşaması bitti**:
+kullanıcının sorusu ("yapay zekâ neyi yapabilir, neyi yapamaz, İşârât'ın bir mislini yazabilir mi?") cevabını buldu.
+Çalışma temposu aynı kalır; değişen yalnız taslak hattının geliştirilmemesi. (1) D5 Max planı süresince sürer
+(Max 2026-12-14'te biter, bir haftalık kullanım sıfırlama hakkı var), Bakara biterse ne âlâ. (2) Odak: MCP
+sunucularının iyileşmesi, taslakların ve sunucuların insanlara, özellikle ehil ve tefsirle ilgilenenlere ulaşması
+(S8 sonuç yazısı ile başlar). (3) Max'tan sonra Pro plana dönülür: **ondan önce taslak sunucusundaki D5 kuyruğu
+durdurulur** (aynı aboneliği kullanır, Pro kotasını yer). (4) Taslak usulünün değişmesi ve vecih haritası
+"Fikirler"de.
 
 ## Adlandırma (kullanıcının kararı, 2026-11-09)
 
@@ -55,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E6, S8, A3, D15, B8 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -74,6 +76,14 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 |---:|---|---|---|
 | 1 | D5 | Asıl iş: Bakara 34–286 (154 birim), küçük adımlarla; ilk adım D5.0 üretim hazırlığı | D1.8 |
 | 2 | S7 | Okuma platformu (girişli, davetle) ve ar-ge masasının D5'e göre güncellenmesi | |
+| 3 | S8 | Sonuç yazısı: "Yapay zekâ İşârât'ın mislini yazabilir mi?" (usul, ölçüler, örnekler, sınırlar; ehil okuyucu için ilk kapı) | |
+
+**S8. Sonuç yazısı** (kullanıcı kabul etti, 2026-11-21): taslak işinin cevabı tek ve kalıcı bir yazıda: "Yapay
+zekâ İşârât'ın mislini yazabilir mi?" Usul (hat, kapı, ölçüler), Bakara 1–33'teki İşârât karşılaştırmasının sonuçları
+(yapabildikleri: garaz, omurga, Risale dersi; yapamadıkları: takdir zincirleri, taalluk, temsil ve îcâz, birinci vechin
+genişliği, tartma), okuma turlarının kararları, örnekler (34'te «kâne», Risale dersi), maliyet. Şimdi
+`KAYIT.md`'ye, deneyler defterine ve usul sayfasına dağınık; ehil okuyucu taslaklardan önce bunu okur. Yeri sitede
+(yenilikler ya da platformun usul sayfasının genişi), kullanıcıyla kararlaştırılır.
 
 **D5. Asıl iş: Bakara 34–286** (eski D1.8; 2026-11-20, kullanıcının kararı: D5 yalnız Bakara, Kur'ân'ın geri kalanı "Sonra"da). Tek adım değil, küçük adımlar; D15'ten çıkan hatla (2026-11-17).
 - **D5.0 Üretim hazırlığı** (D11'in kalanı, kullanıcının kararları 2026-11-17 ve 2026-11-18; 2026-11-19'da alt adımlara
