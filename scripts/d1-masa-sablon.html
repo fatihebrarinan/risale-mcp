@@ -836,6 +836,13 @@ function blockHtml(dk, pair, p) {
   const q = dfHit ? df.q : null;
   const body = b => draftText(b.t, dk, b.l, q);
   const lab = b => b.l === 'tr' ? '<span class="tag ai">yapay zekâ tercümesi</span> ' : '';
+  // S7f: İşârât alıntısında Türkçesi Abdülmecid Nursî tercümesi; alıntı cümlenin parçasıysa cümlenin tamamı
+  const amt = pair.ar.q && pair.ar.amt;
+  const primHtml = amt && prim !== pair.ar
+    ? `<span class="tag">Abdülmecid Nursî tercümesi${pair.ar.cumle ? ' (kaynaktaki cümlenin tamamı)' : ''}</span> ${esc(pair.ar.amt)}`
+    : lab(prim) + body(prim);
+  const whole = pair.ar.q && pair.ar.cumle ? `<details><summary class="small muted">Kaynaktaki cümlenin tamamı</summary>
+      <div class="${/[؀-ۿ]/.test(pair.ar.cumle.slice(0, 40)) ? 'ar' : 'serif'}">${esc(pair.ar.cumle)}</div></details>` : '';
   const marks = [];
   if (L.karsi && (A.items.length || A.extras.length))
     marks.push(mkr(p, key, 'karsi', `İşârât: ${A.found.length}/${A.items.length} nükte` + (A.extras.length ? ` · ${A.extras.length} fazla` : ''),
@@ -856,9 +863,10 @@ function blockHtml(dk, pair, p) {
   if (L.karsi && p.open[key + '|isr']) opened += A.isr.map(isrCard).join('');
   return `<div class="blk${focused ? ' focus' : ''}${pair.ar.q ? ' quote' : ''}${cls}" data-anchor="${esc(key)}">
     <div class="bhead"><span class="small muted">${SEC[key.split('/')[0]] || ''}${pair.ar.q ? ' · kaynaktan alıntı' : ''}</span><span class="mkrs">${marks.join('')}</span></div>
-    <div class="${prim.l === 'ar' ? 'ar' : 'serif'}">${lab(prim)}${body(prim)}</div>
-    ${sec ? `<details${q && !locate(prim.t, q) ? ' open' : ''}><summary class="small muted">${sec.l === 'ar' ? 'Arapçası (taslağın aslı)' : 'Türkçesi (yapay zekâ tercümesi)'}</summary>
-      <div class="${sec.l === 'ar' ? 'ar' : 'serif'}">${body(sec)}</div></details>` : ''}
+    <div class="${prim.l === 'ar' && !(amt && prim !== pair.ar) ? 'ar' : 'serif'}">${primHtml}</div>
+    ${sec ? `<details${q && !locate(prim.t, q) ? ' open' : ''}><summary class="small muted">${sec.l === 'ar' ? (pair.ar.q ? 'Arapçası (alıntı)' : 'Arapçası (taslağın aslı)') : amt ? 'Türkçesi (Abdülmecid Nursî tercümesi)' : 'Türkçesi (yapay zekâ tercümesi)'}</summary>
+      <div class="${sec.l === 'ar' ? 'ar' : 'serif'}">${amt && sec !== pair.ar ? esc(pair.ar.amt) : body(sec)}</div></details>` : ''}
+    ${whole}
     ${pair.tr && pair.tr.iz ? `<div class="izah"><span class="tag ai">yapay zekâ izahı (günümüz Türkçesi)</span> ${esc(pair.tr.iz)}</div>` : ''}
     ${opened ? `<div class="opened">${opened}</div>` : ''}</div>`;
 }

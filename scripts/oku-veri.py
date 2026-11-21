@@ -61,6 +61,7 @@ APP = ROOT / "scripts" / "oku-app.html"
 USUL = ROOT / "scripts" / "oku-usul.html"
 TERCUME = P.KEEP / "tercume" / "kaynaklar.json"
 ISARAT = _load("isarat_esleme", "isarat-esleme.py")
+ALINTI = _load("alinti", "alinti.py")        # S7f: alıntının kaynaktaki cümlesi ve İşârât'ta Abdülmecid tercümesi
 CHOICE = P.KEEP / "oku" / "secim.json"          # ar-ge birimlerinde platforma giden taslak (yoksa en son taslak)
 SITE_HOST = os.environ.get("D5_SITE_HOST", "root@100.108.174.19")
 SITE_KEY = Path.home() / ".ssh" / "site_gonder"                 # sunucuda (rrsync, kök /var/www/ozel/taslak)
@@ -288,6 +289,18 @@ def unit_data(libs: Libs, u: dict) -> dict:
                 v["tercume"] = tercume[v["kimlik"]]["tr"]
             elif v.get("sunucu") == "risale" and (amt := ISARAT.turkcesi(v.get("kimlik"))):   # S7c.4: Abdülmecid
                 v["tercume"], v["tercume_kim"] = amt, "abdulmecid"
+        by_tr = {b.get("tercumesi"): b for b in pub["bloklar"] if b.get("tercumesi")}
+        for b in pub["bloklar"]:                         # S7f: alıntının cümlesi, İşârât'ta Abdülmecid tercümesi
+            if b["tur"] not in ("alinti_ar", "alinti"):
+                continue
+            for k in b.get("kaynaklar") or []:
+                v = pub["kaynaklar"].get(k) or {}
+                if ctx := ALINTI.context(v.get("sunucu"), v.get("kimlik"), b["metin"]):
+                    if ctx.get("cumle"):
+                        b["cumle"] = ctx["cumle"]
+                    if ctx.get("amt") and (tr := by_tr.get(b["id"])):
+                        tr["abdulmecid"] = ctx["amt"]
+                    break
         d["taslak"] = {k: pub[k] for k in ("surum", "yayimlandi", "kunye", "bloklar", "kaynaklar", "eksik", "icerik_sha")
                        if k in pub} | {"onceki_surum": pub.get("onceki_surum")}
     for w in d["tefsir"]:

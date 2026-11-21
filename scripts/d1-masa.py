@@ -436,6 +436,11 @@ def risale(unit: str) -> list[dict]:
 
 # ---------------------------------------------------------------- taslaklar ve yapay zekâ katmanı
 
+_al = importlib.util.spec_from_file_location("alinti", ROOT / "scripts" / "alinti.py")
+ALINTI = sys.modules.get("alinti") or importlib.util.module_from_spec(_al)
+if "alinti" not in sys.modules:
+    sys.modules["alinti"] = ALINTI
+    _al.loader.exec_module(ALINTI)
 TERCUME = P.KEEP / "tercume" / "kaynaklar.json"     # S7c.5: andığı tefsir ve klasik yerlerin Türkçesi (yapay zekâ)
 _ie = importlib.util.spec_from_file_location("isarat_esleme", ROOT / "scripts" / "isarat-esleme.py")
 ISARAT = sys.modules.get("isarat_esleme") or importlib.util.module_from_spec(_ie)
@@ -476,10 +481,19 @@ def drafts(unit: str, ayah: Ayah) -> dict:
             about += f" · taslak {d['kaynak']}'in düzeltmesi, {how}"
         izah = Y.out_dir(unit) / f"izah-taslak-{n}.json"       # D11: günümüz Türkçesiyle izah, paragraf başına
         iz = {x["capa"]: x["metin"] for x in json.loads(izah.read_text(encoding="utf-8")).get("izah", [])} if izah.exists() else {}
+        ctx = {}                                               # S7f: alıntının cümlesi, İşârât'ta Abdülmecid tercümesi
+        for a, lang, quote, text in blocks:
+            if not quote:
+                continue
+            for k in re.findall(r"\d+", " ".join(re.findall(r"\[([^\[\]\n]{1,80})\]", text))):
+                server, sid = ids.get(k, (None, None))
+                if c := ALINTI.context(server, sid, text):
+                    ctx[a] = {x: c[x] for x in ("cumle", "amt") if x in c}
+                    break
         out[f"taslak-{n}"] = {
             "label": f"Taslak {n}", "about": about,
             "blocks": [{"a": a, "l": lang, "q": quote, "t": text, **({"p": pr[a]} if a in pr else {}),
-                        **({"iz": iz[a]} if a in iz else {})}
+                        **({"iz": iz[a]} if a in iz else {}), **ctx.get(a, {})}
                        for a, lang, quote, text in blocks],
             "heads": ayah.heads(blocks), "sources": sources}
     return out

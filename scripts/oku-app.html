@@ -246,11 +246,14 @@ function draftHTML(t) {
     const isAr = b.tur === 'ar' || b.tur === 'alinti_ar';
     const notes = mine(b.id);
     let h = `<div class="blk" id="${esc(b.id)}">`;
-    if (isAr) h += `<div class="${b.tur === 'alinti_ar' ? 'quote' : ''}"><div class="lab">${b.tur === 'alinti_ar' ? 'Alıntı (Arapça)' : 'Taslağın Arapçası (yapay zekâ)'}</div><p class="ar">${marks(b.metin, t.kaynaklar, b.id)}</p></div>`;
+    const wholeOf = x => x && x.cumle ? `<details class="small"><summary>Kaynaktaki cümlenin tamamı</summary><p class="${/[؀-ۿ]/.test(x.cumle.slice(0, 40)) ? 'ar' : 'tr'}">${bidi(esc(x.cumle))}</p></details>` : '';
+    const whole = wholeOf(b);
+    if (isAr) h += `<div class="${b.tur === 'alinti_ar' ? 'quote' : ''}"><div class="lab">${b.tur === 'alinti_ar' ? 'Alıntı (Arapça)' : 'Taslağın Arapçası (yapay zekâ)'}</div><p class="ar">${marks(b.metin, t.kaynaklar, b.id)}</p>${whole}</div>`;
     else {
       const ar = b.tercumesi && byId[b.tercumesi];
       if (ar) h += `<div class="arpair" ${VIEW.ar ? '' : 'hidden'}><p class="ar">${marks(ar.metin, t.kaynaklar, b.id)}</p></div>`;
-      h += `<div class="${b.tur === 'alinti' ? 'quote' : ''}"><div class="lab">${KIND_LAB[b.tur] || ''}</div><p class="tr">${marks(b.metin, t.kaynaklar, b.id)}</p></div>`;
+      if (b.abdulmecid) h += `<div><div class="lab">Abdülmecid Nursî tercümesi${ar && ar.cumle ? ' (kaynaktaki cümlenin tamamı)' : ''}</div><p class="tr">${bidi(esc(b.abdulmecid))}</p></div>`;
+      else h += `<div class="${b.tur === 'alinti' ? 'quote' : ''}"><div class="lab">${KIND_LAB[b.tur] || ''}</div><p class="tr">${marks(b.metin, t.kaynaklar, b.id)}</p>${whole || (b.tur === 'alinti_tercume' ? wholeOf(b.tercumesi && byId[b.tercumesi]) : '')}</div>`;
       if (b.izah) h += `<div class="izah" ${VIEW.izah ? '' : 'hidden'}><div class="lab">İzah (günümüz Türkçesiyle, yapay zekâ)</div>${marks(b.izah.metin, t.kaynaklar, b.id)}</div>`;
     }
     for (const f of b.isaretler || [])
