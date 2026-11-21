@@ -773,6 +773,25 @@ def tool_notes(unit: str, n: int, anchors: set[str], texts: str, keys: list[str]
     return out
 
 
+def dedupe(paras: list[dict]) -> list[dict]:
+    """Kartta aynı söz iki kez görünmesin (30 kabul okuması, 2026-11-21: Türkçe çapa eşinin yanında bir daha, ekli
+    alıntı kendi çapasıyla bir daha geliyordu): Arapçası olmayan ve Türkçesi önceki paragrafınkiyle aynı olan paragraf,
+    Arapçası önceki paragrafın ekli alıntısı olan paragraf atılır."""
+    def flat(t):
+        return re.sub(r"\s+", " ", t or "").strip()
+    seen_tr, seen_ek, out = set(), set(), []
+    for p in paras:
+        ar, tr = flat(p.get("ar")), flat(p.get("tr"))
+        if (not ar and tr and tr in seen_tr) or (ar and ar in seen_ek):
+            continue
+        out.append(p)
+        if tr:
+            seen_tr.add(tr)
+        for e in p.get("ek") or []:
+            seen_ek.add(flat(e.get("t")))
+    return out
+
+
 def okuma_tek(unit: str, ns: list[int], tur: str, yerler: list[dict], gorev: bool = True) -> Path:
     """D15'in okuma sayfası: taslak (ya da kör A/B iki taslak) ve İşârât yan yana; `provalar/<birim>/tur-<tur>.json`,
     `masa/tur-<birim>-<tur>.html`.
@@ -805,6 +824,7 @@ def okuma_tek(unit: str, ns: list[int], tur: str, yerler: list[dict], gorev: boo
             dk, sp = f"taslak-{n}", spec.get(str(n)) or {"capa": []}
             side = read_side(unit, n, its[0]["id"], pd["drafts"][dk]["rows"], dr[dk]["sources"], None, sp["capa"],
                              sp.get("cift"))
+            side["paras"] = dedupe(side["paras"])
             if not y.get("sinir_asimi") and (len(side["paras"]) > READ_MAX_PARAS or side["words"] > READ_MAX_WORDS):
                 bad.append(f"{y['ad']} {lab}: {len(side['paras'])} paragraf, {side['words']} kelime")
             card[lab] = side
