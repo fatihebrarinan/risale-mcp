@@ -387,7 +387,7 @@ def build(only: str | None = None) -> list[str]:
     rows, done = [], []
     for u in units:
         uid = u["id"]
-        has_dir = (P.DRAFTS / uid).is_dir()
+        has_dir = (P.DRAFTS / uid).is_dir() and bool(DUR.drafts(uid))      # boş klasör sayılmaz
         relevant = u["kaynak"] == "isarat" or has_dir
         if (only and uid != only) or not relevant:
             rows.append(old.get(uid) or {"id": uid, "ayet": u["ayet"], "tur": "d5" if u["kaynak"] != "isarat" else "isarat",

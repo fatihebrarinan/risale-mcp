@@ -123,7 +123,8 @@ def readings(unit: str, tur: str) -> list[dict]:
         d = jload(f) or {}
         votes = [v.get("secim") for v in (d.get("ab") or {}).values() if v.get("secim")]
         out.append({"okuyucu": reader_no(d.get("reader")), "kararlar": dict(Counter(votes)), "yer": len(d.get("ab") or {}),
-                    "tarih": (d.get("exported") or "")[:10],
+                    "tarih": (time.strftime("%Y-%m-%d", time.localtime(d["exported"])) if isinstance(d.get("exported"), (int, float))
+                              else (d.get("exported") or "")[:10]),
                     "gerekceler": [{"yer": k.split("|")[-1], "secim": v.get("secim"), "gerekce": v.get("gerekce")}
                                    for k, v in (d.get("ab") or {}).items() if v.get("gerekce")]})
     return out
