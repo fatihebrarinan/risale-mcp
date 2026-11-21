@@ -78,6 +78,26 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
+| 1 | B4 | Mecmua eşlemesinde çok kısa paragrafın uzun ana cilt paragrafına bağlanması (Nutuk "birinci kılıç") | |
+| 2 | B7 | Kelime aramasında bitişik yazılan kelimeler ("âhir zaman" / "Âhirzaman") | |
+| 3 | B8 | Delâilü'l-İ'câz'da muhakkikin dipnot rakamları metinde | |
+| 4 | B3 | Tefsirde uzun cümleler ve denetimden geçmeyen âyet birimleri: önce gerçek bir problem var mı | |
+
+**Küçük açıklar** (kullanıcının kararı, 2026-11-21: "önerdiğin sıraya başla"; B3 için: "gerçekten bir problem var mı
+araştır, varsa düzelt"):
+- B4 Nutuk'ta "birinci kılıç" başlığının altındaki paragraf (B1'in kuyruğundan; B1 donunca buraya kaldı).
+- B7 Kelime aramasında bitişik yazılan kelimeler (2026-11-16, gizli adresli deneme, kullanıcı küçük açıklara aldı):
+  Risale "Âhirzaman" diye bitişik yazar; `"âhir zaman"` 1, `âhirzaman` 31 sonuç (genel profil). Model anlamsal
+  aramayla telafi etti, ama kelime araması yanıltıcı biçimde boşa yakın döndü. "hiçbir", "her şey" gibi öbür bileşikler
+  de ölçülür. Seçenekler: (a) iki kelimelik ifade az sonuç verince bitişik biçimi de denemek ya da sonuçta önermek,
+  (b) `search` açıklamasına bir satır. Araç çıktısı değişirse deploy'da `DEPLOY_EXPECT="search"`.
+- B8 Delâilü'l-İ'câz'da muhakkikin dipnot işaretleri metinde (2026-11-16, aynı deneme): "…في الوجود1، …"; 4.507
+  cümlenin ≈1.070'inde (Esrâr'da 1, öbür üç eserde yok). Bilinen ve kayıtlı (`books/klasik_openiti.py`: dipnotlar
+  OpenITI'de yok); model alıntıyı rakamıyla verdi, okuyana göze batıyor. `text` değişmez; işaret ayrı tutulup
+  görüntüde ve alıntıda atlanabilir (`cite` dipnot işaretini atlayan alıntıyı zaten kabul ediyor mu, bakılır).
+- B3 Tefsirde noktalaması seyrek eserlerin uzun cümleleri (Bursevî ortalama 97 kelime) ve âyet birimlerinin %0,9'unun
+  denetimden geçmemesi (`data/interim/tefsir/mvp-denetim.md`, çoğu yanlış alarm): ölçüldü, düzeltilmedi.
+
 
 ## Bekleyen (başkasının cevabı)
 
@@ -92,7 +112,7 @@ kaynağı (A2'nin ön şartı değil).
 ## Sonra (sırası belli değil; sıraya girince kimlik alır)
 
 Kimliği olanlar ("Sıradaki"nden indi, kullanıcının kararı, 2026-11-17: sıra yalnız taslakların ar-gesi ve yazımı):
-A1 kaynakçada doğrudan bağlantı (Aşama 20), A2 Osmanlıca–Türkçe eşleme (Aşama 19), küçük açıklar B2, B3, B4, B5, B7, B8.
+A1 kaynakçada doğrudan bağlantı (Aşama 20), A2 Osmanlıca–Türkçe eşleme (Aşama 19). Küçük açıklar 2026-11-21'de "Sıradaki"ne alındı (B4, B7, B8, B3; B2 ve B5 kapandı).
 
 **A1, A2:** ayrıntıları `KAYIT.md`'de eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
 kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
@@ -113,23 +133,6 @@ yeniden bakılır.
 (D5.0.4, kural b6; kısa sûreler ve ahkâm için kuralın uzatılması), Bakara'nın gerçek maliyeti ve kalitesiyle kapsam ve
 hesap kararı (ayrı hesap ya da API; gerekirse destek). Fâtiha ve Bakara 1–33'te İşârât var; oralarda taslak yalnız
 okuma platformunun vitrini için (isteğe bağlı).
-
-**Küçük açıklar:**
-- B2 Risale talimatının öbür bağdaştırıcılara bilgi kipinde gönderme cümlesi (MVP'nin "Kalan"ı; tek kaynakça kuralı
-  onları anıyor, yeterli mi bakılır).
-- B3 Tefsirde noktalaması seyrek eserlerin uzun cümleleri (Bursevî ortalama 97 kelime) ve âyet birimlerinin %0,9'unun
-  denetimden geçmemesi (`data/interim/tefsir/mvp-denetim.md`, çoğu yanlış alarm): ölçüldü, düzeltilmedi.
-- B4 Nutuk'ta "birinci kılıç" başlığının altındaki paragraf (B1'in kuyruğundan; B1 donunca buraya kaldı).
-- B5 Üç âyet dizgi şüphesi (`docs/ayet-duzeltmeleri.md`), kullanıcının kararı.
-- B7 Kelime aramasında bitişik yazılan kelimeler (2026-11-16, gizli adresli deneme, kullanıcı küçük açıklara aldı):
-  Risale "Âhirzaman" diye bitişik yazar; `"âhir zaman"` 1, `âhirzaman` 31 sonuç (genel profil). Model anlamsal
-  aramayla telafi etti, ama kelime araması yanıltıcı biçimde boşa yakın döndü. "hiçbir", "her şey" gibi öbür bileşikler
-  de ölçülür. Seçenekler: (a) iki kelimelik ifade az sonuç verince bitişik biçimi de denemek ya da sonuçta önermek,
-  (b) `search` açıklamasına bir satır. Araç çıktısı değişirse deploy'da `DEPLOY_EXPECT="search"`.
-- B8 Delâilü'l-İ'câz'da muhakkikin dipnot işaretleri metinde (2026-11-16, aynı deneme): "…في الوجود1، …"; 4.507
-  cümlenin ≈1.070'inde (Esrâr'da 1, öbür üç eserde yok). Bilinen ve kayıtlı (`books/klasik_openiti.py`: dipnotlar
-  OpenITI'de yok); model alıntıyı rakamıyla verdi, okuyana göze batıyor. `text` değişmez; işaret ayrı tutulup
-  görüntüde ve alıntıda atlanabilir (`cite` dipnot işaretini atlayan alıntıyı zaten kabul ediyor mu, bakılır).
 
 Kimliksizler:
 
@@ -237,6 +240,10 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- B5 Üç âyet dizgi şüphesi (kapandı, 2026-11-21, kullanıcının onayı): 2026-10-30 kararı geçerli: metin değişmez,
+  `ayah_check = dizgi_suphesi`, araç modele uyarır (`docs/ayet-duzeltmeleri.md`; öbür baskılarda da aynı).
+- B2 Risale talimatında öbür eklentilere gönderme (kapandı, 2026-11-21, kullanıcının onayı): yeterli; talimat tek
+  Kaynaklar kuralında öbür eklentileri anıyor, model araçlarını zaten görüyor; ayrı cümle eklenmedi.
 - D5 Bakara 34–286 (2026-11-21, kullanıcının kararı: "sistem artık tamamen kuruldu"): üretim hattı (bölme b6, 154
   birim; h9 istemi; kalite kapısı d3; izah; kaynak tercümesi; tek komutla birim), sunucuda kalıcı kuyruk (`d1-kuyruk`,
   haftalık pencere koruması %90, alarmlar, durum sayfası, telefona bildirim), D5.1 (Bakara 34) okundu. Kuyruk

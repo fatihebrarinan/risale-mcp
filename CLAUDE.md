@@ -255,7 +255,7 @@ Plan, kararlar, bilinen ve olası hatalar: `docs/hadis-plani.md`. Sıra orada. K
 - **Model okumaları yalnız yerelde** (`hadis_okumalar.py` -> `data/library/hadis/readings.json`, şema 12 `hadith_readings`, `hadith_flags`, `hadith_verdicts`): Adım 3–7 ve 9'un adayları, okumaları, uyarıları. `build_db` yalnız `kisisel` profilde yükler; `find_hadith` `model_readings`, `report_flags`, `verdicts` verir. Hadisçi görmeden genel sunucuya çıkmaz.
 - **Hadis kitapları** (`hadis_kutub.py`, `data/library/hadis/kutub/<kitap>.json`, yalnız yerelde): Kütüb-i Sitte ve Muvatta, OpenITI JK baskıları (CC BY-NC-SA 4.0, `fetch hadis` sabit commit'ten indirir): kitap ve bâb ağacı, senet ve metin, Hadith API numarası, basılı cilt ve sayfa (`printed`, üst bilgideki baskının; `source.edition`). Künyenin sayısı bâb (sünenler, Buhârî) ya da kitap içi sıradır (Müslim); `Index.cited` kitaba göre pencereli bölgeyi verir. Künyenin bölgesinde okuma `hadis_bolge.py` (Adım 9): bulunanlar `data/library/hadis/region.json`, iki profilde `hadith_region`; künyesi yalnız anılmış geçişin dayanağı `read_chapter`, `find_hadith` `read_reports`.
 - **Sayılar** (Adım 0, ana metin, 359 tekil parça, derlem sonucu): `found` 83, `partly_found` 18, `phrase_found` 41, bulunamayan 142, 10 harften kısa 75. Geçiş başına dayanak ve kontrol: `data/interim/hadis/adim-0.md`. Eşleşmeler elle doğrulanmadı.
-- **Açık:** üç âyet dizgi şüphesi (`docs/ayet-duzeltmeleri.md`) kullanıcının kararını bekler.
+- **Âyet dizgi şüphesi** (üç yer, `docs/ayet-duzeltmeleri.md`): metin değişmez, araç uyarır (kullanıcının kararı, 2026-10-30; 2026-11-21'de onaylandı, B5).
 
 ## Âyet ilişkileri (Aşama 10)
 
