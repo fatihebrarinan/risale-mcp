@@ -133,6 +133,16 @@ def build(unit: str, n: int | None = None) -> dict:
             blk["izah"] = {"metin": izah[anchor], "sahip": "yapay_zeka"}
         pid_of[anchor] = pid
         out_blocks.append(blk)
+    # bölüm içi alt başlıklar ("### Ders: …", "### Dersin sonu"): ardından gelen paragrafın `ust_baslik`'ı
+    DZ = sys.modules.get("d1_duzelt") or _load("d1_duzelt", "d1-duzelt.py")
+    pending = None
+    for raw_blk in DZ._blocks((keep / f"taslak-{son}.md").read_text(encoding="utf-8")):
+        if raw_blk["anchor"] is None and raw_blk["raw"].startswith("### "):
+            pending = raw_blk["raw"][4:].strip()
+        elif raw_blk["anchor"] and pending:
+            if raw_blk["anchor"] in pid_of:
+                next(x for x in out_blocks if x["taslak_capa"] == raw_blk["anchor"])["ust_baslik"] = pending
+            pending = None
     for blk in out_blocks:        # Türkçe paragrafın Arapçası (tercüme ya da alıntının tercümesi)
         capa = blk["taslak_capa"]
         if "/tr/" in capa and pr.get(capa) in pid_of:

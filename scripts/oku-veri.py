@@ -240,9 +240,7 @@ def published(unit: str) -> dict | None:
         n = choice.get(unit) or max((d["n"] for d in DUR.drafts(unit)), default=None)
         if not n:
             return None
-        cur = idx["birimler"].get(unit)
-        same = cur and json.loads((YAY.YAYIN / cur["yol"]).read_text(encoding="utf-8"))["kunye"].get("son_taslak") == n
-        if not same and not SITE_KEY.exists():  # ar-ge birimlerini yerel yayımlar (sunucu yazmaz: iki makinede v1 çakışmasın)
+        if not SITE_KEY.exists():  # ar-ge birimlerini yerel yayımlar (sunucu yazmaz: iki makinede v1 çakışmasın)
             YAY.yayinla(unit, n)                  # içerik aynıysa sürüm kalır, değiştiyse yeni sürüm
             idx = json.loads(idx_path.read_text(encoding="utf-8"))
     cur = idx["birimler"].get(unit)
@@ -403,6 +401,18 @@ def build(only: str | None = None) -> list[str]:
              "sure": {"n": 2, "ad": "Bakara"}, "birimler": rows}
     idx_path.write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
     (OUT_MASA / "birim" / "index.json").write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
+    # arama dizini: yayımlanan taslakların Türkçe paragrafları ve izahları (platformda konu araması)
+    ara = []
+    for r in rows:
+        f = OUT / "veri" / f"{r['id']}.json"
+        if r.get("taslak") and f.exists():
+            t = json.loads(f.read_text(encoding="utf-8"))["taslak"]
+            for blk in t["bloklar"]:
+                if blk["tur"] in ("tr", "tercume", "alinti", "alinti_tercume"):
+                    ara.append({"b": r["id"], "p": blk["id"], "t": blk["metin"]})
+                if blk.get("izah"):
+                    ara.append({"b": r["id"], "p": blk["id"], "t": blk["izah"]["metin"], "i": 1})
+    (OUT / "veri" / "ara.json").write_text(json.dumps(ara, ensure_ascii=False), encoding="utf-8")
     # sûrenin tamamı: taslağı olan birimler, sırayla
     whole = [json.loads((OUT / "veri" / f"{r['id']}.json").read_text(encoding="utf-8")) for r in rows
              if r.get("taslak") and (OUT / "veri" / f"{r['id']}.json").exists()]

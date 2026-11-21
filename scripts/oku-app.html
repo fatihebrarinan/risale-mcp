@@ -56,9 +56,12 @@ h3 { font-size: .95rem; margin: 18px 0 6px; }
 .lab { font-size: .72rem; color: var(--ai); }
 .qline { display: block; background: var(--q); border-left: 3px solid var(--line); padding: 2px 10px; margin: 4px 0; border-radius: 4px; }
 .quote { background: var(--q); border-left: 3px solid var(--line); padding: 4px 10px; border-radius: 4px; }
+.ders { border-left: 3px solid var(--accent); padding: 0 0 0 12px; margin: 10px 0; }
+.ders > h3 { margin-top: 6px; }
 .izah { background: var(--ai-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0; font-size: .93rem; }
 .acts { font-size: .75rem; color: var(--muted); } .acts a { color: var(--muted); margin-right: 10px; cursor: pointer; }
 a.n { color: var(--src); font-size: .72em; vertical-align: super; text-decoration: none; cursor: pointer; }
+mark { background: var(--warn-soft); color: inherit; }
 .srcbox { background: var(--src-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0; font-size: .88rem; }
 .flag { background: var(--warn-soft); border-radius: 6px; padding: 3px 8px; font-size: .8rem; margin: 4px 0; }
 .box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; margin: 10px 0; }
@@ -96,6 +99,7 @@ async function getJSON(u) { const r = await fetch(u, {cache: 'no-cache'}); if (!
 function panel(cur) {
   const b = INDEX.birimler;
   const L = ['<input id="git" placeholder="Âyete git: 2:255" autocomplete="off">',
+    '<input id="ara" placeholder="Taslaklarda ara" autocomplete="off" style="margin-top:6px">',
     '<select id="sure">' + INDEX.sureler.map(s => `<option value="${s.n}"${s.n === 2 ? ' selected' : ' disabled'}>${s.n}. ${esc(s.ad)}${s.n === 2 ? '' : ' (henüz yok)'}</option>`).join('') + '</select>',
     '<ul>'];
   for (const x of b) {
@@ -104,6 +108,7 @@ function panel(cur) {
     L.push(`<li><a href="#/${esc(x.id)}" class="${x.id === cur ? 'cur' : ''} ${has ? '' : 'off'}"><span class="dot">${mark}</span>Bakara ${esc(rng(x.ayet))}</a></li>`);
   }
   L.push('</ul><p class="small muted">● taslak var · ◐ yalnız İşârât · ○ henüz yazılmadı</p>');
+  L.push('<p class="small"><a href="#/~sure">Sûre boyunca kesintisiz oku</a></p>');
   $('panel').innerHTML = L.join('');
   $('git').addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
@@ -114,6 +119,7 @@ function panel(cur) {
     const x = b.find(x => x.ayet[0] <= a && a <= x.ayet[1]);
     if (x) location.hash = '#/' + x.id;
   });
+  $('ara').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.value.trim().length >= 3) location.hash = '#/~ara/' + encodeURIComponent(e.target.value.trim()); });
   const c = document.querySelector('aside a.cur'); if (c) c.scrollIntoView({block: 'nearest'});
 }
 $('menu').onclick = () => $('panel').classList.toggle('open');
@@ -156,11 +162,37 @@ function draftHTML(t) {
   const mine = id => NOTES.filter(n => n.paragraf === id);
   const L = [`<p class="small"><button data-v="ar" class="${VIEW.ar ? 'on' : ''}">Arapça</button> <button data-v="izah" class="${VIEW.izah ? 'on' : ''}">İzah</button>
     <span class="muted">· taslak sürüm ${t.surum} · <a href="#k-kunye">nasıl yazıldı</a></span></p>`];
-  let sec = null;
-  for (const b of t.bloklar) {
-    if (b.bolum !== sec) { sec = b.bolum; L.push(`<h2>${esc(U.bolum_adlari[sec] || sec)}</h2>`); }
+  // alt başlıklar ("Ders: …", "Dersin sonu"): eşi olan Arapçanınki Türkçesine geçer; ders kutusu ve Risale'deki genişi
+  const pairOf = Object.fromEntries(t.bloklar.filter(b => b.tercumesi).map(b => [b.tercumesi, b.id]));
+  const head = {};
+  for (const b of t.bloklar) if (b.ust_baslik) head[pairOf[b.id] || b.id] = b.ust_baslik;
+  const visible = t.bloklar.filter(b => !((b.tur === 'ar' || b.tur === 'alinti_ar') && paired.has(b.id)));
+  const wide = {};                                          // ders başlığı → içinde anılan ilk Risale bölümü
+  let cur = null;
+  for (const b of visible) {
+    const h = head[b.id];
+    if (h) cur = h.startsWith('Ders') ? h : null;
+    if (cur && !wide[cur]) for (const k of (b.metin.match(/\[(\d+)\]/g) || []).map(x => x.slice(1, -1))) {
+      const s = t.kaynaklar[k];
+      if (s && s.sunucu === 'risale' && s.kaynak && s.kaynak.bag) { wide[cur] = s; break; }
+    }
+  }
+  let sec = null, inDers = false;
+  for (const b of visible) {
+    if (b.bolum !== sec) {
+      if (inDers) { L.push('</div>'); inDers = false; }
+      sec = b.bolum; L.push(`<h2>${esc(U.bolum_adlari[sec] || sec)}</h2>`);
+    }
+    const hd = head[b.id];
+    if (hd) {
+      if (inDers) { L.push('</div>'); inDers = false; }
+      if (hd.startsWith('Ders')) {
+        const w = wide[hd];
+        L.push(`<div class="ders"><h3>${bidi(esc(hd))}</h3>` + (w ? `<p class="small">Risale-i Nur'da genişi: <a href="${esc(w.kaynak.bag)}" target="_blank" rel="noopener">${esc(w.satir.split(' › “')[0])}</a></p>` : ''));
+        inDers = true;
+      } else if (!/^Dersin sonu/.test(hd)) L.push(`<h3>${bidi(esc(hd))}</h3>`);
+    }
     const isAr = b.tur === 'ar' || b.tur === 'alinti_ar';
-    if (isAr && paired.has(b.id)) continue;               // eşi olan Arapça kendi Türkçesinin içinde açılır
     const notes = mine(b.id);
     let h = `<div class="blk" id="${esc(b.id)}">`;
     if (isAr) h += `<div class="${b.tur === 'alinti_ar' ? 'quote' : ''}"><div class="lab">${b.tur === 'alinti_ar' ? 'Alıntı (Arapça)' : 'Taslağın Arapçası (yapay zekâ)'}</div><p class="ar">${marks(b.metin, t.kaynaklar, b.id)}</p></div>`;
@@ -176,6 +208,7 @@ function draftHTML(t) {
     h += notes.map(noteHTML).join('');
     L.push(h + '</div>');
   }
+  if (inDers) L.push('</div>');
   return L.join('\n');
 }
 function noteHTML(n) {
@@ -332,6 +365,10 @@ function render(focus) {
     if (U.masa.alarmlar.length) L.push(`<div class="flag">⚠ Alarm: ${esc(U.masa.alarmlar.join('; '))}</div>`);
     if (U.masa.sayfalar.length) L.push('<p class="small muted">Eski sayfalar: ' + U.masa.sayfalar.map(p => `<a href="${esc(p)}">${esc(p.replace('.html', ''))}</a>`).join(' · ') + '</p>');
   }
+  const ids = INDEX.birimler.filter(x => x.taslak || x.isarat || (MASA && x.masa_taslak)).map(x => x.id);
+  const i = ids.indexOf(U.birim), nb = j => INDEX.birimler.find(x => x.id === ids[j]);
+  L.push('<p class="small" style="margin-top:30px">' + (i > 0 ? `<a href="#/${esc(ids[i - 1])}">← Bakara ${esc(rng(nb(i - 1).ayet))}</a>` : '')
+    + (i >= 0 && i < ids.length - 1 ? ` <span style="float:right"><a href="#/${esc(ids[i + 1])}">Bakara ${esc(rng(nb(i + 1).ayet))} →</a></span>` : '') + '</p>');
   $('main').innerHTML = L.join('\n');
   if (focus) { const el = document.getElementById(focus); if (el) { el.classList.add('hl'); el.scrollIntoView({block: 'center'}); } }
   $('ttl').textContent = `${MASA ? 'Ar-ge masası · ' : ''}${U.sure_adi} ${rng(U.ayet)}`;
@@ -435,9 +472,52 @@ function home() {
     <p class="small muted">Yanlış gördüğünüz yere paragrafın altındaki "not" ile not bırakabilirsiniz.</p>`;
   panel(null);
 }
+const fold = s => s.toLocaleLowerCase('tr').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i');
+let ARA = null;
+async function search(q) {
+  panel(null);
+  $('ttl').textContent = 'Arama';
+  $('main').innerHTML = '<p class="muted">aranıyor…</p>';
+  if (!ARA) { ARA = await getJSON(MASA ? 'oku/veri/ara.json' : 'veri/ara.json'); ARA.forEach(x => x.f = fold(x.t)); }
+  const f = fold(q), hits = ARA.filter(x => x.f.includes(f));
+  $('main').innerHTML = `<h1>«${esc(q)}»</h1><p class="small muted">${hits.length} yer (yayımlanan taslakların Türkçesinde ve izahında; yapay zekâ taslakları)${hits.length ? '' : '. Taslakların Türkçesi eski dille yazılır; eski kelimesiyle de deneyin (ör. "nankörlük" yerine "küfran").'}</p>`
+    + hits.slice(0, 300).map(x => {
+      const i = x.f.indexOf(f), a = Math.max(0, i - 140);
+      const u = INDEX.birimler.find(b => b.id === x.b);
+      return `<div class="note"><a href="#/${esc(x.b)}/${esc(x.p)}">Bakara ${esc(rng(u.ayet))}</a>${x.i ? ' <span class="tag">izah</span>' : ''}<br>${a ? '…' : ''}${esc(x.t.slice(a, i))}<mark>${esc(x.t.slice(i, i + q.length))}</mark>${esc(x.t.slice(i + q.length, i + q.length + 200))}…</div>`;
+    }).join('');
+}
+async function continuous() {
+  // sûre boyunca kesintisiz okuma: taslağı olan birimler sırayla, aşağı indikçe sonraki yüklenir (Türkçe ve izah)
+  panel(null);
+  $('ttl').textContent = 'Bakara · kesintisiz';
+  const ids = INDEX.birimler.filter(x => x.taslak).map(x => x.id);
+  $('main').innerHTML = '<h1>Bakara · kesintisiz okuma</h1><div class="stamp"><b>Yapay zekâ taslaklarıdır; tefsir değildir.</b> Yalnız Türkçesi ve izahı; birimin tamamı için başlığına tıklayın.</div><div id="akis"></div><p id="son" class="muted small">yükleniyor…</p>';
+  let k = 0;
+  const more = async () => {
+    if (k >= ids.length) { $('son').textContent = 'Sûrenin yazılmış taslaklarının sonu.'; return; }
+    const d = await getJSON(DATA + ids[k++] + '.json');
+    const t = d.taslak, L = [`<h2><a href="#/${esc(d.birim)}/~taslak">Bakara ${esc(rng(d.ayet))}</a></h2>`];
+    for (const a of d.ayetler) L.push(`<p class="ar">${esc(a.metin)} ﴿${a.n}﴾</p>`);
+    let sec = null;
+    for (const b of t.bloklar) {
+      if (!['tr', 'tercume', 'alinti', 'alinti_tercume'].includes(b.tur)) continue;
+      if (b.bolum !== sec) { sec = b.bolum; L.push(`<h3>${esc(d.bolum_adlari[sec] || sec)}</h3>`); }
+      L.push(`<p class="tr${b.tur === 'alinti' ? ' quote' : ''}">${bidi(esc(b.metin))}</p>`);
+      if (b.izah && VIEW.izah) L.push(`<div class="izah small">${bidi(esc(b.izah.metin))}</div>`);
+    }
+    $('akis').insertAdjacentHTML('beforeend', L.join(''));
+    $('son').textContent = k < ids.length ? 'aşağı indikçe sonraki birim yüklenir…' : 'Sûrenin yazılmış taslaklarının sonu.';
+  };
+  await more();
+  const io = new IntersectionObserver(async es => { if (es[0].isIntersecting) await more(); });
+  io.observe($('son'));
+}
 async function route() {
   const parts = location.hash.slice(2).split('/').filter(Boolean);
   if (!parts.length) return home();
+  if (parts[0] === '~ara') return search(decodeURIComponent(parts.slice(1).join('/')));
+  if (parts[0] === '~sure') return continuous();
   const uid = parts[0], focus = parts[1] && !parts[1].startsWith('~') ? parts[1] : null;
   if (!U || U.birim !== uid) {
     $('main').innerHTML = '<p class="muted">yükleniyor…</p>';
