@@ -78,25 +78,25 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | B4 | Mecmua eşlemesinde çok kısa paragrafın uzun ana cilt paragrafına bağlanması (Nutuk "birinci kılıç") | |
-| 2 | B7 | Kelime aramasında bitişik yazılan kelimeler ("âhir zaman" / "Âhirzaman") | |
-| 3 | B8 | Delâilü'l-İ'câz'da muhakkikin dipnot rakamları metinde | |
-| 4 | B3 | Tefsirde uzun cümleler ve denetimden geçmeyen âyet birimleri: önce gerçek bir problem var mı | |
+| 1 | B3 | Tefsirde uzun cümleler ve denetimden geçmeyen âyet birimleri: önce gerçek bir problem var mı | |
 
 **Küçük açıklar** (kullanıcının kararı, 2026-11-21: "önerdiğin sıraya başla"; B3 için: "gerçekten bir problem var mı
 araştır, varsa düzelt"):
-- B4 Nutuk'ta "birinci kılıç" başlığının altındaki paragraf (B1'in kuyruğundan; B1 donunca buraya kaldı).
-- B7 Kelime aramasında bitişik yazılan kelimeler (2026-11-16, gizli adresli deneme, kullanıcı küçük açıklara aldı):
-  Risale "Âhirzaman" diye bitişik yazar; `"âhir zaman"` 1, `âhirzaman` 31 sonuç (genel profil). Model anlamsal
-  aramayla telafi etti, ama kelime araması yanıltıcı biçimde boşa yakın döndü. "hiçbir", "her şey" gibi öbür bileşikler
-  de ölçülür. Seçenekler: (a) iki kelimelik ifade az sonuç verince bitişik biçimi de denemek ya da sonuçta önermek,
-  (b) `search` açıklamasına bir satır. Araç çıktısı değişirse deploy'da `DEPLOY_EXPECT="search"`.
-- B8 Delâilü'l-İ'câz'da muhakkikin dipnot işaretleri metinde (2026-11-16, aynı deneme): "…في الوجود1، …"; 4.507
-  cümlenin ≈1.070'inde (Esrâr'da 1, öbür üç eserde yok). Bilinen ve kayıtlı (`books/klasik_openiti.py`: dipnotlar
-  OpenITI'de yok); model alıntıyı rakamıyla verdi, okuyana göze batıyor. `text` değişmez; işaret ayrı tutulup
-  görüntüde ve alıntıda atlanabilir (`cite` dipnot işaretini atlayan alıntıyı zaten kabul ediyor mu, bakılır).
 - B3 Tefsirde noktalaması seyrek eserlerin uzun cümleleri (Bursevî ortalama 97 kelime) ve âyet birimlerinin %0,9'unun
   denetimden geçmemesi (`data/interim/tefsir/mvp-denetim.md`, çoğu yanlış alarm): ölçüldü, düzeltilmedi.
+  **Araştırıldı (2026-11-21):** (1) **Uzun cümleler gerçek:** 300 kelimeyi aşan cümle Bursevî'de %7,3 (en uzunu
+  3.407 kelime, `bursevi/48/10/c001`), Taberî %3,6 (2.002), Âlûsî %2,5, Ebüssuûd %2,3, Râzî %1,0; öbürlerinde yok.
+  Sebep kaynakta: Bursevî'nin Shamela metninde hiç nokta yok, Taberî'de yalnız virgül ve iki nokta; bölücü kurala
+  uygun çalışıyor. Bedeli: atıf birimi bir sayfa olur, `get_passage` binlerce kelime verir. **Düzeltmenin bedeli:**
+  yeniden bölmek bu eserlerin cümle kimliklerini değiştirir ("kimlikler değişmez"); tefsir bağları (âyet birimi
+  43 bin, Kur'ân alıntısı 403 bin; `links_tefsir --mvp` ≈77 dk yeniden) ve taslak arşivi (yayın dosyaları,
+  kaynak tercümeleri) bu kimlikleri anıyor; D5 kuyruğu sunucuda sürerken tefsir veritabanı değişirse eski ve yeni
+  taslaklar farklı kimliklere atıf yapar. **Kullanıcının kararını bekliyor** (seçenekler: kuyruk bitince yeniden
+  bölmek; kimlikleri koruyup uzun cümleye alt adres; şimdilik yalnız araçta uyarı). (2) **Âyet birimleri:** 367
+  geçmeyenin çoğu yanlış alarm (âyetin kelimeleri birimde var; hurûf-u mukattaa ve kısa kelimeli âyetlerde ölçünün
+  kendisi yanılıyor: `razi/53/4` "إن هو إلا وحي يوحى" birimin başında). Gerçek kayma birkaç düzine: âyetin kendi
+  satırı önceki birimin sonunda, şerhi doğru birimde (`razi/30/57`, `razi/57/5`, `razi/68/23`); bir gerçek kaydırma
+  `bursevi/38/85` (metni 86'nın). Etkisi küçük; düzeltmek de kimlik değiştirir, (1) ile birlikte konuşulur.
 
 
 ## Bekleyen (başkasının cevabı)
@@ -240,6 +240,11 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- B4, B7, B8 (2026-11-21, kullanıcının onayıyla; ayrıntı `KAYIT.md` › "Kimlikli işler" › "Küçük açıklar"): B4 mecmua
+  eşlemesinde kısa satır uzun paragrafın ortasına bağlanmaz (Nutuk "İttihad-ı millî...", Fihrist ve Tılsımlar'da birer
+  satır; kimlik değişikliği kabul edildi), B7 tırnaklı ifade bitişik yazılışıyla da aranır (`"her şey"` 15 → 304,
+  `"hiç bir"` 20 → 1.645) ve `NEAR` içinde Arapça kelime artık sorguyu bozmuyor, B8 Delâil'in 1.414 dipnot rakamı
+  ayrıştırıcıda metinden ayrıldı (arama ve `cite` düzeldi; kimlik ve sayfa değişmedi).
 - B5 Üç âyet dizgi şüphesi (kapandı, 2026-11-21, kullanıcının onayı): 2026-10-30 kararı geçerli: metin değişmez,
   `ayah_check = dizgi_suphesi`, araç modele uyarır (`docs/ayet-duzeltmeleri.md`; öbür baskılarda da aynı).
 - B2 Risale talimatında öbür eklentilere gönderme (kapandı, 2026-11-21, kullanıcının onayı): yeterli; talimat tek

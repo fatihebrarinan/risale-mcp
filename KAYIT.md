@@ -345,6 +345,28 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**Küçük açıklar B4, B7, B8 (2026-11-21, kullanıcının onayı: "önerdiğin sıraya başla"; B2 ve B5 aynı gün kapandı):**
+- **B4 Mecmua eşlemesi:** Nutuk'ta "üç elmas kılıç"ın "Birincisi"nin altındaki iki kelimelik "İttihad-ı millî...",
+  ikinci geçişte (`_fill_between`) Divan-ı Harb'in uzun "Yaşasın Şerîat-ı Garrâ! … Yaşasın ittihâd-ı millî! …"
+  paragrafına bağlanmıştı (kısa satır komşu paragrafta kelimesi kelimesine geçince bağlanıyordu). Kural
+  (`mecmua._drop_lone_parts`): paragrafın yarısından küçük parça ancak paragrafın başı ya da sonuysa ("Elcevab:",
+  "Üçüncüsü:", paragrafı bitiren Arapça) ya da yanındaki mecmua paragrafı aynı paragrafa eşlenmişse kalır. İlk
+  sürüm (yalnız komşu şartı) 43 paragrafı çözüyordu, çoğu doğru etiket eşlemesiydi; baş ve son şartıyla 3'e indi:
+  Nutuk (asıl hata), Fihrist `lemalar/lema-21/p003` (üç satırlık âyetin ortası, okurken iki kez görünüyordu) ve
+  Tılsımlar `dal-05/meyve-05/p028` (Câmî'nin Farsça satırı uzun paragrafın tamamını gösteriyordu). Kimlik değişikliği:
+  1 silinen, 26 metni değişen, 4 eklenen cümle (`data/manifest/genel/changes/`), kullanıcının onayıyla kabul.
+- **B7 Bitişik yazılan kelimeler:** ölçüm: `"âhir zaman"` 1 / bitişik 31, `"her şey"` 15 / 289, `"hiç bir"` 20 /
+  1.625, `"bu gün"` 3 / 168. Tırnaklı ifadenin boşlukla ayrılmış tek kelimeleri bitişik yazılışlarıyla da aranır
+  (`search.joined_forms`, en çok 4 kelime, Arapça hariç); `NEAR(…)` içinde her birleşim ayrı NEAR. Bulunan eski
+  hata: `NEAR` içinde Arapça kelime (önekli biçimlerin OR grubu) FTS5 sözdizimi hatası veriyordu; NEAR içinde düz
+  biçim. `search` aracının açıklamasına bir cümle, yalnız Risale sunucusunda (`SEARCH_JOINED_HELP`).
+- **B8 Delâil'in dipnot rakamları:** 4.507 cümlenin 1.173'ünde 1.414 işaret ("الأولى2،"); aramada kelimeyi bozuyordu
+  ("الأولى" bulunmuyordu; `nazm` 174 → 178 sonuç), `cite`'ta rakamsız alıntı tutmuyordu. Ayrıştırıcıda
+  (`klasik_openiti._line`) metinden ayrılır, sayfa sonları kaydırılır, sayısı `notes`'ta; kimlikler ve basılı
+  sayfalar aynı. Esrâr'da 1. Kalan tek bitişik rakam bir âyet adresi (`[الأنبياء100 - 101]`), dokunulmadı.
+- Vektörler: değişen bölümlerin 3.929 cümlesi (0,19 M token); `export-public` genel ve klasik. Testler
+  `tests/test_kucuk_aciklar.py`, `tests/test_search.py`.
+
 **D5'in plan metni** (bitti, 2026-11-21, kullanıcının kararı: "sistem artık tamamen kuruldu, arka planda sunucuda
 Bakara sûresi yazılmaya devam ediyor"; `PLANLAR.md` "Sıradaki"nden değiştirilmeden taşındı; D5.2 ve maliyet raporu
 "Sonra" › "D5'ten kalanlar"a, istem adayı "Fikirler"e geçti).

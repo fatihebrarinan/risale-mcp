@@ -21,3 +21,15 @@ def test_hadith_word_folds_ibn_into_bin():
     assert '"بن مريم"' in to_fts('"ابن مريم"', canon=hadith_word)
     assert '"ابن مريم"' in to_fts('"ابن مريم"')            # Risale'nin araması değişmez
     assert '"لبن"' not in to_fts("ابن", canon=hadith_word)  # süt değil
+
+
+def test_joined_forms_b7():
+    """B7: tırnaklı ifade bitişik yazılışıyla da aranır; NEAR içinde OR grubu yok."""
+    from risale_mcp.search import joined_forms, to_fts
+    assert joined_forms("âhir zaman") == ["ahir zaman", "ahirzaman"]
+    assert joined_forms("hiç bir şey") == ["hic bir sey", "hicbir sey", "hic birsey", "hicbirsey"]
+    assert joined_forms("ehl-i iman") == ["ehl i iman"]
+    assert to_fts('"âhir zaman"') == '(("ahir zaman" OR "ahirzaman"))'
+    assert "OR" not in to_fts("NEAR(الكتاب لا, 5)")
+    assert to_fts('NEAR("âhir zaman" deccal, 10)') == \
+        '((NEAR("ahir zaman" "deccal", 10) OR NEAR("ahirzaman" "deccal", 10)))'

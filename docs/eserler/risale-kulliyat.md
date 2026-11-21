@@ -17,7 +17,7 @@
 | 2 | Ta'likat | `kesif/talikat` | ✅ indirildi | ✅ 12 düğüm, 501 paragraf, 3989 cümle | Türkçe tam tercüme (Protranslate; Keşif Yolculukları Risale-i Nur Eğitim Programı). |
 | 3 | Ta'likat (Arapça) | `risaleoku_app/ar_asaribediyye` | ✅ indirildi | ✅ 12 düğüm, 453 paragraf, 2880 cümle | Arapça asıl: Gelenbevî'nin Burhân'ına hâşiye; İhsan Kasım es-Sâlihî tahkiki (Saykalü'l-İslâm). |
 | 4 | Divan-ı Harb-i Örfî | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 40 düğüm, 310 paragraf, 842 cümle |  |
-| 5 | Nutuk | `risaleoku_app/abed` | ✅ indirildi | ✅ 20 düğüm, 146 paragraf, 289 cümle; %30 ana cilde eşlendi | Âsâr-ı Bedîiyye baskısı. Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde. |
+| 5 | Nutuk | `risaleoku_app/abed` | ✅ indirildi | ✅ 20 düğüm, 146 paragraf, 290 cümle; %30 ana cilde eşlendi | Âsâr-ı Bedîiyye baskısı. Ana parçası (Hürriyete Hitab) erisale'de Divan-ı Harb-i Örfî içinde. |
 | 6 | Makalat | `risaleoku_app/abed` | ✅ indirildi | ✅ 60 düğüm, 420 paragraf, 1026 cümle; %16 ana cilde eşlendi | Âsâr-ı Bedîiyye baskısı; 20 makale. |
 | 7 | Muhakemat | `erisale/muhakemat` | ✅ indirildi | ✅ 62 düğüm, 791 paragraf, 2304 cümle |  |
 | 8 | Teşhisü'l-İllet'in Zeyli | `risaleoku_app/abed` | ✅ indirildi | ✅ 1 düğüm, 36 paragraf, 86 cümle | Hutbe-i Şamiye'nin Arapça zeylinin müellifçe Türkçeye çevrilmemiş kısımları; Âsâr-ı Bediiyye'deki tercüme. |
@@ -62,7 +62,7 @@
 |---:|---|---|---|---|---|
 | 38 | Asâ-yı Mûsâ | `erisale/asa-yi-musa` | ✅ indirildi | ✅ 176 düğüm, 1270 paragraf, 50 cümle; %97 ana cilde eşlendi |  |
 | 39 | Zülfikâr | `risaleoku_app/ihlas_zulfikar` | ✅ indirildi | ✅ 343 düğüm, 2168 paragraf, 662 cümle; %81 ana cilde eşlendi |  |
-| 40 | Tılsımlar Mecmuası | `risaleoku_app/ihlas_tilsimlar` | ✅ indirildi | ✅ 128 düğüm, 1000 paragraf, 214 cümle; %81 ana cilde eşlendi |  |
+| 40 | Tılsımlar Mecmuası | `risaleoku_app/ihlas_tilsimlar` | ✅ indirildi | ✅ 128 düğüm, 1000 paragraf, 215 cümle; %81 ana cilde eşlendi |  |
 | 41 | Âsâr-ı Bediiyye | `risaleoku_app/abed` | ✅ indirildi | ✅ 209 düğüm, 4535 paragraf, 3939 cümle; %58 ana cilde eşlendi | Eski Said dönemi eserlerinin mecmuası; Abdülkadir Badıllı'nın derlemesi. |
 | 42 | Sikke-i Tasdik-i Gaybî | `erisale/sikke-i-tasdik-i-gaybi` | ✅ indirildi (15 blok tamamlandı) | ✅ 255 düğüm, 1592 paragraf, 1633 cümle; %64 ana cilde eşlendi |  |
 | 43 | İman ve Küfür Muvazeneleri | `erisale/iman-ve-kufur-muvazeneleri` | ✅ indirildi | ✅ 146 düğüm, 1011 paragraf, 68 cümle; %98 ana cilde eşlendi |  |
@@ -71,7 +71,7 @@
 | 46 | Küçük Sözler | `risaleoku_app/rnk_ksozler` | ✅ indirildi | ✅ 37 düğüm, 263 paragraf, 35 cümle; %89 ana cilde eşlendi |  |
 | 47 | Gençlik Rehberi | `risaleoku_app/rnk_gencreh` | ✅ indirildi | ✅ 69 düğüm, 714 paragraf, 255 cümle; %80 ana cilde eşlendi |  |
 | 48 | Hanımlar Rehberi | `risaleoku_app/rnk_hanimreh` | ✅ indirildi | ✅ 48 düğüm, 467 paragraf, 515 cümle; %54 ana cilde eşlendi |  |
-| 49 | Fihrist Risalesi | `risaleoku_app/ihlas_fihristris` | ✅ indirildi | ✅ 524 düğüm, 1432 paragraf, 703 cümle; %65 ana cilde eşlendi | Ana ciltlerin fihristelerinden derlenmiş; kullanıcının kararıyla 2026-10-30'da yeniden eklendi. |
+| 49 | Fihrist Risalesi | `risaleoku_app/ihlas_fihristris` | ✅ indirildi | ✅ 524 düğüm, 1432 paragraf, 704 cümle; %65 ana cilde eşlendi | Ana ciltlerin fihristelerinden derlenmiş; kullanıcının kararıyla 2026-10-30'da yeniden eklendi. |
 | 50 | Esasat-ı Nuriye | `risaleoku_app/esasat` | ✅ indirildi | ✅ 56 düğüm, 4644 paragraf, 4782 cümle; %28 ana cilde eşlendi | Sonradan derleme: Rüşdü Tafral ve İttihad İlmî Araştırma Heyeti (İttihad Yayıncılık); Bediüzzaman'ın tertibi değil. |
 | 51 | Hizmet Rehberi ve Düsturları | `risaleoku_app/hizmettoplama` | ✅ indirildi | ✅ 166 düğüm, 5491 paragraf, 3219 cümle; %64 ana cilde eşlendi | Sonradan derleme: Ahmet Koçoğlu (2018); Bediüzzaman'ın tertibi değil. |
 

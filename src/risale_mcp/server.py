@@ -439,6 +439,12 @@ def _warm(library: Library, citations: CitationChecker) -> None:
         pass
 
 
+# B7 (2026-11-21): Risale bileşikleri çoğunlukla bitişik yazar; tırnaklı ifade bitişik yazılışıyla da aranır
+# (`search.joined_forms`). Yalnız Risale sunucusunda söylenir: tefsir ve klasik eserler Arapçadır.
+SEARCH_JOINED_HELP = (" The text often writes compounds as one word (hiçbir, herşey, Âhirzaman); a quoted phrase also "
+                      "matches that joined spelling.")
+
+
 def create_server(library: Library, public_url: str | None = None, store: AuthStore | None = None,
                   anonymous: bool = False, anonymous_semantic: int = ANON_SEMANTIC_PER_DAY,
                   warm: bool = False, open_access: bool = False, profile: str = "kisisel") -> MCPServer:
@@ -541,7 +547,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     @server.tool(title="Search the text", annotations=read_only("Search the text"), structured_output=False)
     def search(
         query: Annotated[str, Field(description="Words (all must occur), \"exact phrase\", prefix*, OR, -exclude, "
-                                                "NEAR(a b, 5). Marks and Turkish letters are optional.")],
+                                                "NEAR(a b, 5). Marks and Turkish letters are optional."
+                                                + ("" if texts_only else SEARCH_JOINED_HELP))],
         work: Annotated[str | None, Field(description="Only this work id.")] = None,
         group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 20,

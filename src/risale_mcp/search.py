@@ -3,6 +3,7 @@
 Sorgu dili (kullanıcının ya da modelin yazdığı):
     haşir kıyamet          iki kelime de geçmeli
     "haşr-i cismanî"       tam ifade
+    "hiç bir şey"          tam ifade; ayrı kelimelerin bitişik yazılışı da: "hiçbir şey", "hiçbirşey"… (B7)
     haşr*                  kelime başı: haşr, haşre, haşrin…
     الكتاب                 Arapça kelime önekli biçimleriyle de: والكتاب، بالكتاب، للكتاب، كتاب…
     haşir OR kıyamet       ikisinden biri
@@ -80,10 +81,32 @@ def hadith_word(word: str) -> str:
     return m[1] + "بن" if m else word
 
 
-def _term(raw: str, prefix_all: bool = False, canon=None) -> str | None:
+JOIN_MAX = 4       # bitişik yazılış denenecek en uzun ifade (kelime): 2^(n-1) biçim
+
+
+def joined_forms(raw: str) -> list[str]:
+    """Tırnaklı ifadenin ayrı yazılmış kelimelerinin bitişik yazılışları (ilki ifadenin kendisi).
+    Risale bileşikleri çoğunlukla bitişik yazar: "hiç bir" 20, "hiçbir" 1.625; "âhir zaman" 1, "Âhirzaman" 31 cümle
+    (B7, 2026-11-21). Yalnız boşlukla ayrılmış tek kelimeler birleşir ("ehl-i iman" kendi biçimiyle kalır); Arapça
+    ifade birleştirilmez. Var olmayan biçim yalnız sonuçsuz bir OR dalıdır."""
+    chunks = [search_words(c) for c in raw.split()]
+    chunks = [c for c in chunks if c]
+    words = [w for c in chunks for w in c]
+    if len(chunks) < 2 or len(words) > JOIN_MAX or _ARABIC.search(" ".join(words)):
+        return [" ".join(words)]
+    joinable = [len(chunks[k]) == 1 and len(chunks[k + 1]) == 1 for k in range(len(chunks) - 1)]
+    forms = [chunks[0][:]]
+    for k, can in enumerate(joinable):
+        nxt = chunks[k + 1]
+        forms = [f + nxt for f in forms] + ([f[:-1] + [f[-1] + nxt[0]] + nxt[1:] for f in forms] if can else [])
+    return list(dict.fromkeys(" ".join(f) for f in forms))
+
+
+def _term(raw: str, prefix_all: bool = False, canon=None, near: bool = False) -> str | None:
     """Bir kelime ya da tırnaklı ifade -> FTS5 ifadesi; aranacak harf yoksa None. Tırnaksız tek Arapça kelime
     önekli biçimleriyle aranır; `prefix_all`: tırnaksız tek kelime kelime başı olarak aranır (Türkçe ek). `canon`:
-    dizinin kelime biçimi (hadis dizini: `hadith_word`)."""
+    dizinin kelime biçimi (hadis dizini: `hadith_word`). `near`: NEAR(…) içinde FTS5 yalnız düz ifade kabul eder
+    (OR grubu sözdizimi hatasıydı, Arapça kelimede de; 2026-11-21): biçimler açılmaz."""
     prefix = raw.endswith("*")
     quoted = raw.startswith('"')
     words = search_words(raw.rstrip("*").strip('"'))
@@ -91,11 +114,17 @@ def _term(raw: str, prefix_all: bool = False, canon=None) -> str | None:
         words = [canon(w) for w in words]
     if not words:
         return None
+    if near:
+        return f'"{" ".join(words)}"' + ("*" if prefix else "")
     if len(words) == 1 and not quoted and _ARABIC.search(words[0]):
         forms = _BIN_FORMS if canon and words[0] in _BIN_FORMS[:3] else arabic_forms(words[0])
         return "(" + " OR ".join(f'"{f}"' + ("*" if prefix else "") for f in forms) + ")"
     if prefix_all and len(words) == 1 and not quoted:
         prefix = True
+    if quoted and not canon and len(words) > 1:
+        forms = joined_forms(raw.rstrip("*").strip('"'))
+        if len(forms) > 1:
+            return "(" + " OR ".join(f'"{f}"' + ("*" if prefix else "") for f in forms) + ")"
     return f'"{" ".join(words)}"' + ("*" if prefix else "")
 
 
@@ -110,14 +139,21 @@ def _near(tokens: list[str], i: int, canon=None) -> tuple[str | None, int]:
             distance = int(tokens[i + 1])
             i += 2
             continue
-        if term := _term(token, canon=canon):
-            terms.append(term)
+        if term := _term(token, canon=canon, near=True):
+            forms = joined_forms(token.rstrip("*").strip('"')) if token.startswith('"') and not canon else []
+            star = "*" if token.endswith("*") else ""
+            terms.append([f'"{f}"{star}' for f in forms] if len(forms) > 1 else [term])
         i += 1
     if i >= len(tokens):
         raise QueryError("NEAR( kapanmamış.")
     if len(terms) < 2:
-        return (terms[0] if terms else None), i + 1
-    return f"NEAR({' '.join(terms)}, {distance})", i + 1
+        return (terms[0][0] if terms else None), i + 1
+    # bitişik yazılışlar: her birleşimi için ayrı NEAR, OR ile (FTS5 NEAR içinde OR kabul etmez); en çok 8
+    combos = [[]]
+    for alternatives in terms:
+        combos = [c + [a] for c in combos for a in alternatives][:8]
+    nears = [f"NEAR({' '.join(c)}, {distance})" for c in combos]
+    return (nears[0] if len(nears) == 1 else "(" + " OR ".join(nears) + ")"), i + 1
 
 
 def to_fts(query: str, prefix_all: bool = False, canon=None) -> str:

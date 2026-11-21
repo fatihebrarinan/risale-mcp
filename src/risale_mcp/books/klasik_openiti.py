@@ -23,6 +23,13 @@ Numaralı başlık ("412 -"): muhakkikin fıkra numarası (Delâil'de Şâkir'in
 düğümdür (`delailul-icaz/12/f412`, başlığı numara), öbürlerinde atılır (Müfredât'ın Shamela sürümündeki beyit
 numaraları gibi).
 
+Muhakkikin dipnot işaretleri (B8, 2026-11-21): Delâil'de ≈1.400 yerde dipnot numarası kelimeye ya da kapanan tırnağa
+bitişiktir ("في المسئلة الأولى2، لأن", "\"ابلعي ماءك\"1،"); dipnotların kendisi OpenITI sürümünde yoktur. Rakam
+yazarın metni değildir: aramada kelimeyi bozuyordu ("الأولى" "الاولي2"yi bulmuyordu), alıntıda ve `cite`'ta
+göze batıyordu. Arapça harfe ya da kapanan tırnağa, ayraca bitişik bir iki haneli rakam metinden ayrılır (sayfa
+sonlarının yeri kaydırılır), sayısı `notes`'tadır. Boşlukla ayrılmış sayılar (muhakkikin girişindeki "[ص: 394]",
+yıllar) dokunulmaz.
+
 Ön metin: muhakkikin girişi ayrı katmandır (`mukaddime-tahkik`, `authority: muhakkik`, `by`), müellife mal edilmez;
 ilk satırlardaki Shamela künyesi (kitap, yazar, muhakkik, yayınevi) alınmaz. Arka metin (fihristler, baskının
 kapanış satırı) alınmaz, `notes`'ta yazılıdır. Baskının harfli sayfa satırları ("- أ -"), "....." satırları,
@@ -90,8 +97,7 @@ PLANS: dict[str, Plan] = {
         start=Mark("=" + BESMELE, 2), intro=Mark("=" + BESMELE, 1), intro_title="مقدمة",
         end=Mark("=الفهارس"), numbered=True,
         notes=("Muhakkikin (Şâkir) fıkra numaraları düğümdür (`f412`); Risâletü'ş-Şâfiye'de numaralar yeniden "
-               "başlar. Muhakkikin dipnot işaretleri (\"منها1.\") metinde kalır; dipnotlar kaynakta yok (OpenITI "
-               "temizliği).", "Baskının fihristleri (\"الفهارس\" ve sonrası) alınmadı.")),
+               "başlar.", "Baskının fihristleri (\"الفهارس\" ve sonrası) alınmadı.")),
     "esrarul-belaga": Plan(
         start=Mark("=" + BESMELE, 1),
         end_gap=("Bu sürüm son paragrafın ortasında biter (\"… فكنحو\"); başka baskıda (ShamAY0032338) devamı var, "
@@ -128,9 +134,21 @@ def _ends(para: Para | None) -> bool:
     return not tail or tail[-1] in BOUNDARY
 
 
+_ARABIC_LETTERS = "\u0621-\u064A\u064B-\u0652\u0670\u0671"
+_FOOTNOTE_MARK = re.compile(rf'(?<=[{_ARABIC_LETTERS}»"\)\]])\d{{1,2}}(?!\d)')
+MARKS = {"removed": 0}                                    # `parse` sıfırlar, sayısı notlara yazılır
+
+
 def _line(p: openiti.Paragraph, text: str) -> openiti.Paragraph:
-    """Temizlenmiş metinli satır; sayfa sonları metnin boyuna kırpılır (artık atılınca konum kısalır)."""
-    return openiti.Paragraph(p.raw, text, None, [], [(min(at, len(text)), page) for at, page in p.breaks],
+    """Temizlenmiş metinli satır; sayfa sonları metnin boyuna kırpılır (artık atılınca konum kısalır). Muhakkikin
+    dipnot işaretleri ayrılır, sonraki sayfa sonları ayrılan harf kadar geri kayar."""
+    cuts = [(m.start(), m.end()) for m in _FOOTNOTE_MARK.finditer(text)]
+    if cuts:
+        MARKS["removed"] += len(cuts)
+        text = _FOOTNOTE_MARK.sub("", text)
+    def shift(at: int) -> int:
+        return at - sum(min(end, at) - start for start, end in cuts if start < at)
+    return openiti.Paragraph(p.raw, text, None, [], [(min(shift(at), len(text)), page) for at, page in p.breaks],
                              p.page, p.end_page)
 
 
@@ -143,6 +161,7 @@ def parse(work: Work, raw_root=RAW_DIR / "openiti") -> tuple[Book, Report]:
     if work.slug == "mufredat":
         return parse_mufredat(work, raw_root)
     plan = PLANS[work.slug]
+    MARKS["removed"] = 0
     doc = openiti.load(work.source.book, raw_root)
     P = doc.paragraphs
     report = Report()
@@ -172,6 +191,10 @@ def parse(work: Work, raw_root=RAW_DIR / "openiti") -> tuple[Book, Report]:
         last = book.nodes()[-1]
         book.gaps.append({"node_id": last.id, "missing_blocks": 1, "after": None, "note": plan.end_gap})
     _printed_on_nodes(book)
+    if MARKS["removed"]:
+        book.notes.append({"node_id": book.root.id, "after": None,
+                           "text": f"Muhakkikin dipnot işaretleri ({MARKS['removed']}) metinden ayrıldı; dipnotların "
+                                   "kendisi kaynakta yok (OpenITI)."})
     return book, report
 
 

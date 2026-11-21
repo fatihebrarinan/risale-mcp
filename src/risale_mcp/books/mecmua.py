@@ -20,6 +20,11 @@ Eşleme baskıdan bağımsızdır: metinler `match_words` ile işaretsiz kelimel
   de varsa ana cilt seçilir, Hizb-i Nurî yalnızca devam ettirilirken ya da son çare olarak.
 - İkinci geçiş: iki eşlemenin arasında kalan paragraflar, o iki yerin arasındaki ana cilt paragraflarıyla
   kelime kelime hizalanır (`_fill_between`): baskı farkı olan kısa satırlar ve şiir mısraları böyle bulunur.
+  Satır bağlandığı paragrafın küçük bir parçasıysa (yarısından az) ancak paragrafın başı ya da sonuysa ("Elcevab:",
+  "Üçüncüsü:", paragrafı bitiren Arapça: mecmua ayrı satıra almış) ya da yanındaki mecmua paragrafı da aynı ana cilt paragrafına
+  eşlenmişse (mecmua paragrafı bölmüş, şiirin mısraları) kalır; paragrafın ortasında tesadüfen geçen söz bağlanmaz
+  (`_drop_lone_parts`; B4, 2026-11-21: Nutuk'ta iki kelimelik "İttihad-ı millî..." Divan-ı Harb'in uzun "Yaşasın…
+  ittihâd-ı millî!" paragrafına bağlanmıştı).
 - Eşlenen paragrafın metni mecmuadan silinir. Bu yüzden `keep_unique` ile mecmuaya özgü kelimesi çok olan
   (en az 8 kelime ve %15) paragraf metniyle kalır; erisale mecmualarında kimlikler kaymasın diye kapalıdır.
 - Mecmua bir ana cilt paragrafını birkaç paragrafa bölmüşse (Hayrat baskısı şiirin her
@@ -181,7 +186,7 @@ def _aligned(words: list[str], target: list[str]) -> float:
 
 def _fill_between(mains: list[dict], found: list[list[int]], index: CanonicalIndex) -> int:
     """Eşlenmemiş paragraflar, iki yanındaki eşlemenin arasındaki ana cilt paragraflarında aranır."""
-    filled, k = 0, 0
+    filled, k, new = 0, 0, set()
     while k < len(mains):
         if found[k]:
             k += 1
@@ -208,8 +213,32 @@ def _fill_between(mains: list[dict], found: list[list[int]], index: CanonicalInd
                 if score >= FILL_COVER:
                     found[i], cursor = [-at], -at
                     filled += 1
+                    new.add(i)
         k = end
-    return filled
+    return filled - _drop_lone_parts(mains, found, new, index)
+
+
+def _drop_lone_parts(mains: list[dict], found: list[list[int]], filled: set[int], index: CanonicalIndex) -> int:
+    """İkinci geçişte bağlanan kısa parça, paragrafın başı ya da sonu değilse ve yanındaki mecmua paragrafı aynı ana cilt
+    paragrafına eşlenmemişse çözülür (bölünmüş paragrafın parçası değil, uzun bir paragrafta tesadüfen geçen söz).
+    Sonuç değişmeyene kadar."""
+    dropped, changed = 0, True
+    while changed:
+        changed = False
+        for k in sorted(filled):
+            if not found[k]:
+                continue
+            target = found[k][0]
+            words = match_words(mains[k]["text"])
+            whole = index.words[target]
+            if 2 * len(words) >= len(whole) or _aligned(words, whole[:len(words) + 2]) >= FILL_COVER \
+                    or _aligned(words, whole[-len(words) - 2:]) >= FILL_COVER:
+                continue
+            neighbours = [found[i] for i in (k - 1, k + 1) if 0 <= i < len(found)]
+            if not any(target in f for f in neighbours):
+                found[k], changed = [], True
+                dropped += 1
+    return dropped
 
 
 def _plausible(words: list[str], j: int, index: CanonicalIndex, cursor: int, after: int | None) -> bool:
