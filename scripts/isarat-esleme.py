@@ -14,6 +14,12 @@ Kalemler nükte düzeyindedir, cümle düzeyinde birebir değildir: ölçü bir 
     uv run python scripts/isarat-esleme.py 13 28 30          # rapor + data/d1/masa/isarat-esleme.html (örneklem)
     uv run python scripts/isarat-esleme.py --hepsi
     uv run python scripts/isarat-esleme.py --model 13 28 30   # model ile (Opus, araçsız); d1-arka.sh ile başlatılır
+    uv run python scripts/isarat-esleme.py --butun            # Fâtiha ve Bakara'nın bütün bölümleri, model ile
+                                                              # (kullanıcının kararı, 2026-11-21) → esleme.json
+
+`esleme.json`: {Arapça cümle kimliği: [Türkçe cümle kimlikleri]} (karşılığı olmayan cümle listede yok). Masa ve platform
+Türkçe kipte İşârât'a atıfların kaynak kutusunda Abdülmecid Nursî tercümesini bundan gösterir; eşlemenin yapay zekânın
+olduğu yazılır.
 """
 from __future__ import annotations
 
@@ -158,6 +164,86 @@ def model_align(unit: str) -> list[tuple[list[int], list[int]]] | None:
     return groups
 
 
+# ---------------------------------------------------------------- bütün İşârât (Fâtiha ve Bakara)
+
+GENEL_DB = P.GENEL_DB
+TR_W, AR_W = "isaratul-icaz", "isaratul-icaz-arabi"
+SURELER = ("sure-i-fatiha", "sure-i-bakara")
+
+
+def section_pairs() -> list[tuple[str, list[str], list[str]]]:
+    """(ad, Arapça bölümler, Türkçe bölümler): aynı kimlikle; Türkçede 21 ve 22 ayrı, Arapçada tek bölüm."""
+    import sqlite3
+    c = sqlite3.connect(f"file:{GENEL_DB}?mode=ro", uri=True)
+    out = []
+    for sure in SURELER:
+        kids = {w: [r[0] for r in c.execute("SELECT id FROM nodes WHERE parent_id = ? ORDER BY ord", (f"{w}/{sure}",))]
+                for w in (AR_W, TR_W)}
+        tr_tail = {k.rsplit("/", 1)[1]: k for k in kids[TR_W]}
+        for a in kids[AR_W]:
+            tail = a.rsplit("/", 1)[1]
+            if tail in tr_tail:
+                out.append((f"{sure}/{tail}", [a], [tr_tail[tail]]))
+            elif tail.startswith("21-22"):
+                out.append((f"{sure}/{tail}", [a], [tr_tail["21"], tr_tail["22"]]))
+    return out
+
+
+def section_sentences(nodes: list[str]) -> list[tuple[str, str]]:
+    import sqlite3
+    c = sqlite3.connect(f"file:{GENEL_DB}?mode=ro", uri=True)
+    out = []
+    for nid in nodes:
+        work = nid.split("/")[0]
+        o, lo = c.execute("SELECT ord, last_ord FROM nodes WHERE id = ?", (nid,)).fetchone()
+        out += c.execute("""SELECT s.id, s.text FROM sentences s JOIN nodes n ON n.id = s.node_id
+                            WHERE n.work = ? AND n.ord BETWEEN ? AND ? ORDER BY s.seq""", (work, o, lo)).fetchall()
+    return out
+
+
+def butun() -> None:
+    from concurrent.futures import ThreadPoolExecutor
+    base = OUT / "butun"
+    base.mkdir(parents=True, exist_ok=True)
+    pairs = section_pairs()
+    def one(item):
+        name, an, tn = item
+        ar, tr = section_sentences(an), section_sentences(tn)
+        stem = base / name.replace("/", "_")
+        if stem.with_suffix(".json").exists():
+            data = json.loads(stem.with_suffix(".json").read_text(encoding="utf-8"))
+        else:
+            prompt = MODEL_ISTEM.format(ar="\n".join(f"A{i + 1}. {t}" for i, (_, t) in enumerate(ar)),
+                                        tr="\n".join(f"T{j + 1}. {t}" for j, (_, t) in enumerate(tr)))
+            data = Y.run_model(prompt, "opus", stem, {"gorev": "isarat-esleme", "bolum": name})
+        return name, ar, tr, data
+    mapping, report = {}, []
+    with ThreadPoolExecutor(3) as ex:
+        for name, ar, tr, data in ex.map(one, pairs):
+            if not data:
+                report.append(f"{name}: model cevabı yok")
+                continue
+            ia = it = bad = 0
+            for g in data.get("gruplar", []):
+                a = [x - 1 for x in g.get("a", [])]
+                t = [x - 1 for x in g.get("t", [])]
+                if a != list(range(ia, ia + len(a))) or t != list(range(it, it + len(t))) or ia + len(a) > len(ar) \
+                        or it + len(t) > len(tr):
+                    bad += 1
+                    continue
+                for i in a:
+                    if t:
+                        mapping[ar[i][0]] = [tr[j][0] for j in t]
+                ia, it = ia + len(a), it + len(t)
+            report.append(f"{name}: {len(ar)} Arapça, {len(tr)} Türkçe cümle; eşlenen Arapça {sum(1 for x, _ in ar if x in mapping)}"
+                          + (f"; sırayı bozan {bad} grup atıldı" if bad else "") + (f"; sonda eşlenmemiş A{ia + 1}…" if ia < len(ar) else ""))
+    (OUT / "esleme.json").write_text(json.dumps(mapping, ensure_ascii=False, indent=0), encoding="utf-8")
+    (OUT / "esleme-rapor.md").write_text("# İşârât: Arapça → Türkçe cümle eşlemesi (model)\n\n" + "\n".join(f"- {x}" for x in report) + "\n",
+                                         encoding="utf-8")
+    print("\n".join(report))
+    print(f"{len(mapping)} Arapça cümle eşlendi → {(OUT / 'esleme.json').relative_to(ROOT)}")
+
+
 def unit_result(unit: str, model: bool = False) -> dict:
     h = Y.hidden(unit)
     ar, tr = h["ar"], h["tr"]                           # [(istem kimliği a016, db kimliği, metin, paragraf)]
@@ -224,7 +310,11 @@ def main() -> None:
     ap.add_argument("units", nargs="*")
     ap.add_argument("--hepsi", action="store_true")
     ap.add_argument("--model", action="store_true", help="model ile eşle (Opus); program eşlemesiyle karşılaştırılır")
+    ap.add_argument("--butun", action="store_true", help="Fâtiha ve Bakara'nın bütün bölümleri, model ile → esleme.json")
     a = ap.parse_args()
+    if a.butun:
+        butun()
+        return
     units = a.units or []
     if a.hepsi:
         units = [u for u in P.UNITS if not P.UNITS[u].get("d5") and (Y.out_dir(u) / "envanter.json").exists()]
