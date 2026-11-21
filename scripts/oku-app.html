@@ -251,12 +251,25 @@ function draftHTML(t) {
     let h = `<div class="blk" id="${esc(b.id)}">`;
     const wholeOf = x => x && x.cumle ? `<details class="small"><summary>Kaynaktaki cümlenin tamamı</summary><p class="${/[؀-ۿ]/.test(x.cumle.slice(0, 40)) ? 'ar' : 'tr'}">${bidi(esc(x.cumle))}</p></details>` : '';
     const whole = wholeOf(b);
-    if (isAr) h += `<div class="${b.tur === 'alinti_ar' ? 'quote' : ''}"><div class="lab">${b.tur === 'alinti_ar' ? 'Alıntı (Arapça)' : 'Taslağın Arapçası (yapay zekâ)'}</div><p class="ar">${marks(b.metin, t.kaynaklar, b.id)}</p>${whole}</div>`;
+    // S7h: alıntının kaynağı kutunun başında (adı ve tıklanır numarası); Arapça gizliyken de belli olsun
+    const srcOf = x => {
+      const ks = ((x && x.kaynaklar) || []).filter(k => t.kaynaklar[k]);
+      if (!ks.length) return '';
+      const name = t.kaynaklar[ks[0]].satir.split(' › ')[0].replace(/ \(Arapça\)$/, '');
+      return `: ${esc(name)} ` + marks(`[${ks.join(', ')}]`, t.kaynaklar, b.id);
+    };
+    if (isAr) h += `<div class="${b.tur === 'alinti_ar' ? 'quote' : ''}"><div class="lab">${b.tur === 'alinti_ar' ? 'Alıntı' + srcOf(b) : 'Taslağın Arapçası (yapay zekâ)'}</div><p class="ar">${marks(b.metin, t.kaynaklar, b.id)}</p>${whole}</div>`;
     else {
       const ar = b.tercumesi && byId[b.tercumesi];
-      if (ar) h += `<div class="arpair" ${VIEW.ar ? '' : 'hidden'}><p class="ar">${marks(ar.metin, t.kaynaklar, b.id)}</p></div>`;
-      if (b.abdulmecid) h += `<div><div class="lab">Abdülmecid Nursî tercümesi${ar && ar.cumle ? ' (kaynaktaki cümlenin tamamı)' : ''}</div><p class="tr">${bidi(esc(b.abdulmecid))}</p></div>`;
-      else h += `<div class="${b.tur === 'alinti' ? 'quote' : ''}">${KIND_LAB[b.tur] ? `<div class="lab">${KIND_LAB[b.tur]}</div>` : ''}<p class="tr">${marks(b.metin, t.kaynaklar, b.id)}</p>${whole || (b.tur === 'alinti_tercume' ? wholeOf(b.tercumesi && byId[b.tercumesi]) : '')}</div>`;
+      const pairAr = ar ? `<div class="arpair" ${VIEW.ar ? '' : 'hidden'}><p class="ar">${marks(ar.metin, t.kaynaklar, b.id)}</p></div>` : '';
+      if (b.tur === 'alinti_tercume' && ar) {           // alıntı ve Türkçesi tek kutuda, kaynağıyla (S7h)
+        const kim = b.abdulmecid ? `Abdülmecid Nursî tercümesi${ar.cumle ? ', kaynaktaki cümlenin tamamı' : ''}` : 'yapay zekâ tercümesi';
+        h += `<div class="quote"><div class="lab">Alıntı${srcOf(ar)} · ${kim}</div>${pairAr}`
+          + `<p class="tr">${bidi(esc(b.abdulmecid || b.metin))}</p>${b.abdulmecid ? '' : wholeOf(ar)}</div>`;
+      } else {
+        h += pairAr;
+        h += `<div class="${b.tur === 'alinti' ? 'quote' : ''}">${b.tur === 'alinti' ? `<div class="lab">Alıntı${srcOf(b)}</div>` : KIND_LAB[b.tur] ? `<div class="lab">${KIND_LAB[b.tur]}</div>` : ''}<p class="tr">${marks(b.metin, t.kaynaklar, b.id)}</p>${whole}</div>`;
+      }
       if (b.izah) h += `<div class="izah" ${VIEW.izah ? '' : 'hidden'}><div class="lab">izah</div>${marks(b.izah.metin, t.kaynaklar, b.id)}</div>`;
     }
     for (const f of b.isaretler || [])

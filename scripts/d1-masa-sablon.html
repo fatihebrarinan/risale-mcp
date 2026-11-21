@@ -824,6 +824,12 @@ function mkr(p, key, layer, label, title) {
   const on = !!p.open[key + '|' + layer];
   return `<button class="mkr ${layer}" data-openmk="${esc(key + '|' + layer)}" aria-pressed="${on}" title="${esc(title)}">${esc(label)}</button>`;
 }
+// S7h: alıntının kaynağı başlıkta (adı ve numarası); Türkçesi gösterilirken numara Arapçada kalıyordu
+function quoteSrc(dk, text) {
+  const src = (DATA.drafts[dk] || {}).sources || {};
+  const ks = [...new Set((text.match(/\[[^\]\n]{1,80}\]/g) || []).flatMap(x => x.match(/\d+/g) || []))].filter(k => src[k]);
+  return ks.length ? `: ${esc(src[ks[0]].c.split(' › ')[0].replace(/ \(Arapça\)$/, ''))} [${ks.join(', ')}]` : '';
+}
 function blockHtml(dk, pair, p) {
   const A = annot(dk, pair), L = p.L, key = pair.ar.a;
   const df = st.dfocus && st.dfocus.dk === dk ? st.dfocus : null;
@@ -863,7 +869,7 @@ function blockHtml(dk, pair, p) {
   if (L.nisbet && p.open[key + '|nisbet']) opened += A.nis.map(nisbetCard).join('');
   if (L.karsi && p.open[key + '|isr']) opened += A.isr.map(isrCard).join('');
   return `<div class="blk${focused ? ' focus' : ''}${pair.ar.q ? ' quote' : ''}${cls}" data-anchor="${esc(key)}">
-    <div class="bhead"><span class="small muted">${SEC[key.split('/')[0]] || ''}${pair.ar.q ? ' · kaynaktan alıntı' : ''}</span><span class="mkrs">${marks.join('')}</span></div>
+    <div class="bhead"><span class="small muted">${SEC[key.split('/')[0]] || ''}${pair.ar.q ? ' · kaynaktan alıntı' + quoteSrc(dk, pair.ar.t) : ''}</span><span class="mkrs">${marks.join('')}</span></div>
     <div class="${prim.l === 'ar' && !(amt && prim !== pair.ar) ? 'ar' : 'serif'}">${primHtml}</div>
     ${sec ? `<details${q && !locate(prim.t, q) ? ' open' : ''}><summary class="small muted">${sec.l === 'ar' ? (pair.ar.q ? 'Arapçası (alıntı)' : 'Arapçası (taslağın aslı)') : amt ? 'Türkçesi (Abdülmecid Nursî tercümesi)' : pair.ar.q ? 'Türkçesi (yapay zekâ tercümesi)' : 'Türkçesi'}</summary>
       <div class="${sec.l === 'ar' ? 'ar' : 'serif'}">${amt && sec !== pair.ar ? esc(pair.ar.amt) : body(sec)}</div></details>` : ''}
