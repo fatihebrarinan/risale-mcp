@@ -345,6 +345,77 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S8 ve S9'un plan metni** (bitti, 2026-11-21, kullanıcının kararı: "S8 ve S9 kapanır"; `PLANLAR.md` "Sıradaki"nden
+değiştirilmeden taşındı).
+
+**S8. Sonuç yazısı** (kullanıcı kabul etti, 2026-11-21): taslak işinin cevabı tek ve kalıcı bir yazıda: "Yapay
+zekâ İşârât'ın mislini yazabilir mi?" Usul (hat, kapı, ölçüler), Bakara 1–33'teki İşârât karşılaştırmasının sonuçları
+(yapabildikleri: garaz, omurga, Risale dersi; yapamadıkları: takdir zincirleri, taalluk, temsil ve îcâz, birinci vechin
+genişliği, tartma), okuma turlarının kararları, örnekler (34'te «kâne», Risale dersi), maliyet. Şimdi
+`KAYIT.md`'ye, deneyler defterine ve usul sayfasına dağınık; ehil okuyucu taslaklardan önce bunu okur. Yeri sitede
+(yenilikler ya da platformun usul sayfasının genişi), kullanıcıyla kararlaştırılır.
+**Taslak yazıldı (2026-11-21):** `docs/s8-sonuc-yazisi.md`. Kaynakları yazının sonundaki "Kayıtlar"da (yayımlanmaz).
+Toplarken çıkan yeni sayı: İşârât karşılaştırması saklı beş birimin on iki taslağının on ikisinde bütün için
+"düzeltmeyle" dedi (45 bölümün 8'i "yeterli", hiç "yetersiz" yok). **İki sürüm** (kullanıcının kararı, 2026-11-21): (1) **iç sürüm:** `docs/s8-sonuc-yazisi.md` bugünkü hâliyle
+kalır (okuma platformunu, kayıtları ve iç ayrıntıyı taşır); (2) **site sürümü:** S9'un "Çalışmalar" kısmında
+yayımlanmak üzere ayrı yazılır: okuma platformundan açıkça bahsetmez (platform davetle; "Bundan sonra"daki platform
+anlatımı ve okuyucu notu çıkar, yerine genel bir cümle), siteye uygun (programcı ayrıntısı, sürüm adları (h9, d3),
+dosya yolları ve "Kayıtlar" yok; S9'un iskeletine göre: kısa cevap kutusu, sınırlar, kaynaklar). Yer: S9.
+Okuyucunun cümlesi (kullanıcının kararı, 2026-11-21; "ehil değil" yerine): "Okumaları projeyi yürüten kişi yaptı;
+tefsir ve belâgat alanında uzman değildir, bilmediğini kaynaktan araştırdı ya da ehline sordu. Bu alanların
+uzmanlarının okuması henüz yok." 
+
+**S9. Sitede "Çalışmalar" kısmı** (kullanıcının fikri ve kararları, 2026-11-21): Yenilikler'den ayrı, blog yazısı
+tarzında bir kısım; projenin ne denediğini ve ne öğrendiğini anlatan uzun, kaynaklı yazılar. Ad **"Çalışmalar"**
+(kullanıcı kabul etti). Yenilikler'den farkı: Yenilikler eklentide ne değiştiğini kısa, örnek soruyla, eklentiyi
+kullanan herkese anlatır; Çalışmalar ehil ve tefsirle ilgilenen okuyucu için uzun, sayılı ve kaynaklıdır, tarihli
+ama "son gözden geçirme" tarihiyle güncellenebilir. Bir çalışma yayımlanınca Yenilikler'e kısa bir duyuru düşer ve
+yazıya bağlanır.
+- **İskelet (her yazıda):** başlık, tarih, son gözden geçirme, okuma süresi; başta **"Kısa cevap"** kutusu; gövde;
+  **"Sınırlar"** kısmı (zorunlu); **Kaynaklar** (Risale ve İşârât alıntıları sitenin atıf biçimiyle); isteğe bağlı PDF
+  ve "Bu yazıya atıf" satırı; yapay zekâ taslağından alıntı varsa damga.
+- **Teknik:** `scripts/site-uret.py`'nin yolu: yazılar `docs/calismalar/<tarih>-<ad>.md` (üst bilgi Yenilikler'deki
+  gibi, ek olarak `gozden_gecirme`), çıktı `site/calismalar/<ad>.html` ve `site/calismalar.html`; menüye
+  "Çalışmalar"; Open Graph, RSS, site haritası aynı yoldan. Markdown çevirisi genişler: tablo, sağdan sola Arapça
+  alıntı (sitenin Naskh yazı tipiyle), "Kısa cevap" kutusu. CSS ya da JS değişirse `ASSET_VERSION`.
+- **Taslak, önizleme, yayın** (kullanıcının isteği ve kararı, 2026-11-21: "yayından önce benim son düzenlemeleri
+  yapıp yayınlayabileceğim bir yapı"; Yenilikler için de): (a) yazının üst bilgisinde `durum: taslak | yayinda`;
+  taslak herkese açık listeye, RSS'e, site haritasına, ana sayfa şeridine girmez, `site/`'a yazılmaz; (b) **önizleme**
+  girişli kısımda (`/taslak/onizleme/`, masa hesabıyla; telefonda da), sitedeki görünüşüyle; yerelde de bakılabilir;
+  (c) **yayınlama tek komut:** durum `yayinda`, tarih o gün, site üretilir, bağlantılar ve paylaşım resmi denetlenir,
+  gönderilir; Çalışmalar yazısıysa Yenilikler'in kısa duyurusu taslak olarak hazırlanır, o da kullanıcının onayıyla
+  yayımlanır. Düzenleme Markdown dosyasında (kullanıcı kendisi ya da önizlemeyi okurken söyler, Claude işler); her
+  değişiklik git'te. Tarayıcıda düzenleme kurulmaz (hesap, kaydetme, çakışma; kazancı az).
+- **İlk yazılar:** (1) **İşârât'ın usulü, son sürümüyle herkese açık** (kullanıcının kararı): bugün `/isarat-usul/`
+  yalnız bağlantıyla paylaşılıyor, `noindex`; sitedeki kopya `docs/d1/usul-ozeti.md`'nin son hâlinden eski (site
+  2026-11-16 08.54, özet 21.28): `scripts/d1-okur.py` son özetten yeniden üretir (HTML ve PDF), `noindex` kalkar,
+  menüde ve site haritasında Çalışmalar'ın yazısı olarak durur; eski adresler (`/isarat-usul/`, `/taslak/isarat-usulu.*`)
+  yeni yere yönlenir ya da sayfa yerinde kalıp listeye bağlanır (yapılırken seçilir; paylaşılmış bağlantılar
+  kırılmaz). Alıntılar `scripts/d1-usul-denetim.py` ile yeniden denetlenir. (2) **S8'in site sürümü** (bkz. S8).
+- **Sonraki adaylar** (karar yok): "Müellifin sözünden birim bölmek" (bölme kuralı), "Neden atıf birimi cümle"
+  (MCP'nin kaynağa bağlılık tasarımı).
+- **İngilizce sonra** (kullanıcının kararı). Deploy `scripts/deploy.sh --code` (site); araç çıktısı değişmez.
+- **Yapılanlar (2026-11-21):** `scripts/site-uret.py` iki türlü (Yenilikler, Çalışmalar), taslak, önizleme (`onizle`
+  yerelde; deploy `/taslak/onizleme/`'ye), `yayinla` (geçici bir yazıyla sınandı: ad ve tarih o gün, duyuru taslağı,
+  menü), Markdown'da kutu, tablo, çizgi, başlık kimlikleri ve içindekiler, Arapça işareti; sitenin Naskh yazı tipi
+  (`site/fonts/naskh.woff2`, OFL; `?v=12`); menüde "Çalışmalar" ilk yazı yayımlanınca görünür; testler
+  `tests/test_site_uret.py`. İşârât'ın usulü son özetten yeniden üretildi (148 alıntı denetimden geçti; 2.7
+  Muhâkemât eklendi, okur betiği artık İşârât dışı kimlikleri de çözer). İki taslak bekliyor: `docs/calismalar/
+  2026-11-21-isarat-usulu.md` (`adres: /isarat-usul/`) ve `2026-11-21-isarat-misli.md` (S8'in site sürümü).
+  **Yayında (2026-11-21, kullanıcının onayıyla, `yayin-20261121-181953`, araç çıktısında fark yok):** site,
+  stil `?v=12`, yeni usul sayfası (yayına kadar `noindex`), önizleme `/taslak/onizleme/` (girişli).
+  **İşârât'ın usulü yayında** (2026-11-21, kullanıcının onayı: "sayfa uygun"; Çalışmalar'ın ilk yazısı, menüde
+  Çalışmalar açıldı, `noindex` kalktı, site haritasında; `yayin-20261121-182932`). Yeniliklere duyurusu taslak
+  (`docs/yenilikler/2026-11-21-isarat-usulu.md`, "Yeni bölüm: Çalışmalar…"). **S8'in site sürümü kısaltıldı**
+  (kullanıcı: "gereğinden fazla ayrıntılı ve uzun … yalnız insanları ilgilendiren kısımları"; 2.192 → 695 kelime:
+  ölçüler tablosu, yolun adımları, sayıların çoğu, maliyet ve okuma çağrısı çıktı; ayrıntılı hâli git geçmişinde ve iç
+  sürümde `docs/s8-sonuc-yazisi.md`). Kullanıcının okumasından (2026-11-21): Yenilikler duyurusu yayında; S8'den
+  "Bir şey daha öğrendik" paragrafı ve Bakara 34 örneği çıktı (551 kelime, alıntısız); **S8 2026-11-24'te kendiliğinden
+  yayımlanacak** (kullanıcının isteği: "hemen yayınlama, 3 gün sonra"). Zamanlı yayın kuruldu: `yayin_tarihi`,
+  `site-uret.py zamanla|zamanli`, `systemd --user` zamanlayıcısı `site-zamanli.timer` (her sabah 09.00), yalnız site
+  gönderen `deploy.sh --site`; `yayinla` artık türüyle de (`yenilikler/ad`; aynı ad iki türde olabiliyor).
+  **Kalan:** 24 Kasım'da S8'in yayımlandığına bakmak (commit edilir, push kullanıcıda).
+
 **S7. Okuma platformu ve ar-ge masası (2026-11-21, kullanıcı yokken; kullanıcının onayı ve deploy izni):**
 - **Masanın girişi** (`scripts/masa-giris.py`, `34873a6`): `/taslak/` = Pano · Okumalar · Birimler; kabuk +
   `pano.json`, okumalar canlı API'den; D5 kuyruğu her birimden sonra yeniler. **Okuma mantığı** (kullanıcının
