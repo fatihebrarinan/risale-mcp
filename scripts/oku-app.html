@@ -175,10 +175,12 @@ function srcBox(k, set = 'y') {
   if (typeof s === 'string') s = {satir: s};               // masadaki eski taslakların kaynakçası yalnız satırdır
   const name = s.kaynak && s.kaynak.ad ? (s.kaynak.bag ? `<a href="${esc(s.kaynak.bag)}" target="_blank" rel="noopener">${esc(s.kaynak.ad)}</a>` : esc(s.kaynak.ad)) : '';
   const ar = /[؀-ۿ]/.test(s.metin || '') && !/[a-zçğışöü]{4}/i.test((s.metin || '').slice(0, 80));
-  const tr = s.tercume ? `<div class="lab">Yapay zekâ tercümesi (yayımlanmış bir tercüme değildir)</div><div class="tr" style="font-size:.95rem">${bidi(esc(s.tercume))}</div>` : '';
+  const tr = !s.tercume ? '' : s.tercume_kim === 'abdulmecid'
+    ? `<div class="lab" style="color:var(--accent)">Abdülmecid Nursî tercümesi (İşârât'ın Türkçesi; karşılığını yapay zekâ eşledi)</div><div class="tr" style="font-size:.95rem">${bidi(esc(s.tercume))}</div>`
+    : `<div class="lab">Yapay zekâ tercümesi (yayımlanmış bir tercüme değildir)</div><div class="tr" style="font-size:.95rem">${bidi(esc(s.tercume))}</div>`;
   return `<div class="srcbox"><b>[${k}]</b> ${esc(s.satir)}` + tr
     + (s.metin ? (tr ? `<details><summary class="small">Arapça aslı</summary>` : '') + `<div class="${ar ? 'ar' : 'tr'}" style="font-size:${ar ? '1.15rem' : '.92rem'}">${bidi(esc(s.metin))}</div>` + (tr ? '</details>' : '') : '')
-    + (tr ? '<div class="small muted">Asıl metin OpenITI, CC BY-NC-SA 4.0; tercüme de aynı lisansla.</div>' : '')
+    + (tr && s.tercume_kim !== 'abdulmecid' ? '<div class="small muted">Asıl metin OpenITI, CC BY-NC-SA 4.0; tercüme de aynı lisansla.</div>' : '')
     + `<div class="small muted">Kaynak: ${name || '—'}</div></div>`;
 }
 document.addEventListener('click', e => {

@@ -301,6 +301,11 @@ def risale(unit: str) -> list[dict]:
 # ---------------------------------------------------------------- taslaklar ve yapay zekâ katmanı
 
 TERCUME = P.KEEP / "tercume" / "kaynaklar.json"     # S7c.5: andığı tefsir ve klasik yerlerin Türkçesi (yapay zekâ)
+_ie = importlib.util.spec_from_file_location("isarat_esleme", ROOT / "scripts" / "isarat-esleme.py")
+ISARAT = sys.modules.get("isarat_esleme") or importlib.util.module_from_spec(_ie)
+if "isarat_esleme" not in sys.modules:
+    sys.modules["isarat_esleme"] = ISARAT
+    _ie.loader.exec_module(ISARAT)
 
 
 def drafts(unit: str, ayah: Ayah) -> dict:
@@ -319,6 +324,8 @@ def drafts(unit: str, ayah: Ayah) -> dict:
             server, sid = ids.get(k, (None, None))
             sources[k] = {"c": cite, "i": sid, "t": texts.text(server, sid, cite.split(" · ")[0]),
                           **({"tr": tercume[sid]["tr"]} if sid in tercume else {})}
+            if server == "risale" and (amt := ISARAT.turkcesi(sid)):     # S7c.4: İşârât'ın Abdülmecid tercümesi
+                sources[k] |= {"tr": amt, "trk": "abdulmecid"}
         istem = meta.get("istem", "tam")
         about = {"tam": "tam istem", "ince": "ince istem", "ince-klasik": "ince istem, klasik eserler açık",
                  "hat": "üretim hattı (D11): kısa istem, kaynak dosyası, uzunluk sınırı",

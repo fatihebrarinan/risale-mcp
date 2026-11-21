@@ -164,10 +164,44 @@ def model_align(unit: str) -> list[tuple[list[int], list[int]]] | None:
     return groups
 
 
-# ---------------------------------------------------------------- bütün İşârât (Fâtiha ve Bakara)
-
 GENEL_DB = P.GENEL_DB
 TR_W, AR_W = "isaratul-icaz", "isaratul-icaz-arabi"
+
+
+# ---------------------------------------------------------------- gösterim: Arapça atfın Türkçesi
+
+_MAP: dict | None = None
+
+
+def turkcesi(sid: str) -> str | None:
+    """İşârât'ın Arapçasına yapılan atfın (cümle ya da `…/c010..c012` aralığı) Abdülmecid Nursî tercümesindeki
+    karşılığı, `esleme.json`'dan; eşlenmemişse None. Masa ve platform kaynak kutusunda gösterir."""
+    global _MAP
+    if not sid or not sid.startswith(AR_W + "/"):
+        return None
+    if _MAP is None:
+        f = OUT / "esleme.json"
+        _MAP = json.loads(f.read_text(encoding="utf-8")) if f.exists() else {}
+    if not _MAP:
+        return None
+    m = re.match(r"^(.*/c)(\d+)(?:\.\.c?(\d+))?$", sid)
+    ids = [sid] if not m else [f"{m.group(1)}{k:0{len(m.group(2))}d}" for k in
+                               range(int(m.group(2)), int(m.group(3) or m.group(2)) + 1)]
+    tr_ids = []
+    for i in ids:
+        for t in _MAP.get(i, []):
+            if t not in tr_ids:
+                tr_ids.append(t)
+    if not tr_ids:
+        return None
+    import sqlite3
+    c = sqlite3.connect(f"file:{GENEL_DB}?mode=ro", uri=True)
+    texts = {r[0]: r[1] for r in c.execute(f"SELECT id, text FROM sentences WHERE id IN ({','.join('?' * len(tr_ids))})", tr_ids)}
+    return " ".join(texts[t] for t in tr_ids if t in texts) or None
+
+
+# ---------------------------------------------------------------- bütün İşârât (Fâtiha ve Bakara)
+
 SURELER = ("sure-i-fatiha", "sure-i-bakara")
 
 
