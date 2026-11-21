@@ -58,8 +58,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **Önde (oturum devri, 2026-11-21, altıncı kısım):** (1) **D5.1 bitti: Bakara 34** (bkz. D5); kuyruk durdu
   (`dur`). **Kullanıcı 34'ü okuyor** (platform `/oku/#/34`, masa `/taslak/ayet.html#/34`, `/taslak/d5-34.html`);
   35–40 kararı ondan sonra. (2) **S7c–S7g yapıldı** (bkz. S7 "S7c–S7g"): masa tek kabuk ve bütün âyetler, Türk hattı
-  varsayılan, İşârât alıntısında Abdülmecid tercümesi ve cümlenin tamamı, etiketler sadeleşti. Bütün birimlerin masa
-  verisi taslak sunucusunda yeni kodla kuruluyor (`masa-hepsi`; bitince masa, platform ve 34'ün D5 sayfası siteye).
+  varsayılan, İşârât alıntısında Abdülmecid tercümesi ve cümlenin tamamı, etiketler sadeleşti. 183 birimin masa verisi
+  kuruldu ve yayında (2026-11-21).
 - **Kullanıcıdan beklenen:** 34'ün okuması; 35–40'ın ne zaman açılacağı; masadan platforma taşınacak kolaylıklar.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
