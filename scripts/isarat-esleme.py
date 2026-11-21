@@ -177,7 +177,7 @@ def unit_result(unit: str, model: bool = False) -> dict:
         got = set().union(*(a2t.get(a, set()) for a in k["ar"]))
         ok += bool(got & set(k["tr"]))
     shapes = Counter(f"{len(ii)}-{len(jj)}" for ii, jj in groups)
-    return {"birim": unit, "ar": len(ar), "tr": len(tr), "gruplar": len(groups), "bicim": dict(shapes),
+    return {"birim": unit, "model": model, "ar": len(ar), "tr": len(tr), "gruplar": len(groups), "bicim": dict(shapes),
             "envanter": [ok, tot],
             "ciftler": [{"ar": [ar[i][1] for i in ii], "tr": [tr[j][1] for j in jj],
                          "ar_t": " ".join(ar[i][2] for i in ii), "tr_t": " ".join(tr[j][2] for j in jj)}
@@ -211,7 +211,7 @@ td, th {{ border-top:1px solid var(--line); padding:3px 8px; text-align:left; }}
 .tr {{ font-family:"Noto Serif",Georgia,serif; margin:0; }}
 </style></head><body><main><p class="small"><a href="./">← masa</a></p>
 <h1>İşârât: Arapça aslı ile Abdülmecid Nursî tercümesi, cümle düzeyinde eşleme sınaması</h1>
-<p class="muted">S7c.4. Eşleme programla (model yok): iki metnin ortak Arapça sözleri çapa, aradakiler sıra ve uzunlukla.
+<p class="muted">S7c.4. {"Eşleme modelle (Opus, araçsız)" if any(r.get("model") for r in results) else "Eşleme programla (model yok): iki metnin ortak Arapça sözleri çapa, aradakiler sıra ve uzunlukla"}. Öbür sayfa: <a href="isarat-esleme.html">program</a> · <a href="isarat-esleme-model.html">model</a>.
 Envanter sütunu: modelin nükteye bağladığı Arapça ve Türkçe cümlelerle uyuşan kalem sayısı (alt sınır; kalemler nükte
 düzeyinde). Aşağıda rastgele {len(sample)} eşleme: sol Arapça, sağ tercüme. Soru: eşlemeler cümle düzeyinde doğru mu?</p>
 <table><tr><th>Birim</th><th>Arapça cümle</th><th>Türkçe cümle</th><th>Envanter</th><th>Eşleme biçimleri</th></tr>{stats}</table>
@@ -238,9 +238,7 @@ def main() -> None:
         ok, tot = r["envanter"]
         print(f"{u}{' (model)' if a.model else ''}: {r['ar']} Arapça, {r['tr']} Türkçe cümle; {r['gruplar']} grup "
               f"{r['bicim']}; envanter {ok}/{tot} (%{100 * ok / max(tot, 1):.0f})")
-    if a.model:
-        return
-    out = P.KEEP / "masa" / "isarat-esleme.html"
+    out = P.KEEP / "masa" / ("isarat-esleme-model.html" if a.model else "isarat-esleme.html")
     out.write_text(page(results), encoding="utf-8")
     print(out.relative_to(ROOT))
 
