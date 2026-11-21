@@ -401,6 +401,7 @@ def gunluk_ozet() -> None:
     bildir("D5 günlük özet", f"son 24 saatte {len(son24)} birim; toplam {len(done)}/{len(units)}; alarmlı {len(al)}; "
                              f"haftalık kota %{(lim.get('week') or 0) * 100:.0f}. https://risalemcp.com/taslak/d5.html")
     st["son_ozet"] = time.time()
+    P.D5_STATE.parent.mkdir(parents=True, exist_ok=True)          # ilk koşuda klasör yok (2026-11-21)
     P.D5_STATE.write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
 
 
