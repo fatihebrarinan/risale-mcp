@@ -511,6 +511,19 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   makinede `rrsync -wo /var/www/ozel/taslak`, yalnız tefsir makinesinden); bildirimler ntfy.sh (konu
   `~taslak/.d5-ntfy`, git'e girmez). Kuyruk sürerken `gonder` kodu `~/kod-bekleyen`'e koyar, sıradaki birimin başında
   geçer. D5 sürerken yerelde `data/d1`'e yazılmaz (önce `git -C data/d1 pull`).
+- **Okuma platformu ve ar-ge masası (S7, 2026-11-21):** tek uygulama (`scripts/oku-app.html`), tek veri biçimi (yayın
+  dosyası `scripts/d1-yayin.py`: `data/d1/yayin/<sûre>/<birim>/v<k>.json`, değişmez sürümler, içerikten paragraf
+  kimliği). `uv run python scripts/oku-veri.py [--birim <b>] [--gonder]` platformu (`data/interim/oku/` →
+  `/var/www/ozel/taslak/oku/`, Caddy `/oku/`'yu oraya çevirir) ve masanın birim görünümünü (`data/interim/oku-masa/` →
+  `/taslak/birim.html`) kurar; D5 kuyruğu her birimden sonra çalıştırır. Platformda yalnız son taslak, masada hepsi;
+  ar-ge birimlerinde platforma giden taslak `data/d1/oku/secim.json` (yoksa en sonuncu). Hesaplar `site_auth.py`:
+  kapsam `masa` (`/taslak/` ve `/oku/`) ya da `oku` (yalnız platform; `scripts/sunucu.sh taslak add-user <e-posta>
+  --generate --oku`), çerez `/` yolunda. Okuyucu notu masa servisinde (`masa.py`; okuyucu yalnız kendi notunu görür);
+  "notlarımla düzelt" elle: `uv run python scripts/d1-birim.py notlarla <birim> [--deneme]`. Masanın girişi
+  `scripts/masa-giris.py` (Pano · Okumalar · Birimler), deneyler defteri `scripts/deneyler.py` (sürümler, deneyler,
+  alet ayarı, kayma, arama); ikisi her D5 biriminden sonra yenilenir. Okumalar yalnız ar-ge içindir, onay değildir:
+  kuyruk okuma görevi açmaz (2026-11-21). `/var/www/ozel/taslak` setgid (`caddy` grubu): sunucunun kısıtlı anahtarla
+  gönderdiği dosyalar Caddy'ye okunur kalır.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

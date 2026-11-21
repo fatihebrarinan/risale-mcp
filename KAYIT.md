@@ -345,6 +345,29 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S7. Okuma platformu ve ar-ge masası (2026-11-21, kullanıcı yokken; kullanıcının onayı ve deploy izni):**
+- **Masanın girişi** (`scripts/masa-giris.py`, `34873a6`): `/taslak/` = Pano · Okumalar · Birimler; kabuk +
+  `pano.json`, okumalar canlı API'den; D5 kuyruğu her birimden sonra yeniler. **Okuma mantığı** (kullanıcının
+  kararı): okumalar yalnız ar-ge, onay değil; "her 20 birimden biri" listesi ve kendiliğinden görev açma düştü
+  (`2d68ab3`); D5.1'de okuma yok; D5.2 bir kez, göz atmak yeter.
+- **Okuma platformu `/oku/` ve masanın birim görünümü** (`3b8716d`, `e1c7af0`, ders/arama eki): tek uygulama
+  (`oku-app.html`), veri `oku-veri.py` (yayın dosyasından; İşârât 1–33, Risale'deki yerler `find_ayah` bağlarından,
+  13 müfessir isteğe bağlı dosyada, kaynak adı ve bağlantısı her atıfta). Hesap kapsamı `masa`/`oku` (`site_auth.py`;
+  çerez `/`; `oku` masaya ve okuma görevlerine giremez, yalnız kendi notunu görür); Caddy `/oku/` →
+  `/var/www/ozel/taslak/oku/` (D5 sunucusunun kısıtlı anahtarı oraya yazabilsin); `/var/www/ozel/taslak` setgid
+  (sunucudan gelen dosyalar `root` grubuyla Caddy'ye kapalı kalacaktı). Yayın: Arapça–Türkçe eşleme `d1-yz.pairs`'e
+  geçti (önceki "son Arapça" eşlemesi kayıyordu), ders başlıkları `ust_baslik`; ar-ge birimleri v1 → v2. Yazı tipi
+  Noto Naskh Arabic (OFL, `scripts/oku-fonts/`). Masa: bütün taslaklar, yan yana, kapı ve kapalı eleştirmen (her
+  düzeltme ayrı; "kısmen" = karşılandı, bir kısmı reddedildi), nisbet, notların hayatı.
+- **Okuyucu notundan düzeltme** (S7 (f)): `d1-birim.py notlarla <birim> [--deneme]`; d3 kuralları, karşılanan not
+  "işlendi" (makine ucu `/taslak/api/not-durum`), reddedilen açık kalır. Henüz gerçek notla çalıştırılmadı.
+- **Deneyler defteri** (`scripts/deneyler.py`, `00e728a`): 38 istem sürümü (`docs/d1/*-istemi.md`), 14 okuma turu
+  (kollar, kör A/B, İşârât karşılaştırması, okuyucu kararları sabit numarayla, KAYIT kaydı), aşamalar D11–D15, alet
+  ayarı (kör A/B ile okuyucu 9 turun 6'sında aynı taslak), kayma (garaz özetleri, birinci vecih), arama (bütün
+  taslaklar ve okuma gerekçeleri).
+- Denendi: `node` ile her birim ve sekme çizildi (176/176), tarayıcıda yerel deneme sunucusunda not, kaynak kutusu,
+  ders, arama, kesintisiz okuma; canlıda girişsiz istekler girişe yönleniyor, API 401. **Canlıda girişle denenmedi.**
+
 **D15. Saklı birimlerde son ölçüm** (bitti, 2026-11-20, kullanıcının kararı: rapor `data/d1/d15-rapor.md` uygun, hat h9; aşağısı kayıttır) (kullanıcının kararı, 2026-11-17: kendi aşaması; "D5'ten önceki son düzlük, o
 aşamaya kadar ar-ge"; eski D12.6). D14'ün en iyi hattı saklı birimlerde (21–22, 25, 30, 28, 29, 26–27) bir kez, aynı
 ölçüyle: kör eleştirmen, envanter (ayar), kullanıcının okuması. D5'e geçiş ölçütü plan belgesi 4.7 (yeni hat çoğunlukla

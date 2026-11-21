@@ -318,6 +318,16 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   notlar ve geçmişi, jetonla görev açma ve dışa aktarma, ad yok); okuma sayfaları kararları sunucuya yazar, "Okumayı
   bitir" tarafları açar (`d1-tur.py okuma-tek`, görevsiz eski düzen `--gorevsiz`); `scripts/masa-gorev.py ac | al`
   (jeton `~taslak/.masa-token`, yerelde `.env` `MASA_TOKEN`).
+  **Yapılanlar (2026-11-21, ikinci kısım; ayrıntı KAYIT.md "S7"):** masanın girişi (Pano · Okumalar · Birimler),
+  birimin ar-ge görünümü (`/taslak/birim.html`: bütün taslaklar, yan yana, kapı ve eleştirmen ham, nisbet, notlar),
+  okuma platformu `/oku/` (S7.3: Kur'ân paneli, âyete git, yalnız son taslak, 1–33'te önce İşârât, Arapça ve izah
+  açılır, atıfta kaynağın metni ve adı, işaretler, künye, eksik notları, Risale'deki yerler, 13 müfessir, ders kutusu ve
+  Risale'deki genişi, konu araması, kesintisiz okuma, indirme ve atıf satırı, kaldığı yer, usul sayfası), okuyucu notu
+  (S7.4: sürüme ve paragrafa bağlı, seçilen söz, geri çekme; okuyucu yalnız kendininkini görür), "notlarımla düzelt"
+  (S7 (f), elle), deneyler defteri, alet ayarı, kayma, arama; hesap kapsamı `oku` (davetli okuyucu masaya giremez).
+  **Kalan:** canlıda girişle bir bakış (kullanıcı); davetli hesapları `scripts/sunucu.sh taslak add-user <e-posta>
+  --generate --oku` (kullanıcının işi); D5 kuyruğu başlayınca platformun sunucudan ilk kurulumu (bütün birimler,
+  kendiliğinden).
   **Kararlar (kullanıcı, 2026-11-21, oturum):** sıra: birimin ar-ge görünümü (hafif: ham notlar, nisbet, kapının
   kabul ve retleri, düzeltme farkı, alarmlar) → S7.3 → S7.4; deneyler defteri, alet ayarı, arama sonra, D5'i
   beklemeden. **Ar-ge masasında da** Kur'ân paneli ve okuma platformunun kolaylıkları olur (kullanıcı: "unutma").
