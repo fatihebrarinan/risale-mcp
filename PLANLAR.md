@@ -324,6 +324,14 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   Platform: aynı davetli hesaplar, ayrı yol (`/oku/`; masa `/taslak/`'ta). Yayın: D5'te bütün birimler; Bakara 1–33
   vitrin (önce İşârât, yanında taslak); **okuma platformunda yalnız son taslak, ar-ge masasında hepsi.** İlk davetliler
   kullanıcının işi.
+  **Ekler** (kullanıcı kabul etti, 2026-11-21): (1) **her alıntıda kaynağın adı ve bağlantısı** (izinlerin şartı:
+  e-Risale, risaleoku, müfessirin baskısı, Vakıf meali; zorunlu); (2) **usul sayfası** "Bu taslaklar nasıl
+  yazılıyor" (hat, kapı, ölçüler, eleştirmenin isabeti, yapay zekânın yapamadıkları, neden "tefsir" denmez; künyeler
+  buraya bağlanır); (3) **taslaklar yan yana** (yalnız masada; aynı birimin taslakları vecih vecih; vecih haritasının
+  öncüsü); (4) **indirme ve atıf biçimi** (birimin yayın dosyası ve düz metin, sûre tek dosya; paragrafın hazır atıf
+  satırı "Risale MCP yapay zekâ taslağı, Bakara 2:30, sürüm 2, paragraf …"); (5) **âyetle gitmek** ("2:255" → birim);
+  (6) **kaldığı yer** (tarayıcıda). Önerilmeyenler: beğeni ya da "faydalı" işareti (meşrebe göre oy gibi işler),
+  çevrimdışı uygulama ve yazdırma. Arayüz minimal ve basit (kullanıcı). Kullanıcı yokken deploy izni verdi (bu iş için).
   **Sıra:** S7.1 veri katmanı (yayın dosyası, kalıcı paragraf kimlikleri, sürümler) → S7.2 ar-ge masası (pano girişte,
   birim başına eleştiri, nisbet ve kapı) → S7.3 okuma platformu ilk sürüm (Kur'ân paneli, birim sayfası, izah, atıfta
   kaynağın metni, künye, işaretler) → S7.4 okuyucu notu (sunucuda, kalıcı adrese bağlı). S7.1 ve S7.2 D5 dönerken
