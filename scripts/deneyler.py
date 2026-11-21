@@ -39,7 +39,7 @@ def _load(name: str, file: str):
 
 P = _load("d1_prova", "d1-prova.py")
 DUR = _load("d1_durum", "d1-durum.py")
-MASA = P.KEEP / "masa"
+MASA = ROOT / "data" / "interim" / "oku-masa"   # yeniden üretilir, git'e girmez (S7d: iki makine yazıyordu)
 DOCS = ROOT / "docs" / "d1"
 KAYIT = ROOT / "KAYIT.md"
 esc = html.escape

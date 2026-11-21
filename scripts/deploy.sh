@@ -64,7 +64,7 @@ rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
 # S5: girişli taslak bölümü (risalemcp.com/taslak/): âyet masası kapalı depodan (data/d1, `scripts/d1-masa.py`)
 # /var/www/ozel/taslak/'a; site/ klasörüne girmez, yalnız Caddy okur, giriş servisi (aşağıda) kapıdır
 # Birim başına bir sayfa (<birim>.html; index.html son birim)
-if [[ -f data/d1/masa/index.html ]]; then
+if [[ -d data/d1/masa ]]; then
     "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel && install -d -o root -g caddy -m 2750 /var/www/ozel/taslak"
     rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/d1/masa/ "$HOST:/var/www/ozel/taslak/"
 fi

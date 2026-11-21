@@ -38,7 +38,8 @@ def _load(name: str, file: str):
 
 P = _load("d1_prova", "d1-prova.py")
 DUR = _load("d1_durum", "d1-durum.py")
-MASA = P.KEEP / "masa"
+MASA = P.KEEP / "masa"                      # okunan sayfalar (tur, D5 okuma sayfaları; git'te)
+OUT = ROOT / "data" / "interim" / "oku-masa"  # yazılanlar: yeniden üretilir, git'e girmez (iki makine yazıyordu, S7d)
 STOP = Path.home() / ".d5-dur"
 
 
@@ -271,7 +272,8 @@ load();
 def yaz() -> list[Path]:
     S = _load("d1_d5_sayfa", "d1-d5-sayfa.py")
     MASA.mkdir(parents=True, exist_ok=True)
-    index, data = MASA / "index.html", MASA / "pano.json"
+    OUT.mkdir(parents=True, exist_ok=True)
+    index, data = OUT / "index.html", OUT / "pano.json"
     index.write_text(SHELL.replace("__CSS__", S.CSS), encoding="utf-8")
     data.write_text(json.dumps(veri(), ensure_ascii=False, indent=1), encoding="utf-8")
     D = _load("deneyler", "deneyler.py")          # deneyler defteri, alet ayarı, kayma, arama (her birimden sonra)
