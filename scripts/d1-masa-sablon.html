@@ -513,7 +513,10 @@ function srcBoxHtml() {
   return `<div class="srcbox"><div style="display:flex;justify-content:space-between;gap:8px"><b class="small">${esc(draftLabel(b.dk))}
     taslağının gösterdiği kaynak [${esc(b.n)}]</b><button class="linkish" data-closesrc>kapat</button></div>
     <div class="small">${esc(s.c || '')}</div>${s.i ? `<div class="small muted">${esc(s.i)}</div>` : ''}
-    <p class="para ar" style="margin:4px 0 0">${s.t ? esc(s.t) : '<span class="muted small">metni bulunamadı</span>'}</p></div>`;
+    ${s.tr && st.lang === 'tr' ? `<div class="serif" style="margin:4px 0 0"><span class="tag ai">yapay zekâ tercümesi</span> ${trEsc(s.tr)}</div>
+      <div class="small muted">Tercüme yapay zekânındır, yayımlanmış bir tercüme değildir; asıl metin OpenITI'den, CC BY-NC-SA 4.0 (tercüme de aynı lisansla).</div>
+      <details><summary class="small muted">Arapça aslı</summary><p class="para ar" style="margin:4px 0 0">${esc(s.t || '')}</p></details>`
+    : `<p class="para ar" style="margin:4px 0 0">${s.t ? esc(s.t) : '<span class="muted small">metni bulunamadı</span>'}</p>`}</div>`;
 }
 // Kaynak gösterme şartları (docs/izinler.md): e-Risale, risaleoku, OpenITI (CC BY-NC-SA 4.0), Tanzil
 const CREDITS = `<div class="credits"><b>Kaynaklar ve izinler.</b> İşârâtü'l-İ'câz'ın Türkçesi (Abdülmecid Nursî tercümesi) ve

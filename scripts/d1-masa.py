@@ -300,9 +300,13 @@ def risale(unit: str) -> list[dict]:
 
 # ---------------------------------------------------------------- taslaklar ve yapay zekâ katmanı
 
+TERCUME = P.KEEP / "tercume" / "kaynaklar.json"     # S7c.5: andığı tefsir ve klasik yerlerin Türkçesi (yapay zekâ)
+
+
 def drafts(unit: str, ayah: Ayah) -> dict:
     keep = P.DRAFTS / unit
     texts = P.SourceTexts(unit)
+    tercume = json.loads(TERCUME.read_text(encoding="utf-8")) if TERCUME.exists() else {}
     out = {}
     for n in Y.drafts_of(unit):
         meta = json.loads((keep / f"taslak-{n}.json").read_text())
@@ -313,7 +317,8 @@ def drafts(unit: str, ayah: Ayah) -> dict:
         sources = {}
         for k, cite in cites.items():
             server, sid = ids.get(k, (None, None))
-            sources[k] = {"c": cite, "i": sid, "t": texts.text(server, sid, cite.split(" · ")[0])}
+            sources[k] = {"c": cite, "i": sid, "t": texts.text(server, sid, cite.split(" · ")[0]),
+                          **({"tr": tercume[sid]["tr"]} if sid in tercume else {})}
         istem = meta.get("istem", "tam")
         about = {"tam": "tam istem", "ince": "ince istem", "ince-klasik": "ince istem, klasik eserler açık",
                  "hat": "üretim hattı (D11): kısa istem, kaynak dosyası, uzunluk sınırı",

@@ -59,6 +59,7 @@ OUT = ROOT / "data" / "interim" / "oku"
 OUT_MASA = ROOT / "data" / "interim" / "oku-masa"
 APP = ROOT / "scripts" / "oku-app.html"
 USUL = ROOT / "scripts" / "oku-usul.html"
+TERCUME = P.KEEP / "tercume" / "kaynaklar.json"
 CHOICE = P.KEEP / "oku" / "secim.json"          # ar-ge birimlerinde platforma giden taslak (yoksa en son taslak)
 SITE_HOST = os.environ.get("D5_SITE_HOST", "root@100.108.174.19")
 SITE_KEY = Path.home() / ".ssh" / "site_gonder"                 # sunucuda (rrsync, kök /var/www/ozel/taslak)
@@ -264,8 +265,11 @@ def unit_data(libs: Libs, u: dict) -> dict:
          "tefsir": tefsir_units(libs, sura, range(a, b + 1)),
          "bolum_adlari": P.SECTION_TITLES}
     if pub:
+        tercume = json.loads(TERCUME.read_text(encoding="utf-8")) if TERCUME.exists() else {}
         for k, v in pub["kaynaklar"].items():
             v["kaynak"] = libs.source(v.get("sunucu"), v.get("kimlik"))
+            if v.get("kimlik") in tercume:                  # S7c.5: andığı tefsir ve klasik yerin Türkçesi (yapay zekâ)
+                v["tercume"] = tercume[v["kimlik"]]["tr"]
         d["taslak"] = {k: pub[k] for k in ("surum", "yayimlandi", "kunye", "bloklar", "kaynaklar", "eksik", "icerik_sha")
                        if k in pub} | {"onceki_surum": pub.get("onceki_surum")}
     for w in d["tefsir"]:
