@@ -365,6 +365,12 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   (kollar, kör A/B, İşârât karşılaştırması, okuyucu kararları sabit numarayla, KAYIT kaydı), aşamalar D11–D15, alet
   ayarı (kör A/B ile okuyucu 9 turun 6'sında aynı taslak), kayma (garaz özetleri, birinci vecih), arama (bütün
   taslaklar ve okuma gerekçeleri).
+- **S7b (2026-11-21, kullanıcının eleştirileri):** (1) masa ekranın tamamı; platformda ölçülü metin sütunu, sağda
+  kaynak yan sütunu, "geniş" düğmesi; (2) Kur'ân paneli her ekranda açılıp kapanır, hatırlanır; (3) kaynaklı işaretler
+  mavi, numarasız etiketler turuncu; bulunan hata: `[dil; 35]` biçimindeki atıflar tıklanmıyordu (30'un h12 son
+  taslağında 19 atıf); (4) masanın birim sayfası eski âyet masası oldu, genişletildi (Kur'ân paneli, 6 yan, Kalite
+  kapısı, Nisbet ve Okuyucu notları yanları, lafız süzgeciyle; D5 ve envantersiz birimlerde de kurulur); `birim.html`
+  emekli. Kapı yanında her düzeltme denemesi ayrı, "kısmen" = karşılandı ama bir kısmı reddedildi.
 - Denendi: `node` ile her birim ve sekme çizildi (176/176), tarayıcıda yerel deneme sunucusunda not, kaynak kutusu,
   ders, arama, kesintisiz okuma; canlıda girişsiz istekler girişe yönleniyor, API 401. **Canlıda girişle denenmedi.**
 

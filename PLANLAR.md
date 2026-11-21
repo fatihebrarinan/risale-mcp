@@ -320,6 +320,10 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   Risale'deki genişi, konu araması, kesintisiz okuma, indirme ve atıf satırı, kaldığı yer, usul sayfası), okuyucu notu
   (S7.4: sürüme ve paragrafa bağlı, seçilen söz, geri çekme; okuyucu yalnız kendininkini görür), "notlarımla düzelt"
   (S7 (f), elle), deneyler defteri, alet ayarı, kayma, arama; hesap kapsamı `oku` (davetli okuyucu masaya giremez).
+  **S7b (kullanıcının eleştirileri, 2026-11-21) yapıldı:** masa tam genişlik, platformda ölçülü metin ve kaynak yan
+  sütunu, Kur'ân paneli açılıp kapanır, renkler (kaynak mavi, etiket turuncu), `[dil; 35]` atıfları tıklanır; masanın
+  birim sayfası eski âyet masası, genişletilmiş (Kur'ân paneli, 6 yan, kapı/nisbet/not yanları lafız süzgeciyle).
+  **Konuşulacak (kullanıcı):** masanın kolaylıklarından hangileri okuma platformuna taşınacak.
   **Kalan:** canlıda girişle bir bakış (kullanıcı); davetli hesapları `scripts/sunucu.sh taslak add-user <e-posta>
   --generate --oku` (kullanıcının işi); D5 kuyruğu başlayınca platformun sunucudan ilk kurulumu (bütün birimler,
   kendiliğinden).

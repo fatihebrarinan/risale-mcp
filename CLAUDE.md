@@ -514,8 +514,12 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
 - **Okuma platformu ve ar-ge masası (S7, 2026-11-21):** tek uygulama (`scripts/oku-app.html`), tek veri biçimi (yayın
   dosyası `scripts/d1-yayin.py`: `data/d1/yayin/<sûre>/<birim>/v<k>.json`, değişmez sürümler, içerikten paragraf
   kimliği). `uv run python scripts/oku-veri.py [--birim <b>] [--gonder]` platformu (`data/interim/oku/` →
-  `/var/www/ozel/taslak/oku/`, Caddy `/oku/`'yu oraya çevirir) ve masanın birim görünümünü (`data/interim/oku-masa/` →
-  `/taslak/birim.html`) kurar; D5 kuyruğu her birimden sonra çalıştırır. Platformda yalnız son taslak, masada hepsi;
+  `/var/www/ozel/taslak/oku/`, Caddy `/oku/`'yu oraya çevirir) kurar. **Masanın birim sayfası eski âyet masasıdır**
+  (`scripts/d1-masa.py` + `d1-masa-sablon.html`; S7b, kullanıcının kararı 2026-11-21: "eski masanın kullanışlılığı"):
+  Kur'ân paneli, en çok 6 yan (Kaynaklar, İşârât, her taslak, Kalite kapısı, Nisbet, Okuyucu notları), lafız ve düzey
+  süzgeci, katmanlar; ar-ge birimleri `data/d1/masa/<b>.html`, D5 birimleri `data/interim/oku-masa/<b>.html`
+  (yeniden üretilir), ortak liste `masa-birimler.json`. D5 kuyruğu her birimden sonra `d1-masa.py <b>` ve
+  `oku-veri.py --birim <b> --gonder` çalıştırır. Platformda yalnız son taslak, masada hepsi;
   ar-ge birimlerinde platforma giden taslak `data/d1/oku/secim.json` (yoksa en sonuncu). Hesaplar `site_auth.py`:
   kapsam `masa` (`/taslak/` ve `/oku/`) ya da `oku` (yalnız platform; `scripts/sunucu.sh taslak add-user <e-posta>
   --generate --oku`), çerez `/` yolunda. Okuyucu notu masa servisinde (`masa.py`; okuyucu yalnız kendi notunu görür);
