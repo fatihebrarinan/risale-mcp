@@ -65,10 +65,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
 - **Önde (oturum devri, 2026-11-21, yedinci kısım):** (1) **D5.1 okundu** (kullanıcı: nazım nükteleri yerinde,
-  Risale dersi çok iyi; sınır: «kâne» tek müfessirden; bkz. S7 "İstem adayı"). (2) **Kuyruk 35–40** sürüyor
-  (`taslak-sunucu.sh devam 40`: 40 bitince kendiliğinden durur; 35–37, 38–39, 40). (3) 34'ün yayını v2: düzeltilmiş
+  Risale dersi çok iyi; sınır: «kâne» tek müfessirden; bkz. S7 "İstem adayı"). (2) **Kuyruk Bakara'nın sonuna kadar** sürüyor
+  (kullanıcının kararı, 2026-11-21; 40'ta durma işareti kaldırıldı; hesap: 14 Aralık'a kadar ≈160 birim, kalan ≈150;
+  haftalık pencere dolunca kullanıcı sıfırlama hakkını kullanabilir; Pro'dan önce `dur`). (3) 34'ün yayını v2: düzeltilmiş
   nisbet denetçisiyle (sahte "kaynakta yok" uyarıları gider). S7c–S7h yayında.
-- **Kullanıcıdan beklenen:** 35–40'tan sonrası; masadan platforma taşınacak kolaylıklar.
+- **Kullanıcıdan beklenen:** masadan platforma taşınacak kolaylıklar; S8'in yeri.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
