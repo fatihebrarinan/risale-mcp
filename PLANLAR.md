@@ -95,8 +95,9 @@ kalır (okuma platformunu, kayıtları ve iç ayrıntıyı taşır); (2) **site 
 yayımlanmak üzere ayrı yazılır: okuma platformundan açıkça bahsetmez (platform davetle; "Bundan sonra"daki platform
 anlatımı ve okuyucu notu çıkar, yerine genel bir cümle), siteye uygun (programcı ayrıntısı, sürüm adları (h9, d3),
 dosya yolları ve "Kayıtlar" yok; S9'un iskeletine göre: kısa cevap kutusu, sınırlar, kaynaklar). Yer: S9.
-**Açık:** okuyucunun ehil olmadığını söyleyen cümle ("Ölçümün sınırları") site sürümünde nasıl söylenecek
-(kullanıcı okurken karar verir).
+Okuyucunun cümlesi (kullanıcının kararı, 2026-11-21; "ehil değil" yerine): "Okumaları projeyi yürüten kişi yaptı;
+tefsir ve belâgat alanında uzman değildir, bilmediğini kaynaktan araştırdı ya da ehline sordu. Bu alanların
+uzmanlarının okuması henüz yok." 
 
 **S9. Sitede "Çalışmalar" kısmı** (kullanıcının fikri ve kararları, 2026-11-21): Yenilikler'den ayrı, blog yazısı
 tarzında bir kısım; projenin ne denediğini ve ne öğrendiğini anlatan uzun, kaynaklı yazılar. Ad **"Çalışmalar"**
@@ -111,6 +112,14 @@ yazıya bağlanır.
   gibi, ek olarak `gozden_gecirme`), çıktı `site/calismalar/<ad>.html` ve `site/calismalar.html`; menüye
   "Çalışmalar"; Open Graph, RSS, site haritası aynı yoldan. Markdown çevirisi genişler: tablo, sağdan sola Arapça
   alıntı (sitenin Naskh yazı tipiyle), "Kısa cevap" kutusu. CSS ya da JS değişirse `ASSET_VERSION`.
+- **Taslak, önizleme, yayın** (kullanıcının isteği ve kararı, 2026-11-21: "yayından önce benim son düzenlemeleri
+  yapıp yayınlayabileceğim bir yapı"; Yenilikler için de): (a) yazının üst bilgisinde `durum: taslak | yayinda`;
+  taslak herkese açık listeye, RSS'e, site haritasına, ana sayfa şeridine girmez, `site/`'a yazılmaz; (b) **önizleme**
+  girişli kısımda (`/taslak/onizleme/`, masa hesabıyla; telefonda da), sitedeki görünüşüyle; yerelde de bakılabilir;
+  (c) **yayınlama tek komut:** durum `yayinda`, tarih o gün, site üretilir, bağlantılar ve paylaşım resmi denetlenir,
+  gönderilir; Çalışmalar yazısıysa Yenilikler'in kısa duyurusu taslak olarak hazırlanır, o da kullanıcının onayıyla
+  yayımlanır. Düzenleme Markdown dosyasında (kullanıcı kendisi ya da önizlemeyi okurken söyler, Claude işler); her
+  değişiklik git'te. Tarayıcıda düzenleme kurulmaz (hesap, kaydetme, çakışma; kazancı az).
 - **İlk yazılar:** (1) **İşârât'ın usulü, son sürümüyle herkese açık** (kullanıcının kararı): bugün `/isarat-usul/`
   yalnız bağlantıyla paylaşılıyor, `noindex`; sitedeki kopya `docs/d1/usul-ozeti.md`'nin son hâlinden eski (site
   2026-11-16 08.54, özet 21.28): `scripts/d1-okur.py` son özetten yeniden üretir (HTML ve PDF), `noindex` kalkar,
