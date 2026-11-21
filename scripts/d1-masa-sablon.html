@@ -222,6 +222,7 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
   <h1><a href="ayet.html" style="color:inherit;text-decoration:none" title="Âyet masasının girişi">Âyet masası</a></h1>
   <button class="btn" id="addpane" title="Bir yan daha aç (en çok 6)">+ yan ekle</button>
   <label>Dil <span class="seg" id="lang"><button data-v="tr">Türkçe</button><button data-v="ar">Arapça</button></span></label>
+  <label title="Kur'ân metninin hattı: Türk hattı (risaleoku) ya da Medine Mushafı (Tanzil). Aynı kıraat, imlâ farkı.">Hat <span class="seg" id="hat"><button data-v="turk">Türk</button><button data-v="medine">Medine</button></span></label>
   <span class="spacer"></span>
   <span class="msg" id="msg"></span>
   <a class="btn nav" href="./">Masanın girişi</a><a class="btn nav" href="/oku/">Okuma platformu</a><a class="btn nav" href="/taslak/cikis">Çıkış</a>
@@ -252,7 +253,9 @@ let abMarks = store.get('d1-masa-ab', {});      // D12.5: "birim|tur|yer" -> {se
 const U = DATA.unit, Y = DATA.yz;
 const DKEYS = Object.keys(DATA.drafts);
 const MAXP = 6;                                  // en çok yan (S6: 4; S7b, 2026-11-21: geniş ekranda 6)
-const st = Object.assign({loc: null, lang: 'tr', blind: false, onlySample: false}, store.get('d1-masa', {}));
+const st = Object.assign({loc: null, lang: 'tr', hat: 'turk', blind: false, onlySample: false}, store.get('d1-masa', {}));
+// Âyetin kelimesi seçilen hatla (S7e: Türk hattı varsayılan; Türk hattı eşlenemeyen âyette Medine)
+function chipText(c) { return st.hat === 'turk' && c.turk ? c.turk : c.text; }
 st.blind = false; st.onlySample = false;            // S7c.1: kör kip ve örneklem süzgeci kalktı
 st.focus = null; st.dfocus = null; st.srcbox = null; st.draft = DKEYS[0];   // st.draft: kartlar çizilirken o yanın taslağı
 const CHIP = Object.fromEntries(DATA.chips.map(c => [c.id, c]));
@@ -317,12 +320,12 @@ function draftOrder() { return st.blind ? [...DKEYS].sort((a, b) => BLIND[a].loc
 function draftLabel(dk) { return st.blind ? BLIND[dk] : (DATA.drafts[dk] ? DATA.drafts[dk].label : dk); }
 function draftAbout(dk) { return st.blind ? '' : (DATA.drafts[dk] || {}).about || ''; }
 
-function persist() { store.set('d1-masa', {loc: st.loc, lang: st.lang, blind: st.blind, onlySample: st.onlySample}); }
+function persist() { store.set('d1-masa', {loc: st.loc, lang: st.lang, hat: st.hat, blind: st.blind, onlySample: st.onlySample}); }
 function say(t) { $('#msg').textContent = t; if (t) setTimeout(() => { if ($('#msg').textContent === t) $('#msg').textContent = ''; }, 6000); }
 let ACCOUNT = null;                              // sitede girişli hesabın adı (/taslak/ben); dosyadan açılınca yok
 function reader() { return ACCOUNT || ''; }
 function needReader() { return true; }             // işaretleme kalktı (S7c.1)
-function locName(l) { return CHIP[l] ? `<span class="arw" dir="rtl">${esc(CHIP[l].text)}</span>` : esc(LOC[l] || l); }
+function locName(l) { return CHIP[l] ? `<span class="arw" dir="rtl">${esc(chipText(CHIP[l]))}</span>` : esc(LOC[l] || l); }
 // paragrafın eşi (`d1-yz.pairs`, blokta `p`): çapalar dil başına sayılır, /ar/k ile /tr/k eş olmayabilir
 function mate(dk, a) {
   const d = DATA.drafts[dk]; if (!d) return null;
@@ -414,7 +417,7 @@ function renderAyah() {
     `<button class="lvl" data-loc="${l}" aria-pressed="${st.loc === l}" title="${esc(LOC_HELP[l])}">${esc(LOC[l])}${l === 'L:tumu' || NO_COUNT ? '' : ` <b>${cnt[l] || 0}</b>`}</button>`).join('');
   const verses = DATA.verses.map(v => {
     const chips = DATA.chips.filter(c => c.ayah === v.n).map(c => `<button class="chip" data-loc="${c.id}" aria-pressed="${st.loc === c.id}"
-      title="${NO_ISARAT ? 'Son taslağın bu kelimeye düşen paragrafları ve notları' : "İşârât'ın bu kelimedeki nükte sayısı"}: ${cnt[c.id] || 0}">${esc(c.text)}${NO_COUNT ? '' : `<span class="n${cnt[c.id] ? '' : ' zero'}">${cnt[c.id] || 0}</span>`}</button>`).join('');
+      title="${NO_ISARAT ? 'Son taslağın bu kelimeye düşen paragrafları ve notları' : "İşârât'ın bu kelimedeki nükte sayısı"}: ${cnt[c.id] || 0}">${esc(chipText(c))}${NO_COUNT ? '' : `<span class="n${cnt[c.id] ? '' : ' zero'}">${cnt[c.id] || 0}</span>`}</button>`).join('');
     return `<div class="verse">${chips}<span class="vno">﴿${v.n.toLocaleString('ar-EG')}﴾</span></div>
       <p class="meal">${esc(v.meal)} <i>(${esc(v.meal_by)}, ${esc(v.ref)})</i></p>`;
   }).join('');
@@ -552,7 +555,8 @@ const CREDITS = `<div class="credits"><b>Kaynaklar ve izinler.</b> İşârâtü'
   Risale-i Nur metinleri <a href="https://www.erisale.com">e-Risale</a>'den, İşârât'ın Arapça aslı <a href="https://risaleoku.com">risaleoku.com</a>'dan,
   sahiplerinin izniyle ve kaynak gösterilerek. Müfessirlerin ve klasik eserlerin metinleri
   <a href="https://openiti.org">OpenITI</a> (KITAB projesi; dijital metin Shamela'dan), <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.tr">CC BY-NC-SA 4.0</a>;
-  kazanç amacı yoktur. Kur'ân metni ve Türkiye Diyanet Vakfı meali <a href="https://tanzil.net">Tanzil Project</a>'ten, değiştirilmeden.
+  kazanç amacı yoktur. Kur'ân metni Türk hattıyla <a href="https://risaleoku.com">risaleoku.com</a>'dan; Medine Mushafı hattı ve Türkiye Diyanet Vakfı meali
+  <a href="https://tanzil.net">Tanzil Project</a>'ten, değiştirilmeden.
   Yapay zekâ taslakları, karşılaştırmaları ve eleştirileri yayımlanmamış çalışma metinleridir; tefsir değildir.
   · <a href="/gizlilik.html">Gizlilik</a></div>`;
 
@@ -1127,7 +1131,7 @@ function kpanel() { $('#kpanel').innerHTML = panelHtml(U); kpanelBind(); }
 // --- âyet masasının girişi (S7d): birim seçilmemişse
 function entryPage(missing) {
   document.title = 'Âyet Masası';
-  $('#addpane').hidden = true; $('#lang').closest('label').hidden = true;
+  $('#addpane').hidden = true; $('#lang').closest('label').hidden = true; $('#hat').closest('label').hidden = true;
   $('#kpanel').innerHTML = panelHtml(null); kpanelBind();
   $('#ayah').innerHTML = '';
   $('#panes').innerHTML = `<div class="welcome" style="max-width:680px">
@@ -1151,6 +1155,7 @@ function render() {
   kpanel();
   document.title = 'Âyet Masası · ' + DATA.title;
   document.querySelectorAll('#lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.lang));
+  document.querySelectorAll('#hat button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.hat));
   document.body.classList.toggle('sel', !!st.loc);
   renderAyah(); renderPanes(); progress(); persist();
   document.documentElement.style.setProperty('--head-h', $('#hdr').offsetHeight + 'px');
@@ -1334,6 +1339,7 @@ document.addEventListener('change', ev => {
 });
 
 document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { st.lang = b.dataset.v; render(); });
+document.querySelectorAll('#hat button').forEach(b => b.onclick = () => { st.hat = b.dataset.v; render(); });
 if (location.pathname.startsWith('/taslak/')) {
   fetch('/taslak/ben', {credentials: 'same-origin', cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(j => {
     if (j && j.name) ACCOUNT = j.name;

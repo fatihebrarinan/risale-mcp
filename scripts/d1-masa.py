@@ -36,6 +36,7 @@ okur neyi neyle karşılaştıracağını bulamadı. Burada her şey âyetin bir
 
 import importlib.util
 import json
+import unicodedata
 import re
 import sqlite3
 import sys
@@ -106,6 +107,70 @@ def eq(tok: str, word: str) -> bool:
 
 # ---------------------------------------------------------------- âyet ve kelime düğmeleri
 
+_TURK: dict | None = None
+
+
+def turk_hatti(sura: int, ayah: int) -> str | None:
+    """Âyetin Türk hattı (risaleoku; `risale_mcp.kuran_turk`, görüntü için; yoksa None)."""
+    global _TURK
+    if _TURK is None:
+        f = ROOT / "data" / "library" / "kuran" / "turk.json"
+        _TURK = json.loads(f.read_text(encoding="utf-8"))["suras"] if f.exists() else {}
+    row = _TURK.get(str(sura)) or []
+    return row[ayah - 1] if ayah <= len(row) else None
+
+
+def turk_chips(chips: list[dict], turk: str) -> list[str] | None:
+    """Medine hattındaki kelime düğmelerinin Türk hattındaki karşılıkları (S7e, 2026-11-21: Türk hattı varsayılan).
+
+    İki hat aynı harf iskeletindedir (`quran.skeleton`): düğmelerin iskelet aralıkları Türk hattının kelimelerine
+    başladıkları yerden dağıtılır. İskeleti boş kelime ("أو", "يا") aynı yerdeki iskeleti boş düğmeye ya da içinde
+    bulunduğu düğmeye düşer. Bir düğme boş kalırsa None: o âyet Medine hattıyla gösterilir."""
+    from risale_mcp.quran import skeleton
+    toks: list[str] = []
+    for t in turk.split():
+        if not any(unicodedata.category(ch) == "Lo" for ch in t) and toks:
+            toks[-1] += " " + t                     # tek başına duran durak işareti öndeki kelimeye
+        else:
+            toks.append(t)
+    spans, pos = [], 0
+    for c in chips:
+        k = len(skeleton(c["text"]))
+        spans.append((pos, pos + k))
+        pos += k
+    bounds = {cs for cs, _ in spans}
+    starts, pos, split = [], 0, []
+    for t in toks:                                  # Türk hattında bitişik yazılan iki kelime ("ذُوفَضْلٍ") ikiye
+        k = len(skeleton(t))
+        cut = next((b - pos for b in sorted(bounds) if pos < b < pos + k), None)
+        if cut:
+            i = max(i for i in range(1, len(t)) if len(skeleton(t[:i])) == cut)
+            for part in (t[:i], t[i:]):
+                split.append(part)
+                starts.append((pos, len(skeleton(part))))
+                pos += len(skeleton(part))
+            continue
+        split.append(t)
+        starts.append((pos, k))
+        pos += k
+    toks = split
+    out, i = [], 0
+    for j, (cs, ce) in enumerate(spans):
+        got = []
+        if cs == ce:
+            if i < len(toks) and starts[i] == (cs, 0):
+                got.append(toks[i])
+                i += 1
+        else:
+            while i < len(toks) and (starts[i][0] < ce or j == len(spans) - 1):
+                got.append(toks[i])
+                i += 1
+        if not got:
+            return None
+        out.append(" ".join(got))
+    return out if i == len(toks) else None
+
+
 class Ayah:
     def __init__(self, unit: str):
         cfg = cfg_of(unit)
@@ -114,7 +179,8 @@ class Ayah:
         self.words = []                       # (âyet, metin, norm)
         for a in range(cfg["ayahs"][0], cfg["ayahs"][1] + 1):
             q = lib.find_ayah(str(cfg["sura"]), a)["quran"]
-            self.verses.append({"n": a, "text": q["text"], "meal": q["translations"][0]["text"],
+            self.verses.append({"n": a, "text": q["text"], "turk": turk_hatti(cfg["sura"], a),
+                                "meal": q["translations"][0]["text"],
                                 "meal_by": q["translations"][0]["translator"], "ref": q["ref"]})
             for w in q["text"].split():
                 if norm(w):
@@ -173,6 +239,11 @@ class Ayah:
             for k in g:
                 self.chip_of[k] = cid
             i = g[-1] + 1
+        for v in self.verses:                      # Türk hattı karşılıkları (düğme düğme)
+            cs = [c for c in self.chips if c["ayah"] == v["n"]]
+            tk = turk_chips(cs, v["turk"]) if v.get("turk") and cs else None
+            for c, t in zip(cs, tk or []):
+                c["turk"] = t
         out = {}
         for i in items:
             if i["vecih"] in LEVELS:
@@ -633,7 +704,7 @@ def build(unit: str, units: list[dict]) -> Path:
                 "critic_sample": [], "systemic": [], "critic_sample_note": ""}
     data = {"unit": unit, "title": title(unit), "d5": d5,
             "verses": ayah.verses,
-            "chips": [{k: c[k] for k in ("id", "ayah", "text", "norm")} for c in ayah.chips],
+            "chips": [{k: c[k] for k in ("id", "ayah", "text", "turk", "norm") if k in c} for c in ayah.chips],
             "isarat": isr, "tefsir": tefsir(unit), "klasik": klasik(ayah),
             "risale": risale(unit), "drafts": dr,
             "yz": layer(unit, ayah, places, dr) if has_drafts else empty_yz,

@@ -66,6 +66,7 @@ h3 { font-size: .95rem; margin: 18px 0 6px; }
 .ders { border-left: 3px solid var(--accent); padding: 0 0 0 12px; margin: 10px 0; }
 .ders > h3 { margin-top: 6px; }
 .izah { background: var(--ai-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0; font-size: .93rem; }
+[data-hat] { cursor: pointer; text-decoration: underline dotted; }
 .acts { font-size: .75rem; color: var(--muted); } .acts a { color: var(--muted); margin-right: 10px; cursor: pointer; }
 a.n { color: var(--src); font-size: .72em; vertical-align: super; text-decoration: none; cursor: pointer; }
 .mk { color: var(--src); font-size: .86em; white-space: nowrap; }
@@ -103,7 +104,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&
 const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
                set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }};
 const rng = a => a[0] === a[1] ? String(a[0]) : a[0] + '–' + a[1];
-let INDEX = null, U = null, NOTES = [], ME = null, VIEW = {ar: false, izah: true};
+let INDEX = null, U = null, NOTES = [], ME = null, VIEW = {ar: false, izah: true, hat: 'turk'};   // hat: Türk hattı varsayılan (S7e)
 
 async function getJSON(u) { const r = await fetch(u, {cache: 'no-cache'}); if (!r.ok) throw new Error(r.status); return r.json(); }
 
@@ -309,10 +310,18 @@ document.addEventListener('click', async e => {
   }
 });
 document.addEventListener('click', e => {
+  const h = e.target.closest('[data-hat]');
+  if (!h) return;
+  e.preventDefault();
+  VIEW.hat = h.dataset.hat;
+  store.set('oku-view', JSON.stringify({ar: VIEW.ar, izah: VIEW.izah, isar_ar: VIEW.isar_ar, masa_ar: VIEW.masa_ar, hat: VIEW.hat}));
+  render();
+});
+document.addEventListener('click', e => {
   const b = e.target.closest('button[data-v]');
   if (!b) return;
   VIEW[b.dataset.v] = !VIEW[b.dataset.v];
-  store.set('oku-view', JSON.stringify({ar: VIEW.ar, izah: VIEW.izah, isar_ar: VIEW.isar_ar, masa_ar: VIEW.masa_ar}));
+  store.set('oku-view', JSON.stringify({ar: VIEW.ar, izah: VIEW.izah, isar_ar: VIEW.isar_ar, masa_ar: VIEW.masa_ar, hat: VIEW.hat}));
   render();
 });
 async function loadNotes() {
@@ -399,8 +408,10 @@ function render(focus) {
   if (!tab || !tabs.some(t => t[0] === tab)) tab = (focus || !U.isarat) && U.taslak ? 'taslak' : (tabs[0] || [''])[0];
   const L = [`<h1>${esc(U.sure_adi)} ${esc(rng(U.ayet))}</h1>`,
     '<div class="stamp"><b>Yapay zekâ taslağıdır; tefsir değildir</b>, müellife ya da İşârât\'a mal edilmez. Türkçe paragraflar yapay zekâ tercümesidir; izah da yapay zekânındır. Alıntılar kaynaklarının sözüdür, yanlarında kaynağı yazılıdır.</div>'];
-  for (const a of U.ayetler) L.push(`<p class="ar">${esc(a.metin)} ﴿${a.n}﴾</p><p class="tr small">Meal: ${esc(a.meal)}</p>`);
-  L.push(`<p class="small muted">Âyet: ${esc(U.ayet_kaynak.metin)} · meal: ${esc(U.ayet_kaynak.meal)}</p>`);
+  const turk = VIEW.hat !== 'medine' && U.ayetler.every(a => a.turk);
+  for (const a of U.ayetler) L.push(`<p class="ar">${esc(turk ? a.turk : a.metin)} ﴿${a.n}﴾</p><p class="tr small">Meal: ${esc(a.meal)}</p>`);
+  L.push(`<p class="small muted">Âyet: ${esc(turk ? U.ayet_kaynak.turk : U.ayet_kaynak.metin)} · meal: ${esc(U.ayet_kaynak.meal)}
+    · hat: <a data-hat="turk"${turk ? ' style="font-weight:600"' : ''}>Türk</a> / <a data-hat="medine"${turk ? '' : ' style="font-weight:600"'}>Medine</a></p>`);
   if (!tabs.length) L.push('<p class="muted">Bu birimin taslağı henüz yazılmadı.</p>');
   else L.push(tabsHTML(tabs, tab));
   if (tab === 'isarat') L.push(isaratHTML());

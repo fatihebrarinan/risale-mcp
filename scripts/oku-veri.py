@@ -252,6 +252,19 @@ def published(unit: str) -> dict | None:
     return json.loads((YAY.YAYIN / cur["yol"]).read_text(encoding="utf-8")) if cur else None
 
 
+_TURK: dict | None = None
+
+
+def turk_hatti(sura: int, ayah: int) -> str | None:
+    """Âyetin Türk hattı (`risale_mcp.kuran_turk`, risaleoku; görüntü için)."""
+    global _TURK
+    if _TURK is None:
+        f = ROOT / "data" / "library" / "kuran" / "turk.json"
+        _TURK = json.loads(f.read_text(encoding="utf-8"))["suras"] if f.exists() else {}
+    row = _TURK.get(str(sura)) or []
+    return row[ayah - 1] if ayah <= len(row) else None
+
+
 def unit_data(libs: Libs, u: dict) -> dict:
     unit, (a, b) = u["id"], u["ayet"]
     cfg = P.UNITS.get(unit, {"sura": 2, "sura_name": "Bakara"})
@@ -259,8 +272,10 @@ def unit_data(libs: Libs, u: dict) -> dict:
     pub = published(unit)
     q = Q_AYAHS
     d = {"birim": unit, "sure": sura, "sure_adi": cfg["sura_name"], "ayet": [a, b],
-         "ayetler": [{"n": k, "metin": q[k]["text"], "meal": q[k]["translations"]["diyanet-vakfi"]} for k in range(a, b + 1)],
-         "ayet_kaynak": {"metin": TANZIL[0], "meal": "Türkiye Diyanet Vakfı meali (Tanzil üzerinden)", "bag": TANZIL[1]},
+         "ayetler": [{"n": k, "metin": q[k]["text"], "turk": turk_hatti(sura, k),
+                      "meal": q[k]["translations"]["diyanet-vakfi"]} for k in range(a, b + 1)],
+         "ayet_kaynak": {"metin": TANZIL[0] + ", Medine Mushafı hattı", "turk": "risaleoku.com, Türk hattı",
+                         "meal": "Türkiye Diyanet Vakfı meali (Tanzil üzerinden)", "bag": TANZIL[1]},
          "isarat": isarat(libs, unit) if u["kaynak"] == "isarat" else None,
          "risale": risale_links(libs, sura, range(a, b + 1)),
          "tefsir": tefsir_units(libs, sura, range(a, b + 1)),

@@ -151,9 +151,13 @@ def sayfa(unit: str, n: int | None = None) -> Path:
          'izah günümüz Türkçesiyle, yine yapay zekânındır. Taslak bir kalite kapısından geçti (aşağıda): kaynağın '
          'sözünü aşan atıflar düzeltildi; eleştirmenin "eksik" notları taslağa eklenmedi, en sonda duruyor.</div>']
     L += ["<h2>Âyet</h2>"]
+    tf = ROOT / "data" / "library" / "kuran" / "turk.json"          # Türk hattı varsayılan (S7e; yoksa Medine)
+    turk = (json.loads(tf.read_text(encoding="utf-8"))["suras"].get(str(cfg["sura"])) or []) if tf.exists() else []
     for k in range(a, b + 1):
-        L += [f'<p class="ar">{esc(ay[k]["text"])} ﴿{k}﴾</p>',
+        t = turk[k - 1] if k <= len(turk) and turk[k - 1] else ay[k]["text"]
+        L += [f'<p class="ar">{esc(t)} ﴿{k}﴾</p>',
               f'<p class="tr small">Meâl (Diyanet Vakfı): {esc(ay[k]["translations"]["diyanet-vakfi"])}</p>']
+    L += ['<p class="small muted">Âyet Türk hattıyla (risaleoku.com); meal Tanzil üzerinden.</p>']
     sec, prev = None, None
     for anchor, lang, quote, text in blocks:
         key = anchor.split("/")[0]
