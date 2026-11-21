@@ -20,6 +20,8 @@ body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 syste
 a { color: var(--src); }
 header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line);
   display: flex; align-items: center; gap: 10px; padding: 8px 16px; }
+header .aistamp { font-size: .72rem; color: var(--muted); white-space: nowrap; }
+@media (max-width: 560px) { header .aistamp { font-size: .62rem; } }
 header .t { font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 header a, header button { font-size: .85rem; }
 a.hbtn { border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; text-decoration: none; color: var(--fg); }
@@ -91,7 +93,7 @@ table.t { width: 100%; border-collapse: collapse; font-size: .85rem; } table.t t
   padding: 4px 6px; vertical-align: top; }
 .ok { color: var(--accent); } .bad { color: var(--bad); }
 </style></head><body>
-<header><button id="menu" aria-label="Kur'ân paneli" title="Kur'ân panelini aç/kapa">☰</button><span class="t" id="ttl"></span>
+<header><button id="menu" aria-label="Kur'ân paneli" title="Kur'ân panelini aç/kapa">☰</button><span class="t" id="ttl"></span><span class="aistamp" title="Bu sayfadaki taslak, tercüme ve izahlar yapay zekânındır; tefsir değildir">yapay zekâ taslağı · tefsir değildir</span>
 <button id="genis" title="Metni ekranın tamamına yay" hidden>↔ geniş</button>
 <a class="hbtn" id="masaBtn" href="/taslak/" hidden>Ar-ge masası</a><a class="hbtn" href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
 <div class="wrap"><aside id="panel"></aside><main id="main"></main><aside id="side"><p class="small muted">Bir atfın numarasına tıklayınca kaynağın metni burada açılır.</p></aside></div>
@@ -204,8 +206,9 @@ document.addEventListener('click', e => {
   holder.insertAdjacentHTML('beforeend', `<div id="${esc(id)}">${srcBox(a.dataset.k, a.dataset.s)}</div>`);
 });
 
-const KIND_LAB = {tercume: 'Yapay zekâ tercümesi', alinti_tercume: 'Yapay zekâ tercümesi (alıntının)',
-  alinti: 'Alıntı', tr: 'Taslağın Türkçe sözü (yapay zekâ)'};
+// S7g (2026-11-21): taslağın kendi paragrafları etiketsiz (üst çubukta ve sayfa başında damga var); alıntı ve
+// alıntının tercümesi etiketli kalır (kaynağın sözü ile modelin sözü karışmasın)
+const KIND_LAB = {tercume: '', alinti_tercume: 'Yapay zekâ tercümesi (alıntının)', alinti: 'Alıntı', tr: ''};
 
 function draftHTML(t) {
   const byId = Object.fromEntries(t.bloklar.map(b => [b.id, b]));
@@ -253,8 +256,8 @@ function draftHTML(t) {
       const ar = b.tercumesi && byId[b.tercumesi];
       if (ar) h += `<div class="arpair" ${VIEW.ar ? '' : 'hidden'}><p class="ar">${marks(ar.metin, t.kaynaklar, b.id)}</p></div>`;
       if (b.abdulmecid) h += `<div><div class="lab">Abdülmecid Nursî tercümesi${ar && ar.cumle ? ' (kaynaktaki cümlenin tamamı)' : ''}</div><p class="tr">${bidi(esc(b.abdulmecid))}</p></div>`;
-      else h += `<div class="${b.tur === 'alinti' ? 'quote' : ''}"><div class="lab">${KIND_LAB[b.tur] || ''}</div><p class="tr">${marks(b.metin, t.kaynaklar, b.id)}</p>${whole || (b.tur === 'alinti_tercume' ? wholeOf(b.tercumesi && byId[b.tercumesi]) : '')}</div>`;
-      if (b.izah) h += `<div class="izah" ${VIEW.izah ? '' : 'hidden'}><div class="lab">İzah (günümüz Türkçesiyle, yapay zekâ)</div>${marks(b.izah.metin, t.kaynaklar, b.id)}</div>`;
+      else h += `<div class="${b.tur === 'alinti' ? 'quote' : ''}">${KIND_LAB[b.tur] ? `<div class="lab">${KIND_LAB[b.tur]}</div>` : ''}<p class="tr">${marks(b.metin, t.kaynaklar, b.id)}</p>${whole || (b.tur === 'alinti_tercume' ? wholeOf(b.tercumesi && byId[b.tercumesi]) : '')}</div>`;
+      if (b.izah) h += `<div class="izah" ${VIEW.izah ? '' : 'hidden'}><div class="lab">izah</div>${marks(b.izah.metin, t.kaynaklar, b.id)}</div>`;
     }
     for (const f of b.isaretler || [])
       h += `<div class="flag">⚠ Bu atıf kaynağın dediğini aşıyor olabilir ([${esc(f.kaynak)}]; yapay zekâ denetçisinin hükmü, denetlenmedi) <details><summary class="small">gerekçe</summary>${esc(f.gerekce)}</details></div>`;

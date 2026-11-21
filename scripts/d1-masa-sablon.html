@@ -583,7 +583,7 @@ function draftSays(dk, anchors, q) {
     .map(a => (blocks.find(b => b.a === a) || {}).t).filter(Boolean) : [];
   const go = `<button class="linkish" data-showdraft="${esc(anchors.join(','))}" data-quote="${esc(q || '')}" data-draftgo2="${esc(dk)}">taslakta göster</button>`;
   if (!tr.length) return `<div class="small"><b>Taslak:</b></div><div class="q ar">${esc(q)}</div>${go}`;
-  return `<div class="small"><b>Taslak:</b> <span class="tag ai">yapay zekâ tercümesi</span> <span class="muted">alıntının geçtiği paragrafın Türkçesi</span></div>
+  return `<div class="small"><b>Taslak:</b> <span class="muted">alıntının geçtiği paragrafın Türkçesi</span></div>
     <div class="q serif">${tr.map(trEsc).join('<br>')}</div>
     <details><summary class="small muted">Alıntılanan Arapça söz</summary><div class="q ar">${esc(q)}</div></details>${go}`;
 }
@@ -756,8 +756,8 @@ function bkCard(x) {
   const notes = ((Y.critic[x.t] || {}).notes || []).filter(n => n.a === anchor || n.a === x.a);
   const src = x.src.map(k => `<details><summary class="small">Taslağın kaynağı [${esc(k.n)}] ${esc(k.c)}</summary><p class="para ar">${esc(k.x || '(metni bulunamadı)')}</p></details>`).join('');
   const prim = st.lang === 'tr'
-    ? `<div class="serif"><span class="tag ai">yapay zekâ tercümesi</span> ${trHtml}</div><details><summary class="small muted">Arapçası (taslağın aslı)</summary><p class="para ar">${esc(x.ar)}</p></details>`
-    : `<p class="para ar">${esc(x.ar)}</p><div class="serif small"><span class="tag ai">yapay zekâ tercümesi</span> ${trHtml}</div>`;
+    ? `<div class="serif">${trHtml}</div><details><summary class="small muted">Arapçası (taslağın aslı)</summary><p class="para ar">${esc(x.ar)}</p></details>`
+    : `<p class="para ar">${esc(x.ar)}</p><div class="serif small">${trHtml}</div>`;
   return `<div class="card" data-bk="${esc(key)}">${cardHead(no, fid, '<span style="flex:1"></span>', bkMark(m))}<div class="small muted">${esc(draftLabel(x.t))} · ${locName(x.loc[0])} · taslağın işareti: ${esc(x.m)}</div>
     ${x.q ? `<div class="bkq"><b>Soru:</b> ${trEsc(x.q)}</div>` : ''}
     <div style="margin:4px 0"><b>${x.q ? 'Taslağın iddiası' : 'İddia'}:</b> <span class="claim">${trEsc(x.c)}</span></div>${prim}
@@ -835,7 +835,8 @@ function blockHtml(dk, pair, p) {
   const prim = st.lang === 'tr' && pair.tr ? pair.tr : pair.ar, sec = prim === pair.ar ? pair.tr : pair.ar;
   const q = dfHit ? df.q : null;
   const body = b => draftText(b.t, dk, b.l, q);
-  const lab = b => b.l === 'tr' ? '<span class="tag ai">yapay zekâ tercümesi</span> ' : '';
+  // S7g: taslağın kendi Türkçesi etiketsiz; alıntının modelce tercümesi etiketli (kaynağın sözüyle karışmasın)
+  const lab = b => b.l === 'tr' && pair.ar.q ? '<span class="tag ai">yapay zekâ tercümesi</span> ' : '';
   // S7f: İşârât alıntısında Türkçesi Abdülmecid Nursî tercümesi; alıntı cümlenin parçasıysa cümlenin tamamı
   const amt = pair.ar.q && pair.ar.amt;
   const primHtml = amt && prim !== pair.ar
@@ -864,10 +865,10 @@ function blockHtml(dk, pair, p) {
   return `<div class="blk${focused ? ' focus' : ''}${pair.ar.q ? ' quote' : ''}${cls}" data-anchor="${esc(key)}">
     <div class="bhead"><span class="small muted">${SEC[key.split('/')[0]] || ''}${pair.ar.q ? ' · kaynaktan alıntı' : ''}</span><span class="mkrs">${marks.join('')}</span></div>
     <div class="${prim.l === 'ar' && !(amt && prim !== pair.ar) ? 'ar' : 'serif'}">${primHtml}</div>
-    ${sec ? `<details${q && !locate(prim.t, q) ? ' open' : ''}><summary class="small muted">${sec.l === 'ar' ? (pair.ar.q ? 'Arapçası (alıntı)' : 'Arapçası (taslağın aslı)') : amt ? 'Türkçesi (Abdülmecid Nursî tercümesi)' : 'Türkçesi (yapay zekâ tercümesi)'}</summary>
+    ${sec ? `<details${q && !locate(prim.t, q) ? ' open' : ''}><summary class="small muted">${sec.l === 'ar' ? (pair.ar.q ? 'Arapçası (alıntı)' : 'Arapçası (taslağın aslı)') : amt ? 'Türkçesi (Abdülmecid Nursî tercümesi)' : pair.ar.q ? 'Türkçesi (yapay zekâ tercümesi)' : 'Türkçesi'}</summary>
       <div class="${sec.l === 'ar' ? 'ar' : 'serif'}">${amt && sec !== pair.ar ? esc(pair.ar.amt) : body(sec)}</div></details>` : ''}
     ${whole}
-    ${pair.tr && pair.tr.iz ? `<div class="izah"><span class="tag ai">yapay zekâ izahı (günümüz Türkçesi)</span> ${esc(pair.tr.iz)}</div>` : ''}
+    ${pair.tr && pair.tr.iz ? `<div class="izah"><span class="tag ai">izah</span> ${esc(pair.tr.iz)}</div>` : ''}
     ${opened ? `<div class="opened">${opened}</div>` : ''}</div>`;
 }
 function missingHtml(dk) {
