@@ -72,6 +72,9 @@ body.sel .hint { display: none; }
 #kpanel li a { display: block; padding: 1px 6px; border-radius: 5px; text-decoration: none; color: var(--fg); }
 #kpanel li a.cur { background: var(--accent-soft); font-weight: 600; }
 #kpanel .kd5 { color: var(--muted); font-size: .72rem; }
+#kpanel details.ks > summary { cursor: pointer; font-weight: 600; margin: 6px 0 2px; }
+#kpanel li a.off { color: var(--muted); }
+#kpanel .dot { display: inline-block; width: 1.1em; color: var(--accent); }
 body.nokpanel #kpanel { display: none; }
 #mainc { flex: 1; min-width: 0; }
 @media (max-width: 900px) { #kpanel { position: fixed; z-index: 6; left: 0; width: 80vw; box-shadow: 2px 0 12px rgba(0,0,0,.2); }
@@ -215,7 +218,7 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
 <body>
 <header id="hdr">
   <button class="btn" id="kbtn" title="Kur'ân panelini aç/kapa">☰</button>
-  <h1><a href="./" style="color:inherit;text-decoration:none" title="Masanın girişi">Âyet masası</a></h1>
+  <h1><a href="ayet.html" style="color:inherit;text-decoration:none" title="Âyet masasının girişi">Âyet masası</a></h1>
   <button class="btn" id="addpane" title="Bir yan daha aç (en çok 6)">+ yan ekle</button>
   <label>Dil <span class="seg" id="lang"><button data-v="tr">Türkçe</button><button data-v="ar">Arapça</button></span></label>
   <span class="spacer"></span>
@@ -226,15 +229,21 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
 <section id="ayah"></section>
 <div id="panes"></div>
 </div></div>
-<script>
-const DATA = {data};
+<script type="module">
+// S7d (kullanıcının kararı, 2026-11-21): masa tek kabuktur (ayet.html); birimin verisi açılınca yüklenir
+// (masa-veri/<birim>.json). Adres #/<birim>; birim değişince sayfa yeniden yüklenir. Birim yoksa âyet masasının girişi.
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) { return false; } },
 };
-// İşaretler eski okuma sayfasının anahtarlarıyla (aynı tarayıcıda ortak; dışa aktarma aynı biçim)
+const UNIT = decodeURIComponent((location.hash.match(/^#\/([^/]+)/) || [])[1] || '');
+addEventListener('hashchange', () => location.reload());
+let UNITS = await fetch('masa-birimler.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : []).catch(() => []);
+const DATA = UNIT ? await fetch(`masa-veri/${encodeURIComponent(UNIT)}.json`, {cache: 'no-cache'})
+  .then(r => r.ok ? r.json() : null).catch(() => null) : null;
+if (!DATA) { entryPage(UNIT); await new Promise(() => {}); }      // giriş: aşağısı çalışmaz
 let yzEval = store.get('d1-yz-sinama', {});     // "birim|taslak|okuyucu-modeli|nükte" ya da "birim|taslak|fazla|anahtar"
 let yzSuz = store.get('d1-yz-suzgec', {});      // "birim|taslak|not anahtarı"
 let bkMarks = store.get('d1-bilirkisi', {});    // "birim|kısım|madde"
@@ -390,6 +399,7 @@ function draftText(text, dk, lang, quote) {
 // ================================================================ âyet
 // S7c.3: İşârât'ı olmayan birimde (D5) kelimenin altındaki sayı son taslağın o yere düşen paragrafları ve notlarıdır
 const NO_ISARAT = !Object.keys(Y.items || {}).length;
+const NO_COUNT = NO_ISARAT && !DKEYS.length;        // taslaksız birim: sayılacak bir şey yok, sayı gösterilmez
 function renderAyah() {
   const cnt = {};
   if (!NO_ISARAT) for (const it of Object.values(Y.items)) for (const l of it.loc) cnt[l] = (cnt[l] || 0) + 1;
@@ -400,10 +410,10 @@ function renderAyah() {
     for (const x of critNotes(last, 'kapali')) for (const l of x.loc || []) cnt[l] = (cnt[l] || 0) + 1;
   }
   const lv = ['L:munasebet', 'L:nazim', 'L:belirsiz', 'L:tumu'].map(l =>
-    `<button class="lvl" data-loc="${l}" aria-pressed="${st.loc === l}" title="${esc(LOC_HELP[l])}">${esc(LOC[l])}${l === 'L:tumu' ? '' : ` <b>${cnt[l] || 0}</b>`}</button>`).join('');
+    `<button class="lvl" data-loc="${l}" aria-pressed="${st.loc === l}" title="${esc(LOC_HELP[l])}">${esc(LOC[l])}${l === 'L:tumu' || NO_COUNT ? '' : ` <b>${cnt[l] || 0}</b>`}</button>`).join('');
   const verses = DATA.verses.map(v => {
     const chips = DATA.chips.filter(c => c.ayah === v.n).map(c => `<button class="chip" data-loc="${c.id}" aria-pressed="${st.loc === c.id}"
-      title="${NO_ISARAT ? 'Son taslağın bu kelimeye düşen paragrafları ve notları' : "İşârât'ın bu kelimedeki nükte sayısı"}: ${cnt[c.id] || 0}">${esc(c.text)}<span class="n${cnt[c.id] ? '' : ' zero'}">${cnt[c.id] || 0}</span></button>`).join('');
+      title="${NO_ISARAT ? 'Son taslağın bu kelimeye düşen paragrafları ve notları' : "İşârât'ın bu kelimedeki nükte sayısı"}: ${cnt[c.id] || 0}">${esc(c.text)}${NO_COUNT ? '' : `<span class="n${cnt[c.id] ? '' : ' zero'}">${cnt[c.id] || 0}</span>`}</button>`).join('');
     return `<div class="verse">${chips}<span class="vno">﴿${v.n.toLocaleString('ar-EG')}﴾</span></div>
       <p class="meal">${esc(v.meal)} <i>(${esc(v.meal_by)}, ${esc(v.ref)})</i></p>`;
   }).join('');
@@ -441,8 +451,8 @@ function isaratHtml() {
   const prim = st.lang, sec = prim === 'tr' ? 'ar' : 'tr';
   const rel = new Set(itemsAt(st.loc).flatMap(([, it]) => it.sids)), foc = focusSids();
   const pick = lang => {
-    const ps = DATA.isarat[lang];
-    if (st.loc === 'L:tumu') return ps;
+    const ps = DATA.isarat[lang] || [];
+    if (st.loc === 'L:tumu' || NO_ISARAT) return ps;        // envanteri olmayan birimde metnin tamamı
     if (LOC_V[st.loc]) return ps.filter(p => p.v === LOC_V[st.loc]);
     return ps.filter(p => p.s.some(s => rel.has(s.id) || foc.has(s.id)));
   };
@@ -454,7 +464,7 @@ function isaratHtml() {
   const main = pick(prim), other = pick(sec);
   const label = {tr: 'Türkçesi (Abdülmecid Nursî tercümesi)', ar: 'Arapça aslı'};
   let h = `<h3>İşârâtü'l-İ'câz <span class="tag src">müellifin metni</span>
-    <span class="muted">Bu birimde taslaklardan gizlenen metin. ${st.lang === 'tr' ? 'Abdülmecid Nursî tercümesi.' : 'Arapça asıl.'}</span></h3>`;
+    <span class="muted">${DKEYS.length ? 'Bu birimde taslaklardan gizlenen metin. ' : ''}${st.lang === 'tr' ? 'Abdülmecid Nursî tercümesi.' : 'Arapça asıl.'}</span></h3>`;
   if (!main.length) h += `<p class="empty">İşârât'ta bu yere bağlanmış bir nükte yok.</p>`;
   else h += main.map(p => paraHtml(p, prim)).join('') +
     `<details><summary class="small muted">${label[sec]}</summary>${other.map(p => paraHtml(p, sec)).join('')}</details>`;
@@ -1090,23 +1100,46 @@ function progress() { return;
   $('#progress').textContent = `İşaretler: örneklem ${ns}/${(Y.sample || []).length} · karşılaştırma ${n1} · eleştiri örneklemi ${nc}/${(Y.critic_sample || []).length} · başlık ${nz}/${(Y.systemic || []).length} · eleştiri ${n2} · bilirkişi ${n3}/${bkAll().length}`;
 }
 // --- Kur'ân paneli (S7b): birimler Bakara sırasıyla, âyete git; açılıp kapanır, durum hatırlanır
-let UNITS = DATA.units || [];
-fetch('masa-birimler.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(j => { if (j && j.length) { UNITS = j; kpanel(); } }).catch(() => {});
-function kpanel() {
-  const us = UNITS;
-
-  const ay = u => u.ayah ? (u.ayah[0] === u.ayah[1] ? u.ayah[0] : u.ayah[0] + '–' + u.ayah[1]) : '';
-  $('#kpanel').innerHTML = `<input id="kgit" placeholder="Âyete git: 2:30" autocomplete="off">
-    <p class="small muted" style="margin:6px 0 2px">Bakara · masası kurulan birimler</p><ul>`
-    + us.map(u => `<li><a href="${esc(u.unit)}.html" class="${u.unit === U ? 'cur' : ''}">${esc(u.title)}${u.d5 ? ' <span class="kd5">D5</span>' : ''}</a></li>`).join('')
-    + `</ul>`;
-  const cur = $('#kpanel a.cur'); if (cur) cur.scrollIntoView({block: 'nearest'});
+// --- Kur'ân paneli (S7d): sûrelere göre, bütün âyetler birimlerine gruplu; açılır kapanır
+function panelHtml(cur) {
+  const by = {};
+  for (const u of UNITS) (by[u.sure] = by[u.sure] || {ad: u.sure_adi, us: []}).us.push(u);
+  const curSure = (UNITS.find(u => u.unit === cur) || {}).sure;
+  const mark = u => u.taslak ? '●' : u.isarat ? '◐' : '○';
+  const nums = u => { const xs = []; for (let k = u.ayah[0]; k <= u.ayah[1]; k++) xs.push(k); return xs.join(' · '); };
+  return `<input id="kgit" placeholder="Âyete git: 2:30" autocomplete="off">` + Object.entries(by).map(([n, g]) =>
+    `<details class="ks"${+n === curSure || (!curSure && +n === 1) ? ' open' : ''}><summary>${esc(n)}. ${esc(g.ad)} <span class="kd5">${g.us.length} birim</span></summary><ul>`
+    + g.us.map(u => `<li><a href="ayet.html#/${encodeURIComponent(u.unit)}" class="${u.unit === cur ? 'cur' : ''}${u.taslak || u.isarat ? '' : ' off'}"
+        title="${esc(u.title)}"><span class="dot">${mark(u)}</span>${nums(u)}</a></li>`).join('') + '</ul></details>').join('')
+    + `<p class="kd5" style="margin-top:8px">● taslak var · ◐ yalnız İşârât · ○ yalnız kaynaklar</p>`;
+}
+function kpanelBind() {
+  const cur = document.querySelector('#kpanel a.cur'); if (cur) cur.scrollIntoView({block: 'nearest'});
   $('#kgit').onkeydown = e => {
     if (e.key !== 'Enter') return;
     const m = e.target.value.trim().match(/^(?:(\d+)\s*[:.\/ ]\s*)?(\d+)$/); if (!m) return;
-    const a = +m[2], x = us.find(u => u.ayah && u.ayah[0] <= a && a <= u.ayah[1]);
-    if (x) location.href = x.unit + '.html'; else say('Bu âyetin masası yok.');
+    const s2 = +(m[1] || 2), a = +m[2], x = UNITS.find(u => u.sure === s2 && u.ayah[0] <= a && a <= u.ayah[1]);
+    if (x) location.hash = '#/' + x.unit; else say('Bu âyet panelde yok (şimdilik Fâtiha ve Bakara).');
   };
+}
+function kpanel() { $('#kpanel').innerHTML = panelHtml(U); kpanelBind(); }
+// --- âyet masasının girişi (S7d): birim seçilmemişse
+function entryPage(missing) {
+  document.title = 'Âyet Masası';
+  $('#addpane').hidden = true; $('#lang').closest('label').hidden = true;
+  $('#kpanel').innerHTML = panelHtml(null); kpanelBind();
+  $('#ayah').innerHTML = '';
+  $('#panes').innerHTML = `<div class="welcome" style="max-width:680px">
+    ${missing ? `<p class="kn bad">«${esc(missing)}» diye bir birim yok.</p>` : ''}
+    <h2 style="margin-top:0">Âyet masası</h2>
+    <p>Her âyet birimi için kaynaklar ve yapay zekâ taslakları yan yana. Soldaki panelden bir âyet seçin (ya da "Âyete git": <code>2:34</code>).</p>
+    <ul><li><b>Kaynaklar:</b> İşârâtü'l-İ'câz (işlediği âyetlerde), on üç müfessirin o âyetleri işleyen birimleri, klasik eserler, âyetin Risale-i Nur'daki yerleri.</li>
+    <li><b>Taslaklar:</b> yazılmış birimlerde yapay zekâ taslakları ve onları denetleyenler: kalite kapısı (yazarın her nota cevabıyla), nisbet denetçisi, İşârât karşılaştırması, okuyucu notları.</li>
+    <li><b>Yanlar:</b> "+ yan ekle" ile yan yana açılır; her yanın başındaki ☰ içindekilerden ne duracağı seçilir.</li>
+    <li><b>Âyetin kelimeleri:</b> bir kelimeye ya da düzeylerden birine tıklayınca bütün yanlar o yere süzülür.</li>
+    <li><b>Dil:</b> Türkçe iken kaynakların Türkçesi önde (İşârât'ta Abdülmecid Nursî tercümesi, tefsirlerde yapay zekâ tercümesi).</li></ul>
+    <p class="small muted">● taslak var · ◐ yalnız İşârât · ○ yalnız kaynaklar. Taslaklar yazıldıkça birimlerine kendiliğinden eklenir.
+    Buradaki hiçbir taslak tefsir değildir.</p></div>`;
 }
 if (store.get('d1-masa-kpanel', 'acik') === 'kapali') document.body.classList.add('nokpanel');
 $('#kbtn').onclick = () => {
@@ -1115,6 +1148,7 @@ $('#kbtn').onclick = () => {
 };
 function render() {
   kpanel();
+  document.title = 'Âyet Masası · ' + DATA.title;
   document.querySelectorAll('#lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.lang));
   document.body.classList.toggle('sel', !!st.loc);
   renderAyah(); renderPanes(); progress(); persist();

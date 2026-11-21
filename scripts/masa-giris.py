@@ -52,7 +52,7 @@ def _pages() -> list[str]:
 
 def _unit_pages(uid: str, pages: list[str]) -> list[dict]:
     """Bir birimin masa sayfaları: masa sayfası, D5 okuma sayfası, okuma turları, fark kartları."""
-    out = [{"ad": "âyet masası", "href": f"{uid}.html", "tur": "masa"}]
+    out = [{"ad": "âyet masası", "href": f"ayet.html#/{uid}", "tur": "masa"}]
     for name in pages:
         stem = name[:-5]
         if stem == uid:
@@ -160,12 +160,17 @@ nav.tabs a.on { color: var(--fg); border-bottom-color: var(--accent); font-weigh
 .chips a { display: inline-block; margin: 4px 6px 0 0; padding: 1px 8px; border: 1px solid var(--line);
            border-radius: 12px; font-size: .82rem; text-decoration: none; }
 .st-bitti { color: var(--accent); } .st-suruyor, .st-bekliyor { color: var(--ai); } .alarm { color: var(--bad); }
+nav.big { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; margin: 10px 0 6px; }
+nav.big a { display: block; text-align: center; padding: 14px 10px; border: 1px solid var(--line); border-radius: 10px;
+            background: var(--card); color: var(--fg); text-decoration: none; font-weight: 600; font-size: 1.02rem; }
+nav.big a:first-child { border-color: var(--accent); }
+nav.big a:hover { background: var(--soft); }
 header.top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 header.top a { font-size: .85rem; color: var(--muted); }
 </style></head><body><main>
 <header class="top"><h1>Ar-ge Masası</h1><span class="small muted"><span id="ben"></span> · <a href="cikis">çıkış</a></span></header>
-<p class="small muted">Yapay zekâ taslaklarının iç çalışma masası. Buradaki hiçbir taslak tefsir değildir.
-<a href="deneyler.html">deneyler defteri</a> · <a href="/oku/">okuma platformu</a></p>
+<nav class="big"><a href="ayet.html">Âyet masası</a><a href="/oku/">Okuma platformu</a><a href="deneyler.html">Deneyler defteri</a><a href="d5.html">D5 durumu</a></nav>
+<p class="small muted">Yapay zekâ taslaklarının iç çalışma masası. Buradaki hiçbir taslak tefsir değildir.</p>
 <nav class="tabs"><a href="#pano" data-t="pano">Pano</a><a href="#okumalar" data-t="okumalar">Okumalar<span id="nok"></span></a><a href="#birimler" data-t="birimler">Birimler</a></nav>
 <section id="pano"></section><section id="okumalar" hidden></section><section id="birimler" hidden></section>
 <p class="small muted" id="alt"></p>

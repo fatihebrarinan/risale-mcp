@@ -51,7 +51,36 @@ P = Y.P
 
 TEMPLATE = Path(__file__).with_name("d1-masa-sablon.html")
 OUT_DIR = P.KEEP / "masa"
-D5_DIR = ROOT / "data" / "interim" / "oku-masa"   # D5 birimlerinin masası: yeniden üretilir, git'e girmez (S7b)
+D5_DIR = ROOT / "data" / "interim" / "oku-masa"   # masanın bütün çıktısı: yeniden üretilir, git'e girmez (S7d)
+VERI = D5_DIR / "masa-veri"                        # birim başına veri (S7d: kabuk ayet.html açılınca yükler)
+# S7d (kullanıcının kararı, 2026-11-21): Fâtiha'da her âyet bir birim; İşârât'ın lafız bölümleri âyetlerine
+FATIHA = {1: ("bismillahi", "er-rahmanir-rahim"), 2: ("el-hamdu", "lillahi", "rabbi", "el-alemin"),
+          3: ("er-rahmanir-rahim-2",), 4: ("maliki-yevmid-din",), 5: ("iyyake-nabudu", "ve-iyyake-nestein"),
+          6: ("ihdina", "es-siratal-mustekim"),
+          7: ("siratallezine-enamte-aleyhim", "gayril-magdubi-aleyhim", "ve-led-dallin")}
+
+
+def all_units() -> list[dict]:
+    """Paneldeki bütün birimler, sûre sırasıyla: {unit, sure, sure_adi, ayah, kaynak}."""
+    out = [{"unit": f"fatiha-{k}", "sure": 1, "sure_adi": "Fâtiha", "ayah": [k, k], "kaynak": "isarat"} for k in FATIHA]
+    out += [{"unit": u["id"], "sure": 2, "sure_adi": "Bakara", "ayah": list(u["ayet"]), "kaynak": u["kaynak"]}
+            for u in P.d5_units()]
+    return out
+
+
+_ALL: dict | None = None
+
+
+def cfg_of(unit: str) -> dict:
+    """Birimin ayarı: kayıtlıysa `d1-prova.UNITS`, değilse paneldeki birimden (sûre, âyetler)."""
+    global _ALL
+    if unit in P.UNITS:
+        return P.UNITS[unit]
+    if _ALL is None:
+        _ALL = {u["unit"]: u for u in all_units()}
+    u = _ALL[unit]
+    return {"sura": u["sure"], "sura_name": u["sure_adi"], "ayahs": tuple(u["ayah"]), "nodes": (),
+            "isarat_only": u["kaynak"] == "isarat"}
 KLASIK_DB = P.DIST_DIR / "klasik" / "risale.db"
 LEVELS = {"V1": "L:munasebet", "V2": "L:nazim"}
 OTHER = "L:belirsiz"
@@ -79,7 +108,7 @@ def eq(tok: str, word: str) -> bool:
 
 class Ayah:
     def __init__(self, unit: str):
-        cfg = P.UNITS[unit]
+        cfg = cfg_of(unit)
         lib = Library(P.TEFSIR_DB)
         self.verses = []
         self.words = []                       # (âyet, metin, norm)
@@ -197,9 +226,42 @@ class Ayah:
 
 # ---------------------------------------------------------------- kaynaklar
 
+def isarat_db(unit: str) -> dict:
+    """Taslağı olmayan İşârât birimi (S7d): Arapça aslı ve Abdülmecid Nursî tercümesi veritabanındaki bölümlerinden,
+    paragraf paragraf (vecih bilgisi yok: düzey süzgeci yalnız "Metinlerin tamamı"nda gösterir)."""
+    cfg = cfg_of(unit)
+    conn = sqlite3.connect(f"file:{P.GENEL_DB}?mode=ro", uri=True)
+    out = {}
+    for lang, work in (("ar", "isaratul-icaz-arabi"), ("tr", "isaratul-icaz")):
+        if cfg["sura"] == 1:
+            tails = FATIHA[cfg["ayahs"][0]]
+            nodes = [f"{work}/sure-i-fatiha/{t}" for t in tails]
+        else:
+            kids = [r[0] for r in conn.execute("SELECT id FROM nodes WHERE parent_id = ? ORDER BY ord", (f"{work}/sure-i-bakara",))]
+            tail = {k.rsplit("/", 1)[1]: k for k in kids}
+            a, b = cfg["ayahs"]
+            key = str(a) if a == b else f"{a}-{b}"
+            nodes = [k for t, k in tail.items() if t == key or t.startswith(key + "-")] or \
+                [tail[str(x)] for x in range(a, b + 1) if str(x) in tail]
+        paras = []
+        for nid in nodes:
+            o = conn.execute("SELECT ord, last_ord FROM nodes WHERE id = ?", (nid,)).fetchone()
+            if not o:
+                continue
+            last = None
+            for sid, pid, text in conn.execute("""SELECT s.id, s.paragraph_id, s.text FROM sentences s JOIN nodes n ON n.id = s.node_id
+                                                  WHERE n.work = ? AND n.ord BETWEEN ? AND ? ORDER BY s.seq""", (work, *o)):
+                if pid != last:
+                    paras.append({"v": None, "s": []})
+                    last = pid
+                paras[-1]["s"].append({"k": "", "id": sid, "t": text})
+        out[lang] = paras
+    return out if any(out.values()) else {}
+
+
 def isarat(unit: str) -> dict:
     """Gizlenen metin vecih vecih, paragraflarıyla; cümlelerin istem kimliği (a016) ve veritabanı kimliği."""
-    cfg = P.UNITS[unit]
+    cfg = cfg_of(unit)
     out = {}
     for lang, rows in Y.hidden(unit).items():
         work = "isaratul-icaz-arabi" if lang == "ar" else "isaratul-icaz"
@@ -240,7 +302,7 @@ def _unit_rows(conn: sqlite3.Connection, section: str) -> list[dict]:
 
 
 def tefsir(unit: str) -> list[dict]:
-    cfg = P.UNITS[unit]
+    cfg = cfg_of(unit)
     lib = Library(P.TEFSIR_DB)
     conn = sqlite3.connect(f"file:{P.TEFSIR_DB}?mode=ro", uri=True)
     works: dict[str, dict] = {}
@@ -280,7 +342,7 @@ def klasik(ayah: Ayah, window: int = 3, context: int = 2) -> list[dict]:
 
 def risale(unit: str) -> list[dict]:
     """Âyetin Risale'de geçtiği öbür yerler (İşârât'ın bu birimi ve Osmanlıca hariç), birer cümle bağlamla."""
-    cfg = dict(P.UNITS[unit])
+    cfg = dict(cfg_of(unit))
     cfg.setdefault("nodes", ())
     lib = Library(P.GENEL_DB)
     conn = sqlite3.connect(f"file:{P.GENEL_DB}?mode=ro", uri=True)
@@ -288,7 +350,10 @@ def risale(unit: str) -> list[dict]:
     for a in range(cfg["ayahs"][0], cfg["ayahs"][1] + 1):
         for r in lib.find_ayah(str(cfg["sura"]), a)["results"]:
             sid = r["id"]
-            if sid in seen or "osmanlica" in sid or any(sid.startswith(n + "/") for n in cfg["nodes"]):
+            own = cfg.get("isarat_only") and sid.startswith("isaratul-icaz") and (
+                any(f"/sure-i-fatiha/{t}/" in sid for t in FATIHA.get(cfg["ayahs"][0], ())) if cfg["sura"] == 1
+                else f"/sure-i-bakara/{cfg['ayahs'][0]}" in sid)            # İşârât'ın bu birimi Kaynaklar'da zaten
+            if sid in seen or own or "osmanlica" in sid or any(sid.startswith(n + "/") for n in cfg["nodes"]):
                 continue
             seen.add(sid)
             seq, node = conn.execute("SELECT seq, node_id FROM sentences WHERE id = ?", (sid,)).fetchone()
@@ -410,7 +475,7 @@ def ready_units() -> list[str]:
 
 
 def out_dir(unit: str) -> Path:
-    return D5_DIR if P.UNITS[unit].get("d5") else OUT_DIR
+    return D5_DIR
 
 
 def extras(unit: str, dr: dict) -> dict:
@@ -555,26 +620,32 @@ def kor(unit: str) -> list[dict]:
 
 
 def build(unit: str, units: list[dict]) -> Path:
-    cfg = P.UNITS[unit]
-    envf = Y.out_dir(unit) / "envanter.json"
+    cfg = cfg_of(unit)
+    has_drafts = (P.DRAFTS / unit).is_dir() and bool(Y.drafts_of(unit))
+    envf = P.DRAFTS / unit / "yz" / "envanter.json"
     env = json.loads(envf.read_text(encoding="utf-8")) if envf.exists() else {"kalemler": []}
     ayah = Ayah(unit)
     places = ayah.build_chips(env["kalemler"])
-    dr = drafts(unit, ayah)
+    dr = drafts(unit, ayah) if has_drafts else {}
     d5 = bool(cfg.get("d5"))
-    data = {"unit": unit, "title": title(unit), "units": units, "d5": d5,
+    isr = {} if d5 else (isarat(unit) if cfg.get("sections") and has_drafts else isarat_db(unit))
+    empty_yz = {"models": [], "items": {}, "drafts": {}, "critic": {}, "bilirkisi": {}, "sample": [],
+                "critic_sample": [], "systemic": [], "critic_sample_note": ""}
+    data = {"unit": unit, "title": title(unit), "d5": d5,
             "verses": ayah.verses,
             "chips": [{k: c[k] for k in ("id", "ayah", "text", "norm")} for c in ayah.chips],
-            "isarat": {} if d5 else isarat(unit), "tefsir": tefsir(unit), "klasik": klasik(ayah),
-            "risale": risale(unit), "drafts": dr, "yz": layer(unit, ayah, places, dr), "masa": extras(unit, dr),
+            "isarat": isr, "tefsir": tefsir(unit), "klasik": klasik(ayah),
+            "risale": risale(unit), "drafts": dr,
+            "yz": layer(unit, ayah, places, dr) if has_drafts else empty_yz,
+            "masa": extras(unit, dr) if has_drafts else {"kapi": [], "nisbet": [], "alarmlar": [], "yayin": None,
+                                                          "katman": {}, "kor": []},
             "fark": sorted(p.name for p in OUT_DIR.glob(f"fark-{unit}-*.html")),   # D12.2 fark kartları
             "turlar": tur_pages(),                                                  # bütün birimlerin tur okumaları
             "tur": tur_data(unit),                                                  # D12.5 tur okuması (kör A/B)
             "tur_acik": tur_open(unit)}                                             # S7c: kör okuması sürüyor mu
-    blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    out = out_dir(unit) / f"{unit}.html"
-    out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
+    VERI.mkdir(parents=True, exist_ok=True)
+    out = VERI / f"{unit}.json"
+    out.write_text(json.dumps(data, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     counts = {}
     for i in data["yz"]["items"].values():
         for l in i["loc"]:
@@ -613,26 +684,51 @@ def tur_open(unit: str) -> dict | None:
 
 
 def title(unit: str) -> str:
-    cfg = P.UNITS[unit]
+    cfg = cfg_of(unit)
     a, b = cfg["ayahs"]
     return f"{cfg['sura_name']} {a}" if a == b else f"{cfg['sura_name']} {a}–{b}"      # tek âyet: "Bakara 13"
 
 
-def main() -> None:
-    every = ready_units()
-    todo = sys.argv[1:] or every
-    OUT_DIR.mkdir(exist_ok=True)
-    units = [{"unit": u, "title": title(u), "ayah": list(P.UNITS[u]["ayahs"]), "d5": bool(P.UNITS[u].get("d5"))}
-             for u in every]
-    # Kur'ân panelinin listesi bütün masa sayfalarında ortak (eski sayfalar yeni D5 birimlerini de görsün)
-    # taslak sunucusu git'teki klasöre yazmaz (iki makinenin push'u çakışmasın): yalnız yeniden üretilen D5 klasörü
+REDIRECT = """<!doctype html><html lang="tr"><head><meta charset="utf-8"><meta name="robots" content="noindex, nofollow">
+<meta http-equiv="refresh" content="0; url=ayet.html#/{u}"><title>Âyet Masası</title></head>
+<body><p><a href="ayet.html#/{u}">Âyet masası: {t}</a></p><script>location.replace('ayet.html#/{u}');</script></body></html>
+"""
+
+
+def shell_and_list(units: list[dict]) -> None:
+    """Kabuk (`ayet.html`), panelin listesi (`masa-birimler.json`; durumlarıyla) ve eski adresler için yönlendirmeler
+    (`<birim>.html` → `ayet.html#/<birim>`; ar-ge birimlerinin eski sayfaları git'teydi, yerlerine küçük dosya)."""
+    D5_DIR.mkdir(parents=True, exist_ok=True)
+    (D5_DIR / "ayet.html").write_text(TEMPLATE.read_text(encoding="utf-8"), encoding="utf-8")
+    rows = []
+    for u in units:
+        uid = u["unit"]
+        has = (P.DRAFTS / uid).is_dir() and bool(Y.drafts_of(uid))
+        rows.append(dict(u, title=title(uid), taslak=has, isarat=u["kaynak"] == "isarat"))
+    (D5_DIR / "masa-birimler.json").write_text(json.dumps(rows, ensure_ascii=False), encoding="utf-8")
     on_server = (Path.home() / ".ssh" / "site_gonder").exists()
-    for d in ({D5_DIR} if on_server else {OUT_DIR, D5_DIR}):
-        d.mkdir(parents=True, exist_ok=True)
-        (d / "masa-birimler.json").write_text(json.dumps(units, ensure_ascii=False), encoding="utf-8")
-    for unit in todo:
+    for r in rows:
+        if not r["taslak"]:
+            continue
+        html = REDIRECT.format(u=r["unit"], t=r["title"])
+        (D5_DIR / f"{r['unit']}.html").write_text(html, encoding="utf-8")
+        if not on_server and (OUT_DIR / f"{r['unit']}.html").exists():      # eski git sayfası: yönlendirmeyle değişir
+            (OUT_DIR / f"{r['unit']}.html").write_text(html, encoding="utf-8")
+
+
+def main() -> None:
+    import argparse
+    ap = argparse.ArgumentParser()
+    ap.add_argument("units", nargs="*")
+    ap.add_argument("--hepsi", action="store_true", help="paneldeki bütün birimler (Fâtiha ve Bakara)")
+    a = ap.parse_args()
+    units = all_units()
+    shell_and_list(units)
+    todo = [u["unit"] for u in units] if a.hepsi else (a.units or ready_units())
+    for k, unit in enumerate(todo, 1):
         build(unit, units)
-    # index.html artık ar-ge masasının giriş sayfasıdır (scripts/masa-giris.py; S7.2, 2026-11-21)
+        if a.hepsi:
+            print(f"  [{k}/{len(todo)}]", flush=True)
 
 
 if __name__ == "__main__":
