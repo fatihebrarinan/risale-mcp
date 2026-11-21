@@ -3,6 +3,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>Âyet Masası</title>
 <style>
+@font-face { font-family: "Naskh"; src: url("oku/fonts/naskh.ttf") format("truetype"); font-display: swap; }
 :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #ffffff; --soft: #f3f1ec;
         --accent: #1f5c3f; --accent-soft: #e2efe7; --ai: #5a4a8a; --ai-soft: #eeebf7; --hl: #fbe38a; --hl-fg: #1d1d1b;
         --rel: #fdf6d8; --bad: #a3271f; --warn: #8a4b00; --warn-soft: #fdf0dc; --src: #1f4f7a; --src-soft: #e3eef8; }
@@ -15,12 +16,12 @@
   --rel: #2d2915; --bad: #f08a80; --warn: #f0b46a; --warn-soft: #3a2a14; --src: #8cc0ef; --src-soft: #18293a; }
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 system-ui, "Noto Sans", sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.6 system-ui, "Noto Sans", "Naskh", sans-serif; }
 button, select, input, textarea { font: inherit; font-size: .85rem; color: var(--fg); }
-.ar, .arw { font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; }
+.ar, .arw { font-family: "Naskh", "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; }
 .ar { direction: rtl; text-align: right; font-size: 1.22rem; line-height: 2; }
 .arw { font-size: 1.1em; }
-.serif { font-family: "Noto Serif", "DejaVu Serif", Georgia, serif; }
+.serif { font-family: "Noto Serif", "Naskh", "DejaVu Serif", Georgia, serif; }
 .muted { color: var(--muted); }
 .small { font-size: .8rem; }
 
@@ -52,7 +53,7 @@ body.sel .hint { display: none; }
 .verses { display: flex; flex-direction: column; gap: 4px; align-items: center; }
 .verse { display: flex; flex-wrap: wrap; direction: rtl; justify-content: center; align-items: flex-start; gap: 4px 6px; }
 .chip { position: relative; border: 1px solid transparent; background: none; border-radius: 10px; cursor: pointer;
-        padding: 0 8px 14px; font-family: "Amiri Quran", "Amiri", "Scheherazade New", "Noto Naskh Arabic", serif;
+        padding: 0 8px 14px; font-family: "Amiri Quran", "Amiri", "Naskh", "Scheherazade New", "Noto Naskh Arabic", serif;
         font-size: 2.1rem; line-height: 1.9; color: var(--fg); }
 .chip:hover { border-color: var(--line); background: var(--soft); }
 .chip .n { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); font: 600 .68rem/1 system-ui, sans-serif;

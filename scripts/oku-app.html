@@ -16,7 +16,7 @@
   --soft: #26251f; --accent: #7cc49d; --ai: #b9a8ee; --ai-soft: #2a2540; --bad: #f08a80; --src: #8cc0ef;
   --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; --tag: #f0a35a; }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 system-ui, "Noto Sans", sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 system-ui, "Noto Sans", "Naskh", sans-serif; }
 a { color: var(--src); }
 header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bottom: 1px solid var(--line);
   display: flex; align-items: center; gap: 10px; padding: 8px 16px; }
@@ -53,7 +53,7 @@ h3 { font-size: .95rem; margin: 18px 0 6px; }
 .muted { color: var(--muted); } .small { font-size: .82rem; }
 .ar { font-family: "Naskh", "Noto Naskh Arabic", "Amiri", serif; direction: rtl; text-align: right; font-size: 1.3rem;
   line-height: 2.1; margin: 8px 0 2px; }
-.tr { font-family: "Noto Serif", "DejaVu Serif", Georgia, serif; margin: 2px 0; }
+.tr { font-family: "Noto Serif", "Naskh", "DejaVu Serif", Georgia, serif; margin: 2px 0; }   /* Türkçe içindeki Arapça Naskh ile (Kur'ân işaretleri) */
 .stamp { background: var(--warn-soft); border-radius: 8px; padding: 6px 12px; font-size: .85rem; margin: 8px 0 14px; }
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 14px 0 10px; overflow-x: auto; }
 .tabs a { padding: 6px 10px; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent; white-space: nowrap; }

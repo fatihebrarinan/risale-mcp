@@ -32,6 +32,7 @@ MASA = P.KEEP / "masa"
 STAMP_RE = re.compile(r"Yapay zekâ tercümesi(?: \(alıntının\))?: ?$")
 
 CSS = """
+@font-face { font-family: "Naskh"; src: url("oku/fonts/naskh.ttf") format("truetype"); font-display: swap; }
 :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #ffffff; --soft: #f3f1ec;
         --accent: #1f5c3f; --ai: #5a4a8a; --ai-soft: #eeebf7; --bad: #a3271f; --src: #1f4f7a; --src-soft: #e3eef8;
         --warn-soft: #fdf0dc; --q: #f6f2e8; }
@@ -43,14 +44,14 @@ CSS = """
   --soft: #26251f; --accent: #7cc49d; --ai: #b9a8ee; --ai-soft: #2a2540; --bad: #f08a80; --src: #8cc0ef;
   --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 system-ui, "Noto Sans", sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 system-ui, "Noto Sans", "Naskh", sans-serif; }
 main { max-width: 860px; margin: 0 auto; padding: 12px 16px 80px; }
 h1 { font-size: 1.15rem; margin: 10px 0 4px; } h2 { font-size: 1.05rem; margin: 26px 0 8px; color: var(--accent); }
 h3 { font-size: .95rem; margin: 18px 0 6px; }
 .muted { color: var(--muted); } .small { font-size: .82rem; }
-.ar { font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; direction: rtl; text-align: right;
+.ar { font-family: "Naskh", "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; direction: rtl; text-align: right;
       font-size: 1.22rem; line-height: 2.05; margin: 10px 0 2px; }
-.tr { font-family: "Noto Serif", "DejaVu Serif", Georgia, serif; margin: 2px 0 6px; }
+.tr { font-family: "Noto Serif", "Naskh", "DejaVu Serif", Georgia, serif; margin: 2px 0 6px; }
 .lab { font-size: .72rem; color: var(--ai); letter-spacing: .02em; }
 .quote { background: var(--q); border-left: 3px solid var(--line); padding: 4px 10px; border-radius: 4px; margin: 6px 0; }
 .izah { background: var(--ai-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0 12px; font-size: .93rem; }
