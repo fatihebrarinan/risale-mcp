@@ -401,6 +401,12 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   tercümesi"); masada blok başlığında kaynak. Aynı gün: tam masa kurulumu sunucuda bitti ama son adımda yerelin gönderme
   betiği (yerel anahtar) kullanıldığı için platform gönderilmedi; kabuk kurulumun başında yazıldığından S7g'siz kaldı;
   ikisi elle düzeltildi.
+- **D5.1'in okuması (kullanıcı, 2026-11-21):** "Genel olarak nazım nükteleri, daha öncekiler gibi, yerinde." Sınır:
+  «وَكَانَ مِنَ الْكَافِرِينَ»'da «kâne»nin mânâsı kayıtsız şartsız Ebüssuûd'dan alındı (iki vecih, nisbeti doğru; tartma
+  yok, öbür müfessirlere bakılmadı); yeniden yazdırmak çözmez. Güçlü yan: "Risale-i Nur'dan ders çok çok iyi" (âyetin
+  Risale'de doğrudan bağı yok; dersi anlamsal aramayla buldu: D5.2'nin çekincesine karşı iyi işaret). Sonuç: usul
+  sayfasına sınır satırı, istem adayı plana; 34'ün yayını düzeltilmiş nisbet denetçisiyle v2 (eski hükümler
+  `nisbet-taslak-2.eski-kesik.*`); kuyruk 35–40 (`taslak-sunucu.sh devam 40`, yeni: o birim bitince durur).
 - Denendi: `node` ile her birim ve sekme çizildi (176/176), tarayıcıda yerel deneme sunucusunda not, kaynak kutusu,
   ders, arama, kesintisiz okuma; canlıda girişsiz istekler girişe yönleniyor, API 401. **Canlıda girişle denenmedi.**
 
