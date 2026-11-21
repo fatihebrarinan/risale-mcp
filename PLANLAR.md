@@ -55,12 +55,11 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde (oturum devri, 2026-11-21, altıncı kısım):** (1) **D5.1 bitti: Bakara 34** (bkz. D5); kuyruk durdu
-  (`dur`). **Kullanıcı 34'ü okuyor** (platform `/oku/#/34`, masa `/taslak/ayet.html#/34`, `/taslak/d5-34.html`);
-  35–40 kararı ondan sonra. (2) **S7c–S7g yapıldı** (bkz. S7 "S7c–S7g"): masa tek kabuk ve bütün âyetler, Türk hattı
-  varsayılan, İşârât alıntısında Abdülmecid tercümesi ve cümlenin tamamı, etiketler sadeleşti. 183 birimin masa verisi
-  kuruldu ve yayında (2026-11-21).
-- **Kullanıcıdan beklenen:** 34'ün okuması; 35–40'ın ne zaman açılacağı; masadan platforma taşınacak kolaylıklar.
+- **Önde (oturum devri, 2026-11-21, yedinci kısım):** (1) **D5.1 okundu** (kullanıcı: nazım nükteleri yerinde,
+  Risale dersi çok iyi; sınır: «kâne» tek müfessirden; bkz. S7 "İstem adayı"). (2) **Kuyruk 35–40** sürüyor
+  (`taslak-sunucu.sh devam 40`: 40 bitince kendiliğinden durur; 35–37, 38–39, 40). (3) 34'ün yayını v2: düzeltilmiş
+  nisbet denetçisiyle (sahte "kaynakta yok" uyarıları gider). S7c–S7h yayında.
+- **Kullanıcıdan beklenen:** 35–40'tan sonrası; masadan platforma taşınacak kolaylıklar.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -397,6 +396,11 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   --generate --oku` (kullanıcının işi); (4) Kaynaklar yanındaki bütün tefsir birimlerinin tercümesi (sonraya; kota D5
   ile ortak); (5) Diyanet baskısının Türk hattıyla risaleoku'nun Türk hattı arasındaki küçük işaret farkları (ör.
   durak işaretleri) bakılmadı; kaynak risaleoku.
+  **İstem adayı (D5.1'in okumasından, kullanıcı kabul etti, 2026-11-21; şimdi değil):** "kelime mânâsında tek
+  müfessire dayanma": taslak bir kelimenin mânâsını bir müfessirden alıp kendi sözü gibi kullanıyor, öbürlerini
+  tartmıyor (34'te «kâne» yalnız Ebüssuûd'dan). Aday kural: bir kelimenin mânâsını bir müfessirden alırken öbürlerinin o
+  kelimede ne dediğine bak, ayrılıyorlarsa söyle. Yeni istem sürümü ve deneme ister (h9 kararı bozulmaz); kapı ve
+  nisbet bunu yakalamaz (atfın doğruluğuna bakarlar, tercihin tartılmasına değil). Usul sayfasında sınır olarak yazılı.
   **Kararlar (kullanıcı, 2026-11-21, oturum):** sıra: birimin ar-ge görünümü (hafif: ham notlar, nisbet, kapının
   kabul ve retleri, düzeltme farkı, alarmlar) → S7.3 → S7.4; deneyler defteri, alet ayarı, arama sonra, D5'i
   beklemeden. **Ar-ge masasında da** Kur'ân paneli ve okuma platformunun kolaylıkları olur (kullanıcı: "unutma").
