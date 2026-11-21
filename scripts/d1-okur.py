@@ -13,8 +13,9 @@ Kaynak `docs/d1/usul-ozeti.md`'dir (programcı sürümü: kimlikler, denetim kom
   tercümesi" damgasıyla (ikinci sürüm, D1.2b);
 - baştaki teknik not yerine okura yazılmış giriş (`INTRO`), "Denetim" bölümü yerine tek cümle gelir;
 - "[Çıkarım]" "Derleyenin notu" olur.
-Sayfa yalnız bağlantıyla bulunur: menüde ve site haritasında yoktur, `noindex` taşır. Depo açık olduğu için gizli
-değildir (kullanıcının kararı, 2026-11-10: açık olması sorun değil).
+Sayfa `noindex` ile yazılır; Çalışmalar kaydı (`docs/calismalar/*-isarat-usulu.md`, `adres: /isarat-usul/`)
+yayımlanınca `scripts/site-uret.py` onu kaldırır, sayfa Çalışmalar'da listelenir ve site haritasına girer (S9,
+kullanıcının kararı 2026-11-21: son sürümü herkese açık). Ondan önce yalnız bağlantıyla paylaşılıyordu.
 """
 import html
 import re
@@ -33,20 +34,20 @@ TITLE = "İşârâtü'l-İ'câz'ın usulü: kendi metninden bir döküm"
 DESCRIPTION = ("İşârâtü'l-İ'câz'ın bir âyeti ele alırken ne yaptığını ve hangi sırayla yaptığını eserin kendi "
                "cümleleriyle gösteren taslak döküm.")
 MONTHS = ("Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık")
-ASSET_VERSION = 11
+ASSET_VERSION = 12
 
 INTRO = """<div class="note">
 <p><strong>Bu belge nedir?</strong> İşârâtü'l-İ'câz'ın bir âyeti ele alırken ne yaptığını ve hangi sırayla yaptığını, eserin kendi cümleleriyle gösteren bir dökümdür. Tefsir değildir. Bir yapay zekâ derlemesidir ve ehlinin tashihine sunulmuş bir taslaktır.</p>
 <p><strong>Nasıl okunur?</strong> Çerçeveli sözler İşârâtü'l-İ'câz'dan aynen alınmıştır ve kaynak metinle birebir karşılaştırılmıştır. Dayanak eserin Arapça aslıdır; Arapça cümlenin altında, "Tercümede" diye, Abdülmecid Nursî tercümesindeki karşılığı durur. Her alıntının altında eserdeki yeri ve cümlenin ilk kelimeleri yazar; o cümleyi kitapta siz de bulabilirsiniz.</p>
 <p><strong>İki işarete dikkat edin.</strong> <span class="mine">Yapay zekâ tercümesi</span> diye başlayan satırlar eserin sözü değildir: Arapça cümlenin tercümede karşılığı bulunmadığı yerde derleyenin yaptığı tercümedir, yanlış olabilir. <span class="mine">Derleyenin notu</span> diye başlayan yerler de derleyenin kendi tespitidir.</p>
 <p><strong>Hangi metin?</strong> Arapça asıl risaleoku.com'daki metinden, Türkçe tercüme e-Risale'deki metinden alınmıştır. Tenbih'i ve Hâşiye'yi müellif sonradan Türkçe yazmıştır; onlarda asıl Türkçedir. Tercüme asıldan üç noktada ayrılır: âyetlerin ardındaki "Yani: …" mealleri asılda yoktur; tercüme yer yer kısaltır (1.4); Bakara 17–20'nin başındaki belâgat bahsi tercümede hiç yoktur (2. bölüm). Arapça asıl 31. âyetin ortasında biter.</p>
-<p><strong>İkinci sürümde ne değişti?</strong> İlk sürüm Türkçe tercümenin taranmasına dayanıyordu. Bu sürüm için Arapça asıl baştan sona okundu (Fâtiha, Bakara 1–33). Eklenenler: usulün belâgat temeli (2), her âyette izlenen sıranın çizelgesi (4), mukaddimelerin ne zaman geldiği (5) ve taslak için kurallar (8).</p>
+<p><strong>İkinci sürümde ne değişti?</strong> İlk sürüm Türkçe tercümenin taranmasına dayanıyordu. Bu sürüm için Arapça asıl baştan sona okundu (Fâtiha, Bakara 1–33). Eklenenler: usulün belâgat temeli (2), her âyette izlenen sıranın çizelgesi (4), mukaddimelerin ne zaman geldiği (5) ve taslak için kurallar (8). Sonradan usulün aslı da eklendi: Muhâkemât'ın "Unsur-u Belâğat"ı (2.7).</p>
 <p><strong>Sınırı nedir?</strong> Okuma bir yapay zekâ okumasıdır; Arapça belâgat inceliklerinde yanılmış olabilir. Sayılar bir kelime taramasından gelir, yaklaşık okunmalıdır.</p>
 <p><strong>Düzeltmeleriniz</strong> için: <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></p>
 </div>"""
 OUTRO = "<p class=\"muted small\">Bu belgedeki bütün alıntılar kaynak metinlerle (risaleoku.com, e-Risale) birebir karşılaştırılmıştır.</p>"
 PAGE_CSS = """<style>
-.reader blockquote.quote p.ar { direction: rtl; text-align: right; font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; font-size: 1.25rem; line-height: 2.1; }
+.reader blockquote.quote p.ar { direction: rtl; text-align: right; font-family: "Naskh Site", "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; font-size: 1.25rem; line-height: 2.1; }
 .reader p.label { margin: 0 0 -8px; font-size: 0.85rem; color: var(--muted); }
 </style>"""
 
@@ -70,7 +71,7 @@ def place(ident: str) -> str:
     return text
 
 
-_ID = r"isaratul-icaz[\w/-]*/c\d+(?:\.\.c\d+)?"
+_ID = r"[a-z][\w-]*/[\w/.-]*?c\d+(?:\.\.c\d+)?"   # 2.7 Muhâkemât da anar
 
 
 def inline(text: str) -> str:

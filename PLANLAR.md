@@ -69,9 +69,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `docs/s8-sonuc-yazisi.md` (dağınık kayıtlardan toplandı; kullanıcı okuyacak). (3) **Kuyruk Bakara'nın sonuna kadar**
   sürüyor (kullanıcının kararı, 2026-11-21; hesap: 14 Aralık'a kadar ≈160 birim, kalan ≈150; haftalık pencere dolunca
   kullanıcı sıfırlama hakkını kullanabilir; Pro'dan önce `dur`). D5.1 okundu (bkz. D5 "İstem adayı").
-- **Sıradaki iş:** S9 "Çalışmalar" (kullanıcının kararları, 2026-11-21): iskelet, İşârât'ın usulü son sürümüyle
-  herkese açık, S8'in platformu anmayan site sürümü (iç sürüm `docs/s8-sonuc-yazisi.md` kalır).
-- **Kullanıcıdan beklenen:** S8'in okunması (site sürümünde "okuyucu ehil değil" cümlesi); masadan platforma taşınacak
+- **Sıradaki iş:** S9 "Çalışmalar": iskelet, taslak ve önizleme kuruldu, iki taslak hazır (İşârât'ın usulü, S8'in
+  site sürümü); deploy ve kullanıcının okuması bekliyor, sonra `yayinla`.
+- **Kullanıcıdan beklenen:** deploy onayı; iki taslağın okunması (önizleme); masadan platforma taşınacak
   kolaylıklar ("Sonra" › "Okuma platformu ve ar-ge masasının açıkları").
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
@@ -129,6 +129,14 @@ yazıya bağlanır.
 - **Sonraki adaylar** (karar yok): "Müellifin sözünden birim bölmek" (bölme kuralı), "Neden atıf birimi cümle"
   (MCP'nin kaynağa bağlılık tasarımı).
 - **İngilizce sonra** (kullanıcının kararı). Deploy `scripts/deploy.sh --code` (site); araç çıktısı değişmez.
+- **Yapılanlar (2026-11-21):** `scripts/site-uret.py` iki türlü (Yenilikler, Çalışmalar), taslak, önizleme (`onizle`
+  yerelde; deploy `/taslak/onizleme/`'ye), `yayinla` (geçici bir yazıyla sınandı: ad ve tarih o gün, duyuru taslağı,
+  menü), Markdown'da kutu, tablo, çizgi, başlık kimlikleri ve içindekiler, Arapça işareti; sitenin Naskh yazı tipi
+  (`site/fonts/naskh.woff2`, OFL; `?v=12`); menüde "Çalışmalar" ilk yazı yayımlanınca görünür; testler
+  `tests/test_site_uret.py`. İşârât'ın usulü son özetten yeniden üretildi (148 alıntı denetimden geçti; 2.7
+  Muhâkemât eklendi, okur betiği artık İşârât dışı kimlikleri de çözer). İki taslak bekliyor: `docs/calismalar/
+  2026-11-21-isarat-usulu.md` (`adres: /isarat-usul/`) ve `2026-11-21-isarat-misli.md` (S8'in site sürümü).
+  **Kalan:** deploy (önizlemenin sunucuya çıkması; kullanıcının onayıyla), kullanıcının okuması ve `yayinla`.
 
 **D5. Asıl iş: Bakara 34–286** (eski D1.8; 2026-11-20, kullanıcının kararı: D5 yalnız Bakara, Kur'ân'ın geri kalanı "Sonra"da). Tek adım değil, küçük adımlar; D15'ten çıkan hatla (2026-11-17).
 - **D5.0 Üretim hazırlığı** (D11'in kalanı, kullanıcının kararları 2026-11-17 ve 2026-11-18; 2026-11-19'da alt adımlara

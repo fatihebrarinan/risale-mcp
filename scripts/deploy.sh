@@ -74,6 +74,12 @@ if [[ -f data/interim/oku/index.html ]]; then
     rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/oku/ "$HOST:/var/www/ozel/taslak/oku/"
     rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/oku-masa/ "$HOST:/var/www/ozel/taslak/"
 fi
+# S9: Yenilikler ve Çalışmalar taslaklarının önizlemesi (girişli /taslak/onizleme/; `scripts/site-uret.py` üretir).
+# --delete: yayımlanan taslağın önizlemesi kalkar
+if [[ -f data/interim/onizleme/index.html ]]; then
+    "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/onizleme"
+    rsync -az --delete --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/onizleme/ "$HOST:/var/www/ozel/taslak/onizleme/"
+fi
 # Caddy yapılandırması (docs/Caddyfile) değiştiyse yeniden yüklenir
 rsync -az -e "${SSH[*]}" docs/Caddyfile "$HOST:/etc/caddy/Caddyfile.new"
 "${SSH[@]}" "$HOST" "cmp -s /etc/caddy/Caddyfile.new /etc/caddy/Caddyfile && rm /etc/caddy/Caddyfile.new \

@@ -188,3 +188,19 @@ footer br + a { margin-top: 4px; }
 .reader blockquote.quote footer { margin: 0; padding: 0; border: 0; font-size: 0.85rem; color: var(--muted); }
 .reader .mine { display: inline-block; padding: 0 7px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; background: var(--badbg); color: var(--bad); vertical-align: 1px; }
 .reader .note p { margin: 8px 0; }
+
+/* S9 Çalışmalar: uzun yazılar. Noto Naskh Arabic (SIL Open Font License 1.1) kendi sitemizden; dışarıdan yüklenmez */
+@font-face { font-family: "Naskh Site"; src: url("/fonts/naskh.woff2") format("woff2"); font-display: swap; }
+.study [lang="ar"], .reader [lang="ar"], .reader p.ar { font-family: "Naskh Site", "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; }
+.study span[lang="ar"] { font-size: 1.12em; }
+.study p[dir="rtl"], .study blockquote[dir="rtl"] { text-align: right; font-size: 1.25rem; line-height: 2; }
+.post.study blockquote[dir="rtl"] { border-left: 0; border-right: 3px solid var(--accent); padding: 4px 14px 4px 0; }
+.study .lead { font-size: 1.08rem; }
+.study .box-title { margin: 0 0 4px; }
+.study .box p:last-child, .study .box ul:last-child { margin-bottom: 0; }
+.study .table-wrap { overflow-x: auto; }
+.study hr { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
+.toc { margin: 16px 0 24px; }
+.toc ol { margin: 4px 0; padding-left: 22px; }
+.toc p { margin: 0; }
+.preview-banner { border-left-color: #b8860b; }
