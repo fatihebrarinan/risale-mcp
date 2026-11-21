@@ -371,6 +371,13 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   taslağında 19 atıf); (4) masanın birim sayfası eski âyet masası oldu, genişletildi (Kur'ân paneli, 6 yan, Kalite
   kapısı, Nisbet ve Okuyucu notları yanları, lafız süzgeciyle; D5 ve envantersiz birimlerde de kurulur); `birim.html`
   emekli. Kapı yanında her düzeltme denemesi ayrı, "kısmen" = karşılandı ama bir kısmı reddedildi.
+- **S7c (2026-11-21):** masa sadeleşti (kör kip, tur bağlantıları ve D7–D9'un bütün işaretleme araçları kalktı; üst
+  satır ☰ · birim · + yan · Dil; kör okuması sürerse yalnız uyarı), her yanda içindekiler ağacı (her müfessir, her
+  taslağın eleştirileri ayrı yan; lafız sayıları; bölüm atlama), D5'te kelime sayıları taslaktan. İşârât eşlemesi:
+  program envanterle %77 (±1 cümle %88), model 3 birimde 163/164 → kullanıcının kararıyla model, 37 bölüm (≈7 $).
+  Kaynak tercümesi: ilk koşu sıralı ≈2 saat sürdü; 3 paralel çağrı ve orta düşünmeyle yeniden. Kabul 30'un okuması:
+  3 yerde eşit, karar h9; iki kart tekrarı benim kart kurma hatamdı (`d1-tur.dedupe`). D5.1 (yalnız 34) başladı;
+  kuyruğun ilk koşusunda `data/d1/d5/` yokken günlük özet hatası, düzeltildi.
 - Denendi: `node` ile her birim ve sekme çizildi (176/176), tarayıcıda yerel deneme sunucusunda not, kaynak kutusu,
   ders, arama, kesintisiz okuma; canlıda girişsiz istekler girişe yönleniyor, API 401. **Canlıda girişle denenmedi.**
 

@@ -55,17 +55,19 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde (oturum devri, 2026-11-21, üçüncü kısım):** (1) **Kabul 30 bitti, karar h9** (kullanıcı, 2026-11-21; okuma
-  3 yerde eşit: birinci vecih yeterli, «وَإِذْ» yetersiz (İşârât başka noktada), ders sağlıklı okunamadı (kart kurma
-  hatam: tekrarlar; `d1-tur.dedupe` düzeltti; "bu kadar okuma yeter"); h12 +%39 maliyet, +%19 uzunluk, daha çok
-  nisbet hatası, ders alıntısında damga hatası). `D5_SURUM` varsayılanı h9; 30 platformda taslak 4
-  (`data/d1/oku/secim.json`). (2) **S7c** (masanın sadeleşmesi, içindekiler ağacı, D5 kelime sayıları) bitti;
-  **S7c.4 İşârât eşlemesi kullanıcının kararını bekliyor** (program envanterle %74, model (Opus, ≈0,3 $/birim) 3 birimde
-  163/164; örneklemler `/taslak/isarat-esleme.html`, `isarat-esleme-model.html`); **S7c.5 kaynak tercümesi** arka planda
-  (`d1-arka.sh liste`: `kaynak-tercume`), bitince `d1-masa.py` ve `oku-veri.py --gonder`, `taslak-gonder.sh` masa sayfaları,
-  `taslak-sunucu.sh gonder`. (3) Sonra kuyruk (kullanıcının onayıyla): `taslak-sunucu.sh devam`, 40'ı (ilk kıssa birimi)
-  yazınca `dur`; kullanıcı 40'a göz atar (D5.2), sonra `devam`.
-- **Kullanıcıdan beklenen:** S7c.4'ün kararı (İşârât eşlemesi: model mi, program mı, hiç mi); kuyruğun başlaması.
+- **Önde (oturum devri, 2026-11-21, dördüncü kısım):** (1) **D5.1 başladı: kuyruk 34'ü yazıyor** (sunucu, h9; `dur`
+  işareti konuldu: 34 bitince durur; `taslak-sunucu.sh durum`, günlük `calistir tail data/interim/d1-isler/kuyruk.log`;
+  bitince telefona bildirim). İlk koşuda bir hata: günlük özet `data/d1/d5/` yokken yazıyordu (düzeltildi, `cc0c360`'tan
+  sonra). 34 bitince: yerelde `git -C data/d1 pull`, kullanıcı 34'ü platformda (`/oku/#/34`) ve masada (`/taslak/34.html`)
+  okur (onay değil; hattın ilk gerçek ürünü); maliyet, süre, haftalık kota payı ölçülür; 35–40 sonra (kullanıcının
+  kararı: önce yalnız 34). (2) **S7c bitti:** masanın sadeleşmesi, içindekiler ağacı, D5 kelime sayıları; **İşârât
+  Arapça–Türkçe eşlemesi modelle** (kullanıcının kararı; Fâtiha ve Bakara 37 bölüm, 2.706 Arapça cümle,
+  `data/d1/isarat-esleme/esleme.json`; Bakara 17–20'nin belâgat faslı ve on meselesinin tercümede karşılığı yok);
+  **taslakların andığı tefsir ve klasik yerlerin Türkçesi** (528 parça, Sonnet, `data/d1/tercume/kaynaklar.json`; D5'te
+  her birimde, `D5_TERCUME=0` atlar). Türkçe kipte kaynak kutusunda Türkçesi önde (İşârât: Abdülmecid tercümesi,
+  eşleme yapay zekânın; tefsir: yapay zekâ tercümesi, OpenITI lisansı). Tur okuma sayfaları tam genişlik, etiketler
+  turuncu; kart tekrarları `d1-tur.dedupe` ile.
+- **Kullanıcıdan beklenen:** 34 bitince okuması; 35–40'ın ne zaman açılacağı.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
