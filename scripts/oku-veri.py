@@ -237,6 +237,8 @@ def published(unit: str) -> dict | None:
     cfg = P.UNITS[unit]
     if not cfg.get("d5"):                 # ar-ge birimi (Bakara 1–33)
         choice = json.loads(CHOICE.read_text(encoding="utf-8")) if CHOICE.exists() else {}
+        if unit in choice and not choice[unit]:   # 0/null: henüz yayımlanmaz (ör. kör okuması sürerken)
+            return None
         n = choice.get(unit) or max((d["n"] for d in DUR.drafts(unit)), default=None)
         if not n:
             return None
