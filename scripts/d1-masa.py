@@ -522,7 +522,9 @@ def main() -> None:
     units = [{"unit": u, "title": title(u), "ayah": list(P.UNITS[u]["ayahs"]), "d5": bool(P.UNITS[u].get("d5"))}
              for u in every]
     # Kur'ân panelinin listesi bütün masa sayfalarında ortak (eski sayfalar yeni D5 birimlerini de görsün)
-    for d in {OUT_DIR, D5_DIR}:
+    # taslak sunucusu git'teki klasöre yazmaz (iki makinenin push'u çakışmasın): yalnız yeniden üretilen D5 klasörü
+    on_server = (Path.home() / ".ssh" / "site_gonder").exists()
+    for d in ({D5_DIR} if on_server else {OUT_DIR, D5_DIR}):
         d.mkdir(parents=True, exist_ok=True)
         (d / "masa-birimler.json").write_text(json.dumps(units, ensure_ascii=False), encoding="utf-8")
     for unit in todo:
