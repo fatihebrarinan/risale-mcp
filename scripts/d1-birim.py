@@ -254,7 +254,8 @@ def yaz(unit: str, surum: str = SURUM) -> int:
     durum_sayfasi()
     # S7: andığı tefsir ve klasik yerlerin Türkçesi (S7c.5), masanın birim sayfası (eski âyet masası, d1-masa.py) ve
     # okuma platformu (/oku/); hata kuyruğu durdurmaz
-    subprocess.run(["uv", "run", "python", "scripts/kaynak-tercume.py", unit], cwd=ROOT)
+    if os.environ.get("D5_TERCUME", "1") != "0":     # kota sıkışırsa D5_TERCUME=0; eksikler sonra --hepsi ile
+        subprocess.run(["uv", "run", "python", "scripts/kaynak-tercume.py", unit], cwd=ROOT)
     subprocess.run(["uv", "run", "python", "scripts/d1-masa.py", unit], cwd=ROOT)
     p = subprocess.run(["uv", "run", "python", "scripts/oku-veri.py", "--birim", unit, "--gonder"], cwd=ROOT)
     if p.returncode:

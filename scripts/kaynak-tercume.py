@@ -39,6 +39,8 @@ P = Y.P
 STORE = P.KEEP / "tercume" / "kaynaklar.json"
 SERVERS = ("tefsir", "klasik")
 BATCH = 30
+PARALEL = 3                  # aynı anda çağrı (2026-11-21: tek tek 4–7 dk/parti, ilk koşu ≈2 saat sürüyordu)
+Y.EFFORT = "medium"          # tercümede yüksek düşünme gerekmiyor (yalnız bu süreçte; öbür işler etkilenmez)
 ISTEM = """Aşağıda klasik Arapça tefsir ve belâgat eserlerinden numaralı parçalar var. Her birini Türkçeye çevir.
 
 Kurallar: anlamı sadık ver, eklemeden ve özetlemeden; terimleri (istiare, kinaye, takdim, hasr, i'rab terimleri) yerleşik
@@ -73,23 +75,29 @@ def cited(unit: str) -> dict[str, str]:
 
 
 def translate(unit: str, todo: dict[str, str], store: dict) -> int:
-    done = 0
+    from concurrent.futures import ThreadPoolExecutor
+    import threading
+    lock, done = threading.Lock(), [0]
     items = list(todo.items())
-    for b in range(0, len(items), BATCH):
+    stamp = f"{datetime.now():%Y%m%d-%H%M%S}"
+    def one(b: int) -> None:
         part = items[b:b + BATCH]
         prompt = ISTEM.format(parcalar="\n\n".join(f"{i + 1}. {t}" for i, (_, t) in enumerate(part)))
-        stem = Y.out_dir(unit) / f"kaynak-tercume-{datetime.now():%Y%m%d-%H%M%S}-{b // BATCH + 1}"
+        stem = Y.out_dir(unit) / f"kaynak-tercume-{stamp}-{b // BATCH + 1}"
         res = Y.run_model(prompt, "sonnet", stem, {"gorev": "kaynak-tercume", "birim": unit, "parca": len(part)})
         if not res:
-            continue
-        for i, (sid, ar) in enumerate(part):
-            tr = res.get(str(i + 1))
-            if isinstance(tr, str) and tr.strip():
-                store[sid] = {"ar": ar, "tr": tr.strip(), "model": Y.MODELS["sonnet"], "at": datetime.now().isoformat()}
-                done += 1
-        STORE.parent.mkdir(parents=True, exist_ok=True)
-        STORE.write_text(json.dumps(store, ensure_ascii=False, indent=1), encoding="utf-8")   # her partiden sonra
-    return done
+            return
+        with lock:
+            for i, (sid, ar) in enumerate(part):
+                tr = res.get(str(i + 1))
+                if isinstance(tr, str) and tr.strip():
+                    store[sid] = {"ar": ar, "tr": tr.strip(), "model": Y.MODELS["sonnet"], "at": datetime.now().isoformat()}
+                    done[0] += 1
+            STORE.parent.mkdir(parents=True, exist_ok=True)
+            STORE.write_text(json.dumps(store, ensure_ascii=False, indent=1), encoding="utf-8")   # her partiden sonra
+    with ThreadPoolExecutor(PARALEL) as ex:
+        list(ex.map(one, range(0, len(items), BATCH)))
+    return done[0]
 
 
 def main() -> None:
