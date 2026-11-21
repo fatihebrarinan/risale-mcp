@@ -851,7 +851,10 @@ def publish_due(send: bool) -> None:
     for post in due:
         changed += publish_post(post)
     build()
-    paths = sorted({str(p.relative_to(ROOT)) for p in changed} | {"site"})
+    def known(p: Path) -> bool:                           # git'e verilecek yol: diskte ya da depoda olan
+        return p.exists() or subprocess.run(["git", "ls-files", "--error-unmatch", str(p)], cwd=ROOT,
+                                            capture_output=True).returncode == 0
+    paths = sorted({str(p.relative_to(ROOT)) for p in changed if known(p)} | {"site"})
     subprocess.run(["git", "add", "-A", "--", *paths], cwd=ROOT, check=True)
     titles = ", ".join(f"«{p.title}»" for p in due)
     subprocess.run(["git", "commit", "-q", "-m", f"site: scheduled publish of {', '.join(p.slug for p in due)}",
