@@ -65,6 +65,21 @@ def context(texts, server: str, sid: str) -> str | None:
     return None
 
 
+def clip(ctx: str, n: int = 4000) -> str:
+    """Bağlamı `n` harfe indirir ama atfedilen kısmı (»…«) içeride tutar (2026-11-21, Bakara 34: baştan kesilince
+    Ebüssuûd'un uzun önceki cümleleri atfedilen cümleyi dışarıda bırakıyordu; denetçi "kaynakta yok" diyordu)."""
+    if len(ctx) <= n:
+        return ctx
+    i = ctx.find("»")
+    if i < 0:
+        return ctx[:n]
+    j = ctx.find("«", i) + 1 or len(ctx)
+    if j - i >= n:
+        return ctx[i:i + n] + "…"
+    start = max(0, i - (n - (j - i)) // 2)
+    return ("…" if start else "") + ctx[start:start + n] + ("…" if start + n < len(ctx) else "")
+
+
 def items(unit: str, n: int) -> list[dict]:
     blocks, cites = Y.draft_blocks(unit, n)
     ids = _ids(unit, n)
@@ -91,7 +106,7 @@ def items(unit: str, n: int) -> list[dict]:
         ctx = context(texts, server, sid) if server != "hadis" else texts.hadith(texts._conn(P.HADIS_DB), sid)
         if not ctx:
             continue
-        out.append({"kaynak": k, "atif": cites.get(k, ""), "id": sid, "sunucu": server, "baglam": ctx[:4000],
+        out.append({"kaynak": k, "atif": cites.get(k, ""), "id": sid, "sunucu": server, "baglam": clip(ctx),
                     "cumleler": lines})
     return out
 
