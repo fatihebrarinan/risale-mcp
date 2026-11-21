@@ -454,7 +454,8 @@ def build(unit: str, units: list[dict]) -> Path:
             "risale": risale(unit), "drafts": dr, "yz": layer(unit, ayah, places, dr), "masa": extras(unit, dr),
             "fark": sorted(p.name for p in OUT_DIR.glob(f"fark-{unit}-*.html")),   # D12.2 fark kartları
             "turlar": tur_pages(),                                                  # bütün birimlerin tur okumaları
-            "tur": tur_data(unit)}                                                  # D12.5 tur okuması (kör A/B)
+            "tur": tur_data(unit),                                                  # D12.5 tur okuması (kör A/B)
+            "tur_acik": tur_open(unit)}                                             # S7c: kör okuması sürüyor mu
     blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
     out = out_dir(unit) / f"{unit}.html"
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -485,6 +486,15 @@ def tur_data(unit: str) -> dict | None:
     {ad, a, b, giris, yerler, sayfa}."""
     turs = [json.loads(p.read_text(encoding="utf-8")) for p in (P.DRAFTS / unit).glob("tur-*.json")]  # T1…, D
     return max(turs, key=lambda t: t.get("at", "")) if turs else None
+
+
+def tur_open(unit: str) -> dict | None:
+    """Birimin son turu kör A/B ise ve okuyucunun sonucu henüz alınmadıysa (`data/d1/notlar/d1-tur-<b>-<tur>-*.json`
+    yok) {ad, sayfa}: masada üstte uyarı (S7c.1, kullanıcının kararı: kör kip kalktı)."""
+    t = tur_data(unit)
+    if not t or not t.get("b") or list((P.KEEP / "notlar").glob(f"d1-tur-{unit}-{t.get('ad')}-*.json")):
+        return None
+    return {"ad": t.get("ad"), "sayfa": t.get("sayfa")}
 
 
 def title(unit: str) -> str:

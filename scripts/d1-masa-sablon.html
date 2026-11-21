@@ -76,6 +76,14 @@ body.nokpanel #kpanel { display: none; }
 #mainc { flex: 1; min-width: 0; }
 @media (max-width: 900px) { #kpanel { position: fixed; z-index: 6; left: 0; width: 80vw; box-shadow: 2px 0 12px rgba(0,0,0,.2); }
   body:not(.kopen) #kpanel { display: none; } }
+.tbtn { font-weight: 600; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tree { flex-basis: 100%; max-height: 55vh; overflow-y: auto; background: var(--card); border: 1px solid var(--line);
+        border-radius: 8px; padding: 6px 8px; margin-top: 4px; font-size: .86rem; }
+.tree ul { list-style: none; padding-left: 14px; margin: 2px 0; } .tree > ul.treeul { padding-left: 0; }
+.tree summary { cursor: pointer; font-weight: 600; }
+.tree .leaf { background: none; border: 0; cursor: pointer; color: var(--fg); padding: 1px 6px; border-radius: 5px; text-align: start; font-size: .86rem; }
+.tree .leaf:hover { background: var(--soft); } .tree .leaf.cur { background: var(--accent-soft); font-weight: 600; }
+.jump { flex-basis: 100%; }
 .kn { border-left: 3px solid var(--line); padding: 4px 8px; margin: 0 0 8px; background: var(--card); border-radius: 0 6px 6px 0; font-size: .86rem; }
 .kn.ok { border-left-color: var(--accent); } .kn.bad { border-left-color: var(--bad); } .kn.part { border-left-color: var(--warn); }
 #panes { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); }
@@ -209,16 +217,8 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
   <h1><a href="./" style="color:inherit;text-decoration:none" title="Masanın girişi">Âyet masası</a></h1>
   <label>Âyet <select id="unit"></select></label>
   <button class="btn" id="addpane" title="Bir yan daha aç (en çok 6)">+ yan ekle</button>
-  <label title="Taslakların adını ve nasıl yazıldığını gizler"><input type="checkbox" id="blind"> kör kip</label>
   <label>Dil <span class="seg" id="lang"><button data-v="tr">Türkçe</button><button data-v="ar">Arapça</button></span></label>
-  <label id="readerw">Okuyucu <input id="reader" size="10" placeholder="adınız"></label>
-  <span id="who" class="small muted" hidden></span>
   <span class="spacer"></span>
-  <span id="progress" class="small muted"></span>
-  <button class="btn" id="export" title="İşaretleri dosyaya yaz (eski okuma sayfasıyla aynı biçim)">Dışa aktar</button>
-  <label class="btn" style="color:var(--fg)">İçe aktar<input type="file" id="import" accept=".json" hidden></label>
-  <span id="farklar"></span>
-  <a class="btn" id="logout" href="/taslak/cikis" hidden style="text-decoration:none;color:var(--fg)">Çıkış</a>
   <span class="msg" id="msg"></span>
 </header>
 <div id="wrap"><aside id="kpanel"></aside><div id="mainc">
@@ -242,6 +242,7 @@ const U = DATA.unit, Y = DATA.yz;
 const DKEYS = Object.keys(DATA.drafts);
 const MAXP = 6;                                  // en çok yan (S6: 4; S7b, 2026-11-21: geniş ekranda 6)
 const st = Object.assign({loc: null, lang: 'tr', blind: false, onlySample: false}, store.get('d1-masa', {}));
+st.blind = false; st.onlySample = false;            // S7c.1: kör kip ve örneklem süzgeci kalktı
 st.focus = null; st.dfocus = null; st.srcbox = null; st.draft = DKEYS[0];   // st.draft: kartlar çizilirken o yanın taslağı
 const CHIP = Object.fromEntries(DATA.chips.map(c => [c.id, c]));
 const LOC = {'L:munasebet': 'Önceki âyetlerle münasebet', 'L:nazim': 'Cümlelerin nazmı',
@@ -261,16 +262,19 @@ const CTYPE = {dogru: 'doğru, iyi', yanlis: 'yanlış', eksik: 'eksik', fazla: 
 const ISR = {kaynakli: 'kaynaklı', kendi_tespiti: 'kendi tespiti', isaretsiz: 'işaretsiz'};
 const BKV = {dogru: 'doğru', yanlis: 'yanlış', emin_degilim: 'emin değilim'};
 const BKD = {'': 'dayanak türü…', kaynak: 'kaynak (cümle kimliği)', kisi: 'kişi (yalnız alanı)', kanaat: 'kendi kanaatim', yz: 'yapay zekâ'};
-const LAYERS = [['karsi', "İşârât'la karşılaştırma"], ['critic', 'Eleştirmen (açık kitap)'], ['kcritic', 'Kapalı kitap eleştirmen'], ['bk', 'Bilirkişi soruları']];
+const LAYERS = [['karsi', "İşârât'la karşılaştırma"], ['critic', 'Eleştirmen (açık kitap)'], ['kcritic', 'Kapalı kitap eleştirmen']];
 const PRI = {yuksek: 'yüksek', orta: 'orta', dusuk: 'düşük'};
 
 // --- yanlar (S6): her yan Kaynaklar, İşârât'ın metni ya da bir taslak; taslak yanında katmanlar
 function newDraftPane(dk) { return {k: 'draft', d: dk, L: {karsi: true, critic: false, kcritic: false, bk: false}, open: {}}; }
 let panes = store.get('d1-masa-yanlar-' + U, null) || [{k: 'src'}, newDraftPane(DKEYS[DKEYS.length - 1])];
-panes = panes.filter(p => p.k !== 'draft' || DATA.drafts[p.d]).slice(0, MAXP);
+const TEFSIR_W = Object.fromEntries(DATA.tefsir.map(w => [w.work, w]));
+const PANE_KINDS = new Set(['src', 'isarat', 'tefsirler', 'tefsir', 'klasik', 'risale', 'draft', 'crit', 'kapi', 'nisbet', 'notlar']);
+panes = panes.filter(p => PANE_KINDS.has(p.k) && (!['draft', 'crit'].includes(p.k) || DATA.drafts[p.d])
+                         && (p.k !== 'tefsir' || TEFSIR_W[p.w]) && (p.k !== 'isarat' || Object.keys(DATA.isarat || {}).length)).slice(0, MAXP);
 if (!panes.length) panes = [{k: 'src'}];
 panes.forEach(p => { p.open = {}; if (p.k === 'draft') p.L = Object.assign({karsi: true, critic: false, kcritic: false, bk: false}, p.L || {}); });
-function savePanes() { store.set('d1-masa-yanlar-' + U, panes.map(p => ({k: p.k, d: p.d, L: p.L}))); }
+function savePanes() { store.set('d1-masa-yanlar-' + U, panes.map(p => ({k: p.k, d: p.d, w: p.w, c: p.c, L: p.L}))); }
 function withDraft(dk, fn) { const o = st.draft; st.draft = dk; try { return fn(); } finally { st.draft = o; } }
 
 // --- kör kip: taslaklar "Taslak A, B…" diye, sabit tohumla karışık sırada; bilgi satırı gizli
@@ -292,8 +296,8 @@ function draftAbout(dk) { return st.blind ? '' : (DATA.drafts[dk] || {}).about |
 function persist() { store.set('d1-masa', {loc: st.loc, lang: st.lang, blind: st.blind, onlySample: st.onlySample}); }
 function say(t) { $('#msg').textContent = t; if (t) setTimeout(() => { if ($('#msg').textContent === t) $('#msg').textContent = ''; }, 6000); }
 let ACCOUNT = null;                              // sitede girişli hesabın adı (/taslak/ben); dosyadan açılınca yok
-function reader() { return ACCOUNT || $('#reader').value.trim(); }
-function needReader() { if (reader()) return false; say('Önce okuyucu adınızı yazın.'); $('#reader').focus(); return true; }
+function reader() { return ACCOUNT || ''; }
+function needReader() { return true; }             // işaretleme kalktı (S7c.1)
 function locName(l) { return CHIP[l] ? `<span class="arw" dir="rtl">${esc(CHIP[l].text)}</span>` : esc(LOC[l] || l); }
 // paragrafın eşi (`d1-yz.pairs`, blokta `p`): çapalar dil başına sayılır, /ar/k ile /tr/k eş olmayabilir
 function mate(dk, a) {
@@ -370,43 +374,35 @@ function draftText(text, dk, lang, quote) {
 
 
 // ================================================================ âyet
+// S7c.3: İşârât'ı olmayan birimde (D5) kelimenin altındaki sayı son taslağın o yere düşen paragrafları ve notlarıdır
+const NO_ISARAT = !Object.keys(Y.items || {}).length;
 function renderAyah() {
-  const cnt = {}; for (const it of Object.values(Y.items)) for (const l of it.loc) cnt[l] = (cnt[l] || 0) + 1;
+  const cnt = {};
+  if (!NO_ISARAT) for (const it of Object.values(Y.items)) for (const l of it.loc) cnt[l] = (cnt[l] || 0) + 1;
+  else {
+    const last = DKEYS[DKEYS.length - 1], d = DATA.drafts[last];
+    if (d) for (const b of d.blocks) if (b.l === 'ar') for (const l of d.heads[b.a] || []) cnt[l] = (cnt[l] || 0) + 1;
+    for (const k of (DATA.masa || {}).kapi || []) for (const x of k.notlar) for (const l of x.loc || []) cnt[l] = (cnt[l] || 0) + 1;
+    for (const x of critNotes(last, 'kapali')) for (const l of x.loc || []) cnt[l] = (cnt[l] || 0) + 1;
+  }
   const lv = ['L:munasebet', 'L:nazim', 'L:belirsiz', 'L:tumu'].map(l =>
     `<button class="lvl" data-loc="${l}" aria-pressed="${st.loc === l}" title="${esc(LOC_HELP[l])}">${esc(LOC[l])}${l === 'L:tumu' ? '' : ` <b>${cnt[l] || 0}</b>`}</button>`).join('');
   const verses = DATA.verses.map(v => {
     const chips = DATA.chips.filter(c => c.ayah === v.n).map(c => `<button class="chip" data-loc="${c.id}" aria-pressed="${st.loc === c.id}"
-      title="İşârât'ın bu kelimedeki nükte sayısı: ${cnt[c.id] || 0}">${esc(c.text)}<span class="n${cnt[c.id] ? '' : ' zero'}">${cnt[c.id] || 0}</span></button>`).join('');
+      title="${NO_ISARAT ? 'Son taslağın bu kelimeye düşen paragrafları ve notları' : "İşârât'ın bu kelimedeki nükte sayısı"}: ${cnt[c.id] || 0}">${esc(c.text)}<span class="n${cnt[c.id] ? '' : ' zero'}">${cnt[c.id] || 0}</span></button>`).join('');
     return `<div class="verse">${chips}<span class="vno">﴿${v.n.toLocaleString('ar-EG')}﴾</span></div>
       <p class="meal">${esc(v.meal)} <i>(${esc(v.meal_by)}, ${esc(v.ref)})</i></p>`;
   }).join('');
   $('#ayah').innerHTML = `<div class="levels">${lv}</div><div class="verses">${verses}</div>
-    <p class="hint">Bir kelimeye ya da üstteki düzeylerden birine tıklayın. Kelimenin altındaki sayı İşârât'ın o kelimedeki nükte sayısıdır.</p>${turHtml()}`;
+    <p class="hint">Bir kelimeye ya da üstteki düzeylerden birine tıklayın. Kelimenin altındaki sayı ${NO_ISARAT ? 'son taslağın o kelimeye düşen paragraflarının ve notlarının sayısıdır (bu birimde İşârât yok)' : "İşârât'ın o kelimedeki nükte sayısıdır"}.</p>${turHtml()}`;
 }
 
 // --- D12.5 tur okuması: program seçtiği yerlerde iki taslağı (A, B) kör karşılaştırma; tercih ve gerekçe, sonra "Aç"
 function abKey(y) { return `${U}|${TUR.ad}|${y.id}`; }
-function turHtml() {
-  if (!TUR) return '';
-  const done = TUR.yerler.filter(y => (abMarks[abKey(y)] || {}).secim).length;
-  if (TUR.sayfa)                                 // okuma standardı (2026-11-17): okuma turun kendi sayfasında
-    return `<div class="small" style="margin-top:8px"><b>Tur okuması: ${esc(TUR.ad)}</b> · ${done}/${TUR.yerler.length} yer ·
-      ≈${TUR.kelime} kelime, ≈${TUR.dakika} dk · <a href="${esc(TUR.sayfa)}">okuma sayfasını aç</a></div>`;
-  const rows = TUR.yerler.map((y, i) => {
-    const m = abMarks[abKey(y)] || {}, k = abKey(y);
-    const opt = [['a', 'A daha iyi'], ['b', 'B daha iyi'], ['esit', 'eşit'], ['emin_degilim', 'emin değilim']].map(([v, l]) => {
-      const val = v === 'a' ? TUR.a : v === 'b' ? TUR.b : v;
-      return `<button data-abv="${esc(val)}" aria-pressed="${m.secim === val}">${l}</button>`; }).join('');
-    const who = d => `${esc(d)}${(DATA.drafts[d] || {}).about ? ' (' + esc(DATA.drafts[d].about) + ')' : ''}`;
-    const rev = m.acildi ? `<div class="reveal">A = ${who(TUR.a)}; B = ${who(TUR.b)}${y.acik ? '<br>' + esc(y.acik) : ''}</div>`
-      : (m.secim ? `<button class="btn reveal" data-abopen="${esc(k)}">Aç: hangisi hangisi</button>` : '');
-    return `<div class="abrow" data-abk="${esc(k)}"><b>${i + 1}. <a href="#" data-turgo="${esc(y.id)}">${locName(y.loc)}</a></b>
-      ${y.baslik ? ' · ' + esc(y.baslik) : ''}<div class="why">${esc(y.soru || '')}</div>
-      <span class="seg">${opt}</span><textarea data-abg placeholder="Kısa gerekçe (bir iki cümle)">${esc(m.gerekce || '')}</textarea>${rev}</div>`;
-  }).join('');
-  const open = store.get('d1-masa-tur-acik', true);
-  return `<details id="turbox"${open ? ' open' : ''}><summary>Tur okuması: ${esc(TUR.ad)} · ${done}/${TUR.yerler.length} yer</summary>
-    <p class="small">${TUR.giris || ''}</p>${rows}</details>`;
+function turHtml() {                               // S7c.1: kör okuması sürüyorsa yalnız uyarı
+  const t = DATA.tur_acik;
+  return t ? `<p class="kn bad" style="margin:8px auto 0;max-width:760px">Bu birimin kör okuması sürüyor (${esc(t.ad)}): okumadan önce taslakların sürümlerine bakmayın.
+    ${t.sayfa ? `<a href="${esc(t.sayfa)}">Okuma sayfası</a>` : ''}</p>` : '';
 }
 function turGo(id) {                              // yere git: kör kip, Kaynaklar + Taslak A + Taslak B, katmanlar kapalı
   const y = TUR.yerler.find(x => x.id === id);
@@ -477,12 +473,12 @@ function fullUnit(rows) {
   return rows.map(r => r.ayah ? `<p class="ayahline ar">﴿${esc(r.ayah)}﴾ <span class="small muted" dir="ltr">(baskının âyet satırı)</span></p>`
     : `<p class="para ar">${r.s.map(s => sentHtml(s)).join(' ')}</p>`).join('');
 }
-function tefsirHtml() {
+function tefsirHtml(only) {
   const foc = focusSids(), cid = CHIP[st.loc] ? st.loc : null;
   const hitFn = s => foc.has(s.id) || (cid && chipIn(s.t, cid));
   let h = `<h3>Müfessirler <span class="muted">vefat sırasıyla; bu âyetleri işleyen birimleri.${st.lang === 'tr'
     ? ' Türkçeleri henüz yok.' : ''}${cid ? ' Kelimenin geçtiği cümleler, birer cümle bağlamla.' : ''}</span></h3>`;
-  for (const w of DATA.tefsir) {
+  for (const w of DATA.tefsir.filter(w => !only || w.work === only)) {
     let parts = [], total = 0;
     for (const u of w.units) {
       const ex = excerpt(u.rows, hitFn);
@@ -491,7 +487,7 @@ function tefsirHtml() {
       parts.push(`<div class="ctx"><div class="small muted">${esc(u.verses)}${pr}</div>${ex ? ex.html : ''}
         <details${ex ? '' : ' open'}><summary class="small muted">birimin tamamı</summary>${fullUnit(u.rows)}</details></div>`);
     }
-    const open = total > 0 && (cid || foc.size);
+    const open = !!only || (total > 0 && (cid || foc.size));
     h += `<details class="wk"${open ? ' open' : ''}><summary><b>${esc(w.author)}</b> · ${esc(w.title)}
       <span class="muted">${total ? `${total} cümle` : ''}</span></summary>${parts.join('')}</details>`;
   }
@@ -528,10 +524,8 @@ const CREDITS = `<div class="credits"><b>Kaynaklar ve izinler.</b> İşârâtü'
   Yapay zekâ taslakları, karşılaştırmaları ve eleştirileri yayımlanmamış çalışma metinleridir; tefsir değildir.
   · <a href="/gizlilik.html">Gizlilik</a></div>`;
 
-function evBtns(key, choices, attr, cur) {
-  return `<span class="ev" data-${attr}k="${esc(key)}">${choices.map(([v, l]) =>
-    `<button data-${attr}="${v}" aria-pressed="${cur === v}">${l}</button>`).join('')}</span>`;
-}
+// S7c.1 (kullanıcının kararı, 2026-11-21): D7–D9'un işaretleme araçları tamamen kalktı; işaret düğmeleri boş döner
+function evBtns() { return ''; }
 const EVC = [['tutuyor', 'metinde tutuyor'], ['kismen', 'kısmen'], ['tutmuyor', 'tutmuyor']];
 const SUZC = [['kalsin', 'kalsın'], ['atilsin', 'atılsın'], ['ehline', 'ehline sor']];
 
@@ -563,14 +557,13 @@ const EVL = Object.fromEntries(EVC);
 function foldKey(id) { return `${st.draft}|${id}`; }
 function isFolded(id) { return !!folded[foldKey(id)]; }
 function setFold(ids, on) { for (const id of ids) { if (on) folded[foldKey(id)] = 1; else delete folded[foldKey(id)]; } store.set('d1-masa-kucuk', folded); }
-function markOf(k) { const v = (yzEval[k] || {}).v; return v ? `<span class="done">${esc(EVL[v])}</span>` : '<span class="muted">işaretsiz</span>'; }
-function itemMarks(id) { return Y.models.filter(m => ((Y.drafts[st.draft] || {rows: {}}).rows[id] || {})[m])
-  .map(m => `${MODEL[m] || m}: ${markOf(`${U}|${st.draft}|${m}|${id}`)}`).join(' · '); }
+function markOf() { return ''; }
+function itemMarks() { return ''; }
 function itemDone(id) { const row = (Y.drafts[st.draft] || {rows: {}}).rows[id] || {};
   return Y.models.filter(m => row[m]).every(m => (yzEval[`${U}|${st.draft}|${m}|${id}`] || {}).v); }
 let FOLDSET = {all: [], done: []};               // görünen sekmenin kartları (küçültme çubuğu için)
 function foldBar(all, done, what) {
-  FOLDSET = {all, done};
+  FOLDSET = {all, done}; return '';
   return all.length ? `<div class="foldbar"><span class="muted">${done.length}/${all.length} ${what} işaretlendi</span>
     <button data-foldall="1">hepsini küçült</button><button data-foldall="0">hepsini aç</button>
     <button data-folddone="1">işaretlenenleri küçült</button></div>` : '';
@@ -580,10 +573,11 @@ function cardHead(no, fid, gist, marks) {
     <button class="fold" data-fold="${esc(fid)}">${isFolded(fid) ? 'aç' : 'küçült'}</button></div>`;
 }
 const SAMPLE = new Set((Y.sample || []).map(x => x.key));     // "taslak-3|opus|N24", "taslak-1|fazla|<anahtar>"
-const SMP = '<span class="tag smp" title="D7.7 örneklemi: önce bunlar işaretlenir">örneklem</span>';
-function inSample(dk, m, id) { return SAMPLE.has(`${dk}|${m}|${id}`); }
+const SMP = '';
+function inSample() { return false; }
 function sampleDone(key) { return !!(yzEval[`${U}|${key}`] || {}).v; }
 function sampleBox() {
+  return '';
   const xs = Y.sample || []; if (!xs.length) return '';
   const done = xs.filter(x => sampleDone(x.key)).length;
   const label = x => x.m === 'fazla' ? 'fazla' : `nükte, ${MODEL[x.m] || x.m}`;
@@ -649,8 +643,8 @@ function sidLabel(id) {
   return id;
 }
 const SUZL = Object.fromEntries(SUZC);
-function suzMark(key) { const v = (yzSuz[key] || {}).v; return v ? `<span class="done">${esc(SUZL[v])}</span>` : '<span class="muted">işaretsiz</span>'; }
-const CSMP = '<span class="tag smp" title="D9.3 örneklemi: önce bunlar süzülür">örneklem</span>';
+function suzMark() { return ''; }
+const CSMP = '';
 const CSAMPLE = new Set((Y.critic_sample || []).map(x => `${x.t}|${x.k}`));
 function noteCard(dk, x, no) {
   const key = `${U}|${dk}|${x.k}`, it = x.n && Y.items[x.n], fid = 'not:' + x.k;
@@ -679,7 +673,8 @@ function locIndex(list, done, attr) {
   }).join('')}</div>`;
 }
 function critNote(x) { return ((Y.critic[x.t] || {}).notes || []).find(n => n.k === x.k); }
-function critBox() {   // D9.3: süzülecek 10 not (taslaklara ve yerlere dağılmış; tıklayınca taslak ve yer değişir)
+function critBox() {   // D9.3 (kalktı, S7c.1)
+  return '';
   const xs = Y.critic_sample || []; if (!xs.length) return '';
   const done = x => (yzSuz[`${U}|${x.t}|${x.k}`] || {}).v;
   return `<details class="samplebox"${store.get('d1-masa-crit-acik', true) ? ' open' : ''} id="critbox">
@@ -689,7 +684,8 @@ function critBox() {   // D9.3: süzülecek 10 not (taslaklara ve yerlere dağı
       return `<li class="${done(x) ? 'done' : ''}${x.t === st.draft && x.loc.includes(st.loc) ? ' here' : ''}"><button class="linkish" data-critgo="${esc(x.t + '|' + x.k)}">
       <span class="muted">${esc(draftLabel(x.t).replace('Taslak ', 'T'))} · ${locName(x.loc[0])} · ${esc(CTYPE[n.t] || n.t || '')}</span> ${esc(n.m.length > 120 ? n.m.slice(0, 119) + '…' : n.m)}</button>${done(x) ? ` <span class="done">${esc(SUZL[done(x)])}</span>` : ''}</li>`; }).join('')}</ol></details>`;
 }
-function sysBox() {    // D9.3: sistemli başlıklar; D8'in istemi "kalsın" denenlerden yazılır
+function sysBox() {    // D9.3 (kalktı, S7c.1)
+  return '';
   const zs = Y.systemic || []; if (!zs.length) return '';
   const key = z => `${U}|sistemli|${z.id}`, done = z => (yzSuz[key(z)] || {}).v;
   return `<details class="samplebox bkbox"${store.get('d1-masa-sys-acik', true) ? ' open' : ''} id="sysbox">
@@ -706,7 +702,7 @@ function sysBox() {    // D9.3: sistemli başlıklar; D8'in istemi "kalsın" den
         ${z.karsi.length ? `<p class="small"><b>Karşı görüş</b> (eleştirmen başka bir taslakta):</p><ul class="small">${z.karsi.map(r => `<li><b>${esc(draftLabel(r.t))}:</b> ${codes(r.m)}</li>`).join('')}</ul>` : ''}</details>
       <div style="margin-top:6px">${evBtns(key(z), SUZC, 'suz', done(z))}</div></div>`).join('')}</details>`;
 }
-function bkAll() { return Object.entries(Y.bilirkisi).flatMap(([p, xs]) => xs.map(x => Object.assign({part: p}, x))); }
+function bkAll() { return []; }                  // bilirkişi maddeleri işaretleme içindi (kalktı, S7c.1)
 function bkMark(m) { return m.v ? `<span class="done">${esc(BKV[m.v])}</span>${m.dt ? ` <span class="muted">(${esc(BKD[m.dt])})</span>` : ''}` : '<span class="muted">işaretsiz</span>'; }
 function bkNav(x) {    // bütün maddeler boyunca sırayla: taslak ve yer kendiliğinden değişir
   const all = bkAll(), i = all.findIndex(y => y.part === x.part && y.id === x.id);
@@ -750,12 +746,11 @@ function bkBox() {     // 24 maddenin hepsi, taslaktan ve yerden bağımsız (ku
 function welcome() {
   return `<div class="welcome"><p><b>Nasıl kullanılır?</b></p><ol>
     <li>Yukarıda âyetten bir kelimeye ya da düzeylerden birine ("Önceki âyetlerle münasebet", "Cümlelerin nazmı", "Metinlerin tamamı") tıklayın. Bütün yanlar o yere göre süzülür.</li>
-    <li>Her yanın başındaki seçiciden ne duracağını seçin: <b>Kaynaklar</b> (İşârât, müfessirler, klasik eserler, Risale), yalnız <b>İşârât'ın metni</b> ya da bir <b>taslak</b>.
+    <li>Her yanın başındaki <b>içindekiler</b> düğmesinden ne duracağını seçin: Kaynaklar (İşârât, her müfessir ayrı, klasik eserler, Risale-i Nur'daki yerler), Taslaklar, Model eleştirileri, Nisbet denetçisi, Kalite kapısı ya da Okuyucu notları.
       Üstteki <b>+ yan ekle</b> bir yan daha açar (en çok ${MAXP}); ✕ kapatır. İki taslağı yan yana koyup karşılaştırabilirsiniz.</li>
     <li>Taslak yanında <b>katmanlar</b> açılır: <b>İşârât'la karşılaştırma</b> paragrafın sol kenarını boyar (yeşil: İşârât'ta karşılığı var, kırmızı: çelişebilir,
       gri: karşılığı yok) ve sonda taslağın kaçırdığı nükteleri sayar; <b>Eleştirmen</b> (açık kitap: İşârât'ı okuyarak; <b>kapalı kitap</b>: görmeden, asıl işin şartıyla) ve <b>Bilirkişi</b> paragrafın üstüne işaret koyar. İşarete tıklayınca kartlar paragrafın altında açılır.</li>
     <li>Bir İşârât cümlesine tıklayınca taslak yanlarında ona bağlı paragraflar sarı olur; bir nükteye tıklayınca İşârât'taki cümlesi sarı olur.</li>
-    <li><b>Kör kip</b> taslakların adını ve nasıl yazıldığını gizler ("Taslak A, B…").</li>
     <li>"Dil" Türkçe iken İşârât Abdülmecid Nursî tercümesiyle, taslaklar Türkçesiyle (yapay zekâ tercümesi) görünür; Arapçası her yerde açılır.</li></ol></div>`;
 }
 
@@ -879,21 +874,63 @@ function layerCount(dk, k) {
   if (k === 'kcritic') return Y.critic[dk] && Y.critic[dk].kapali ? Y.critic[dk].notes.filter(n => n.c === 'kapali' && at(n)).length : '–';
   return bkAll().filter(x => x.t === dk && at(x)).length;
 }
-function paneHead(i, p) {
-  const opt = (v, l) => `<option value="${v}"${(p.k === 'draft' ? 'd:' + p.d : p.k) === v ? ' selected' : ''}>${l}</option>`;
+// --- S7c.2 içindekiler ağacı (kullanıcının tasarımı, 2026-11-21): her yanın başında, açılır kapanır
+function paneKey(p) { return p.k === 'draft' ? 'd:' + p.d : p.k === 'tefsir' ? 't:' + p.w : p.k === 'crit' ? `c:${p.c}:${p.d}` : p.k; }
+const CRIT = {kapali: 'Kapalı eleştirmen', acik: 'Açık eleştirmen', karsi: "İşârât karşılaştırması"};
+function paneTitle(p) {
+  return {src: 'Kaynaklar (hepsi bir arada)', isarat: "İşârât", tefsirler: 'Müfessirler (hepsi)', klasik: 'Klasik eserler',
+          risale: "Risale-i Nur'daki yerler", kapi: 'Kalite kapısı', nisbet: 'Nisbet denetçisi', notlar: 'Okuyucu notları'}[p.k]
+    || (p.k === 'tefsir' ? (TEFSIR_W[p.w] || {}).author + ' · ' + (TEFSIR_W[p.w] || {}).title
+    : p.k === 'draft' ? draftLabel(p.d) : p.k === 'crit' ? CRIT[p.c] + ' · ' + draftLabel(p.d) : p.k);
+}
+function critNotes(dk, kind) { return ((Y.critic[dk] || {}).notes || []).filter(x => (kind === 'kapali') === (x.c === 'kapali')); }
+function tefsirCount(w) {
+  const cid = CHIP[st.loc] ? st.loc : null; if (!cid) return null;
+  let n = 0; for (const u of w.units) for (const r of u.rows) for (const s2 of r.s || []) if (chipIn(s2.t, cid)) n++;
+  return n;
+}
+function treeHtml(p) {
+  const cur = paneKey(p), loc = !!st.loc;
+  const leaf = (key, label, cnt) => `<li><button class="leaf${key === cur ? ' cur' : ''}" data-setpane="${esc(key)}">${label}${loc && cnt != null ? ` <span class="muted">${cnt}</span>` : ''}</button></li>`;
+  const grp = (title, inner, open) => inner ? `<li><details${open ? ' open' : ''}><summary>${title}</summary><ul>${inner}</ul></details></li>` : '';
   const M = DATA.masa || {};
-  const opts = opt('src', 'Kaynaklar') + (Object.keys(DATA.isarat || {}).length ? opt('isarat', "İşârât'ın metni") : '') +
-    ((M.kapi || []).length ? opt('kapi', 'Kalite kapısı (notlar ve cevaplar)') : '') +
-    ((M.nisbet || []).length ? opt('nisbet', 'Nisbet denetçisi') : '') + opt('notlar', 'Okuyucu notları') +
-    `<optgroup label="Yapay zekâ taslakları">${draftOrder().map(dk => opt('d:' + dk, esc(draftLabel(dk)) + (draftAbout(dk) ? ' · ' + esc(draftAbout(dk)) : ''))).join('')}</optgroup>`;
-  const tag = p.k === 'draft' ? '<span class="tag ai">yapay zekâ taslağı, tefsir değildir</span>'
+  const kl = CHIP[st.loc] ? DATA.klasik.filter(x => x.s.some(s2 => chipIn(s2.t, st.loc))).length : DATA.klasik.length;
+  const tef = leaf('tefsirler', 'Hepsi') + DATA.tefsir.map(w => leaf('t:' + w.work, esc(w.author), tefsirCount(w))).join('');
+  const src = leaf('src', 'Hepsi bir arada') + (Object.keys(DATA.isarat || {}).length ? leaf('isarat', "İşârâtü'l-İ'câz") : '')
+    + grp('Tefsirler', tef, cur === 'tefsirler' || cur.startsWith('t:')) + leaf('klasik', 'Klasik eserler', kl)
+    + leaf('risale', "Risale-i Nur'daki yerler", DATA.risale.length);
+  const drafts = draftOrder().map(dk => leaf('d:' + dk, esc(draftLabel(dk)) + `<span class="muted small"> ${esc((draftAbout(dk).match(/istem \w+/) || [''])[0])}</span>`,
+    loc ? blocksAt(dk).length : null)).join('');
+  const crit = Object.keys(CRIT).map(c => {
+    const ds = draftOrder().filter(dk => c === 'karsi' ? Y.drafts[dk] : critNotes(dk, c).length);
+    return grp(CRIT[c], ds.map(dk => leaf(`c:${c}:${dk}`, esc(draftLabel(dk)),
+      c === 'karsi' ? itemsAt(st.loc || 'L:tumu').length : critNotes(dk, c).filter(atAll).length)).join(''), cur.startsWith(`c:${c}:`));
+  }).join('');
+  const kc = (M.kapi || []).reduce((n, k) => n + k.notlar.filter(atAll).length, 0);
+  const nc = (M.nisbet || []).reduce((n, k) => n + k.hukumler.filter(h => h.hukum !== 'dogru' && atAll(h)).length, 0);
+  return `<ul class="treeul">${grp('Kaynaklar', src, ['src', 'isarat', 'tefsirler', 'klasik', 'risale'].includes(cur) || cur.startsWith('t:'))}
+    ${grp('Taslaklar', drafts, cur.startsWith('d:'))}${grp('Model eleştirileri', crit, cur.startsWith('c:'))}
+    ${(M.nisbet || []).length ? leaf('nisbet', 'Nisbet denetçisi', nc) : ''}${(M.kapi || []).length ? leaf('kapi', 'Kalite kapısı', kc) : ''}
+    ${leaf('notlar', 'Okuyucu notları')}</ul>`;
+}
+function newPane(key, old) {
+  if (key.startsWith('d:')) return Object.assign(newDraftPane(key.slice(2)), old && old.k === 'draft' ? {L: old.L} : {});
+  if (key.startsWith('t:')) return {k: 'tefsir', w: key.slice(2), open: {}};
+  if (key.startsWith('c:')) { const [, c, d] = key.split(':'); return {k: 'crit', c, d, open: {}}; }
+  return {k: key, open: {}};
+}
+function paneHead(i, p) {
+  const tag = ['draft', 'crit'].includes(p.k) ? '<span class="tag ai">yapay zekâ, tefsir değildir</span>'
     : ['kapi', 'nisbet'].includes(p.k) ? '<span class="tag ai">yapay zekâ denetçileri, ham</span>'
     : p.k === 'notlar' ? '<span class="tag g">okuyucular</span>' : '<span class="tag src">kaynakların metni</span>';
   const lay = p.k === 'draft' ? `<span class="layers">${LAYERS.map(([k, l]) =>
     `<label class="small"><input type="checkbox" data-layer="${k}" ${p.L[k] ? 'checked' : ''}> ${l} <span class="muted">${layerCount(p.d, k)}</span></label>`).join('')}</span>` : '';
-  return `<div class="ph"><select data-panekind title="Bu yanda ne dursun">${opts}</select>${tag}
+  const secs = p.k === 'draft' && st.loc ? [...new Set(blocksAt(p.d).map(pr => pr.ar.a.split('/')[0]))] : [];
+  const jump = secs.length > 1 ? `<span class="jump small">${secs.map(x => `<button class="linkish" data-jump="${esc(x)}">${esc(SEC[x] || x)}</button>`).join(' · ')}</span>` : '';
+  return `<div class="ph"><button class="btn tbtn" data-tree aria-expanded="${!!p.tree}" title="İçindekiler: bu yanda ne dursun">☰ ${esc(paneTitle(p))}</button>${tag}
     ${st.loc ? `<span class="where">${locName(st.loc)}</span>` : ''}<span class="spacer"></span>
-    ${panes.length > 1 ? '<button class="btn x" data-closepane title="Bu yanı kapat">✕</button>' : ''}${lay}</div>`;
+    ${panes.length > 1 ? '<button class="btn x" data-closepane title="Bu yanı kapat">✕</button>' : ''}${lay}${jump}
+    <div class="tree"${p.tree ? '' : ' hidden'}>${p.tree ? treeHtml(p) : ''}</div></div>`;
 }
 // --- S7b yanları: kalite kapısı, nisbet, okuyucu notları; seçilen yere süzülür (yer seçilmemişse hepsi)
 const atAll = x => !st.loc || at(x);
@@ -946,7 +983,25 @@ function notlarPane() {
     <span class="small muted">okuyucu ${esc(n.okuyucu_no)} · sürüm ${esc(n.surum)} · ${Yy && Yy.capa[n.paragraf] ? esc(Yy.capa[n.paragraf]) : esc(n.paragraf || '')}</span>
     ${n.secici && n.secici.exact ? `<div class="small"><i>«${trEsc(n.secici.exact)}»</i></div>` : ''}<div class="serif">${trEsc(n.metin)}</div></div>`).join('');
 }
+function critPane(p) {
+  return withDraft(p.d, () => {
+    if (p.c === 'karsi') {
+      if (!Y.drafts[p.d]) return '<p class="empty">Bu taslak İşârât\'la karşılaştırılmadı.</p>';
+      const its = itemsAt(st.loc || 'L:tumu'), ex = (Y.drafts[p.d].extras || []).filter(atAll);
+      return its.map(([id, it], j) => itemCard(id, it, `Nükte ${j + 1}/${its.length}`)).join('')
+        + ex.map((f, j) => extraCard(f, `Fazla ${j + 1}/${ex.length}`)).join('') + missingHtml(p.d);
+    }
+    const xs = critNotes(p.d, p.c).filter(atAll);
+    return (xs.length ? xs.map((x, j) => noteCard(p.d, x, `Not ${j + 1}/${xs.length}`)).join('') : '<p class="empty">Bu yerde not yok.</p>')
+      + (p.c === 'kapali' ? kapaliSummary(p.d) : criticSummary(p.d));
+  });
+}
 function paneBody(p) {
+  if (p.k === 'tefsirler') return tefsirHtml() + CREDITS;
+  if (p.k === 'tefsir') return tefsirHtml(p.w) + CREDITS;
+  if (p.k === 'klasik') return klasikHtml() + CREDITS;
+  if (p.k === 'risale') return risaleHtml() + CREDITS;
+  if (p.k === 'crit') return critPane(p);
   if (p.k === 'kapi') return kapiPane();
   if (p.k === 'nisbet') return nisbetPane();
   if (p.k === 'notlar') return notlarPane();
@@ -964,7 +1019,7 @@ function renderPanes(resetPane) {
   $('#addpane').disabled = panes.length >= MAXP;
 }
 
-function progress() {
+function progress() { return;
   const n1 = Object.keys(yzEval).filter(k => k.startsWith(U + '|')).length;
   const n2 = Object.keys(yzSuz).filter(k => k.startsWith(U + '|')).length;
   const n3 = Object.entries(bkMarks).filter(([k, v]) => k.startsWith(U + '|') && v.v).length;
@@ -978,11 +1033,15 @@ let UNITS = DATA.units || [];
 fetch('masa-birimler.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(j => { if (j && j.length) { UNITS = j; kpanel(); } }).catch(() => {});
 function kpanel() {
   const us = UNITS;
+  // birimin kendi okuma ve fark sayfaları (S7c.1: üst satırdan buraya)
+  const mine = (DATA.turlar || []).filter(t => t.birim === DATA.title).map(t => `<li><a href="${esc(t.sayfa)}">okuma: ${esc(t.ad)}</a></li>`)
+    .concat((DATA.fark || []).map(f => `<li><a href="${esc(f)}">fark: ${esc(f.replace(/^fark-|\.html$/g, ''))}</a></li>`));
   const ay = u => u.ayah ? (u.ayah[0] === u.ayah[1] ? u.ayah[0] : u.ayah[0] + '–' + u.ayah[1]) : '';
   $('#kpanel').innerHTML = `<input id="kgit" placeholder="Âyete git: 2:30" autocomplete="off">
     <p class="small muted" style="margin:6px 0 2px">Bakara · masası kurulan birimler</p><ul>`
     + us.map(u => `<li><a href="${esc(u.unit)}.html" class="${u.unit === U ? 'cur' : ''}">${esc(u.title)}${u.d5 ? ' <span class="kd5">D5</span>' : ''}</a></li>`).join('')
-    + `</ul><p class="small"><a href="./">masanın girişi</a> · <a href="/oku/">okuma platformu</a></p>`;
+    + `</ul>${mine.length ? `<p class="small muted" style="margin:4px 0 2px">${esc(DATA.title)}: okumalar</p><ul>${mine.join('')}</ul>` : ''}
+    <p class="small"><a href="./">masanın girişi</a> · <a href="/oku/">okuma platformu</a> · <a href="/taslak/cikis">çıkış</a></p>`;
   const cur = $('#kpanel a.cur'); if (cur) cur.scrollIntoView({block: 'nearest'});
   $('#kgit').onkeydown = e => {
     if (e.key !== 'Enter') return;
@@ -998,14 +1057,9 @@ $('#kbtn').onclick = () => {
 };
 function render() {
   kpanel();
-  const turl = (DATA.turlar || []).slice(0, 6).map((t, i) => `<a class="btn" style="text-decoration:none;color:var(--fg)${i ? '' : ';font-weight:600'}" href="${esc(t.sayfa)}">Tur okuması: ${esc(t.birim)} · ${esc(t.ad)}</a>`).join(' ');
-  $('#farklar').innerHTML = turl + ' ' + (DATA.fark || []).map(f => { const m = f.match(/-(\d+)-(\d+)\.html$/), t = f.match(/-(T\d+)\.html$/);
-    const lab = t ? `tur ${t[1]} (kör A/B)` : m ? `taslak ${m[1]} ile ${m[2]}` : f;   // D12.5 turunun fark sayfası
-    return `<a class="btn" style="text-decoration:none;color:var(--fg)" href="${esc(f)}">Fark okuması: ${lab}</a>`; }).join(' ');
   $('#unit').innerHTML = (DATA.units || [{unit: U, title: DATA.title}]).map(u =>
     `<option value="${esc(u.unit)}"${u.unit === U ? ' selected' : ''}>${esc(u.title)}</option>`).join('');
   document.querySelectorAll('#lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.lang));
-  $('#blind').checked = st.blind;
   document.body.classList.toggle('sel', !!st.loc);
   renderAyah(); renderPanes(); progress(); persist();
   document.documentElement.style.setProperty('--head-h', $('#hdr').offsetHeight + 'px');
@@ -1056,6 +1110,12 @@ document.addEventListener('click', ev => {
     panes.push(panes.some(p => p.k === 'src') ? newDraftPane(dk) : {k: 'src', open: {}});
     savePanes(); render(); return;
   }
+  const tb = t.closest('[data-tree]');
+  if (tb) { const p = panes[paneOf(tb)]; p.tree = !p.tree; renderPanes(); return; }
+  const sp = t.closest('[data-setpane]');
+  if (sp) { const i = paneOf(sp); panes[i] = newPane(sp.dataset.setpane, panes[i]); savePanes(); renderPanes(i); return; }
+  const jp = t.closest('[data-jump]');
+  if (jp) { scrollIn(paneOf(jp), `.blk[data-anchor^="${jp.dataset.jump}/"]`); return; }
   const cp = t.closest('[data-closepane]');
   if (cp) { panes.splice(paneOf(cp), 1); savePanes(); render(); return; }
   const loc = t.closest('[data-loc]');
@@ -1176,13 +1236,7 @@ function bkSave(box, patch) {
 document.addEventListener('change', ev => {
   const t = ev.target;
   if (t.id === 'unit') { if (t.value !== U) { st.loc = null; persist(); location.href = t.value + '.html'; } return; }
-  if (t.id === 'blind') { st.blind = t.checked; persist(); render(); return; }
   if (t.matches('[data-abg]')) { const k = t.closest('[data-abk]').dataset.abk; abSave(k, {gerekce: t.value}); return; }
-  if (t.matches('[data-panekind]')) {
-    const i = paneOf(t), v = t.value;
-    panes[i] = v.startsWith('d:') ? Object.assign(newDraftPane(v.slice(2)), panes[i].k === 'draft' ? {L: panes[i].L} : {}) : {k: v, open: {}};
-    savePanes(); renderPanes(i); return;
-  }
   if (t.matches('[data-layer]')) { const p = panes[paneOf(t)]; p.L[t.dataset.layer] = t.checked; savePanes(); renderPanes(); return; }
   if (t.id === 'onlysmp') { st.onlySample = t.checked; renderPanes(); persist(); return; }
   const f = t.closest('[data-bkf]');
@@ -1190,45 +1244,11 @@ document.addEventListener('change', ev => {
 });
 
 document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { st.lang = b.dataset.v; render(); });
-$('#reader').value = store.get('d1-okuma-okur', '');
-$('#logout').hidden = !location.pathname.startsWith('/taslak/');
 if (location.pathname.startsWith('/taslak/')) {
   fetch('/taslak/ben', {credentials: 'same-origin', cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(j => {
-    if (!j || !j.name) return;
-    ACCOUNT = j.name;
-    $('#readerw').hidden = true; $('#who').hidden = false; $('#who').textContent = `Okuyucu: ${j.name}`;
-    $('#who').title = j.email;
+    if (j && j.name) ACCOUNT = j.name;
   }).catch(() => {});
 }
-$('#reader').onchange = () => store.set('d1-okuma-okur', reader());
-
-// --- dışa ve içe aktarma: eski okuma sayfasıyla aynı dosya (notlar ve ölçütler de içinde, değiştirilmeden)
-$('#export').onclick = () => {
-  const r = reader() || 'okuyucu', rubric = store.get('d1-okuma-olcut', {});
-  const payload = {app: 'd1-okuma', version: 1, reader: r, exported_at: new Date().toISOString(), notes: store.get('d1-okuma-notlar', []),
-    yz_sinama: yzEval, yz_suzgec: yzSuz, bilirkisi: bkMarks, ab: abMarks,
-    rubric: Object.entries(rubric).map(([k, v]) => { const [unit, draft, rd] = k.split('|'); return {unit, draft, reader: rd, scores: v}; })};
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 1)], {type: 'application/json'}));
-  a.download = `d1-notlar-${r.replace(/[^\p{L}\p{N}]+/gu, '-')}-${new Date().toISOString().slice(0, 16).replace(/[-:T]/g, '')}.json`;
-  a.click(); URL.revokeObjectURL(a.href); say('İşaretler dışa aktarıldı.');
-};
-$('#import').onchange = async ev => {
-  const f = ev.target.files[0]; if (!f) return;
-  try {
-    const p = JSON.parse(await f.text());
-    if (p.app !== 'd1-okuma') throw new Error('bu sayfanın dosyası değil');
-    for (const [src, map, key] of [[p.yz_sinama, yzEval, 'd1-yz-sinama'], [p.yz_suzgec, yzSuz, 'd1-yz-suzgec'], [p.bilirkisi, bkMarks, 'd1-bilirkisi'], [p.ab, abMarks, 'd1-masa-ab']]) {
-      for (const [k, v] of Object.entries(src || {})) if (!map[k] || v.at > map[k].at) map[k] = v;
-      store.set(key, map);
-    }
-    const notes = store.get('d1-okuma-notlar', []);
-    for (const n of p.notes || []) { const i = notes.findIndex(x => x.id === n.id); if (i < 0) notes.push(n); else if (n.at > notes[i].at) notes[i] = n; }
-    store.set('d1-okuma-notlar', notes);
-    render(); say('İşaretler içe aktarıldı.');
-  } catch (e) { say('İçe aktarılamadı: ' + e.message); }
-  ev.target.value = '';
-};
 window.addEventListener('resize', () => document.documentElement.style.setProperty('--head-h', $('#hdr').offsetHeight + 'px'));
 render();
 </script></body></html>
