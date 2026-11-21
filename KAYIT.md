@@ -378,6 +378,10 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   Kaynak tercümesi: ilk koşu sıralı ≈2 saat sürdü; 3 paralel çağrı ve orta düşünmeyle yeniden. Kabul 30'un okuması:
   3 yerde eşit, karar h9; iki kart tekrarı benim kart kurma hatamdı (`d1-tur.dedupe`). D5.1 (yalnız 34) başladı;
   kuyruğun ilk koşusunda `data/d1/d5/` yokken günlük özet hatası, düzeltildi.
+- **S7g Etiketler (2026-11-21):** kullanıcının önerisi: her paragrafın başındaki "Yapay zekâ tercümesi" ve izahın
+  "yapay zekâ izahı" etiketi kalktı (platform ve masa); damga sayfa başında ve platformun üst çubuğunda her zaman
+  ("yapay zekâ taslağı · tefsir değildir"; ekran görüntüsüne de girer). Kalanlar: alıntı, alıntının tercümesi (yapay zekâ
+  ya da Abdülmecid Nursî), kaynakların Türkçesi; kopyalanan atıf satırı ve indirilen dosyalar kendi damgasını taşır.
 - **S7f Alıntının cümlesi (2026-11-21):** kullanıcının sorusu (Bakara 34: «تولّد أنانية إبليس فيما بين الملائكة» altındaki
   "İblis'in enâniyetinin melâike arasında tevellüdü." neden orada?): taslak İşârât'ın cümlesinden yüklemsiz bir parça
   alıntılamış, altına da modelin tercümesi konmuştu. Kararı: platformda ve masada İşârât alıntısının Türkçesi eşlemeden
