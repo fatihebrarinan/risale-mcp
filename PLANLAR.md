@@ -69,9 +69,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `docs/s8-sonuc-yazisi.md` (dağınık kayıtlardan toplandı; kullanıcı okuyacak). (3) **Kuyruk Bakara'nın sonuna kadar**
   sürüyor (kullanıcının kararı, 2026-11-21; hesap: 14 Aralık'a kadar ≈160 birim, kalan ≈150; haftalık pencere dolunca
   kullanıcı sıfırlama hakkını kullanabilir; Pro'dan önce `dur`). D5.1 okundu (bkz. D5 "İstem adayı").
-- **Sıradaki iş:** S9 "Çalışmalar": İşârât'ın usulü yayında; önizlemede iki taslak (S8'in kısa site sürümü,
-  Yeniliklere duyuru), kullanıcının okuması bekliyor, sonra `yayinla`.
-- **Kullanıcıdan beklenen:** iki taslağın okunması (önizleme); masadan platforma taşınacak
+- **Sıradaki iş:** S9 "Çalışmalar": İşârât'ın usulü ve Yenilikler duyurusu yayında; S8'in kısa site sürümü
+  2026-11-24 sabahı kendiliğinden yayımlanacak (`site-zamanli.timer`).
+- **Kullanıcıdan beklenen:** masadan platforma taşınacak
   kolaylıklar ("Sonra" › "Okuma platformu ve ar-ge masasının açıkları").
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
@@ -143,7 +143,12 @@ yazıya bağlanır.
   (`docs/yenilikler/2026-11-21-isarat-usulu.md`, "Yeni bölüm: Çalışmalar…"). **S8'in site sürümü kısaltıldı**
   (kullanıcı: "gereğinden fazla ayrıntılı ve uzun … yalnız insanları ilgilendiren kısımları"; 2.192 → 695 kelime:
   ölçüler tablosu, yolun adımları, sayıların çoğu, maliyet ve okuma çağrısı çıktı; ayrıntılı hâli git geçmişinde ve iç
-  sürümde `docs/s8-sonuc-yazisi.md`). **Kalan:** kullanıcının iki taslağı okuması ve `yayinla`.
+  sürümde `docs/s8-sonuc-yazisi.md`). Kullanıcının okumasından (2026-11-21): Yenilikler duyurusu yayında; S8'den
+  "Bir şey daha öğrendik" paragrafı ve Bakara 34 örneği çıktı (551 kelime, alıntısız); **S8 2026-11-24'te kendiliğinden
+  yayımlanacak** (kullanıcının isteği: "hemen yayınlama, 3 gün sonra"). Zamanlı yayın kuruldu: `yayin_tarihi`,
+  `site-uret.py zamanla|zamanli`, `systemd --user` zamanlayıcısı `site-zamanli.timer` (her sabah 09.00), yalnız site
+  gönderen `deploy.sh --site`; `yayinla` artık türüyle de (`yenilikler/ad`; aynı ad iki türde olabiliyor).
+  **Kalan:** 24 Kasım'da S8'in yayımlandığına bakmak (commit edilir, push kullanıcıda).
 
 **D5. Asıl iş: Bakara 34–286** (eski D1.8; 2026-11-20, kullanıcının kararı: D5 yalnız Bakara, Kur'ân'ın geri kalanı "Sonra"da). Tek adım değil, küçük adımlar; D15'ten çıkan hatla (2026-11-17).
 - **D5.0 Üretim hazırlığı** (D11'in kalanı, kullanıcının kararları 2026-11-17 ve 2026-11-18; 2026-11-19'da alt adımlara

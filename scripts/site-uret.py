@@ -6,7 +6,10 @@ bilgi, sayılar, site haritası.
     python3 scripts/site-uret.py --resim            # bir de paylaşım resmi (site/img/paylasim.png; uvx cairosvg)
     python3 scripts/site-uret.py onizle             # üretir ve yerelde açar: http://127.0.0.1:8090/taslak/onizleme/
     python3 scripts/site-uret.py yayinla <ad>       # taslağı yayımlar (durum, tarih, dosya adı; bağlantı denetimi)
-    python3 scripts/site-uret.py yayinla <ad> --gonder   # … ve scripts/deploy.sh --code
+    python3 scripts/site-uret.py yayinla <ad> --gonder   # … ve scripts/deploy.sh --site (yalnız site)
+    python3 scripts/site-uret.py zamanla <ad> 2026-11-24 # o gün kendiliğinden yayımlansın (`iptal` kaldırır)
+    python3 scripts/site-uret.py zamanli --gonder        # günü gelenleri yayımla, commit, deploy.sh --site
+                                                         # (günlük zamanlayıcı: docs/site-zamanli.timer)
 
 Sonra: scripts/deploy.sh --code (önizleme de onunla gider: risalemcp.com/taslak/onizleme/, girişli, masa hesabı)
 
@@ -115,6 +118,7 @@ class Post:
     review: date | None = None
     address: str | None = None
     source: Path | None = None
+    scheduled: date | None = None       # `yayin_tarihi`: o gün (ya da makine açılınca) kendiliğinden yayımlanır
 
     @property
     def path(self) -> str:
@@ -170,8 +174,10 @@ def read_post(path: Path, kind: Kind) -> Post:
     if status not in STATUSES:
         sys.exit(f"{path.name}: durum {status!r} (taslak ya da yayinda olmalı)")
     review = date.fromisoformat(meta["gozden_gecirme"]) if meta.get("gozden_gecirme") else None
+    scheduled = date.fromisoformat(meta["yayin_tarihi"]) if meta.get("yayin_tarihi") else None
     return Post(kind, path.stem, meta["baslik"], date.fromisoformat(meta["tarih"]), meta["ozet"],
-                meta.get("whatsapp", "").strip(), text[end:], status, review, meta.get("adres") or None, path)
+                meta.get("whatsapp", "").strip(), text[end:], status, review, meta.get("adres") or None, path,
+                scheduled)
 
 
 def read_posts(kind: Kind) -> list[Post]:
@@ -379,9 +385,10 @@ def _rel(path: Path) -> str:
 
 def _preview_banner(post: Post) -> str:
     rel = _rel(post.source) if post.source else post.slug
-    return (f'<p class="note preview-banner"><strong>Önizleme: yayımlanmadı.</strong> Bu sayfayı yalnız girişli '
-            f"hesaplar görür. Kaynak <code>{rel}</code>; yayımlamak için "
-            f"<code>python3 scripts/site-uret.py yayinla {post.slug}</code>.</p>\n")
+    when = (f" <strong>{date_tr(post.scheduled)} günü kendiliğinden yayımlanacak.</strong>" if post.scheduled else "")
+    return (f'<p class="note preview-banner"><strong>Önizleme: yayımlanmadı.</strong>{when} Bu sayfayı yalnız girişli '
+            f"hesaplar görür. Kaynak <code>{rel}</code>; hemen yayımlamak için "
+            f"<code>python3 scripts/site-uret.py yayinla {post.kind.key}/{post.slug}</code>.</p>\n")
 
 
 def _toc(body_html: str) -> str:
@@ -443,10 +450,10 @@ def index_page(kind: Kind, posts: list[Post]) -> str:
 
 def preview_index(drafts: list[Post]) -> str:
     items = "\n".join(f"""<article class="post-item">
-  <p class="muted small">{p.kind.title} · taslak · <code>{_rel(p.source) if p.source else p.slug}</code></p>
+  <p class="muted small">{p.kind.title} · taslak{f" · <strong>{date_tr(p.scheduled)} günü yayımlanacak</strong>" if p.scheduled else ""} · <code>{_rel(p.source) if p.source else p.slug}</code></p>
   <h2><a href="{p.preview_path}">{inline(p.title)}</a></h2>
   <p>{inline(p.summary)}</p>
-  <p class="small muted">Yayımlamak için: <code>python3 scripts/site-uret.py yayinla {p.slug}</code></p>
+  <p class="small muted">Hemen yayımlamak için: <code>python3 scripts/site-uret.py yayinla {p.kind.key}/{p.slug}</code></p>
 </article>""" for p in drafts) or '<p class="muted">Bekleyen taslak yok.</p>'
     body = f"""<h1>Önizleme</h1>
 <p class="lead">Yayımlanmamış Yenilikler ve Çalışmalar yazıları, sitedeki görünüşleriyle. Bu sayfayı yalnız girişli hesaplar görür.</p>
@@ -730,16 +737,22 @@ def build(quiet: bool = False) -> dict[str, list[Post]]:
 
 
 def find_post(name: str) -> Post:
-    found = [p for kind in KINDS.values() for p in read_posts(kind)
-             if p.slug == name or re.sub(r"^\d{4}-\d{2}-\d{2}-", "", p.slug) == name]
+    """Yayımlanacak taslak: `ad`, `tarih-ad` ya da türüyle `calismalar/ad` (aynı ad iki türde olabilir)."""
+    kind_key, _, name = name.rpartition("/")
+    kinds = [KINDS[kind_key]] if kind_key in KINDS else list(KINDS.values())
+    found = [p for kind in kinds for p in read_posts(kind) if p.draft
+             and (p.slug == name or re.sub(r"^\d{4}-\d{2}-\d{2}-", "", p.slug) == name)]
     if len(found) != 1:
-        sys.exit(f"{name}: {'bulunamadı' if not found else 'birden çok yazı: ' + ', '.join(p.slug for p in found)}")
+        sys.exit(f"{name}: {'taslak bulunamadı' if not found else 'birden çok taslak (türüyle yazın, ör. calismalar/ad): ' + ', '.join(f'{p.kind.key}/{p.slug}' for p in found)}")
     return found[0]
 
 
-def _set_meta(text: str, key: str, value: str) -> str:
+def _set_meta(text: str, key: str, value: str | None) -> str:
+    """Üst bilgide bir alanı yazar; `value` None ise siler."""
     head, sep, rest = text.partition("\n---\n")
-    if re.search(rf"^{key}:.*$", head, re.M):
+    if value is None:
+        head = re.sub(rf"\n{key}:.*$", "", head, count=1, flags=re.M)
+    elif re.search(rf"^{key}:.*$", head, re.M):
         head = re.sub(rf"^{key}:.*$", f"{key}: {value}", head, count=1, flags=re.M)
     else:
         head += f"\n{key}: {value}"
@@ -755,10 +768,9 @@ def _move(src: Path, dst: Path) -> None:
         src.rename(dst)
 
 
-def publish(name: str, send: bool) -> None:
-    post = find_post(name)
-    if not post.draft:
-        sys.exit(f"{post.slug}: zaten yayında")
+def publish_post(post: Post) -> list[Path]:
+    """Taslağı yayına alır (dosya düzeyinde; siteyi kurmaz): durum, tarih bugün, dosya adı bugünün tarihiyle.
+    Değişen ya da yazılan dosyaları döndürür."""
     if not post.address:                                  # önce önizlemedeki bağlantılar
         build(quiet=True)
         preview = PREVIEW / post.kind.key / f"{post.slug}.html"
@@ -767,8 +779,9 @@ def publish(name: str, send: bool) -> None:
     today = date.today().isoformat()
     rest = re.sub(r"^\d{4}-\d{2}-\d{2}-", "", post.slug)
     text = post.source.read_text(encoding="utf-8")
-    text = _set_meta(_set_meta(text, "durum", "yayinda"), "tarih", today)
+    text = _set_meta(_set_meta(_set_meta(text, "durum", "yayinda"), "tarih", today), "yayin_tarihi", None)
     target = post.source.with_name(f"{today}-{rest}.md")
+    changed = [post.source, target]
     if target != post.source:
         if target.exists():
             sys.exit(f"{target.relative_to(ROOT)} zaten var")
@@ -796,12 +809,58 @@ whatsapp: |
 
 [Yazının tamamı]({url})
 """, encoding="utf-8")
-            print(f"Yeniliklere duyuru taslağı: {note.relative_to(ROOT)} (bakıp `yayinla {today}-{rest}` ile yayımlayın)")
+            changed.append(note)
+            print(f"Yeniliklere duyuru taslağı: {note.relative_to(ROOT)} (bakıp `yayinla yenilikler/{rest}` ile yayımlayın)")
+    return changed
+
+
+def publish(name: str, send: bool) -> None:
+    publish_post(find_post(name))
     build()
     if send:
-        subprocess.run([str(ROOT / "scripts" / "deploy.sh"), "--code"], cwd=ROOT, check=True)
+        subprocess.run([str(ROOT / "scripts" / "deploy.sh"), "--site"], cwd=ROOT, check=True)
     else:
-        print("göndermek için: scripts/deploy.sh --code")
+        print("göndermek için: scripts/deploy.sh --site")
+
+
+def schedule(name: str, day: str) -> None:
+    """Taslağa yayın günü koyar (`yayin_tarihi`); `iptal` kaldırır."""
+    post = find_post(name)
+    value = None if day == "iptal" else date.fromisoformat(day).isoformat()
+    post.source.write_text(_set_meta(post.source.read_text(encoding="utf-8"), "yayin_tarihi", value), encoding="utf-8")
+    print(f"{post.kind.key}/{post.slug}: " + (f"{value} günü yayımlanacak" if value else "yayın günü kaldırıldı"))
+    build(quiet=True)
+
+
+def _notify(text: str) -> None:
+    print(text)
+    if shutil.which("notify-send"):
+        subprocess.run(["notify-send", "Risale MCP sitesi", text], check=False)
+
+
+def publish_due(send: bool) -> None:
+    """Yayın günü gelmiş taslakları yayımlar; değişenleri commit eder, `--gonder` ile siteyi gönderir
+    (`scripts/deploy.sh --site`: yalnız site ve önizleme; kod gitmez). Günlük zamanlayıcı çağırır
+    (`docs/site-zamanli.timer`, `systemd --user`; makine kapalıysa açılınca)."""
+    today = date.today()
+    due = [p for kind in KINDS.values() for p in read_posts(kind) if p.draft and p.scheduled and p.scheduled <= today]
+    if not due:
+        print(f"{today}: yayın günü gelmiş taslak yok")
+        return
+    changed: list[Path] = []
+    for post in due:
+        changed += publish_post(post)
+    build()
+    paths = sorted({str(p.relative_to(ROOT)) for p in changed} | {"site"})
+    subprocess.run(["git", "add", "-A", "--", *paths], cwd=ROOT, check=True)
+    titles = ", ".join(f"«{p.title}»" for p in due)
+    subprocess.run(["git", "commit", "-q", "-m", f"site: scheduled publish of {', '.join(p.slug for p in due)}",
+                    "--", *paths], cwd=ROOT, check=False)
+    if send:
+        done = subprocess.run([str(ROOT / "scripts" / "deploy.sh"), "--site"], cwd=ROOT).returncode == 0
+        _notify(f"Yayımlandı: {titles}" if done else f"Yayımlandı ama gönderilemedi: {titles} (scripts/deploy.sh --site)")
+    else:
+        _notify(f"Yayımlandı (gönderilmedi): {titles}")
 
 
 def serve(port: int = 8090) -> None:
@@ -828,6 +887,12 @@ def main() -> None:
         if len(args) < 2:
             sys.exit("kullanım: site-uret.py yayinla <ad> [--gonder]")
         publish(args[1], "--gonder" in args)
+    elif args[:1] == ["zamanla"]:
+        if len(args) != 3:
+            sys.exit("kullanım: site-uret.py zamanla <ad> <YYYY-AA-GG | iptal>")
+        schedule(args[1], args[2])
+    elif args[:1] == ["zamanli"]:
+        publish_due("--gonder" in args)
     elif args[:1] == ["onizle"]:
         serve()
     elif not args:

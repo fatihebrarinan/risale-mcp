@@ -5,6 +5,7 @@ ozet: İşârât'ı yapay zekâdan gizleyip Bakara'nın ilk âyetlerini ona yazd
 durum: taslak
 whatsapp: |
   Yapay zekâ İşârâtü'l-İ'câz'ın mislini yazabilir mi? İşârât'ı gizleyip Bakara'nın ilk âyetlerini yazdırdık, müellifin metniyle karşılaştırdık.
+yayin_tarihi: 2026-11-24
 ---
 
 :::kisa
@@ -42,18 +43,6 @@ Taslak yazılırken model kaynakları kendisi okur: önce İşârât ve Risale-i
 
 İşârât'ı gizlediğimiz beş âyet grubunda on iki taslak yazıldı; İşârât'la karşılaştırılınca on ikisi de aynı hükmü aldı: **"düzeltmeyle yeterli."** Hiçbiri tek başına yeterli bulunmadı, hiçbiri de yetersiz bulunmadı. Taslak İşârât'ın nüktelerinin kabaca yarısını yakalıyor. Kaçırdıklarının çoğu ise İşârât'ı okumadan bilinemeyecek şeyler.
 
-Bir şey daha öğrendik: isteme "şöyle düşün" diye kural yazmak modelin düşünmesini değiştirmiyor. Model kurala katılıyor, uyduğunu sanıyor, ama aynı şekilde yazmaya devam ediyor. Değişiklik ancak işin yapısı değişince geliyor: hangi kaynağı önce okuduğu, hangi adımı ayrıca yaptığı.
-
-## Bir örnek: Bakara 34
-
-> وَإِذْ قُلْنَا لِلْمَلَـٰٓئِكَةِ ٱسْجُدُوا۟ لِـَٔادَمَ فَسَجَدُوٓا۟ إِلَّآ إِبْلِيسَ أَبَىٰ وَٱسْتَكْبَرَ وَكَانَ مِنَ ٱلْكَـٰفِرِينَ
-
-İşârât'ın bittiği yerden sonraki ilk âyet. Nazım nükteleri yerinde, Risale-i Nur'dan dersi çok iyi. Bu âyet Risale'de doğrudan geçmiyor; taslak dersi konu üzerinden buldu: şeytanın yaratılışındaki hikmet, insanın imtihanı, takvâ. Alıntıladığı sözlerden biri:
-
-> "Halk‑ı şer, şer değil; belki kesb-i şer, şerdir." [1]
-
-Sınırı da burada göründü: «kâne» kelimesinin iki mânâsını yalnız bir müfessirden aldı; öbür müfessirlerin bu kelimede ne dediğine bakmadı. Atıf doğru, ama tartma yok.
-
 ## Sınırlar
 
 - Okumaları projeyi yürüten kişi yaptı; tefsir ve belâgat alanında uzman değildir, bilmediğini kaynaktan araştırdı ya da ehline sordu. Bu alanların uzmanlarının okuması henüz yok.
@@ -65,9 +54,3 @@ Sınırı da burada göründü: «kâne» kelimesinin iki mânâsını yalnız b
 Tefsir ehlinin işidir. Yapay zekânın yazdığı hiçbir şey tefsir diye anılmaz. Bu çalışmanın gayesi tefsir yazmak değil; Kur'ân'ın sonsuz bir derya olduğunu görmeye çalışmak ve ileride tefsir üzerinde çalışacaklara kaynağa bağlı bir zemin hazırlamak. Aynı şartlarda yazılan taslakların birbirinden farklı nükteler bulması birincisine bir işaret; yapay zekânın neyi yapıp neyi yapamadığını dürüstçe göstermek de ikincisinin şartı.
 
 İşârât'ın usulünü, eserin kendi cümleleriyle, [İşârâtü'l-İ'câz'ın usulü](/isarat-usul/) yazısında bulabilirsiniz.
-
-## Kaynaklar
-
-1. Mektubat › Onikinci Mektûb › İkinci Suâliniz › "Halk‑ı şer, şer değil;…"
-
-Risale-i Nur'un metni e-Risale (erisale.com) ve risaleoku.com'dan, izinleriyle; Kur'ân metni Tanzil Project'ten (tanzil.net).

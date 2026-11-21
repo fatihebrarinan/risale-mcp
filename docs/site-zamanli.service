@@ -1,0 +1,12 @@
+# S9: yayın günü gelmiş Yenilikler ve Çalışmalar taslaklarını yayımlar (scripts/site-uret.py zamanli --gonder):
+# dosyayı yayına alır, commit eder, yalnız siteyi gönderir (scripts/deploy.sh --site). Bu bilgisayarda, systemd --user.
+# Kurulum: cp docs/site-zamanli.{service,timer} ~/.config/systemd/user/ && systemctl --user daemon-reload
+#          && systemctl --user enable --now site-zamanli.timer
+# Günlük: journalctl --user -u site-zamanli
+[Unit]
+Description=Risale MCP sitesi: zamanı gelen yazıları yayımla
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/Belgeler/Coding/Projects/risale-mcp
+ExecStart=/usr/bin/python3 scripts/site-uret.py zamanli --gonder

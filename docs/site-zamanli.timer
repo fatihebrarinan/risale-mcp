@@ -1,0 +1,11 @@
+# Her sabah 09.00'da; bilgisayar o saatte kapalıysa açılınca (Persistent). Bkz. site-zamanli.service.
+[Unit]
+Description=Risale MCP sitesi: zamanlı yayın, günlük
+
+[Timer]
+OnCalendar=*-*-* 09:00:00
+Persistent=true
+RandomizedDelaySec=5min
+
+[Install]
+WantedBy=timers.target

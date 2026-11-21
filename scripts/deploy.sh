@@ -3,6 +3,8 @@
 #
 #   scripts/deploy.sh            # kod + genel profilin veritabanı ve vektörleri + quran.json
 #   scripts/deploy.sh --code     # yalnızca kod, site/ ve taslak bölümü (data/d1/masa/; veri değişmediyse)
+#   scripts/deploy.sh --site     # yalnız tanıtım sitesi (site/) ve yazıların önizlemesi: kod gitmez, servis yeniden
+#                                # başlamaz, araç çıktısı değişmediği için kaydı da yapılmaz (S9; zamanlı yayın bunu kullanır)
 #   DEPLOY_EXPECT="cite" scripts/deploy.sh   # bu araçların çıktısındaki fark beklenen sayılır
 #   scripts/deploy.sh --hadis    # ayrıca hadis sunucusu (aynı makine, 127.0.0.1:8001, hadis.risalemcp.com):
 #                                # hadis.db, vektörleri ve servis birimi; `--code` ile birlikte de verilebilir
@@ -21,10 +23,22 @@ KEY="${RISALE_KEY:-$HOME/.ssh/risale_hetzner}"
 DEST=/home/risale/risale-mcp
 SSH=(ssh -i "$KEY" -o BatchMode=yes)
 cd "$(dirname "$0")/.."
-CODE_ONLY=0; HADIS=0
+CODE_ONLY=0; HADIS=0; SITE_ONLY=0
 for arg in "$@"; do
-    case "$arg" in --code) CODE_ONLY=1 ;; --hadis) HADIS=1 ;; *) echo "bilinmeyen seçenek: $arg"; exit 2 ;; esac
+    case "$arg" in --code) CODE_ONLY=1 ;; --hadis) HADIS=1 ;; --site) SITE_ONLY=1 ;;
+        *) echo "bilinmeyen seçenek: $arg"; exit 2 ;; esac
 done
+
+if [[ $SITE_ONLY == 1 ]]; then
+    "${SSH[@]}" "$HOST" "mkdir -p /var/www/risalemcp"
+    rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
+    if [[ -f data/interim/onizleme/index.html ]]; then
+        "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/onizleme"
+        rsync -az --delete --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/onizleme/ "$HOST:/var/www/ozel/taslak/onizleme/"
+    fi
+    echo "site gönderildi"
+    exit 0
+fi
 
 if [[ $CODE_ONLY == 0 ]]; then
     uv run python -m risale_mcp.manifest release --profile genel
