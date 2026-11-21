@@ -515,10 +515,15 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   dosyası `scripts/d1-yayin.py`: `data/d1/yayin/<sûre>/<birim>/v<k>.json`, değişmez sürümler, içerikten paragraf
   kimliği). `uv run python scripts/oku-veri.py [--birim <b>] [--gonder]` platformu (`data/interim/oku/` →
   `/var/www/ozel/taslak/oku/`, Caddy `/oku/`'yu oraya çevirir) kurar. **Masanın birim sayfası eski âyet masasıdır**
-  (`scripts/d1-masa.py` + `d1-masa-sablon.html`; S7b, kullanıcının kararı 2026-11-21: "eski masanın kullanışlılığı"):
-  Kur'ân paneli, en çok 6 yan (Kaynaklar, İşârât, her taslak, Kalite kapısı, Nisbet, Okuyucu notları), lafız ve düzey
-  süzgeci, katmanlar; ar-ge birimleri `data/d1/masa/<b>.html`, D5 birimleri `data/interim/oku-masa/<b>.html`
-  (yeniden üretilir), ortak liste `masa-birimler.json`. D5 kuyruğu her birimden sonra `d1-masa.py <b>` ve
+  (`scripts/d1-masa.py` + `d1-masa-sablon.html`; S7b–S7d, kullanıcının kararları 2026-11-21): tek kabuk
+  `ayet.html` (modül; birimin verisi açılınca `masa-veri/<b>.json`'dan yüklenir, adres `#/<b>`; birimsiz giriş sayfası),
+  Kur'ân paneli sûrelere göre bütün âyetlerle (Fâtiha 7 birim: İşârât'ın lafız bölümleri âyetlerine `d1-masa.FATIHA`;
+  Bakara 176), en çok 6 yan ve her yanda içindekiler ağacı, lafız ve düzey süzgeci, katmanlar bugünkü hatta göre
+  (Kalite kapısı yazarın cevabıyla ve son taslağa taşınmış, Nisbet, İşârât karşılaştırması, eski D9 eleştirmeni);
+  taslaksız birimde yalnız kaynaklar. Bütün çıktı yeniden üretilir: `data/interim/oku-masa/` (`ayet.html`,
+  `masa-veri/`, `masa-birimler.json`, giriş `index.html`/`pano.json`, deneyler defteri) → `/var/www/ozel/taslak/`;
+  `data/d1/masa/`'da yalnız okuma ve D5 sayfaları, eski `<b>.html` yönlendirmedir. Hepsini kurmak
+  `uv run python scripts/d1-masa.py --hepsi` (≈25 dk; sunucuda `d1-arka.sh`). D5 kuyruğu her birimden sonra `d1-masa.py <b>` ve
   `oku-veri.py --birim <b> --gonder` çalıştırır. Platformda yalnız son taslak, masada hepsi;
   ar-ge birimlerinde platforma giden taslak `data/d1/oku/secim.json` (yoksa en sonuncu). Hesaplar `site_auth.py`:
   kapsam `masa` (`/taslak/` ve `/oku/`) ya da `oku` (yalnız platform; `scripts/sunucu.sh taslak add-user <e-posta>

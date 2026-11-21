@@ -55,19 +55,15 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde (oturum devri, 2026-11-21, dördüncü kısım):** (1) **D5.1 başladı: kuyruk 34'ü yazıyor** (sunucu, h9; `dur`
-  işareti konuldu: 34 bitince durur; `taslak-sunucu.sh durum`, günlük `calistir tail data/interim/d1-isler/kuyruk.log`;
-  bitince telefona bildirim). İlk koşuda bir hata: günlük özet `data/d1/d5/` yokken yazıyordu (düzeltildi, `cc0c360`'tan
-  sonra). 34 bitince: yerelde `git -C data/d1 pull`, kullanıcı 34'ü platformda (`/oku/#/34`) ve masada (`/taslak/34.html`)
-  okur (onay değil; hattın ilk gerçek ürünü); maliyet, süre, haftalık kota payı ölçülür; 35–40 sonra (kullanıcının
-  kararı: önce yalnız 34). (2) **S7c bitti:** masanın sadeleşmesi, içindekiler ağacı, D5 kelime sayıları; **İşârât
-  Arapça–Türkçe eşlemesi modelle** (kullanıcının kararı; Fâtiha ve Bakara 37 bölüm, 2.706 Arapça cümle,
-  `data/d1/isarat-esleme/esleme.json`; Bakara 17–20'nin belâgat faslı ve on meselesinin tercümede karşılığı yok);
-  **taslakların andığı tefsir ve klasik yerlerin Türkçesi** (528 parça, Sonnet, `data/d1/tercume/kaynaklar.json`; D5'te
-  her birimde, `D5_TERCUME=0` atlar). Türkçe kipte kaynak kutusunda Türkçesi önde (İşârât: Abdülmecid tercümesi,
-  eşleme yapay zekânın; tefsir: yapay zekâ tercümesi, OpenITI lisansı). Tur okuma sayfaları tam genişlik, etiketler
-  turuncu; kart tekrarları `d1-tur.dedupe` ile.
-- **Kullanıcıdan beklenen:** 34 bitince okuması; 35–40'ın ne zaman açılacağı.
+- **Önde (oturum devri, 2026-11-21, beşinci kısım):** (1) **D5.1 bitti: Bakara 34** (38 dk, ≈12,1 $ kullanım
+  değeri, haftalık kota %57 → %59; son taslak 3; alarm: kapıdan sonra nisbet 6/56). Kuyruk durdu (`dur` işareti).
+  **Kullanıcı 34'ü okuyacak** (platform `/oku/#/34`, masa `/taslak/ayet.html#/34`, D5 okuma sayfası
+  `/taslak/d5-34.html`); 35–40 kararı ondan sonra. (2) **S7d** (kullanıcının kararları): masa tek kabuk ve birim
+  açılınca veri, Kur'ân panelinde Fâtiha (7) ve Bakara (176) bütün âyetler, taslaksız birimlerde yalnız kaynaklar, masa
+  girişinde dört büyük düğme (Âyet masası, Okuma platformu, Deneyler defteri, D5 durumu). Bütün birimlerin verisi taslak
+  sunucusunda kuruluyor (`masa-hepsi`, sonra siteye). Giriş, pano ve deneyler defteri git'ten çıktı (iki makine yazıp
+  çakışıyordu).
+- **Kullanıcıdan beklenen:** 34'ün okuması; 35–40'ın ne zaman açılacağı.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 

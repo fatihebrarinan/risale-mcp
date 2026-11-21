@@ -378,6 +378,10 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   Kaynak tercümesi: ilk koşu sıralı ≈2 saat sürdü; 3 paralel çağrı ve orta düşünmeyle yeniden. Kabul 30'un okuması:
   3 yerde eşit, karar h9; iki kart tekrarı benim kart kurma hatamdı (`d1-tur.dedupe`). D5.1 (yalnız 34) başladı;
   kuyruğun ilk koşusunda `data/d1/d5/` yokken günlük özet hatası, düzeltildi.
+- **D5.1 Bakara 34 (2026-11-21):** kuyrukla, h9; 38 dk, ≈12,1 $, haftalık %2; son taslak 3; alarm nisbet 6/56. Kuyruğun
+  ilk koşusunda `data/d1/d5/` yoktu (günlük özet), ikinci koşuda bekleyen kod `systemd` yeniden deneme beklerken
+  `devam` takıldı (`restart --no-block` ile). Masada S7c2 (katmanlar bugünkü hatta göre) ve S7d (tek kabuk, bütün âyetler,
+  Fâtiha 7 birim, dört büyük düğme); giriş ve deneyler defteri iki makinede yazılıp çakıştığı için git'ten çıktı.
 - Denendi: `node` ile her birim ve sekme çizildi (176/176), tarayıcıda yerel deneme sunucusunda not, kaynak kutusu,
   ders, arama, kesintisiz okuma; canlıda girişsiz istekler girişe yönleniyor, API 401. **Canlıda girişle denenmedi.**
 
