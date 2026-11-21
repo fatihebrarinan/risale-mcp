@@ -55,15 +55,12 @@ Son verilen kimlikler: E6, S7, A3, D15, B8 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde (oturum devri, 2026-11-21, beşinci kısım):** (1) **D5.1 bitti: Bakara 34** (38 dk, ≈12,1 $ kullanım
-  değeri, haftalık kota %57 → %59; son taslak 3; alarm: kapıdan sonra nisbet 6/56). Kuyruk durdu (`dur` işareti).
-  **Kullanıcı 34'ü okuyacak** (platform `/oku/#/34`, masa `/taslak/ayet.html#/34`, D5 okuma sayfası
-  `/taslak/d5-34.html`); 35–40 kararı ondan sonra. (2) **S7d** (kullanıcının kararları): masa tek kabuk ve birim
-  açılınca veri, Kur'ân panelinde Fâtiha (7) ve Bakara (176) bütün âyetler, taslaksız birimlerde yalnız kaynaklar, masa
-  girişinde dört büyük düğme (Âyet masası, Okuma platformu, Deneyler defteri, D5 durumu). Bütün birimlerin verisi taslak
-  sunucusunda kuruluyor (`masa-hepsi`, sonra siteye). Giriş, pano ve deneyler defteri git'ten çıktı (iki makine yazıp
-  çakışıyordu).
-- **Kullanıcıdan beklenen:** 34'ün okuması; 35–40'ın ne zaman açılacağı.
+- **Önde (oturum devri, 2026-11-21, altıncı kısım):** (1) **D5.1 bitti: Bakara 34** (bkz. D5); kuyruk durdu
+  (`dur`). **Kullanıcı 34'ü okuyor** (platform `/oku/#/34`, masa `/taslak/ayet.html#/34`, `/taslak/d5-34.html`);
+  35–40 kararı ondan sonra. (2) **S7c–S7g yapıldı** (bkz. S7 "S7c–S7g"): masa tek kabuk ve bütün âyetler, Türk hattı
+  varsayılan, İşârât alıntısında Abdülmecid tercümesi ve cümlenin tamamı, etiketler sadeleşti. Bütün birimlerin masa
+  verisi taslak sunucusunda yeni kodla kuruluyor (`masa-hepsi`; bitince masa, platform ve 34'ün D5 sayfası siteye).
+- **Kullanıcıdan beklenen:** 34'ün okuması; 35–40'ın ne zaman açılacağı; masadan platforma taşınacak kolaylıklar.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -200,6 +197,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (e) **telefona bildirim ve harcama tavanı** (D5.0.1'in "sonra"sı); (f) **kabul birimi 30** sunucuda, h12 ve h9 kör A/B
   (kullanıcı 3 yeri okur: birinci vecih, bir taalluk yeri, Risale dersi; kartlar içeriğe göre seçilir, iki taraf
   gönderilmeden okunur); h9 mı h12 mi orada belli olur. Sonra D5.1 (Bakara 34), D5.2.
+  **Hepsi yapıldı (2026-11-21).** Kabul 30'un sonucu (kullanıcının kararı): okuma 3 yerde eşit; ölçüler h9 lehine
+  (h12 %39 pahalı, %19 uzun, nisbet hatası daha çok, dersinde damga hatası; İşârât karşılaştırması ve envanter eşit) →
+  **D5 istemi h9** (`D5_SURUM`, varsayılan h9); "bu kadar okuma yeter" (h12 denemesi kapandı). **Kaynak
+  tercümesi D5'in adımı** (kullanıcının kararı): her birimden sonra taslağın andığı tefsir ve klasik yerler çevrilir
+  (`kaynak-tercume.py`, Sonnet, 3 paralel; birim başına ≈0,4–0,5 $, birimin ≈%3'ü), `D5_TERCUME=0` ile atlanır.
 - **Büyük işin kolaylıkları** (kullanıcı kabul etti, 2026-11-21; D5.1'den önce; model çağrısız): (1) her birimden
   sonra `data/d1` commit ve push (kuyruk tek uzun iş); (2) kuyruk sunucunun açılışında başlayan, düşünce yeniden kalkan
   hizmet (`d1-kuyruk`); (3) **haftalık pencere koruması: %90** (kullanıcının eşiği; geçince durur, sıfırlanınca sürer,
@@ -226,7 +228,13 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kısa İşârât örneğiyle; h10'daki gibi tablo yok (zorlama). Sınama: saklı birim 29'da h9'a karşı (kör A/B ve
   kullanıcının okuması).
 - D5.1 Bakara 34, kuyruğun ilk birimi; okuma yok (2026-11-21; önceden "okumayı kullanıcı yapar", 2026-11-20), durum
-  Panodan.
+  Panodan. **Kapsam yalnız 34** (kullanıcının kararı, 2026-11-21: "okumaya sabırsızlanıyorum"; 35–40 sonra).
+  **Bitti (2026-11-21):** 38 dk, ≈12,1 $ kullanım değeri, haftalık kota %57 → %59; kapı 25 not (20 karşılandı, 5
+  reddedildi), ikinci tur 5 not (hepsi reddedildi), son taslak 3. Alarm "kapıdan sonra nisbet 6/56" büyük ölçüde
+  denetçinin hatası: kaynağın bağlamı baştan 4.000 harfte kesiliyordu, Ebüssuûd'un uzun önceki cümleleri atfedilen
+  cümleyi dışarıda bırakıyordu (5 yanlış "kaynakta yok"; yazar beşini alıntıyla reddetti); kesim artık atfedilen
+  cümlenin etrafından (`d1-nisbet.clip`, `f1aac75`). Kullanıcı 34'ü okuyor ("şu ana kadar gayet iyi"); sunuşa dair
+  eleştirileri S7e–S7g oldu.
 - **D5.2 Risale'si az iki birim, kuyruk büyümeden önce** (kullanıcının kararı, 2026-11-19; 2026-11-21: göz atmak
   yetebilir, bir kez; birimler sırayla yazıldığı için kıssa 40'ta erken gelir (kuyruk 40'tan sonra durur), ahkâm
   178'den sonra, geldiğinde): bir kıssa (İsrâiloğulları,
@@ -322,7 +330,7 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   birim sayfası eski âyet masası, genişletilmiş (Kur'ân paneli, 6 yan, kapı/nisbet/not yanları lafız süzgeciyle).
   **Konuşulacak (kullanıcı):** masanın kolaylıklarından hangileri okuma platformuna taşınacak.
   **S7c. Âyet masasının sadeleşmesi ve kaynakların Türkçesi** (kullanıcının kararları, 2026-11-21; kullanıcı "eski
-  masa iyi, ama etraf çok dağınık ve çalışması zor" dedi). Sıra:
+  masa iyi, ama etraf çok dağınık ve çalışması zor" dedi; **hepsi yapıldı**, sonuçlar aşağıda "S7c–S7g"). Sıra:
   - **S7c.1 Sadeleşme:** kör kip kalkar (kör okuma görevli sayfalarda, taraflar sunucuda; kör okuması süren birimin
     masasında yalnız üstte uyarı "bu birimin kör okuması sürüyor"); üstteki tur ve fark okuması bağlantıları kalkar
     (Pano › Okumalar ve Birimler sekmesinde var; birimin kendi okumaları Kur'ân panelinde birimin altında küçük
@@ -346,9 +354,49 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
     (OpenITI, CC BY-NC-SA 4.0: türetilmiş eser, ticari değil, aynı lisans). Dil Türkçe iken kaynak kutusunda Türkçesi
     önde. Kaynaklar yanındaki bütün tefsir birimlerinin tercümesi **sonraya** (kota D5 ile ortak; istenirse birim
     başına düğmeyle sıraya).
-  **Kalan:** canlıda girişle bir bakış (kullanıcı); davetli hesapları `scripts/sunucu.sh taslak add-user <e-posta>
-  --generate --oku` (kullanıcının işi); D5 kuyruğu başlayınca platformun sunucudan ilk kurulumu (bütün birimler,
-  kendiliğinden).
+  **S7c–S7g: sonuçlar ve oturumdaki kararlar** (2026-11-21; kullanıcının okumasından ve eleştirilerinden; ayrıntı
+  ve commitler KAYIT.md "S7"):
+  - **S7c'nin sonuçları.** (1) Sadeleşme yapıldı (kör kip, tur bağlantıları, D7–D9 işaretleme araçları kalktı).
+    (2) İçindekiler ağacı her yanda; her müfessir ve her taslağın eleştirileri ayrı yaprak. (3) D5'te lafız sayıları
+    taslaktan. (4) **İşârât eşlemesi:** program envanterle %77 (±1 cümle %88), model 3 birimde 163/164 → kullanıcının
+    kararı: **model**; Fâtiha ve Bakara'nın 37 bölümü (2706 Arapça cümle, ≈7 $; `isarat-esleme.py --butun`,
+    `data/d1/isarat-esleme/esleme.json`, rapor `esleme-rapor.md`); Bakara 17–20'nin belâgat faslı ve 10 mesele
+    Türkçede karşılıksız. (5) **Kaynak tercümesi:** yalnız taslakların andığı yerler (kullanıcının kararı; bütün tefsir
+    birimlerinin tercümesi sonraya), 528 parça (`data/d1/tercume/kaynaklar.json`); ilk koşu sıralı ≈2 saatti, 3 paralel
+    ve orta düşünmeyle hızlandı; D5'te her birimin adımı (bkz. D5).
+  - **S7c2 Masanın üst satırı ve katmanları** (kullanıcının dört maddesi, 2026-11-21): âyet seçicisi kalktı (Kur'ân
+    paneli yeter); sağ üstte büyük düğmeler Masanın girişi · Okuma platformu · Çıkış; okumalar Kur'ân paneline
+    karışmaz, yalnız masanın girişinde; katmanlar bugünkü hatta göre: Kalite kapısı (yazarın cevabıyla, son taslağa
+    taşınmış), Nisbet, İşârât karşılaştırması, eski D9 eleştirmeni yalnız o eleştirinin yapıldığı birimlerde (kapalı
+    ve açık kitap eleştirileri de öyle). Bulunan hata: 30'un taslak 4'ünde eleştirmen notları görünmüyordu (düzeldi).
+  - **S7d Masa tek kabuk, bütün âyetler** (kullanıcının kararları): masanın girişinde dört büyük düğme (Âyet masası,
+    Okuma platformu, Deneyler defteri, D5 durumu); âyet masasının küçük giriş sayfası (ne olduğu, "soldan bir âyet
+    seçin"); Kur'ân paneli sûrelere göre, Fâtiha'nın 7 âyeti (İşârât'ın lafız bölümleri âyetlerine dağıtılır, Besmele
+    1. âyet; `d1-masa.FATIHA`) ve Bakara'nın 176 birimi; taslağı yazılmamış birimde yalnız kaynaklar (İşârât işlediği
+    yerde, her yerde tefsirler, klasik eserler, Risale'deki yerler), sayı yok, taslak yazıldıkça kendiliğinden gelir;
+    **veri birim açılınca yüklenir** (kullanıcı: "site çok büyüyebilir, altyapıyı sağlam kuralım"; `ayet.html` +
+    `masa-veri/<b>.json`, birim başına 0,1–2 MB); eski `<b>.html` yönlendirme.
+  - **S7e Türk hattı** (kullanıcının kararı): Kur'ân metni masada, platformda ve D5 sayfalarında varsayılan Türk
+    hattıyla (risaleoku), Medine seçilebilir (masada "Hat", platformda âyetin altında); yalnız görüntü, araçlar ve
+    eşleme Tanzil'de. Taslakların içindeki âyet alıntıları Tanzil'den geldiği için Medine imlâsıyla kalır.
+  - **S7f Alıntının cümlesi** (kullanıcının sorusu ve kararı): İşârât alıntısının Türkçesi eşlemeden Abdülmecid
+    Nursî tercümesi (modelinki değil); cümleden koparılmış alıntıda "kaynaktaki cümlenin tamamı"; müfessir
+    alıntılarında yapay zekâ tercümesi kalır.
+  - **S7g Etiketler** (kullanıcının önerisi): taslağın kendi paragraflarındaki "Yapay zekâ tercümesi" ve izah etiketi
+    kalktı; damga sayfa başında ve platformun üst çubuğunda her zaman; alıntı ve alıntının tercümesi etiketli kalır
+    (kaynağın sözü ile modelin sözü karışmasın); atıf satırı ve indirilen dosyalar damgalı.
+  - **Görüntü düzeltmeleri:** tur okuma sayfaları ekranın tamamı, numarasız etiketler turuncu; okuma kartında aynı
+    alıntının iki kez çıkması (kart kurma hatası, `d1-tur.dedupe`); Türkçe metnin içindeki Arapçada Kur'ân işaretleri
+    (U+06DF) boş kutu çıkıyordu → bütün sayfalarda Türkçe yazı tipi listesine sitenin Naskh'ı yedek (kullanıcı:
+    "düzeldi").
+  - **Altyapı:** masanın bütün çıktısı yeniden üretilir ve git dışındadır (`data/interim/oku-masa/`: `ayet.html`,
+    `masa-veri/`, giriş, pano, deneyler defteri; iki makine yazıp `data/d1`'de çakışıyordu); hepsini kurmak sunucuda
+    `d1-masa.py --hepsi` (≈25 dk, `d1-arka.sh`); sunucuya geçen kod kuyruk durmuşsa hemen, sürüyorsa sıradaki birimde.
+  **Açık kalanlar:** (1) **konuşulacak** (kullanıcı): masanın kolaylıklarından hangileri okuma platformuna taşınacak;
+  (2) canlıda girişle bir bakış (kullanıcı); (3) davetli hesapları `scripts/sunucu.sh taslak add-user <e-posta>
+  --generate --oku` (kullanıcının işi); (4) Kaynaklar yanındaki bütün tefsir birimlerinin tercümesi (sonraya; kota D5
+  ile ortak); (5) Diyanet baskısının Türk hattıyla risaleoku'nun Türk hattı arasındaki küçük işaret farkları (ör.
+  durak işaretleri) bakılmadı; kaynak risaleoku.
   **Kararlar (kullanıcı, 2026-11-21, oturum):** sıra: birimin ar-ge görünümü (hafif: ham notlar, nisbet, kapının
   kabul ve retleri, düzeltme farkı, alarmlar) → S7.3 → S7.4; deneyler defteri, alet ayarı, arama sonra, D5'i
   beklemeden. **Ar-ge masasında da** Kur'ân paneli ve okuma platformunun kolaylıkları olur (kullanıcı: "unutma").

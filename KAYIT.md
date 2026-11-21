@@ -378,23 +378,23 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   Kaynak tercümesi: ilk koşu sıralı ≈2 saat sürdü; 3 paralel çağrı ve orta düşünmeyle yeniden. Kabul 30'un okuması:
   3 yerde eşit, karar h9; iki kart tekrarı benim kart kurma hatamdı (`d1-tur.dedupe`). D5.1 (yalnız 34) başladı;
   kuyruğun ilk koşusunda `data/d1/d5/` yokken günlük özet hatası, düzeltildi.
-- **S7g Etiketler (2026-11-21):** kullanıcının önerisi: her paragrafın başındaki "Yapay zekâ tercümesi" ve izahın
-  "yapay zekâ izahı" etiketi kalktı (platform ve masa); damga sayfa başında ve platformun üst çubuğunda her zaman
-  ("yapay zekâ taslağı · tefsir değildir"; ekran görüntüsüne de girer). Kalanlar: alıntı, alıntının tercümesi (yapay zekâ
-  ya da Abdülmecid Nursî), kaynakların Türkçesi; kopyalanan atıf satırı ve indirilen dosyalar kendi damgasını taşır.
-- **S7f Alıntının cümlesi (2026-11-21):** kullanıcının sorusu (Bakara 34: «تولّد أنانية إبليس فيما بين الملائكة» altındaki
-  "İblis'in enâniyetinin melâike arasında tevellüdü." neden orada?): taslak İşârât'ın cümlesinden yüklemsiz bir parça
-  alıntılamış, altına da modelin tercümesi konmuştu. Kararı: platformda ve masada İşârât alıntısının Türkçesi eşlemeden
-  Abdülmecid Nursî tercümesi; parça alıntıda "kaynaktaki cümlenin tamamı" (`scripts/alinti.py`; yalnız sunuş).
+- **D5.1 Bakara 34 (2026-11-21):** kuyrukla, h9; 38 dk, ≈12,1 $, haftalık %2; son taslak 3; alarm nisbet 6/56. Kuyruğun
+  ilk koşusunda `data/d1/d5/` yoktu (günlük özet), ikinci koşuda bekleyen kod `systemd` yeniden deneme beklerken
+  `devam` takıldı (`restart --no-block` ile). Masada S7c2 (katmanlar bugünkü hatta göre) ve S7d (tek kabuk, bütün âyetler,
+  Fâtiha 7 birim, dört büyük düğme); giriş ve deneyler defteri iki makinede yazılıp çakıştığı için git'ten çıktı.
 - **S7e Türk hattı (2026-11-21):** kullanıcının kararı: Kur'ân metni masada, platformda ve D5 sayfalarında Türk hattıyla
   (varsayılan), Medine seçilebilir. Kaynak risaleoku'nun Kur'ân'ı (`kuran_turk.py`; 6236 âyet, iskelet denetimi, 3 imlâ
   farkı 21:88, 63:10, 72:16). Masanın kelime düğmeleri iskelet konumlarıyla Türk hattının kelimelerine eşlendi (293/293
   âyet; bitişik yazılan "ذُوفَضْلٍ" düğme sınırından bölünür). Aynı gün: Türkçe metnin içindeki Arapça Kur'ân işaretleri
   (U+06DF) boş kutu çıkıyordu; Türkçe yazı tipi listelerine sitenin Naskh'ı yedek olarak eklendi.
-- **D5.1 Bakara 34 (2026-11-21):** kuyrukla, h9; 38 dk, ≈12,1 $, haftalık %2; son taslak 3; alarm nisbet 6/56. Kuyruğun
-  ilk koşusunda `data/d1/d5/` yoktu (günlük özet), ikinci koşuda bekleyen kod `systemd` yeniden deneme beklerken
-  `devam` takıldı (`restart --no-block` ile). Masada S7c2 (katmanlar bugünkü hatta göre) ve S7d (tek kabuk, bütün âyetler,
-  Fâtiha 7 birim, dört büyük düğme); giriş ve deneyler defteri iki makinede yazılıp çakıştığı için git'ten çıktı.
+- **S7f Alıntının cümlesi (2026-11-21):** kullanıcının sorusu (Bakara 34: «تولّد أنانية إبليس فيما بين الملائكة» altındaki
+  "İblis'in enâniyetinin melâike arasında tevellüdü." neden orada?): taslak İşârât'ın cümlesinden yüklemsiz bir parça
+  alıntılamış, altına da modelin tercümesi konmuştu. Kararı: platformda ve masada İşârât alıntısının Türkçesi eşlemeden
+  Abdülmecid Nursî tercümesi; parça alıntıda "kaynaktaki cümlenin tamamı" (`scripts/alinti.py`; yalnız sunuş).
+- **S7g Etiketler (2026-11-21):** kullanıcının önerisi: her paragrafın başındaki "Yapay zekâ tercümesi" ve izahın
+  "yapay zekâ izahı" etiketi kalktı (platform ve masa); damga sayfa başında ve platformun üst çubuğunda her zaman
+  ("yapay zekâ taslağı · tefsir değildir"; ekran görüntüsüne de girer). Kalanlar: alıntı, alıntının tercümesi (yapay zekâ
+  ya da Abdülmecid Nursî), kaynakların Türkçesi; kopyalanan atıf satırı ve indirilen dosyalar kendi damgasını taşır.
 - Denendi: `node` ile her birim ve sekme çizildi (176/176), tarayıcıda yerel deneme sunucusunda not, kaynak kutusu,
   ders, arama, kesintisiz okuma; canlıda girişsiz istekler girişe yönleniyor, API 401. **Canlıda girişle denenmedi.**
 
