@@ -32,7 +32,7 @@ from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-SURUM = os.environ.get("D5_SURUM", "h12")      # kabul birimi 30'dan sonra kesinleşir (h9 ya da h12)
+SURUM = os.environ.get("D5_SURUM", "h9")       # kabul birimi 30: kullanıcının kararı h9 (2026-11-21)
 
 
 def _load(name: str, file: str):
