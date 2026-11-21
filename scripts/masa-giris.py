@@ -47,7 +47,7 @@ def _num_key(uid: str) -> list[int]:
 
 
 def _pages() -> list[str]:
-    return sorted(p.name for p in MASA.glob("*.html") if p.name not in ("index.html",))
+    return sorted(p.name for p in MASA.glob("*.html") if p.name not in ("index.html", "deneyler.html"))
 
 
 def _unit_pages(uid: str, pages: list[str]) -> list[dict]:
@@ -165,7 +165,7 @@ header.top a { font-size: .85rem; color: var(--muted); }
 </style></head><body><main>
 <header class="top"><h1>Ar-ge Masası</h1><span class="small muted"><span id="ben"></span> · <a href="cikis">çıkış</a></span></header>
 <p class="small muted">Yapay zekâ taslaklarının iç çalışma masası. Buradaki hiçbir taslak tefsir değildir.
-<a href="birim.html">Kur'ân paneli</a> · <a href="/oku/">okuma platformu</a></p>
+<a href="birim.html">Kur'ân paneli</a> · <a href="deneyler.html">deneyler defteri</a> · <a href="/oku/">okuma platformu</a></p>
 <nav class="tabs"><a href="#pano" data-t="pano">Pano</a><a href="#okumalar" data-t="okumalar">Okumalar<span id="nok"></span></a><a href="#birimler" data-t="birimler">Birimler</a></nav>
 <section id="pano"></section><section id="okumalar" hidden></section><section id="birimler" hidden></section>
 <p class="small muted" id="alt"></p>
@@ -269,7 +269,8 @@ def yaz() -> list[Path]:
     index, data = MASA / "index.html", MASA / "pano.json"
     index.write_text(SHELL.replace("__CSS__", S.CSS), encoding="utf-8")
     data.write_text(json.dumps(veri(), ensure_ascii=False, indent=1), encoding="utf-8")
-    return [index, data]
+    D = _load("deneyler", "deneyler.py")          # deneyler defteri, alet ayarı, kayma, arama (her birimden sonra)
+    return [index, data, *D.yaz()]
 
 
 def main() -> None:
