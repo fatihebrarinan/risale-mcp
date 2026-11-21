@@ -51,6 +51,7 @@ P = Y.P
 
 TEMPLATE = Path(__file__).with_name("d1-masa-sablon.html")
 OUT_DIR = P.KEEP / "masa"
+D5_DIR = ROOT / "data" / "interim" / "oku-masa"   # D5 birimlerinin masası: yeniden üretilir, git'e girmez (S7b)
 KLASIK_DB = P.DIST_DIR / "klasik" / "risale.db"
 LEVELS = {"V1": "L:munasebet", "V2": "L:nazim"}
 OTHER = "L:belirsiz"
@@ -279,7 +280,8 @@ def klasik(ayah: Ayah, window: int = 3, context: int = 2) -> list[dict]:
 
 def risale(unit: str) -> list[dict]:
     """Âyetin Risale'de geçtiği öbür yerler (İşârât'ın bu birimi ve Osmanlıca hariç), birer cümle bağlamla."""
-    cfg = P.UNITS[unit]
+    cfg = dict(P.UNITS[unit])
+    cfg.setdefault("nodes", ())
     lib = Library(P.GENEL_DB)
     conn = sqlite3.connect(f"file:{P.GENEL_DB}?mode=ro", uri=True)
     seen, out = set(), []
@@ -336,8 +338,18 @@ def drafts(unit: str, ayah: Ayah) -> dict:
 
 
 def layer(unit: str, ayah: Ayah, places: dict[str, list[str]], dr: dict) -> dict:
-    """Eşleştirme, eleştiri ve bilirkişi maddeleri, her biri yeriyle (`loc`)."""
+    """Eşleştirme, eleştiri ve bilirkişi maddeleri, her biri yeriyle (`loc`). Envanteri ve eşleştirmesi olmayan
+    birimde (D5, kabul birimi) yalnız eleştirmen katmanı (kapalı eleştirmen, kapının dosyalarından)."""
     y = Y.page_data(unit)
+    if y is None:
+        head = {dk: d["heads"] for dk, d in dr.items()}
+        critic = {}
+        for dk, c in Y.critic_page(unit).items():
+            if dk in head:
+                critic[dk] = dict(c, notes=[dict(x, loc=next((head[dk][a] for a in [x["a"]] if a in head[dk]),
+                                                            ["L:genel"])) for x in c["notes"]])
+        return {"models": [], "items": {}, "drafts": {}, "critic": critic, "bilirkisi": {}, "sample": [],
+                "critic_sample": [], "systemic": [], "critic_sample_note": ""}
     env = json.loads((Y.out_dir(unit) / "envanter.json").read_text(encoding="utf-8"))
     hidden = {r[0]: r[1] for rows in Y.hidden(unit).values() for r in rows}
     items = {}
@@ -379,25 +391,73 @@ def layer(unit: str, ayah: Ayah, places: dict[str, list[str]], dr: dict) -> dict
 
 
 def ready_units() -> list[str]:
-    return [u for u in P.UNITS if (Y.out_dir(u) / "envanter.json").exists() and Y.drafts_of(u)]
+    """Masası kurulabilen birimler: taslağı olan her birim (ar-ge birimleri ve D5), Bakara sırasıyla."""
+    order = {u["id"]: i for i, u in enumerate(P.d5_units())}
+    units = [u for u in P.UNITS if (P.DRAFTS / u).is_dir() and Y.drafts_of(u)]
+    return sorted(units, key=lambda u: order.get(u, 10 ** 6))
+
+
+def out_dir(unit: str) -> Path:
+    return D5_DIR if P.UNITS[unit].get("d5") else OUT_DIR
+
+
+def extras(unit: str, dr: dict) -> dict:
+    """S7b: kapının notları (her düzeltme ayrı, yazarın cevabıyla), nisbet hükümleri ve yayın sürümü; her not yeriyle
+    (taslağın çapasından, `heads`). Ham hâliyle, ar-ge masası için (`oku-veri.masa_data`)."""
+    spec = importlib.util.spec_from_file_location("oku_veri", ROOT / "scripts" / "oku-veri.py")
+    if "oku_veri" not in sys.modules:
+        mod = importlib.util.module_from_spec(spec)
+        sys.modules["oku_veri"] = mod
+        spec.loader.exec_module(mod)
+    OV = sys.modules["oku_veri"]
+    m = OV.masa_data(unit, {})
+    def loc(dk: str, capa: str | None, quote: str | None = None) -> list[str]:
+        h = (dr.get(dk) or {}).get("heads", {})
+        if capa and capa in h:
+            return h[capa]
+        if quote:                                       # nisbet: alıntının geçtiği paragraf
+            q = re.sub(r"\s+", " ", quote)[:40]
+            for b in (dr.get(dk) or {}).get("blocks", []):
+                if q and q in re.sub(r"\s+", " ", b["t"]):
+                    return h.get(b["a"], ["L:genel"])
+        return ["L:genel"]
+    for k in m["kapi"]:
+        for x in k["notlar"]:
+            x["loc"] = loc(f"taslak-{k['taslak']}", x.get("capa"))
+    for k in m["nisbet"]:
+        for x in k["hukumler"]:
+            x["loc"] = loc(f"taslak-{k['taslak']}", None, x.get("taslak_alinti"))
+    YAY = OV.YAY
+    idx = json.loads((YAY.YAYIN / "index.json").read_text(encoding="utf-8")) if (YAY.YAYIN / "index.json").exists() else {}
+    cur = (idx.get("birimler") or {}).get(unit)
+    yayin = None
+    if cur:
+        pub = json.loads((YAY.YAYIN / cur["yol"]).read_text(encoding="utf-8"))
+        dk = f"taslak-{pub['kunye']['son_taslak']}"
+        yayin = {"surum": pub["surum"], "taslak": dk,
+                 "capa": {b["id"]: b["taslak_capa"] for b in pub["bloklar"]}}
+    return {"kapi": m["kapi"], "nisbet": m["nisbet"], "alarmlar": m["alarmlar"], "yayin": yayin}
 
 
 def build(unit: str, units: list[dict]) -> Path:
     cfg = P.UNITS[unit]
-    env = json.loads((Y.out_dir(unit) / "envanter.json").read_text(encoding="utf-8"))
+    envf = Y.out_dir(unit) / "envanter.json"
+    env = json.loads(envf.read_text(encoding="utf-8")) if envf.exists() else {"kalemler": []}
     ayah = Ayah(unit)
     places = ayah.build_chips(env["kalemler"])
     dr = drafts(unit, ayah)
-    data = {"unit": unit, "title": title(unit), "units": units,
+    d5 = bool(cfg.get("d5"))
+    data = {"unit": unit, "title": title(unit), "units": units, "d5": d5,
             "verses": ayah.verses,
             "chips": [{k: c[k] for k in ("id", "ayah", "text", "norm")} for c in ayah.chips],
-            "isarat": isarat(unit), "tefsir": tefsir(unit), "klasik": klasik(ayah), "risale": risale(unit),
-            "drafts": dr, "yz": layer(unit, ayah, places, dr),
+            "isarat": {} if d5 else isarat(unit), "tefsir": tefsir(unit), "klasik": klasik(ayah),
+            "risale": risale(unit), "drafts": dr, "yz": layer(unit, ayah, places, dr), "masa": extras(unit, dr),
             "fark": sorted(p.name for p in OUT_DIR.glob(f"fark-{unit}-*.html")),   # D12.2 fark kartları
             "turlar": tur_pages(),                                                  # bütün birimlerin tur okumaları
             "tur": tur_data(unit)}                                                  # D12.5 tur okuması (kör A/B)
     blob = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    out = OUT_DIR / f"{unit}.html"
+    out = out_dir(unit) / f"{unit}.html"
+    out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(TEMPLATE.read_text(encoding="utf-8").replace("{data}", blob), encoding="utf-8")
     counts = {}
     for i in data["yz"]["items"].values():
@@ -437,7 +497,12 @@ def main() -> None:
     every = ready_units()
     todo = sys.argv[1:] or every
     OUT_DIR.mkdir(exist_ok=True)
-    units = [{"unit": u, "title": title(u)} for u in every]
+    units = [{"unit": u, "title": title(u), "ayah": list(P.UNITS[u]["ayahs"]), "d5": bool(P.UNITS[u].get("d5"))}
+             for u in every]
+    # Kur'ân panelinin listesi bütün masa sayfalarında ortak (eski sayfalar yeni D5 birimlerini de görsün)
+    for d in {OUT_DIR, D5_DIR}:
+        d.mkdir(parents=True, exist_ok=True)
+        (d / "masa-birimler.json").write_text(json.dumps(units, ensure_ascii=False), encoding="utf-8")
     for unit in todo:
         build(unit, units)
     # index.html artık ar-ge masasının giriş sayfasıdır (scripts/masa-giris.py; S7.2, 2026-11-21)

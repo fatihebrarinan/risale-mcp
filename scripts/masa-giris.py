@@ -52,11 +52,11 @@ def _pages() -> list[str]:
 
 def _unit_pages(uid: str, pages: list[str]) -> list[dict]:
     """Bir birimin masa sayfaları: masa sayfası, D5 okuma sayfası, okuma turları, fark kartları."""
-    out = [{"ad": "birim görünümü", "href": f"birim.html#/{uid}", "tur": "birim"}]
+    out = [{"ad": "âyet masası", "href": f"{uid}.html", "tur": "masa"}]
     for name in pages:
         stem = name[:-5]
         if stem == uid:
-            out.append({"ad": "masa sayfası", "href": name, "tur": "masa"})
+            continue
         elif stem == f"d5-{uid}" or stem.startswith(f"d5-{uid}-t"):
             out.append({"ad": "okuma sayfası" + (f" (taslak {stem.rsplit('-t', 1)[1]})" if "-t" in stem[3 + len(uid):]
                                                  else ""), "href": name, "tur": "d5"})
@@ -165,7 +165,7 @@ header.top a { font-size: .85rem; color: var(--muted); }
 </style></head><body><main>
 <header class="top"><h1>Ar-ge Masası</h1><span class="small muted"><span id="ben"></span> · <a href="cikis">çıkış</a></span></header>
 <p class="small muted">Yapay zekâ taslaklarının iç çalışma masası. Buradaki hiçbir taslak tefsir değildir.
-<a href="birim.html">Kur'ân paneli</a> · <a href="deneyler.html">deneyler defteri</a> · <a href="/oku/">okuma platformu</a></p>
+<a href="deneyler.html">deneyler defteri</a> · <a href="/oku/">okuma platformu</a></p>
 <nav class="tabs"><a href="#pano" data-t="pano">Pano</a><a href="#okumalar" data-t="okumalar">Okumalar<span id="nok"></span></a><a href="#birimler" data-t="birimler">Birimler</a></nav>
 <section id="pano"></section><section id="okumalar" hidden></section><section id="birimler" hidden></section>
 <p class="small muted" id="alt"></p>

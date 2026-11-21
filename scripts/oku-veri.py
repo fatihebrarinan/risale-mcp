@@ -7,7 +7,8 @@ PLANLAR S7). Tek veri biçimi, iki görünüm: ikisi de yayın dosyasından (`d1
   yerleri (müellifin sözüyle), müfessirler (Arapça, istek üzerine), künye, işaretler, indirme ve atıf satırı.
   Çıktı `data/interim/oku/` (yeniden üretilir, git'e girmez); sitede `/var/www/ozel/taslak/oku/` (Caddy `/oku/`'yu
   oraya çevirir; D5 sunucusunun kısıtlı anahtarı yalnız taslak klasörüne yazabildiği için).
-- **Ar-ge masası** (`/taslak/birim.html`, yalnız `masa` kapsamı): aynı birim, artı bütün taslaklar, yan yana
+- **Ar-ge masası:** birim sayfası eski âyet masasıdır (`scripts/d1-masa.py`; S7b, kullanıcının kararı 2026-11-21);
+  bu betiğin `masa_data`'sı ona kapı, nisbet ve alarm verir. Önceki `/taslak/birim.html` emekli. Eski not:
   karşılaştırma, kapı ve eleştirmen notları (ham), nisbet hükümleri, alarmlar, eski sayfalar. Çıktı
   `data/interim/oku-masa/` → `/var/www/ozel/taslak/` (`birim.html`, `birim/<birim>.json`).
 
@@ -371,7 +372,7 @@ def build(only: str | None = None) -> list[str]:
     units = P.d5_units()
     (OUT / "veri").mkdir(parents=True, exist_ok=True)
     (OUT / "indir").mkdir(parents=True, exist_ok=True)
-    (OUT_MASA / "birim").mkdir(parents=True, exist_ok=True)
+    OUT_MASA.mkdir(parents=True, exist_ok=True)
     idx_path = OUT / "veri" / "index.json"
     if only and not idx_path.exists():           # ilk kurulum (ör. sunucuda): bütün birimler
         only = None
@@ -389,8 +390,6 @@ def build(only: str | None = None) -> list[str]:
         (OUT / "veri" / f"{uid}.json").write_text(json.dumps(d, ensure_ascii=False), encoding="utf-8")
         (OUT / "indir" / f"bakara-{uid}.txt").write_text(plain(d), encoding="utf-8")
         m = masa_data(uid, d)
-        (OUT_MASA / "birim" / f"{uid}.json").write_text(json.dumps(d | {"masa": m}, ensure_ascii=False),
-                                                        encoding="utf-8")
         rows.append({"id": uid, "ayet": u["ayet"], "tur": "d5" if u["kaynak"] != "isarat" else "isarat",
                      "taslak": bool(d.get("taslak")), "isarat": bool(d.get("isarat")),
                      "surum": (d.get("taslak") or {}).get("surum"), "masa_taslak": len(m["taslaklar"])})
@@ -402,7 +401,6 @@ def build(only: str | None = None) -> list[str]:
              "sureler": [{"n": i + 1, "ad": name, "ayet": len(q["suras"][i]["ayahs"])} for i, name in enumerate(SURA_NAMES)],
              "sure": {"n": 2, "ad": "Bakara"}, "birimler": rows}
     idx_path.write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
-    (OUT_MASA / "birim" / "index.json").write_text(json.dumps(index, ensure_ascii=False), encoding="utf-8")
     # arama dizini: yayımlanan taslakların Türkçe paragrafları ve izahları (platformda konu araması)
     ara = []
     for r in rows:
@@ -425,10 +423,8 @@ def build(only: str | None = None) -> list[str]:
     app = APP.read_text(encoding="utf-8")
     for path, conf in ((OUT / "index.html", {"__MASA__": "false", "__TITLE__": "Kur'ân Taslakları",
                                                "__FONT__": "fonts/naskh.ttf", "__USUL__": "usul.html",
-                                               "__EXTRA__": ' <a href="/taslak/cikis">çıkış</a>'}),
-                       (OUT_MASA / "birim.html", {"__MASA__": "true", "__TITLE__": "Ar-ge Masası · Birim",
-                                                  "__FONT__": "oku/fonts/naskh.ttf", "__USUL__": "oku/usul.html",
-                                                  "__EXTRA__": ' <a href="./">masa</a> <a href="/oku/">platform</a>'})):
+                                               "__EXTRA__": ' <a href="/taslak/cikis">çıkış</a>'}),):
+        # masanın birim görünümü eski âyet masasıdır (d1-masa.py; S7b, kullanıcının kararı 2026-11-21)
         page = app
         for k, v in conf.items():
             page = page.replace(k, v)
@@ -443,7 +439,7 @@ def build(only: str | None = None) -> list[str]:
 
 
 def gonder() -> None:
-    """Siteye: platform `/var/www/ozel/taslak/oku/`, masa `/var/www/ozel/taslak/` (birim.html, birim/)."""
+    """Siteye: platform `/var/www/ozel/taslak/oku/`, D5 birimlerinin masası `/var/www/ozel/taslak/` (`d1-masa.py`)."""
     if SITE_KEY.exists():                    # D5 sunucusu: kısıtlı anahtar, kök taslak klasörü
         ssh, dest_oku, dest_masa = f"ssh -i {SITE_KEY} -o BatchMode=yes", f"{SITE_HOST}:/oku/", f"{SITE_HOST}:/"
         extra = []
@@ -455,7 +451,7 @@ def gonder() -> None:
                         "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/oku"], check=True)
     for src, dest in ((f"{OUT}/", dest_oku), (f"{OUT_MASA}/", dest_masa)):
         subprocess.run(["rsync", "-rtz", "--chmod=D2750,F640", *extra, "-e", ssh, src, dest], check=True)
-    print("https://risalemcp.com/oku/ · https://risalemcp.com/taslak/birim.html")
+    print("https://risalemcp.com/oku/")
 
 
 def main() -> None:

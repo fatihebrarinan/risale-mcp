@@ -7,14 +7,14 @@
 @font-face { font-family: "Naskh"; src: url("__FONT__") format("truetype"); font-display: swap; }
 :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --soft: #f3f1ec;
   --accent: #1f5c3f; --ai: #5a4a8a; --ai-soft: #eeebf7; --bad: #a3271f; --src: #1f4f7a; --src-soft: #e3eef8;
-  --warn-soft: #fdf0dc; --q: #f6f2e8; }
+  --warn-soft: #fdf0dc; --q: #f6f2e8; --tag: #b45309; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --soft: #26251f;
   --accent: #7cc49d; --ai: #b9a8ee; --ai-soft: #2a2540; --bad: #f08a80; --src: #8cc0ef; --src-soft: #18293a;
-  --warn-soft: #3a2a14; --q: #24221c; } }
+  --warn-soft: #3a2a14; --q: #24221c; --tag: #f0a35a; } }
 :root[data-theme="dark"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b;
   --soft: #26251f; --accent: #7cc49d; --ai: #b9a8ee; --ai-soft: #2a2540; --bad: #f08a80; --src: #8cc0ef;
-  --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; }
+  --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; --tag: #f0a35a; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 system-ui, "Noto Sans", sans-serif; }
 a { color: var(--src); }
@@ -25,7 +25,7 @@ header a, header button { font-size: .85rem; }
 button { font: inherit; background: none; border: 1px solid var(--line); border-radius: 6px; color: inherit;
   padding: 2px 8px; cursor: pointer; }
 button.on { background: var(--soft); border-color: var(--accent); }
-.wrap { display: flex; max-width: 1180px; margin: 0 auto; }
+.wrap { display: flex; }
 aside { width: 230px; flex: none; border-right: 1px solid var(--line); padding: 12px; height: calc(100vh - 45px);
   position: sticky; top: 45px; overflow-y: auto; font-size: .9rem; }
 aside input { width: 100%; padding: 5px 8px; font: inherit; border: 1px solid var(--line); border-radius: 6px;
@@ -37,10 +37,16 @@ aside li a { display: block; padding: 2px 6px; border-radius: 5px; text-decorati
 aside li a.cur { background: var(--soft); font-weight: 600; }
 aside li a.off { color: var(--muted); }
 .dot { display: inline-block; width: 1.1em; color: var(--accent); }
-main { flex: 1; min-width: 0; padding: 12px 16px 80px; max-width: 860px; }
-#menu { display: none; }
-@media (max-width: 760px) { aside { display: none; position: fixed; left: 0; top: 45px; z-index: 4; background: var(--bg);
-  width: 85vw; box-shadow: 2px 0 12px rgba(0,0,0,.15); } aside.open { display: block; } #menu { display: inline-block; } }
+main { flex: 1; min-width: 0; padding: 12px 24px 80px; }
+/* platform: metin sütunu ölçülü (uzun satır zor okunur), sağda yan sütun; masa ve "geniş" kipte ekranın tamamı */
+body:not(.masa):not(.wide) main { max-width: 860px; }
+#side { display: none; flex: 1; min-width: 300px; max-width: 560px; border-left: 1px solid var(--line); padding: 12px 16px;
+  height: calc(100vh - 45px); position: sticky; top: 45px; overflow-y: auto; font-size: .9rem; }
+@media (min-width: 1200px) { body:not(.masa):not(.wide) #side { display: block; } }
+body.nopanel aside#panel { display: none; }
+@media (max-width: 760px) { aside#panel { display: none; position: fixed; left: 0; top: 45px; z-index: 4; background: var(--bg);
+  width: 85vw; box-shadow: 2px 0 12px rgba(0,0,0,.15); } body.panelopen aside#panel { display: block; }
+  main { padding: 12px 16px 80px; } }
 h1 { font-size: 1.2rem; margin: 8px 0; } h2 { font-size: 1.05rem; margin: 26px 0 8px; color: var(--accent); }
 h3 { font-size: .95rem; margin: 18px 0 6px; }
 .muted { color: var(--muted); } .small { font-size: .82rem; }
@@ -61,8 +67,12 @@ h3 { font-size: .95rem; margin: 18px 0 6px; }
 .izah { background: var(--ai-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0; font-size: .93rem; }
 .acts { font-size: .75rem; color: var(--muted); } .acts a { color: var(--muted); margin-right: 10px; cursor: pointer; }
 a.n { color: var(--src); font-size: .72em; vertical-align: super; text-decoration: none; cursor: pointer; }
+.mk { color: var(--src); font-size: .86em; white-space: nowrap; }
+.mk a.n { font-size: 1em; vertical-align: baseline; text-decoration: underline dotted; }
+.tg { color: var(--tag); font-size: .86em; }
+a.n.cur { background: var(--src-soft); border-radius: 3px; }
 mark { background: var(--warn-soft); color: inherit; }
-.srcbox { background: var(--src-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0; font-size: .88rem; }
+.srcbox { background: var(--src-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0; font-size: .88rem; overflow-wrap: anywhere; }
 .flag { background: var(--warn-soft); border-radius: 6px; padding: 3px 8px; font-size: .8rem; margin: 4px 0; }
 .box { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 8px 14px; margin: 10px 0; }
 details { margin: 8px 0; } details > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
@@ -79,9 +89,10 @@ table.t { width: 100%; border-collapse: collapse; font-size: .85rem; } table.t t
   padding: 4px 6px; vertical-align: top; }
 .ok { color: var(--accent); } .bad { color: var(--bad); }
 </style></head><body>
-<header><button id="menu" aria-label="Kur'ân paneli">☰</button><span class="t" id="ttl"></span>
+<header><button id="menu" aria-label="Kur'ân paneli" title="Kur'ân panelini aç/kapa">☰</button><span class="t" id="ttl"></span>
+<button id="genis" title="Metni ekranın tamamına yay" hidden>↔ geniş</button>
 <a href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
-<div class="wrap"><aside id="panel"></aside><main id="main"></main></div>
+<div class="wrap"><aside id="panel"></aside><main id="main"></main><aside id="side"><p class="small muted">Bir atfın numarasına tıklayınca kaynağın metni burada açılır.</p></aside></div>
 <script>
 const MASA = __MASA__;
 const DATA = MASA ? 'birim/' : 'veri/', TDATA = MASA ? 'oku/veri/' : 'veri/', API = '/taslak/api/';
@@ -122,20 +133,46 @@ function panel(cur) {
   $('ara').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.value.trim().length >= 3) location.hash = '#/~ara/' + encodeURIComponent(e.target.value.trim()); });
   const c = document.querySelector('aside a.cur'); if (c) c.scrollIntoView({block: 'nearest'});
 }
-$('menu').onclick = () => $('panel').classList.toggle('open');
+// panel: telefonda üstte açılır, bilgisayarda yer kaplar; ikisinde de açılıp kapanır, bilgisayardaki durum hatırlanır
+const narrow = () => matchMedia('(max-width: 760px)').matches;
+if (MASA) document.body.classList.add('masa');
+if (store.get('oku-panel') === 'kapali') document.body.classList.add('nopanel');
+if (store.get('oku-genis') === '1') document.body.classList.add('wide');
+$('genis').hidden = MASA;
+$('genis').classList.toggle('on', document.body.classList.contains('wide'));
+$('menu').onclick = () => {
+  if (narrow()) { document.body.classList.toggle('panelopen'); return; }
+  const off = document.body.classList.toggle('nopanel');
+  store.set('oku-panel', off ? 'kapali' : 'acik');
+};
+$('genis').onclick = () => {
+  const on = document.body.classList.toggle('wide');
+  $('genis').classList.toggle('on', on);
+  store.set('oku-genis', on ? '1' : '0');
+};
 
 // ---------------------------------------------------------------- metin
 const AR = '\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF';
 const AR_RUN = new RegExp(`[${AR}](?:[${AR}\\s]*[${AR}])?`, 'g');
 const bidi = h => h.replace(AR_RUN, '<bdi>$&</bdi>');
-function marks(t, srcs, pid) {
-  const h = bidi(esc(t)).replace(/\[(\d+)\]/g, (m, k) => srcs && srcs[k] ? `<a class="n" data-k="${k}" data-p="${esc(pid)}">[${k}]</a>` : m);
+// köşeli işaretler: içinde numara olan kaynaklıdır (mavi, numaraları tıklanır: "[35]", "[dil; 35]", "[belâgat; 8, …]"),
+// numarasız olan taslağın kendi etiketidir (turuncu: "[belâgat; istinbat]"). Kaynak kümesi taslak başınadır (SRC).
+const SRC = {};
+function marks(t, srcs, pid, set = 'y') {
+  if (srcs) SRC[set] = srcs;
+  const h = bidi(esc(t)).replace(/\[([^\]\n]{1,120})\]/g, (m, inner) => {
+    if (!/\d/.test(inner)) return `<span class="tg">[${inner}]</span>`;
+    const lin = inner.replace(/(^|[^\w\u00C0-\u024F])(\d+)(?![\w])/g, (x, pre, k) =>
+      srcs && srcs[k] ? `${pre}<a class="n" data-k="${k}" data-p="${esc(pid)}" data-s="${esc(set)}">${k}</a>` : x);
+    return `<span class="mk">[${lin}]</span>`;
+  });
   // taslağın içindeki alıntı satırları ("> …") alıntı olarak görünür; Türkçe içindeki Arapça yalıtılır (parantez dönmesin)
   return h.split('\n').map(l => l.startsWith('&gt; ') ? `<span class="qline">${l.slice(5)}</span>` : l).join('<br>').replace(/<br>(<span class="qline">)/g, '$1').replace(/(<\/span>)<br>/g, '$1');
 }
-function srcBox(k) {
-  const s = U.taslak.kaynaklar[k];
+function srcBox(k, set = 'y') {
+  let s = (SRC[set] || {})[k];
   if (!s) return '';
+  if (typeof s === 'string') s = {satir: s};               // masadaki eski taslakların kaynakçası yalnız satırdır
   const name = s.kaynak && s.kaynak.ad ? (s.kaynak.bag ? `<a href="${esc(s.kaynak.bag)}" target="_blank" rel="noopener">${esc(s.kaynak.ad)}</a>` : esc(s.kaynak.ad)) : '';
   const ar = /[؀-ۿ]/.test(s.metin || '') && !/[a-zçğışöü]{4}/i.test((s.metin || '').slice(0, 80));
   return `<div class="srcbox"><b>[${k}]</b> ${esc(s.satir)}`
@@ -147,10 +184,18 @@ document.addEventListener('click', e => {
   if (!a) return;
   e.preventDefault();
   const holder = a.closest('.blk');
-  const id = 'src-' + a.dataset.p + '-' + a.dataset.k;
+  const side = $('side');
+  if (side && getComputedStyle(side).display !== 'none') {    // platform, geniş ekran: yan sütunda
+    const blk = a.closest('.blk');
+    side.innerHTML = srcBox(a.dataset.k, a.dataset.s) + (blk ? `<p class="small"><a href="#/${esc(U.birim)}/${esc(blk.id)}">↑ paragrafa dön</a></p>` : '');
+    for (const x of document.querySelectorAll('a.n.cur')) x.classList.remove('cur');
+    a.classList.add('cur');
+    return;
+  }
+  const id = 'src-' + a.dataset.s + '-' + a.dataset.p + '-' + a.dataset.k;
   const ex = document.getElementById(id);
   if (ex) { ex.remove(); return; }
-  holder.insertAdjacentHTML('beforeend', `<div id="${esc(id)}">${srcBox(a.dataset.k)}</div>`);
+  holder.insertAdjacentHTML('beforeend', `<div id="${esc(id)}">${srcBox(a.dataset.k, a.dataset.s)}</div>`);
 });
 
 const KIND_LAB = {tercume: 'Yapay zekâ tercümesi', alinti_tercume: 'Yapay zekâ tercümesi (alıntının)',
@@ -172,7 +217,7 @@ function draftHTML(t) {
   for (const b of visible) {
     const h = head[b.id];
     if (h) cur = h.startsWith('Ders') ? h : null;
-    if (cur && !wide[cur]) for (const k of (b.metin.match(/\[(\d+)\]/g) || []).map(x => x.slice(1, -1))) {
+    if (cur && !wide[cur]) for (const k of (b.metin.match(/\[[^\]\n]*\]/g) || []).flatMap(x => x.match(/\d+/g) || [])) {
       const s = t.kaynaklar[k];
       if (s && s.sunucu === 'risale' && s.kaynak && s.kaynak.bag) { wide[cur] = s; break; }
     }
@@ -533,7 +578,7 @@ async function route() {
   panel(uid);
   render(focus);
   store.set('oku-son', '#/' + uid);
-  $('panel').classList.remove('open');
+  document.body.classList.remove('panelopen');
 }
 addEventListener('hashchange', route);
 (async () => {

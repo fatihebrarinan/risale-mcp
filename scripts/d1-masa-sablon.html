@@ -64,6 +64,20 @@ body.sel .hint { display: none; }
 .meal i { font-size: .75rem; }
 .hint { text-align: center; font-size: .82rem; color: var(--muted); margin: 6px 0 0; }
 
+#wrap { display: flex; align-items: flex-start; }
+#kpanel { width: 210px; flex: none; position: sticky; top: var(--head-h, 52px); height: calc(100vh - var(--head-h, 52px));
+          overflow-y: auto; border-right: 1px solid var(--line); padding: 10px; font-size: .85rem; background: var(--bg); }
+#kpanel input { width: 100%; box-sizing: border-box; }
+#kpanel ul { list-style: none; padding: 0; margin: 6px 0; }
+#kpanel li a { display: block; padding: 1px 6px; border-radius: 5px; text-decoration: none; color: var(--fg); }
+#kpanel li a.cur { background: var(--accent-soft); font-weight: 600; }
+#kpanel .kd5 { color: var(--muted); font-size: .72rem; }
+body.nokpanel #kpanel { display: none; }
+#mainc { flex: 1; min-width: 0; }
+@media (max-width: 900px) { #kpanel { position: fixed; z-index: 6; left: 0; width: 80vw; box-shadow: 2px 0 12px rgba(0,0,0,.2); }
+  body:not(.kopen) #kpanel { display: none; } }
+.kn { border-left: 3px solid var(--line); padding: 4px 8px; margin: 0 0 8px; background: var(--card); border-radius: 0 6px 6px 0; font-size: .86rem; }
+.kn.ok { border-left-color: var(--accent); } .kn.bad { border-left-color: var(--bad); } .kn.part { border-left-color: var(--warn); }
 #panes { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); }
 .pane { position: sticky; top: var(--head-h, 52px); height: calc(100vh - var(--head-h, 52px)); overflow: auto;
         padding: 0 14px 60px; border-right: 1px solid var(--line); min-width: 0; }
@@ -191,9 +205,10 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
 </style></head>
 <body>
 <header id="hdr">
-  <h1>Âyet masası</h1>
+  <button class="btn" id="kbtn" title="Kur'ân panelini aç/kapa">☰</button>
+  <h1><a href="./" style="color:inherit;text-decoration:none" title="Masanın girişi">Âyet masası</a></h1>
   <label>Âyet <select id="unit"></select></label>
-  <button class="btn" id="addpane" title="Bir yan daha aç (en çok 4)">+ yan ekle</button>
+  <button class="btn" id="addpane" title="Bir yan daha aç (en çok 6)">+ yan ekle</button>
   <label title="Taslakların adını ve nasıl yazıldığını gizler"><input type="checkbox" id="blind"> kör kip</label>
   <label>Dil <span class="seg" id="lang"><button data-v="tr">Türkçe</button><button data-v="ar">Arapça</button></span></label>
   <label id="readerw">Okuyucu <input id="reader" size="10" placeholder="adınız"></label>
@@ -206,8 +221,10 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
   <a class="btn" id="logout" href="/taslak/cikis" hidden style="text-decoration:none;color:var(--fg)">Çıkış</a>
   <span class="msg" id="msg"></span>
 </header>
+<div id="wrap"><aside id="kpanel"></aside><div id="mainc">
 <section id="ayah"></section>
 <div id="panes"></div>
+</div></div>
 <script>
 const DATA = {data};
 const $ = s => document.querySelector(s);
@@ -223,7 +240,7 @@ let bkMarks = store.get('d1-bilirkisi', {});    // "birim|kısım|madde"
 let abMarks = store.get('d1-masa-ab', {});      // D12.5: "birim|tur|yer" -> {secim: taslak|esit|emin_degilim, harf, gerekce, acildi}
 const U = DATA.unit, Y = DATA.yz;
 const DKEYS = Object.keys(DATA.drafts);
-const MAXP = 4;                                  // en çok yan (S6: masaüstünde 3, genişte 4)
+const MAXP = 6;                                  // en çok yan (S6: 4; S7b, 2026-11-21: geniş ekranda 6)
 const st = Object.assign({loc: null, lang: 'tr', blind: false, onlySample: false}, store.get('d1-masa', {}));
 st.focus = null; st.dfocus = null; st.srcbox = null; st.draft = DKEYS[0];   // st.draft: kartlar çizilirken o yanın taslağı
 const CHIP = Object.fromEntries(DATA.chips.map(c => [c.id, c]));
@@ -339,7 +356,7 @@ function inline(text, dk, lang) {
   const src = DATA.drafts[dk].sources;
   return s.replace(/\[([^\]\n]{1,80})\]/g, (m, inner) => {
     const nums = inner.match(/\b\d+\b/g) || [];
-    if (!nums.length) return m;
+    if (!nums.length) return `<span class="mk own" title="taslağın kendi etiketi (kaynağı yok)">[${inner}]</span>`;
     const own = inner.includes('kendi tespiti') ? ' own' : '';
     const title = nums.map(n => `[${n}] ${src[n] ? src[n].c : ''}`).join(' | ');
     return `<span class="mk${own}" data-src="${nums[0]}" data-draft="${dk}" title="${esc(title)}">[${inner}]</span>`;
@@ -864,16 +881,75 @@ function layerCount(dk, k) {
 }
 function paneHead(i, p) {
   const opt = (v, l) => `<option value="${v}"${(p.k === 'draft' ? 'd:' + p.d : p.k) === v ? ' selected' : ''}>${l}</option>`;
-  const opts = opt('src', 'Kaynaklar') + opt('isarat', "İşârât'ın metni") +
+  const M = DATA.masa || {};
+  const opts = opt('src', 'Kaynaklar') + (Object.keys(DATA.isarat || {}).length ? opt('isarat', "İşârât'ın metni") : '') +
+    ((M.kapi || []).length ? opt('kapi', 'Kalite kapısı (notlar ve cevaplar)') : '') +
+    ((M.nisbet || []).length ? opt('nisbet', 'Nisbet denetçisi') : '') + opt('notlar', 'Okuyucu notları') +
     `<optgroup label="Yapay zekâ taslakları">${draftOrder().map(dk => opt('d:' + dk, esc(draftLabel(dk)) + (draftAbout(dk) ? ' · ' + esc(draftAbout(dk)) : ''))).join('')}</optgroup>`;
-  const tag = p.k === 'draft' ? '<span class="tag ai">yapay zekâ taslağı, tefsir değildir</span>' : '<span class="tag src">kaynakların metni</span>';
+  const tag = p.k === 'draft' ? '<span class="tag ai">yapay zekâ taslağı, tefsir değildir</span>'
+    : ['kapi', 'nisbet'].includes(p.k) ? '<span class="tag ai">yapay zekâ denetçileri, ham</span>'
+    : p.k === 'notlar' ? '<span class="tag g">okuyucular</span>' : '<span class="tag src">kaynakların metni</span>';
   const lay = p.k === 'draft' ? `<span class="layers">${LAYERS.map(([k, l]) =>
     `<label class="small"><input type="checkbox" data-layer="${k}" ${p.L[k] ? 'checked' : ''}> ${l} <span class="muted">${layerCount(p.d, k)}</span></label>`).join('')}</span>` : '';
   return `<div class="ph"><select data-panekind title="Bu yanda ne dursun">${opts}</select>${tag}
     ${st.loc ? `<span class="where">${locName(st.loc)}</span>` : ''}<span class="spacer"></span>
     ${panes.length > 1 ? '<button class="btn x" data-closepane title="Bu yanı kapat">✕</button>' : ''}${lay}</div>`;
 }
+// --- S7b yanları: kalite kapısı, nisbet, okuyucu notları; seçilen yere süzülür (yer seçilmemişse hepsi)
+const atAll = x => !st.loc || at(x);
+const KDUR = {'karşılandı': 'ok', 'kısmen': 'part', 'reddedildi': 'bad', 'anılmadı': ''};
+function kapiPane() {
+  const K = (DATA.masa || {}).kapi || [];
+  const L = ['<p class="small muted">Kapının notları (kapalı eleştirmen, nisbet denetçisi, biçim) ve yazarın her nota cevabı. "kısmen": karşılandı, bir kısmı gerekçesiyle reddedildi.</p>'];
+  for (const k of K) {
+    const ns = k.notlar.filter(atAll);
+    const lab = {kapi: 'Kalite kapısı', kapi2: 'İkinci tur', okuyucu: 'Okuyucu notlarıyla düzeltme'}[k.tur] || k.tur;
+    L.push(`<h3>${lab} <span class="muted">${esc(k.surum || '')} · ${esc(draftLabel('taslak-' + k.taslak))} → ${esc(draftLabel('taslak-' + k.yeni))} · ${ns.length}/${k.notlar.length} not</span></h3>`);
+    for (const x of ns)
+      L.push(`<div class="kn ${KDUR[x.durum] || ''}"><b>${esc(x.no)}</b> <span class="tag g">${esc(x.kaynak || '')}</span> <span class="tag g">${esc(x.tur || '')}</span> <span class="small muted">${esc(x.capa || '')}</span>`
+        + (x.alinti ? `<div class="small"><i>«${trEsc(x.alinti)}»</i></div>` : '') + `<div class="serif">${trEsc(x.metin || '')}</div>`
+        + (x.oneri ? `<div class="small muted">Öneri: ${trEsc(x.oneri)}</div>` : '')
+        + `<div class="small"><b>${esc(x.durum)}</b>${x.nasil ? ': ' + esc(x.nasil.join(', ')) : ''}</div>`
+        + (x.gerekce ? `<div class="small" style="color:var(--bad)">Ret gerekçesi: ${trEsc(x.gerekce)}</div>` : '') + '</div>');
+  }
+  if ((DATA.masa || {}).alarmlar && DATA.masa.alarmlar.length) L.push(`<p class="kn bad">⚠ Alarm: ${esc(DATA.masa.alarmlar.join('; '))}</p>`);
+  return L.join('');
+}
+const HKM = {dogru: 'doğru', asiyor: 'kaynağın sözünü aşıyor', kaynakta_yok: 'kaynakta yok', nisbet_yok: 'nisbet yok (istinbat)', nakil: 'nakil'};
+function nisbetPane() {
+  const L = ['<p class="small muted">Nisbet denetçisi: taslağın kaynağa dayandırdığı her söz kaynakta var mı. "doğru" olanlar gizli.</p>'];
+  for (const k of (DATA.masa || {}).nisbet || []) {
+    const c = {}; k.hukumler.forEach(h => c[h.hukum] = (c[h.hukum] || 0) + 1);
+    const ns = k.hukumler.filter(h => h.hukum !== 'dogru' && atAll(h));
+    L.push(`<h3>${esc(draftLabel('taslak-' + k.taslak))} <span class="muted">${Object.entries(c).map(([a, b]) => esc(HKM[a] || a) + ' ' + b).join(' · ')}</span></h3>`);
+    for (const h of ns)
+      L.push(`<div class="kn ${h.hukum === 'nisbet_yok' || h.hukum === 'nakil' ? 'part' : 'bad'}"><b>[${esc(h.kaynak)}]</b> <span class="tag g">${esc(HKM[h.hukum] || h.hukum)}</span>`
+        + (h.taslak_alinti ? `<div class="small"><i>«${trEsc(h.taslak_alinti)}»</i></div>` : '') + `<div class="serif small">${trEsc(h.gerekce || '')}</div></div>`);
+  }
+  return L.join('');
+}
+let NOTES = null;
+function notlarPane() {
+  if (NOTES === null) {
+    NOTES = [];
+    fetch('/taslak/api/notlar/' + encodeURIComponent(U), {credentials: 'same-origin', cache: 'no-store'})
+      .then(r => r.ok ? r.json() : {notlar: []}).then(j => { NOTES = j.notlar || []; renderPanes(); }).catch(() => {});
+    return '<p class="empty">Notlar yükleniyor…</p>';
+  }
+  const Yy = (DATA.masa || {}).yayin, h = Yy && DATA.drafts[Yy.taslak] ? DATA.drafts[Yy.taslak].heads : {};
+  const locOf = n => (Yy && n.paragraf && Yy.capa[n.paragraf] && h[Yy.capa[n.paragraf]]) || ['L:genel'];
+  const ns = NOTES.filter(n => atAll({loc: locOf(n)}));
+  const how = `<p class="small muted">Okuma platformundaki okuyucu notları (sürüme ve paragrafa bağlı). Notlarla düzeltme elle: <code>uv run python scripts/d1-birim.py notlarla ${esc(U)}</code>.</p>`;
+  if (!ns.length) return how + '<p class="empty">Bu yerde okuyucu notu yok.</p>';
+  const ST = {acik: 'açık', islendi: 'işlendi', kapandi: 'kapandı'};
+  return how + ns.map(n => `<div class="kn ${n.durum === 'islendi' ? 'ok' : n.durum === 'kapandi' ? '' : 'part'}"><span class="tag g">${esc(n.tur)}</span> <span class="tag g">${esc(ST[n.durum] || n.durum)}</span>
+    <span class="small muted">okuyucu ${esc(n.okuyucu_no)} · sürüm ${esc(n.surum)} · ${Yy && Yy.capa[n.paragraf] ? esc(Yy.capa[n.paragraf]) : esc(n.paragraf || '')}</span>
+    ${n.secici && n.secici.exact ? `<div class="small"><i>«${trEsc(n.secici.exact)}»</i></div>` : ''}<div class="serif">${trEsc(n.metin)}</div></div>`).join('');
+}
 function paneBody(p) {
+  if (p.k === 'kapi') return kapiPane();
+  if (p.k === 'nisbet') return nisbetPane();
+  if (p.k === 'notlar') return notlarPane();
   if (!st.loc) return p.k === 'draft' ? `<p class="empty">Önce âyetten bir yer seçin.</p>` : welcome() + CREDITS;
   if (p.k === 'src') return srcBoxHtml() + isaratHtml() + tefsirHtml() + klasikHtml() + risaleHtml() + CREDITS;
   if (p.k === 'isarat') return isaratHtml();
@@ -897,7 +973,31 @@ function progress() {
   const nz = (Y.systemic || []).filter(z => (yzSuz[`${U}|sistemli|${z.id}`] || {}).v).length;
   $('#progress').textContent = `İşaretler: örneklem ${ns}/${(Y.sample || []).length} · karşılaştırma ${n1} · eleştiri örneklemi ${nc}/${(Y.critic_sample || []).length} · başlık ${nz}/${(Y.systemic || []).length} · eleştiri ${n2} · bilirkişi ${n3}/${bkAll().length}`;
 }
+// --- Kur'ân paneli (S7b): birimler Bakara sırasıyla, âyete git; açılıp kapanır, durum hatırlanır
+let UNITS = DATA.units || [];
+fetch('masa-birimler.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(j => { if (j && j.length) { UNITS = j; kpanel(); } }).catch(() => {});
+function kpanel() {
+  const us = UNITS;
+  const ay = u => u.ayah ? (u.ayah[0] === u.ayah[1] ? u.ayah[0] : u.ayah[0] + '–' + u.ayah[1]) : '';
+  $('#kpanel').innerHTML = `<input id="kgit" placeholder="Âyete git: 2:30" autocomplete="off">
+    <p class="small muted" style="margin:6px 0 2px">Bakara · masası kurulan birimler</p><ul>`
+    + us.map(u => `<li><a href="${esc(u.unit)}.html" class="${u.unit === U ? 'cur' : ''}">${esc(u.title)}${u.d5 ? ' <span class="kd5">D5</span>' : ''}</a></li>`).join('')
+    + `</ul><p class="small"><a href="./">masanın girişi</a> · <a href="/oku/">okuma platformu</a></p>`;
+  const cur = $('#kpanel a.cur'); if (cur) cur.scrollIntoView({block: 'nearest'});
+  $('#kgit').onkeydown = e => {
+    if (e.key !== 'Enter') return;
+    const m = e.target.value.trim().match(/^(?:(\d+)\s*[:.\/ ]\s*)?(\d+)$/); if (!m) return;
+    const a = +m[2], x = us.find(u => u.ayah && u.ayah[0] <= a && a <= u.ayah[1]);
+    if (x) location.href = x.unit + '.html'; else say('Bu âyetin masası yok.');
+  };
+}
+if (store.get('d1-masa-kpanel', 'acik') === 'kapali') document.body.classList.add('nokpanel');
+$('#kbtn').onclick = () => {
+  if (matchMedia('(max-width: 900px)').matches) { document.body.classList.toggle('kopen'); return; }
+  store.set('d1-masa-kpanel', document.body.classList.toggle('nokpanel') ? 'kapali' : 'acik');
+};
 function render() {
+  kpanel();
   const turl = (DATA.turlar || []).slice(0, 6).map((t, i) => `<a class="btn" style="text-decoration:none;color:var(--fg)${i ? '' : ';font-weight:600'}" href="${esc(t.sayfa)}">Tur okuması: ${esc(t.birim)} · ${esc(t.ad)}</a>`).join(' ');
   $('#farklar').innerHTML = turl + ' ' + (DATA.fark || []).map(f => { const m = f.match(/-(\d+)-(\d+)\.html$/), t = f.match(/-(T\d+)\.html$/);
     const lab = t ? `tur ${t[1]} (kör A/B)` : m ? `taslak ${m[1]} ile ${m[2]}` : f;   // D12.5 turunun fark sayfası
