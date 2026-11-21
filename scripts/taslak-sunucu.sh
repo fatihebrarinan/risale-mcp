@@ -13,7 +13,7 @@
 #   scripts/taslak-sunucu.sh calistir <komut …>   # sunucuda, taslak kullanıcısıyla, depo kökünde (ör. scripts/d1-arka.sh liste)
 #   scripts/taslak-sunucu.sh durum      # kuyruk, birimler, bellek, disk, d1 işleri
 #   scripts/taslak-sunucu.sh kuyruk-kur # D5 kuyruğu kalıcı hizmet (bir kez)
-#   scripts/taslak-sunucu.sh devam      # kuyruğu başlat ya da sürdür
+#   scripts/taslak-sunucu.sh devam [b]  # kuyruğu başlat ya da sürdür (birim verilirse o birim bitince durur)
 #   scripts/taslak-sunucu.sh dur        # sürmekte olan birim bitince dur
 #   scripts/taslak-sunucu.sh hemen-dur  # hemen kes (devamda yarım birim kaldığı adımdan sürer)
 #
@@ -125,8 +125,8 @@ EOT
 XDG_RUNTIME_DIR=/run/user/\$(id -u) systemctl --user daemon-reload && echo hizmet kuruldu"
     ;;
 devam)
-    # durdurma işaretini kaldır, kuyruğu başlat (açılışta da başlasın)
-    as_u "rm -f ~/.d5-dur; export XDG_RUNTIME_DIR=/run/user/\$(id -u); systemctl --user reset-failed d1-kuyruk 2>/dev/null; systemctl --user enable --now d1-kuyruk && echo 'kuyruk sürüyor'"
+    # durdurma işaretini kaldır, kuyruğu başlat (açılışta da başlasın); `devam 40`: 40 bitince durur
+    as_u "rm -f ~/.d5-dur ~/.d5-son; ${2:+echo $2 > ~/.d5-son; }export XDG_RUNTIME_DIR=/run/user/\$(id -u); systemctl --user reset-failed d1-kuyruk 2>/dev/null; systemctl --user enable --now d1-kuyruk && echo 'kuyruk sürüyor'"
     ;;
 dur)
     # sürmekte olan birim bitince durur (yarım iş bırakmaz)

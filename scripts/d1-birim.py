@@ -347,6 +347,7 @@ def bildir(baslik: str, metin: str) -> None:
 
 
 STOP = Path.home() / ".d5-dur"                     # `taslak-sunucu.sh dur`: birim bitince dur
+SON = Path.home() / ".d5-son"                      # `taslak-sunucu.sh devam <birim>`: o birim bitince dur
 STAGING = Path.home() / "kod-bekleyen"              # `taslak-sunucu.sh gonder` kuyruk sürerken kodu buraya koyar
 HAFTA_ESIK = 0.90                                   # kullanıcının eşiği (2026-11-21): haftalık pencere %90
 
@@ -418,6 +419,13 @@ def kuyruk(kadar: int | None, tavan: float | None) -> None:
         uid = next((u["id"] for u in units if not (P.d5_state()["birimler"].get(u["id"]) or {}).get("bitti")), None)
         if uid is None:
             bildir("D5 kuyruğu bitti", f"Bakara'nın {len(units)} birimi yazıldı")
+            return
+        son = SON.read_text().strip() if SON.exists() else ""
+        if son and son in [u["id"] for u in units] and \
+                [u["id"] for u in units].index(uid) > [u["id"] for u in units].index(son):
+            SON.unlink()
+            bildir("D5 durdu: istenen birime gelindi", f"{son} bitti; sıradaki {uid}. Sürdürmek: devam")
+            print(f"{son} bitti, istenen yer: durdu (sıradaki {uid})")
             return
         if STOP.exists():
             bildir("D5 durdu", f"isteğinizle; sıradaki {uid}. Sürdürmek: devam")
