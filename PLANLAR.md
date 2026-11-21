@@ -324,6 +324,31 @@ bekliyor, yeri gelince: D15 sürerken yan iş açılmaz). İki ayrı şey:
   sütunu, Kur'ân paneli açılıp kapanır, renkler (kaynak mavi, etiket turuncu), `[dil; 35]` atıfları tıklanır; masanın
   birim sayfası eski âyet masası, genişletilmiş (Kur'ân paneli, 6 yan, kapı/nisbet/not yanları lafız süzgeciyle).
   **Konuşulacak (kullanıcı):** masanın kolaylıklarından hangileri okuma platformuna taşınacak.
+  **S7c. Âyet masasının sadeleşmesi ve kaynakların Türkçesi** (kullanıcının kararları, 2026-11-21; kullanıcı "eski
+  masa iyi, ama etraf çok dağınık ve çalışması zor" dedi). Sıra:
+  - **S7c.1 Sadeleşme:** kör kip kalkar (kör okuma görevli sayfalarda, taraflar sunucuda; kör okuması süren birimin
+    masasında yalnız üstte uyarı "bu birimin kör okuması sürüyor"); üstteki tur ve fark okuması bağlantıları kalkar
+    (Pano › Okumalar ve Birimler sekmesinde var; birimin kendi okumaları Kur'ân panelinde birimin altında küçük
+    bağlantı); D7–D9'un işaretleme araçları **tamamen kalkar** (işaret sayacı, okuyucu adı, dışa ve içe aktarma,
+    örneklem, sistemli başlık ve bilirkişi işaretleme listeleri, işaret düğmeleri; kullanıcının kararı); üst satır:
+    ☰ · birim · + yan · Dil.
+  - **S7c.2 Yan içinde içindekiler ağacı** (seçicinin yerine; açılır kapanır): Kaynaklar › İşârât · Tefsirler (13
+    müfessirin adı) · Klasik eserler · Risale-i Nur'daki yerler; Taslaklar › her taslak (sürümüyle); Model
+    eleştirileri › kapalı eleştirmen · açık eleştirmen · İşârât karşılaştırması; Nisbet denetçisi; Kalite kapısı;
+    Okuyucu notları. Yaprağa tıklayınca yan onu gösterir (ör. Râzî, Beyzâvî ve bir taslak üç yanda yan yana); lafız
+    seçiliyse dallarda o lafza düşen sayı; uzun içerikte bölüm atlama (Mukaddime, vecihler, Dersler).
+  - **S7c.3 Lafız düğmelerinin sayısı:** D5 birimlerinde (İşârât yok) İşârât'ın nükte sayısı yerine taslak paragrafı
+    ve not sayısı.
+  - **S7c.4 İşârât'ta Arapça–Türkçe eşlemesi: önce sınama** (kullanıcının şartı: cümle düzeyinde mümkün olmayabilir).
+    Birkaç birimde (ör. 13, 28, 30) Arapça cümlelerle Abdülmecid tercümesinin cümlelerini eşlemeyi dene: önce program
+    (âyet ve Arapça alıntılar iki metinde ortak çapa; aradaki cümleler sıra ve uzunlukla), gerekirse model; sonuç
+    örneklemle kullanıcıya: cümle düzeyinde tutuyor mu, yoksa paragraf ya da bölüm düzeyinde mi kalmalı. Karar ondan
+    sonra; tutarsa eşleme kalıcı veri, masada ve platformda Türkçe dilde İşârât kaynağı Abdülmecid tercümesiyle.
+  - **S7c.5 Taslağın andığı tefsir ve klasik yerlerin tercümesi:** birim kurulurken taslağın atıf yaptığı cümleler
+    (birimde ≈30–50 kısa parça) hafif modelle, "Yapay zekâ tercümesi" damgalı, alıntının altında ayrı; lisans satırı
+    (OpenITI, CC BY-NC-SA 4.0: türetilmiş eser, ticari değil, aynı lisans). Dil Türkçe iken kaynak kutusunda Türkçesi
+    önde. Kaynaklar yanındaki bütün tefsir birimlerinin tercümesi **sonraya** (kota D5 ile ortak; istenirse birim
+    başına düğmeyle sıraya).
   **Kalan:** canlıda girişle bir bakış (kullanıcı); davetli hesapları `scripts/sunucu.sh taslak add-user <e-posta>
   --generate --oku` (kullanıcının işi); D5 kuyruğu başlayınca platformun sunucudan ilk kurulumu (bütün birimler,
   kendiliğinden).
