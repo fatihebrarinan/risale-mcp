@@ -345,6 +345,190 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**D5'in plan metni** (bitti, 2026-11-21, kullanıcının kararı: "sistem artık tamamen kuruldu, arka planda sunucuda
+Bakara sûresi yazılmaya devam ediyor"; `PLANLAR.md` "Sıradaki"nden değiştirilmeden taşındı; D5.2 ve maliyet raporu
+"Sonra" › "D5'ten kalanlar"a, istem adayı "Fikirler"e geçti).
+
+**D5. Asıl iş: Bakara 34–286** (eski D1.8; 2026-11-20, kullanıcının kararı: D5 yalnız Bakara, Kur'ân'ın geri kalanı "Sonra"da). Tek adım değil, küçük adımlar; D15'ten çıkan hatla (2026-11-17).
+- **D5.0 Üretim hazırlığı** (D11'in kalanı, kullanıcının kararları 2026-11-17 ve 2026-11-18; 2026-11-19'da alt adımlara
+  bölündü, kullanıcının kararı: eski "D5.0 (n)" göndermeleri D5.0.n diye okunur). **D5'te birim başına insan onayı
+  yoktur** (kullanıcı, 2026-11-19: bütün Kur'ân'ın taslağı birinin onayına sunulmak için değil, okunmak için): kalite
+  makineden gelir.
+  **D5'te okuma** (kullanıcının kararı, 2026-11-21: "D5 ve S7'nin ortak amacı taslakları insanlarla buluşturmak …
+  okumalar ar-ge için taslağı geliştirmek için yok muydu?"): okumalar yalnız ar-ge içindir (hattı geliştirmek, bir
+  sürümü sınamak), onay değildir. Bu yüzden (1) kuyruk okuma görevi açmaz, "her 20 birimden biri" okuma listesi
+  kalktı; alarmlar ar-ge bilgisi olarak Panoda ve durum sayfasında durur, görev açmaz; (2) okuma görevleri (S7.2)
+  yalnız deneyler için, elle açılır (kabul 30, ileride bir istem değişikliği, belki ehil okuması); (3) D5.1'de
+  okuma yok (kabul 30 zaten D5 koşullarında: önceki birimin taslağını görür, kendi İşârât'ı gizli); 34'ü kuyruk
+  yazarken durum Panodan izlenir; (4) D5.2 bir kez yapılır (30'un kapsamadığı tek risk: Risale'si az birimler), okuma
+  yerine göz atmak yetebilir. Yanlışı görüp not etmek okuyucuların işi (S7.4); bir notu düzeltmeye vermek elle
+  (S7 (f)).
+  - **D5.0.1 Kuyruk** (eski D11.4): birimleri sırayla yazdırmak, kullanım sınırına takılınca sıfırlanmayı bekleyip
+    sürmek, pencere başına sığan işi ölçmek. Sıra önerisi: önce Risale-i Nur'un bağ kurduğu âyetler (D5.2'nin çekincesiyle).
+    **Kullanım sınırına karşı koruma (yapıldı, 2026-11-19, kullanıcının isteği: "5 saatlik limitin dolması sık … büyük bir
+    problem"):** bütün `claude -p` çağrıları `d1-prova.claude_p`'den geçer: çağrıdan önce Haiku yoklaması pencerenin
+    doluluğunu öğrenir (`rate_limit_event`), eşiğin üstündeyse (taslak %75, eleştirmen ve ölçüler %85) sıfırlanmaya
+    kadar bekler; çağrı yine takılırsa (`usage_limit_reached`) döküm `basarisiz/`'e alınır, beklenir, yeniden yapılır
+    (en çok 4 deneme); yedi günlük pencere %98 doluysa durur. Ölçü (21–22): taslak pencerenin ≈%18'ini, İşârât
+    karşılaştırması ≈%7'sini, kapalı eleştirmen ≈%12'sini yiyor.
+    **Arka plan işleri (yapıldı, 2026-11-19):** `scripts/d1-arka.sh` (`systemd --user`, terminal ve oturumdan bağımsız,
+    uyku engellenir; `baslat`, `liste`, `log`, `bekle`, `yeniden`, `durdur`), koşturucu `scripts/d1-arka-is.sh` (iş
+    bitince `data/d1` commit ve push, masaüstü bildirimi). Yarıda kalan iş `yeniden` ile aynı komuttan sürer; adımlar
+    biteni atlar, taslak yazdırma `d1-hat.py yazdir … --yoksa` ile (o sürümün taslağı varsa yazmaz).
+    **Sonraya** (kullanıcının kararı, 2026-11-19; zamanı gelince): (a) **iş başına maliyet tavanı** (ör. "bu iş 15 $'ı
+    aşarsa dur"; sınır koruması bekletir ama durdurmaz; D5'te kuyruk günlerce dönerken önemli); (b) **telefona
+    bildirim** (masaüstü bildirimi yalnız bilgisayar başında işe yarar; iki yol: bir bildirim servisi (ör. ntfy; iş
+    adı ve "bitti" dışarı gider, taslak gitmez) ya da kendi sunucumuzda kurulan bildirim servisi (dışarıya hiçbir şey
+    çıkmaz); D5 sunucuya taşınınca daha anlamlı).
+    **Sunucuya taşıma: karar verildi** (kullanıcı, 2026-11-20): bilgisayar bir ay açık kalmasın; D5'in yazdırması
+    sunucuda döner (ayrıntı aşağıda "Bilgisayardan bağımsız çalışma"). **Bakara bu planla**
+    (kaba hesap, 2026-11-20): haftalık pencere %40 dolu, 23 Kasım'da sıfırlanır; 11 Aralık'a kadar ≈4,5 haftalık kota
+    (bu haftanın kalanı, üç hafta, bir ücretsiz sıfırlama); D5 birimi haftalığın ≈%1,5–3'ü: 160–270 birim, gereken
+    154; dar ama mümkün. Şartlar: D5.0 bir haftada biter, iş kesintisiz döner, öbür kullanım az, ücretsiz sıfırlama sona
+    saklanır. Taslaklar sırayla yazılır (D5.0.5: her birim önceki birimin taslağını bekler). Kesin hesap D5.1'den sonra.
+    **Asıl ürün altyapı; hesap ve kapsam** (kullanıcının değerlendirmesi, 2026-11-20): işin bu kadar uzun ve maliyetli
+    olacağı hesaba katılmamıştı; önemli olan hazır bir altyapı (hat, kalite kapısı, bölme, kuyruk, birim başına bilinen
+    maliyet), biri destek olursa o parayla işin yapılabilmesi. Kaba ölçü (D15.2, 26–27): bir ar-ge birimi 18,9 $ liste
+    fiyatı, 5 saatlik pencerenin ≈%25'i, haftalığın ≈%2'si, 56 dk. D5 birimi tahmini ≈13–16 $ (taslak, kapalı, nisbet,
+    düzeltme, izah), haftalığın ≈%1,5–3'ü: tek abonelikle haftada ≈35–60 birim; Bakara (153 birim) ≈3–5 hafta
+    (API'de ≈2.000–2.500 $), bütün Kur'ân (≈3.000–3.800 birim, tahmin) ≈1–2 yıl (API'de ≈40–60 bin $). Darboğaz saat
+    değil kota. Kotayı düşürme adayları (D5.0'da sınanır): hafif işler (nisbet, izah) Sonnet'e, düzeltme yalnız yüksek
+    öncelikli bulguda, kapalı eleştirmen yalnız işaretlenen paragraflara, taslakta düşünme "orta". **Kararlar
+    (kullanıcı kabul etti, 2026-11-20):** (a) kapsam ve hesap kararı D5.1 ve D5.2'den sonra, gerçek D5 zincirinin
+    ölçülen birim başı kotası ve maliyetiyle; (b) **sûre başına maliyet raporu** (destekçiye "şu kadar para, şu kadar
+    sûre"); (c) **hesap ayrımı:** iş kişisel hesaptan ayrılacak; iki yol: ayrı abonelik (ucuz; tüketici şartlarına
+    bakılmalı: kişinin ikinci hesabı ve aboneliğin sunucuda toplu işte kullanımı) ya da API hesabı (Console;
+    kullandıkça öde, harcama sınırı, fatura ve kullanım raporu, kota yok; Batch ve önbellek indirimleri hattın bir
+    kısmının yeniden yazılmasını ister); (d) **hat hesaptan bağımsız:** abonelik ya da API anahtarı tek ayarla
+    değişir; API'de sınır korumasının yerini iş başına harcama tavanı alır. D5.1 ve D5.2 bugünkü hesapla.
+    **Bilgisayardan bağımsız çalışma** (kullanıcı kabul etti, 2026-11-19; karar yeri gelince): D5'te birimler günlerce
+    sürer; iş sunucuda döner. Parçalar: `claude setup-token` (aboneliğin uzun ömürlü giriş anahtarı, tarayıcısız;
+    kullanım aynı pencereden düşer, `claude_p`'nin koruması orada da çalışır); genel ve hadis veritabanları, Kur'ân,
+    vektörler sunucuya (deploy betiğinin uzantısı); `data/d1` sunucuda her adımda commit ve push, yerelde `git pull`;
+    okuma sayfaları sunucudan doğrudan `/taslak/`'a. **Kuruldu (2026-11-20, kullanıcının seçimi "A": tefsir
+    makinesi; yük ≈0, 5 GB boş bellek):** ayrı kullanıcı `taslak`, `scripts/taslak-sunucu.sh` (CLAUDE.md "Taslak hattı
+    ve kullanım sınırı"); veri sunucudan sunucuya (yayındaki kopyalar yereldekiyle aynı, `ozet`; evden yükleme ≈15
+    KB/s, kullanılmaz); özel depoya yazma izinli deploy anahtarı eklendi; işler Nice=10. **Kalan:** kullanıcının
+    `giris`'i (aboneliğin anahtarı), sunucuda ilk gerçek model çağrısı (yoklama ve bir taslak), okuma sayfalarının
+    sunucudan gönderilmesi (bugün yerelden `taslak-gonder.sh`).
+    **Tek komutla birim hattı** (kullanıcı kabul etti, 2026-11-19): bugün bir birim on küsur komut (kurulum, taslak,
+    eşleştirme, eleştirmenler, kör A/B, okuma sayfası); tek komuta bağlanır.
+  - **D5.0.2 Uzunluk hedefi:** kapandı, gerek yok (h9'da hedef kalktı, D14.6; derslerin şişmesi D15'te izleniyor).
+  - **D5.0.3 İzah katmanı** (günümüz Türkçesiyle, `d1-hat.py izah`; izahları birleştirme "Sonra"da). Okuma platformunda
+    (S7) geniş okuyucu için önem kazandı.
+  - **D5.0.4 Birim bölmesi** (bekliyor, 2026-11-19, kullanıcının kararı: D15 sürerken yan iş zorladı, yeri gelince
+    devam): kullanıcının kararı: önce İşârât'ın mantığı, sonra bütün
+  Kur'ân. `scripts/d1-bolme.py`; veriler `data/d1/bolme/`. (a) Müfessirlerin grupları: Râzî Bakara 1–33'te İşârât'ın
+  21 sınırının hepsini verir (3 fazla, temsil ve kıssa içinde), Suyûtî 19/21; Râzî'yle Bakara 34–286 ≈211 birim (D5.0
+  (7)'deki ≈140 tahmininden fazla). (b) Müellifin her geçişteki sözü (Opus okuması, alıntılar denetlendi,
+  `gecisler.md`): ölçüt müellifin kendisinde: atıf cümlede «الاتحاد في المقصد», kıssada «التناسب في الغرض»
+  (`isaratul-icaz-arabi/sure-i-bakara/8/c001`); bağ cümle seviyesindeyse birlikte (ikinci vecih), garaz seviyesindeyse
+  sınır (birinci vecih). (c) Kural `docs/d1/bolme-kurali.md`: b1'den b4'e dört tur işlenebilirlik sınaması (İşârât'ı
+  görmeyen model, yalnız kuralla; kuralsız kol 17–19/21); **b4 üç koşuda üçünde 21/21, fazla yok** (≈3 $). Çekince: b4
+  bu 32 geçişe uydurulmuş, genelleme kanıtı değil. **Kullanıcı b4'ü onayladı (2026-11-19)**; Bakara 34–286 b4 ile
+  bölündü (≈50 âyetlik parça, üç koşu, çoğunluk; ≈7 $): 157 birim, 253 geçişin 230'unda oybirliği. Koşuların en çok
+  ayrıldığı soru «ثم» ile gelen âyetti; **kullanıcının kararı (2026-11-19): önceki üyenin devamı** (b5; «ثم»li üç parça
+  yeniden koştu, ≈4 $): **153 birim** (86'sı tek âyetli, en büyüğü 5), oybirliği olmayan 20, Râzî'den ayrılan 80
+  (çoğunda biz birleştiriyoruz). İnceleme listesi `data/d1/bolme/bakara/bolme.md`; b4 hâli `bakara/b4/`. Sonra bütün
+  Kur'ân; birim kimlikleri kalıcı adres olur.
+    **Bakara kesinleşti (2026-11-20):** kullanıcı 20 geçişi okudu (`d1-bolme.py inceleme`, sayfa `bolme-bakara.html`);
+    19'unda koşuların çoğunluğuyla aynı, 73|74'te "sınır" (74 uzun, yeni bir misal getiriyor: "72–74 tek başına
+    incelendiğinde 74'ün kendine has nükteleri kaçırılabilir"): kural b6 (5. kural genişledi). **Bakara 176 birim**
+    (1–33 İşârât'ın 22 birimi, 34–286 154 birim), kimlik âyet aralığı (`34`, `35-37`…): `data/d1/bolme/bakara/birimler.json`
+    (kalıcı adres). Kararlar `bakara/karar/`. **Kalan:** bütün Kur'ân (b6 ile; kısa sûreler ve ahkâm için kuralın
+    uzatması ayrıca konuşulur); sırası gelince.
+  - **D5.0.5 Önceki birim:** birinci vecih için İşârât'ın önceki birimi yerine önceki birimin taslağı; D15.3'te 28'de
+    sınanır (26–27'nin h9 taslağı).
+  - **D5.0.6 Kalite kapısı: denetle, düzelt, yayımla** (2026-11-19'da yeniden tarif: insan onayı olmadığı için kör
+    aletler insanı yönlendirmek için değil otomatik düzeltme için): nisbet denetçisi (D14.5b), kapalı eleştirmen (tek
+    çağrı), düzeltme turu (D12.1: kapalı notlarla düzeltme işe yaradı ama uzattı; sınanmalı), mekanik denetimler ve
+    **biçim denetimi** (her Arapça paragrafın tercümesi hemen arkasında mı; D15.1'de taslak tercümeyi topluca verdi;
+    yazımdan hemen sonra çalışır, kullanıcı kabul etti 2026-11-19).
+    Ayar verisi D15'ten (D15.1: kapalı İşârât'sız görülebileni kaçırmıyor, nisbet onu tamamlıyor).
+    **İlk sınama (2026-11-20, 26–27 ve 28'in h9 taslakları, istem d2):** ilk ölçüm geçersizdi (düzeltmeyi uygulayan kod
+    `###` alt başlıklarını sayıyordu, değişiklikler komşu paragrafa iniyordu; 28'de 51'in 47'si; onarıldı `7e0a5e5`,
+    D12'nin düzeltmeleri etkilenmemiş, taslaklar aynı model çıktısından yeniden kuruldu, hatalılar `hatali-capa/`).
+    Doğru kurulumla: nisbet hatası 26–27'de 11/71 → 7/96, 28'de 2/25 → 6/54; **eski hataların hepsi düzeldi, kalan
+    hataların hepsi düzeltmenin eklediği yeni kaynaklardan ya da yeniden yazdığı paragraflardan** (26–27: 7'si de yeni
+    kaynak; 28: 3 yeni kaynak, 2 değişen paragraf, 1 eskiden kalan). İşârât karşılaştırmasının hükmü ikisinde de
+    değişmedi (düzeltmeyle), "eksik" notları azalmadı (12 → 12, 7 → 10). Arapça %10,4 ve %12,8 uzadı (sınır %10).
+    Maliyet birim başına ≈6–7 $ (kapalı 2,3, nisbet 1, düzeltme 2,6–3,4). **Öneri (kullanıcının kararını bekliyor):**
+    d3: düzeltme yeni kaynak eklemez, yalnız düzeltir, daraltır, siler; eksik nükte notları düzeltmeye girmez (okuma
+    sayfasında not olarak durur); değişen paragraflara ucuz bir nisbet geçişi.
+    **d3 kabul edildi ve sınandı (2026-11-21):** nisbet hatası 26–27'de 11/71 → **3/79** (ikinci tura not çıkmadı;
+    kalan üçü düzeltmenin dokunmadığı sözlerde), 28'de 2/25 → 2/37 → ikinci turdan sonra **0/37**; Arapça %9,3 ve %6,6
+    uzadı (sınırın içinde); İşârât karşılaştırmasında "kaynak" notları 26–27'de 3 → 0, hüküm ikisinde de "düzeltmeyle"
+    (beklenen: kapı nükte eklemez). Yazar 14 ve 9 notu gerekçesiyle reddetti. Maliyet birim başına ≈6–7,5 $ (kapalı
+    2,3, nisbet 1, düzeltme 2,2–2,9, ikinci nisbet 0,6, gerekirse ikinci tur 1,2). **Kapı d3 ile hatta girer.**
+  - **D5.0.7 Maliyet:** taslak ≈4,5–5,5 $, konu ve tablo ≈0,3 $, nisbet ≈1 $, kapalı ≈3 $, düzeltme (ölçülecek);
+    Bakara'nın kalanı **154 birim** (b6, kesin), bütün Kur'ân ≈3.400 birim tahmini (bölmeden sonra güncellenir).
+  - **D5.0.8 Soru kalıpları listesinin bütün İşârât'tan yeniden kuruluşu:** gerek kalmadı (2026-11-20: hat h9,
+    liste ve Tarama yalnız h10'daydı). Yerine D15'in açık sorusu: edatın ve kaydın taalluku (bkz. D15 "Hat h9").
+  - **D5.0.9 Kabul birimi 30:** D5.0'ın değişiklikleri (D5.0.4–D5.0.8) bitince hattın son sınaması; 30 hiçbir denemeye
+    ve listeye girmez.
+- **D5.1'den önce hepsi** (kullanıcının kararı, 2026-11-21: "D5.1'de Bakara'nın tamamı yazdırılırken durum nasıl
+  olacak, onu görmek istiyorum"; D5.1 üretimin aynısı olmalı). Sıra: (a) h12 ✓ (`4393a54`); (b) **D5 kipi**: birimler
+  `bolme/bakara/birimler.json`'dan, prova veritabanı yok (genel veritabanlarına bağ), sızıntı testi yok, önceki birim
+  İşârât'sa (34'ün öncesi 31–33) İşârât, değilse önceki birimin son taslağı (D5.0.5), Ek 3b'nin garaz özetleri İşârât'ın
+  birimlerinden ve D5'te yazılmış taslaklardan (her birimden sonra bir özet); (c) **tek komutla birim** (`d1-birim.py`):
+  istem, taslak, kapı d3 (kapalı, nisbet, düzeltme, ikinci tur), garaz özeti, izah (D5.0.3), D5 okuma sayfası
+  (taslak, dersler, kapının düzelttikleri, eksik notları; İşârât yok), birim kaydı (son taslak, maliyet, süre);
+  (d) **kuyruk**: Bakara sırasıyla, kesintide kaldığı birimden, sunucuda `d1-arka.sh` ile; sayfalar sunucudan siteye;
+  (e) **telefona bildirim ve harcama tavanı** (D5.0.1'in "sonra"sı); (f) **kabul birimi 30** sunucuda, h12 ve h9 kör A/B
+  (kullanıcı 3 yeri okur: birinci vecih, bir taalluk yeri, Risale dersi; kartlar içeriğe göre seçilir, iki taraf
+  gönderilmeden okunur); h9 mı h12 mi orada belli olur. Sonra D5.1 (Bakara 34), D5.2.
+  **Hepsi yapıldı (2026-11-21).** Kabul 30'un sonucu (kullanıcının kararı): okuma 3 yerde eşit; ölçüler h9 lehine
+  (h12 %39 pahalı, %19 uzun, nisbet hatası daha çok, dersinde damga hatası; İşârât karşılaştırması ve envanter eşit) →
+  **D5 istemi h9** (`D5_SURUM`, varsayılan h9); "bu kadar okuma yeter" (h12 denemesi kapandı). **Kaynak
+  tercümesi D5'in adımı** (kullanıcının kararı): her birimden sonra taslağın andığı tefsir ve klasik yerler çevrilir
+  (`kaynak-tercume.py`, Sonnet, 3 paralel; birim başına ≈0,4–0,5 $, birimin ≈%3'ü), `D5_TERCUME=0` ile atlanır.
+- **Büyük işin kolaylıkları** (kullanıcı kabul etti, 2026-11-21; D5.1'den önce; model çağrısız): (1) her birimden
+  sonra `data/d1` commit ve push (kuyruk tek uzun iş); (2) kuyruk sunucunun açılışında başlayan, düşünce yeniden kalkan
+  hizmet (`d1-kuyruk`); (3) **haftalık pencere koruması: %90** (kullanıcının eşiği; geçince durur, sıfırlanınca sürer,
+  telefona haber); (4) kalite alarmları (kapıdan sonra kalan nisbet hatası, eksik vecih, Arapça uzunluk aykırı, Risale
+  dersi yok, kapı notların çoğunu reddetti, izah eksik): kuyruk durmaz, alarm birime yazılır, telefona düşer (görev açmaz);
+  (5) durum sayfası `/taslak/d5.html` (birimler, bağlantılar, alarmlar, maliyet, haftalık kota, bitiş tahmini) ve
+  günlük özet bildirimi; (6) geçici hatada bir kez yeniden deneme; (7) kod güncellemesi yalnız birimler arasında
+  (sunucuda bekleyen kod, sıradaki birimin başında geçer); (8) **kolay durdurma ve sürdürme** (kullanıcı: "önümüzdeki
+  haftalarda sık kullanabilirim"): `scripts/taslak-sunucu.sh dur | devam | hemen-dur | durum` ya da telefondan Claude'a
+  söylemek; `dur` birimi bitirip durur, `hemen-dur` ortada keser (sürdürünce biten adımlar atlanır). Okuma listesi
+  2026-11-21'de kalktı ("D5'te okuma").
+- **D5'in başlangıç sırası** (kullanıcı kabul etti, 2026-11-20): (1) Bakara bölmesinin 20 geçişi (D5.0.4); (2) kalite
+  kapısı D15'in taslakları üzerinde, İşârât doğru cevap olarak (D5.0.6); (3) **h9'a bir iyileştirme turu** (h11;
+  kullanıcının kararı: yapılacak; adaylar D15 raporundan: birinci vechin genişliği, ders seçiminde isabet ölçüsü,
+  taalluk sorusu; saklı birim 29'da h9'a karşı); (4) tek komutla birim hattı (D5.0.1); (5) kabul birimi 30 (D5.0.9);
+  (6) D5.1, D5.2. İzah (D5.0.3) S7 ile.
+- **h11'in tanımı** (kullanıcı kabul etti, 2026-11-20): (a) **birinci vechin genişliği:** kaynak dosyasına sûrenin
+  şimdiye kadarki birimlerinin kısa garaz özetleri (İşârât'tan; D5'te taslaklardan) ve sonraki 3–5 âyetin metni;
+  istemde birinci vecih için "önceki bahislere, sonraki âyetlere ve Kur'ân'ın bütününe uzanan hatları say"; (b)
+  **ders seçimi:** zorunlu ders başlığının isabeti en güçlü tek bölümden değil ilk birkaç bölümün toplamından (28'de
+  haşir konusu: Onuncu Söz 19, öbürleri 17, 15; Risale'nin en geniş işlediği konu tek bölümde 25'i bulamadığı için
+  ders açılmadı); (c) **taalluk:** istemde ikinci ve üçüncü vecih için üç soru (edat, kayıt ya da cümle neye bağlı;
+  zâhiren ne beklenirdi; neden bu geldi; bağ için söylenmemiş bir şey varsa takdiri), geliştirme birimlerinden iki
+  kısa İşârât örneğiyle; h10'daki gibi tablo yok (zorlama). Sınama: saklı birim 29'da h9'a karşı (kör A/B ve
+  kullanıcının okuması).
+- D5.1 Bakara 34, kuyruğun ilk birimi; okuma yok (2026-11-21; önceden "okumayı kullanıcı yapar", 2026-11-20), durum
+  Panodan. **Kapsam yalnız 34** (kullanıcının kararı, 2026-11-21: "okumaya sabırsızlanıyorum"; 35–40 sonra).
+  **Bitti (2026-11-21):** 38 dk, ≈12,1 $ kullanım değeri, haftalık kota %57 → %59; kapı 25 not (20 karşılandı, 5
+  reddedildi), ikinci tur 5 not (hepsi reddedildi), son taslak 3. Alarm "kapıdan sonra nisbet 6/56" büyük ölçüde
+  denetçinin hatası: kaynağın bağlamı baştan 4.000 harfte kesiliyordu, Ebüssuûd'un uzun önceki cümleleri atfedilen
+  cümleyi dışarıda bırakıyordu (5 yanlış "kaynakta yok"; yazar beşini alıntıyla reddetti); kesim artık atfedilen
+  cümlenin etrafından (`d1-nisbet.clip`, `f1aac75`). Kullanıcı 34'ü okuyor ("şu ana kadar gayet iyi"); sunuşa dair
+  eleştirileri S7e–S7g oldu.
+- **D5.2 Risale'si az iki birim, kuyruk büyümeden önce** (kullanıcının kararı, 2026-11-19; 2026-11-21: göz atmak
+  yetebilir, bir kez; birimler sırayla yazıldığı için kıssa 40'ta erken gelir (kuyruk 40'tan sonra durur), ahkâm
+  178'den sonra, geldiğinde): bir kıssa (İsrâiloğulları,
+  40–74) ve bir ahkâm birimi (178–283) okunur. Sebep: D15'in saklı birimlerinin hepsi Risale'ce zengin (Risale'deki
+  doğrudan alıntı 21–22'de 30, 26–27'de 14, 28'de 7); Bakara 34–283'te âyetlerin ≈%78'inde doğrudan alıntı yok (34–39:
+  6'da 5, 40–74: 35'te 26, 178–283: 106'da 86; konu üzerinden gelen yerler sayılmadı). h10'un kazancı büyük ölçüde
+  Risale dersinden; kuyruk "önce Risale'nin bağ kurduğu âyetler" sırasıyla başlarsa düşüş geç görülür.
+- **İstem adayı** (D5.1'in okumasından, kullanıcı kabul etti, 2026-11-21; şimdi değil; S7 bitince buraya taşındı):
+  "kelime mânâsında tek müfessire dayanma": taslak bir kelimenin mânâsını bir müfessirden alıp kendi sözü gibi
+  kullanıyor, öbürlerini tartmıyor (34'te «kâne» yalnız Ebüssuûd'dan). Aday kural: bir kelimenin mânâsını bir
+  müfessirden alırken öbürlerinin o kelimede ne dediğine bak, ayrılıyorlarsa söyle. Yeni istem sürümü ve deneme ister
+  (h9 kararı bozulmaz); kapı ve nisbet bunu yakalamaz (atfın doğruluğuna bakarlar, tercihin tartılmasına değil). Usul
+  sayfasında sınır olarak yazılı. Bkz. "Fikirler" › "Taslak usulünün hedeflere göre değişmesi".
+
 **S8 ve S9'un plan metni** (bitti, 2026-11-21, kullanıcının kararı: "S8 ve S9 kapanır"; `PLANLAR.md` "Sıradaki"nden
 değiştirilmeden taşındı).
 
