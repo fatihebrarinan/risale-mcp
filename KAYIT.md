@@ -378,6 +378,10 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   Kaynak tercümesi: ilk koşu sıralı ≈2 saat sürdü; 3 paralel çağrı ve orta düşünmeyle yeniden. Kabul 30'un okuması:
   3 yerde eşit, karar h9; iki kart tekrarı benim kart kurma hatamdı (`d1-tur.dedupe`). D5.1 (yalnız 34) başladı;
   kuyruğun ilk koşusunda `data/d1/d5/` yokken günlük özet hatası, düzeltildi.
+- **S7f Alıntının cümlesi (2026-11-21):** kullanıcının sorusu (Bakara 34: «تولّد أنانية إبليس فيما بين الملائكة» altındaki
+  "İblis'in enâniyetinin melâike arasında tevellüdü." neden orada?): taslak İşârât'ın cümlesinden yüklemsiz bir parça
+  alıntılamış, altına da modelin tercümesi konmuştu. Kararı: platformda ve masada İşârât alıntısının Türkçesi eşlemeden
+  Abdülmecid Nursî tercümesi; parça alıntıda "kaynaktaki cümlenin tamamı" (`scripts/alinti.py`; yalnız sunuş).
 - **S7e Türk hattı (2026-11-21):** kullanıcının kararı: Kur'ân metni masada, platformda ve D5 sayfalarında Türk hattıyla
   (varsayılan), Medine seçilebilir. Kaynak risaleoku'nun Kur'ân'ı (`kuran_turk.py`; 6236 âyet, iskelet denetimi, 3 imlâ
   farkı 21:88, 63:10, 72:16). Masanın kelime düğmeleri iskelet konumlarıyla Türk hattının kelimelerine eşlendi (293/293
