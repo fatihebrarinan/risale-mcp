@@ -22,6 +22,7 @@ header { position: sticky; top: 0; z-index: 5; background: var(--bg); border-bot
   display: flex; align-items: center; gap: 10px; padding: 8px 16px; }
 header .t { font-weight: 600; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 header a, header button { font-size: .85rem; }
+a.hbtn { border: 1px solid var(--line); border-radius: 6px; padding: 3px 10px; text-decoration: none; color: var(--fg); }
 button { font: inherit; background: none; border: 1px solid var(--line); border-radius: 6px; color: inherit;
   padding: 2px 8px; cursor: pointer; }
 button.on { background: var(--soft); border-color: var(--accent); }
@@ -91,7 +92,7 @@ table.t { width: 100%; border-collapse: collapse; font-size: .85rem; } table.t t
 </style></head><body>
 <header><button id="menu" aria-label="Kur'ân paneli" title="Kur'ân panelini aç/kapa">☰</button><span class="t" id="ttl"></span>
 <button id="genis" title="Metni ekranın tamamına yay" hidden>↔ geniş</button>
-<a href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
+<a class="hbtn" id="masaBtn" href="/taslak/" hidden>Ar-ge masası</a><a class="hbtn" href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
 <div class="wrap"><aside id="panel"></aside><main id="main"></main><aside id="side"><p class="small muted">Bir atfın numarasına tıklayınca kaynağın metni burada açılır.</p></aside></div>
 <script>
 const MASA = __MASA__;
@@ -588,7 +589,7 @@ addEventListener('hashchange', route);
 (async () => {
   try { VIEW = Object.assign(VIEW, JSON.parse(store.get('oku-view') || '{}')); } catch (e) {}
   try { INDEX = await getJSON(DATA + 'index.json'); } catch (e) { $('main').textContent = 'Dizin okunamadı.'; return; }
-  try { ME = await getJSON('/taslak/ben'); $('ben').textContent = ME.name || ''; } catch (e) {}
+  try { ME = await getJSON('/taslak/ben'); $('ben').textContent = ME.name || ''; $('masaBtn').hidden = ME.scope !== 'masa'; } catch (e) {}
   route();
 })();
 </script></body></html>

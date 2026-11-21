@@ -430,7 +430,7 @@ def build(only: str | None = None) -> list[str]:
     app = APP.read_text(encoding="utf-8")
     for path, conf in ((OUT / "index.html", {"__MASA__": "false", "__TITLE__": "Kur'ân Taslakları",
                                                "__FONT__": "fonts/naskh.ttf", "__USUL__": "usul.html",
-                                               "__EXTRA__": ' <a href="/taslak/cikis">çıkış</a>'}),):
+                                               "__EXTRA__": ' <a class="hbtn" href="/taslak/cikis">Çıkış</a>'}),):
         # masanın birim görünümü eski âyet masasıdır (d1-masa.py; S7b, kullanıcının kararı 2026-11-21)
         page = app
         for k, v in conf.items():

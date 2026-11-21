@@ -84,6 +84,7 @@ body.nokpanel #kpanel { display: none; }
 .tree .leaf { background: none; border: 0; cursor: pointer; color: var(--fg); padding: 1px 6px; border-radius: 5px; text-align: start; font-size: .86rem; }
 .tree .leaf:hover { background: var(--soft); } .tree .leaf.cur { background: var(--accent-soft); font-weight: 600; }
 .jump { flex-basis: 100%; }
+a.btn.nav { text-decoration: none; color: var(--fg); font-size: .88rem; padding: 4px 12px; }
 .kn { border-left: 3px solid var(--line); padding: 4px 8px; margin: 0 0 8px; background: var(--card); border-radius: 0 6px 6px 0; font-size: .86rem; }
 .kn.ok { border-left-color: var(--accent); } .kn.bad { border-left-color: var(--bad); } .kn.part { border-left-color: var(--warn); }
 #panes { display: grid; grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr)); }
@@ -215,11 +216,11 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
 <header id="hdr">
   <button class="btn" id="kbtn" title="Kur'ân panelini aç/kapa">☰</button>
   <h1><a href="./" style="color:inherit;text-decoration:none" title="Masanın girişi">Âyet masası</a></h1>
-  <label>Âyet <select id="unit"></select></label>
   <button class="btn" id="addpane" title="Bir yan daha aç (en çok 6)">+ yan ekle</button>
   <label>Dil <span class="seg" id="lang"><button data-v="tr">Türkçe</button><button data-v="ar">Arapça</button></span></label>
   <span class="spacer"></span>
   <span class="msg" id="msg"></span>
+  <a class="btn nav" href="./">Masanın girişi</a><a class="btn nav" href="/oku/">Okuma platformu</a><a class="btn nav" href="/taslak/cikis">Çıkış</a>
 </header>
 <div id="wrap"><aside id="kpanel"></aside><div id="mainc">
 <section id="ayah"></section>
@@ -262,18 +263,31 @@ const CTYPE = {dogru: 'doğru, iyi', yanlis: 'yanlış', eksik: 'eksik', fazla: 
 const ISR = {kaynakli: 'kaynaklı', kendi_tespiti: 'kendi tespiti', isaretsiz: 'işaretsiz'};
 const BKV = {dogru: 'doğru', yanlis: 'yanlış', emin_degilim: 'emin değilim'};
 const BKD = {'': 'dayanak türü…', kaynak: 'kaynak (cümle kimliği)', kisi: 'kişi (yalnız alanı)', kanaat: 'kendi kanaatim', yz: 'yapay zekâ'};
-const LAYERS = [['karsi', "İşârât'la karşılaştırma"], ['critic', 'Eleştirmen (açık kitap)'], ['kcritic', 'Kapalı kitap eleştirmen']];
+// S7c2 (kullanıcının isteği, 2026-11-21): katmanlar bugünkü hatta göre; kutucuk yalnız o taslakta verisi olana çıkar
+const LAYERS = [['kapi', 'Kalite kapısı'], ['nisbet', 'Nisbet'], ['karsi', "İşârât karşılaştırması"],
+                ['critic', 'Eski açık kitap eleştirmen (D9)'], ['kcritic', 'Kapalı eleştirmen (ham)']];
+const KAT = dk => ((DATA.masa || {}).katman || {})[dk] || {kapi: [], nisbet: [], isr: []};
+const locOfA = (dk, a) => (a && DATA.drafts[dk] && DATA.drafts[dk].heads[a]) || ['L:genel'];
+function layerTotal(dk, k) {
+  const K = KAT(dk);
+  if (k === 'kapi') return K.kapi.length;
+  if (k === 'nisbet') return K.nisbet.length;
+  if (k === 'karsi') return (Y.drafts[dk] ? Object.keys(Y.drafts[dk].rows).length : 0) + K.isr.length;
+  if (k === 'critic') return critNotes(dk, 'acik').length;
+  if (k === 'kcritic') return K.kapi.length ? 0 : critNotes(dk, 'kapali').length;   // kapı varsa notları orada, cevaplarıyla
+  return 0;
+}
 const PRI = {yuksek: 'yüksek', orta: 'orta', dusuk: 'düşük'};
 
 // --- yanlar (S6): her yan Kaynaklar, İşârât'ın metni ya da bir taslak; taslak yanında katmanlar
-function newDraftPane(dk) { return {k: 'draft', d: dk, L: {karsi: true, critic: false, kcritic: false, bk: false}, open: {}}; }
+function newDraftPane(dk) { return {k: 'draft', d: dk, L: {kapi: true, nisbet: false, karsi: true, critic: false, kcritic: false}, open: {}}; }
 let panes = store.get('d1-masa-yanlar-' + U, null) || [{k: 'src'}, newDraftPane(DKEYS[DKEYS.length - 1])];
 const TEFSIR_W = Object.fromEntries(DATA.tefsir.map(w => [w.work, w]));
 const PANE_KINDS = new Set(['src', 'isarat', 'tefsirler', 'tefsir', 'klasik', 'risale', 'draft', 'crit', 'kapi', 'nisbet', 'notlar']);
 panes = panes.filter(p => PANE_KINDS.has(p.k) && (!['draft', 'crit'].includes(p.k) || DATA.drafts[p.d])
                          && (p.k !== 'tefsir' || TEFSIR_W[p.w]) && (p.k !== 'isarat' || Object.keys(DATA.isarat || {}).length)).slice(0, MAXP);
 if (!panes.length) panes = [{k: 'src'}];
-panes.forEach(p => { p.open = {}; if (p.k === 'draft') p.L = Object.assign({karsi: true, critic: false, kcritic: false, bk: false}, p.L || {}); });
+panes.forEach(p => { p.open = {}; if (p.k === 'draft') p.L = Object.assign({kapi: true, nisbet: false, karsi: true, critic: false, kcritic: false}, p.L || {}); });
 function savePanes() { store.set('d1-masa-yanlar-' + U, panes.map(p => ({k: p.k, d: p.d, w: p.w, c: p.c, L: p.L}))); }
 function withDraft(dk, fn) { const o = st.draft; st.draft = dk; try { return fn(); } finally { st.draft = o; } }
 
@@ -394,6 +408,7 @@ function renderAyah() {
       <p class="meal">${esc(v.meal)} <i>(${esc(v.meal_by)}, ${esc(v.ref)})</i></p>`;
   }).join('');
   $('#ayah').innerHTML = `<div class="levels">${lv}</div><div class="verses">${verses}</div>
+    ${((DATA.masa || {}).kor || []).map(k => `<p class="hint">Kör A/B: taslak ${esc(k.A)} ile ${esc(k.B)} → taslak ${esc(k.tercih)} (${esc(k.guc || '')})</p>`).join('')}
     <p class="hint">Bir kelimeye ya da üstteki düzeylerden birine tıklayın. Kelimenin altındaki sayı ${NO_ISARAT ? 'son taslağın o kelimeye düşen paragraflarının ve notlarının sayısıdır (bu birimde İşârât yok)' : "İşârât'ın o kelimedeki nükte sayısıdır"}.</p>${turHtml()}`;
 }
 
@@ -772,6 +787,7 @@ function blocksAt(dk) {
   for (const f of yd.extras.filter(at)) f.a.forEach(a => want.add(a));
   for (const n of ((Y.critic[dk] || {}).notes || []).filter(at)) want.add(n.a);
   for (const x of bkAll().filter(x => x.t === dk && at(x))) want.add(x.a);
+  { const K = KAT(dk); for (const x of [...K.kapi, ...K.nisbet, ...K.isr]) if (x.a && at({loc: locOfA(dk, x.a)})) want.add(x.a); }
   for (const a of [...want]) want.add(arOf(dk, a));
   return d.blocks.filter(b => b.l === 'ar' && (want.has(b.a) || (d.heads[b.a] || []).includes(st.loc))).map(pairOf);
 }
@@ -786,7 +802,8 @@ function annot(dk, pair) {
   const all = ((Y.critic[dk] || {}).notes || []).filter(n => as.has(n.a));
   const notes = all.filter(n => n.c !== 'kapali'), knotes = all.filter(n => n.c === 'kapali');
   const bks = bkAll().filter(x => x.t === dk && as.has(x.a));
-  return {items, found, extras, notes, knotes, bks};
+  const K = KAT(dk), kap = K.kapi.filter(x => as.has(x.a)), nis = K.nisbet.filter(x => as.has(x.a)), isr = K.isr.filter(x => as.has(x.a));
+  return {items, found, extras, notes, knotes, bks, kap, nis, isr};
 }
 function mkr(p, key, layer, label, title) {
   const on = !!p.open[key + '|' + layer];
@@ -810,14 +827,18 @@ function blockHtml(dk, pair, p) {
       'Karşılaştırıcıların bu paragrafa bağladığı İşârât nükteleri (bulunan/hepsi) ve İşârât\'ta karşılığı olmayan iddialar'));
   if (L.critic && A.notes.length) marks.push(mkr(p, key, 'critic', `● ${A.notes.length} not`, 'Eleştirmenin (açık kitap) bu paragrafa notları'));
   if (L.kcritic && A.knotes.length) marks.push(mkr(p, key, 'kcritic', `◆ ${A.knotes.length} kapalı`, 'Kapalı kitap eleştirmenin bu paragrafa notları'));
-  if (L.bk && A.bks.length) marks.push(mkr(p, key, 'bk', `? ${A.bks.length} madde`, 'Bilirkişi soruları'));
+  if (L.kapi && A.kap.length) marks.push(mkr(p, key, 'kapi', `⚑ ${A.kap.length} kapı`, 'Kalite kapısının bu paragrafa notları ve yazarın cevabı'));
+  if (L.nisbet && A.nis.length) marks.push(mkr(p, key, 'nisbet', `§ ${A.nis.length} nisbet`, 'Nisbet denetçisinin bu paragraftaki hükümleri'));
+  if (L.karsi && A.isr.length) marks.push(mkr(p, key, 'isr', `◇ ${A.isr.length} İşârât notu`, "İşârât karşılaştırmasının (D15) bu paragrafa notları"));
   let opened = '';
   if (L.karsi && p.open[key + '|karsi'])
     opened += A.items.map((id, j) => itemCard(id, Y.items[id], `Nükte ${j + 1}/${A.items.length}`)).join('') +
               A.extras.map((f, j) => extraCard(f, `Fazla ${j + 1}/${A.extras.length}`)).join('');
   if (L.critic && p.open[key + '|critic']) opened += A.notes.map((n, j) => noteCard(dk, n, `Not ${j + 1}/${A.notes.length}`)).join('');
   if (L.kcritic && p.open[key + '|kcritic']) opened += A.knotes.map((n, j) => noteCard(dk, n, `Kapalı not ${j + 1}/${A.knotes.length}`)).join('');
-  if (L.bk && p.open[key + '|bk']) opened += A.bks.map(x => bkCard(x)).join('');
+  if (L.kapi && p.open[key + '|kapi']) opened += A.kap.map(kapiCard).join('');
+  if (L.nisbet && p.open[key + '|nisbet']) opened += A.nis.map(nisbetCard).join('');
+  if (L.karsi && p.open[key + '|isr']) opened += A.isr.map(isrCard).join('');
   return `<div class="blk${focused ? ' focus' : ''}${pair.ar.q ? ' quote' : ''}${cls}" data-anchor="${esc(key)}">
     <div class="bhead"><span class="small muted">${SEC[key.split('/')[0]] || ''}${pair.ar.q ? ' · kaynaktan alıntı' : ''}</span><span class="mkrs">${marks.join('')}</span></div>
     <div class="${prim.l === 'ar' ? 'ar' : 'serif'}">${lab(prim)}${body(prim)}</div>
@@ -858,23 +879,51 @@ function kapaliSummary(dk) {
     ${k.sistemli.length ? `<ul class="small">${k.sistemli.map(s => `<li>${s.bolum ? `<b>${esc(SEC[s.bolum] || s.bolum)}:</b> ` : ''}${codes(s.metin)}</li>`).join('')}</ul>` : ''}
     ${locIndex(notes, done)}</details>`;
 }
+function kapiCard(x) {
+  const lab = {kapi: 'kalite kapısı', kapi2: 'ikinci tur', okuyucu: 'okuyucu notu', eksik: 'eksik notu'}[x.tur_round] || x.tur_round;
+  return `<div class="kn ${KDUR[x.durum] || (x.tur_round === 'eksik' ? '' : 'part')}"><b>${esc(x.no || '')}</b> <span class="tag g">${esc(lab)}</span> <span class="tag g">${esc(x.kaynak || '')}</span> <span class="tag g">${esc(x.tur || '')}</span>
+    ${x.src !== +String(st.draft).split('-')[1] ? `<span class="small muted">(taslak ${x.src}'e yazıldı)</span>` : ''}
+    ${x.alinti ? `<div class="small"><i>«${trEsc(x.alinti)}»</i></div>` : ''}<div class="serif">${trEsc(x.metin || '')}</div>
+    ${x.oneri ? `<div class="small muted">Öneri: ${trEsc(x.oneri)}</div>` : ''}
+    <div class="small"><b>${esc(x.durum || '')}</b>${x.nasil ? ': ' + esc(x.nasil.join(', ')) : ''}</div>
+    ${x.gerekce ? `<div class="small" style="color:var(--bad)">Ret gerekçesi: ${trEsc(x.gerekce)}</div>` : ''}</div>`;
+}
+function nisbetCard(h) {
+  return `<div class="kn ${h.hukum === 'nisbet_yok' || h.hukum === 'nakil' ? 'part' : 'bad'}"><b>[${esc(h.kaynak)}]</b> <span class="tag g">${esc(HKM[h.hukum] || h.hukum)}</span>
+    ${h.alinti ? `<div class="small"><i>«${trEsc(h.alinti)}»</i></div>` : ''}<div class="serif small">${trEsc(h.gerekce || '')}</div></div>`;
+}
+function isrCard(x) {
+  return `<div class="kn ${x.tur === 'dogru' ? 'ok' : 'part'}"><span class="tag g">${esc(x.tur || '')}</span>${x.oncelik ? ` <span class="tag g">${esc(x.oncelik)}</span>` : ''}
+    ${x.alinti ? `<div class="small"><i>«${trEsc(x.alinti)}»</i></div>` : ''}<div class="serif">${trEsc(x.metin || '')}</div></div>`;
+}
+function generalNotes(dk, L) {                      // paragrafa bağlanamayan notlar: taslağın geneline
+  const K = KAT(dk), parts = [];
+  if (L.kapi) { const xs = K.kapi.filter(x => !x.a); if (xs.length) parts.push(`<details><summary class="small"><b>Kalite kapısı: taslağın geneline ya da paragrafı bulunamayan notlar</b> (${xs.length})</summary>${xs.map(kapiCard).join('')}</details>`); }
+  if (L.nisbet) { const xs = K.nisbet.filter(x => !x.a); if (xs.length) parts.push(`<details><summary class="small"><b>Nisbet: paragrafı bulunamayan hükümler</b> (${xs.length})</summary>${xs.map(nisbetCard).join('')}</details>`); }
+  if (L.karsi) { const xs = K.isr.filter(x => !x.a); if (xs.length) parts.push(`<details><summary class="small"><b>İşârât karşılaştırması: taslağın geneline notlar</b> (${xs.length})</summary>${xs.map(isrCard).join('')}</details>`); }
+  return parts.join('');
+}
 function draftPane(p) {
-  const dk = p.d, L = p.L;
-  let h = '';
+  const dk = p.d, L = Object.fromEntries(Object.entries(p.L).map(([k, v]) => [k, v && layerTotal(dk, k) > 0]));
+  let h = generalNotes(dk, L);
   if (st.srcbox && !panes.some(q => q.k === 'src')) h += srcBoxHtml();
   const lists = (L.karsi ? sampleBox() : '') + (L.critic ? critBox() + sysBox() : '') + (L.bk ? bkBox() : '');
   if (lists) h += `<details class="lists"><summary class="small muted">İşaretleme listeleri (örneklemler, sistemli başlıklar, bilirkişi maddeleri)</summary>${lists}</details>`;
-  if (L.karsi) h += `<div class="legend small"><span class="lg found">İşârât'ta karşılığı var</span><span class="lg contra">İşârât'la çelişebilir</span><span class="lg extra">karşılığı yok (fazla)</span></div>`;
+  if (L.karsi && Y.drafts[dk]) h += `<div class="legend small"><span class="lg found">İşârât'ta karşılığı var</span><span class="lg contra">İşârât'la çelişebilir</span><span class="lg extra">karşılığı yok (fazla)</span></div>`;
   const pairs = blocksAt(dk);
-  h += pairs.length ? pairs.map(pr => blockHtml(dk, pr, p)).join('')
+  h += pairs.length ? pairs.map(pr => blockHtml(dk, pr, Object.assign({}, p, {L}))).join('')
     : `<p class="empty">Bu taslakta bu yere ait paragraf yok. Üstteki "Metinlerin tamamı" ile bütününe bakabilirsiniz.</p>`;
-  if (L.karsi) h += missingHtml(dk);
+  if (L.karsi && Y.drafts[dk]) h += missingHtml(dk);
   if (L.critic) h += criticSummary(dk);
   if (L.kcritic) h += kapaliSummary(dk);
   return h;
 }
 function layerCount(dk, k) {
   if (!st.loc) return '';
+  const K = KAT(dk), here = xs => xs.filter(x => at({loc: locOfA(dk, x.a)})).length;
+  if (k === 'kapi') return here(K.kapi);
+  if (k === 'nisbet') return here(K.nisbet);
+  if (k === 'karsi' && !Y.drafts[dk]) return here(K.isr);
   if (k === 'karsi') return Y.drafts[dk] ? itemsAt(st.loc).length : '–';
   if (k === 'critic') return Y.critic[dk] ? Y.critic[dk].notes.filter(n => n.c !== 'kapali' && at(n)).length : '–';
   if (k === 'kcritic') return Y.critic[dk] && Y.critic[dk].kapali ? Y.critic[dk].notes.filter(n => n.c === 'kapali' && at(n)).length : '–';
@@ -882,7 +931,7 @@ function layerCount(dk, k) {
 }
 // --- S7c.2 içindekiler ağacı (kullanıcının tasarımı, 2026-11-21): her yanın başında, açılır kapanır
 function paneKey(p) { return p.k === 'draft' ? 'd:' + p.d : p.k === 'tefsir' ? 't:' + p.w : p.k === 'crit' ? `c:${p.c}:${p.d}` : p.k; }
-const CRIT = {kapali: 'Kapalı eleştirmen', acik: 'Açık eleştirmen', karsi: "İşârât karşılaştırması"};
+const CRIT = {karsi: "İşârât karşılaştırması", acik: 'Eski açık kitap eleştirmen (D9)', kapali: 'Kapalı eleştirmen (ham)'};
 function paneTitle(p) {
   return {src: 'Kaynaklar (hepsi bir arada)', isarat: "İşârât", tefsirler: 'Müfessirler (hepsi)', klasik: 'Klasik eserler',
           risale: "Risale-i Nur'daki yerler", kapi: 'Kalite kapısı', nisbet: 'Nisbet denetçisi', notlar: 'Okuyucu notları'}[p.k]
@@ -908,9 +957,10 @@ function treeHtml(p) {
   const drafts = draftOrder().map(dk => leaf('d:' + dk, esc(draftLabel(dk)) + `<span class="muted small"> ${esc((draftAbout(dk).match(/istem \w+/) || [''])[0])}</span>`,
     loc ? blocksAt(dk).length : null)).join('');
   const crit = Object.keys(CRIT).map(c => {
-    const ds = draftOrder().filter(dk => c === 'karsi' ? Y.drafts[dk] : critNotes(dk, c).length);
+    const ds = draftOrder().filter(dk => c === 'karsi' ? (Y.drafts[dk] || KAT(dk).isr.length) : critNotes(dk, c).length);
     return grp(CRIT[c], ds.map(dk => leaf(`c:${c}:${dk}`, esc(draftLabel(dk)),
-      c === 'karsi' ? itemsAt(st.loc || 'L:tumu').length : critNotes(dk, c).filter(atAll).length)).join(''), cur.startsWith(`c:${c}:`));
+      c === 'karsi' ? (Y.drafts[dk] ? itemsAt(st.loc || 'L:tumu').length : 0) + KAT(dk).isr.filter(x => atAll({loc: locOfA(dk, x.a)})).length
+                    : critNotes(dk, c).filter(atAll).length)).join(''), cur.startsWith(`c:${c}:`));
   }).join('');
   const kc = (M.kapi || []).reduce((n, k) => n + k.notlar.filter(atAll).length, 0);
   const nc = (M.nisbet || []).reduce((n, k) => n + k.hukumler.filter(h => h.hukum !== 'dogru' && atAll(h)).length, 0);
@@ -929,7 +979,7 @@ function paneHead(i, p) {
   const tag = ['draft', 'crit'].includes(p.k) ? '<span class="tag ai">yapay zekâ, tefsir değildir</span>'
     : ['kapi', 'nisbet'].includes(p.k) ? '<span class="tag ai">yapay zekâ denetçileri, ham</span>'
     : p.k === 'notlar' ? '<span class="tag g">okuyucular</span>' : '<span class="tag src">kaynakların metni</span>';
-  const lay = p.k === 'draft' ? `<span class="layers">${LAYERS.map(([k, l]) =>
+  const lay = p.k === 'draft' ? `<span class="layers">${LAYERS.filter(([k]) => layerTotal(p.d, k) > 0).map(([k, l]) =>
     `<label class="small"><input type="checkbox" data-layer="${k}" ${p.L[k] ? 'checked' : ''}> ${l} <span class="muted">${layerCount(p.d, k)}</span></label>`).join('')}</span>` : '';
   const secs = p.k === 'draft' && st.loc ? [...new Set(blocksAt(p.d).map(pr => pr.ar.a.split('/')[0]))] : [];
   const jump = secs.length > 1 ? `<span class="jump small">${secs.map(x => `<button class="linkish" data-jump="${esc(x)}">${esc(SEC[x] || x)}</button>`).join(' · ')}</span>` : '';
@@ -992,10 +1042,15 @@ function notlarPane() {
 function critPane(p) {
   return withDraft(p.d, () => {
     if (p.c === 'karsi') {
-      if (!Y.drafts[p.d]) return '<p class="empty">Bu taslak İşârât\'la karşılaştırılmadı.</p>';
-      const its = itemsAt(st.loc || 'L:tumu'), ex = (Y.drafts[p.d].extras || []).filter(atAll);
-      return its.map(([id, it], j) => itemCard(id, it, `Nükte ${j + 1}/${its.length}`)).join('')
-        + ex.map((f, j) => extraCard(f, `Fazla ${j + 1}/${ex.length}`)).join('') + missingHtml(p.d);
+      const isr = KAT(p.d).isr.filter(x => atAll({loc: locOfA(p.d, x.a)}));
+      let h = isr.length ? `<h3>İşârât karşılaştırmasının notları <span class="muted">(D15; İşârât'ı okuyarak)</span></h3>${isr.map(isrCard).join('')}` : '';
+      if (Y.drafts[p.d]) {
+        const its = itemsAt(st.loc || 'L:tumu'), ex = (Y.drafts[p.d].extras || []).filter(atAll);
+        h += `<h3>Envanter eşleştirmesi <span class="muted">(D7; her nükte bulundu mu)</span></h3>`
+          + its.map(([id, it], j) => itemCard(id, it, `Nükte ${j + 1}/${its.length}`)).join('')
+          + ex.map((f, j) => extraCard(f, `Fazla ${j + 1}/${ex.length}`)).join('') + missingHtml(p.d);
+      }
+      return h || '<p class="empty">Bu taslak İşârât\'la karşılaştırılmadı.</p>';
     }
     const xs = critNotes(p.d, p.c).filter(atAll);
     return (xs.length ? xs.map((x, j) => noteCard(p.d, x, `Not ${j + 1}/${xs.length}`)).join('') : '<p class="empty">Bu yerde not yok.</p>')
@@ -1039,15 +1094,12 @@ let UNITS = DATA.units || [];
 fetch('masa-birimler.json', {cache: 'no-cache'}).then(r => r.ok ? r.json() : null).then(j => { if (j && j.length) { UNITS = j; kpanel(); } }).catch(() => {});
 function kpanel() {
   const us = UNITS;
-  // birimin kendi okuma ve fark sayfaları (S7c.1: üst satırdan buraya)
-  const mine = (DATA.turlar || []).filter(t => t.birim === DATA.title).map(t => `<li><a href="${esc(t.sayfa)}">okuma: ${esc(t.ad)}</a></li>`)
-    .concat((DATA.fark || []).map(f => `<li><a href="${esc(f)}">fark: ${esc(f.replace(/^fark-|\.html$/g, ''))}</a></li>`));
+
   const ay = u => u.ayah ? (u.ayah[0] === u.ayah[1] ? u.ayah[0] : u.ayah[0] + '–' + u.ayah[1]) : '';
   $('#kpanel').innerHTML = `<input id="kgit" placeholder="Âyete git: 2:30" autocomplete="off">
     <p class="small muted" style="margin:6px 0 2px">Bakara · masası kurulan birimler</p><ul>`
     + us.map(u => `<li><a href="${esc(u.unit)}.html" class="${u.unit === U ? 'cur' : ''}">${esc(u.title)}${u.d5 ? ' <span class="kd5">D5</span>' : ''}</a></li>`).join('')
-    + `</ul>${mine.length ? `<p class="small muted" style="margin:4px 0 2px">${esc(DATA.title)}: okumalar</p><ul>${mine.join('')}</ul>` : ''}
-    <p class="small"><a href="./">masanın girişi</a> · <a href="/oku/">okuma platformu</a> · <a href="/taslak/cikis">çıkış</a></p>`;
+    + `</ul>`;
   const cur = $('#kpanel a.cur'); if (cur) cur.scrollIntoView({block: 'nearest'});
   $('#kgit').onkeydown = e => {
     if (e.key !== 'Enter') return;
@@ -1063,8 +1115,6 @@ $('#kbtn').onclick = () => {
 };
 function render() {
   kpanel();
-  $('#unit').innerHTML = (DATA.units || [{unit: U, title: DATA.title}]).map(u =>
-    `<option value="${esc(u.unit)}"${u.unit === U ? ' selected' : ''}>${esc(u.title)}</option>`).join('');
   document.querySelectorAll('#lang button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === st.lang));
   document.body.classList.toggle('sel', !!st.loc);
   renderAyah(); renderPanes(); progress(); persist();
@@ -1241,7 +1291,6 @@ function bkSave(box, patch) {
 }
 document.addEventListener('change', ev => {
   const t = ev.target;
-  if (t.id === 'unit') { if (t.value !== U) { st.loc = null; persist(); location.href = t.value + '.html'; } return; }
   if (t.matches('[data-abg]')) { const k = t.closest('[data-abk]').dataset.abk; abSave(k, {gerekce: t.value}); return; }
   if (t.matches('[data-layer]')) { const p = panes[paneOf(t)]; p.L[t.dataset.layer] = t.checked; savePanes(); renderPanes(); return; }
   if (t.id === 'onlysmp') { st.onlySample = t.checked; renderPanes(); persist(); return; }

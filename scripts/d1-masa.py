@@ -448,7 +448,110 @@ def extras(unit: str, dr: dict) -> dict:
         dk = f"taslak-{pub['kunye']['son_taslak']}"
         yayin = {"surum": pub["surum"], "taslak": dk,
                  "capa": {b["id"]: b["taslak_capa"] for b in pub["bloklar"]}}
-    return {"kapi": m["kapi"], "nisbet": m["nisbet"], "alarmlar": m["alarmlar"], "yayin": yayin}
+    return {"kapi": m["kapi"], "nisbet": m["nisbet"], "alarmlar": m["alarmlar"], "yayin": yayin,
+            "katman": layers(unit, dr, m), "kor": kor(unit)}
+
+
+def _ar_anchor(d: dict, a: str | None) -> str | None:
+    """Türkçe çapanın Arapça eşi (taslak yanı Arapça çapalarla çizilir)."""
+    if not a or a == "genel":
+        return None
+    if "/tr/" in a:
+        b = next((x for x in d["blocks"] if x["a"] == a), None)
+        return b.get("p") if b and b.get("p") else None
+    return a
+
+
+def _map_anchor(src: dict, dst: dict, a: str | None) -> str | None:
+    """Bir taslağın paragrafının sonraki taslaktaki karşılığı: aynı bölümde en benzer Arapça paragraf (≥ 0,5)."""
+    import difflib
+    a = _ar_anchor(src, a)
+    if not a:
+        return None
+    text = next((x["t"] for x in src["blocks"] if x["a"] == a), "")
+    sec = a.split("/")[0]
+    best = max(((difflib.SequenceMatcher(None, text[:500], x["t"][:500]).ratio(), x["a"]) for x in dst["blocks"]
+                if x["l"] == "ar" and x["a"].split("/")[0] == sec), default=(0, None))
+    return best[1] if best[0] >= 0.5 else None
+
+
+def layers(unit: str, dr: dict, m: dict) -> dict:
+    """S7c2 (kullanıcının isteği, 2026-11-21): taslak yanının katmanları bugünkü hatta göre, taslak başına:
+    `kapi` kalite kapısının notları yazarın cevabıyla (kaynak taslağın notları sonraki taslaklara metin benzerliğiyle
+    taşınır: son taslakta da görünür), `nisbet` atıf hükümleri (doğrular hariç), `isr` D15'in İşârât karşılaştırması
+    notları. Her notta `a` Arapça çapa (yoksa None: taslağın geneline)."""
+    reg_path = P.DRAFTS / unit / "duzeltmeler.json"
+    reg = json.loads(reg_path.read_text(encoding="utf-8")) if reg_path.exists() else {}
+    def ancestors(n: int) -> list[int]:
+        out, cur = [], str(n)
+        while cur in reg:
+            cur = str(reg[cur]["kaynak"])
+            out.append(int(cur))
+        return out
+    yz = Y.out_dir(unit)
+    acik = {}
+    for f in yz.glob("kapi-acik-notlar-taslak-*.json"):
+        n = int(f.stem.rsplit("-", 1)[1])
+        acik[n] = json.loads(f.read_text(encoding="utf-8"))["notlar"]
+    out = {}
+    for dk, d in dr.items():
+        n = int(dk.split("-")[1])
+        chain = [n] + ancestors(n)                     # kendisi ve kaynakları
+        kap = []
+        for k in m["kapi"]:
+            if k["taslak"] not in chain:
+                continue
+            src = dr.get(f"taslak-{k['taslak']}")
+            for x in k["notlar"]:
+                a = _ar_anchor(d, x.get("capa")) if k["taslak"] == n else (_map_anchor(src, d, x.get("capa")) if src else None)
+                kap.append({kk: x.get(kk) for kk in ("no", "tur", "kaynak", "capa", "oncelik", "alinti", "metin", "oneri",
+                                                     "durum", "nasil", "gerekce")}
+                           | {"a": a, "tur_round": k["tur"], "src": k["taslak"], "yeni": k["yeni"]})
+        for src_n in chain:
+            src = dr.get(f"taslak-{src_n}")
+            for x in acik.get(src_n, []):
+                a = _ar_anchor(d, x.get("capa")) if src_n == n else (_map_anchor(src, d, x.get("capa")) if src else None)
+                kap.append({"no": "", "tur": "eksik", "kaynak": "kapali", "capa": x.get("capa"), "metin": x.get("metin"),
+                            "oneri": x.get("oneri"), "alinti": x.get("taslak_alinti"), "durum": "taslağa eklenmedi",
+                            "a": a, "tur_round": "eksik", "src": src_n})
+        nis = []
+        for src_n in chain:                             # kendi nisbet denetimi, yoksa en yakın kaynağınki
+            f = yz / f"nisbet-taslak-{src_n}.json"
+            if not f.exists():
+                continue
+            src = dr.get(f"taslak-{src_n}") or d
+            for h in json.loads(f.read_text(encoding="utf-8")).get("hukumler", []):
+                if h.get("hukum") == "dogru":
+                    continue
+                q = re.sub(r"\s+", " ", h.get("taslak_alinti") or "")[:40]
+                sa = next((b["a"] for b in src["blocks"] if q and q in re.sub(r"\s+", " ", b["t"])), None)
+                a = _ar_anchor(src, sa) if src_n == n else _map_anchor(src, d, sa)
+                nis.append({"kaynak": h.get("kaynak"), "hukum": h.get("hukum"), "gerekce": h.get("gerekce"),
+                            "alinti": h.get("taslak_alinti"), "a": a, "src": src_n})
+            break
+        isr = []
+        f = yz / f"isarat-karsilastirma-taslak-{n}.json"
+        if f.exists():
+            for x in json.loads(f.read_text(encoding="utf-8")).get("notlar", []):
+                isr.append({"tur": x.get("tur"), "oncelik": x.get("oncelik"), "metin": x.get("metin"),
+                            "alinti": x.get("taslak_alinti"), "a": _ar_anchor(d, x.get("capa"))})
+        if kap or nis or isr:
+            out[dk] = {"kapi": kap, "nisbet": nis, "isr": isr}
+    return out
+
+
+def kor(unit: str) -> list[dict]:
+    """Kör A/B ölçüleri (ar-ge): tek satır bilgi."""
+    out = []
+    for f in sorted(Y.out_dir(unit).glob("kor-olcu-*.json")):
+        if f.name.endswith(".meta.json"):
+            continue
+        k = json.loads(f.read_text(encoding="utf-8"))
+        meta = json.loads(f.with_name(f.stem + ".meta.json").read_text(encoding="utf-8")) if f.with_name(f.stem + ".meta.json").exists() else {}
+        b = k.get("butun") or {}
+        out.append({"A": meta.get("A"), "B": meta.get("B"), "tercih": {"A": meta.get("A"), "B": meta.get("B")}.get(b.get("tercih"), b.get("tercih")),
+                    "guc": b.get("guc")})
+    return out
 
 
 def build(unit: str, units: list[dict]) -> Path:
