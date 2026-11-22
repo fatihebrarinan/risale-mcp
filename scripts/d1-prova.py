@@ -974,6 +974,11 @@ def claude_p(command: list[str], prompt: str, log: Path, env: dict, timeout: int
     for attempt in range(1, LIMIT_TRIES + 1):
         st = limit_probe(env)
         if st.get("week") is not None and st["week"] >= 0.98:
+            reset = st.get("week_reset")
+            if reset and reset - time.time() < 12 * 3600:     # sıfırlanma yakın: bekle, sür (birim yarıda kalmasın)
+                _wait_until(reset, f"yedi günlük pencere {st['week']:.0%} dolu")
+                LIMIT_STATE.unlink(missing_ok=True)
+                continue
             raise SystemExit(f"yedi günlük kullanım penceresi dolu ({st['week']:.0%}); "
                              f"{datetime.fromtimestamp(st.get('week_reset') or 0):%Y-%m-%d %H:%M}'de açılır")
         if st.get("hit") or (st.get("five") is not None and st["five"] >= esik):

@@ -16,6 +16,7 @@
 #   scripts/taslak-sunucu.sh devam [b]  # kuyruğu başlat ya da sürdür (birim verilirse o birim bitince durur)
 #   scripts/taslak-sunucu.sh dur        # sürmekte olan birim bitince dur
 #   scripts/taslak-sunucu.sh hemen-dur  # hemen kes (devamda yarım birim kaldığı adımdan sürer)
+#   scripts/taslak-sunucu.sh esik <oran|sil>  # haftalık eşik yalnız bu pencere için (ör. 1.0: sıfırlanma yakınken)
 #
 # Kullanıcının bir kez yapacağı: `giris` (tarayıcı onayı; anahtar sohbete girmez, `~/.claude-token`'a yazılır,
 # `d1-arka-is.sh` oradan okur). `kur`'un yazdığı açık anahtar özel depoya yazma izinli "deploy key" olarak eklendi
@@ -135,6 +136,11 @@ dur)
 hemen-dur)
     # hemen keser; devam edince yarım birim kaldığı adımdan sürer (biten adımlar atlanır)
     as_u "touch ~/.d5-dur; export XDG_RUNTIME_DIR=/run/user/\$(id -u); systemctl --user stop d1-kuyruk && echo 'kuyruk durduruldu'"
+    ;;
+esik)
+    # yalnız bugünkü haftalık pencere için (sıfırlanınca kendiliğinden düşer, eşik yeniden %90); bekleyen kuyruk 1 dk içinde sürer
+    if [ "${2:-}" = sil ]; then as_u "rm -f ~/.d5-hafta-esik && echo 'eşik: %90'"
+    else as_u "echo ${2:?oran, ör. 1.0} > ~/.d5-hafta-esik && echo 'eşik bu pencere için: $2'"; fi
     ;;
 durum)
     "${SSH[@]}" "$HOST" "free -m | sed -n 2p; df -h / | tail -1; uptime"

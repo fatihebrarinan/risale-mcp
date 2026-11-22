@@ -350,6 +350,7 @@ STOP = Path.home() / ".d5-dur"                     # `taslak-sunucu.sh dur`: bir
 SON = Path.home() / ".d5-son"                      # `taslak-sunucu.sh devam <birim>`: o birim bitince dur
 STAGING = Path.home() / "kod-bekleyen"              # `taslak-sunucu.sh gonder` kuyruk sürerken kodu buraya koyar
 HAFTA_ESIK = 0.90                                   # kullanıcının eşiği (2026-11-21): haftalık pencere %90
+ESIK_FILE = Path.home() / ".d5-hafta-esik"          # `taslak-sunucu.sh esik <oran>`: yalnız bu pencere için eşik
 
 
 def durum_sayfasi() -> None:
@@ -371,20 +372,45 @@ def kod_guncelle() -> None:
     os.execv(sys.executable, [sys.executable, *sys.argv])
 
 
+def hafta_esik(reset: float | None) -> float:
+    """Haftalık eşik. `~/.d5-hafta-esik` (`taslak-sunucu.sh esik 1.0`) yalnız o anki pencere için geçer: ilk okunuşta
+    pencerenin sıfırlanma zamanı yanına yazılır, o zaman geçince dosya silinir ve eşik yeniden HAFTA_ESIK olur."""
+    if not ESIK_FILE.exists():
+        return HAFTA_ESIK
+    try:
+        parts = ESIK_FILE.read_text().split()
+        esik = float(parts[0])
+        until = float(parts[1]) if len(parts) > 1 else None
+    except (OSError, ValueError, IndexError):
+        return HAFTA_ESIK
+    if until is None and reset:
+        until = reset
+        ESIK_FILE.write_text(f"{esik} {until:.0f}\n")
+    if until is not None and time.time() > until:
+        ESIK_FILE.unlink(missing_ok=True)
+        return HAFTA_ESIK
+    return esik
+
+
 def bekle_hafta(env: dict) -> bool:
-    """Haftalık pencere eşiği aşıldıysa sıfırlanmaya kadar bekler (durdurma işaretine bakarak). False: durduruldu."""
+    """Haftalık pencere eşiği aşıldıysa sıfırlanmaya kadar bekler (durdurma işaretine ve eşik dosyasına bakarak).
+    False: durduruldu."""
     st = P.limit_probe(env, max_age=0)
     week = st.get("week")
-    if week is None or week < HAFTA_ESIK:
-        return True
     reset = st.get("week_reset") or time.time() + 6 * 3600
+    esik = hafta_esik(reset)
+    if week is None or week < esik:
+        return True
     when = datetime.fromtimestamp(reset)
-    bildir("D5 bekliyor: haftalık kota", f"%{week * 100:.0f} ≥ %{HAFTA_ESIK * 100:.0f}; {when:%d.%m %H:%M}'de sürer")
+    bildir("D5 bekliyor: haftalık kota", f"%{week * 100:.0f} ≥ %{esik * 100:.0f}; {when:%d.%m %H:%M}'de sürer")
     print(f"⏸ haftalık pencere %{week * 100:.0f}; {when:%d.%m %H:%M}'e kadar bekleniyor", flush=True)
     while time.time() < reset + P.LIMIT_MARGIN:
         if STOP.exists():
             return False
-        time.sleep(300)
+        if week < hafta_esik(reset):           # eşik beklerken yükseltildi
+            print(f"▶ eşik %{hafta_esik(reset) * 100:.0f}: sürüyor", flush=True)
+            return True
+        time.sleep(60)
     return True
 
 

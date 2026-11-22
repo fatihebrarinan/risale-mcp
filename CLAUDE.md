@@ -506,7 +506,8 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   varsayılan h12; taslak, kapı d3, garaz özeti, izah, okuma sayfası `masa/d5-<birim>.html`, kayıt
   `data/d1/d5/bakara.json`), kuyruk sunucuda kalıcı hizmet `d1-kuyruk` (`taslak-sunucu.sh kuyruk-kur` bir kez;
   **`devam`**, **`dur`** (birim bitince), **`hemen-dur`**, **`durum`**). Kuyruk her birimden sonra `data/d1`'i push
-  eder, haftalık pencere %90'ı geçince sıfırlanmayı bekler, alarmları (`d1-birim.alarmlar`) birime yazar; durum sayfası
+  eder, haftalık pencere %90'ı geçince sıfırlanmayı bekler (`esik 1.0`: yalnız o pencere için eşik; %98'de sıfırlanma
+  12 saatten yakınsa çağrı bekleyip sürer), alarmları (`d1-birim.alarmlar`) birime yazar; durum sayfası
   `https://risalemcp.com/taslak/d5.html`. Sayfaları sunucu kısıtlı anahtarla gönderir (`~/.ssh/site_gonder`, ana
   makinede `rrsync -wo /var/www/ozel/taslak`, yalnız tefsir makinesinden); bildirimler ntfy.sh (konu
   `~taslak/.d5-ntfy`, git'e girmez). Kuyruk sürerken `gonder` kodu `~/kod-bekleyen`'e koyar, sıradaki birimin başında
