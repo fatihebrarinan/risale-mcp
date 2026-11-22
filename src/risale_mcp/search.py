@@ -135,7 +135,7 @@ def _near(tokens: list[str], i: int, canon=None) -> tuple[str | None, int]:
         token = tokens[i]
         if token == ",":
             if i + 1 >= len(tokens) or not tokens[i + 1].isdigit():
-                raise QueryError("NEAR(…, n) içinde virgülden sonra bir sayı olmalı.")
+                raise QueryError("In NEAR(…, n) a number must follow the comma.")
             distance = int(tokens[i + 1])
             i += 2
             continue
@@ -145,7 +145,7 @@ def _near(tokens: list[str], i: int, canon=None) -> tuple[str | None, int]:
             terms.append([f'"{f}"{star}' for f in forms] if len(forms) > 1 else [term])
         i += 1
     if i >= len(tokens):
-        raise QueryError("NEAR( kapanmamış.")
+        raise QueryError("NEAR( is not closed: write NEAR(word1 word2, 5).")
     if len(terms) < 2:
         return (terms[0][0] if terms else None), i + 1
     # bitişik yazılışlar: her birleşimi için ayrı NEAR, OR ile (FTS5 NEAR içinde OR kabul etmez); en çok 8
@@ -190,8 +190,8 @@ def to_fts(query: str, prefix_all: bool = False, canon=None) -> str:
 
     clauses = [c for c in clauses if c]
     if not clauses:
-        raise QueryError("Sorguda aranacak bir kelime yok." if not excluded else
-                         "Yalnızca dışlanan kelime var; aranacak bir kelime de yazın.")
+        raise QueryError("The query has no word to search for." if not excluded else
+                         "The query only excludes words; add a word to search for.")
     expr = " OR ".join(f"({' AND '.join(c)})" for c in clauses)
     if excluded:
         expr = f"({expr})" + "".join(f" NOT {term}" for term in excluded)

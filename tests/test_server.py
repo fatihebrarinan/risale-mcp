@@ -160,7 +160,7 @@ def test_search_reports_totals_and_bad_queries(library):
     assert result["total"] == 2 and result["by_work"] == {"sozler": 1, "asa-yi-musa": 1}
     assert result["matching_sections"] == [{"id": "sozler/10", "ref": "Sözler › Onuncu Söz"}]
     assert library.search("hasr*", work="sozler")["by_work"] == {"sozler": 1}
-    with pytest.raises(LibraryError, match="aranacak"):
+    with pytest.raises(LibraryError, match="search for"):
         library.search("-hasir")
 
 
@@ -204,6 +204,20 @@ async def test_server_lists_tools_prompts_and_resources(library):
         assert prompts == {"topic_survey", "text_and_commentary", "discuss", "self_test", "lesson_plan"}
         templates = {t.uri_template for t in (await client.list_resource_templates()).resource_templates}
         assert templates == {"risale://outline/{work}", "risale://text/{+section}"}
+
+
+@pytest.mark.parametrize("profile", ["tefsir", "klasik"])
+async def test_texts_only_servers_describe_their_own_tools(library, profile):
+    """S4.3 (2026-11-22): tefsir ve klasik sunucularının araç açıklamaları Risale'ninkini taşımaz (dizin ölçütü:
+    açıklama aracın gerçek davranışına uymalı); her sunucu sürümünü ve belge adresini bildirir."""
+    async with Client(create_server(library, profile=profile)) as client:
+        tools = (await client.list_tools()).tools
+        text = json.dumps([t.model_dump(mode="json") for t in tools], ensure_ascii=False)
+        for word in ("hâşiye", "sozler", "eski-said", "written", "Dokuzuncu Hakikat", "isaret", "Turkish"):
+            assert word not in text, word
+        assert all(t.annotations.read_only_hint and t.title for t in tools)
+        info = client.server_info
+        assert info.version and info.website_url.startswith("https://risalemcp.com/en/")
 
 
 async def test_server_tool_returns_compact_json_and_readable_errors(library):

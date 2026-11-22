@@ -154,6 +154,12 @@ class Source(BaseModel):
                                                          "(… for omitted parts); leave out if you only paraphrase.")
 
 
+class TextSource(Source):
+    """Tefsir ve klasik sunucularında aynı alanlar, örneksiz (S4.3)."""
+    id: str = Field(description="A sentence id, or a range 'first_id..last_id' (the last may be short: "
+                                "'…/c010..c015'), as the tools return them.")
+
+
 # Müfessirlerin eserleri (tefsir altyapısı, T6): yalnız veritabanında böyle bir eser varsa talimata eklenir (bugün yerel
 # profil); genel sunucunun talimatı değişmez. Müfessirin eseri gerçek tefsirdir ve öyle anılır; modelin kendi yazdığı
 # hiçbir şey "tefsir" diye anılmaz; Risale'nin bir yeri kuralla bulunan bağla tefsir diye anılmaz (kullanıcının
@@ -444,6 +450,98 @@ def _warm(library: Library, citations: CitationChecker) -> None:
 SEARCH_JOINED_HELP = (" The text often writes compounds as one word (hiçbir, herşey, Âhirzaman); a quoted phrase also "
                       "matches that joined spelling.")
 
+# S4.3 (2026-11-22): tefsir ve klasik sunucuları Risale'nin araç açıklamalarını aynen taşıyordu (hâşiye, telif
+# tarihi, Risale'nin bağ türleri, `sozler/10` örnekleri). Dizin ölçütü: açıklama aracın gerçek davranışına uymalı.
+# Bu sunucularda araçların açıklaması ve parametre yardımları buradan gelir; imzalar aynı kalır.
+TEXTS_DOCS = {
+    "list_works": "List the works on this server with their ids, titles, authors, language, sizes (sections, "
+                  "sentences) and the edition each comes from (note).",
+    "get_outline": "Show the heading tree of a work or section: ids, titles, subtitles (a subtitle also marks a "
+                   "section that is another person's text, such as the editor's introduction) and the number of "
+                   "sentences under each section. Sections cut off by the depth limit show their number of "
+                   "subsections.",
+    "read_section": "Read a section and its subsections in book order: headings (ref; layer: the section is "
+                    "another person's text, such as the editor's introduction), paragraphs as sentences (id, text, "
+                    "printed: the edition's volume and page) and quoted Arabic marked by kind, with the verse's "
+                    "address for a Qur'anic quotation (arabic). Long sections come in pages: pass next_cursor back "
+                    "to continue.",
+    "get_passage": "Get sentences (or a range) with their text and the edition's volume and page (printed), "
+                   "optionally with neighbouring sentences; layer marks another person's text. A range of up to 8 "
+                   "sentences in one section also returns cite_as, its reference. A range past the end of its "
+                   "section stops at its last sentence (see note).",
+    "search": "Search the works sentence by sentence by their own words, best matches first: the total, matches per "
+              "work, matching section titles, and sentences (id, author, cite_as, text). An unquoted Arabic word "
+              "also matches its forms with attached و ف ب ل ك and the article (الكتاب: والكتاب, بالكتاب, كتاب). If "
+              "no word matches exactly, each unquoted word is retried once as a word start and the result carries "
+              "expanded. Read a result in context before relying on it.",
+    "semantic_search": "Find passages by meaning: the sentences closest to the query (id, author, cite_as, text, "
+                       "similarity) and the sections where the topic concentrates. The query may be in any "
+                       "language. For exact words or terms use search. Read a result in context before relying on "
+                       "it.",
+    "find_sentence": "Find a sentence from its opening words, e.g. when the user quotes a sentence. Vowel marks are "
+                     "optional and the last word may be incomplete.",
+    "find_ayah": "List where a Qur'anic verse (or any verse of a sura) is quoted in the works: the sentence and the "
+                 "Arabic as quoted (results; via 'source': marked as a verse by the edition, via 'text': found in "
+                 "the Qur'an's text; check warns when the words differ from the named verse). For one verse it also "
+                 "returns the verse itself (quran).",
+    "cite": "Get the references to show for the passages you use, checked against the works. Call it once before "
+            "writing the answer, with every sentence or range you quote or rely on, and every quotation you will "
+            "show in the answer with its words (a quotation left out is not checked and may end up under the wrong "
+            "number; widen a range that a quotation runs past). Returns, for each source, cite_as (the full "
+            "reference to show), a problem to fix if any (a range longer than 8 sentences or past its section, "
+            "quoted words that are not in those sentences, with where they occur), and the bibliography lines "
+            "\"[n] cite_as\" for the answer's Kaynaklar list (copy them unchanged).",
+}
+TEFSIR_DOCS = TEXTS_DOCS | {
+    "get_outline": TEXTS_DOCS["get_outline"] + " A tafsir is divided by sura, then into verse units (the part that "
+                   "treats a verse or verses).",
+    "read_section": TEXTS_DOCS["read_section"].replace(
+        "headings (ref;", "headings (ref; verses: the verses a unit treats; a unit opens with the edition's printed "
+        "verse, kind ayah;"),
+    "find_ayah": TEXTS_DOCS["find_ayah"].replace(
+        "(quran).", "(quran); risale: the places in the Risale-i Nur tied to it (id, citation, kind of tie, "
+        "strength; their text is on the Risale-i Nur server, not here); and classical_works, each work in the order "
+        "of its author's death: the unit that treats the verse (units: section id, verses, printed) and the "
+        "sentences elsewhere in the work that quote it (quotations)."),
+}
+# parametre yardımları: (Risale, tefsir, klasik)
+PARAM_HELP = {
+    "group": ("Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.",
+              "Only this group (list_works gives each work's group).",
+              "Only this group (list_works gives each work's group)."),
+    "related": (RELATED_HELP, "Has no effect on this server: all its works are searched by default.",
+                "Has no effect on this server: all its works are searched by default."),
+    "outline": ("A work id (e.g. 'sozler') or a section id (e.g. 'sozler/10').",
+                "A work id (e.g. 'beyzavi') or a section id (e.g. 'beyzavi/2' for a sura, 'beyzavi/2/255' for a "
+                "verse unit).",
+                "A work id (e.g. 'delailul-icaz') or a section id (e.g. 'tarifat/2')."),
+    "passage": ("A sentence id, or a range 'first_id..last_id' (the last may be short: 'sozler/10/c010..c015').",
+                "A sentence id, or a range 'first_id..last_id' (the last may be short: "
+                "'ibnkesir/2/255/c001..c003').",
+                "A sentence id, or a range 'first_id..last_id' (the last may be short: 'tarifat/2/c001..c003')."),
+    "query": ("Words (all must occur), \"exact phrase\", prefix*, OR, -exclude, NEAR(a b, 5). Marks and Turkish "
+              "letters are optional." + SEARCH_JOINED_HELP,
+              "Words (all must occur), \"exact phrase\", prefix*, OR, -exclude, NEAR(a b, 5). Vowel marks are "
+              "optional.",
+              "Words (all must occur), \"exact phrase\", prefix*, OR, -exclude, NEAR(a b, 5). Vowel marks are "
+              "optional."),
+    "meaning": ("A question or concept in your own (today's) words, e.g. 'Ölüm neden bir nimettir?' or "
+                "'ümitsizlik'.",
+                "A question or concept in your own words, in any language, e.g. 'kalplerin mühürlenmesi mecaz mı' "
+                "or 'the merit of the Throne Verse'.",
+                "A question or concept in your own words, in any language, e.g. 'the definition of metaphor' or "
+                "'i'câz nazımdadır'."),
+}
+SITE_DOCS = {"risale": "risale.html", "hadis": "hadith.html", "tefsir": "tafsir.html", "klasik": "classical.html"}
+
+
+def _version() -> str:
+    try:
+        from importlib.metadata import version
+        return version("risale-mcp")
+    except Exception:
+        return "0"
+
 
 def create_server(library: Library, public_url: str | None = None, store: AuthStore | None = None,
                   anonymous: bool = False, anonymous_semantic: int = ANON_SEMANTIC_PER_DAY,
@@ -468,24 +566,29 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     klasik = profile == "klasik"                # klasik eserler sunucusu (E2.4): tefsirinkiyle aynı araç seti
     texts_only = tefsir or klasik               # Risale'ye özgü araçlar (hadis), kaynaklar ve hazır komutlar yok
     hadis = profile == "hadis"                  # hadis sunucusu (MVP M5): birimi hadis, kendi araçları
+    docs = TEFSIR_DOCS if tefsir else TEXTS_DOCS if klasik else {}     # boşsa docstring (Risale)
+    which = 1 if tefsir else 2 if klasik else 0
+    helps = {key: values[which] for key, values in PARAM_HELP.items()}
+    meta = {"version": _version(),
+            "website_url": f"https://risalemcp.com/en/{SITE_DOCS['hadis' if hadis else profile if texts_only else 'risale']}"}
     if hadis:
         server = MCPServer("hadis", title="Risale MCP Hadis", instructions=HADIS_INSTRUCTIONS,
                            description="Report-level, citable access to hadith collections and the Qur'an.",
-                           icons=_icons(public_url, "hadis"), **protected)
+                           icons=_icons(public_url, "hadis"), **meta, **protected)
     elif tefsir:
         server = MCPServer("tefsir", title="Risale MCP Tefsir", instructions=TEFSIR_INSTRUCTIONS,
                            description="Sentence-level, citable access to classical tafsir works and the Qur'an.",
-                           icons=_icons(public_url, "tefsir"), **protected)
+                           icons=_icons(public_url, "tefsir"), **meta, **protected)
     elif klasik:
         server = MCPServer("klasik", title="Risale MCP Klasik", instructions=KLASIK_INSTRUCTIONS,
                            description="Sentence-level, citable access to classical Arabic works on rhetoric, "
                                        "language and terms, and the Qur'an.",
-                           icons=_icons(public_url, "klasik"), **protected)
+                           icons=_icons(public_url, "klasik"), **meta, **protected)
     else:
         server = MCPServer(NAME, title="Risale MCP",
                            instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),
                            description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
-                           icons=_icons(public_url), **protected)
+                           icons=_icons(public_url), **meta, **protected)
     variant = profile if profile in VARIANTS else ""
     for path, (name, media) in _own_static(variant).items():    # ikon: istemciler sunucu adresinden de alabilir
         server.custom_route(path, methods=["GET"], include_in_schema=False)(_static(name, media))
@@ -500,18 +603,20 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     if warm:
         threading.Thread(target=_warm, args=(library, citations), daemon=True).start()
 
-    @server.tool(title="List works", annotations=read_only("List works"), structured_output=False)
+    @server.tool(title="List works", description=docs.get("list_works"), annotations=read_only("List works"),
+                 structured_output=False)
     def list_works(
-        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
+        group: Annotated[str | None, Field(description=helps["group"])] = None,
     ) -> str:
         """List the works with their ids, groups and sizes, and when they were written (written) where known. Works
         whose text could not be found are listed as not available."""
         with _tool_errors():
             return _json(library.works(group))
 
-    @server.tool(title="Show outline", annotations=read_only("Show outline"), structured_output=False)
+    @server.tool(title="Show outline", description=docs.get("get_outline"), annotations=read_only("Show outline"),
+                 structured_output=False)
     def get_outline(
-        section: Annotated[str, Field(description="A work id (e.g. 'sozler') or a section id (e.g. 'sozler/10').")],
+        section: Annotated[str, Field(description=helps["outline"])],
         depth: Annotated[int, Field(description="How many levels of subsections to include.", ge=0, le=6)] = 2,
     ) -> str:
         """Show the heading tree of a work or section: ids, titles, subtitles, when each treatise was written (written) and the number of sentences under
@@ -519,7 +624,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.outline(section, depth))
 
-    @server.tool(title="Read section", annotations=read_only("Read section"), structured_output=False)
+    @server.tool(title="Read section", description=docs.get("read_section"), annotations=read_only("Read section"),
+                 structured_output=False)
     def read_section(
         section: Annotated[str, Field(description="A section id from get_outline or a search result's ref path.")],
         cursor: Annotated[str | None, Field(description="next_cursor from the previous call, to continue.")] = None,
@@ -532,10 +638,10 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.read_section(section, cursor, max_words))
 
-    @server.tool(title="Get passage", annotations=read_only("Get passage"), structured_output=False)
+    @server.tool(title="Get passage", description=docs.get("get_passage"), annotations=read_only("Get passage"),
+                 structured_output=False)
     def get_passage(
-        id: Annotated[str, Field(description="A sentence id, or a range 'first_id..last_id' (the last may be short: "
-                                             "'sozler/10/c010..c015').")],
+        id: Annotated[str, Field(description=helps["passage"])],
         context: Annotated[int, Field(description="Neighbouring sentences to add on each side.", ge=0, le=20)] = 0,
     ) -> str:
         """Get sentences (or a range) with their text, attached hâşiyes and the publisher's translations of quoted
@@ -544,16 +650,15 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.passage(id, context))
 
-    @server.tool(title="Search the text", annotations=read_only("Search the text"), structured_output=False)
+    @server.tool(title="Search the text", description=docs.get("search"), annotations=read_only("Search the text"),
+                 structured_output=False)
     def search(
-        query: Annotated[str, Field(description="Words (all must occur), \"exact phrase\", prefix*, OR, -exclude, "
-                                                "NEAR(a b, 5). Marks and Turkish letters are optional."
-                                                + ("" if texts_only else SEARCH_JOINED_HELP))],
+        query: Annotated[str, Field(description=helps["query"])],
         work: Annotated[str | None, Field(description="Only this work id.")] = None,
-        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
+        group: Annotated[str | None, Field(description=helps["group"])] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 20,
         offset: Annotated[int, Field(ge=0)] = 0,
-        include_related: Annotated[bool, Field(description=RELATED_HELP)] = False,
+        include_related: Annotated[bool, Field(description=helps["related"])] = False,
     ) -> str:
         """Search the works sentence by sentence by the text's own words, best matches first: the total, matches
         per work, matching section titles, and sentences (id, cite_as, text). An unquoted Arabic word also matches its
@@ -585,15 +690,15 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             with _tool_errors():
                 return _json(library.hadith(id))
 
-    @server.tool(title="Search by meaning", annotations=read_only("Search by meaning"), structured_output=False)
+    @server.tool(title="Search by meaning", description=docs.get("semantic_search"), annotations=read_only("Search by meaning"),
+                 structured_output=False)
     def semantic_search(
-        query: Annotated[str, Field(description="A question or concept in your own (today's) words, e.g. "
-                                                "'Ölüm neden bir nimettir?' or 'ümitsizlik'.")],
+        query: Annotated[str, Field(description=helps["meaning"])],
         work: Annotated[str | None, Field(description="Only this work id.")] = None,
-        group: Annotated[str | None, Field(description="Only this group: eski-said, ana-cilt, mecmua, hizb or osmanlica.")] = None,
+        group: Annotated[str | None, Field(description=helps["group"])] = None,
         limit: Annotated[int, Field(ge=1, le=50)] = 10,
         offset: Annotated[int, Field(ge=0)] = 0,
-        include_related: Annotated[bool, Field(description=RELATED_HELP)] = False,
+        include_related: Annotated[bool, Field(description=helps["related"])] = False,
     ) -> str:
         """Find passages by meaning: the sentences closest to the query (id, cite_as, text, similarity) and the
         sections where the topic concentrates. For concepts and questions; the text often uses other, older words.
@@ -602,9 +707,9 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             limited = open_access or (anonymous and get_access_token() is None)
             if limited and not is_debug_request() \
                     and store.anonymous_calls("semantic_search", start_of_day()) >= anonymous_semantic:
-                raise ToolError("The daily limit of semantic searches for users without an account is reached. "
-                                "Use search with the text's own words instead. A user with an account can sign "
-                                "in for unlimited use.")
+                raise ToolError("The shared daily limit of semantic searches on this server is reached. Use search "
+                                "with the text's own words instead; semantic_search works again tomorrow."
+                                + ("" if open_access else " A user with an account can sign in for unlimited use."))
             return _json(library.semantic_search(query, work, group, limit, offset, include_related))
 
     if anonymous:
@@ -630,7 +735,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
             with _tool_errors():
                 return _json(library.text_links(id, limit))
 
-    @server.tool(title="Find sentence", annotations=read_only("Find sentence"), structured_output=False)
+    @server.tool(title="Find sentence", description=docs.get("find_sentence"), annotations=read_only("Find sentence"),
+                 structured_output=False)
     def find_sentence(
         incipit: Annotated[str, Field(description="The first words of the sentence, as the user quotes them.")],
         scope: Annotated[str | None, Field(description="Only inside this work or section id.")] = None,
@@ -640,7 +746,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.find_sentence(incipit, scope))
 
-    @server.tool(title="Find verse in the works", annotations=read_only("Find verse in the works"), structured_output=False)
+    @server.tool(title="Find verse in the works", description=docs.get("find_ayah"), annotations=read_only("Find verse in the works"),
+                 structured_output=False)
     def find_ayah(
         sura: Annotated[str, Field(description="Sura number (1–114) or name, e.g. '2' or 'Bakara'.")],
         ayah: Annotated[int | None, Field(description="Verse number; without it, every quoted verse of the sura.")] = None,
@@ -678,9 +785,10 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         with _tool_errors():
             return _json(library.ayahs(sura, ayah, end, context))
 
-    @server.tool(title="Build references", annotations=read_only("Build references"), structured_output=False)
+    @server.tool(title="Build references", description=docs.get("cite"), annotations=read_only("Build references"),
+                 structured_output=False)
     def cite(
-        sources: Annotated[list[Source], Field(description="The sentences you quote or rely on, in the order of "
+        sources: Annotated[list[TextSource if texts_only else Source], Field(description="The sentences you quote or rely on, in the order of "
                                                            "their numbers in your answer ([1], [2]…).",
                                                min_length=1, max_length=50)],
         first: Annotated[int, Field(description="Number of the first source; set it to continue the numbering when "
