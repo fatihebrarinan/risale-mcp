@@ -92,11 +92,16 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (c) İlk girişte karşılama sayfası (yapay zekâ taslağı, tefsir değildir; not nasıl bırakılır; ne saklanır).
   (d) Paragraf altındaki "atıf" ve "bağlantı" kalkar, "not" büyür; paragrafın adresi not açılınca adres çubuğuna
   yazılır. (e) Platformdan metin kopyalanınca damgalı künye satırı kendiliğinden eklenir ("… yapay zekâ taslağı …
-  Tefsir değildir."). (f) Kaldığı yer: okuyucu dönünce son birim ve paragraf. (g) **Not akışı konuşuluyor**
-  (notlarla nereye varılacağı; yeni not bildirimi, bütün açık notların listesi, notun akıbetinin okuyucuya
-  gösterilmesi buna bağlı). Birim sonunda tek soru önerisi kullanıcıya gerekli gelmedi. **Kullanıcının eğilimi
-  (2026-11-22):** basit başlasın: her okuyucunun notu kendisine bağlı saklanır, girince önceki notlarını görür;
-  yöneticiye bildirim yok, notla taslak düzeltme ilk aşamada yok; konuşma sürüyor.
+  Tefsir değildir."). (f) Kaldığı yer: okuyucu dönünce son birim ve paragraf.
+  (g) **Not, okuyucunun kendi defteri** (kullanıcının kararı, 2026-11-22): her okuyucunun notu kendisine bağlı
+  saklanır, girince notlarını paragraflarının yanında görür; (g1) herkes yalnız kendi notunu görür, yönetici de
+  (bugün masa hesabı herkesinkini görüyor; notların sunucuda durduğu karşılama sayfasında ve gizlilik politikasında
+  yazar); (g2) "Notlarım" sayfası: bütün birimlerdeki notlar tek listede, paragrafına bağlantıyla, indirilebilir;
+  (g3) tür seçimi (hata, soru, öneri, kaynak) kalkar, tek yazı alanı; (g4) okuyucu notunu düzenler ve gerçekten
+  siler (heyet akışının "silinmez" kuralı kişisel defterde uygulanmaz); (g5) paragrafta seçilen söz notun başında
+  kalır. Yöneticiye bildirim yok, notla taslak düzeltme (`notlarla`) ilk aşamada kullanılmaz (kod durur). Birim
+  sonunda tek soru önerisi kullanıcıya gerekli gelmedi. (h) Türkçe lügat (A4 (a)) hazır olunca platformda kelimeye
+  dokununca anlam.
 
 **Küçük açıklar** (kullanıcının kararı, 2026-11-21: "önerdiğin sıraya başla"; B3 için: "gerçekten bir problem var mı
 araştır, varsa düzelt"):
@@ -173,8 +178,8 @@ Kimliksizler:
   yazılış çeşitleri; ≈14 bin madde tahmini, ≈1,2 MB); risaleoku'nun izni bütün içeriğini kapsar (kullanıcı). Nâşirin
   lügatıdır, müellife mal edilmez (meal gibi). Kullanım: okuma platformunda Türkçe kelimeye dokununca anlam, Risale
   eklentisinde bir lügat aracı; kelimenin ekleri atılarak en uzun madde eşlenir. Hangi basılı lügatten geldiği
-  risaleoku'ya sorulur (atıf için). e-Risale'nin lügatı indirilen veride yok (sitede `/api/` üzerinden). (b) **Arapça**:
-  konuşuluyor.
+  risaleoku'ya sorulur (atıf için). e-Risale'nin lügatı indirilen veride yok (sitede `/api/` üzerinden). Arapça
+  lügat "Fikirler"de.
 - **E8 Arap dünyasına açılmak** (kullanıcının kararı, 2026-11-22): ilk adım izin: külliyatın Arapça tercümesi
   (İhsan Kasım Salihî) için hak sahibine e-posta (taslağı Claude, gönderen kullanıcı). İzin gelirse eser kataloğa,
   sitenin ve talimatın Arapçası sonra.
@@ -230,6 +235,11 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 
 ## Fikirler (konuşuldu, karar yok)
 
+- **Arapça lügat** (kullanıcının kararı, 2026-11-22: "Fikirler"de kalsın): okuma platformunda âyetteki bir kelimeye
+  dokununca kökü ve el-Müfredât'ın o maddesi, Râgıb'ın sözüyle ve kaynağıyla (taslağın kelime mânâsını okuyucu
+  lügatçiden denetler). Eklentilere kazancı küçük (Klasik'te el-Müfredât köklere göre bölümlü). Zorluk kök bulmak:
+  Kur'ân kelimeleri için hazır sarf verisi var (lisansı bakılır), taslağın Arapça nesrinde zor. Yapılırsa küçük
+  başlar: yalnız âyetin kelimeleri, yalnız el-Müfredât; ileride et-Ta'rîfât, Mekāyîs ya da Lisân.
 - **Ortak derlemler** (e-Risale, Yeni Asya; "Sonra"dan taşındı, kullanıcının kararı, 2026-11-22): e-Risale kendi MCP
   sunucusunu yazmış, ortak çalışmak istemeyebilir; Yeni Asya'nın ihtiyaçları kullanıcının onlarla konuşmasıyla
   belirlenir. Tasarım aşağıda ("Ortak derlemler").
