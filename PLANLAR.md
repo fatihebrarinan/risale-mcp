@@ -57,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E6, S9, A3, D15, B8 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E8, S10, A3, D15, B8 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -68,6 +68,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (`yayin-20261121-193007`, klasik `2026-11-21` sürümü, tefsir kodu); B3 Aralık'ta. S7, S8, S9 ve **D5 bitti** (kullanıcının
   kararları; "Biten"de, ayrıntı `KAYIT.md`). D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine sürüyor
   (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
+- **Önde (2026-11-22):** S10 davet altyapısı ve okuma platformu; önce not akışı, lügat, OpenAI için tüzel kişilik ve
+  Elmalılı'nın engelleri konuşuluyor (kullanıcı). Kuyruk haftalık kotada, 23.11 03.00'te (TSİ) sürer.
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
   "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
   (`site-zamanli.timer`); yayımlandığına bakılır. (2) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
@@ -80,7 +82,19 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | B3 | Tefsirde uzun cümlelerin yeniden bölünmesi ve kayan âyet birimleri: **Aralık'ta, D5 kuyruğu durunca** | |
+| 1 | S10 | Davet altyapısı ve okuma platformunun değişiklikleri (not akışı konuşuluyor) | |
+| 2 | B3 | Tefsirde uzun cümlelerin yeniden bölünmesi ve kayan âyet birimleri: **Aralık'ta, D5 kuyruğu durunca** | |
+
+- S10 **Davet altyapısı ve okuma platformu** (kullanıcının kararları, 2026-11-22; ehil okuyucu davetinin ön şartı, S8
+  yazısı 2026-11-24'te çıkıyor). (a) Hesabın varsayılan kapsamı `oku`, masa açıkça istenir (bugün varsayılan `masa`;
+  tek hesap kullanıcınınki). (b) Tek kullanımlık davet bağlantısı (7 gün): yönetici `davet <e-posta>` der, bağlantıyı
+  kendi e-postasıyla gönderir (site e-posta göndermez), okuyucu parolasını kendisi koyar; unutursa yeni bağlantı.
+  (c) İlk girişte karşılama sayfası (yapay zekâ taslağı, tefsir değildir; not nasıl bırakılır; ne saklanır).
+  (d) Paragraf altındaki "atıf" ve "bağlantı" kalkar, "not" büyür; paragrafın adresi not açılınca adres çubuğuna
+  yazılır. (e) Platformdan metin kopyalanınca damgalı künye satırı kendiliğinden eklenir ("… yapay zekâ taslağı …
+  Tefsir değildir."). (f) Kaldığı yer: okuyucu dönünce son birim ve paragraf. (g) **Not akışı konuşuluyor**
+  (notlarla nereye varılacağı; yeni not bildirimi, bütün açık notların listesi, notun akıbetinin okuyucuya
+  gösterilmesi buna bağlı). Birim sonunda tek soru önerisi kullanıcıya gerekli gelmedi.
 
 **Küçük açıklar** (kullanıcının kararı, 2026-11-21: "önerdiğin sıraya başla"; B3 için: "gerçekten bir problem var mı
 araştır, varsa düzelt"):
@@ -112,8 +126,9 @@ araştır, varsa düzelt"):
 
 | Kimlik | İş | Kimde | Eski adı |
 |---|---|---|---|
-| S4.3 | Claude dizini: Risale başvurusu "In review"; dizin ekibine e-posta gitti (2026-11-16) | Anthropic | M7 |
-| S4.1 | OpenAI: doğrulanmış kendi adıyla dizine başvurulsun mu | Kullanıcı | M7 |
+| S4.3 | Claude dizini: Risale başvurusu "In review"; dizin ekibine e-posta gitti (2026-11-16). **Sonraki adım (kullanıcının kararı, 2026-11-22):** belgenin verdiği adrese (mcp-review@anthropic.com) listeleme adı, organizasyon ve durumla e-posta; bir hafta cevap yoksa başvuru silinip `risale.risalemcp.com/mcp` adresiyle yeniden gönderilir. Öncesinde dört sunucu dizin ölçütleriyle denetlenir (araçlarda `title` ve salt okunur işareti, hata iletileri, Voyage'ın beyanı) | Anthropic | M7 |
+| S4.7 | Claude eklentisi (plugin, kullanıcının kararı, 2026-11-22): küçük, herkese açık GitHub deposu (proje talimatı skill olarak, dört bağdaştırıcının adresi, README, lisans; metin girmez). Önce yerelde kurulup skill'in sohbette ne zaman yüklendiği denenir (her sohbette değil, açıklaması eşleşince yüklenir: proje talimatının birebir yerini tutmayabilir), sonra portaldan "Plugin bundle" | Biz | |
+| S4.1 | OpenAI: kullanıcı kendi adıyla başvurmayı kabul etti (2026-11-22), önce "Risale MCP"yi işletme doğrulamasına uygun bir tüzel kişi (dernek) yapmanın yolu konuşuluyor; dört başvuru | Kullanıcı | M7 |
 
 Kapananlar (2026-11-12): E4 Kızıl İcaz'ın Türkçesi (gerek yok, "Biten"); Diyanet (izin yok, "Biten"); Osmanlıcanın
 kaynağı (A2'nin ön şartı değil).
@@ -147,15 +162,20 @@ Kimliksizler:
 
 - **Konu fihristi** (Aşama 15): dondurulması önerildi (anlamsal arama bu işi büyük ölçüde görüyor); karar kullanıcıda.
 - **Kur'ân'a kelime düzeyinde adres** (Y1.1): mekanik; bir ihtiyaç doğarsa.
-- **Hadis – hadis rivayet grupları** (Y2.1'in kalanı): aynı hadisin rivayetleri, lafızla (mekanik).
+- **E7 Hadis tarafını derinleştirmek** (kullanıcının kararı, 2026-11-22; kullanımda hadis eklentisi Risale'yi geçti,
+  2026-11-20–22): (a) hadis – hadis rivayet grupları (Y2.1'in kalanı): aynı hadisin rivayetleri, lafızla (mekanik);
+  (b) yeni kitaplar, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve Abdürrezzâk'ın
+  Musannef'leri (nüshalar seçilirken bakılır).
+- **E8 Arap dünyasına açılmak** (kullanıcının kararı, 2026-11-22): ilk adım izin: külliyatın Arapça tercümesi
+  (İhsan Kasım Salihî) için hak sahibine e-posta (taslağı Claude, gönderen kullanıcı). İzin gelirse eser kataloğa,
+  sitenin ve talimatın Arapçası sonra.
 - **Risale'nin müfessiri adıyla anması** (Y1.7'nin mekanik kısmı).
 - **Yalnız Türkçe aktarılan hadisler** (HA7, 101 aday cümle).
 - **Gönderme tablosu** (Aşama 13'ün ertelenen kısmı).
 - **Yerel indirilebilir paket** (Y2.7).
-- **Ortak derlemler** (e-Risale, Yeni Asya): tasarım aşağıda.
 - **E3 Sorularla Risale:** web araması değil; izin alınırsa `risale/ilgili` koleksiyonuna (`authority: modern`,
   varsayılan aramaya girmez). İzin e-postası gönderilmedi (2026-11-12), izin yoksa eklenmez. Bkz. "Fikirler".
-- **E5 Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Önce (b)'nin 2. dilimi, sonra 3. dilimi (kullanıcı, 2026-11-13); (c)'dekiler yer ve zaman müsait olunca.
+- **E5 Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Önce (b)'nin 2. dilimi, sonra 3. dilimi (kullanıcı, 2026-11-13); (c)'dekiler yer ve zaman müsait olunca. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
 - **Okuma platformu ve ar-ge masasının açıkları** (S7'den, 2026-11-21; kullanıcının kararı: arayüzün küçük
   düzeltme ve geliştirmeleri sırası gelince ayrı adım olarak yazılır, kimlik alır): (1) **konuşulacak** (kullanıcı):
   masanın kolaylıklarından hangileri okuma platformuna taşınacak; (2) canlıda girişle bir bakış (kullanıcı);
@@ -195,6 +215,9 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 
 ## Fikirler (konuşuldu, karar yok)
 
+- **Ortak derlemler** (e-Risale, Yeni Asya; "Sonra"dan taşındı, kullanıcının kararı, 2026-11-22): e-Risale kendi MCP
+  sunucusunu yazmış, ortak çalışmak istemeyebilir; Yeni Asya'nın ihtiyaçları kullanıcının onlarla konuşmasıyla
+  belirlenir. Tasarım aşağıda ("Ortak derlemler").
 - **Taslak usulünün hedeflere göre değişmesi ve vecih haritası** (kullanıcının kararı, 2026-11-21: "Fikirler kısmında
   kalsın"; şimdi istekli değil). D5.1'in okumasından: model bulmada ve dizmede güçlü (Risale dersi, nazım nükteleri),
   tartmada zayıf (34'te «kâne» tek müfessirden). Fikir: taslak müfessirlerin ayrıldığı yerde tercih yapmak yerine
