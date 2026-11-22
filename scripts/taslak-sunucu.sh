@@ -16,7 +16,7 @@
 #   scripts/taslak-sunucu.sh devam [b]  # kuyruğu başlat ya da sürdür (birim verilirse o birim bitince durur)
 #   scripts/taslak-sunucu.sh dur        # sürmekte olan birim bitince dur
 #   scripts/taslak-sunucu.sh hemen-dur  # hemen kes (devamda yarım birim kaldığı adımdan sürer)
-#   scripts/taslak-sunucu.sh esik <oran|sil>  # haftalık eşik yalnız bu pencere için (ör. 1.0: sıfırlanma yakınken)
+#   scripts/taslak-sunucu.sh esik <oran|sil>  # haftalık eşik yalnız o anki pencere için (ör. 1.0; her hafta yeniden verilir, sıfırlanınca 0.9)
 #
 # Kullanıcının bir kez yapacağı: `giris` (tarayıcı onayı; anahtar sohbete girmez, `~/.claude-token`'a yazılır,
 # `d1-arka-is.sh` oradan okur). `kur`'un yazdığı açık anahtar özel depoya yazma izinli "deploy key" olarak eklendi
@@ -146,6 +146,9 @@ durum)
     "${SSH[@]}" "$HOST" "free -m | sed -n 2p; df -h / | tail -1; uptime"
     as_u "cd $DEST && export PATH=\$HOME/.local/bin:\$PATH XDG_RUNTIME_DIR=/run/user/\$(id -u)
         echo \"kuyruk: \$(systemctl --user is-active d1-kuyruk 2>/dev/null)\$( [ -f ~/.d5-dur ] && echo ', durdurma işareti var')\"
+        e=0.9; u=; [ -f ~/.d5-hafta-esik ] && read e u < ~/.d5-hafta-esik
+        if [ -n \"\$u\" ] && [ \"\$u\" -le \"\$(date +%s)\" ]; then e=0.9; u=; fi
+        echo \"haftalık eşik: \$e\$( [ -n \"\$u\" ] && date -d @\$u '+ (%d.%m %H:%M sıfırlanmasına kadar, sonra 0.9)')\"
         uv run python scripts/d1-birim.py durum 2>/dev/null | head -3
         tail -n 3 data/interim/d1-isler/kuyruk.log 2>/dev/null
         (scripts/d1-arka.sh liste 2>/dev/null | head -6 || true)"
