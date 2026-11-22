@@ -71,8 +71,8 @@ Aynı çizim, zemin rengi farklı (kullanıcı onayladı): Risale yeşil `src/ri
 `icon-hadis.png`, Tefsir mor `icon-tefsir.png`, Klasik kahverengi `icon-klasik.png` (256×256; SVG'leri yanında).
 Portalda her başvuruya kendi PNG'si yüklenir: dizinde ayrı simgenin tek yolu budur. Claude'un kendi arayüzü simgeyi
 `google.com/s2/favicons?domain=risalemcp.com` ile kök alan adından alır, dört eklenti orada yeşil görünür (2026-11-16). Sunucular da kendi simgesini MCP `icons` ile duyurur
-(`https://mcp.risalemcp.com/icon-<ad>.png`, kök sunucu verir) ve başlıkları liste adlarıyla aynıdır: "Risale MCP
-Hadis", "Risale MCP Tefsir", "Risale MCP Klasik".
+(`https://mcp.risalemcp.com/icon-<ad>.png`, kök sunucu verir) ve başlıkları liste adlarıyla aynıdır: "Risale-i Nur
+Library", "Hadith Library", "Tafsir Library", "Classical Islamic Library" (2026-11-22; önceden "Risale MCP …").
 
 ### 1.5 OpenAI alan adı doğrulaması
 
@@ -118,7 +118,7 @@ Hakem talimatı için ayrı alan yok: test istemleri "Ek notlar"a girer. Kullan�
 | Politika beyanları | yedisi de işaretlenir |
 | Ek notlar | eklentinin notu: yayıncı, kaynaklar, test istemleri |
 | Şirket adı, web sitesi | `Risale MCP`, `https://risalemcp.com/` |
-| Ad | `Risale MCP Risale-i Nur`, `Risale MCP Hadis`, `Risale MCP Tefsir`, `Risale MCP Klasik` |
+| Ad | `Risale-i Nur Library`, `Hadith Library`, `Tafsir Library`, `Classical Islamic Library` (kullanıcının kararı, 2026-11-22: İngilizce, "Risale MCP" öneki yok; yayıncı adı "Risale MCP" kalır. Önceden `Risale MCP Risale-i Nur`, `Risale MCP Hadis`, `Risale MCP Tefsir`, `Risale MCP Klasik`) |
 
 **Araç taraması için bağdaştırıcı hesapta olmalı.** Portal araçları sizin hesabınızdaki bağdaştırıcıdan okur ve
 "bu listelemenin gönderildiği bağdaştırıcı hesabınızda yok" diye uyarır. Gizli adres yetmez: listelemedeki adresin
@@ -133,9 +133,9 @@ Gizli adresli olanı denemelerin kaydı için ayrıca tutabilirsiniz.
 - Ek notların ilk paragrafı (yayıncı; her eklentide aynı):
   > Publisher: "Risale MCP" is the name of a volunteer, non-commercial project, not a registered company. It is run
   > by an individual (the holder of this account) and is named the same way on the website, the privacy policy and
-  > the terms (risalemcp.com). The project runs four connectors under this name, submitted separately: Risale MCP
-  > (mcp.risalemcp.com/mcp), Risale MCP Hadis (hadis.risalemcp.com/mcp), Risale MCP Tefsir
-  > (tefsir.risalemcp.com/mcp) and Risale MCP Klasik (klasik.risalemcp.com/mcp).
+  > the terms (risalemcp.com). The project runs four connectors under this name, submitted separately: Risale-i Nur
+  > Library (mcp.risalemcp.com/mcp), Hadith Library (hadis.risalemcp.com/mcp), Tafsir Library
+  > (tefsir.risalemcp.com/mcp) and Classical Islamic Library (klasik.risalemcp.com/mcp).
 - Ek notların son paragrafı (her eklentide aynı):
   > All tools are read-only, there are no accounts, and no conversation content or tool inputs are stored (only the
   > tool name, time, duration and error type, for 90 days).
@@ -164,7 +164,7 @@ yüzdendi, S4.2). "Risale-i Nur" aramada bulunsun diye tek satırın ilk kelimel
 5. Gönderdikten sonra durum "Approved" olursa yayımlamak bizde (**Publish**); onaydan sonra yapılan her düzenleme
    listelemeyi yeniden incelemeye gönderir, düzenlemeyi yayımlamadan önce yapın. "In review" olursa beklenir.
 
-**Alanlar:** sunucu URL'si `https://mcp.risalemcp.com/mcp`, ad `Risale MCP Risale-i Nur` (kullanıcı, 2026-11-16: yayıncı adıyla aynı olmasın), etiket `risale`, simge
+**Alanlar:** sunucu URL'si `https://mcp.risalemcp.com/mcp`, ad `Risale-i Nur Library` (2026-11-22; önceden `Risale MCP Risale-i Nur`, kullanıcı 2026-11-16: yayıncı adıyla aynı olmasın), etiket `risale`, simge
 `src/risale_mcp/static/icon.png` (yeşil; boş bırakılırsa alan adının simgesi), dokümantasyon
 `https://risalemcp.com/en/risale.html` (öbürleri gibi eklentinin kendi sayfası; eski başvuruda `docs.html`),
 kimlik doğrulama **Yok**, test hesabı yok.
@@ -232,14 +232,14 @@ kimlik doğrulama **Yok**, test hesabı yok.
 
 ### 2b. Hadis (yeni başvuru)
 
-Portal › **Submit new** › **MCP connector**. Sunucu URL'si `https://hadis.risalemcp.com/mcp`, ad `Risale MCP Hadis`,
+Portal › **Submit new** › **MCP connector**. Sunucu URL'si `https://hadis.risalemcp.com/mcp`, ad `Hadith Library` (2026-11-22; önceden `Risale MCP Hadis`),
 etiket `hadis`, simge `https://hadis.risalemcp.com/icon.png`, dokümantasyon `https://risalemcp.com/en/hadith.html`.
 
 - **Tek satır:**
   > Read and cite eighteen classical hadith collections in Arabic, report by report, with grades only as the
   > sources give them.
 - **Açıklama:**
-  > Risale MCP Hadis gives Claude eighteen classical hadith collections in their original Arabic: the Six Books
+  > Hadith Library gives Claude eighteen classical hadith collections in their original Arabic: the Six Books
   > (al-Bukhari, Muslim, Abu Dawud, al-Tirmidhi, al-Nasa'i, Ibn Majah) and the Muwatta, Ahmad's Musnad, al-Darimi,
   > al-Tabarani's al-Mu'jam al-Saghir, al-Hakim's al-Mustadrak with al-Dhahabi's notes, Ibn Hibban (al-Ihsan),
   > al-Haythami's Majma' al-Zawa'id, Kanz al-'Ummal, al-Munawi's Fayd al-Qadir, al-'Ajluni's Kashf al-Khafa, Qadi
@@ -290,7 +290,7 @@ etiket `hadis`, simge `https://hadis.risalemcp.com/icon.png`, dokümantasyon `ht
 
 ### 2c. Tefsir (yeni başvuru)
 
-Sunucu URL'si `https://tefsir.risalemcp.com/mcp`, ad `Risale MCP Tefsir`, etiket `tefsir`, simge
+Sunucu URL'si `https://tefsir.risalemcp.com/mcp`, ad `Tafsir Library` (2026-11-22; önceden `Risale MCP Tefsir`), etiket `tefsir`, simge
 `https://tefsir.risalemcp.com/icon.png`, dokümantasyon `https://risalemcp.com/en/tafsir.html`. Tefsir sunucusu ayrı
 makinededir (CAX21); hakem denemesinde sorun olursa `scripts/tefsir-sunucu.sh status|logs`.
 
@@ -298,7 +298,7 @@ makinededir (CAX21); hakem denemesinde sorun olursa `scripts/tefsir-sunucu.sh st
   > Read and cite thirteen classical works of Qur'anic exegesis in Arabic, verse by verse, from al-Tabari to
   > al-Alusi.
 - **Açıklama:**
-  > Risale MCP Tefsir gives Claude thirteen classical works of Qur'anic exegesis (tafsir) in their original
+  > Tafsir Library gives Claude thirteen classical works of Qur'anic exegesis (tafsir) in their original
   > Arabic, in order of their authors' deaths: al-Tabari, al-Maturidi, al-Zamakhshari, Fakhr al-Din al-Razi,
   > al-Qurtubi, al-Baydawi, al-Nasafi, Ibn Kathir, al-Jalalayn, al-Suyuti's al-Durr al-Manthur, Abu al-Su'ud,
   > Isma'il Haqqi Bursawi and al-Alusi: about 552,000 sentences, together with the Qur'an's text.
@@ -345,14 +345,14 @@ makinededir (CAX21); hakem denemesinde sorun olursa `scripts/tefsir-sunucu.sh st
 
 ### 2d. Klasik Eserler (yeni başvuru)
 
-Sunucu URL'si `https://klasik.risalemcp.com/mcp`, ad `Risale MCP Klasik`, etiket `klasik`, simge
+Sunucu URL'si `https://klasik.risalemcp.com/mcp`, ad `Classical Islamic Library` (2026-11-22; önceden `Risale MCP Klasik`), etiket `klasik`, simge
 `https://klasik.risalemcp.com/icon.png`, dokümantasyon `https://risalemcp.com/en/classical.html`.
 
 - **Tek satır:**
   > Read and cite classical Arabic works on rhetoric, language and terms, from al-Jurjani's Dala'il al-I'jaz to
   > al-Sayyid al-Sharif's Ta'rifat.
 - **Açıklama:**
-  > Risale MCP Klasik gives Claude classical Arabic works on rhetoric (balagha), language and terms in their original
+  > Classical Islamic Library gives Claude classical Arabic works on rhetoric (balagha), language and terms in their original
   > Arabic: 'Abd al-Qahir al-Jurjani's Dala'il al-I'jaz and Asrar al-Balagha, al-Raghib al-Isfahani's al-Mufradat fi
   > Gharib al-Qur'an, al-Sakkaki's Miftah al-'Ulum and al-Sayyid al-Sharif al-Jurjani's al-Ta'rifat: about 15,000
   > sentences, together with the Qur'an's text. These are the masters of rhetoric that Bediüzzaman Said Nursî names
@@ -431,7 +431,7 @@ Değişecekler (`packaging/chatgpt/plugin.json`; S4.2 kararı: uygulama adı "Ri
 | Alan | Bugün | Yeni |
 |---|---|---|
 | `name` | `risale-i-nur` | `risale-i-nur` (kalır: portal mevcut başvurunun iç adını değiştirmeye izin vermiyor, 2026-11-22; dizinde görünmez) |
-| `interface.displayName` | Risale-i Nur | Risale Library (2026-11-22: portalın otomatik denetimi "Remove “MCP” from the plugin name" dedi; yönerge §1.3 adın sonuna "MCP" eklenmesini yasaklıyor. Yalnız OpenAI'de; Claude ve site "Risale MCP") |
+| `interface.displayName` | Risale-i Nur | Risale-i Nur Library (kullanıcının kararı, 2026-11-22, dört eklentinin yeni adlarıyla; arada "Risale Library" denendi. Adda "MCP" olamaz: portalın otomatik denetimi "Remove “MCP” from the plugin name" dedi; yönerge §1.3 adın sonuna "MCP" eklenmesini yasaklıyor. Yalnız OpenAI'de; Claude ve site "Risale MCP") |
 | `interface.developerName`, `author.name` | Nur Hadimleri | doğrulanmış adınız (§1.1) |
 | `interface.shortDescription` (≤30) | Cite the Risale-i Nur exactly | Cite the Risale-i Nur exactly (kalır) |
 | açıklamalar | "126,000 sentences across 44 works", "by Nur Hadimleri" | "131,000 sentences across 53 works"; son cümle "A volunteer, non-commercial project." |
@@ -462,8 +462,8 @@ değilse ilk cümle ve "previous version" atılır.
 >   privacy policy and terms name the same person as publisher and operator (risalemcp.com/en/privacy.html,
 >   risalemcp.com/en/terms.html). The earlier name "Nur Hadimleri" was not a registered organization and has been
 >   removed everywhere.
-> - Name: the app is now "Risale Library". "Risale-i Nur" is the name of the works the app serves (the writings of
->   Bediüzzaman Said Nursî, 1878–1960), not a brand we claim. The project's own name is "Risale MCP", after its
+> - Name: the app is now "Risale-i Nur Library", a description of what it holds. "Risale-i Nur" is the name of
+>   the works the app serves (the writings of Bediüzzaman Said Nursî, 1878–1960), not a brand we claim. The project's own name is "Risale MCP", after its
 >   domain risalemcp.com, which I own and verify with the domain token. "MCP" is left out of the app name because
 >   the guidelines require it.
 > - Content: the texts are served unchanged, with written permission from their sources (e-Risale, risaleoku.com and
@@ -482,7 +482,7 @@ genişletilir; ben hazırlarım):
 | Alan | Hadis | Tefsir | Klasik Eserler |
 |---|---|---|---|
 | `name` | `risale-mcp-hadis` | `risale-mcp-tefsir` | `risale-mcp-klasik` |
-| `displayName` | Risale Hadith Library | Risale Tafsir Library | Risale Classical Library (OpenAI'de adda "MCP" olamaz; kesinleşmedi) |
+| `displayName` | Hadith Library | Tafsir Library | Classical Islamic Library (kullanıcının kararı, 2026-11-22) |
 | `shortDescription` (≤30) | Cite hadith collections | Cite classical tafsir works | Cite classical rhetoric works |
 | sunucu | `https://hadis.risalemcp.com/mcp` | `https://tefsir.risalemcp.com/mcp` | `https://klasik.risalemcp.com/mcp` |
 | açıklama | §2b'deki açıklama ("Claude" yerine "ChatGPT") | §2c'deki açıklama | §2d'deki açıklama |

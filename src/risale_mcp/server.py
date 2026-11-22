@@ -384,8 +384,11 @@ STATIC = {"/icon.png": ("icon.png", "image/png"), "/icon.svg": ("icon.svg", "ima
 # Hadis, tefsir ve klasik sunucularının kendi simgesi (S4.6: aynı çizim, zemin rengi farklı). Her biri kendi alt
 # alan adındadır (hadis.risalemcp.com); o sunucu /icon.png ve /favicon.ico'da kendi simgesini, kökte simge bağlantılı
 # küçük bir sayfa verir (MCP `icons` ve alan adına bakan istemciler için; Claude'un arayüzü kök alan adınınkini alır). Bütün dosyalar her sunucuda durur.
-VARIANTS = {"hadis": ("Risale MCP Hadis", "hadis.html"), "tefsir": ("Risale MCP Tefsir", "tefsir.html"),
-            "klasik": ("Risale MCP Klasik", "klasik.html")}
+# Dizindeki ve sunucu bilgisindeki adlar (kullanıcının kararı, 2026-11-22; önceden "Risale MCP …"). Proje ve
+# yayıncının adı "Risale MCP" kalır (alan adı risalemcp.com).
+RISALE_TITLE = "Risale-i Nur Library"
+VARIANTS = {"hadis": ("Hadith Library", "hadis.html"), "tefsir": ("Tafsir Library", "tefsir.html"),
+            "klasik": ("Classical Islamic Library", "klasik.html")}
 for _variant in VARIANTS:
     STATIC[f"/icon-{_variant}.png"] = (f"icon-{_variant}.png", "image/png")
     STATIC[f"/icon-{_variant}.svg"] = (f"icon-{_variant}.svg", "image/svg+xml")
@@ -572,20 +575,20 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     meta = {"version": _version(),
             "website_url": f"https://risalemcp.com/en/{SITE_DOCS['hadis' if hadis else profile if texts_only else 'risale']}"}
     if hadis:
-        server = MCPServer("hadis", title="Risale MCP Hadis", instructions=HADIS_INSTRUCTIONS,
+        server = MCPServer("hadis", title=VARIANTS["hadis"][0], instructions=HADIS_INSTRUCTIONS,
                            description="Report-level, citable access to hadith collections and the Qur'an.",
                            icons=_icons(public_url, "hadis"), **meta, **protected)
     elif tefsir:
-        server = MCPServer("tefsir", title="Risale MCP Tefsir", instructions=TEFSIR_INSTRUCTIONS,
+        server = MCPServer("tefsir", title=VARIANTS["tefsir"][0], instructions=TEFSIR_INSTRUCTIONS,
                            description="Sentence-level, citable access to classical tafsir works and the Qur'an.",
                            icons=_icons(public_url, "tefsir"), **meta, **protected)
     elif klasik:
-        server = MCPServer("klasik", title="Risale MCP Klasik", instructions=KLASIK_INSTRUCTIONS,
+        server = MCPServer("klasik", title=VARIANTS["klasik"][0], instructions=KLASIK_INSTRUCTIONS,
                            description="Sentence-level, citable access to classical Arabic works on rhetoric, "
                                        "language and terms, and the Qur'an.",
                            icons=_icons(public_url, "klasik"), **meta, **protected)
     else:
-        server = MCPServer(NAME, title="Risale MCP",
+        server = MCPServer(NAME, title=RISALE_TITLE,
                            instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),
                            description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
                            icons=_icons(public_url), **meta, **protected)

@@ -19,7 +19,7 @@
   "extensions": {
     "com.openai": {
       "interface": {
-        "displayName": "Risale Library",
+        "displayName": "Risale-i Nur Library",
         "shortDescription": "Cite the Risale-i Nur exactly",
         "longDescription": "The complete works of Bediüzzaman Said Nursî (1878–1960).\n\nIncludes the Risale-i Nur Collection (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 131,000 sentences across 53 works, besides 16 volumes in Ottoman script, together with the Qur'an's vowelled Arabic text and the Türkiye Diyanet Foundation's Turkish translation.\n\nEvery sentence has a stable address, so ChatGPT can ground what it says in the text itself:\n- Search by the text's own words, or by meaning in today's language.\n- Read any section in book order, with the author's footnotes (hâşiye) and the sources of the verses and hadiths he quotes.\n- Quote the text exactly and end the answer with a list of sources giving work › section › the sentence's opening words. Quotations are checked against the cited sentences before the answer is sent.\n- Find where a Qur'anic verse is quoted in the works, and read the verse itself.\n\nWhen something is not in the works, ChatGPT is told to say so instead of filling the gap. All tools are read-only and work without an account. A volunteer, non-commercial project.",
         "developerName": "Fatih Ebrar İnan",

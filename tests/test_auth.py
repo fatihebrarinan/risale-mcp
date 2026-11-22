@@ -447,7 +447,7 @@ def test_subdomain_server_serves_its_own_icon_and_landing():
     assert own["/icon.png"][0] == "icon-hadis.png" and own["/favicon.ico"][0] == "favicon-hadis.ico"
     assert _own_static("")["/icon.png"][0] == "icon.png" and set(own) == set(STATIC)
     page = asyncio.run(_landing("klasik")(None)).body.decode()
-    assert "<title>Risale MCP Klasik</title>" in page and 'rel="icon" href="/favicon.ico"' in page
+    assert "<title>Classical Islamic Library</title>" in page and 'rel="icon" href="/favicon.ico"' in page
 
 
 def test_subdomain_server_also_accepts_the_old_host():
