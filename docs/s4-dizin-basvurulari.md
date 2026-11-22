@@ -422,7 +422,7 @@ gerekir, sizde kişisel doğrulama var. Kararınız: kişisel kimlikle yayımlam
 
 **Yapıldı (2026-11-22):** doğrulanmış ad "Fatih Ebrar İnan" (Verified - Individual, "solo developer"). Gizlilik ve
 şartlar sayfalarının yayıncı satırı bu ad (yayında); paket aşağıdaki tabloya göre güncellendi, `mcp.json` anahtarı
-`risale-mcp`, zip `data/interim/chatgpt/risale-mcp.zip`. Kalan sizde: organizasyonun görünen adı ("Nur Hadimleri")
+`risale-i-nur` (iç ad, portal değiştirtmiyor), zip `data/interim/chatgpt/risale-mcp.zip`. Kalan sizde: organizasyonun görünen adı ("Nur Hadimleri")
 da aynı ada çevrilsin (ret iletisi markanın doğrulanmış kişiye ait olduğunu soruyor; iki ayrı ad kalmasın), sonra
 §5 adım 4 ve aşağıdaki adımlar.
 
@@ -430,13 +430,13 @@ Değişecekler (`packaging/chatgpt/plugin.json`; S4.2 kararı: uygulama adı "Ri
 
 | Alan | Bugün | Yeni |
 |---|---|---|
-| `name` | `risale-i-nur` | `risale-mcp` |
+| `name` | `risale-i-nur` | `risale-i-nur` (kalır: portal mevcut başvurunun iç adını değiştirmeye izin vermiyor, 2026-11-22; dizinde görünmez) |
 | `interface.displayName` | Risale-i Nur | Risale MCP |
 | `interface.developerName`, `author.name` | Nur Hadimleri | doğrulanmış adınız (§1.1) |
 | `interface.shortDescription` (≤30) | Cite the Risale-i Nur exactly | Cite the Risale-i Nur exactly (kalır) |
 | açıklamalar | "126,000 sentences across 44 works", "by Nur Hadimleri" | "131,000 sentences across 53 works"; son cümle "A volunteer, non-commercial project." |
 | `tr-TR` açıklama | aynı eski sayılar ve "Nur Hadimleri'nin…" | "53 eserde yaklaşık 131 bin cümle"; son cümle "Gönüllü ve ticari olmayan bir projedir." |
-| `mcp.json` sunucu anahtarı | `risale-i-nur` | `risale-mcp` (adres aynı) |
+| `mcp.json` sunucu anahtarı | `risale-i-nur` | `risale-i-nur` (kalır, adres aynı) |
 | `publication.release_notes` | First public release… | Aynı; başına "Resubmitted under the publisher's verified individual identity." eklenebilir |
 
 Adımlar:
