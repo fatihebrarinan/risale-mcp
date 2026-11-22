@@ -431,7 +431,7 @@ Değişecekler (`packaging/chatgpt/plugin.json`; S4.2 kararı: uygulama adı "Ri
 | Alan | Bugün | Yeni |
 |---|---|---|
 | `name` | `risale-i-nur` | `risale-i-nur` (kalır: portal mevcut başvurunun iç adını değiştirmeye izin vermiyor, 2026-11-22; dizinde görünmez) |
-| `interface.displayName` | Risale-i Nur | Risale MCP |
+| `interface.displayName` | Risale-i Nur | Risale Library (2026-11-22: portalın otomatik denetimi "Remove “MCP” from the plugin name" dedi; yönerge §1.3 adın sonuna "MCP" eklenmesini yasaklıyor. Yalnız OpenAI'de; Claude ve site "Risale MCP") |
 | `interface.developerName`, `author.name` | Nur Hadimleri | doğrulanmış adınız (§1.1) |
 | `interface.shortDescription` (≤30) | Cite the Risale-i Nur exactly | Cite the Risale-i Nur exactly (kalır) |
 | açıklamalar | "126,000 sentences across 44 works", "by Nur Hadimleri" | "131,000 sentences across 53 works"; son cümle "A volunteer, non-commercial project." |
@@ -458,7 +458,7 @@ genişletilir; ben hazırlarım):
 | Alan | Hadis | Tefsir | Klasik Eserler |
 |---|---|---|---|
 | `name` | `risale-mcp-hadis` | `risale-mcp-tefsir` | `risale-mcp-klasik` |
-| `displayName` | Risale MCP Hadis | Risale MCP Tefsir | Risale MCP Klasik |
+| `displayName` | Risale Hadith Library | Risale Tafsir Library | Risale Classical Library (OpenAI'de adda "MCP" olamaz; kesinleşmedi) |
 | `shortDescription` (≤30) | Cite hadith collections | Cite classical tafsir works | Cite classical rhetoric works |
 | sunucu | `https://hadis.risalemcp.com/mcp` | `https://tefsir.risalemcp.com/mcp` | `https://klasik.risalemcp.com/mcp` |
 | açıklama | §2b'deki açıklama ("Claude" yerine "ChatGPT") | §2c'deki açıklama | §2d'deki açıklama |
