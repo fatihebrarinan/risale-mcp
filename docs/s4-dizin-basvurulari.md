@@ -476,6 +476,61 @@ Test senaryoları (pakete):
 
 Her başvuruda tanıtım videosu ayrı (o eklentinin beş senaryosu) ve alan adı jetonu ayrı (§1.5).
 
+## 2e. Claude Risale: dizin ekibine e-posta ve dört sunucunun denetimi (2026-11-22)
+
+**Denetim** (dizin ölçütleri, `claude.com/docs/connectors/building/review-criteria`, 2026-11-22'de okundu; canlı
+sunuculardan `tools/list` ve hatalı çağrı):
+
+| Ölçüt | Bulgu | Durum |
+|---|---|---|
+| Her araçta `title` ve `readOnlyHint` | 42 aracın hepsinde (`readOnlyHint: true`, `destructiveHint: false`) | uygun |
+| Açıklama aracın gerçek davranışına uymalı | **Tefsir ve Klasik, Risale'nin açıklamalarını aynen taşıyordu**: hâşiye, telif tarihi, Risale'nin bağ türleri, `sozler/10` örnekleri, `group` değerleri `eski-said, ana-cilt…` | düzeltildi (`server.TEXTS_DOCS`, `TEFSIR_DOCS`, `PARAM_HELP`; test) |
+| Hata iletileri açıklamalı olmalı | Sorgu dilinin hataları Türkçeydi ("NEAR( kapanmamış."), dört sunucuda | İngilizceye çevrildi |
+| Açık kipte doğru ileti | `semantic_search` günlük sınırında "A user with an account can sign in" diyordu; açık kipte hesap yok | düzeltildi |
+| Sunucu bilgisi | `version` boştu, `website_url` yoktu | paket sürümü ve `risalemcp.com/en/<eklenti>.html` |
+| Üçüncü taraf (Voyage AI) | Gizlilik politikası iki dilde anıyor: yalnız arama ifadesi gider, saklanmaz | uygun |
+| Konuşma verisi | Parametre ve IP kaydedilmez (politika) | uygun |
+| Açıklamada başka araca ya da davranışa buyruk | Yok; `cite` "cevaptan önce bir kez çağır" der (ne zaman çağrılacağını söylemek ölçüte uygun) | uygun |
+
+Bilinen ve bırakılan: yanlış adlı parametrede SDK'nın pydantic iletisi ("Field required"); açıklamalı, ölçüte uygun.
+
+**E-posta** (belgenin verdiği kanal: bağdaştırıcı için `mcp-review@anthropic.com`; `directory@` eklenti paketleri
+içindir, cevabı gecikebilir). Belge şunları ister: listelemenin adı, gönderildiği organizasyon, portalın gösterdiği
+durum. Gönderen: Claude hesabınızın birincil iletişim adresi. Köşeli ayraçlı yerleri portaldan doldurun. Kod
+düzeltmeleri yayına çıkmadan göndermeyin (son paragraf onları anıyor).
+
+> **To:** mcp-review@anthropic.com
+> **Subject:** Connector listing "Risale MCP Risale-i Nur": In review since 16 November
+>
+> Hello,
+>
+> Our connector submission has been in "In review" for some time, and I would be grateful to know whether
+> anything is needed from us.
+>
+> - Listing name: Risale MCP Risale-i Nur (slug: [portaldaki slug])
+> - Organization: [portaldaki organizasyon adı]
+> - Status shown in the portal: In review (resubmitted on 16 November 2026; the first submission was on
+>   29 October 2026)
+> - Server URL: https://mcp.risalemcp.com/mcp (no authentication, public read-only data)
+>
+> The connector gives Claude sentence-level, citable access to the works of Bediüzzaman Said Nursî, served with
+> the permission of their sources. All 12 tools are read-only and carry titles and annotations; documentation is
+> at https://risalemcp.com/en/risale.html and the privacy policy at https://risalemcp.com/en/privacy.html. Our
+> three companion connectors from the same organization (Risale MCP Hadis, Tefsir and Klasik) were approved as
+> Community listings by the automatic review on 16 November.
+>
+> On 22 November we reviewed all four servers against the pre-submission checklist and made small fixes (clearer
+> English error messages for the search syntax, tool descriptions that match each server's own works, server
+> version and documentation URL in the server info).
+>
+> If the review needs a test prompt, a demo, or any change on our side, please let me know.
+>
+> Thank you,
+> [adınız]
+
+Bir hafta cevap gelmezse (≈2026-11-30): başvuru silinir, `risale.risalemcp.com/mcp` adresiyle yeniden gönderilir
+(`PLANLAR.md` S4.3).
+
 ## 8. Kontrol listesi (gönderirken işaretleyin)
 
 - [x] §1.1 yayıncı adı "Risale MCP", site ve politikalar yayında (2026-11-16)

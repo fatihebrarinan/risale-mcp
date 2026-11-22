@@ -192,9 +192,13 @@ def json_diff(old, new, path: str = "") -> list[str]:
 def compare(before: str, after: str, expect: tuple[str, ...] = ()) -> int:
     old = json.loads((SNAPSHOT_DIR / before / "calls.json").read_text(encoding="utf-8"))
     new = json.loads((SNAPSHOT_DIR / after / "calls.json").read_text(encoding="utf-8"))
-    # Her profilin çağrı seti (genel, hadis, tefsir): çağrının aracı adından bulunur.
+    # Çağrının aracı adından, kaydın kendi profilinin setinden bulunur: aynı ad profiller arasında başka aracı
+    # gösterebilir (`search_bad`: hadiste search_hadith, tefsir ve klasikte search; S4.3'te görüldü, 2026-11-22).
+    profile = json.loads(meta.read_text(encoding="utf-8")).get("profile") \
+        if (meta := SNAPSHOT_DIR / after / "meta.json").exists() else None
+    paths = [PROFILE_CALLS.get(profile, CALLS_PATH)] if profile else [CALLS_PATH, *PROFILE_CALLS.values()]
     tool_of = {c["name"]: c.get("tool") or c.get("prompt") or c.get("uri")
-               for path in {CALLS_PATH, *PROFILE_CALLS.values()} if path.exists() for c in load_calls(path)}
+               for path in paths if path.exists() for c in load_calls(path)}
     sections: list[tuple[str, list[str], bool]] = []     # (başlık, farklar, beklenen mi)
     for key in ("instructions", "tools", "resources", "prompts"):
         diff = json_diff(old.get(key), new.get(key))
