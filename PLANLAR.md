@@ -57,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E8, S10, A3, D15, B8 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E8, S10, A4, D15, B8 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -94,7 +94,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   yazılır. (e) Platformdan metin kopyalanınca damgalı künye satırı kendiliğinden eklenir ("… yapay zekâ taslağı …
   Tefsir değildir."). (f) Kaldığı yer: okuyucu dönünce son birim ve paragraf. (g) **Not akışı konuşuluyor**
   (notlarla nereye varılacağı; yeni not bildirimi, bütün açık notların listesi, notun akıbetinin okuyucuya
-  gösterilmesi buna bağlı). Birim sonunda tek soru önerisi kullanıcıya gerekli gelmedi.
+  gösterilmesi buna bağlı). Birim sonunda tek soru önerisi kullanıcıya gerekli gelmedi. **Kullanıcının eğilimi
+  (2026-11-22):** basit başlasın: her okuyucunun notu kendisine bağlı saklanır, girince önceki notlarını görür;
+  yöneticiye bildirim yok, notla taslak düzeltme ilk aşamada yok; konuşma sürüyor.
 
 **Küçük açıklar** (kullanıcının kararı, 2026-11-21: "önerdiğin sıraya başla"; B3 için: "gerçekten bir problem var mı
 araştır, varsa düzelt"):
@@ -128,7 +130,7 @@ araştır, varsa düzelt"):
 |---|---|---|---|
 | S4.3 | Claude dizini: Risale başvurusu "In review"; dizin ekibine e-posta gitti (2026-11-16). **Sonraki adım (kullanıcının kararı, 2026-11-22):** belgenin verdiği adrese (mcp-review@anthropic.com) listeleme adı, organizasyon ve durumla e-posta; bir hafta cevap yoksa başvuru silinip `risale.risalemcp.com/mcp` adresiyle yeniden gönderilir. Öncesinde dört sunucu dizin ölçütleriyle denetlenir (araçlarda `title` ve salt okunur işareti, hata iletileri, Voyage'ın beyanı) | Anthropic | M7 |
 | S4.7 | Claude eklentisi (plugin, kullanıcının kararı, 2026-11-22): küçük, herkese açık GitHub deposu (proje talimatı skill olarak, dört bağdaştırıcının adresi, README, lisans; metin girmez). Önce yerelde kurulup skill'in sohbette ne zaman yüklendiği denenir (her sohbette değil, açıklaması eşleşince yüklenir: proje talimatının birebir yerini tutmayabilir), sonra portaldan "Plugin bundle" | Biz | |
-| S4.1 | OpenAI: kullanıcı kendi adıyla başvurmayı kabul etti (2026-11-22), önce "Risale MCP"yi işletme doğrulamasına uygun bir tüzel kişi (dernek) yapmanın yolu konuşuluyor; dört başvuru | Kullanıcı | M7 |
+| S4.1 | OpenAI: **kullanıcının kendi adıyla** dört başvuru (Risale, Hadis, Tefsir, Klasik; kullanıcının kararı, 2026-11-22; dernek yolu bırakıldı: OpenAI'nin işletme doğrulaması Türkiye belgelerinde belirsiz). Sitedeki yayıncı satırı (gizlilik, şartlar) doğrulanmış adla aynı olur (S4.6'daki "kişisel ad hiçbir yerde" kararı bu kadarıyla değişir); önce Risale, sonucu görülünce öbürleri | Kullanıcı | M7 |
 
 Kapananlar (2026-11-12): E4 Kızıl İcaz'ın Türkçesi (gerek yok, "Biten"); Diyanet (izin yok, "Biten"); Osmanlıcanın
 kaynağı (A2'nin ön şartı değil).
@@ -166,6 +168,13 @@ Kimliksizler:
   2026-11-20–22): (a) hadis – hadis rivayet grupları (Y2.1'in kalanı): aynı hadisin rivayetleri, lafızla (mekanik);
   (b) yeni kitaplar, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve Abdürrezzâk'ın
   Musannef'leri (nüshalar seçilirken bakılır).
+- **A4 Lügat** (kullanıcının kararı, 2026-11-22): (a) **Osmanlıca–Türkçe**: risaleoku'nun Türkçe lügatı (katalogda
+  `kind: dictionary`, `lang: tr`, sürüm 41; harf başına `x.txt` "kelime=anlam", anlamlar " * " ile ayrılır, `x_f.txt`
+  yazılış çeşitleri; ≈14 bin madde tahmini, ≈1,2 MB); risaleoku'nun izni bütün içeriğini kapsar (kullanıcı). Nâşirin
+  lügatıdır, müellife mal edilmez (meal gibi). Kullanım: okuma platformunda Türkçe kelimeye dokununca anlam, Risale
+  eklentisinde bir lügat aracı; kelimenin ekleri atılarak en uzun madde eşlenir. Hangi basılı lügatten geldiği
+  risaleoku'ya sorulur (atıf için). e-Risale'nin lügatı indirilen veride yok (sitede `/api/` üzerinden). (b) **Arapça**:
+  konuşuluyor.
 - **E8 Arap dünyasına açılmak** (kullanıcının kararı, 2026-11-22): ilk adım izin: külliyatın Arapça tercümesi
   (İhsan Kasım Salihî) için hak sahibine e-posta (taslağı Claude, gönderen kullanıcı). İzin gelirse eser kataloğa,
   sitenin ve talimatın Arapçası sonra.
@@ -189,6 +198,12 @@ Kimliksizler:
 - **E6 Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
   2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
   dizgisi baskının yayıncısınındır: kaynak seçilirken bakılır. Bir arkadaşın gönderdiği PDF'ler biçimi bozuk, son çare.
+  **Karar (kullanıcı, 2026-11-22, bir avukatla görüştükten sonra):** telifi bitmiş eseri internette yayımlayan,
+  onu kullanıma açmıştır; amaç ticari değil. Yazım ve imlânın hakkının saklı olduğunu **açıkça belirtmeyen** bir
+  yerden alınabilir. Sıra: (1) kaynak adayları aranır (aslına sadık, sadeleştirilmemiş; metin olarak alınabilen;
+  telif notu olmayan), kullanıcıya örnekleriyle gösterilir; (2) seçilenden ekleme: tefsir koleksiyonuna, âyet
+  birimleriyle, Türkçe cümle bölücüyle; Türkçe anlamsal aramada öne geçmesin diye eser ya da dil seçilmeden
+  varsayılan aramaya girmez (`find_ayah` etkilenmez, vefat sırasıyla sonda gelir).
 
 ## Dondurulan
 
