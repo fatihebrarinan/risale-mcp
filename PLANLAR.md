@@ -74,6 +74,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   ("Fatih Ebrar İnan"; gizlilik ve şartlar yayında; paket `data/interim/chatgpt/risale-mcp.zip`). E8: hak
   yayıncının (künye: "حقوق الطبع محفوظة للناشر", شركة سوزلر للنشر, Kahire); öneri İstanbul'daki Sözler Neşriyat'a
   Türkçe e-posta (`docs/e8-arapca-kulliyat-izin-epostasi.md`). Kuyruk haftalık kotada, 23.11 03.00'te (TSİ) sürer.
+- **Önde (2026-11-22 akşam):** S4.3 e-postası gitti. **Dizin adları İngilizce** (kullanıcının kararı): "Risale-i Nur Library", "Hadith Library", "Tafsir Library", "Classical Islamic Library"; yayıncı "Risale MCP" kalır; dört sunucunun başlığı yayında (`yayin-20261122-232806`, tefsir ve klasik aynı saatte). OpenAI: organizasyon adı "Risale MCP", eski projenin anahtarları iptal; paket iç adı `risale-i-nur` (portal değiştirtmiyor), görünen ad "Risale-i Nur Library" (adda "MCP" olamaz), hakeme not §6. **Kullanıcıda:** OpenAI'ye yükleme (jeton bana), video; Claude portalında dört listelemenin adı (önce onaylı üçü, yayımlamadan; sonra Risale).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
   "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
   (`site-zamanli.timer`); yayımlandığına bakılır. (2) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
