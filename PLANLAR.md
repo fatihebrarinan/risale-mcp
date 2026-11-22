@@ -57,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E8, S10, A4, D15, B8 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E8, S10, A4, D16, B9 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -68,22 +68,35 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (`yayin-20261121-193007`, klasik `2026-11-21` sürümü, tefsir kodu); B3 Aralık'ta. S7, S8, S9 ve **D5 bitti** (kullanıcının
   kararları; "Biten"de, ayrıntı `KAYIT.md`). D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine sürüyor
   (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
-- **Önde (2026-11-22):** S10 davet altyapısı ve okuma platformu; önce not akışı, lügat, OpenAI için tüzel kişilik ve
-  Elmalılı'nın engelleri konuşuluyor (kullanıcı). Kuyruk haftalık kotada, 23.11 03.00'te (TSİ) sürer.
+- **Önde (2026-11-22):** "Sıradaki" yeniden sıralandı, "Sonra" gözden geçirildi (17 işten 4'e). Sıradaki iş 1:
+  hızlı dış adımlar (S4.3, S4.1, E8). Kuyruk haftalık kotada, 23.11 03.00'te (TSİ) sürer.
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
   "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
   (`site-zamanli.timer`); yayımlandığına bakılır. (2) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
-- **Kullanıcıdan beklenen:** masadan platforma taşınacak kolaylıklar ("Sonra" › "Okuma platformu ve ar-ge masasının
-  açıkları").
+- **Kullanıcıdan beklenen:** "Sıradaki" 8 (Risale'si az birimlere göz atmak); S4.1 için OpenAI portalı; E8'in e-postasını
+  göndermek (taslak 1. sırada).
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
+Sıra (kullanıcının kararı, 2026-11-22): dış adımlar önce (cevapları haftalar sürer); davetin ön şartları (S10, A4) Max
+bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisine Aralık'ta tek dokunuş.
+
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S10 | Davet altyapısı ve okuma platformunun değişiklikleri (not akışı konuşuluyor) | |
-| 2 | B3 | Tefsirde uzun cümlelerin yeniden bölünmesi ve kayan âyet birimleri: **Aralık'ta, D5 kuyruğu durunca** | |
+| 1 | S4 | Hızlı dış adımlar: S4.3 Risale için mcp-review@anthropic.com'a e-posta ve dört sunucunun dizin ölçütleriyle denetimi; S4.1 OpenAI'ye Risale başvurusu (sitedeki yayıncı satırı kullanıcının adına, sonra portal); E8'in izin e-postası taslağı | |
+| 2 | S10 | Davet altyapısı ve okuma platformu (davet bağlantısı, varsayılan `oku`, karşılama, kişisel defter, kopyalamada damga, kaldığı yer) | |
+| 3 | A4 | Türkçe lügat (risaleoku): indirme, eşleme, platformda kelimeye dokununca anlam, Risale eklentisinde lügat aracı | |
+| 4 | E6 | E6.1 Elmalılı'nın kaynak adayları: arama, örnekleriyle kullanıcıya, seçim (ekleme 11. sırada) | |
+| 5 | S4 | S4.7 Claude eklentisi (plugin): depo, yerelde deneme, başvuru | |
+| 6 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
+| 7 | E5 | Klasik 2. dilim ve yeni tanıtım | |
+| 8 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 9 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 10 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 11 | B3 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 12 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 
 - S10 **Davet altyapısı ve okuma platformu** (kullanıcının kararları, 2026-11-22; ehil okuyucu davetinin ön şartı, S8
   yazısı 2026-11-24'te çıkıyor). (a) Hesabın varsayılan kapsamı `oku`, masa açıkça istenir (bugün varsayılan `masa`;
@@ -101,7 +114,46 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   siler (heyet akışının "silinmez" kuralı kişisel defterde uygulanmaz); (g5) paragrafta seçilen söz notun başında
   kalır. Yöneticiye bildirim yok, notla taslak düzeltme (`notlarla`) ilk aşamada kullanılmaz (kod durur). Birim
   sonunda tek soru önerisi kullanıcıya gerekli gelmedi. (h) Türkçe lügat (A4 (a)) hazır olunca platformda kelimeye
-  dokununca anlam.
+  dokununca anlam. (i) S7'nin platform açıklarından (1) masadan taşınacak kolaylıklar 2026-11-22'deki
+  konuşmayla karşılandı, (2) canlıda girişle bakış S10'un deneme adımıdır, (3) davetli hesapları S10'un davet
+  bağlantısıyla açılır.
+
+- A4 **Lügat** (kullanıcının kararı, 2026-11-22): (a) **Osmanlıca–Türkçe**: risaleoku'nun Türkçe lügatı (katalogda
+  `kind: dictionary`, `lang: tr`, sürüm 41; harf başına `x.txt` "kelime=anlam", anlamlar " * " ile ayrılır, `x_f.txt`
+  yazılış çeşitleri; ≈14 bin madde tahmini, ≈1,2 MB); risaleoku'nun izni bütün içeriğini kapsar (kullanıcı). Nâşirin
+  lügatıdır, müellife mal edilmez (meal gibi). Kullanım: okuma platformunda Türkçe kelimeye dokununca anlam, Risale
+  eklentisinde bir lügat aracı; kelimenin ekleri atılarak en uzun madde eşlenir. Hangi basılı lügatten geldiği
+  risaleoku'ya sorulur (atıf için). e-Risale'nin lügatı indirilen veride yok (sitede `/api/` üzerinden). Arapça
+  lügat "Fikirler"de.
+- E6 **Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
+  2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
+  dizgisi baskının yayıncısınındır: kaynak seçilirken bakılır. Bir arkadaşın gönderdiği PDF'ler biçimi bozuk, son çare.
+  **Karar (kullanıcı, 2026-11-22, bir avukatla görüştükten sonra):** telifi bitmiş eseri internette yayımlayan,
+  onu kullanıma açmıştır; amaç ticari değil. Yazım ve imlânın hakkının saklı olduğunu **açıkça belirtmeyen** bir
+  yerden alınabilir. Sıra: (1) kaynak adayları aranır (aslına sadık, sadeleştirilmemiş; metin olarak alınabilen;
+  telif notu olmayan), kullanıcıya örnekleriyle gösterilir; (2) seçilenden ekleme: tefsir koleksiyonuna, âyet
+  birimleriyle, Türkçe cümle bölücüyle; Türkçe anlamsal aramada öne geçmesin diye eser ya da dil seçilmeden
+  varsayılan aramaya girmez (`find_ayah` etkilenmez, vefat sırasıyla sonda gelir).
+- E5 **Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Sırada (b)'nin 2. dilimi (kullanıcı, 2026-11-13); 3. dilim ve (c) "Sonra"da. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
+- A1 **Kaynakçada doğrudan bağlantı** (Aşama 20; e-Risale ile görüşmeden, 2026-10-30): kaynakçada yolun yanında metnin
+  kendisine bağlantı; atıf hangi kaynaktaysa (erisale.com, risaleoku.com) onun ilgili yerine. erisale'de bölümün
+  `url`'si outline'da var; risaleoku'da bölüme doğrudan bağlantının biçimi işin başında araştırılır. `cite` sonucu,
+  sunucu talimatı, proje talimatları ve `citations.CITE_NOTE` değişir (deploy'da beklenen fark `cite`); bağlantı
+  veriden gelir, tahmin edilmez; karşılığı olmayan atıf bağlantısız kalır. Yerel eserler ve Kur'ân ayrı düşünülür.
+- **Risale'si az birimlere göz atmak** (eski D5.2; isteğe bağlı, bir kez, kullanıcının işi): bir kıssa birimi
+  (İsrâiloğulları, 40–74; yazıldı) ve bir ahkâm birimi (178–283; Aralık'a doğru). Sebep: sınanan birimlerin hepsi
+  Risale'ce zengindi; Bakara 34–283'te âyetlerin ≈%78'inde Risale'den doğrudan alıntı yok. Okuma değil, göz atmak
+  yetebilir (2026-11-21).
+- E7 **Hadis tarafını derinleştirmek** (kullanıcının kararı, 2026-11-22; kullanımda hadis eklentisi Risale'yi geçti,
+  2026-11-20–22): (a) hadis – hadis rivayet grupları (Y2.1'in kalanı): aynı hadisin rivayetleri, lafızla (mekanik);
+  (c) yalnız Türkçe aktarılan hadisler (HA7, 101 aday cümle, Adım 4): künye varsa künyenin bölgesinde aranır. (b) yeni
+  kitaplar "Sonra"da.
+- B9 **Türk hattının iki kaynağı** (S7'nin açığı, 2026-11-21): Diyanet baskısının Türk hattıyla risaleoku'nun Türk hattı
+  arasındaki küçük işaret farkları (ör. durak işaretleri) bakılmadı; kaynak risaleoku. Kısa karşılaştırma, rapor.
+- D16 **Bakara'nın maliyet raporu ve hesap kararı** (D5'ten kalan; kuyruk durunca, Bakara bitmese de): sûre başına
+  maliyet (destekçiye "şu kadar para, şu kadar sûre"; kuyruğun birim kayıtları `data/d1/d5/bakara.json`) ve hesap
+  ayrımı kararı (ayrı abonelik ya da API hesabı; hat ikisine de tek ayarla geçebilecek şekilde). "Fikirler" ›
+  "Kur'ân'ın geri kalanı"nın ön şartı.
 
 **Küçük açıklar** (kullanıcının kararı, 2026-11-21: "önerdiğin sıraya başla"; B3 için: "gerçekten bir problem var mı
 araştır, varsa düzelt"):
@@ -142,77 +194,32 @@ kaynağı (A2'nin ön şartı değil).
 
 ## Sonra (sırası belli değil; sıraya girince kimlik alır)
 
-Kimliği olanlar ("Sıradaki"nden indi, kullanıcının kararı, 2026-11-17: sıra yalnız taslakların ar-gesi ve yazımı):
-A1 kaynakçada doğrudan bağlantı (Aşama 20), A2 Osmanlıca–Türkçe eşleme (Aşama 19). Küçük açıklar 2026-11-21'de "Sıradaki"ne alındı (B4, B7, B8, B3; B2 ve B5 kapandı).
+"Sonra" 2026-11-22'de baştan gözden geçirildi (kullanıcının kararı: her iş tek tek; sıraya girenler "Sıradaki"nde,
+fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
 
-**A1, A2:** ayrıntıları `KAYIT.md`'de eski adlarıyla (Aşama 20, 19). **A2 durumu (2026-11-12):** e-Risale kaynaklarını
-kullanmaya izin verdi; erisale'nin Osmanlıcası ön şart değil, Osmanlıca külliyat elimizde (risaleoku, 16 cilt, Envar
-baskısı, `osmanlica` grubu). erisale'den alınabilirse baskı farkı kalkar, ama beklenmez. Şimdilik sırada kalır, sonra
-yeniden bakılır.
-
-**D5'ten kalanlar** (D5 kapandı, 2026-11-21, kullanıcının kararı: "sistem artık tamamen kuruldu"; ayrıntı `KAYIT.md`
-› D5):
-- **Risale'si az birimlere bir göz atmak** (eski D5.2; isteğe bağlı, bir kez): bir kıssa birimi (İsrâiloğulları, 40–74)
-  ve bir ahkâm birimi (178–283) yazılınca. Sebep: sınanan birimlerin hepsi Risale'ce zengindi; Bakara 34–283'te
-  âyetlerin ≈%78'inde Risale'den doğrudan alıntı yok, taslağın en güçlü yanı Risale dersi. Okuma değil, göz atmak
-  yetebilir (2026-11-21).
-- **Bakara bitince:** sûre başına maliyet raporu (destekçiye "şu kadar para, şu kadar sûre"; kuyruğun birim kayıtları
-  `data/d1/d5/bakara.json`) ve hesap ayrımı kararı (ayrı abonelik ya da API hesabı; hat ikisine de tek ayarla
-  geçebilecek şekilde). İkisi aşağıdaki "Kur'ân'ın geri kalanı"nın ön şartıdır.
-
-**Kur'ân'ın geri kalanı** (kullanıcının kararı, 2026-11-20: D5 yalnız Bakara). Ön şartlar: bütün Kur'ân'ın bölmesi
-(D5.0.4, kural b6; kısa sûreler ve ahkâm için kuralın uzatılması), Bakara'nın gerçek maliyeti ve kalitesiyle kapsam ve
-hesap kararı (ayrı hesap ya da API; gerekirse destek). Fâtiha ve Bakara 1–33'te İşârât var; oralarda taslak yalnız
-okuma platformunun vitrini için (isteğe bağlı).
-
-Kimliksizler:
-
-- **Konu fihristi** (Aşama 15): dondurulması önerildi (anlamsal arama bu işi büyük ölçüde görüyor); karar kullanıcıda.
-- **Kur'ân'a kelime düzeyinde adres** (Y1.1): mekanik; bir ihtiyaç doğarsa.
-- **E7 Hadis tarafını derinleştirmek** (kullanıcının kararı, 2026-11-22; kullanımda hadis eklentisi Risale'yi geçti,
-  2026-11-20–22): (a) hadis – hadis rivayet grupları (Y2.1'in kalanı): aynı hadisin rivayetleri, lafızla (mekanik);
-  (b) yeni kitaplar, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve Abdürrezzâk'ın
-  Musannef'leri (nüshalar seçilirken bakılır).
-- **A4 Lügat** (kullanıcının kararı, 2026-11-22): (a) **Osmanlıca–Türkçe**: risaleoku'nun Türkçe lügatı (katalogda
-  `kind: dictionary`, `lang: tr`, sürüm 41; harf başına `x.txt` "kelime=anlam", anlamlar " * " ile ayrılır, `x_f.txt`
-  yazılış çeşitleri; ≈14 bin madde tahmini, ≈1,2 MB); risaleoku'nun izni bütün içeriğini kapsar (kullanıcı). Nâşirin
-  lügatıdır, müellife mal edilmez (meal gibi). Kullanım: okuma platformunda Türkçe kelimeye dokununca anlam, Risale
-  eklentisinde bir lügat aracı; kelimenin ekleri atılarak en uzun madde eşlenir. Hangi basılı lügatten geldiği
-  risaleoku'ya sorulur (atıf için). e-Risale'nin lügatı indirilen veride yok (sitede `/api/` üzerinden). Arapça
-  lügat "Fikirler"de.
 - **E8 Arap dünyasına açılmak** (kullanıcının kararı, 2026-11-22): ilk adım izin: külliyatın Arapça tercümesi
-  (İhsan Kasım Salihî) için hak sahibine e-posta (taslağı Claude, gönderen kullanıcı). İzin gelirse eser kataloğa,
+  (İhsan Kasım Salihî) için hak sahibine e-posta (taslağı Claude, gönderen kullanıcı; "Sıradaki" 1). İzin gelirse eser kataloğa,
   sitenin ve talimatın Arapçası sonra.
-- **Risale'nin müfessiri adıyla anması** (Y1.7'nin mekanik kısmı).
-- **Yalnız Türkçe aktarılan hadisler** (HA7, 101 aday cümle).
-- **Gönderme tablosu** (Aşama 13'ün ertelenen kısmı).
-- **Yerel indirilebilir paket** (Y2.7).
-- **E3 Sorularla Risale:** web araması değil; izin alınırsa `risale/ilgili` koleksiyonuna (`authority: modern`,
-  varsayılan aramaya girmez). İzin e-postası gönderilmedi (2026-11-12), izin yoksa eklenmez. Bkz. "Fikirler".
-- **E5 Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Önce (b)'nin 2. dilimi, sonra 3. dilimi (kullanıcı, 2026-11-13); (c)'dekiler yer ve zaman müsait olunca. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
-- **Okuma platformu ve ar-ge masasının açıkları** (S7'den, 2026-11-21; kullanıcının kararı: arayüzün küçük
-  düzeltme ve geliştirmeleri sırası gelince ayrı adım olarak yazılır, kimlik alır): (1) **konuşulacak** (kullanıcı):
-  masanın kolaylıklarından hangileri okuma platformuna taşınacak; (2) canlıda girişle bir bakış (kullanıcı);
-  (3) davetli hesapları `scripts/sunucu.sh taslak add-user <e-posta> --generate --oku` (kullanıcının işi); (4) Kaynaklar
-  yanındaki bütün tefsir birimlerinin tercümesi (kota D5 ile ortak); (5) Diyanet baskısının Türk hattıyla
-  risaleoku'nun Türk hattı arasındaki küçük işaret farkları (ör. durak işaretleri) bakılmadı; kaynak risaleoku;
-  (6) "notlarımla düzelt" henüz gerçek bir okuyucu notuyla çalıştırılmadı.
-- **Âyet masasının açıkları** (S5'ten, 2026-11-14): müfessirlerin Türkçesi (yapay zekâ tercümesi, damgalı); bilirkişi
-  kartında maddenin paragrafındaki bütün kaynaklar ve kaynak metni gösterilen maddede dayanak varsayılanı (D6'nın
-  dersi); işaretlerin sunucuda toplanması ayrı karardır (heyet akışı, dondurulan). Köklü değişiklik yeni kimlik alır.
-- **E6 Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
-  2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
-  dizgisi baskının yayıncısınındır: kaynak seçilirken bakılır. Bir arkadaşın gönderdiği PDF'ler biçimi bozuk, son çare.
-  **Karar (kullanıcı, 2026-11-22, bir avukatla görüştükten sonra):** telifi bitmiş eseri internette yayımlayan,
-  onu kullanıma açmıştır; amaç ticari değil. Yazım ve imlânın hakkının saklı olduğunu **açıkça belirtmeyen** bir
-  yerden alınabilir. Sıra: (1) kaynak adayları aranır (aslına sadık, sadeleştirilmemiş; metin olarak alınabilen;
-  telif notu olmayan), kullanıcıya örnekleriyle gösterilir; (2) seçilenden ekleme: tefsir koleksiyonuna, âyet
-  birimleriyle, Türkçe cümle bölücüyle; Türkçe anlamsal aramada öne geçmesin diye eser ya da dil seçilmeden
-  varsayılan aramaya girmez (`find_ayah` etkilenmez, vefat sırasıyla sonda gelir).
+- **E5'in kalanı:** 3. dilim (el-Mevâhibü'l-Ledünniyye) ve (c) listesi (`docs/eserler/klasik.md`); 2. dilim ve
+  tanıtım "Sıradaki"nde.
+- **E7 (b) Yeni hadis kitapları**, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve
+  Abdürrezzâk'ın Musannef'leri (nüshalar seçilirken bakılır). E7'nin (a) ve (c)'si "Sıradaki"nde.
+- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 11),
+  o zaman kimlik alır.
 
 ## Dondurulan
 
 Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır olur.
+
+2026-11-22 (kullanıcının kararı; "Sonra"nın gözden geçirilmesi):
+- **Konu fihristi** (Aşama 15): anlamsal arama bu işi büyük ölçüde görüyor. Konunun ortak adres olduğu karar yazılı
+  kalır (`docs/tefsir-pilot-degerlendirme.md`).
+- **Gönderme tablosu** (Aşama 13'ün ertelenen kısmı, ≈1.700 numaralı gönderme): talimatın "metin başka yere
+  gönderiyorsa orayı da oku" kuralı ve eski adlar sözlüğü işin çoğunu görüyor.
+- **Risale'nin müfessiri adıyla anması** (Y1.7'nin mekanik kısmı): birkaç düzine yer; model sohbette aramayla buluyor.
+- **Âyet masasının açıkları** (S5'ten): masa ar-ge içindi, taslak hattının geliştirilmesi bitti.
+- **"Notlarımla düzelt"in gerçek okuyucu notuyla denenmesi** (S7'nin açığı): notlar okuyucunun kendi defteri (S10);
+  `notlarla` kodu durur.
 
 2026-11-12 (kullanıcının kararı):
 - **S3 Gemini** (Aşama 18): Gemini uygulamasında Türkiye için uzak MCP desteği yok (Antigravity ve CLI hariç); şu an
@@ -234,6 +241,18 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   damgalı model tercümesi kuralı.
 
 ## Fikirler (konuşuldu, karar yok)
+
+"Sonra"dan taşınanlar (kullanıcının kararı, 2026-11-22):
+- **Kur'ân'ın geri kalanının taslakları** (kullanıcının kararı, 2026-11-20: D5 yalnız Bakara). Ön şartlar: bütün
+  Kur'ân'ın bölmesi (D5.0.4, kural b6; kısa sûreler ve ahkâm için kuralın uzatılması), Bakara'nın gerçek maliyeti ve
+  kalitesiyle kapsam ve hesap kararı (D16; ayrı hesap ya da API; gerekirse destek). Pro planında yürümez. Fâtiha ve
+  Bakara 1–33'te İşârât var; oralarda taslak yalnız okuma platformunun vitrini için (isteğe bağlı).
+- **A2 Osmanlıca–Türkçe eşleme** (Aşama 19): kalıcı değeri var, talebi yok; 16 cildin hizalanması büyük iş. e-Risale
+  izin verdi, Osmanlıca külliyat elimizde (risaleoku, Envar baskısı, `osmanlica` grubu). Ehil okuyucular isterse açılır.
+- **Kur'ân'a kelime düzeyinde adres** (Y1.1): tek kullanım yeri Arapça lügat (âyette kelimeye dokunmak); onunla birlikte.
+- **Yerel indirilebilir paket** (Y2.7): talep yok; metnin tamamını dağıtmak izinlerin istisnası olur
+  (`docs/izinler.md`). Talep gelirse.
+- **Okuma platformunda bütün tefsir birimlerinin tercümesi** (S7'nin açığı): ağır kota ister, Pro'da yürümez.
 
 - **Arapça lügat** (kullanıcının kararı, 2026-11-22: "Fikirler"de kalsın): okuma platformunda âyetteki bir kelimeye
   dokununca kökü ve el-Müfredât'ın o maddesi, Râgıb'ın sözüyle ve kaynağıyla (taslağın kelime mânâsını okuyucu
@@ -269,7 +288,7 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   "kazanç olmaması", OpenITI CC BY-NC-SA, Tanzil'in Diyanet mealleri ticari olmayan kullanım; ücretli üyelik bunlarla
   çatışır, önce her kaynaktan yeni izin gerekir. Öneri: düşünülecekse ücretsiz ve bağış destekli, kaynaklara sorarak.
 
-- **Sorularla Risale (öneri, 2026-11-09):** modelin Risale'yi okurken web'deki kaynaklara (Sorularla Risale) bakması
+- **E3 Sorularla Risale (öneri, 2026-11-09; 2026-11-22'de "Sonra"dan buraya):** İzin e-postası gönderilmedi. Modelin Risale'yi okurken web'deki kaynaklara (Sorularla Risale) bakması
   önerildi. Kullanıcı web aramasına sıcak bakmıyor (belirsizlik, kanıtsızlık). Doğru yol web araması değil, izin
   alınıp `risale/ilgili` koleksiyonuna (`authority: modern`, varsayılan aramaya girmez) eklemek; izin yoksa
   eklenmez, talimata web araması konmaz.
