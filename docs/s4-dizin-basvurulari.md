@@ -450,6 +450,30 @@ Adımlar:
    (liste dışı YouTube ya da paylaşılan Drive). Masaüstü ve mobilde birer deneme.
 6. **Submit for review.**
 
+**Additional Submission Context** (hakeme özel not; 2026-11-22'de Risale'nin yeniden başvurusunda kullanıldı). Öbür üç
+başvuruda iskelet aynı: ilk madde (yayıncı) ve son paragraf aynen kalır, "Name" maddesi o eklentinin adına, "Content"
+maddesi o sunucunun kaynaklarına (OpenITI CC BY-NC-SA 4.0, Hadith API, Sanadset…) göre yazılır; yeniden başvuru
+değilse ilk cümle ve "previous version" atılır.
+
+> This is a resubmission. The previous version was rejected because we could not show that the brand belongs to the
+> verified developer. What changed:
+>
+> - Publisher: the app is now published under my verified individual identity, Fatih Ebrar İnan. The website's
+>   privacy policy and terms name the same person as publisher and operator (risalemcp.com/en/privacy.html,
+>   risalemcp.com/en/terms.html). The earlier name "Nur Hadimleri" was not a registered organization and has been
+>   removed everywhere.
+> - Name: the app is now "Risale Library". "Risale-i Nur" is the name of the works the app serves (the writings of
+>   Bediüzzaman Said Nursî, 1878–1960), not a brand we claim. The project's own name is "Risale MCP", after its
+>   domain risalemcp.com, which I own and verify with the domain token. "MCP" is left out of the app name because
+>   the guidelines require it.
+> - Content: the texts are served unchanged, with written permission from their sources (e-Risale, risaleoku.com and
+>   others), on condition that the source is named. The answers' bibliography names it. The Qur'an text and
+>   translation come from Tanzil (tanzil.net), used as its terms allow.
+>
+> It is a volunteer, non-commercial project. All tools are read-only and work without an account or sign-in. No
+> conversation content or tool inputs are stored; only the tool name, time, duration and error type are kept, for 90
+> days.
+
 ## 7. OpenAI: Hadis, Tefsir ve Klasik Eserler
 
 Her biri ayrı paket (`packaging/chatgpt-hadis/`, `packaging/chatgpt-tefsir/`, `packaging/chatgpt-klasik/`; betik eklenti adını alacak biçimde
