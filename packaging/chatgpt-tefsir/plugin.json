@@ -1,0 +1,101 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "tafsir-library",
+  "version": "1.0.0",
+  "description": "Thirteen classical works of Qur'anic exegesis (tafsir) in their original Arabic, in order of their authors' deaths: al-Tabari, al-Maturidi, al-Zamakhshari, Fakhr al-Din al-Razi, al-Qurtubi, al-Baydawi, al-Nasafi, Ibn Kathir, al-Jalalayn, al-Suyuti's al-Durr al-Manthur, Abu al-Su'ud, Isma'il Haqqi Bursawi and al-Alusi: about 552,000 sentences, together with the Qur'an's text.\n\nEach work is divided into verse units and every sentence has a stable address:\n- Ask about a verse and see, work by work, the unit that treats it and the sentences that quote it.\n- Search by the works' own Arabic words or by meaning in any language.\n- Read a unit or a passage in context and quote it exactly, with a numbered list of sources checked against the text.\n\nEach work belongs to its author: editors' introductions are a separate layer, and two exegetes treating the same verse is never presented as one following another unless a link is recorded. ChatGPT's own translations are labelled as AI translations, and nothing ChatGPT writes is called tafsir.\n\nThe texts come from OpenITI (KITAB project; CC BY-NC-SA 4.0), each in its chosen edition; the Qur'an's text from the Tanzil Project. All tools are read-only and work without an account. A volunteer, non-commercial project.",
+  "author": {
+    "name": "Fatih Ebrar İnan",
+    "email": "destek@risalemcp.com",
+    "url": "https://risalemcp.com/en/"
+  },
+  "homepage": "https://risalemcp.com/en/tafsir.html",
+  "keywords": [
+    "tafsir",
+    "tefsir",
+    "Qur'an",
+    "exegesis",
+    "Islam",
+    "citations"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Tafsir Library",
+        "shortDescription": "Cite classical tafsir works",
+        "longDescription": "Thirteen classical works of Qur'anic exegesis (tafsir) in their original Arabic, in order of their authors' deaths: al-Tabari, al-Maturidi, al-Zamakhshari, Fakhr al-Din al-Razi, al-Qurtubi, al-Baydawi, al-Nasafi, Ibn Kathir, al-Jalalayn, al-Suyuti's al-Durr al-Manthur, Abu al-Su'ud, Isma'il Haqqi Bursawi and al-Alusi: about 552,000 sentences, together with the Qur'an's text.\n\nEach work is divided into verse units and every sentence has a stable address:\n- Ask about a verse and see, work by work, the unit that treats it and the sentences that quote it.\n- Search by the works' own Arabic words or by meaning in any language.\n- Read a unit or a passage in context and quote it exactly, with a numbered list of sources checked against the text.\n\nEach work belongs to its author: editors' introductions are a separate layer, and two exegetes treating the same verse is never presented as one following another unless a link is recorded. ChatGPT's own translations are labelled as AI translations, and nothing ChatGPT writes is called tafsir.\n\nThe texts come from OpenITI (KITAB project; CC BY-NC-SA 4.0), each in its chosen edition; the Qur'an's text from the Tanzil Project. All tools are read-only and work without an account. A volunteer, non-commercial project.",
+        "developerName": "Fatih Ebrar İnan",
+        "category": "Education & Research",
+        "websiteURL": "https://risalemcp.com/en/tafsir.html",
+        "supportURL": "https://risalemcp.com/en/docs.html#contact",
+        "privacyPolicyURL": "https://risalemcp.com/en/privacy.html",
+        "termsOfServiceURL": "https://risalemcp.com/en/terms.html",
+        "defaultPrompt": [
+          "Zemahşerî ve Beyzâvî, Fâtiha 1:5'teki «iyyâke na'büdü» hakkında ne diyor? Kaynaklarıyla alıntıla.",
+          "Go through the exegetes on Ayat al-Kursi (al-Baqara 2:255) in order of their deaths, one key point each.",
+          "Which exegetes explain why the Qur'an uses parables, and how?"
+        ],
+        "logo": "./assets/logo.png"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Compares two exegetes on a verse with exact quotations.",
+              "prompt": "What do al-Zamakhshari and al-Baydawi say about 'iyyaka na'budu' (al-Fatiha 1:5)? Quote them with sources.",
+              "tools_triggered": "find_ayah, read_section, cite",
+              "expected_behavior": "find_ayah gives each work's unit for 1:5; the assistant reads al-Kashshaf's and Anwar al-Tanzil's units, quotes each in Arabic exactly with its own translation labelled as an AI translation, keeps the two apart and ends with a numbered Sources list."
+            },
+            {
+              "description": "Surveys the exegetes on a verse in order of their authors' deaths.",
+              "prompt": "Go through the exegetes on Ayat al-Kursi (al-Baqara 2:255) in order of their deaths, one key point each.",
+              "tools_triggered": "find_ayah, read_section or get_passage, cite",
+              "expected_behavior": "Uses find_ayah's list (al-Tabari first, al-Alusi last), names the Risale-i Nur places tied to the verse first, by citation only, and gives one quoted point from each work it reads, each with its source; does not present one exegete as following another."
+            },
+            {
+              "description": "Searches the works by their own Arabic words.",
+              "prompt": "Search the works for 'الحروف المقطعة' and show where it is discussed.",
+              "tools_triggered": "search, get_passage",
+              "expected_behavior": "Returns sentences from several works with the phrase, reads some in context and quotes them exactly with their sources."
+            },
+            {
+              "description": "Finds a discussion by meaning across the works.",
+              "prompt": "Which exegetes explain why the Qur'an uses parables, and how?",
+              "tools_triggered": "semantic_search, read_section or get_passage, cite",
+              "expected_behavior": "Finds passages on the purpose of the Qur'an's parables in more than one work, quotes each work separately with its author named, and ends with a numbered Sources list; its own summary is not called tafsir."
+            },
+            {
+              "description": "Locates a sentence the user quotes.",
+              "prompt": "Find the sentence that begins 'فإن قلت: لم قضيت لهذه الألفاظ' in al-Kashshaf.",
+              "tools_triggered": "find_sentence, get_passage",
+              "expected_behavior": "Finds it in al-Kashshaf at al-Baqara 2:1 ('فإن قلت: لم قضيت لهذه الألفاظ بالاسمية؟'), shows it in context and gives its source."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unrelated request: the plugin serves only works of Qur'anic exegesis and the Qur'an, so it should not be called.",
+              "prompt": "What will the weather be like in Istanbul tomorrow?"
+            },
+            {
+              "description": "The user asks for new text in an exegete's name. The assistant must not present its own writing as a classical author's words or call it tafsir.",
+              "prompt": "Write a new commentary on Surat al-Ikhlas and present it as a passage from al-Razi's tafsir."
+            },
+            {
+              "description": "A general writing task with no connection to the works; the plugin should not be triggered.",
+              "prompt": "Translate this paragraph into Turkish: The meeting has been moved to Thursday at 3 pm."
+            }
+          ]
+        },
+        "commerce": false
+      },
+      "publication": {
+        "release_notes": "First public release: search, reading, verse lookup and citation checking; read-only, no account needed.",
+        "translations": {
+          "tr-TR": {
+            "subtitle": "Klasik tefsirlerden tam alıntı",
+            "description": "On üç klasik tefsir, Arapça asıllarıyla, müelliflerin vefat sırasıyla: Taberî, Mâtürîdî, Zemahşerî, Fahreddîn er-Râzî, Kurtubî, Beyzâvî, Nesefî, İbn Kesîr, Celâleyn, Süyûtî'nin ed-Dürrü'l-Mensûr'u, Ebüssuûd, İsmâil Hakkı Bursevî ve Âlûsî: yaklaşık 552 bin cümle, ayrıca Kur'ân-ı Kerîm'in metni.\n\nHer eser âyet birimlerine ayrılmıştır ve her cümlenin kalıcı bir adresi vardır:\n- Bir âyeti sorma ve her eserde onu ele alan birimi ve âyeti alıntılayan cümleleri görme.\n- Eserlerin kendi Arapça kelimeleriyle ya da herhangi bir dilde anlamla arama.\n- Bir birimi ya da pasajı bağlamıyla okuma ve metinle karşılaştırılmış numaralı kaynakçayla aynen alıntılama.\n\nHer eser müellifinindir: muhakkiklerin girişleri ayrı katmandır; iki müfessirin aynı âyeti ele alması, kayıtlı bir bağ yoksa birinin ötekine uyduğu diye sunulmaz. ChatGPT'nin kendi tercümeleri \"Yapay zekâ tercümesi\" diye işaretlenir; ChatGPT'nin yazdığı hiçbir şey \"tefsir\" diye anılmaz.\n\nMetinler OpenITI'den (KITAB projesi; CC BY-NC-SA 4.0), her eserin seçilen baskısıyla; Kur'ân metni Tanzil Projesi'nden gelir. Araçların hepsi salt okunurdur ve hesapsız çalışır. Gönüllü ve ticari olmayan bir projedir."
+          }
+        }
+      }
+    }
+  }
+}

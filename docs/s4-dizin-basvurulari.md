@@ -478,14 +478,18 @@ değilse ilk cümle ve "previous version" atılır.
 
 ## 7. OpenAI: Hadis, Tefsir ve Klasik Eserler
 
-Her biri ayrı paket (`packaging/chatgpt-hadis/`, `packaging/chatgpt-tefsir/`, `packaging/chatgpt-klasik/`; betik eklenti adını alacak biçimde
-genişletilir; ben hazırlarım):
+**Hazır (2026-11-22):** `packaging/chatgpt-hadis/`, `-tefsir/`, `-klasik/` (bir kez üretildi, artık asıl kaynak
+bunlar); zip'ler `scripts/chatgpt-paket.sh hadis tefsir klasik` → `data/interim/chatgpt/hadith-library.zip`,
+`tafsir-library.zip`, `classical-islamic-library.zip`. İç adlarda "mcp" yok (Risale'de görünen adın "MCP"si reddedildi).
+Test senaryolarının iddiaları 2026-11-22'de canlı sunucularda denendi; Hadis'in "Bukhari, Adhan: 148" senaryosu künye
+dizininin sunucuya gitmesini bekler (`2a33a3b`, `HADIS_EXPECT=find_by_citation scripts/deploy.sh --code --hadis`).
+Alan adı jetonu her alt alan adında ayrı: `scripts/sunucu.sh openai-challenge <jeton> hadis|tefsir|klasik`.
 
 | Alan | Hadis | Tefsir | Klasik Eserler |
 |---|---|---|---|
-| `name` | `risale-mcp-hadis` | `risale-mcp-tefsir` | `risale-mcp-klasik` |
+| `name` | `hadith-library` | `tafsir-library` | `classical-islamic-library` |
 | `displayName` | Hadith Library | Tafsir Library | Classical Islamic Library (kullanıcının kararı, 2026-11-22) |
-| `shortDescription` (≤30) | Cite hadith collections | Cite classical tafsir works | Cite classical rhetoric works |
+| `shortDescription` (≤30) | Cite hadith collections | Cite classical tafsir works | Cite classical Arabic works |
 | sunucu | `https://hadis.risalemcp.com/mcp` | `https://tefsir.risalemcp.com/mcp` | `https://klasik.risalemcp.com/mcp` |
 | açıklama | §2b'deki açıklama ("Claude" yerine "ChatGPT") | §2c'deki açıklama | §2d'deki açıklama |
 | `websiteURL` | `https://risalemcp.com/en/hadith.html` | `https://risalemcp.com/en/tafsir.html` | `https://risalemcp.com/en/classical.html` |

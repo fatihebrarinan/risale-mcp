@@ -1,0 +1,101 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "classical-islamic-library",
+  "version": "1.0.0",
+  "description": "Classical Arabic works on rhetoric (balagha), language and terms in their original Arabic: 'Abd al-Qahir al-Jurjani's Dala'il al-I'jaz and Asrar al-Balagha, al-Raghib al-Isfahani's al-Mufradat fi Gharib al-Qur'an, al-Sakkaki's Miftah al-'Ulum and al-Sayyid al-Sharif al-Jurjani's al-Ta'rifat: about 15,000 sentences, together with the Qur'an's text. These are the masters of rhetoric that Bediüzzaman Said Nursî names in his Isharat al-I'jaz.\n\nEvery sentence has a stable address in the sections of its edition (the Dala'il in its editor's numbered paragraphs, al-Mufradat by root, al-Ta'rifat by chapter):\n- Search by the works' own Arabic words and terms, or by meaning in any language.\n- Read a section or a passage in context and quote it exactly, with a numbered list of sources checked against the text.\n- Find where a Qur'anic verse is quoted, for example in al-Mufradat's explanation of a word.\n\nEach work belongs to its author: the editor's introduction is a separate layer, and a link between these works and the Isharat is never presented as recorded unless ChatGPT has read both. ChatGPT's own translations are labelled as AI translations.\n\nThe texts come from OpenITI (KITAB project; CC BY-NC-SA 4.0), each in its chosen edition; the Qur'an's text from the Tanzil Project. All tools are read-only and work without an account. A volunteer, non-commercial project.",
+  "author": {
+    "name": "Fatih Ebrar İnan",
+    "email": "destek@risalemcp.com",
+    "url": "https://risalemcp.com/en/"
+  },
+  "homepage": "https://risalemcp.com/en/classical.html",
+  "keywords": [
+    "balagha",
+    "Arabic rhetoric",
+    "Jurjani",
+    "Qur'an",
+    "Islam",
+    "citations"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Classical Islamic Library",
+        "shortDescription": "Cite classical Arabic works",
+        "longDescription": "Classical Arabic works on rhetoric (balagha), language and terms in their original Arabic: 'Abd al-Qahir al-Jurjani's Dala'il al-I'jaz and Asrar al-Balagha, al-Raghib al-Isfahani's al-Mufradat fi Gharib al-Qur'an, al-Sakkaki's Miftah al-'Ulum and al-Sayyid al-Sharif al-Jurjani's al-Ta'rifat: about 15,000 sentences, together with the Qur'an's text. These are the masters of rhetoric that Bediüzzaman Said Nursî names in his Isharat al-I'jaz.\n\nEvery sentence has a stable address in the sections of its edition (the Dala'il in its editor's numbered paragraphs, al-Mufradat by root, al-Ta'rifat by chapter):\n- Search by the works' own Arabic words and terms, or by meaning in any language.\n- Read a section or a passage in context and quote it exactly, with a numbered list of sources checked against the text.\n- Find where a Qur'anic verse is quoted, for example in al-Mufradat's explanation of a word.\n\nEach work belongs to its author: the editor's introduction is a separate layer, and a link between these works and the Isharat is never presented as recorded unless ChatGPT has read both. ChatGPT's own translations are labelled as AI translations.\n\nThe texts come from OpenITI (KITAB project; CC BY-NC-SA 4.0), each in its chosen edition; the Qur'an's text from the Tanzil Project. All tools are read-only and work without an account. A volunteer, non-commercial project.",
+        "developerName": "Fatih Ebrar İnan",
+        "category": "Education & Research",
+        "websiteURL": "https://risalemcp.com/en/classical.html",
+        "supportURL": "https://risalemcp.com/en/docs.html#contact",
+        "privacyPolicyURL": "https://risalemcp.com/en/privacy.html",
+        "termsOfServiceURL": "https://risalemcp.com/en/terms.html",
+        "defaultPrompt": [
+          "Cürcânî, Delâilü'l-İ'câz'da i'câzın nazımda olduğunu nasıl savunuyor? Kaynaklarıyla.",
+          "How does al-Raghib explain the word \"nur\" in al-Mufradat? With sources.",
+          "What is the definition of \"الاستعارة\" in al-Ta'rifat, and how does al-Sakkaki treat it in the Miftah?"
+        ],
+        "logo": "./assets/logo.png"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Follows an argument in a classical work of rhetoric with exact quotations.",
+              "prompt": "How does al-Jurjani argue in the Dala'il al-I'jaz that inimitability lies in the arrangement (nazm)? Quote him with sources.",
+              "tools_triggered": "semantic_search, read_section, cite",
+              "expected_behavior": "Finds the passages on nazm in the Dala'il al-I'jaz, reads them in context, quotes al-Jurjani in Arabic exactly with its own translation labelled as an AI translation, names the edition's numbered paragraphs as the editor's division and ends with a numbered Sources list."
+            },
+            {
+              "description": "Looks up a Qur'anic word in al-Mufradat.",
+              "prompt": "How does al-Raghib explain the word 'nur' in al-Mufradat? With sources.",
+              "tools_triggered": "search or get_outline, read_section, cite",
+              "expected_behavior": "Opens the entry for the root نور in al-Mufradat, quotes al-Raghib's explanation and the verses he cites exactly, and gives its sources."
+            },
+            {
+              "description": "Finds the definition of a term.",
+              "prompt": "What is the definition of 'الاستعارة' in al-Ta'rifat?",
+              "tools_triggered": "search, get_passage, cite",
+              "expected_behavior": "Finds the definition in al-Ta'rifat, Bab al-Alif ('الاستعارة: ادعاء معنى الحقيقة في الشيء للمبالغة في التشبيه…'), quotes it exactly and gives its source."
+            },
+            {
+              "description": "Locates a sentence the user quotes.",
+              "prompt": "Find the sentence that begins 'الابتداء: هو أول جزء' in al-Ta'rifat.",
+              "tools_triggered": "find_sentence, get_passage",
+              "expected_behavior": "Finds the first sentence of Bab al-Alif in al-Ta'rifat and shows it with its source."
+            },
+            {
+              "description": "Finds where a verse is quoted in these works and shows the verse.",
+              "prompt": "Where is al-Baqara 2:255 quoted in these works? Show the verse.",
+              "tools_triggered": "find_ayah, get_ayah",
+              "expected_behavior": "Reports the places (in al-Mufradat's entries such as أخذ, أيد, سنة, كرس and نوم) with citations and gives the verse's text from get_ayah, not from memory."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unrelated request: the plugin serves only classical Arabic works and the Qur'an, so it should not be called.",
+              "prompt": "What will the weather be like in Istanbul tomorrow?"
+            },
+            {
+              "description": "The user asks for new text in a classical author's name. The assistant must not present its own writing as the author's words.",
+              "prompt": "Write a new chapter on metaphor in al-Jurjani's style and present it as part of Asrar al-Balagha."
+            },
+            {
+              "description": "A general writing task with no connection to the works; the plugin should not be triggered.",
+              "prompt": "Translate this paragraph into Turkish: The meeting has been moved to Thursday at 3 pm."
+            }
+          ]
+        },
+        "commerce": false
+      },
+      "publication": {
+        "release_notes": "First public release: search, reading, verse lookup and citation checking; read-only, no account needed.",
+        "translations": {
+          "tr-TR": {
+            "subtitle": "Klasik eserlerden tam alıntı",
+            "description": "Belâgat, dil ve terim alanındaki klasik Arapça eserler, Arapça asıllarıyla: Abdülkāhir el-Cürcânî'nin Delâilü'l-İ'câz'ı ve Esrârü'l-Belâğa'sı, Râgıb el-İsfahânî'nin el-Müfredât fî Garîbi'l-Kur'ân'ı, Sekkâkî'nin Miftâhu'l-Ulûm'u ve Seyyid Şerîf el-Cürcânî'nin et-Ta'rîfât'ı: yaklaşık 15 bin cümle, ayrıca Kur'ân-ı Kerîm'in metni. Bunlar Bediüzzaman Said Nursî'nin İşârâtü'l-İ'câz'da adını andığı belâgat imamlarıdır.\n\nHer cümlenin, baskısının bölümlerinde kalıcı bir adresi vardır (Delâil muhakkikinin numaralı fıkralarında, Müfredât köke göre, Ta'rîfât bâblara göre):\n- Eserlerin kendi Arapça kelime ve terimleriyle ya da herhangi bir dilde anlamla arama.\n- Bir bölümü ya da pasajı bağlamıyla okuma ve metinle karşılaştırılmış numaralı kaynakçayla aynen alıntılama.\n- Bir âyetin nerede alıntılandığını bulma, örneğin Müfredât'ta bir kelimenin izahında.\n\nHer eser müellifinindir: muhakkikin girişi ayrı katmandır; bu eserlerle İşârât arasındaki bir bağ, ChatGPT ikisini de okumadıkça kayıtlı bir bağ diye sunulmaz. ChatGPT'nin kendi tercümeleri \"Yapay zekâ tercümesi\" diye işaretlenir.\n\nMetinler OpenITI'den (KITAB projesi; CC BY-NC-SA 4.0), her eserin seçilen baskısıyla; Kur'ân metni Tanzil Projesi'nden gelir. Araçların hepsi salt okunurdur ve hesapsız çalışır. Gönüllü ve ticari olmayan bir projedir."
+          }
+        }
+      }
+    }
+  }
+}

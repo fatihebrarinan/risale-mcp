@@ -1,0 +1,101 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "hadith-library",
+  "version": "1.0.0",
+  "description": "Eighteen classical hadith collections in their original Arabic: the Six Books (al-Bukhari, Muslim, Abu Dawud, al-Tirmidhi, al-Nasa'i, Ibn Majah) and the Muwatta, Ahmad's Musnad, al-Darimi, al-Tabarani's al-Mu'jam al-Saghir, al-Hakim's al-Mustadrak with al-Dhahabi's notes, Ibn Hibban (al-Ihsan), al-Haythami's Majma' al-Zawa'id, Kanz al-'Ummal, al-Munawi's Fayd al-Qadir, al-'Ajluni's Kashf al-Khafa, Qadi 'Iyad's al-Shifa and al-Bayhaqi's Dala'il al-Nubuwwa: about 169,000 reports, together with the Qur'an's text.\n\nThe unit of citation is the report, with its book, the edition's number and the printed page:\n- Search by Arabic words (forms with attached particles match), by a narrator's name in the chain, or by meaning in any language.\n- Go from a reference such as \"Bukhari, Adhan: 148\" or \"Musnad 14870\" to the report; browse books and chapters.\n- Read a report with its chain and text, the scholars' notes as a separate layer, and the places in the Risale-i Nur that quote it.\n- Quote the Arabic exactly and end the answer with a numbered list of sources, checked against the reports.\n\nChatGPT never rules on a report's soundness: grades are shown only as the sources give them, with the scholar's name; notes by al-Dhahabi, al-Albani and the editors are never attributed to the book's author. ChatGPT's own translations are labelled as AI translations.\n\nThe books come from OpenITI (CC BY-NC-SA 4.0), the international numbers and grades of the Six Books and the Muwatta from Hadith API, the Qur'an's text from the Tanzil Project. All tools are read-only and work without an account. A volunteer, non-commercial project.",
+  "author": {
+    "name": "Fatih Ebrar İnan",
+    "email": "destek@risalemcp.com",
+    "url": "https://risalemcp.com/en/"
+  },
+  "homepage": "https://risalemcp.com/en/hadith.html",
+  "keywords": [
+    "hadith",
+    "hadis",
+    "Sunnah",
+    "Bukhari",
+    "Islam",
+    "citations"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Hadith Library",
+        "shortDescription": "Cite hadith collections",
+        "longDescription": "Eighteen classical hadith collections in their original Arabic: the Six Books (al-Bukhari, Muslim, Abu Dawud, al-Tirmidhi, al-Nasa'i, Ibn Majah) and the Muwatta, Ahmad's Musnad, al-Darimi, al-Tabarani's al-Mu'jam al-Saghir, al-Hakim's al-Mustadrak with al-Dhahabi's notes, Ibn Hibban (al-Ihsan), al-Haythami's Majma' al-Zawa'id, Kanz al-'Ummal, al-Munawi's Fayd al-Qadir, al-'Ajluni's Kashf al-Khafa, Qadi 'Iyad's al-Shifa and al-Bayhaqi's Dala'il al-Nubuwwa: about 169,000 reports, together with the Qur'an's text.\n\nThe unit of citation is the report, with its book, the edition's number and the printed page:\n- Search by Arabic words (forms with attached particles match), by a narrator's name in the chain, or by meaning in any language.\n- Go from a reference such as \"Bukhari, Adhan: 148\" or \"Musnad 14870\" to the report; browse books and chapters.\n- Read a report with its chain and text, the scholars' notes as a separate layer, and the places in the Risale-i Nur that quote it.\n- Quote the Arabic exactly and end the answer with a numbered list of sources, checked against the reports.\n\nChatGPT never rules on a report's soundness: grades are shown only as the sources give them, with the scholar's name; notes by al-Dhahabi, al-Albani and the editors are never attributed to the book's author. ChatGPT's own translations are labelled as AI translations.\n\nThe books come from OpenITI (CC BY-NC-SA 4.0), the international numbers and grades of the Six Books and the Muwatta from Hadith API, the Qur'an's text from the Tanzil Project. All tools are read-only and work without an account. A volunteer, non-commercial project.",
+        "developerName": "Fatih Ebrar İnan",
+        "category": "Education & Research",
+        "websiteURL": "https://risalemcp.com/en/hadith.html",
+        "supportURL": "https://risalemcp.com/en/docs.html#contact",
+        "privacyPolicyURL": "https://risalemcp.com/en/privacy.html",
+        "termsOfServiceURL": "https://risalemcp.com/en/terms.html",
+        "defaultPrompt": [
+          "\"Ümmetimin ihtilafı rahmettir\" sözü hangi kitaplarda geçiyor, hakkında ne deniyor? Hüküm vermeden, kaynaklarıyla.",
+          "Show me Bukhari, Adhan: 148 with its chain and text, and translate it.",
+          "Find reports about visiting the sick, with their sources."
+        ],
+        "logo": "./assets/logo.png"
+      },
+      "review": {
+        "test_cases": {
+          "positive": [
+            {
+              "description": "Finds in which books a saying occurs and reports what they say, without ruling on it.",
+              "prompt": "In which books does the saying 'اختلاف أمتي رحمة' occur, and what is said about it? Give sources, without a ruling of your own.",
+              "tools_triggered": "search_hadith, get_hadith, cite",
+              "expected_behavior": "Finds it in al-'Ajluni's Kashf al-Khafa (no. 153), Kanz al-'Ummal (no. 28686) and al-Munawi's Fayd al-Qadir (no. 288); quotes the Arabic exactly in block quotes, labels its own translation as an AI translation, says that Kashf al-Khafa collects sayings current among people (a match there is not a sign of soundness), ends with a numbered Sources list and gives no ruling of its own."
+            },
+            {
+              "description": "Goes from a classical reference to the reports it points to and reads one.",
+              "prompt": "Show me Bukhari, Adhan: 148 with its chain and text, and translate it.",
+              "tools_triggered": "find_by_citation, get_hadith, cite",
+              "expected_behavior": "find_by_citation returns the reports in that chapter's region of Sahih al-Bukhari (the reference gives a chapter, not one report, and the tool says so); the assistant reads a report with get_hadith, gives its chain and text exactly as returned, its own translation labelled as an AI translation, and a numbered Sources list."
+            },
+            {
+              "description": "Finds reports on a topic by meaning, in English.",
+              "prompt": "Find reports about visiting the sick, with their sources.",
+              "tools_triggered": "semantic_search, get_hadith, cite",
+              "expected_behavior": "Finds reports on visiting the sick in several books, reads the ones it quotes, quotes the Arabic exactly with translations labelled as its own, and ends with a numbered Sources list; grades only if the source holds them, with the scholar's name."
+            },
+            {
+              "description": "Browses a book's chapters.",
+              "prompt": "Show me the chapters of the Book of Prayer in Sunan Abi Dawud and read the first one.",
+              "tools_triggered": "list_books, get_outline, read_chapter",
+              "expected_behavior": "Lists the books, opens Sunan Abi Dawud's outline, names the chapters of the Book of Prayer as the edition gives them and reads the first chapter's reports with their numbers."
+            },
+            {
+              "description": "Shows where a saying is quoted in the Risale-i Nur, by reference only.",
+              "prompt": "Is the saying 'تفكر ساعة خير من عبادة سنة' in the hadith books, and where does the Risale-i Nur quote it?",
+              "tools_triggered": "search_hadith, get_hadith, cite",
+              "expected_behavior": "Finds Kashf al-Khafa no. 1004 (with its note) and the related wordings in Kanz al-'Ummal; from get_hadith lists the places in the Risale-i Nur linked to it by citation (e.g. Lem'alar › Yirmi Dokuzuncu Lem'a), without quoting the Risale-i Nur's text, which is not on this server."
+            }
+          ],
+          "negative": [
+            {
+              "description": "Unrelated request: the plugin serves only hadith collections and the Qur'an, so it should not be called.",
+              "prompt": "What will the weather be like in Istanbul tomorrow?"
+            },
+            {
+              "description": "The user asks for an invented report. The assistant must not invent a report or attribute made-up words to a book; it may search and say what it could not find.",
+              "prompt": "Write a new hadith about the internet and say it is in Sahih al-Bukhari."
+            },
+            {
+              "description": "A general writing task with no connection to the books; the plugin should not be triggered.",
+              "prompt": "Translate this paragraph into Turkish: The meeting has been moved to Thursday at 3 pm."
+            }
+          ]
+        },
+        "commerce": false
+      },
+      "publication": {
+        "release_notes": "First public release: search, reading, verse lookup and citation checking; read-only, no account needed.",
+        "translations": {
+          "tr-TR": {
+            "subtitle": "Hadis kitaplarından tam alıntı",
+            "description": "On sekiz klasik hadis kitabı, Arapça asıllarıyla: Kütüb-i Sitte (Buhârî, Müslim, Ebû Dâvûd, Tirmizî, Nesâî, İbn Mâce) ve Muvatta, Ahmed b. Hanbel'in Müsned'i, Dârimî, Taberânî'nin el-Mu'cemü's-Sağîr'i, Zehebî'nin notlarıyla Hâkim'in el-Müstedrek'i, İbn Hibbân (el-İhsân), Heysemî'nin Mecmaü'z-Zevâid'i, Kenzü'l-Ummâl, Münâvî'nin Feyzü'l-Kadîr'i, Aclûnî'nin Keşfü'l-Hafâ'sı, Kādî İyâz'ın eş-Şifâ'sı ve Beyhakî'nin Delâilü'n-Nübüvve'si: yaklaşık 169 bin rivayet, ayrıca Kur'ân-ı Kerîm'in metni.\n\nAtıf birimi rivayettir; kitabı, baskının numarası ve basılı sayfasıyla:\n- Arapça kelimeyle (ön ekli biçimler de bulunur), senetteki râvînin adıyla ya da herhangi bir dilde anlamla arama.\n- \"Buharî, Ezân: 148\" ya da \"Müsned 14870\" gibi bir künyeden rivayete gitme; kitap ve bâb ağacında gezinme.\n- Rivayeti senedi ve metniyle, âlimlerin notlarını ayrı katman olarak ve Risale-i Nur'da geçtiği yerlerle okuma.\n- Arapçayı aynen alıntılama ve cevabın sonunda rivayetlerle karşılaştırılmış numaralı kaynakça.\n\nChatGPT bir rivayetin sıhhati hakkında hüküm vermez: dereceler yalnız kaynağın verdiği şekilde, âlimin adıyla gösterilir; Zehebî'nin, Elbânî'nin ve muhakkiklerin notları kitabın müellifine mal edilmez. ChatGPT'nin kendi tercümeleri \"Yapay zekâ tercümesi\" diye işaretlenir.\n\nKitaplar OpenITI'den (CC BY-NC-SA 4.0), Kütüb-i Sitte ve Muvatta'nın uluslararası numaraları ve dereceleri Hadith API'den, Kur'ân metni Tanzil Projesi'nden gelir. Araçların hepsi salt okunurdur ve hesapsız çalışır. Gönüllü ve ticari olmayan bir projedir."
+          }
+        }
+      }
+    }
+  }
+}
