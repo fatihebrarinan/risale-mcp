@@ -149,9 +149,11 @@ kimlik doğrulama ve test hesabı bilgisi sunucuyla uyuşmuyor olabilir. Yeni ba
 yok, test hesabı yok, bütün alanlar dolu. Bedeli: kuyruktaki yer gider; otomatik yoldan geçeceğinin garantisi yok
 (Anthropic bazı başvuruları her durumda bir kişiye verir).
 
-**Ad `Risale MCP`** (kullanıcının kararı, 2026-11-16): yayıncıyla ve öbür üç eklentiyle aynı aile; "Risale-i Nur"
-eserin adıdır, listelemenin adı olunca resmî bir yayın ya da marka iddiası gibi görünebilir (OpenAI'nin reddi bu
-yüzdendi, S4.2). "Risale-i Nur" aramada bulunsun diye tek satırın ilk kelimeleridir.
+**Ad `Risale-i Nur Library`** (kullanıcının kararı, 2026-11-22; önceden `Risale MCP`, 2026-11-16, sonra `Risale
+MCP Risale-i Nur`): "Library" eki adı bir marka iddiası değil bir tanım yapar; "Risale-i Nur" eserin adıdır, ek
+notta bu söylenir. Tek satır artık "Risale-i Nur:" ile başlamaz (ad onu taşıyor). **Portalda değişecekler
+(2026-11-22):** ad, tek satır, açıklamanın ilk kelimeleri, ek notların ortak ilk paragrafı ve "It is now named…"
+cümlesi; Hadis, Tefsir ve Klasik'te ad, açıklamanın ilk kelimeleri ve ortak ilk paragraf.
 
 **Sıra:**
 
@@ -170,10 +172,10 @@ yüzdendi, S4.2). "Risale-i Nur" aramada bulunsun diye tek satırın ilk kelimel
 kimlik doğrulama **Yok**, test hesabı yok.
 
 - **Tek satır:**
-  > Risale-i Nur: read and cite the complete works of Bediüzzaman Said Nursî, sentence by sentence, with the
+  > Read and cite the complete works of Bediüzzaman Said Nursî, the Risale-i Nur, sentence by sentence, with the
   > Qur'an's text alongside.
 - **Açıklama:**
-  > Risale MCP gives Claude the complete works of Bediüzzaman Said Nursî: the Risale-i Nur Collection
+  > Risale-i Nur Library gives Claude the complete works of Bediüzzaman Said Nursî: the Risale-i Nur Collection
   > (Sözler, Mektubat, Lem'alar, Şualar, the Lâhikas, Tarihçe-i Hayat), the works of his early period, the
   > compilations and the Hizbs, in Turkish and, for the works he wrote in Arabic, in Arabic too. About 131,000
   > sentences across 53 works, besides 16 volumes in Ottoman script, together with the Qur'an's vowelled Arabic
@@ -216,9 +218,9 @@ kimlik doğrulama **Yok**, test hesabı yok.
   > The texts are served with the permission of their sources (e-Risale, risaleoku.com, nurpedia.org and the Keşif
   > Yolculukları programme), which are named on the website and in every answer's list of sources; the Qur'an's
   > text comes from the Tanzil Project. This replaces our earlier submission of the same connector (named
-  > "Risale-i Nur", sent on 29 October with optional OAuth), which we withdrew. It is now named Risale MCP, like the
-  > publisher and the other three connectors, and the server has had no accounts and no OAuth since the evening of
-  > 29 October.
+  > "Risale-i Nur", sent on 29 October with optional OAuth), which we withdrew. It is now named Risale-i Nur
+  > Library, a description of what it holds: "Risale-i Nur" is the name of the works it serves, not a brand we
+  > claim. The server has had no accounts and no OAuth since the evening of 29 October.
   >
   > How to test (the texts are in Turkish; questions can be asked in English): "List the works and show the outline
   > of Sözler." · "Why is the time of the Last Day kept hidden, according to the Risale-i Nur? Quote the text and
