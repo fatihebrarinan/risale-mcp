@@ -22,6 +22,69 @@ CITED_BOOK = {"bukhari": "bukhari", "muslim": "muslim", "abudawud": "abudawud", 
               "sunen-darimi": "darimi", "mucemus-sagir": "mucem-sagir", "mustedrek": "mustedrek",
               "sahih-ibn-hibban": "ihsan", "mecmauz-zevaid": "mecma", "kenzul-ummal": "kenz", "feyzul-kadir": "feyz",
               "keşfu": "kesfulhafa", "sifa": "sifa", "delail-beyhaki": "delail"}
+# İngilizce künye (2026-11-22; dizin hakemleri ve yabancı kullanıcılar "Bukhari, Adhan: 148" yazar): künye ayrıştırıcı
+# Risale'nin Türkçe künyeleri içindir ve onlara dokunulmaz; sunucu girdiyi ayrıştırmadan önce kitap adını Türkçe
+# yazılışa çevirir, tanınmayan bölüm adını da harf iskeletiyle (`_skeleton`) kitabın bölüm adlarında arar.
+ENGLISH_BOOKS = (
+    (r"(?:sahih\s+)?(?:al-?\s*)?bukhari", "Buhari"),
+    (r"(?:sunan\s+)?abu\s*dawu?d", "Ebu Davud"),
+    (r"(?:jami\S*\s+|sunan\s+)?(?:a[lt]-?\s*)?tirmidhi", "Tirmizi"),
+    (r"(?:sunan\s+)?(?:a[ln]-?\s*)?nasa'?i", "Nesai"),
+    (r"(?:sunan\s+)?ibn\s*majah?", "Ibn Mace"),
+    (r"(?:al-?\s*)?muwatt?a'?(?:\s+(?:of\s+)?malik)?|malik'?s\s+muwatt?a'?", "Muvatta"),
+    (r"(?:al-?\s*)?mustadrak", "Mustedrek"),
+    (r"kanz\s+al-?\s*'?ummal", "Kenzul Ummal"),
+    (r"musnad(?:\s+(?:of\s+)?ahmad(?:\s+ibn\s+hanbal)?)?|ahmad(?:\s+ibn\s+hanbal)?,?\s+musnad", "Musned"),
+)
+_ENGLISH = [(re.compile(rf"\b(?:{pat})\b", re.I), tr) for pat, tr in ENGLISH_BOOKS]
+_DIGRAPHS = (("dh", "z"), ("th", "s"), ("kh", "h"), ("gh", "g"), ("sh", "s"), ("ch", "c"), ("j", "c"), ("w", "v"),
+             ("q", "k"), ("x", "ks"))
+
+
+def _english(citation: str) -> str:
+    for pattern, turkish in _ENGLISH:
+        citation = pattern.sub(turkish, citation)
+    return citation
+
+
+def _skeleton(name: str) -> str:
+    """Bölüm adının ünsüz iskeleti: İngilizce ("adhan", "wudu", "ghusl") ve Türkçe ("ezan", "vudu", "gusul") aynı."""
+    from risale_mcp.hadis_kitaplar import normalize_name
+    s = re.sub(r"^(?:kitab\w*\s+|book\s+of\s+(?:the\s+)?)?(?:a[lnrst]-|e[lnrst]\s+)?", "", normalize_name(name).strip())
+    for a, b in _DIGRAPHS:
+        s = s.replace(a, b)
+    s = re.sub(r"[^a-z]|[aeiouy]", "", s)
+    return re.sub(r"(.)\1+", r"\1", s)
+
+
+def _chapter_skeletons() -> dict[str, dict[str, int]]:
+    """Kitap -> {iskelet: bölüm}; iki bölümün aynı iskelete düştüğü ad tanınmaz (belirsiz)."""
+    from risale_mcp.hadis_kitaplar import SECTIONS
+    out: dict[str, dict[str, int]] = {}
+    for book, rows in SECTIONS.items():
+        seen: dict[str, set[int]] = {}
+        for pattern, number in rows:
+            names = pattern.pattern.rsplit("(?:", 1)[1].rstrip(")")
+            for alt in names.split("|"):
+                plain = re.sub(r"\[(.)[^\]]*\]", r"\1", alt.replace("\\w*", "").replace("\\w", "")).replace("?", "").replace("+", "")
+                if plain:
+                    seen.setdefault(_skeleton(plain), set()).add(number)
+        out[book] = {k: next(iter(v)) for k, v in seen.items() if k and len(v) == 1}
+    return out
+
+
+_SKELETONS: dict[str, dict[str, int]] | None = None
+
+
+def english_section(book: str, chapter: str) -> int | None:
+    global _SKELETONS
+    if _SKELETONS is None:
+        _SKELETONS = _chapter_skeletons()
+    return _SKELETONS.get(book, {}).get(_skeleton(chapter))
+
+
+NO_BOOK_NOTE = ("This book is not recognised or not in the library (list_books gives the books). Write the reference "
+                "as e.g. 'Bukhari, Adhan: 148', 'Muslim, Iman: 20', 'Musnad 14870' or 'Mustadrak, 4:123'.")
 CAUTION = {"kesfulhafa": "This book collects sayings current among people, many weak or baseless: a match here means "
                           "the saying is discussed there, not that it is sound."}
 MAX_UNITS = 20
@@ -168,17 +231,25 @@ class HadisLibrary(Library):
 
     def by_citation(self, citation: str, limit: int = 20) -> dict:
         """Künyeden ("Buharî, Ezân: 148", "Müsned 14870", "Müstedrek, 4:123") kütüphanedeki yer."""
-        from risale_mcp.hadis_kutub import Index, load
-        parsed = parse_citation(citation).citations
+        from risale_mcp.hadis_kutub import Index, load_index_books as load
+        parsed = parse_citation(_english(citation)).citations
         out = []
         for c in parsed:
             key = CITED_BOOK.get(c.book or "")
             if key is None:
-                out.append({"citation": c.raw, "found": False, "note": "This book is not in the library."})
+                out.append({"citation": c.raw, "found": False, "note": NO_BOOK_NOTE})
                 continue
             for loc in c.locators or []:
                 found, note = [], None
                 if loc.kind == "chapter" and key in ("bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah", "malik"):
+                    if loc.section is None:
+                        loc.section = english_section(key, loc.chapter or "")
+                    if loc.section is None:
+                        out.append({"citation": c.raw, "book": key, "found": False, "reports": [],
+                                    "note": f"The chapter (kitab) name '{loc.chapter}' was not recognised in this book. "
+                                            "Give the book's chapter name, e.g. 'Bukhari, Adhan: 148' or 'Buharî, Ezân: "
+                                            "148', or browse with get_outline."})
+                        continue
                     index = self._kutub_index(Index, load)
                     found = [self.conn.execute("SELECT * FROM lib_units WHERE id = ?", (h["id"],)).fetchone()
                              for h in _region(index, key, loc.section, loc.number)]

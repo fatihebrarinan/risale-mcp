@@ -129,6 +129,9 @@ if [[ $HADIS == 1 ]]; then
     "${SSH[@]}" "$HOST" "mkdir -p $DEST/data/dist/hadis/vectors"
     rsync -az --info=progress2 -e "${SSH[*]}" data/dist/hadis/hadis.db "$HOST:$DEST/data/dist/hadis/hadis.db"
     rsync -az --delete -e "${SSH[*]}" data/dist/hadis/vectors/ "$HOST:$DEST/data/dist/hadis/vectors/"
+    # Künye dizini (find_by_citation'ın bâb künyeleri; kitapların tam metni yerelde kalır): her gönderimde yeniden yazılır
+    uv run python -m risale_mcp.hadis_kutub index
+    rsync -az -e "${SSH[*]}" data/dist/hadis/kutub-index.json.gz "$HOST:$DEST/data/dist/hadis/kutub-index.json.gz"
     rsync -az -e "${SSH[*]}" docs/risale-mcp-hadis.server.service "$HOST:/etc/systemd/system/risale-mcp-hadis.service.new"
     "${SSH[@]}" "$HOST" "cmp -s /etc/systemd/system/risale-mcp-hadis.service.new /etc/systemd/system/risale-mcp-hadis.service \
         && rm /etc/systemd/system/risale-mcp-hadis.service.new \

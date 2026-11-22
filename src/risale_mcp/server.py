@@ -962,7 +962,7 @@ def _hadis_tools(server: MCPServer, library) -> None:
 
     @server.tool(title="Find by reference", annotations=read_only("Find by reference"), structured_output=False)
     def find_by_citation(
-        citation: Annotated[str, Field(description="A reference, e.g. 'Buharî, Ezân: 148', 'Müsned 14870', 'Müstedrek, 4:123'.")],
+        citation: Annotated[str, Field(description="A reference in English or Turkish, e.g. 'Bukhari, Adhan: 148', 'Buharî, Ezân: 148', 'Musnad 14870', 'Müstedrek, 4:123'.")],
     ) -> str:
         """The reports a reference points to in this library: a chapter's region in the Six Books, a report by its
         number, or the reports on a printed page (another edition's page may differ: see note)."""

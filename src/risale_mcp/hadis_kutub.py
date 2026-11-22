@@ -34,7 +34,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from risale_mcp import openiti
-from risale_mcp.paths import INTERIM_DIR, LIBRARY_DIR, RAW_DIR
+from risale_mcp.paths import DIST_DIR, INTERIM_DIR, LIBRARY_DIR, RAW_DIR
 from risale_mcp.sources.hadis import OPENITI_BOOKS, OPENITI_COMMITS
 
 KUTUB_DIR = LIBRARY_DIR / "hadis" / "kutub"
@@ -320,6 +320,37 @@ def load(out_dir: Path = KUTUB_DIR) -> dict[str, dict]:
     return {b: json.loads((out_dir / f"{b}.json").read_text("utf-8")) for b in OPENITI_BOOKS if (out_dir / f"{b}.json").exists()}
 
 
+# Hadis sunucusunda künyenin bölgesi (`find_by_citation`, "Buharî, Ezân: 148") için yalnız `Index`'in okuduğu alanlar
+# gerekir; kitapların tam JSON'ları (≈140 MB) yalnız yereldedir. `deploy.sh --hadis` bu ince dizini her gönderimde
+# yeniden yazar ve gönderir (2026-11-22: dizin sunucuya hiç gitmemişti, bâb künyeleri canlıda hep boş dönüyordu).
+INDEX_PATH = DIST_DIR / "hadis" / "kutub-index.json.gz"
+
+
+def slim(books: dict[str, dict]) -> dict[str, dict]:
+    """`Index`'in kullandığı alanlar: kitap ve bâb ağacı, hadisin kimliği, düğümü ve API numarası (metin yok)."""
+    keep_node = ("id", "parent_id", "level", "number", "api_sections")
+    return {b: {"outline": [{k: n[k] for k in keep_node if k in n} for n in d["outline"]],
+                "hadiths": [{k: h[k] for k in ("id", "node_id", "api") if k in h} for h in d["hadiths"]]}
+            for b, d in books.items() if b in TITLES}
+
+
+def write_index(path: Path = INDEX_PATH) -> Path:
+    import gzip
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_bytes(gzip.compress(json.dumps(slim(load()), ensure_ascii=False, separators=(",", ":")).encode("utf-8")))
+    return path
+
+
+def load_index_books() -> dict[str, dict]:
+    """Künye dizini için kitaplar: yerelde tam JSON'lar, sunucuda ince dizin (ikisi de yoksa boş)."""
+    if any((KUTUB_DIR / f"{b}.json").exists() for b in TITLES):
+        return {b: d for b, d in load().items() if b in TITLES}
+    if INDEX_PATH.exists():
+        import gzip
+        return json.loads(gzip.decompress(INDEX_PATH.read_bytes()))
+    return {}
+
+
 # Künyenin numarası kitaba göre başka şeydir (Wensinck sistemi): Kütüb-i Sitte'nin sünenlerinde ve Buhârî'de bâb,
 # Müslim ve Muvatta'da kitabın içindeki hadis sırası. Baskılar bâb ve tarik sayımında ayrıldığı için künye kesin yeri
 # değil yakın bir bölgeyi gösterir. Pencereler 2026-11-03 ölçümünden (tekil künye, karıştırılmış künyeye karşı;
@@ -428,4 +459,8 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    import sys
+    if sys.argv[1:] == ["index"]:      # deploy.sh --hadis: sunucuya giden ince künye dizini
+        print(write_index())
+    else:
+        main()

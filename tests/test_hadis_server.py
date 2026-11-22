@@ -34,6 +34,27 @@ def test_a_split_chapter_is_numbered_continuously(lib):
     assert found["found"] and all(r["id"].startswith("bukhari/") for r in found["reports"])
 
 
+def test_english_references_reach_the_same_reports(lib):
+    turkish = lib.by_citation("Buharî, Ezân: 148")["citations"][0]["reports"]
+    for english in ("Bukhari, Adhan: 148", "Sahih al-Bukhari, Adhan 148"):
+        assert lib.by_citation(english)["citations"][0]["reports"] == turkish
+    assert lib.by_citation("Musnad 14870")["citations"][0]["reports"][0]["id"] == "musned/14870"
+    unknown = lib.by_citation("Bukhari, Nonexistentchapter: 3")["citations"][0]
+    assert not unknown["found"] and "not recognised" in unknown["note"]
+
+
+def test_the_server_index_matches_the_full_books(lib, tmp_path, monkeypatch):
+    """Sunucuda kitapların tam JSON'ları yok, ince dizin var (2026-11-22: dizin hiç gitmemişti, bâb künyeleri boştu)."""
+    from risale_mcp import hadis_kutub as k
+    from risale_mcp.hadis_library import _region
+    full = k.Index(k.load_index_books())
+    monkeypatch.setattr(k, "INDEX_PATH", k.write_index(tmp_path / "kutub-index.json.gz"))
+    monkeypatch.setattr(k, "KUTUB_DIR", tmp_path / "yok")
+    slim = k.Index(k.load_index_books())
+    for book, section, number in (("bukhari", 10, "148"), ("muslim", 1, "20"), ("abudawud", 2, "30"), ("nasai", 7, "5")):
+        assert [h["id"] for h in _region(slim, book, section, number)] == [h["id"] for h in _region(full, book, section, number)]
+
+
 def test_kashf_al_khafa_carries_its_note(lib):
     hits = lib.search_reports('"ستفتح عليكم الشام"', book="kesfulhafa")["results"]
     assert hits and all("book_note" in h for h in hits)
