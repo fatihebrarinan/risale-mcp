@@ -420,6 +420,12 @@ gerekir, sizde kişisel doğrulama var. Kararınız: kişisel kimlikle yayımlam
 
 ## 6. OpenAI: Risale (düzeltilmiş paket, yeniden başvuru)
 
+**Yapıldı (2026-11-22):** doğrulanmış ad "Fatih Ebrar İnan" (Verified - Individual, "solo developer"). Gizlilik ve
+şartlar sayfalarının yayıncı satırı bu ad (yayında); paket aşağıdaki tabloya göre güncellendi, `mcp.json` anahtarı
+`risale-mcp`, zip `data/interim/chatgpt/risale-mcp.zip`. Kalan sizde: organizasyonun görünen adı ("Nur Hadimleri")
+da aynı ada çevrilsin (ret iletisi markanın doğrulanmış kişiye ait olduğunu soruyor; iki ayrı ad kalmasın), sonra
+§5 adım 4 ve aşağıdaki adımlar.
+
 Değişecekler (`packaging/chatgpt/plugin.json`; S4.2 kararı: uygulama adı "Risale MCP"):
 
 | Alan | Bugün | Yeni |

@@ -68,23 +68,19 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (`yayin-20261121-193007`, klasik `2026-11-21` sürümü, tefsir kodu); B3 Aralık'ta. S7, S8, S9 ve **D5 bitti** (kullanıcının
   kararları; "Biten"de, ayrıntı `KAYIT.md`). D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine sürüyor
   (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
-- **Önde (2026-11-22):** "Sıradaki" yeniden sıralandı, "Sonra" gözden geçirildi (17 işten 4'e). Sıradaki iş 1
-  sürüyor: S4.3'ün denetimi yapıldı, düzeltmeler commit edildi (`aa9083d`: tefsir ve klasik araç açıklamaları
-  kendilerinin, sorgu hataları İngilizce, açık kipte sınır iletisi, sunucu sürümü), **gönderilmedi** (deploy izni
-  kullanıcıda); e-posta taslağı `docs/s4-dizin-basvurulari.md` §2e; E8'in taslağı
-  `docs/e8-arapca-kulliyat-izin-epostasi.md` (hak sahibi ve adres künyeden doğrulanacak). S4.1 doğrulanmış adın
-  yazılışını bekliyor. Kuyruk haftalık kotada, 23.11 03.00'te (TSİ) sürer.
+- **Önde (2026-11-22):** "Sıradaki" yeniden sıralandı, "Sonra" gözden geçirildi (17 işten 4'e). Sıradaki iş 1:
+  S4.3 denetimi ve düzeltmeleri **yayında** (`yayin-20261122-173908`; tefsir ve klasik kendi araç açıklamalarıyla),
+  e-posta taslağı `docs/s4-dizin-basvurulari.md` §2e. S4.1: site ve ChatGPT paketi doğrulanmış ada çevrildi
+  ("Fatih Ebrar İnan"; gizlilik ve şartlar yayında; paket `data/interim/chatgpt/risale-mcp.zip`). E8: hak
+  yayıncının (künye: "حقوق الطبع محفوظة للناشر", شركة سوزلر للنشر, Kahire); öneri İstanbul'daki Sözler Neşriyat'a
+  Türkçe e-posta (`docs/e8-arapca-kulliyat-izin-epostasi.md`). Kuyruk haftalık kotada, 23.11 03.00'te (TSİ) sürer.
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
   "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
   (`site-zamanli.timer`); yayımlandığına bakılır. (2) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
-- **Kullanıcıdan beklenen:** S4.3'ün düzeltmelerini göndermek (`DEPLOY_EXPECT="search" HADIS_EXPECT="search_hadith"
-  scripts/deploy.sh --code --hadis`; tefsir ve klasik için `TEFSIR_EXPECT="list_works get_outline read_section
-  get_passage search semantic_search find_sentence find_ayah cite"` ile `scripts/tefsir-sunucu.sh gonder` ve
-  `PROFIL=klasik scripts/tefsir-sunucu.sh gonder`), sonra
-  §2e e-postası; S4.1 için OpenAI'deki doğrulanmış adın yazılışı; E8'in hak sahibini künyeden bulup e-postayı
-  göndermek; "Sıradaki" 8 (Risale'si az birimlere göz atmak).
+- **Kullanıcıdan beklenen:** §2e e-postası (mcp-review@anthropic.com); OpenAI: organizasyon adını da doğrulanmış
+  ada çevirip paketle yeniden başvuru (§5–§6); E8: sozler.com.tr'nin iletişim adresiyle e-posta; "Sıradaki" 8.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -195,7 +191,7 @@ araştır, varsa düzelt"):
 |---|---|---|---|
 | S4.3 | Claude dizini: Risale başvurusu "In review"; dizin ekibine e-posta gitti (2026-11-16). **Sonraki adım (kullanıcının kararı, 2026-11-22):** belgenin verdiği adrese (mcp-review@anthropic.com) listeleme adı, organizasyon ve durumla e-posta; bir hafta cevap yoksa başvuru silinip `risale.risalemcp.com/mcp` adresiyle yeniden gönderilir. Öncesinde dört sunucu dizin ölçütleriyle denetlenir (araçlarda `title` ve salt okunur işareti, hata iletileri, Voyage'ın beyanı). **Denetlendi (2026-11-22):** bulgular ve e-posta taslağı `docs/s4-dizin-basvurulari.md` §2e; düzeltmeler `aa9083d`, gönderilince e-posta gider | Anthropic | M7 |
 | S4.7 | Claude eklentisi (plugin, kullanıcının kararı, 2026-11-22): küçük, herkese açık GitHub deposu (proje talimatı skill olarak, dört bağdaştırıcının adresi, README, lisans; metin girmez). Önce yerelde kurulup skill'in sohbette ne zaman yüklendiği denenir (her sohbette değil, açıklaması eşleşince yüklenir: proje talimatının birebir yerini tutmayabilir), sonra portaldan "Plugin bundle" | Biz | |
-| S4.1 | OpenAI: **kullanıcının kendi adıyla** dört başvuru (Risale, Hadis, Tefsir, Klasik; kullanıcının kararı, 2026-11-22; dernek yolu bırakıldı: OpenAI'nin işletme doğrulaması Türkiye belgelerinde belirsiz). Sitedeki yayıncı satırı (gizlilik, şartlar) doğrulanmış adla aynı olur (S4.6'daki "kişisel ad hiçbir yerde" kararı bu kadarıyla değişir); önce Risale, sonucu görülünce öbürleri | Kullanıcı | M7 |
+| S4.1 | OpenAI (2026-11-22: site ve paket "Fatih Ebrar İnan" adına, yayında; başvuru kullanıcıda): **kullanıcının kendi adıyla** dört başvuru (Risale, Hadis, Tefsir, Klasik; kullanıcının kararı, 2026-11-22; dernek yolu bırakıldı: OpenAI'nin işletme doğrulaması Türkiye belgelerinde belirsiz). Sitedeki yayıncı satırı (gizlilik, şartlar) doğrulanmış adla aynı olur (S4.6'daki "kişisel ad hiçbir yerde" kararı bu kadarıyla değişir); önce Risale, sonucu görülünce öbürleri | Kullanıcı | M7 |
 
 Kapananlar (2026-11-12): E4 Kızıl İcaz'ın Türkçesi (gerek yok, "Biten"); Diyanet (izin yok, "Biten"); Osmanlıcanın
 kaynağı (A2'nin ön şartı değil).

@@ -17,6 +17,22 @@ izin. Taslak Claude'un, gönderen kullanıcı.
   (risaleoku) veriyoruz: e-postada bunu da açıkça söylüyoruz.
 - Hizmet Vakfı (rasaelalnour.com) 2026-10-30'da izin vermemişti; o mesele kapalıdır ve bu e-posta ona gitmez.
 
+**Nereye yazılır (araştırma, 2026-11-22):**
+- Arapça tercümenin bir cildinin künyesi (archive.org'daki taranmış `سيرة ذاتية`, 6. baskı): "حقوق الطبع محفوظة
+  للناشر", yayıncı **شركة سوزلر للنشر** (Kahire), adres "شارع جعفر الصادق، الحي السابع، مدينة نصر، القاهرة";
+  "إعداد وترجمة: إحسان قاسم الصالحي". Yani hak yayıncınındır (en azından o baskıda). Mısır'daki şirket
+  "Dâr Sözler li'n-Neşr" adıyla 2010'da kurulmuş; Mısır sarı sayfaları aynı adresi veriyor (30 Ca'fer es-Sâdık
+  Cad., Nasr City). sozleregypt.com bugün açılmıyor (404).
+- İstanbul'daki ana yayınevi **Sözler Neşriyat Tic. ve San. A.Ş.** (sozler.com.tr; Türkçe ve İngilizce
+  baskılarda "Copyright © Sözler Neşriyat A.Ş."; App Store'daki Arapça "سوزلر" uygulamasının telif satırı da
+  bu şirket). Sitenin iletişim sayfası otomatik okunamadı; adresi tarayıcıdan alınır.
+- Doğrulanmamış: taranmış bir kitapta geçen `darsozler@gmail.com` ve +20 2 2260 2938 (güncel olup olmadığı
+  bilinmiyor; web'de başka yerde geçmiyor).
+- **Öneri:** e-posta İstanbul'daki Sözler Neşriyat'a, Türkçe (aşağıdaki taslak); içinde "Arapça baskının hakkı
+  Kahire'deki şirketinizdeyse lütfen iletin" ricası. Kahire'ye ayrıca Arapça bir nüsha (`darsozler@gmail.com`,
+  doğrulanmamış adres olduğu belirtilerek) gönderilebilir. Mütercime bilgi: RİNAP (Üsküdar Üniversitesi) ya da
+  Sözler aracılığıyla.
+
 **Göndermeden önce doldurulacaklar:** alıcı adresi, [adınız], [telefon] (isteğe bağlı). Arapçasını isterseniz
 ayrıca hazırlarım; yayınevi Türkiye'de olduğu için ilk e-posta Türkçe.
 
@@ -26,8 +42,8 @@ ve talimatın Arapçası sonra.
 
 ## Taslak
 
-**Alıcı:** Sözler Neşriyat [adres künyeden ya da yayınevinin sitesinden]; mümkünse bilgi olarak Üstad İhsan Kasım
-es-Sâlihî
+**Alıcı:** Sözler Neşriyat A.Ş., İstanbul [adres sozler.com.tr'nin iletişim sayfasından]; mümkünse bilgi olarak
+Dâr Sözler (Kahire) ve Üstad İhsan Kasım es-Sâlihî
 
 **Konu:** Külliyat-ı Resâili'n-Nûr'un Arapça tercümesinin yapay zekâ ile kaynağa bağlı kullanımı için izin talebi
 
@@ -51,8 +67,8 @@ olduğunu düşünüyoruz. Bu sebeple sizden şu hususlarda izin ve yardım isti
    el-Melâhık ve öbür ciltler) bu araçta kullanma izni.
 2. Metni risaleoku.com'daki nüshadan alabilir miyiz, yoksa sizin tercih ettiğiniz bir dijital nüsha mı
    kullanmalıyız? Hangisini uygun görürseniz ona uyarız.
-3. Hak sahibi siz değilseniz ya da Üstad İhsan Kasım'ın da izni gerekiyorsa, kime yazmamız gerektiğini
-   bildirirseniz minnettar oluruz.
+3. Arapça baskının hakkı Kahire'deki şirketinizdeyse (شركة سوزلر للنشر) ya da Üstad İhsan Kasım'ın da izni
+   gerekiyorsa, bu talebi ilgilisine iletmenizi ya da kime yazmamız gerektiğini bildirmenizi rica ederim.
 
 Kullanımla ilgili birkaç hususu açıkça belirtmek isterim:
 - Metin bir web sitesinde okunacak şekilde yayımlanmaz; model yalnızca sorulan soruyla ilgili bölümleri okur ve
