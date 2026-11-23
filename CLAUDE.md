@@ -529,8 +529,10 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   ar-ge birimlerinde platforma giden taslak `data/d1/oku/secim.json` (yoksa en sonuncu). Hesaplar `site_auth.py`:
   kapsam `oku` (varsayılan, yalnız platform) ya da `masa` (`/taslak/` ve `/oku/`); hesap **davet bağlantısıyla** açılır
   (S10): `scripts/sunucu.sh taslak davet <e-posta> [--masa]` tek kullanımlık, 7 günlük bağlantı verir, kullanıcı kendi
-  e-postasıyla gönderir, okuyucu parolasını kendisi koyar (unutursa yeni bağlantı; `davetler` bekleyenler); çerez `/`
-  yolunda. Okuyucu notu **kişisel defterdir** (`masa.py`, `kapsam = 'defter'`): herkes, yönetici de, yalnız kendi notunu
+  e-postasıyla gönderir, okuyucu parolasını kendisi koyar (unutursa yeni bağlantı; `davetler` bekleyenler); **açık
+  davet** `davet --acik [--not <not>]`: adresi okuyucu yazar, yalnız yeni hesap açar (var olan hesabı reddeder), e-posta
+  doğrulanmaz (yalnız giriş adı, site e-posta göndermez); `--not` yöneticinin hesabı tanıma notudur (`users` gösterir,
+  `set-label`); çerez `/` yolunda. Okuyucu notu **kişisel defterdir** (`masa.py`, `kapsam = 'defter'`): herkes, yönetici de, yalnız kendi notunu
   görür, düzenler, gerçekten siler; dışa aktarıma ve "notlarımla düzelt"e girmez; Notlarım ve Word dosyası
   (`docx_yaz.py`). S10'dan önceki notlar ar-ge kaydıdır (`arge`; masa `?arge=1`); "notlarımla düzelt" yalnız onlarla, elle:
   `uv run python scripts/d1-birim.py notlarla <birim> [--deneme]`. Platform: karşılama (`#/~hosgeldin`), Notlarım

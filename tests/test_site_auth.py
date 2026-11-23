@@ -224,3 +224,31 @@ def test_remove_user_drops_invites(store):
 def test_gate_returns_to_public_platform_path(client):
     r = client.get("/_auth", headers={"X-Forwarded-Uri": "/taslak/oku/"})
     assert r.headers["location"] == "/taslak/giris?next=/oku/"
+
+
+def test_open_invite(store, client):
+    """Açık davet: okuyucu e-postasını kendisi yazar; yalnız yeni hesap açar; not hesaba geçer."""
+    token = store.invite(None, label="Ahmet Hoca")
+    assert store.invite_email(token) == "" and store.invites()[0]["label"] == "Ahmet Hoca"
+    r = client.get(f"/oku/davet/{token}")
+    assert r.status_code == 200 and "Hesabınızı açın" in r.text and " readonly " not in r.text
+    pw = {"password": "uzun-parola-1", "password2": "uzun-parola-1"}
+    r = client.post(f"/oku/davet/{token}", data={"email": "okur@example.org"} | pw)     # var olan hesap: ele geçirilemez
+    assert r.status_code == 400 and "zaten var" in r.text and store.login("okur@example.org", "dogru-parola-123")[0]
+    r = client.post(f"/oku/davet/{token}", data={"email": "adres-degil"} | pw)
+    assert r.status_code == 400 and "Geçerli" in r.text and "adres-degil" in r.text        # yazdığı kalır
+    r = client.post(f"/oku/davet/{token}", data={"email": " Yeni@Example.org "} | pw)
+    assert r.status_code == 303 and r.headers["location"] == "/oku/"
+    assert store.check(r.cookies[COOKIE]) == "yeni@example.org" and store.scope("yeni@example.org") == "oku"
+    assert {u["email"]: u["label"] for u in store.users()}["yeni@example.org"] == "Ahmet Hoca"
+    assert client.get(f"/oku/davet/{token}").status_code == 410                         # tek kullanımlık
+    other = store.invite(None)
+    with pytest.raises(ValueError):
+        store.accept(other, "uzun-parola-1", email="yeni@example.org")                 # ikinci kez aynı adres
+
+
+def test_labels(store):
+    store.set_label("okur@example.org", "kendi hesabım")
+    assert store.users()[0]["label"] == "kendi hesabım"
+    store.accept(store.invite("okur@example.org", label="yeni not"), "yepyeni-parola")   # yenilemede not güncellenir
+    assert store.users()[0]["label"] == "yeni not"

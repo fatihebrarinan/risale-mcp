@@ -377,6 +377,12 @@ aktarım defter notlarını vermez; deploy ve canlı deneme izni):
   kapalı) ✎ paragrafın sonunda. Seçici artık boşluksuz metinle saklanır ve aranır (önü ve ardıyla, aynı söz birden çok
   geçerse doğrusu); ✎ kopyalanan metne girmez; seçim yaparken sarı alana dokunmak notu açmaz. Paragraf değişirse
   notun görünmemesi açığı PLANLAR "Sonra"da.
+- **Açık davet** (kullanıcının kararı, aynı gün: okuyucuya önce e-postasını sormak gerekmesin; e-posta doğrulaması
+  gerekmez, çünkü e-posta yalnız giriş adıdır ve doğrulama sitenin e-posta göndermesini isterdi): `davet --acik
+  [--not "Ahmet Hoca"]` adressiz bağlantı verir, okuyucu e-postasını ve parolasını yazar. Yalnız yeni hesap açar:
+  adresin hesabı varsa reddeder (başkasının hesabı ele geçirilmesin), parola yenileme adresli bağlantıyla kalır.
+  Yöneticinin notu (`label`) hesaba geçer, `users` ve `davetler` gösterir, `set-label` değiştirir. Bağlantı aynı anda iki
+  kez gönderilirse ikincisi işlemez. Gizlilik politikasına iki cümle (doğrulanmayan adres, yöneticinin notu).
 - **Gizlilik politikası** (Türkçe, İngilizce, 23 Kasım 2026): eski metin "notlar sunucuya gönderilmez" diyordu (S7'den
   beri yanlıştı); yeni metin davet, saklananlar, kaldığı yer ve defter notlarını anlatır.
 - **Deneme:** 27 yeni ya da değişen test; yerelde tarayıcıda (masaüstü ve 390 px) davet → karşılama → not → düzenle →
