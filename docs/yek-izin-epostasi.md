@@ -25,33 +25,19 @@ Bilinmesi gerekenler (e-postaya girmez):
 
 **Konu:** Hak Dini Kur'an Dili neşrinizin kâr amacı gütmeyen bir kaynak hizmetinde kullanılması hakkında
 
-Türkiye Yazma Eserler Kurumu Başkanlığı Çeviri ve Yayım Daire Başkanlığı'na,
-
 Sayın Yetkili,
 
-[Kısa tanışma.] Kâr amacı gütmeyen, gönüllülerce yürütülen Risale MCP projesini (https://risalemcp.com)
-yürütüyorum. Proje, Claude ve ChatGPT gibi yapay zekâ asistanlarının dinî metinlerden cevap verirken kaynağa bağlı
-kalmasını sağlıyor: asistan dayandığı yeri eserin adı ve bölümüyle gösteriyor, metni değiştirmeden alıntılıyor. Tefsir
-bölümünde bugün Taberî, Zemahşerî, Râzî, Beyzâvî, İbn Kesîr ve Âlûsî gibi on üç klasik tefsir yer alıyor.
+Kâr amacı gütmeyen Risale MCP projesini (https://risalemcp.com) yürütüyorum. Proje, yapay zekâ asistanlarının
+klasik eserlerden metni değiştirmeden, kaynağını göstererek alıntı yapmasını sağlıyor.
 
-Bu bölüme Elmalılı Muhammed Hamdi Yazır'ın Hak Dini Kur'an Dili'ni, aslına sadık metniyle eklemek istiyoruz. Bunun
-için Başkanlığınızın Prof. Dr. Asım Cüneyd Köksal ve Doç. Dr. Murat Kaya'nın hazırladığı tenkitli neşrini kullanmak
-istiyoruz. Daha önce Başkanlığınızın yayınlarının ticari olmayan kullanıma, metin başka bir yerde kendi adımıza
-yayımlanmamak şartıyla açık olduğunu duymuştum. Bunu yazılı olarak teyit etmenizi ve izninizi rica ediyorum.
-Kullanım şartlarımız şunlar:
+Tefsir bölümümüze Başkanlığınızın Hak Dini Kur'an Dili neşrini (haz. Asım Cüneyd Köksal, Murat Kaya) eklemek
+istiyoruz. Yayınlarınızın ticari olmayan kullanıma, metin başka yerde kendi adımıza yayımlanmamak şartıyla açık
+olduğunu duydum. Bunu yazılı olarak teyit etmenizi rica ederim.
 
-- Hizmet ücretsizdir, reklam içermez, kazanç amacı yoktur.
-- Metin değiştirilmez. Her alıntıda eserin adı, bölümü ve neşrin künyesi (Türkiye Yazma Eserler Kurumu Başkanlığı,
-  hazırlayanlar Asım Cüneyd Köksal ve Murat Kaya) gösterilir.
-- Metin kendi adımıza ayrı bir kitap ya da dosya olarak yayımlanmaz; toplu indirmeye açılmaz. Yalnız bu hizmette,
-  yapay zekâ asistanının okuması ve kullanıcıya atıflı alıntı vermesi için kullanılır.
-- Asistanın kendi yorumu ve özeti metinden ayrı tutulur, Elmalılı'ya ya da neşre mal edilmez.
+Şartlarımız: hizmet ücretsiz ve reklamsızdır; metin değiştirilmez; her alıntıda Başkanlığınız ve hazırlayanlar
+kaynak gösterilir; metin ayrıca yayımlanmaz ve toplu indirmeye açılmaz.
 
-Uygun görürseniz neşrin dijital dosyasını (Word, XML ya da düz metin) da rica ederim. PDF'ten metin çıkarırken
-Arapça ibarelerin bir kısmı bozuk çıkıyor; dosyanız bu hataları önler. Belirlemek istediğiniz başka şartlar varsa
-onlara da uyarız.
-
-Projeyi daha ayrıntılı anlatmaktan memnuniyet duyarım.
+Uygun görürseniz neşrin dijital dosyasını (Word ya da metin) da rica ederim; PDF'ten Arapça ibareler bozuk çıkıyor.
 
 Saygılarımla,
 [Ad Soyad]
