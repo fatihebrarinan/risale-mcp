@@ -124,6 +124,13 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   göre alınmaz, ancak izin istenirse. Elenenler: archive.org'daki öbür takımlar (Azim, Yenda: sadeleştirilmiş;
   "(original)" kopyası kaldırılmış), kuranikerim.com (sadeleştirilmiş, kapalı), acikkuran ve kuran.gen.tr (yalnız
   meal), Osmanlıca 1935 taramaları (metin değil).
+  **YEK'in şartları (2026-11-23):** ticari olmayan kullanıma izin veren yazılı bir hüküm bulunamadı. Bulunanlar:
+  PDF künyesi "izni olmaksızın tümüyle veya kısmen, hiçbir yolla ve hiçbir ortamda yayımlanamaz ve çoğaltılamaz";
+  e-kitap sitesinin alt bilgisi "Tüm Hakları Saklıdır"; PDF'leri açan duyuru (yek.gov.tr, n_id=114) "filigranlı pdf
+  … şahsî bilgisayarlara", amaç okuma ve referans; Çeviri ve Yayım Yönetmeliği elektronik yayını "sadece okunabilmesi
+  amacıyla" diye tanımlar, hazırlayanlar çoğaltma ve umuma iletim haklarını Başkanlığa devreder, Başkanlık üçüncü
+  kişilere kullandırabilir. Kullanıcının bildiği izin (ticari değilse ve metin başka yerde kendi adımıza
+  yayımlanmazsa) yazılı değilse yazılı teyit gerekir.
 - E5 **Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Sırada (b)'nin 2. dilimi (kullanıcı, 2026-11-13); 3. dilim ve (c) "Sonra"da. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
 - A1 **Kaynakçada doğrudan bağlantı** (Aşama 20; e-Risale ile görüşmeden, 2026-10-30): kaynakçada yolun yanında metnin
   kendisine bağlantı; atıf hangi kaynaktaysa (erisale.com, risaleoku.com) onun ilgili yerine. erisale'de bölümün
