@@ -70,6 +70,17 @@ h3 { font-size: .95rem; margin: 18px 0 6px; }
 .izah { background: var(--ai-soft); border-radius: 8px; padding: 6px 10px; margin: 4px 0; font-size: .93rem; }
 [data-hat] { cursor: pointer; text-decoration: underline dotted; }
 .acts { font-size: .75rem; color: var(--muted); } .acts a { color: var(--muted); margin-right: 10px; cursor: pointer; }
+/* S10 (d): paragrafın altında yalnız not düğmesi, belirgin */
+.acts button.notbtn { font-size: .82rem; color: var(--accent); border-color: var(--line); padding: 1px 10px; margin-top: 2px; }
+.acts button.notbtn:hover { border-color: var(--accent); }
+.note .nt { white-space: pre-wrap; }
+.note .na a, .note .na button { margin-right: 10px; }
+.note .na button { font-size: .8rem; padding: 0 8px; }
+.welcome { max-width: 680px; } .welcome h2 { margin-top: 22px; } .welcome li { margin: 4px 0; }
+button.big { font-size: 1rem; padding: 8px 18px; background: var(--accent); color: var(--bg); border: 0; }
+a.big { display: inline-block; font-size: .95rem; padding: 6px 14px; border: 1px solid var(--accent); border-radius: 6px; text-decoration: none; color: var(--accent); }
+@media (max-width: 560px) { #ben, #genis, #usulBtn { display: none !important; } header { gap: 6px; padding: 8px 10px; }
+  a.hbtn { padding: 3px 7px; } header .aistamp { white-space: normal; line-height: 1.15; max-width: 76px; } }
 a.n { color: var(--src); font-size: .72em; vertical-align: super; text-decoration: none; cursor: pointer; }
 .mk { color: var(--src); font-size: .86em; white-space: nowrap; }
 .mk a.n { font-size: 1em; vertical-align: baseline; text-decoration: underline dotted; }
@@ -95,7 +106,7 @@ table.t { width: 100%; border-collapse: collapse; font-size: .85rem; } table.t t
 </style></head><body>
 <header><button id="menu" aria-label="Kur'ân paneli" title="Kur'ân panelini aç/kapa">☰</button><span class="t" id="ttl"></span><span class="aistamp" title="Bu sayfadaki taslak, tercüme ve izahlar yapay zekânındır; tefsir değildir">yapay zekâ taslağı · tefsir değildir</span>
 <button id="genis" title="Metni ekranın tamamına yay" hidden>↔ geniş</button>
-<a class="hbtn" id="masaBtn" href="/taslak/" hidden>Ar-ge masası</a><a class="hbtn" href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
+<a class="hbtn" id="masaBtn" href="/taslak/" hidden>Ar-ge masası</a><a class="hbtn" id="notlarimBtn" href="#/~notlarim" hidden>Notlarım</a><a class="hbtn" id="usulBtn" href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
 <div class="wrap"><aside id="panel"></aside><main id="main"></main><aside id="side"><p class="small muted">Bir atfın numarasına tıklayınca kaynağın metni burada açılır.</p></aside></div>
 <script>
 const MASA = __MASA__;
@@ -107,6 +118,7 @@ const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { retu
                set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }};
 const rng = a => a[0] === a[1] ? String(a[0]) : a[0] + '–' + a[1];
 let INDEX = null, U = null, NOTES = [], ME = null, VIEW = {ar: false, izah: true, hat: 'turk'};   // hat: Türk hattı varsayılan (S7e)
+let PAGE = null, FOCUS = null, MYNOTES = [], WANT = null, FIRST = true;   // S10: sayfa türü, odak paragraf, Notlarım, karşılamadan sonra gidilecek yer
 
 async function getJSON(u) { const r = await fetch(u, {cache: 'no-cache'}); if (!r.ok) throw new Error(r.status); return r.json(); }
 
@@ -124,6 +136,7 @@ function panel(cur) {
   }
   L.push('</ul><p class="small muted">● taslak var · ◐ yalnız İşârât · ○ henüz yazılmadı</p>');
   L.push('<p class="small"><a href="#/~sure">Sûre boyunca kesintisiz oku</a></p>');
+  if (!MASA) L.push('<p class="small"><a href="#/~notlarim">Notlarım</a> · <a href="#/~giris">Giriş sayfası</a> · <a href="#/~hosgeldin">Bu platform hakkında</a></p>');
   $('panel').innerHTML = L.join('');
   $('git').addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
@@ -274,8 +287,9 @@ function draftHTML(t) {
     }
     for (const f of b.isaretler || [])
       h += `<div class="flag">⚠ Bu atıf kaynağın dediğini aşıyor olabilir ([${esc(f.kaynak)}]; yapay zekâ denetçisinin hükmü, denetlenmedi) <details><summary class="small">gerekçe</summary>${esc(f.gerekce)}</details></div>`;
-    h += `<div class="acts"><a data-act="atif" data-p="${esc(b.id)}">atıf</a><a data-act="not" data-p="${esc(b.id)}">not${notes.length ? ' (' + notes.length + ')' : ''}</a><a href="#/${esc(U.birim)}/${esc(b.id)}">bağlantı</a></div>`;
-    h += notes.map(noteHTML).join('');
+    h += MASA ? `<div class="acts"><a data-act="atif" data-p="${esc(b.id)}">atıf</a><a data-act="not" data-p="${esc(b.id)}">not${notes.length ? ' (' + notes.length + ')' : ''}</a><a href="#/${esc(U.birim)}/${esc(b.id)}">bağlantı</a></div>`
+      : `<div class="acts"><button class="notbtn" data-act="not" data-p="${esc(b.id)}">✎ Not ekle</button></div>`;
+    h += notes.map(n => MASA ? noteHTML(n) : myNoteHTML(n)).join('');
     L.push(h + '</div>');
   }
   if (inDers) L.push('</div>');
@@ -290,6 +304,44 @@ function noteHTML(n) {
     + (MASA ? ` · <a class="small" data-act="durum" data-n="${esc(n.id)}" data-d="islendi">işlendi</a> <a class="small" data-act="durum" data-n="${esc(n.id)}" data-d="kapandi">kapandı</a> <a class="small" data-act="durum" data-n="${esc(n.id)}" data-d="acik">açık</a>` : '')
     + '</div>';
 }
+// S10 (g): okuyucunun kendi defteri: tür yok, durum yok; yazan düzenler ve siler
+function myNoteHTML(n, withPlace) {
+  const when = new Date(n.zaman * 1000).toLocaleDateString('tr-TR', {day: 'numeric', month: 'long', year: 'numeric'});
+  const edited = n.guncellendi && n.guncellendi - n.zaman > 60 ? ' (düzenlendi)' : '';
+  return `<div class="note" data-note="${esc(n.id)}">`
+    + (withPlace && n.baglam ? `<div class="small muted">Paragraf: «${bidi(esc(n.baglam))}…»</div>` : '')
+    + (n.secici && n.secici.exact ? `<div class="small">İşaretlediğiniz söz: <i>«${bidi(esc(n.secici.exact))}»</i></div>` : '')
+    + `<div class="nt">${bidi(esc(n.metin))}</div>`
+    + `<div class="small muted na">${esc(when)}${edited} · `
+    + (withPlace && n.paragraf ? `<a href="#/${esc(n.birim)}/${esc(n.paragraf)}">paragrafa git</a>` : '')
+    + `<a data-act="duzenle" data-n="${esc(n.id)}">düzenle</a><a data-act="sil" data-n="${esc(n.id)}">sil</a></div></div>`;
+}
+function noteForm(secici, text) {
+  return `<form class="nf">${secici && secici.exact ? `<div class="small">İşaretlediğiniz söz: <i>«${bidi(esc(secici.exact))}»</i></div>` : (text == null ? '<div class="small muted">Bir sözü işaretlemek isterseniz önce paragrafta o sözü seçin, sonra "Not ekle"ye basın.</div>' : '')}
+    <textarea name="metin" required placeholder="Notunuz">${esc(text || '')}</textarea>
+    <button>Kaydet</button> <a data-act="vazgec">vazgeç</a>
+    <div class="small muted">Notunuzu yalnız siz görürsünüz. Bütün notlarınız "Notlarım" sayfasında toplanır.</div></form>`;
+}
+// telefonda düğmeye dokunmak seçimi silebilir: paragraftaki son seçim saklanır
+let LAST_SEL = null;
+document.addEventListener('selectionchange', () => {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed) return;
+  const node = sel.anchorNode, el = node && (node.nodeType === 1 ? node : node.parentElement);
+  const blk = el && el.closest('#main .blk');
+  if (blk && !el.closest('form')) LAST_SEL = {blk: blk.id, text: String(sel).trim(), at: Date.now()};
+});
+function selectorFor(blk) {
+  let t = String(window.getSelection() || '').trim();
+  if (!t && LAST_SEL && LAST_SEL.blk === blk.id && Date.now() - LAST_SEL.at < 120000) t = LAST_SEL.text;
+  if (!t) return null;
+  const txt = blk.innerText, i = txt.indexOf(t);
+  return i >= 0 ? {exact: t.slice(0, 500), prefix: txt.slice(Math.max(0, i - 32), i), suffix: txt.slice(i + t.length, i + t.length + 32)} : null;
+}
+async function afterNoteChange() {
+  if (PAGE === 'notlarim') return myNotes();
+  await loadNotes(); render(FOCUS);
+}
 function citeLine(pid) {
   const r = rng(U.ayet), v = U.taslak.surum;
   return `Risale MCP yapay zekâ taslağı, ${U.sure_adi} ${U.sure}:${r}, sürüm ${v}, paragraf ${pid} (${PLAT}#/${U.birim}/${pid}). Tefsir değildir.`;
@@ -303,6 +355,50 @@ document.addEventListener('click', async e => {
     const line = citeLine(a.dataset.p);
     try { await navigator.clipboard.writeText(line); a.textContent = 'kopyalandı'; } catch (err) {}
     if (!blk.querySelector('.citeline')) blk.insertAdjacentHTML('beforeend', `<div class="srcbox citeline small">${esc(line)}</div>`);
+  } else if (act === 'not' && !MASA) {
+    if (blk.querySelector('form.nf')) { blk.querySelector('form.nf textarea').focus(); return; }
+    const secici = selectorFor(blk);
+    history.replaceState(null, '', `#/${U.birim}/${blk.id}`);        // S10 (d): paragrafın adresi adres çubuğunda
+    FOCUS = blk.id;
+    blk.querySelector('.acts').insertAdjacentHTML('afterend', noteForm(secici));
+    const f = blk.querySelector('form.nf');
+    f.metin.focus();
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const metin = f.metin.value.trim();
+      if (!metin) return;
+      const lead = [...blk.querySelectorAll('p')].find(x => x.offsetParent !== null);   // gizli Arapça eşi değil
+      const body = {surum: U.taslak.surum, paragraf: blk.id, secici, metin, etiket: `${U.sure_adi} ${rng(U.ayet)}`,
+                    baglam: lead ? lead.innerText.trim().slice(0, 140) : null};
+      const r = await fetch(API + 'notlar/' + encodeURIComponent(U.birim), {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
+      if (r.ok) { LAST_SEL = null; await afterNoteChange(); }
+      else f.insertAdjacentHTML('beforeend', '<div class="bad small">Kaydedilemedi. Oturumunuz kapanmış olabilir: sayfayı yenileyip tekrar deneyin.</div>');
+    };
+  } else if (act === 'duzenle') {
+    const card = a.closest('.note'), n = (PAGE === 'notlarim' ? MYNOTES : NOTES).find(x => x.id === a.dataset.n);
+    if (!n || card.nextElementSibling && card.nextElementSibling.matches('form.nf')) return;
+    card.hidden = true;
+    card.insertAdjacentHTML('afterend', noteForm(n.secici, n.metin));
+    const f = card.nextElementSibling;
+    f.metin.focus();
+    f.onsubmit = async ev => {
+      ev.preventDefault();
+      const metin = f.metin.value.trim();
+      if (!metin) return;
+      const r = await fetch(API + 'not/' + encodeURIComponent(n.id), {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({metin})});
+      if (r.ok) await afterNoteChange(); else f.insertAdjacentHTML('beforeend', '<div class="bad small">Kaydedilemedi.</div>');
+    };
+  } else if (act === 'sil') {
+    // tarayıcının onay penceresi yerine satır içi onay
+    a.outerHTML = `<span class="bad">Silinsin mi? </span><a data-act="silevet" data-n="${esc(a.dataset.n)}">evet, sil</a><a data-act="silhayir">hayır</a>`;
+  } else if (act === 'silhayir') { await afterNoteChange();
+  } else if (act === 'silevet') {
+    const r = await fetch(API + 'not/' + encodeURIComponent(a.dataset.n), {method: 'DELETE'});
+    if (r.ok) await afterNoteChange();
+  } else if (act === 'karsilandi') {
+    try { await fetch(API + 'karsilandi', {method: 'POST'}); } catch (err) {}
+    if (ME) ME.welcomed = true;
+    location.hash = WANT && WANT !== '#/~hosgeldin' ? WANT : '#/~giris';
   } else if (act === 'not') {
     if (blk.querySelector('form.nf')) return;
     const sel = String(window.getSelection() || '').trim();
@@ -320,7 +416,9 @@ document.addEventListener('click', async e => {
       const r = await fetch(API + 'notlar/' + encodeURIComponent(U.birim), {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
       if (r.ok) { await loadNotes(); render(); } else f.insertAdjacentHTML('beforeend', '<div class="bad small">Gönderilemedi (oturum?).</div>');
     };
-  } else if (act === 'vazgec') { a.closest('form').remove();
+  } else if (act === 'vazgec') {
+    const f = a.closest('form'); if (f.previousElementSibling && f.previousElementSibling.hidden) f.previousElementSibling.hidden = false;
+    f.remove();
   } else if (act === 'geri' || act === 'durum') {
     const durum = act === 'geri' ? 'geri_cekildi' : a.dataset.d;
     const r = await fetch(API + 'not/' + encodeURIComponent(a.dataset.n) + '/durum', {method: 'PUT', headers: {'Content-Type': 'application/json'},
@@ -412,6 +510,7 @@ function tabsHTML(tabs, cur) {
   return '<div class="tabs">' + tabs.map(([k, lab]) => `<a href="#/${esc(U.birim)}/~${k}" class="${k === cur ? 'on' : ''}">${lab}</a>`).join('') + '</div>';
 }
 function render(focus) {
+  PAGE = 'birim'; FOCUS = focus || null;
   const parts = location.hash.slice(2).split('/');
   let tab = (parts[1] || '').startsWith('~') ? parts[1].slice(1) : null;
   const tabs = [];
@@ -542,16 +641,105 @@ document.addEventListener('change', e => {
 });
 
 // ---------------------------------------------------------------- yönlendirme
+const placeHash = p => p && p.birim ? '#/' + p.birim + (p.paragraf ? '/' + p.paragraf : '') : null;
+const unitName = id => { const x = INDEX && INDEX.birimler.find(b => b.id === id); return x ? 'Bakara ' + rng(x.ayet) : 'Birim ' + id; };
 function home() {
-  const last = store.get('oku-son');
+  PAGE = 'giris';
+  const last = ME && ME.place;
   $('ttl').textContent = MASA ? 'Ar-ge masası · birimler' : "Kur'ân · yapay zekâ taslakları";
   $('main').innerHTML = `<h1>${MASA ? 'Birimler' : "Kur'ân'ın yapay zekâ taslakları"}</h1>
-    <div class="stamp"><b>Buradaki metinler yapay zekâ taslağıdır; tefsir değildir.</b> İşârâtü'l-İ'câz'ın usulüyle, kaynaklara (Risale-i Nur, klasik tefsirler, belâgat eserleri, hadis kitapları) bağlı kalarak yazıldılar; her atıfın kaynağı tıklayınca görünür. Nasıl yazıldıklarını <a href="__USUL__">usul sayfası</a> anlatır.</div>
-    ${last ? `<p>Kaldığınız yer: <a href="${esc(last)}">${esc(last.replace('#/', 'Bakara ').split('/').slice(0, 1).join(''))}</a></p>` : ''}
+    <div class="stamp"><b>Buradaki metinler yapay zekâ taslağıdır; tefsir değildir.</b> İşârâtü'l-İ'câz'ın usulüyle, kaynaklara (Risale-i Nur, klasik tefsirler, belâgat eserleri, hadis kitapları) bağlı kalarak yazıldılar; her atfın kaynağı tıklayınca görünür. Nasıl yazıldıklarını <a href="__USUL__">usul sayfası</a> anlatır.</div>
+    ${last ? `<p><a class="big" href="${esc(placeHash(last))}">Kaldığınız yerden devam edin: ${esc(unitName(last.birim))}</a></p>` : ''}
     <p>Soldaki panelden bir birim seçin ya da âyete gidin ("2:255"). Bakara 1–33'te önce müellifin sözü (İşârâtü'l-İ'câz), yanında onu görmeden yazılmış taslak durur.</p>
-    <p class="small muted">Yanlış gördüğünüz yere paragrafın altındaki "not" ile not bırakabilirsiniz.</p>`;
+    ${MASA ? '' : `<p class="small muted">Bir paragraf hakkında not bırakmak için altındaki "Not ekle"ye basın. Notlarınızı yalnız siz görürsünüz; hepsi <a href="#/~notlarim">Notlarım</a> sayfasında toplanır. <a href="#/~hosgeldin">Bu platform hakkında</a></p>`}`;
   panel(null);
 }
+
+// ---------------------------------------------------------------- S10 (c): karşılama
+function welcome() {
+  PAGE = 'hosgeldin';
+  panel(null);
+  $('ttl').textContent = 'Hoş geldiniz';
+  const first = ME && !ME.welcomed;
+  $('main').innerHTML = `<div class="welcome"><h1>Hoş geldiniz</h1>
+    <p>Bu sayfalarda Kur'ân âyetleri üzerine, İşârâtü'l-İ'câz'ın usulüyle yazılmış <b>yapay zekâ taslakları</b> var. Taslaklar kaynaklara (Risale-i Nur, klasik tefsirler, belâgat eserleri, hadis kitapları) bağlı kalarak yazıldı; bir atfın numarasına dokununca kaynağın kendi metni açılır.</p>
+    <div class="stamp"><b>Bunlar tefsir değildir.</b> Yapay zekânın yazdığı hiçbir şey tefsir diye anılmaz; taslaklar müellife ya da İşârât'a mal edilmez. Yanlış, eksik ya da kaynağın dediğini aşan yerler bulunabilir; okurken bunu göz önünde tutun.</div>
+    <h2>Nasıl okunur</h2>
+    <ul><li>Soldaki panelden (telefonda ☰ düğmesinden) bir birim seçin ya da âyete gidin ("2:255").</li>
+    <li>Bakara 1–33'te önce müellifin sözü (İşârâtü'l-İ'câz) durur, yanında onu görmeden yazılmış taslak.</li>
+    <li>"Arapça" ve "İzah" düğmeleri taslağın Arapçasını ve yapay zekânın izahını açıp kapar.</li></ul>
+    <h2>Not bırakmak</h2>
+    <ul><li>Paragrafın altındaki <b>"Not ekle"</b>ye basın, notunuzu yazın, "Kaydet"e basın.</li>
+    <li>Bir sözü işaretlemek isterseniz önce paragrafta o sözü seçin (telefonda parmağınızı basılı tutup), sonra "Not ekle"ye basın; seçtiğiniz söz notun başında durur.</li>
+    <li>Notlarınızı istediğiniz zaman düzeltebilir ya da silebilirsiniz. Hepsi <b>Notlarım</b> sayfasında toplanır; oradan Word dosyası olarak indirebilirsiniz.</li></ul>
+    <h2>Ne saklanır</h2>
+    <ul><li>Notlarınızı yalnız siz görürsünüz; sunucuda hesabınıza bağlı saklanır, kimseyle paylaşılmaz, hesabınız silinince silinir.</li>
+    <li>Kaldığınız yer de saklanır: döndüğünüzde okumaya oradan devam edersiniz.</li>
+    <li>Ayrıntısı <a href="/gizlilik.html">gizlilik politikasında</a>.</li></ul>
+    <h2>Metin kopyalarsanız</h2>
+    <p>Kopyaladığınız metnin sonuna, nereden alındığını ve yapay zekâ taslağı olduğunu söyleyen bir satır kendiliğinden eklenir. Başka bir yerde paylaşırken bu satırı silmemenizi rica ederiz.</p>
+    <p>Taslakların nasıl yazıldığını <a href="__USUL__">usul sayfası</a> anlatır.</p>
+    <p style="margin-top:22px">${first ? '<button class="big" data-act="karsilandi">Okumaya başla</button>' : '<a class="big" href="#/~giris">Giriş sayfasına dön</a>'}</p></div>`;
+}
+
+// ---------------------------------------------------------------- S10 (g2): Notlarım
+async function myNotes() {
+  PAGE = 'notlarim';
+  panel(null);
+  $('ttl').textContent = 'Notlarım';
+  try { MYNOTES = (await getJSON(API + 'defter')).notlar; } catch (e) { $('main').innerHTML = '<p class="bad">Notlar okunamadı. Sayfayı yenileyin.</p>'; return; }
+  if (PAGE !== 'notlarim') return;
+  const first = id => { const m = String(id).match(/\d+/); return m ? +m[0] : 1e9; };
+  const groups = {};
+  for (const n of MYNOTES) (groups[n.birim] = groups[n.birim] || []).push(n);
+  const ids = Object.keys(groups).sort((a, b) => first(a) - first(b));
+  const L = [`<h1>Notlarım</h1><p class="small muted">Bütün birimlerdeki notlarınız (${MYNOTES.length}). Notlarınızı yalnız siz görürsünüz.</p>`];
+  if (MYNOTES.length) L.push(`<p><a class="big" href="${API}defter.docx" download>Word dosyası olarak indir</a></p>`);
+  else L.push('<p class="muted">Henüz notunuz yok. Bir paragrafın altındaki "Not ekle" ile başlayabilirsiniz.</p>');
+  for (const id of ids) {
+    const ns = groups[id];
+    L.push(`<h2><a href="#/${esc(id)}">${esc(ns.find(n => n.etiket) ? ns.find(n => n.etiket).etiket : unitName(id))}</a></h2>`);
+    L.push(ns.map(n => myNoteHTML(n, true)).join(''));
+  }
+  $('main').innerHTML = L.join('\n');
+}
+
+// ---------------------------------------------------------------- S10 (e): kopyalamada damga
+document.addEventListener('copy', e => {
+  const sel = window.getSelection();
+  if (!sel || sel.isCollapsed || PAGE !== 'birim' || !U) return;
+  const node = sel.anchorNode, el = node && (node.nodeType === 1 ? node : node.parentElement);
+  if (!el || !el.closest('#main') || el.closest('form, textarea, input')) return;
+  const text = String(sel);
+  if (!text.trim()) return;
+  const blk = el.closest('.blk'), place = `${U.sure_adi} ${U.sure}:${rng(U.ayet)}`;
+  const line = blk && U.taslak
+    ? `— Risale MCP okuma platformu, ${place}, taslak sürüm ${U.taslak.surum}, ${PLAT}#/${U.birim}/${blk.id}. Yapay zekâ taslağıdır; tefsir değildir.`
+    : `— Risale MCP okuma platformu, ${place}, ${PLAT}#/${U.birim}. Bu sayfadaki taslaklar yapay zekânındır; tefsir değildir.`;
+  e.clipboardData.setData('text/plain', text.replace(/\s+$/, '') + '\n\n' + line);
+  e.clipboardData.setData('text/html', esc(text).replace(/\n/g, '<br>') + '<br><br><i>' + esc(line) + '</i>');
+  e.preventDefault();
+});
+
+// ---------------------------------------------------------------- S10 (f): kaldığı yer (hesaba bağlı)
+let PLACE_SENT = '', PLACE_TIMER = null;
+function savePlace(birim, paragraf) {
+  if (MASA || !birim) return;
+  const key = birim + '/' + (paragraf || '');
+  if (key === PLACE_SENT) return;
+  PLACE_SENT = key;
+  if (ME) ME.place = {birim, paragraf: paragraf || null};
+  fetch(API + 'yer', {method: 'PUT', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({birim, paragraf: paragraf || null})}).catch(() => {});
+}
+addEventListener('scroll', () => {
+  if (PAGE !== 'birim' || !U) return;
+  clearTimeout(PLACE_TIMER);
+  PLACE_TIMER = setTimeout(() => {
+    const top = 70;
+    const b = [...document.querySelectorAll('#main .blk[id]')].find(x => x.getBoundingClientRect().bottom > top);
+    if (b) savePlace(U.birim, b.id);
+  }, 2500);
+}, {passive: true});
 const fold = s => s.toLocaleLowerCase('tr').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ı/g, 'i');
 let ARA = null;
 async function search(q) {
@@ -595,7 +783,18 @@ async function continuous() {
 }
 async function route() {
   const parts = location.hash.slice(2).split('/').filter(Boolean);
-  if (!parts.length) return home();
+  const first = FIRST; FIRST = false;
+  if (!MASA && ME && !ME.welcomed && parts[0] !== '~hosgeldin') {     // S10 (c): ilk girişte karşılama
+    WANT = location.hash; location.replace('#/~hosgeldin'); return;
+  }
+  if (!parts.length) {                                                 // S10 (f): dönünce kaldığı yer
+    if (first && !MASA && ME && ME.place) { location.replace(placeHash(ME.place)); return; }
+    return home();
+  }
+  if (parts[0] === '~giris') return home();
+  if (parts[0] === '~hosgeldin') return welcome();
+  if (parts[0] === '~notlarim') return myNotes();
+  PAGE = parts[0];
   if (parts[0] === '~ara') return search(decodeURIComponent(parts.slice(1).join('/')));
   if (parts[0] === '~sure') return continuous();
   const uid = parts[0], focus = parts[1] && !parts[1].startsWith('~') ? parts[1] : null;
@@ -612,7 +811,7 @@ async function route() {
   }
   panel(uid);
   render(focus);
-  store.set('oku-son', '#/' + uid);
+  savePlace(uid, focus);
   document.body.classList.remove('panelopen');
 }
 addEventListener('hashchange', route);
@@ -620,6 +819,7 @@ addEventListener('hashchange', route);
   try { VIEW = Object.assign(VIEW, JSON.parse(store.get('oku-view') || '{}')); } catch (e) {}
   try { INDEX = await getJSON(DATA + 'index.json'); } catch (e) { $('main').textContent = 'Dizin okunamadı.'; return; }
   try { ME = await getJSON('/taslak/ben'); $('ben').textContent = ME.name || ''; $('masaBtn').hidden = ME.scope !== 'masa'; } catch (e) {}
+  $('notlarimBtn').hidden = MASA;
   route();
 })();
 </script></body></html>

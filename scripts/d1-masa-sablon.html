@@ -1055,14 +1055,14 @@ let NOTES = null;
 function notlarPane() {
   if (NOTES === null) {
     NOTES = [];
-    fetch('/taslak/api/notlar/' + encodeURIComponent(U), {credentials: 'same-origin', cache: 'no-store'})
+    fetch('/taslak/api/notlar/' + encodeURIComponent(U) + '?arge=1', {credentials: 'same-origin', cache: 'no-store'})
       .then(r => r.ok ? r.json() : {notlar: []}).then(j => { NOTES = j.notlar || []; renderPanes(); }).catch(() => {});
     return '<p class="empty">Notlar yükleniyor…</p>';
   }
   const Yy = (DATA.masa || {}).yayin, h = Yy && DATA.drafts[Yy.taslak] ? DATA.drafts[Yy.taslak].heads : {};
   const locOf = n => (Yy && n.paragraf && Yy.capa[n.paragraf] && h[Yy.capa[n.paragraf]]) || ['L:genel'];
   const ns = NOTES.filter(n => atAll({loc: locOf(n)}));
-  const how = `<p class="small muted">Okuma platformundaki okuyucu notları (sürüme ve paragrafa bağlı). Notlarla düzeltme elle: <code>uv run python scripts/d1-birim.py notlarla ${esc(U)}</code>.</p>`;
+  const how = `<p class="small muted">Ar-ge notları: S10'dan (2026-11-23) önce okuma platformunda yazılanlar (sürüme ve paragrafa bağlı). Okuyucuların kendi defterleri burada görünmez; yalnız yazanı görür. Notlarla düzeltme elle: <code>uv run python scripts/d1-birim.py notlarla ${esc(U)}</code>.</p>`;
   if (!ns.length) return how + '<p class="empty">Bu yerde okuyucu notu yok.</p>';
   const ST = {acik: 'açık', islendi: 'işlendi', kapandi: 'kapandı'};
   return how + ns.map(n => `<div class="kn ${n.durum === 'islendi' ? 'ok' : n.durum === 'kapandi' ? '' : 'part'}"><span class="tag g">${esc(n.tur)}</span> <span class="tag g">${esc(ST[n.durum] || n.durum)}</span>
