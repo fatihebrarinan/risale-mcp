@@ -219,3 +219,8 @@ def test_remove_user_drops_invites(store):
     store.invite("okur@example.org")
     store.remove_user("okur@example.org")
     assert store.invites() == []
+
+
+def test_gate_returns_to_public_platform_path(client):
+    r = client.get("/_auth", headers={"X-Forwarded-Uri": "/taslak/oku/"})
+    assert r.headers["location"] == "/taslak/giris?next=/oku/"

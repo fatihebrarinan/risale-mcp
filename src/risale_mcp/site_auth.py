@@ -392,6 +392,8 @@ def build_app(store: Store, masa_store=None):
             if allowed(store.scope(email), uri):
                 return PlainTextResponse("ok", headers={"Cache-Control": "no-store"})
             return RedirectResponse(OKU, status_code=302)        # yalnız okuyucu: masaya değil platforma
+        if uri.startswith(PREFIX + "oku/"):                     # Caddy'nin iç yolu: okuyucu /oku/… adresine dönsün
+            uri = OKU + uri[len(PREFIX + "oku/"):]
         return RedirectResponse(f"{PREFIX}giris?next={quote(safe_next(uri), safe='/')}", status_code=302)
 
     async def login(request: Request):
