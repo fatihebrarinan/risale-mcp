@@ -1754,10 +1754,12 @@ eklenir).
   Tefsir'in 3. ve 5. senaryosu yeniden çekildi: ilkinde web araması ve Klasik eklentisi devreye girmişti; Hadis'in 5.
   senaryosunda Risale eklentisi de kullanıldı, kullanıcının kararı: sorun değil); üç başvuru Risale'nin sonucu
   beklenmeden gönderildi (kullanıcının kararı; inceleme ≈1 ay). E8'in ilk adımı Sözler e-postası yerine risaleoku'ya
-  soru oldu (kullanıcının kararı; gerekçe `PLANLAR.md` › "Sonra" › E8), mesaj gitti. **S4 kapandı** (kullanıcının
+  soru oldu (kullanıcının kararı; gerekçe aşağıda, "E8 izin"), mesaj gitti. **S4 kapandı** (kullanıcının
   kararı, 2026-11-23): cevaplar `PLANLAR.md` › "Bekleyen"de (S4.3 Anthropic, S4.1 OpenAI, E8 risaleoku), S4.7
   "Sıradaki"nde.
-- E8 izin (2026-11-23): risaleoku'nun cevabı ("RN Kütüphanesi", 12.03): "yabancı dillerde mütercimler tarafından
+- E8 izin (2026-11-23): önce risaleoku'ya soruldu, Sözler'e değil (gerekçe: izin vermiş birine, aynı sohbette; soru
+  20'yi aşkın dili birden kapsar; tercümenin hakkı yayıncının ve mütercimin olduğu için rıza sorusu da mesajdaydı).
+  risaleoku'nun cevabı ("RN Kütüphanesi", 12.03): "yabancı dillerde mütercimler tarafından
   izinli olarak kullanılmaktadır.. ticari bir amacınız olmadığı için bizzat izin almadan kullanabilirsiniz". İzin
   Risale'nin diğer dillerdeki tercümelerini de kapsar; şart aynı (kazanç yok, kaynak), tercümelerde mütercim ve yayınevi
   anılır. Ekran görüntüsü `data/raw/kullanici/izinler/risaleoku-cevap-diller.jpeg`; `docs/izinler.md` güncellendi

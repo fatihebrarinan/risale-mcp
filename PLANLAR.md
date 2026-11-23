@@ -136,7 +136,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   kitaplar "Sonra"da.
 - B9 **Türk hattının iki kaynağı** (S7'nin açığı, 2026-11-21): Diyanet baskısının Türk hattıyla risaleoku'nun Türk hattı
   arasındaki küçük işaret farkları (ör. durak işaretleri) bakılmadı; kaynak risaleoku. Kısa karşılaştırma, rapor.
-- E8 **Külliyatın Arapça tercümesi** (kullanıcının kararları, 2026-11-23; izin ve geçmişi "Sonra"dan taşındı, aşağıda).
+- E8 **Külliyatın Arapça tercümesi** (kullanıcının kararları, 2026-11-23; izin `docs/izinler.md`, geçmişi `KAYIT.md`; Sözler'e e-posta şimdilik
+  gitmez, taslak `docs/e8-arapca-kulliyat-izin-epostasi.md` durur).
   Kaynak risaleoku'nun "كتب عربية" rafı (`data/raw/risaleoku_app/ar_*`, diskte; Türkçe risaleoku ciltleriyle aynı
   biçim: `#` sayfa işareti, `toc`, `footnotes`), İhsan Kasım es-Sâlihî'nin tercümesi, Sözler Neşriyat (Kahire).
   İşârât ve Mesnevî'nin Arapça asılları, Kızıl İcaz, Ta'likat ve Hutbe zaten sistemde.
@@ -219,15 +220,6 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   Yeni sürümler seyrek, şimdilik bırakıldı. Çözüm yolu: notun sürümü ve seçicisiyle (`secici`) yeni sürümde en yakın
   paragrafı bulup notu orada "önceki sürüme yazılmıştı" diye göstermek. (Söz paragrafta bulunamazsa not paragrafın
   altında açık durur, "bu sürümde bulunamadı" der: bu yapıldı.)
-- **E8'in izni ve geçmişi** (iş "Sıradaki" 9'da): külliyatın Arapça tercümesi için ilk adım izindi (kullanıcının
-  kararı, 2026-11-22). Önce risaleoku.com'a, ilk izni veren sohbetin içinden soruldu (2026-11-23; gerekçe: izin vermiş
-  birine, soru 20'yi aşkın dili birden kapsar; tercümenin hakkı yayıncının ve mütercimin olduğu için rıza sorusu da
-  mesajdaydı). **İzin geldi (2026-11-23, "RN Kütüphanesi"):** "yabancı dillerde mütercimler tarafından izinli olarak
-  kullanılmaktadır.. ticari bir amacınız olmadığı için bizzat izin almadan kullanabilirsiniz" (ekran görüntüsü
-  `data/raw/kullanici/izinler/risaleoku-cevap-diller.jpeg`; kayıt `docs/izinler.md`). Şart aynı (kazanç yok, kaynak
-  gösterilir); verdiğimiz söz: tercümelerde mütercim ve yayınevi de anılır. Arapça baskının künyesi hakkı yayıncıya
-  veriyor ("حقوق الطبع محفوظة للناشر"); **Sözler'e e-posta şimdilik gitmez** (kullanıcının kararı, 2026-11-23;
-  taslak `docs/e8-arapca-kulliyat-izin-epostasi.md` durur).
 - **Öbür dillerdeki tercümeler** (kullanıcının kararı, 2026-11-23: E8'in Arapça hattı oturduktan sonra, aynı yoldan):
   risaleoku'nun "Other Languages" rafı izne dahil. Tam ya da büyük takımlar: Almanca (14 kitap), İngilizce (11),
   İspanyolca (33), Rusça (20), Urduca (15), Özbekçe (≈97, iki alfabe), Macarca (15); öbürleri küçük kitaplar
