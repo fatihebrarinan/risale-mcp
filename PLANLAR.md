@@ -68,7 +68,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   karşılama, kopyalamada damga, kaldığı yer; gizlilik politikası yenilendi). Davet: `scripts/sunucu.sh taslak davet
   <e-posta>` bağlantıyı verir, kullanıcı kendi e-postasıyla gönderir. Kullanıcıdan beklenen: karşılama sayfasını
   (`/oku/#/~hosgeldin`) ve kopyalama damgasını okuyup düzeltmek, sonra ilk davetler. Sıradaki iş 1: **A4** Türkçe lügat
-  (S10 (h) onunla gelir). S4'ün cevapları "Bekleyen"de: Anthropic (S4.3), OpenAI (S4.1), risaleoku.com (E8). D5'in
+  (S10 (h) onunla gelir). S4'ün cevapları "Bekleyen"de: Anthropic (S4.3), OpenAI (S4.1). **E8'in izni geldi
+  (2026-11-23):** risaleoku diğer dillerdeki tercümelere de izin verdi ("Sonra" › E8, `docs/izinler.md`). D5'in
   kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine sürüyor
   (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
@@ -77,8 +78,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   yedek yolu ("Bekleyen"). (3) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
-- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek (risaleoku'nun cevabına göre E8'in sonraki
-  adımı); "Sıradaki" 6 (Risale'si az birimlere göz atmak).
+- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 6 (Risale'si az birimlere göz
+  atmak); E8 için iki karar: Sözler'e bilgi e-postası gitsin mi (taslak bilgi e-postasına çevrilecek) ve E8 sıraya
+  hangi yerde girer.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -171,7 +173,6 @@ araştır, varsa düzelt"):
 |---|---|---|---|
 | S4.3 | Claude dizini: Risale başvurusu "In review"; dizin ekibine e-posta gitti (2026-11-16). **Sonraki adım (kullanıcının kararı, 2026-11-22):** belgenin verdiği adrese (mcp-review@anthropic.com) listeleme adı, organizasyon ve durumla e-posta; bir hafta cevap yoksa başvuru silinip `risale.risalemcp.com/mcp` adresiyle yeniden gönderilir. Öncesinde dört sunucu dizin ölçütleriyle denetlenir (araçlarda `title` ve salt okunur işareti, hata iletileri, Voyage'ın beyanı). **Denetlendi (2026-11-22):** bulgular ve e-posta taslağı `docs/s4-dizin-basvurulari.md` §2e; düzeltmeler `aa9083d`. **E-posta gitti (2026-11-22);** dört listeleme yeni İngilizce adlarla incelemede (2026-11-23); alan adı Anthropic'te kanıtlandı (DNS TXT, 2026-11-23; "Verified" talep edilmedi: şirket içindir). Cevap yoksa ≈2026-11-30'da yedek yol | Anthropic | M7 |
 | S4.1 | OpenAI: dört başvuru **kullanıcının doğrulanmış kendi adıyla** ("Fatih Ebrar İnan"; site ve paket aynı adla, yayında; organizasyon adı "Risale MCP"). Risale "Risale-i Nur Library" adıyla yeniden gönderildi (2026-11-23); Hadis, Tefsir, Klasik paketleri, alan adı jetonları ve demo videolarıyla Risale'nin sonucu beklenmeden gönderildi (2026-11-23; hakeme notlar `docs/s4-dizin-basvurulari.md` §6–§7). İnceleme ≈1 ay. Ret gelirse gerekçesine göre düzeltme ve itiraz (e-postayı yanıtlayarak) | OpenAI | M7 |
-| E8 | Arapça (ve öbür dillerdeki) tercümeler için izin: risaleoku.com'a, ilk izni veren sohbetin içinden, izinlerinin "Other Languages" rafını (Arapça, Almanca, İngilizce, Rusça, Urduca… 20'yi aşkın dil) de kapsayıp kapsamadığı ve tercümeleri yayınevlerinin ve mütercimlerin rızasıyla paylaşıp paylaşmadıkları soruldu (kullanıcının kararı, 2026-11-23: Sözler'e yazmadan önce; gönderildi). Cevaba göre: (a) yayınevleriyle anlaşmaları varsa yeterli sayılır, Sözler'e izin değil bilgi e-postası; (b) yalnız "kullanabilirsiniz" derlerse Sözler e-postası (`docs/e8-arapca-kulliyat-izin-epostasi.md`, metnin risaleoku'dan alınacağı söylenerek) yine gider; (c) hak kendilerinde değilse E8 Sözler'le sürer. İzin gelse de hangi dilin ekleneceği ayrı karardır (önce Arapça: 9 cilt diskte, `data/raw/risaleoku_app/ar_*`, İhsan Kasım es-Sâlihî tercümesi). Ayrıntı "Sonra" › E8 | risaleoku.com | |
 
 Kapananlar (2026-11-12): E4 Kızıl İcaz'ın Türkçesi (gerek yok, "Biten"); Diyanet (izin yok, "Biten"); Osmanlıcanın
 kaynağı (A2'nin ön şartı değil).
@@ -189,12 +190,23 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   altında açık durur, "bu sürümde bulunamadı" der: bu yapıldı.)
 - **E8 Arap dünyasına açılmak** (kullanıcının kararı, 2026-11-22): ilk adım izin. Külliyatın Arapça tercümesi
   (İhsan Kasım es-Sâlihî; künye: "حقوق الطبع محفوظة للناشر", شركة سوزلر للنشر, Kahire). **Yol değişti (kullanıcının
-  kararı, 2026-11-23):** önce risaleoku.com'a soruldu ("Bekleyen" › E8), Sözler'e e-posta cevaba göre (taslak
+  kararı, 2026-11-23):** önce risaleoku.com'a soruldu (cevap aşağıda), Sözler'e e-posta cevaba göre (taslak
   `docs/e8-arapca-kulliyat-izin-epostasi.md`). Gerekçe: aynı sohbette, izin vermiş birine; soru 20'yi aşkın dili
   birden kapsar; Sözler'in Türkçe baskısı ve İhsan Kasım'ın tahkikli Arapça asılları zaten bu izinle kullanılıyor.
-  Sınırı: tercümenin hakkı risaleoku'nun değil, yayıncının ve mütercimin (`docs/izinler.md`: başkasının telifli
-  tercümeleri risaleoku'nun iznine dayanılarak alınmaz); bu yüzden rıza sorusu da mesajda. İzin gelirse eser
-  kataloğa, sitenin ve talimatın Arapçası sonra.
+  Sınırı: tercümenin hakkı risaleoku'nun değil, yayıncının ve mütercimin; bu yüzden rıza sorusu da mesajda.
+  **İzin geldi (2026-11-23, "RN Kütüphanesi"):** "yabancı dillerde mütercimler tarafından izinli olarak
+  kullanılmaktadır.. ticari bir amacınız olmadığı için bizzat izin almadan kullanabilirsiniz" (ekran görüntüsü
+  `data/raw/kullanici/izinler/risaleoku-cevap-diller.jpeg`; kayıt `docs/izinler.md`). Planın (a) şıkkı: risaleoku
+  tercümeleri mütercimlerin izniyle paylaşıyor, onların izni yeterli; Sözler'e izin değil bilgi e-postası. Şart aynı
+  (kazanç yok, kaynak gösterilir); soruda verdiğimiz söz: tercümelerde mütercim ve yayınevi de anılır. Not: cevap
+  mütercimleri anıyor, Arapça baskının künyesi hakkı yayıncıya veriyor ("حقوق الطبع محفوظة للناشر"); bilgi
+  e-postası bu yüzden Sözler'e gider (Kahire'deki şirkete iletilmesi ricasıyla).
+  **Sonraki adımlar** (sırası kullanıcının kararı): (1) Sözler'e bilgi e-postası: `docs/e8-arapca-kulliyat-izin-epostasi.md`
+  izin isteğinden bilgiye çevrilir, kullanıcı gönderir. (2) Hangi dil: önce Arapça (9 cilt diskte,
+  `data/raw/risaleoku_app/ar_*`, İhsan Kasım es-Sâlihî; indirildi, ayrıştırılmadı); öbür diller ayrı karar. (3) Eser
+  kataloğa (tercüme olarak `Work.translation`, `translator`, baskı kaydı ve yayınevi `catalog/editions.py`); Türkçe
+  kimliklerle paralel mi, Osmanlıca gibi ayrı mı ayrıştırmanın başında belirlenir; `catalog/permissions.py`'deki
+  risaleoku kaydına diğer diller yazılır. (4) Sitenin ve talimatın Arapçası sonra.
 - **E5'in kalanı:** 3. dilim (el-Mevâhibü'l-Ledünniyye) ve (c) listesi (`docs/eserler/klasik.md`); 2. dilim ve
   tanıtım "Sıradaki"nde.
 - **E7 (b) Yeni hadis kitapları**, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve

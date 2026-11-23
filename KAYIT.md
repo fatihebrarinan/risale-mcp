@@ -1757,6 +1757,11 @@ eklenir).
   soru oldu (kullanıcının kararı; gerekçe `PLANLAR.md` › "Sonra" › E8), mesaj gitti. **S4 kapandı** (kullanıcının
   kararı, 2026-11-23): cevaplar `PLANLAR.md` › "Bekleyen"de (S4.3 Anthropic, S4.1 OpenAI, E8 risaleoku), S4.7
   "Sıradaki"nde.
+- E8 izin (2026-11-23): risaleoku'nun cevabı ("RN Kütüphanesi", 12.03): "yabancı dillerde mütercimler tarafından
+  izinli olarak kullanılmaktadır.. ticari bir amacınız olmadığı için bizzat izin almadan kullanabilirsiniz". İzin
+  Risale'nin diğer dillerdeki tercümelerini de kapsar; şart aynı (kazanç yok, kaynak), tercümelerde mütercim ve yayınevi
+  anılır. Ekran görüntüsü `data/raw/kullanici/izinler/risaleoku-cevap-diller.jpeg`; `docs/izinler.md` güncellendi
+  ("Bekleyen"den çıktı). Planın (a) şıkkı: Sözler'e izin değil bilgi e-postası. Sonraki adımlar `PLANLAR.md` › "Sonra" › E8.
 
 
 **D3. Başka türden bir birim.** D1 ve D2'nin dersleriyle, yine İşârât'ın kapsadığı aralıkta (cevabı bilinen, kör

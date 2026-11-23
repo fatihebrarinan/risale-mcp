@@ -3,7 +3,7 @@
 Eserlerini kullanmamıza kimin, hangi şartla izin verdiğinin tek listesi. Yeni kaynak eklenmeden önce buraya bakılır;
 izin alınınca buraya, sonra koddaki karşılığına (`src/risale_mcp/catalog/permissions.py`) yazılır; genel profil
 izni orada kayıtlı olmayan eseri kurmaz. Yazışmalar ve taslaklar: `docs/kaynak-bilgilendirme-epostasi.md`,
-`docs/akgunduz-izin-epostasi.md`. Son güncelleme: 2026-11-05.
+`docs/akgunduz-izin-epostasi.md`. Son güncelleme: 2026-11-23.
 
 ## Açıkça izin verenler
 
@@ -12,7 +12,7 @@ Kayıtlar kullanıcının bildirimine dayanır. Yazılı cevaplar depoda değil,
 | Kaynak | Kapsam | Şart | Kayıt | Şu anki kullanım |
 |---|---|---|---|---|
 | **erisale.com** (e-Risale) | Sitedeki metinler; kullanıcının bu metinlerle yapacağı her iş (2026-11-05) | Kaynak gösterilecek (sitede belgelerde gösteriliyor) | Sözlü izin (görüşme, 2026-10-30), yazılı nüsha yok; kapsam kullanıcının bildirimi, 2026-11-05 | Birincil kaynak: 27 eser, genel sunucuda |
-| **risaleoku.com** | Bütün eserler, kullanıcının bunlarla yapacağı her iş (2026-11-05; başkasının telifli tercümeleri, ör. Kütüb-i Sitte, bu izne dayanılarak alınmadı) | Kazanç olmayacak, kaynak gösterilecek | Site sahibinin yazılı cevabı (ekran görüntüsü `risaleoku-cevap.png`): "Kaynaklarımızı herhangi bir maddi kazanç olmaması ve kaynak gösterilmesi şartıyla kullanabilirsiniz." | 42 eser; 40'ı genel sunucuda, 2 sonradan derleme yalnız yerelde. Sikke'nin ikinci "Husrev'in Bir Fıkrası" da buradan (Sözler Neşriyat baskısı) |
+| **risaleoku.com** | Bütün eserler, kullanıcının bunlarla yapacağı her iş (2026-11-05). **Risale-i Nur'un diğer dillerdeki tercümeleri de** ("Other Languages" rafı: Arapça, Almanca, İngilizce, Rusça, Urduca… 20'yi aşkın dil; 2026-11-23). Risale dışındaki başkasının telifli tercümeleri (ör. Kütüb-i Sitte) bu izne dayanılarak alınmadı | Kazanç olmayacak, kaynak gösterilecek; tercümelerde mütercim ve yayınevi de anılacak (bizim taahhüdümüz, soruda yazılı) | Site sahibinin yazılı cevabı (ekran görüntüsü `risaleoku-cevap.png`): "Kaynaklarımızı herhangi bir maddi kazanç olmaması ve kaynak gösterilmesi şartıyla kullanabilirsiniz." Diğer diller (aynı sohbet, 2026-11-23, "RN Kütüphanesi"; `risaleoku-cevap-diller.jpeg`): "yabancı dillerde mütercimler tarafından izinli olarak kullanılmaktadır.. ticari bir amacınız olmadığı için bizzat izin almadan kullanabilirsiniz" | 42 eser; 40'ı genel sunucuda, 2 sonradan derleme yalnız yerelde. Sikke'nin ikinci "Husrev'in Bir Fıkrası" da buradan (Sözler Neşriyat baskısı) |
 | **kastamonur.com** | Kayıtlı değil | Kayıtlı değil | Kullanıcının bildirimi, 2026-11-02 | Telif tarihleri (Aşama 13.2; sayfa "kaynaksız kopyalamaya rızamız yoktur" der, kaynak her kayıtta durur). Nutuk ve Makalat'ın ham verisi diskte; bu eserler risaleoku'dan gelir |
 | **nurpedia.org** | Elindeki her şey, "uygun bulduğunuz şekilde" | Şart yok; kaynak gösterme ricası ("Kaynak göstermenizden memnun oluruz"); gösteriyoruz | Yazılı cevap (`nurpedia-cevap.txt`; istek 2026-10-29, cevap kullanıcının aktarımıyla 2026-11-05) | Rumuzat-ı Semaniye'nin metni, genel sunucuda (2026-11-04'ten; kullanıcının kararı). Hadis işaretleri ve künyeleri (Aşama 14): `Risale:Hadisler` ve 120 kadar `Ayet-Hadis Mealleri` sayfası yerelde. robots.txt yapay zekâ botlarını kapatır, `*` okuma sayfalarına açıktır |
 
@@ -77,4 +77,3 @@ nurpedia'dan gelir; yalnız nurpedia'nın resim verdiği tablolar PDF'ten, kulla
 | Kaynak | İstek | Durum |
 |---|---|---|
 | Yeni Asya | Ortak proje, izinli PDF'ler | Planda; mevcut veri kullanılmıyor |
-| risaleoku.com (diğer diller) | İznin "Other Languages" rafını (Arapça başta, 20'yi aşkın dil) kapsayıp kapsamadığı; tercümeleri yayınevlerinin ve mütercimlerin rızasıyla mı paylaştıkları (2026-11-23, ilk iznin sohbetinden) | Cevap bekleniyor (`PLANLAR.md` E8). O zamana kadar tercümeler bu izne dayanılarak alınmaz |

@@ -6,6 +6,10 @@ paylaşıp paylaşmadıkları soruldu (gönderildi). Bu taslak cevaba göre gide
 anlaşmaları varsa izin değil bilgi e-postası olur; yalnız "kullanabilirsiniz" derlerse olduğu gibi, metnin
 risaleoku'dan alınacağı söylenerek; hak kendilerinde değilse olduğu gibi.
 
+**Cevap geldi (2026-11-23):** "yabancı dillerde mütercimler tarafından izinli olarak kullanılmaktadır.. ticari bir
+amacınız olmadığı için bizzat izin almadan kullanabilirsiniz" (`docs/izinler.md`). Birinci şık: aşağıdaki taslak
+izin isteğinden **bilgi e-postasına** çevrilecek (henüz çevrilmedi); gönderip göndermemek kullanıcının kararı.
+
 `PLANLAR.md` E8 "Arap dünyasına açılmak": ilk adım, külliyatın Arapça tercümesini kullanmak için hak sahibinden
 izin. Taslak Claude'un, gönderen kullanıcı.
 
