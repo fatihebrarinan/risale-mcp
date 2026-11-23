@@ -512,6 +512,85 @@ Test senaryoları (pakete):
 
 Her başvuruda tanıtım videosu ayrı (o eklentinin beş senaryosu) ve alan adı jetonu ayrı (§1.5).
 
+**Additional Submission Context** (2026-11-23; kullanıcının kararı: üçü Risale'nin sonucunu beklemeden gönderilir,
+inceleme ≈1 ay sürüyor). Ortak maddeler (yayıncı, üçüncü taraf, son paragraf) üçünde aynı.
+
+Hadith Library:
+
+> - Publisher: the app is published under my verified individual identity, Fatih Ebrar İnan. The website's privacy
+>   policy and terms name the same person as publisher and operator (risalemcp.com/en/privacy.html,
+>   risalemcp.com/en/terms.html).
+> - Name: "Hadith Library" describes what the app holds; it is not a brand we claim. It is one of four apps of the
+>   same volunteer project, "Risale MCP", after its domain risalemcp.com, which I own; this app's server,
+>   hadis.risalemcp.com, is verified with the domain token. The others are Risale-i Nur Library (in review), Tafsir
+>   Library and Classical Islamic Library. "MCP" is left out of the app name because the guidelines require it.
+> - Content: the books are classical hadith collections in their original Arabic, from OpenITI (KITAB project),
+>   licensed CC BY-NC-SA 4.0. We serve the text unchanged, name the source and edition in each book's record, and the
+>   project is non-commercial, as the licence requires. The international numbers and the scholars' grades for the
+>   Six Books and the Muwatta come from Hadith API (Unlicense). The Qur'an's text and the Türkiye Diyanet Vakfı
+>   translation come from Tanzil (tanzil.net), used as its terms allow (non-commercial).
+> - Religious content: the app never rules on whether a report is authentic. Grades appear only where a source holds
+>   them, with the scholar's name, and the server's instructions tell the assistant not to judge soundness itself. A
+>   match in a book that collects sayings current among people (al-'Ajluni's Kashf al-Khafa) carries a note that it
+>   is not a sign of soundness. Translations made by the assistant are labelled as AI translations.
+> - Demo video: in the fifth scenario our Risale-i Nur Library app was also enabled in the chat, so ChatGPT read the
+>   linked Risale-i Nur passages there as well. With Hadith Library alone, the app gives those places by citation
+>   only (their text is not on this server), as the test case describes.
+> - Third party: semantic_search sends only the search phrase to Voyage AI to compute its meaning; the server keeps
+>   the result in memory and never writes it to disk (privacy policy). The server is open to all and its limits are
+>   shared by all users (120 requests a minute, 2,000 semantic searches a day); if a test hits one, the error says
+>   so and the word search keeps working.
+>
+> It is a volunteer, non-commercial project. All tools are read-only and work without an account or sign-in. No
+> conversation content or tool inputs are stored; only the tool name, time, duration and error type are kept, for 90
+> days.
+
+Tafsir Library:
+
+> - Publisher: (Hadith Library ile aynı)
+> - Name: "Tafsir Library" describes what the app holds; it is not a brand we claim. It is one of four apps of the
+>   same volunteer project, "Risale MCP", after its domain risalemcp.com, which I own; this app's server,
+>   tefsir.risalemcp.com, is verified with the domain token. The others are Risale-i Nur Library (in review), Hadith
+>   Library and Classical Islamic Library. "MCP" is left out of the app name because the guidelines require it.
+> - Content: thirteen classical works of Qur'anic exegesis in their original Arabic, from OpenITI (KITAB project),
+>   licensed CC BY-NC-SA 4.0, each in the edition named in its record; verse-unit boundaries come from OpenITI's
+>   altafsir.com-based version, the text always from the chosen edition. We serve the text unchanged, name the
+>   source, and the project is non-commercial, as the licence requires. The Qur'an's text and the Türkiye Diyanet
+>   Vakfı translation come from Tanzil (tanzil.net), used as its terms allow (non-commercial).
+> - Religious content: the classical works are tafsir and are named so; nothing the assistant writes (a summary, a
+>   comparison, a draft) is called tafsir, and its translations are labelled as AI translations. Each work's words
+>   are quoted exactly with their source, and two exegetes treating the same verse is never presented as one
+>   following or answering the other unless the text records it.
+> - Demo video: in the third scenario our Classical Islamic Library app was also enabled in the chat, so one result
+>   comes from al-Raghib's al-Mufradat, which is on that server, not this one. All other results come from the
+>   thirteen tafsir works.
+> - Third party: (Hadith Library ile aynı)
+>
+> (Son paragraf Hadith Library ile aynı.)
+
+Classical Islamic Library:
+
+> - Publisher: (Hadith Library ile aynı)
+> - Name: "Classical Islamic Library" describes what the app holds; it is not a brand we claim. It is one of four
+>   apps of the same volunteer project, "Risale MCP", after its domain risalemcp.com, which I own; this app's server,
+>   klasik.risalemcp.com, is verified with the domain token. The others are Risale-i Nur Library (in review), Hadith
+>   Library and Tafsir Library. "MCP" is left out of the app name because the guidelines require it.
+> - Content: five classical Arabic works on rhetoric, language and terms (al-Jurjani's Dala'il al-I'jaz and Asrar
+>   al-Balagha, al-Raghib's al-Mufradat, al-Sakkaki's Miftah al-'Ulum, al-Sayyid al-Sharif al-Jurjani's al-Ta'rifat)
+>   in their original Arabic, from OpenITI (KITAB project), licensed CC BY-NC-SA 4.0, each in the edition named in
+>   its record. We serve the text unchanged, name the source, and the project is non-commercial, as the licence
+>   requires. The Qur'an's text and the Türkiye Diyanet Vakfı translation come from Tanzil (tanzil.net), used as its
+>   terms allow (non-commercial).
+> - Authorship: each work's words are quoted exactly and attributed to its author; editors' introductions and the
+>   editor's numbered paragraphs of the Dala'il are named as the editor's. Translations made by the assistant are
+>   labelled as AI translations.
+> - Demo video: the fifth scenario asks about one work ("Where is al-Baqara 2:255 quoted in Dala'il al-I'jaz?")
+>   rather than all of them as in the test case. The app answers that the Dala'il does not quote the verse and that
+>   the library's six occurrences are all in al-Mufradat, and gives the verse's text from the Qur'an tool.
+> - Third party: (Hadith Library ile aynı)
+>
+> (Son paragraf Hadith Library ile aynı.)
+
 ## 2e. Claude Risale: dizin ekibine e-posta ve dört sunucunun denetimi (2026-11-22)
 
 **Denetim** (dizin ölçütleri, `claude.com/docs/connectors/building/review-criteria`, 2026-11-22'de okundu; canlı
@@ -576,8 +655,8 @@ Bir hafta cevap gelmezse (≈2026-11-30): başvuru silinir, `risale.risalemcp.co
 - [ ] Claude Tefsir: aynı
 - [ ] Claude Klasik Eserler: aynı
 - [ ] OpenAI Risale: paket güncellendi, video, jeton, gönderildi
-- [ ] OpenAI Hadis: paket, video, jeton, gönderildi (Risale'nin sonucundan sonra)
-- [ ] OpenAI Tefsir: paket, video, jeton, gönderildi (Risale'nin sonucundan sonra)
-- [ ] OpenAI Klasik Eserler: paket, video, jeton, gönderildi (Risale'nin sonucundan sonra)
+- [ ] OpenAI Hadis: paket, video, jeton, gönderildi (Risale'yi beklemeden, kullanıcının kararı 2026-11-23)
+- [ ] OpenAI Tefsir: paket, video, jeton, gönderildi (Risale'yi beklemeden, kullanıcının kararı 2026-11-23)
+- [ ] OpenAI Klasik Eserler: paket, video, jeton, gönderildi (Risale'yi beklemeden, kullanıcının kararı 2026-11-23)
 - [ ] Kabullerden sonra: sitedeki kurulum sayfalarında dizinden ekleme yolu (`site/claude.html`'deki yorum satırı),
       Yenilikler yazısı
