@@ -1684,6 +1684,26 @@ eklenir).
   arayüzünde yeşil görünür, alt alan adı bunu değiştirmez. Ayrı simge yalnız dizin listelemesinde (portala yüklenen
   dosya). Alt alan adları kalır (OpenAI doğrulaması alan adı başına, sunucuların bağımsızlığı); simge için ayrı kök
   alan adı almaya değmez.
+- S4.7 ve kapanış (2026-11-22 – 2026-11-23; "Şimdi" bloğundan taşındı). **2026-11-22:** S4.3 için dört sunucu dizin
+  ölçütleriyle denetlendi, düzeltmeler yayında (`yayin-20261122-173908`), e-posta mcp-review@anthropic.com'a gitti
+  (taslak `docs/s4-dizin-basvurulari.md` §2e). OpenAI için yayıncı satırı doğrulanmış kişisel ada çevrildi ("Fatih
+  Ebrar İnan"; gizlilik, şartlar, paket; S4.6'daki "kişisel ad hiçbir yerde" kararı bu kadarıyla değişti; dernek yolu
+  bırakıldı: OpenAI'nin işletme doğrulaması Türkiye belgelerinde belirsiz). **Dizin adları İngilizce** (kullanıcının
+  kararı): "Risale-i Nur Library", "Hadith Library", "Tafsir Library", "Classical Islamic Library"; yayıncı "Risale
+  MCP"; dört sunucunun başlığı yayında (`yayin-20261122-232806`). OpenAI organizasyon adı "Risale MCP", eski projenin
+  anahtarları iptal; paket iç adı `risale-i-nur` (portal değiştirtmiyor), görünen ad "Risale-i Nur Library" (adda
+  "MCP" olamaz), hakeme not §6. S4.7 (Claude eklentisi, plugin) açıldı. **2026-11-23:** Claude'da dört listeleme yeni
+  adla incelemede; alan adı Anthropic'te DNS TXT ile kanıtlandı ("Verified" talep edilmedi: şirket içindir). OpenAI'de
+  Risale yeniden gönderildi; Hadis, Tefsir, Klasik paketleri (`data/interim/chatgpt/{hadith,tafsir,classical-islamic}-library.zip`,
+  §7) ve üç alt alan adının jetonu hazırlandı. Hadis sunucusunda bâb künyeleri hep boştu (Kütüb-i Sitte dizini sunucuya
+  gitmemişti) ve İngilizce künye tanınmıyordu: düzeltildi (`yayin-20261123-000026`). Demo videoları
+  (`~/Videolar/hadis-demo-2026-11-23_10.23.06.mp4`, `tafsir-library-demo.mp4`, `klasik-demo-2026-11-23_10.35.52.mp4`;
+  Tefsir'in 3. ve 5. senaryosu yeniden çekildi: ilkinde web araması ve Klasik eklentisi devreye girmişti; Hadis'in 5.
+  senaryosunda Risale eklentisi de kullanıldı, kullanıcının kararı: sorun değil); üç başvuru Risale'nin sonucu
+  beklenmeden gönderildi (kullanıcının kararı; inceleme ≈1 ay). E8'in ilk adımı Sözler e-postası yerine risaleoku'ya
+  soru oldu (kullanıcının kararı; gerekçe `PLANLAR.md` › "Sonra" › E8), mesaj gitti. **S4 kapandı** (kullanıcının
+  kararı, 2026-11-23): cevaplar `PLANLAR.md` › "Bekleyen"de (S4.3 Anthropic, S4.1 OpenAI, E8 risaleoku), S4.7
+  "Sıradaki"nde.
 
 
 **D3. Başka türden bir birim.** D1 ve D2'nin dersleriyle, yine İşârât'ın kapsadığı aralıkta (cevabı bilinen, kör

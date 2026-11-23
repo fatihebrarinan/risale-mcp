@@ -1,5 +1,11 @@
 # E8: Arapça Külliyat için izin e-postası (taslak, 2026-11-22)
 
+**Sıra değişti (kullanıcının kararı, 2026-11-23):** bu e-postadan önce risaleoku.com'a, ilk izni veren sohbetin
+içinden, izinlerinin diğer dillerdeki eserleri kapsayıp kapsamadığı ve tercümeleri yayınevlerinin rızasıyla
+paylaşıp paylaşmadıkları soruldu (gönderildi). Bu taslak cevaba göre gider (`PLANLAR.md` "Bekleyen" › E8): yayınevleriyle
+anlaşmaları varsa izin değil bilgi e-postası olur; yalnız "kullanabilirsiniz" derlerse olduğu gibi, metnin
+risaleoku'dan alınacağı söylenerek; hak kendilerinde değilse olduğu gibi.
+
 `PLANLAR.md` E8 "Arap dünyasına açılmak": ilk adım, külliyatın Arapça tercümesini kullanmak için hak sahibinden
 izin. Taslak Claude'un, gönderen kullanıcı.
 

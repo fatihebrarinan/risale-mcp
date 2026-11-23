@@ -77,3 +77,4 @@ nurpedia'dan gelir; yalnız nurpedia'nın resim verdiği tablolar PDF'ten, kulla
 | Kaynak | İstek | Durum |
 |---|---|---|
 | Yeni Asya | Ortak proje, izinli PDF'ler | Planda; mevcut veri kullanılmıyor |
+| risaleoku.com (diğer diller) | İznin "Other Languages" rafını (Arapça başta, 20'yi aşkın dil) kapsayıp kapsamadığı; tercümeleri yayınevlerinin ve mütercimlerin rızasıyla mı paylaştıkları (2026-11-23, ilk iznin sohbetinden) | Cevap bekleniyor (`PLANLAR.md` E8). O zamana kadar tercümeler bu izne dayanılarak alınmaz |
