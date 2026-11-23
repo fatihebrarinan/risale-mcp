@@ -1820,6 +1820,30 @@ eklenir).
   soru oldu (kullanıcının kararı; gerekçe aşağıda, "E8 izin"), mesaj gitti. **S4 kapandı** (kullanıcının
   kararı, 2026-11-23): cevaplar `PLANLAR.md` › "Bekleyen"de (S4.3 Anthropic, S4.1 OpenAI, E8 risaleoku), S4.7
   "Sıradaki"nde.
+- S4.7 **Claude eklentisi** (bitti, 2026-11-23; "Sıradaki"den taşındı) (plugin, kullanıcının kararı, 2026-11-22): küçük, herkese açık GitHub deposu (proje
+  talimatı skill olarak, dört bağdaştırıcının adresi, README, lisans; metin girmez). Önce yerelde kurulup skill'in
+  sohbette ne zaman yüklendiği denenir (her sohbette değil, açıklaması eşleşince yüklenir: proje talimatının birebir
+  yerini tutmayabilir), sonra portaldan "Plugin bundle". S4'ün öbür adımları kapandı (2026-11-23).
+  **Hazır (2026-11-23; kullanıcının kararları: tek eklenti, hazır komutlar skill olur, skill'ler İngilizce):** depo
+  `github.com/fatihebrarinan/risale-library-plugin` (herkese açık, MIT; ad `risale-library`, görünen ad "Risale-i Nur
+  Library", yazar "Risale MCP"), kaynakları `packaging/claude-plugin/`, üretici `scripts/claude-plugin.py`; ana skill
+  `site/en/instructions.md`'den üretilir. Sekiz skill: `risale-library` (ana kurallar), `verse-study`, `hadith-check`
+  (eklentiler arası akışlar), hazır komutlardan `topic-survey`, `text-and-commentary`, `study-circle`, `self-test`,
+  `lesson-plan`. Claude Code'da 12 soruluk deneme (`tests/golden/claude_plugin_prompts.json`; rapor
+  `data/interim/claude-plugin/dene-20261123-16*.md`): 11'inde beklenen skill yüklendi, denetim sorusunda hiçbiri; tek
+  tefsir sorusunda yüklenmedi ama cevap doğru; üç eklentili cevapta tek Kaynaklar listesi. claude.ai'de
+  kullanıcı denedi: hesapta kurulu bağdaştırıcıları kendiliğinden gördü, skill doğru yüklendi (orada yalnız skill ve
+  bağdaştırıcı çalışır; komut, hook, alt ajan yok). **Portalın denetimi** (2026-11-23) iki şey istedi, 1.0.1'de düzeldi:
+  yazar adı "Risale MCP" dizindeki "riddle-mcp"ye benziyordu (NAME_CONFUSABLE), yazar ve marketplace sahibi artık
+  "Nur Hadimleri" (dizin başvurularındaki yayıncı adı; eklentinin adı ve görünen adı değişmedi, o yüzden e-posta
+  gerekmedi); üç skill'in açıklaması tırnaksız ": " taşıyordu (YAML okuyucusu orada durur): sekizinin açıklaması çift
+  tırnaklı, `claude-plugin.py` tırnaksızı reddeder. Listeleme alanları (`documentationUrl`, `privacyPolicyUrl`,
+  `supportUrl`, `termsOfServiceUrl`, `icon`) için uyarılar "no action needed". **Gönderildi** (2026-11-23, `main @
+  54ebcd6`; listelendiği yerler Claude Code, Cowork, Claude uygulamaları; auto-publish açık). Veri işleme cevapları:
+  kişisel veri yok; skill'ler beyan edilen bağdaştırıcılardan başka yere veri göndermez (Voyage sunucunun içinde);
+  saklama "Not retained" (araç girdileri saklanmaz; 90 günlük kullanım kaydı içeriksiz işletme kaydı); 18 yaş altı için
+  değil. Ardından gizlilik politikası (iki dil) bağdaştırıcıları alt alan adlarıyla yazacak biçimde düzeltildi
+  (`hadis.risalemcp.com/mcp` …; önceden `/hadis` gibi eski yollar), yayında. Cevap `PLANLAR.md` › "Bekleyen"de.
 - E8 izin (2026-11-23): önce risaleoku'ya soruldu, Sözler'e değil (gerekçe: izin vermiş birine, aynı sohbette; soru
   20'yi aşkın dili birden kapsar; tercümenin hakkı yayıncının ve mütercimin olduğu için rıza sorusu da mesajdaydı).
   risaleoku'nun cevabı ("RN Kütüphanesi", 12.03): "yabancı dillerde mütercimler tarafından

@@ -71,14 +71,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (`data/interim/lugat/olcum.md`). Önceki adım **S10** de yayında; kullanıcıdan beklenen: karşılama sayfasını
   (`/oku/#/~hosgeldin`) ve kopyalama damgasını okuyup düzeltmek, sonra ilk davetler (`scripts/sunucu.sh taslak davet
   <e-posta>`). **E6.1 bitti (2026-11-23):** Elmalılı'nın kaynak adayları bulundu, Yazma Eserler Kurumu'na izin
-  e-postası gitti ("Bekleyen"); ekleme Aralık'taki tefsir kurulumunda kalır (kullanıcının kararı). **S4.7 hazır
-  (2026-11-23):** Claude eklentisi `github.com/fatihebrarinan/risale-library-plugin`'de (dört bağdaştırıcı, sekiz skill),
-  Claude Code'da ve claude.ai'de denendi. Portalın denetimi iki şey istedi (2026-11-23), 1.0.1'de düzeldi: yazar adı
-  "Risale MCP" dizindeki "riddle-mcp"ye benziyordu, artık "Nur Hadimleri" (dizin başvurularındaki yayıncı adı; proje
-  adı değişmedi); skill açıklamaları çift tırnaklı (": " YAML'ı bozuyordu; betik artık tırnaksızı reddeder).
-  Başvuru gönderildi (2026-11-23, `54ebcd6`, auto-publish açık; veri işleme: kişisel veri yok, başka servis yok,
-  saklanmaz, 18 altı değil); cevap "Bekleyen"de. Gizlilik politikası alt alan adlarını yazıyor (yayında). S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
-  OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 7'de. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
+  e-postası gitti ("Bekleyen"); ekleme Aralık'taki tefsir kurulumunda kalır (kullanıcının kararı). **S4.7 bitti (2026-11-23):** Claude eklentisi
+  (plugin) 1.0.1 dizine gönderildi; cevap "Bekleyen"de. S4'ün bütün cevapları "Bekleyen"de: Anthropic (S4.3 dört
+  bağdaştırıcı, S4.7 eklenti), OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 6'da. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
   sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
   "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
@@ -86,7 +81,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   yedek yolu ("Bekleyen"). (3) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
-- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 4 (Risale'si az birimlere göz
+- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 3 (Risale'si az birimlere göz
   atmak); E8.6 için Arapça okuyan bir denetçi aramak.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
@@ -96,30 +91,15 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S4 | S4.7 Claude eklentisi (plugin): depo ve deneme hazır; başvuru kullanıcıda | |
-| 2 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
-| 3 | E5 | Klasik 2. dilim ve yeni tanıtım | |
-| 4 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 5 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 6 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 7 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 8 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 9 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 1 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
+| 2 | E5 | Klasik 2. dilim ve yeni tanıtım | |
+| 3 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 4 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 5 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 6 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 7 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 8 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 
-- S4.7 **Claude eklentisi** (plugin, kullanıcının kararı, 2026-11-22): küçük, herkese açık GitHub deposu (proje
-  talimatı skill olarak, dört bağdaştırıcının adresi, README, lisans; metin girmez). Önce yerelde kurulup skill'in
-  sohbette ne zaman yüklendiği denenir (her sohbette değil, açıklaması eşleşince yüklenir: proje talimatının birebir
-  yerini tutmayabilir), sonra portaldan "Plugin bundle". S4'ün öbür adımları kapandı (2026-11-23).
-  **Hazır (2026-11-23; kullanıcının kararları: tek eklenti, hazır komutlar skill olur, skill'ler İngilizce):** depo
-  `github.com/fatihebrarinan/risale-library-plugin` (herkese açık, MIT; ad `risale-library`, görünen ad "Risale-i Nur
-  Library", yazar "Risale MCP"), kaynakları `packaging/claude-plugin/`, üretici `scripts/claude-plugin.py`; ana skill
-  `site/en/instructions.md`'den üretilir. Sekiz skill: `risale-library` (ana kurallar), `verse-study`, `hadith-check`
-  (eklentiler arası akışlar), hazır komutlardan `topic-survey`, `text-and-commentary`, `study-circle`, `self-test`,
-  `lesson-plan`. Claude Code'da 12 soruluk deneme (`tests/golden/claude_plugin_prompts.json`; rapor
-  `data/interim/claude-plugin/dene-20261123-16*.md`): 11'inde beklenen skill yüklendi, denetim sorusunda hiçbiri; tek
-  tefsir sorusunda yüklenmedi ama cevap doğru; üç eklentili cevapta tek Kaynaklar listesi. claude.ai'de yükleme
-  denenmedi (orada yalnız skill ve bağdaştırıcı çalışır; komut, hook, alt ajan yok). Kalan: kullanıcının başvurusu
-  (§9); gönderilince "Bekleyen"e.
 - E6 **Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
   2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
   dizgisi baskının yayıncısınındır: kaynak seçilirken bakılır. Bir arkadaşın gönderdiği PDF'ler biçimi bozuk, son çare.
@@ -219,6 +199,7 @@ araştır, varsa düzelt"):
 |---|---|---|---|
 | S4.3 | Claude dizini: Risale başvurusu "In review"; dizin ekibine e-posta gitti (2026-11-16). **Sonraki adım (kullanıcının kararı, 2026-11-22):** belgenin verdiği adrese (mcp-review@anthropic.com) listeleme adı, organizasyon ve durumla e-posta; bir hafta cevap yoksa başvuru silinip `risale.risalemcp.com/mcp` adresiyle yeniden gönderilir. Öncesinde dört sunucu dizin ölçütleriyle denetlenir (araçlarda `title` ve salt okunur işareti, hata iletileri, Voyage'ın beyanı). **Denetlendi (2026-11-22):** bulgular ve e-posta taslağı `docs/s4-dizin-basvurulari.md` §2e; düzeltmeler `aa9083d`. **E-posta gitti (2026-11-22);** dört listeleme yeni İngilizce adlarla incelemede (2026-11-23); alan adı Anthropic'te kanıtlandı (DNS TXT, 2026-11-23; "Verified" talep edilmedi: şirket içindir). Cevap yoksa ≈2026-11-30'da yedek yol | Anthropic | M7 |
 | E6.1 | Elmalılı: Türkiye Yazma Eserler Kurumu'na izin e-postası gönderildi (2026-11-23; `docs/yek-izin-epostasi.md`): Hak Dini Kur'an Dili neşrinin (haz. Köksal, Kaya) ticari olmayan kullanımının yazılı teyidi ve dijital dosyası. İzin gelirse `docs/izinler.md`'ye, neşir C adayı olur; gelmezse yedek yol A (archive.org Mürşit metni). Birkaç hafta cevap yoksa telefon (0212 514 46 35, dahili 281–282) | Türkiye Yazma Eserler Kurumu | |
+| S4.7 | Claude dizini: eklenti (plugin) "Risale-i Nur Library" 1.0.1 gönderildi (2026-11-23; depo `fatihebrarinan/risale-library-plugin` `54ebcd6`, yazar "Nur Hadimleri", auto-publish açık: onaylanınca kendiliğinden yayına girer). Önce güvenlik ve politika taraması, tutulursa hakem. Onaylanınca: sitedeki kurulum sayfalarına eklentiden kurma yolu, Yenilikler yazısı. Ret gelirse gerekçesine göre düzeltme, yeni sürüm (`version` artar) | Anthropic | |
 | S4.1 | OpenAI: dört başvuru **kullanıcının doğrulanmış kendi adıyla** ("Fatih Ebrar İnan"; site ve paket aynı adla, yayında; organizasyon adı "Risale MCP"). Risale "Risale-i Nur Library" adıyla yeniden gönderildi (2026-11-23); Hadis, Tefsir, Klasik paketleri, alan adı jetonları ve demo videolarıyla Risale'nin sonucu beklenmeden gönderildi (2026-11-23; hakeme notlar `docs/s4-dizin-basvurulari.md` §6–§7). İnceleme ≈1 ay. Ret gelirse gerekçesine göre düzeltme ve itiraz (e-postayı yanıtlayarak) | OpenAI | M7 |
 
 Kapananlar (2026-11-12): E4 Kızıl İcaz'ın Türkçesi (gerek yok, "Biten"); Diyanet (izin yok, "Biten"); Osmanlıcanın
@@ -244,7 +225,7 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   tanıtım "Sıradaki"nde.
 - **E7 (b) Yeni hadis kitapları**, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve
   Abdürrezzâk'ın Musannef'leri (nüshalar seçilirken bakılır). E7'nin (a) ve (c)'si "Sıradaki"nde.
-- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 8),
+- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 7),
   o zaman kimlik alır.
 
 ## Dondurulan
@@ -360,6 +341,7 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- S4.7 Claude eklentisi (2026-11-23, dizine gönderildi): herkese açık depo `fatihebrarinan/risale-library-plugin` (dört bağdaştırıcı, sekiz İngilizce skill, metin yok; kaynak `packaging/claude-plugin/`, üretici `scripts/claude-plugin.py`); Claude Code'da ve claude.ai'de denendi; portalın denetimiyle yazar adı "Nur Hadimleri" oldu, skill açıklamaları tırnaklandı (1.0.1). Cevap "Bekleyen"de. Ayrıntı `KAYIT.md` › "Kimlikli işler" › S4.
 - E6.1 Elmalılı'nın kaynak adayları (2026-11-23): üç aday (archive.org Mürşit metni, islamilimleri.com, Yazma Eserler
   Kurumu neşri); Kurum'un şartları araştırıldı (her hakkı saklı), izin e-postası gitti ("Bekleyen"). Ekleme (E6.2)
   Aralık'ta. Ayrıntı `KAYIT.md` › "Kimlikli işler" › E6.1.
@@ -381,7 +363,7 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
 - S4'ün dış adımları (kapandı, 2026-11-23, kullanıcının kararı): Claude'da dört listeleme İngilizce adlarla
   ("Risale-i Nur Library", "Hadith Library", "Tafsir Library", "Classical Islamic Library") incelemede, dizin ekibine
   e-posta gitti, alan adı kanıtlandı; OpenAI'de dört başvuru kullanıcının adıyla gönderildi; E8 için risaleoku'ya
-  soru gitti. Cevaplar "Bekleyen"de, S4.7 "Sıradaki"nde. Ayrıntı `KAYIT.md` › "Kimlikli işler" › S4.
+  soru gitti. Cevaplar "Bekleyen"de; S4.7 ayrıca bitti. Ayrıntı `KAYIT.md` › "Kimlikli işler" › S4.
 - B4, B7, B8 (2026-11-21, kullanıcının onayıyla; ayrıntı `KAYIT.md` › "Kimlikli işler" › "Küçük açıklar"): B4 mecmua
   eşlemesinde kısa satır uzun paragrafın ortasına bağlanmaz (Nutuk "İttihad-ı millî...", Fihrist ve Tılsımlar'da birer
   satır; kimlik değişikliği kabul edildi), B7 tırnaklı ifade bitişik yazılışıyla da aranır (`"her şey"` 15 → 304,

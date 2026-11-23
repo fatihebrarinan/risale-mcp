@@ -658,12 +658,18 @@ Bir hafta cevap gelmezse (≈2026-11-30): başvuru silinir, `risale.risalemcp.co
 - [ ] OpenAI Hadis: paket, video, jeton, gönderildi (Risale'yi beklemeden, kullanıcının kararı 2026-11-23)
 - [ ] OpenAI Tefsir: paket, video, jeton, gönderildi (Risale'yi beklemeden, kullanıcının kararı 2026-11-23)
 - [ ] OpenAI Klasik Eserler: paket, video, jeton, gönderildi (Risale'yi beklemeden, kullanıcının kararı 2026-11-23)
-- [ ] Claude eklentisi (plugin): depo hazır (§9); isteğe bağlı claude.ai denemesi; "Plugin bundle" gönderildi
+- [x] Claude eklentisi (plugin): depo hazır (§9), claude.ai'de denendi, "Plugin bundle" 1.0.1 gönderildi (2026-11-23)
 - [ ] Kabullerden sonra: sitedeki kurulum sayfalarında dizinden ekleme yolu (`site/claude.html`'deki yorum satırı),
       Yenilikler yazısı
 
 
 ## 9. Claude eklentisi (plugin, S4.7; hazır 2026-11-23)
+
+**Gönderildi (2026-11-23):** `main @ 54ebcd6` (1.0.1), Claude Code · Cowork · Claude uygulamaları, auto-publish açık.
+Portalın denetimiyle iki düzeltme: yazar adı "Nur Hadimleri" ("Risale MCP" dizindeki "riddle-mcp"ye benziyordu;
+NAME_CONFUSABLE), skill açıklamaları çift tırnaklı. Veri işleme: kişisel veri **Hayır**, başka servis **Hayır**,
+saklama **Not retained**, 18 yaş altı **Hayır**. Kalan uyarılar (listeleme alanları, `icon.png`) portalın "no action
+needed" dediği uyarılardır. Yeni sürüm gönderilirse `version` artırılır, her sürüm yeniden taranır.
 
 Depo: **https://github.com/fatihebrarinan/risale-library-plugin** (herkese açık, dal `main`, eklenti deponun kökünde).
 İçerik `packaging/claude-plugin/`'den `python3 scripts/claude-plugin.py build` ile üretilir; değişiklikten sonra
@@ -671,7 +677,7 @@ depoda commit ve push, `plugin.json`'daki `version` artırılır (her yeni sür�
 `claude plugin validate` uyarısız geçti.
 
 **İsteğe bağlı ön deneme (claude.ai):** Customize › Plugins › Add › Upload plugin, dosya
-`data/interim/claude-plugin/risale-library-1.0.0.zip` (`python3 scripts/claude-plugin.py zip`). Sonra eklentinin
+`data/interim/claude-plugin/risale-library-<sürüm>.zip` (`python3 scripts/claude-plugin.py zip`). Sonra eklentinin
 Connectors sekmesinden dört bağdaştırıcı eklenir (kullanıcı her birini ayrıca bağlar). Bakılacak: tevekkül gibi bir
 soruda ve Âyetü'l-Kürsî sorusunda skill yükleniyor mu (Claude Code'da yüklendi; claude.ai'nin seçimi aynı olmayabilir).
 Hesabınızda zaten ekli olan aynı adresli özel bağdaştırıcılar varsa araçlar iki kez görünebilir: denemede onları
@@ -686,7 +692,7 @@ kapatın.
 | Branch / tag | `main` |
 | Listing | README listeleme metni olur; ad ve kısa açıklama `plugin.json`'dan ("Risale-i Nur Library") |
 | Data handling | Eklentinin kendisi hiçbir şey göndermez, kod çalıştırmaz. Bağdaştırıcılar yalnız aracın girdisini alır (arama ifadesi, kimlik, alıntılanan sözler); anlamsal aramada arama ifadesi Voyage AI'a gider; istek başına zaman, bağdaştırıcı, araç, süre, hata türü 90 gün; ifade, alıntı ve IP kaydedilmez. Gizlilik: `https://risalemcp.com/en/privacy.html` |
-| Compliance | iletişim `destek@risalemcp.com`, dört onay kutusu |
+| Compliance | iletişim: portal hesabın e-postasını alır; dört onay kutusu |
 | Eşleştirme | Portal sunarsa eklenti, aynı adresli dört bağdaştırıcı listelemesiyle (§2a–§2d) eşleştirilir |
 
 Ek not önerisi (portal sorarsa):
