@@ -309,6 +309,52 @@ def unit_data(libs: Libs, u: dict) -> dict:
     return d
 
 
+# ---------------------------------------------------------------- lügat (A4)
+# Birimin bütün Türkçe metinlerinde (taslak, izah, alıntılar, kaynakların metni ve tercümesi, İşârât, Risale'deki
+# yerler) lügatta karşılığı olan kelime ve tamlamalar önceden bulunur (`lugat.Lexicon.spans`, eşleme kuralları tek
+# yerde); uygulama dokunulan kelimeyi kapsayan en uzun anahtarı bu listede arar. Anahtar `normalize.search_words`
+# biçimidir; uygulamadaki `lugatWords` aynı çeviriyi yapar.
+_SEGMENT = re.compile(r"[.,;:!?()\[\]{}\"“”«»…\n]+")
+_SKIP_KEYS = {"bag", "kimlik", "id", "dosya", "url", "sunucu", "capa", "icerik_sha", "tur", "bolum", "kaynak"}
+
+
+def _strings(x, out: list[str]) -> list[str]:
+    if isinstance(x, str):
+        if re.search(r"[A-Za-zÇĞİÖŞÜçğıöşüÂâÎîÛû]{3}", x):
+            out.append(x)
+    elif isinstance(x, list):
+        for v in x:
+            _strings(v, out)
+    elif isinstance(x, dict):
+        for k, v in x.items():
+            if k not in _SKIP_KEYS:
+                _strings(v, out)
+    return out
+
+
+def glossary(libs: Libs, d: dict) -> dict | None:
+    lib = libs.lib("genel")
+    if lib is None or not lib.has_lugat():
+        return None
+    from risale_mcp.normalize import search_words
+    lex = lib.lexicon()
+    keys: dict[str, list] = {}
+    used: dict[int, list] = {}
+    for text in _strings(d, []):
+        for seg in _SEGMENT.split(text):
+            words = search_words(seg)
+            for i, n, found in lex.spans(seg):
+                k = " ".join(words[i:i + n])
+                if k in keys:
+                    continue
+                keys[k] = [[m.entry["id"], m.how] + ([m.stem] if m.stem else []) for m in found]
+                for m in found:
+                    used.setdefault(m.entry["id"], [m.entry["word"], m.entry["meaning"]])
+    src = lex.source
+    return {"sema": "lugat/1", "kaynak": {"ad": src.get("name"), "bag": src.get("url"), "surum": src.get("version")},
+            "anahtar": keys, "madde": used}
+
+
 def masa_data(unit: str, base: dict) -> dict:
     """Ar-ge masasının ekleri: bütün taslaklar, kapı ve eleştirmen notları, nisbet, alarmlar (ham)."""
     out = {"taslaklar": [], "kapi": [], "kapali": [], "nisbet": [], "acik": [], "alarmlar": [], "sayfalar": []}
@@ -423,6 +469,8 @@ def build(only: str | None = None) -> list[str]:
             continue
         d = unit_data(libs, u)
         (OUT / "veri" / f"{uid}.json").write_text(json.dumps(d, ensure_ascii=False), encoding="utf-8")
+        if (g := glossary(libs, d)) is not None:
+            (OUT / "veri" / f"{uid}.lugat.json").write_text(json.dumps(g, ensure_ascii=False), encoding="utf-8")
         (OUT / "indir" / f"bakara-{uid}.txt").write_text(plain(d), encoding="utf-8")
         m = masa_data(uid, d)
         rows.append({"id": uid, "ayet": u["ayet"], "tur": "d5" if u["kaynak"] != "isarat" else "isarat",

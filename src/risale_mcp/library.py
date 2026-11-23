@@ -25,6 +25,7 @@ from risale_mcp.catalog.model import AUTHOR
 from risale_mcp.db import connect
 from risale_mcp.hadis import ATTRIBUTION, CAUTION_BOOKS, SUPPORT_ORDER, TITLES
 from risale_mcp.hadis_kitaplar import BY_ID
+from risale_mcp import lugat
 from risale_mcp.quran import skeleton
 from risale_mcp.embeddings import EmbeddingError
 from risale_mcp.normalize import search_words
@@ -222,6 +223,7 @@ class Library:
         self._conn: sqlite3.Connection | None = None
         self._version: int | None = None
         self._semantic: tuple[sqlite3.Connection, SemanticIndex] | None = None
+        self._lexicon: tuple[sqlite3.Connection, lugat.Lexicon] | None = None
 
     @property
     def conn(self) -> sqlite3.Connection:
@@ -1009,6 +1011,50 @@ class Library:
 
     def _verse_ref(self, sura: int, start: int, end: int) -> str:
         return f"{self._sura_name(sura)} Sûresi, {sura}:{_ayah_span(start, end)}"
+
+    # ------------------------------------------------------------ lügat (A4)
+
+    def has_lugat(self) -> bool:
+        try:
+            return self.conn.execute("SELECT EXISTS (SELECT 1 FROM lugat)").fetchone()[0] == 1
+        except sqlite3.OperationalError:          # lügatsız (eski ya da tefsir) veritabanı
+            return False
+
+    def lexicon(self) -> lugat.Lexicon:
+        """Lügatın eşleme dizini; veritabanı yenilenince yeniden kurulur."""
+        conn = self.conn
+        if self._lexicon is None or self._lexicon[0] is not conn:
+            if not self.has_lugat():
+                raise LibraryError("The dictionary is not installed in this database.")
+            entries = [{"id": r["id"], "word": r["word"], "meaning": r["meaning"],
+                        "variants": json.loads(r["variants"]) if r["variants"] else [], "exact": bool(r["exact"])}
+                       for r in conn.execute("SELECT * FROM lugat ORDER BY id")]
+            row = conn.execute("SELECT value FROM meta WHERE key = 'lugat_source'").fetchone()
+            self._lexicon = (conn, lugat.Lexicon(entries, json.loads(row[0]) if row else None))
+        return self._lexicon[1]
+
+    def lookup_words(self, words: list[str]) -> dict:
+        """Kelime ya da tamlamaların lügattaki maddeleri; tamlama bulunmazsa kelimeleri tek tek."""
+        lex = self.lexicon()
+        results = []
+        for text in words:
+            found = lex.lookup(text)
+            item: dict = {"query": text, "entries": [lugat.record(m) for m in found]}
+            if not found:
+                parts = search_words(text)
+                if len(parts) > 1:
+                    spans = lex.spans(text)
+                    covered = [(i, n, f) for i, n, f in spans if not any(j <= i and i + n <= j + m and (j, m) != (i, n)
+                                                                          for j, m, _ in spans)]
+                    item["parts"] = [{"words": lugat.surface(text, i, n), "entries": [lugat.record(m) for m in f]}
+                                     for i, n, f in covered]
+                if not item.get("parts"):
+                    item["note"] = "Not in the dictionary."
+            results.append(item)
+        src = lex.source
+        return {"dictionary": f"{src.get('name', lugat.SOURCE_NAME)} ({src.get('url', lugat.SOURCE_URL)}, "
+                              f"version {src.get('version', '?')})",
+                "note": lugat.NOTE, "results": results}
 
     def _has_quran(self) -> bool:
         return self.conn.execute("SELECT EXISTS (SELECT 1 FROM quran_ayahs)").fetchone()[0] == 1

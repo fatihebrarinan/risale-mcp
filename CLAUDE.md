@@ -37,7 +37,7 @@ Genel sunucunun kaynakları (kim, hangi şartla izin verdi: `docs/izinler.md`; y
 | Kaynak | Rol | İzin ve notlar |
 |---|---|---|
 | **erisale.com** | Birincil kaynak: ana ciltler, Eski Said eserleri, Asâ-yı Mûsâ, Sikke, Muvazeneler (27 eser) | e-Risale'yi kaynak gösterdiğimiz sürece kullanım izni var (görüşme, 2026-10-30; sitede belgelerde gösteriliyor). Her bölüm ayrı sayfa; liste `sitemap-tr.xml`'den. Metin sayfaya gömülü RSC verisinde yapısal ağaçtır: blok türleri (`H2`, `H3`, `Paragraph`, `CenteredParagraph`, `HeadingDescription`…), satır içi başlıklar (`Heading`), Arapça (`RTL`, türü âyet/hadis/Arapça, meali `rtl.txn`), hâşiye tam geçtiği yerde (`FootnoteRef` → `Footnote`). `blockIndex` kitap içinde süreklidir; boşluk = eksik bölüm. robots.txt yalnızca `/api/` yolunu yasaklar; yalnızca okuma sayfaları indirilir. |
-| **risaleoku.com** (`risaleoku_app`) | Mecmualar (Zülfikâr, Tılsımlar, Sirâcü'n-Nûr, Gençlik ve Hanımlar Rehberi, Küçük Sözler, Fihrist, Âsâr-ı Bediiyye), Nutuk, Makalat ve Âsâr parçaları, Hizbler ve dualar, aslı Arapça eserler, 16 Osmanlıca cilt | Site sahibi, kazanç olmadığı ve kaynak gösterildiği sürece bütün eserlere izin verdi; diğer dillerdeki Risale tercümeleri de dahil (mütercimlerin izniyle paylaşıyorlar, 2026-11-23; Arapça külliyat E8). Katalog `/api/v1/content/changes`, dosyalar `/f/<sha256>.txt.gz`, meal `|n@` numarasıyla. `uv run python -m risale_mcp.fetch risaleoku [anahtar…]`; ham veri `data/raw/risaleoku_app/`. Biçim `books/risaleoku_app.py` başında. Sayfa başındaki ve Arapçadan sonraki satır cümle ortasında da girintili gelir: paragraf sürer. Sikke'nin ikinci "Husrev'in Bir Fıkrasıdır"ı erisale'de indirilemediği için Sözler Neşriyat baskısından gelir (`soz_stg`, `erisale.SUPPLEMENTS`; yazımı erisale'ye en yakın baskı, alt başlıkta işaretli). Aslı Arapça eserler başlık ağacını ve Türkçeyle paralel kimlikleri `books/outlines/<eser>.json` şablonundan alır, metin kelime çapalarıyla (bir kısmında `printed`: bu baskının başlık satırı, `start`: ilk kelimeleri) yerleşir. Geçişin kayıtları: `docs/risaleoku-gecis-plani.md`. |
+| **risaleoku.com** (`risaleoku_app`) | Mecmualar (Zülfikâr, Tılsımlar, Sirâcü'n-Nûr, Gençlik ve Hanımlar Rehberi, Küçük Sözler, Fihrist, Âsâr-ı Bediiyye), Nutuk, Makalat ve Âsâr parçaları, Hizbler ve dualar, aslı Arapça eserler, 16 Osmanlıca cilt, Türkçe lügat (A4) | Site sahibi, kazanç olmadığı ve kaynak gösterildiği sürece bütün eserlere izin verdi; diğer dillerdeki Risale tercümeleri de dahil (mütercimlerin izniyle paylaşıyorlar, 2026-11-23; Arapça külliyat E8). Katalog `/api/v1/content/changes`, dosyalar `/f/<sha256>.txt.gz`, meal `|n@` numarasıyla. `uv run python -m risale_mcp.fetch risaleoku [anahtar…]`; ham veri `data/raw/risaleoku_app/`. Biçim `books/risaleoku_app.py` başında. Sayfa başındaki ve Arapçadan sonraki satır cümle ortasında da girintili gelir: paragraf sürer. Sikke'nin ikinci "Husrev'in Bir Fıkrasıdır"ı erisale'de indirilemediği için Sözler Neşriyat baskısından gelir (`soz_stg`, `erisale.SUPPLEMENTS`; yazımı erisale'ye en yakın baskı, alt başlıkta işaretli). Aslı Arapça eserler başlık ağacını ve Türkçeyle paralel kimlikleri `books/outlines/<eser>.json` şablonundan alır, metin kelime çapalarıyla (bir kısmında `printed`: bu baskının başlık satırı, `start`: ilk kelimeleri) yerleşir. Geçişin kayıtları: `docs/risaleoku-gecis-plani.md`. |
 | Keşif Yolculukları Risale-i Nur Eğitim Programı | Ta'likat'ın Türkçesi | Ediz Sözüer'in programı; Word dosyası Google Drive'da, Protranslate'in tam tercümesi. Telif bildirimi "asliyetini korumak ve kaynak belirtmek şartıyla" serbest kullanım tanır. |
 | **nurpedia.org** (`nurpedia`) | Rumuzat-ı Semaniye'nin metni; hadis işaretleri ve künyeleri (Aşama 14) | Elindeki her şeye izin verdi (2026-11-02). MediaWiki sayfaları; `fetch nurpedia` (metin), `fetch hadis` (hadis sayfaları). |
 | Kullanıcının dosyaları (`kullanici`) | Rumuzat-ı Semaniye'nin tabloları | Rumuzat'ın PDF'i (`data/raw/kullanici/<kitap>/<kitap>.pdf`); nurpedia tabloları resim verdiği için yalnız tablolar buradan, kullanıcının kararı ve sorumluluğuyla (2026-11-04). |
@@ -104,7 +104,7 @@ risale-mcp/
 ├── packaging/chatgpt/     # OpenAI eklenti paketi
 ├── data/                  # git'e eklenmez (README.md hariç, her klasörün işi orada; links/reviews/ kendi yerel deposunda)
 │   ├── raw/<kaynak>/      # ham yanıtlar, kaynak başına; kullanıcının PDF'leri raw/kullanici/<kitap>/
-│   ├── library/           # asıl veri: risale/kulliyat/<eser>.json, risale/ilgili/, kuran/quran.json, hadis/matches.json
+│   ├── library/           # asıl veri: risale/kulliyat/<eser>.json, risale/ilgili/, kuran/quran.json, hadis/matches.json, lugat/risaleoku-tr.json
 │   ├── dist/<profil>/     # kisisel, genel: risale.db ve vectors/ (kisisel/vectors asıl depo, ücretli çıkarılır)
 │   ├── manifest/<profil>/ # kabul edilmiş kimlik manifestosu, sürümler, kimlik değişikliği raporları (silinmez: eski sürümlerin tek kaydı)
 │   ├── interim/           # erisale/ blokları, review/ kontrol arayüzü (taşınmaz: tarayıcı işaretleri adrese bağlı olabilir), outline/, quran/ayah_check.md, ayah_links/, arabic_kinds/, golden/, search_eval/, tool_snapshot/, chatgpt/
@@ -116,6 +116,7 @@ risale-mcp/
 │   ├── fetch.py, build.py, build_db.py, db.py   # indirme, ayrıştırma, veritabanı CLI'ları
 │   ├── sentences.py       # cümle bölücü, incipit, atıflar, altın örnekler
 │   ├── arabic_kinds.py    # Arapça parçaların türü ve dayanağı, âyet adres düzeltmeleri
+│   ├── lugat.py           # lügat (A4): ayrıştırma, kelimenin maddesini bulma, ölçüm
 │   ├── quran.py, hadis.py, hadis_adaylar.py, hadis_turkce.py, hadis_rivayet.py, hadis_uyum.py, hadis_okuma.py, hadis_ornek.py, openiti.py, ayah_links.py, search.py, semantic.py, embeddings.py, search_eval.py, tool_snapshot.py
 │   ├── library.py, server.py, citations.py, auth.py, golden.py, local_only.py, manifest.py
 │   ├── review_ui.py, review_assets/, static/
@@ -377,6 +378,7 @@ Claude Desktop (`claude_desktop_config.json`; Linux'ta `~/.config/Claude/`):
 | `find_ayah(sura, ayah?)` | Âyetin eserlerde geçtiği cümleler; sûre numarası ya da adı. `via: source` kaynağın işaretlediği, `via: text` Kur'ân metninde bulunan işaretsiz alıntı; `check` kaynağın numarası metinle tutmuyorsa uyarır; tek âyette âyetin kendisi (`quran`) ve âyetle bağ kuran yerler (`links`: tür, güç, kanıt cümlesi; güçlüler önce; denetlenmişse `reviews`: durum, denetçinin gücü, sabit numarası (ad yayımlanmaz), karşıladığı alanlar ya da `competent: false`, tarih, gerekçe; `review_fields`: bağın gerektirdiği ve ehil kabulle karşılanan alanlar) |
 | `get_ayah(sura, ayah, end?, context=0)` | Kur'ân'dan âyet ya da aralık (en çok 30): harekeli metin, Vakıf meali (`covers_verses`: birlikte tercüme edilen âyetler), atıf (`ref`), eserlerde kaç kez geçtiği ve kaç yerin bağ kurduğu (`linked_in_works`), Tanzil atfı |
 | `find_hadith(text, limit=20)`, `get_hadith(id)` | Hadisin eserlerdeki yerleri, dayanağı (`hadith_support`) ve rivayetleri; rivayetin metni, dereceler, kaynak ve Risale'de bağlı olduğu cümleler (`linked_in_works`, bağlardan) (bkz. Hadis katmanı) |
+| `lookup_word(words)` | Eski kelime ve tamlamaların risaleoku.com lügatındaki maddeleri (`how`: exact, variant, stem; tamlama bulunmazsa kelimeleri `parts`); lügat nâşirindir, talimat (`LUGAT_INSTRUCTIONS`) metin gibi alıntılamayı ve Kaynaklar'a koymayı yasaklar. Yalnız lügatı olan veritabanında (Risale profilleri) |
 | `semantic_search(query, work?, group?, limit=10, offset=0, include_related=false)` | Anlamca en yakın cümleler (`similarity`) ve konunun yoğunlaştığı bölümler (`sections`); kavram ve günümüz Türkçesiyle sorular için. Kelime araması (`search`) ayrı kalır. |
 | `cite(sources)` | Cevaptan önce bir kez (kaynakça satırlarının altında alıntıdaki âyet ve hadis künyeleri) (gösterilecek her alıntı sözleriyle; sonradan eklenen alıntı için yeniden): dayanılan cümle ya da aralıkların kimlikleri ve alıntılanan sözler (`[{id, quote?}]`, kaynakça sırasıyla). Her biri için tam atıf (`cite_as`), sorun (aralık 8 cümleyi ya da bölümü aşıyor, alıntı o cümlelerde yok: asıl yeriyle, bilinmeyen kimlik) ve cevabın "Kaynaklar" listesi (`bibliography`: "[n] cite_as"). Önceki `verify_citations(text)` taslağın tamamını alıyordu (bkz. Hız ve token); sonuçtaki `note` (`citations.CITE_NOTE`) kaynakçanın değiştirilmeden kopyalanmasını, eser dışı kaynakların ayrı listede verilmesini söyler (ChatGPT satırları kendisi yazıyordu) |
 
@@ -542,6 +544,16 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   alet ayarı, kayma, arama); ikisi her D5 biriminden sonra yenilenir. Okumalar yalnız ar-ge içindir, onay değildir:
   kuyruk okuma görevi açmaz (2026-11-21). `/var/www/ozel/taslak` setgid (`caddy` grubu): sunucunun kısıtlı anahtarla
   gönderdiği dosyalar Caddy'ye okunur kalır.
+- **Lügat (A4, 2026-11-23):** risaleoku.com'un Türkçe lügatı (≈39 bin madde, sürüm 41). İndirme
+  `uv run python -m risale_mcp.fetch lugat` (`data/raw/risaleoku_app/lugat-tr/`, dosyalar sıra numarasıyla, adları
+  manifestoda), ayrıştırma `uv run python -m risale_mcp.lugat build` → `data/library/lugat/risaleoku-tr.json`,
+  `build_db` Risale profillerinde `lugat` tablosuna yükler (şema sürümü artmadı; tablo yoksa araç yok). Eşleme kuralları
+  `lugat.py` başında: anahtar `search_words`, ekler atılır, harf biçimi (`Form`: ş ç ğ ö ü ve kesmeler) tutmayan madde
+  eşlenmez ("bir" bi'r değildir), sesteş Türkçe kelimeler `STOP`. Elle bakmak için `lugat bak <kelime…>`, ölçüm
+  `lugat olc` (`data/interim/lugat/olcum.md`). Okuma platformunda kelimeye dokununca anlam: `oku-veri.py` her birim
+  için `veri/<birim>.lugat.json` yazar (birimin Türkçe metinlerinde bulunan anahtarlar; genel veritabanından), uygulama
+  yalnız dokunulan kelimeyi kapsayan en uzun anahtarı arar (`lugatWords` = `search_words`; `tests/test_lugat.py` node
+  ile denetler). Lügat nâşirindir, müellife mal edilmez.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

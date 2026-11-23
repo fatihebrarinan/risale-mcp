@@ -106,6 +106,7 @@
 
   {"name": "prompt_topic_survey", "kind": "prompt", "prompt": "topic_survey", "args": {"topic": "haşir"}},
   {"name": "prompt_text_and_commentary", "kind": "prompt", "prompt": "text_and_commentary", "args": {"question": "Kader nedir?"}},
+  {"name": "lookup_word", "tool": "lookup_word", "args": {"words": ["kâinatın", "Âb-ı hayatı", "Kur’ân’ın", "bir", "haşr-i cismanî ve rûhanîyi"]}},
   {"name": "prompt_discuss", "kind": "prompt", "prompt": "discuss", "args": {"topic": "ihlas"}},
   {"name": "prompt_self_test", "kind": "prompt", "prompt": "self_test", "args": {"section": "lemalar/21"}},
   {"name": "prompt_lesson_plan", "kind": "prompt", "prompt": "lesson_plan", "args": {"subject": "tevhid"}}

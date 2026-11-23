@@ -7,6 +7,7 @@ Kullanım:
     uv run python -m risale_mcp.fetch check sozler      # yalnızca diskteki ham veriyi doğrula
     uv run python -m risale_mcp.fetch quran             # Kur'ân metni ve mealleri (tanzil.net)
     uv run python -m risale_mcp.fetch risaleoku         # risaleoku.com uygulamasının kitapları (RISALEOKU_BOOKS)
+    uv run python -m risale_mcp.fetch lugat             # risaleoku.com'un Türkçe lügatı (A4)
     uv run python -m risale_mcp.fetch tefsir            # müfessirlerin eserleri (OpenITI, sabit commit)
     uv run python -m risale_mcp.fetch klasik            # klasik eserler (E2; OpenITI, sabit commit)
 
@@ -230,6 +231,13 @@ def cmd_risaleoku(args: argparse.Namespace) -> None:
         sys.exit(1)
 
 
+def cmd_lugat(args: argparse.Namespace) -> None:
+    root = RAW_DIR / "risaleoku_app"
+    risaleoku_app.fetch_dictionary(args.lang, root, PoliteClient(args.delay), refresh=args.refresh)
+    manifest, texts = risaleoku_app.load_dictionary(args.lang, root)
+    print(f"doğrulandı: {len(texts)} dosya, {sum(len(t) for t in texts.values()):,} karakter")
+
+
 def _add_selection(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("works", nargs="*", help="katalogdaki eser slug'ları, ör. sozler lemeat")
     parser.add_argument("--all", action="store_true", help="katalogdaki bütün eserler")
@@ -274,6 +282,11 @@ def main() -> None:
     app.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
     app.add_argument("--delay", type=float, default=DEFAULT_DELAY, help="istekler arası saniye")
     app.set_defaults(func=cmd_risaleoku)
+    lugat = sub.add_parser("lugat", help="risaleoku.com'un lügatı (A4)")
+    lugat.add_argument("--lang", default="tr", help="lügat dili (risaleoku kataloğundaki `lang`)")
+    lugat.add_argument("--refresh", action="store_true", help="diskte olsa da yeniden indir")
+    lugat.add_argument("--delay", type=float, default=DEFAULT_DELAY, help="istekler arası saniye")
+    lugat.set_defaults(func=cmd_lugat)
     args = parser.parse_args()
     args.func(args)
 

@@ -113,6 +113,14 @@ form.nf select { font: inherit; background: var(--bg); color: var(--fg); border:
 table.t { width: 100%; border-collapse: collapse; font-size: .85rem; } table.t td { border-top: 1px solid var(--line);
   padding: 4px 6px; vertical-align: top; }
 .ok { color: var(--accent); } .bad { color: var(--bad); }
+/* A4: lügat; kelimeye dokununca anlamı (risaleoku.com lügatı) */
+#lugat { position: absolute; z-index: 8; max-width: min(420px, calc(100vw - 32px)); background: var(--card);
+  border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 4px 18px rgba(0,0,0,.18); padding: 8px 12px;
+  font-size: .9rem; line-height: 1.5; }
+#lugat .lw { font-weight: 600; } #lugat .lm { white-space: pre-line; margin: 2px 0 6px; }
+#lugat .lx { float: right; border: 0; font-size: 1rem; padding: 0 4px; color: var(--muted); }
+#lugat .lf { font-size: .75rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 4px; }
+mark.lg { background: var(--src-soft); color: inherit; border-radius: 2px; }
 </style></head><body>
 <header><button id="menu" aria-label="Kur'ân paneli" title="Kur'ân panelini aç/kapa">☰</button><span class="t" id="ttl"></span><span class="aistamp" title="Bu sayfadaki taslak, tercüme ve izahlar yapay zekânındır; tefsir değildir">yapay zekâ taslağı · tefsir değildir</span>
 <button id="genis" title="Metni ekranın tamamına yay" hidden>↔ geniş</button>
@@ -127,7 +135,7 @@ const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&
 const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
                set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }};
 const rng = a => a[0] === a[1] ? String(a[0]) : a[0] + '–' + a[1];
-let INDEX = null, U = null, NOTES = [], ME = null, VIEW = {ar: false, izah: true, hat: 'turk'};   // hat: Türk hattı varsayılan (S7e)
+let INDEX = null, U = null, NOTES = [], ME = null, VIEW = {ar: false, izah: true, hat: 'turk', lugat: true};   // hat: Türk hattı varsayılan (S7e)
 let PAGE = null, FOCUS = null, MYNOTES = [], WANT = null, FIRST = true;   // S10: sayfa türü, odak paragraf, Notlarım, karşılamadan sonra gidilecek yer
 
 async function getJSON(u) { const r = await fetch(u, {cache: 'no-cache'}); if (!r.ok) throw new Error(r.status); return r.json(); }
@@ -239,7 +247,7 @@ function draftHTML(t) {
   const byId = Object.fromEntries(t.bloklar.map(b => [b.id, b]));
   const paired = new Set(t.bloklar.filter(b => b.tercumesi).map(b => b.tercumesi));
   const mine = id => NOTES.filter(n => n.paragraf === id);
-  const L = [`<p class="small"><button data-v="ar" class="${VIEW.ar ? 'on' : ''}">Arapça</button> <button data-v="izah" class="${VIEW.izah ? 'on' : ''}">İzah</button>${!MASA && NOTES.length ? ` <button data-v="notlar" class="${VIEW.notlar ? 'on' : ''}" title="Bütün notları aç ya da kapa">Notlar (${NOTES.length})</button>` : ''}
+  const L = [`<p class="small"><button data-v="ar" class="${VIEW.ar ? 'on' : ''}">Arapça</button> <button data-v="izah" class="${VIEW.izah ? 'on' : ''}">İzah</button> <button data-v="lugat" class="${VIEW.lugat ? 'on' : ''}" title="Bir kelimeye dokununca lügatteki anlamı açılsın">Lügat</button>${!MASA && NOTES.length ? ` <button data-v="notlar" class="${VIEW.notlar ? 'on' : ''}" title="Bütün notları aç ya da kapa">Notlar (${NOTES.length})</button>` : ''}
     <span class="muted">· taslak sürüm ${t.surum} · <a href="#k-kunye">nasıl yazıldı</a></span></p>`];
   // alt başlıklar ("Ders: …", "Dersin sonu"): eşi olan Arapçanınki Türkçesine geçer; ders kutusu ve Risale'deki genişi
   const pairOf = Object.fromEntries(t.bloklar.filter(b => b.tercumesi).map(b => [b.tercumesi, b.id]));
@@ -807,7 +815,8 @@ function welcome() {
     <h2>Nasıl okunur</h2>
     <ul><li>Soldaki panelden (telefonda ☰ düğmesinden) bir birim seçin ya da âyete gidin ("2:255").</li>
     <li>Bakara 1–33'te önce müellifin sözü (İşârâtü'l-İ'câz) durur, yanında onu görmeden yazılmış taslak.</li>
-    <li>"Arapça" ve "İzah" düğmeleri taslağın Arapçasını ve yapay zekânın izahını açıp kapar.</li></ul>
+    <li>"Arapça" ve "İzah" düğmeleri taslağın Arapçasını ve yapay zekânın izahını açıp kapar.</li>
+    <li>Eski bir kelimeye ya da tamlamaya dokununca lügatteki anlamı açılır (risaleoku.com lügatı; nâşirin lügatıdır, metnin parçası değildir). İstemezseniz "Lügat" düğmesiyle kapatabilirsiniz.</li></ul>
     <h2>Not bırakmak</h2>
     <ul><li>Paragrafın altındaki <b>"Not ekle"</b>ye basın, notunuzu yazın, "Kaydet"e basın.</li>
     <li>Bir sözü işaretlemek isterseniz önce paragrafta o sözü seçin (telefonda parmağınızı basılı tutup), sonra "Not ekle"ye basın; seçtiğiniz söz notun başında durur.</li>
@@ -911,8 +920,8 @@ async function continuous() {
     for (const b of t.bloklar) {
       if (!['tr', 'tercume', 'alinti', 'alinti_tercume'].includes(b.tur)) continue;
       if (b.bolum !== sec) { sec = b.bolum; L.push(`<h3>${esc(d.bolum_adlari[sec] || sec)}</h3>`); }
-      L.push(`<p class="tr${b.tur === 'alinti' ? ' quote' : ''}">${bidi(esc(b.metin))}</p>`);
-      if (b.izah && VIEW.izah) L.push(`<div class="izah small">${bidi(esc(b.izah.metin))}</div>`);
+      L.push(`<p class="tr${b.tur === 'alinti' ? ' quote' : ''}" data-b="${esc(d.birim)}">${bidi(esc(b.metin))}</p>`);
+      if (b.izah && VIEW.izah) L.push(`<div class="izah small" data-b="${esc(d.birim)}">${bidi(esc(b.izah.metin))}</div>`);
     }
     $('akis').insertAdjacentHTML('beforeend', L.join(''));
     $('son').textContent = k < ids.length ? 'aşağı indikçe sonraki birim yüklenir…' : 'Sûrenin yazılmış taslaklarının sonu.';
@@ -921,6 +930,88 @@ async function continuous() {
   const io = new IntersectionObserver(async es => { if (es[0].isIntersecting) await more(); });
   io.observe($('son'));
 }
+// ---------------------------------------------------------------- A4: lügat
+// Kelimeye dokununca risaleoku.com lügatındaki anlamı. Birimin metninde lügatta karşılığı olan kelime ve tamlamalar
+// önceden bulunmuştur (`oku-veri.py` → `veri/<birim>.lugat.json`, eşleme `risale_mcp/lugat.py`); burada yalnız
+// dokunulan kelimeyi kapsayan en uzun anahtar aranır. `lugatWords` Python'daki `normalize.search_words`'ün aynısıdır.
+const LUGAT = {}, LUGAT_ON = 'p.tr, .izah, .quote, .qline, .srcbox, .note .tr';
+const lugatWords = t => (t.replace(/I/g, 'ı').replace(/İ/g, 'i').toLowerCase().normalize('NFD').replace(/\p{M}/gu, '')
+  .replace(/['’‘ʼ`]/g, '').replace(/ı/g, 'i').replace(/ـ/g, '').match(/[\p{L}\p{N}_]+/gu) || []);
+async function lugatOf(b) {
+  if (!(b in LUGAT)) LUGAT[b] = getJSON((MASA ? 'oku/veri/' : 'veri/') + b + '.lugat.json').catch(() => null);
+  return LUGAT[b];
+}
+function caretAt(x, y) {
+  if (document.caretPositionFromPoint) { const p = document.caretPositionFromPoint(x, y); return p && [p.offsetNode, p.offset]; }
+  if (document.caretRangeFromPoint) { const r = document.caretRangeFromPoint(x, y); return r && [r.startContainer, r.startOffset]; }
+  return null;
+}
+function lugatClose() { const x = $('lugat'); if (x) x.remove(); for (const m of document.querySelectorAll('mark.lg')) m.replaceWith(...m.childNodes); }
+document.addEventListener('click', async e => {
+  if (e.target.closest('#lugat')) { if (e.target.closest('.lx')) lugatClose(); return; }
+  lugatClose();
+  if (!VIEW.lugat || PAGE === 'notlarim' || PAGE === 'hosgeldin') return;
+  const host = e.target.closest(LUGAT_ON);
+  if (!host || e.target.closest('a, button, mark.nm, .nicon, summary, .lab, .mk, .ar, bdi, form, .acts')) return;
+  if (String(window.getSelection() || '').trim()) return;                 // seçim yapılıyor (not için)
+  const birim = (e.target.closest('[data-b]') || {}).dataset?.b || (U && PAGE === 'birim' ? U.birim : null);
+  if (!birim) return;
+  const c = caretAt(e.clientX, e.clientY);
+  if (!c || c[0].nodeType !== 3 || !host.contains(c[0])) return;
+  // dokunulan kelime ve iki yanındaki kelimeler (aynı metin düğümleri zincirinde: tamlama "âb-ı hayat")
+  const walker = document.createTreeWalker(host, NodeFilter.SHOW_TEXT, {acceptNode: n => n.parentElement.closest('.nicon, .mk, .lab, bdi, a') ? NodeFilter.FILTER_REJECT : NodeFilter.FILTER_ACCEPT});
+  const nodes = []; let at = -1, n;
+  while ((n = walker.nextNode())) { if (n === c[0]) at = nodes.reduce((s, x) => s + x.data.length, 0) + c[1]; nodes.push(n); }
+  if (at < 0) return;
+  const text = nodes.map(x => x.data).join('');
+  const toks = []; const re = /[\p{L}\p{M}\p{N}_'’‘ʼ`]+/gu; let m;
+  while ((m = re.exec(text))) for (const w of lugatWords(m[0])) toks.push({w, a: m.index, b: m.index + m[0].length,
+    cut: /[.,;:!?()\[\]{}"“”«»…]/.test(text.slice(toks.length ? toks[toks.length - 1].b : 0, m.index))});
+  const i = toks.findIndex(t => t.a <= at && at <= t.b);
+  if (i < 0) return;
+  const g = await lugatOf(birim);
+  if (!g) return;
+  // dokunulan kelimeyi kapsayan anahtarlar, en uzundan; noktalama tamlamayı keser
+  const found = [];
+  for (let len = 6; len >= 1; len--) for (let s0 = Math.max(0, i - len + 1); s0 <= i; s0++) {
+    if (s0 + len > toks.length || toks.slice(s0 + 1, s0 + len).some(t => t.cut)) continue;
+    const k = toks.slice(s0, s0 + len).map(t => t.w).join(' ');
+    if (g.anahtar[k] && !found.some(f => f.k === k)) found.push({k, s0, len, hits: g.anahtar[k]});
+  }
+  if (!found.length) return;
+  const seen = new Set(), rows = [];
+  for (const f of found) for (const [id, how, stem] of f.hits) {
+    if (seen.has(id) || !g.madde[id]) continue;
+    seen.add(id);
+    const [word, meaning] = g.madde[id];
+    rows.push(`<div class="lw">${bidi(esc(word))}${how === 'stem' ? ` <span class="small muted">(metinde «${esc(text.slice(toks[f.s0].a, toks[f.s0 + f.len - 1].b))}»)</span>` : ''}</div><div class="lm">${bidi(esc(meaning))}</div>`);
+  }
+  if (!rows.length) return;
+  // en uzun eşleşmeyi metinde belirt
+  const best = found[0], from = toks[best.s0].a, to = toks[best.s0 + best.len - 1].b;
+  let pos = 0;
+  for (const x of nodes) {
+    const a = Math.max(from, pos), b = Math.min(to, pos + x.data.length);
+    if (a < b) {
+      const mid = a > pos ? x.splitText(a - pos) : x;
+      if (b - a < mid.data.length) mid.splitText(b - a);
+      const mk = document.createElement('mark'); mk.className = 'lg';
+      mid.parentNode.insertBefore(mk, mid); mk.appendChild(mid);
+    }
+    pos += x.data.length;
+  }
+  const box = document.createElement('div');
+  box.id = 'lugat';
+  box.innerHTML = `<button class="lx" aria-label="Kapat">×</button>${rows.slice(0, 6).join('')}<div class="lf">${esc(g.kaynak.ad || 'risaleoku.com lügatı')} · nâşirin lügatıdır, metnin parçası değildir${rows.length > 6 ? ` · ${rows.length - 6} madde daha` : ''}</div>`;
+  document.body.appendChild(box);
+  const mk = document.querySelector('mark.lg'), r = (mk || host).getBoundingClientRect();
+  const w = box.offsetWidth, left = Math.min(Math.max(8, r.left + scrollX), scrollX + document.documentElement.clientWidth - w - 8);
+  box.style.left = left + 'px';
+  box.style.top = (r.bottom + scrollY + 6) + 'px';
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') lugatClose(); });
+addEventListener('hashchange', lugatClose);
+
 async function route() {
   const parts = location.hash.slice(2).split('/').filter(Boolean);
   const first = FIRST; FIRST = false;

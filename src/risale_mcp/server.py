@@ -164,6 +164,13 @@ class TextSource(Source):
 # profil); genel sunucunun talimatı değişmez. Müfessirin eseri gerçek tefsirdir ve öyle anılır; modelin kendi yazdığı
 # hiçbir şey "tefsir" diye anılmaz; Risale'nin bir yeri kuralla bulunan bağla tefsir diye anılmaz (kullanıcının
 # açıklaması, 2026-11-04).
+# A4: lügat aracı yalnız lügatı olan veritabanında (Risale profilleri)
+LUGAT_INSTRUCTIONS = """
+- Dictionary (lookup_word): old words and phrases of the text can be looked up in risaleoku.com's Ottoman \
+Turkish–Turkish dictionary. It is the publisher's dictionary, not the author's words: use it to understand a word and \
+to explain it to the user in your own words, say a meaning comes from it ("risaleoku.com lügatı") when you give one, \
+never quote it as the text and never put it in Kaynaklar. A match by stem is a candidate: check it fits the sentence."""
+
 CLASSICAL_INSTRUCTIONS = """
 
 Classical works of other authors (list_works collection tefsir, e.g. al-Baydawi's Anwar al-Tanzil):
@@ -446,6 +453,11 @@ def _warm(library: Library, citations: CitationChecker) -> None:
         library._semantic_index()
     except Exception:                    # vektör yoksa araç çağrılınca açıklamalı hata verir
         pass
+    try:
+        if library.has_lugat():          # lügatın eşleme dizini (≈1,5 sn)
+            library.lexicon()
+    except Exception:
+        pass
 
 
 # B7 (2026-11-21): Risale bileşikleri çoğunlukla bitişik yazar; tırnaklı ifade bitişik yazılışıyla da aranır
@@ -565,6 +577,10 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         classical = library.has_classical()
     except Exception:
         classical = False
+    try:
+        has_lugat = profile not in ("tefsir", "klasik", "hadis") and library.has_lugat()
+    except Exception:
+        has_lugat = False
     tefsir = profile == "tefsir"                # tefsir sunucusu (MVP M5): kendi adı, talimatı ve araç seti
     klasik = profile == "klasik"                # klasik eserler sunucusu (E2.4): tefsirinkiyle aynı araç seti
     texts_only = tefsir or klasik               # Risale'ye özgü araçlar (hadis), kaynaklar ve hazır komutlar yok
@@ -589,7 +605,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
                            icons=_icons(public_url, "klasik"), **meta, **protected)
     else:
         server = MCPServer(NAME, title=RISALE_TITLE,
-                           instructions=INSTRUCTIONS + (CLASSICAL_INSTRUCTIONS if classical else ""),
+                           instructions=INSTRUCTIONS + (LUGAT_INSTRUCTIONS if has_lugat else "")
+                           + (CLASSICAL_INSTRUCTIONS if classical else ""),
                            description="Sentence-level, citable access to the works of Bediüzzaman Said Nursî.",
                            icons=_icons(public_url), **meta, **protected)
     variant = profile if profile in VARIANTS else ""
@@ -787,6 +804,21 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         which (covers_verses); ask for that range to read it whole."""
         with _tool_errors():
             return _json(library.ayahs(sura, ayah, end, context))
+
+    if has_lugat:
+        @server.tool(title="Look up a word", annotations=read_only("Look up a word"), structured_output=False)
+        def lookup_word(
+            words: Annotated[list[str], Field(description="Words or phrases as written in the text, e.g. 'kâinatın', "
+                                                          "'âb-ı hayat', 'hikmet-i İlahiye'.",
+                                              min_length=1, max_length=30)],
+        ) -> str:
+            """Look up old words and phrases of the works in risaleoku.com's Ottoman Turkish–Turkish dictionary: each
+        match's headword and meaning. Suffixes are removed to find the headword (how: exact, variant = another
+        spelling, stem = found after removing suffixes, with the stem); a phrase not in the dictionary comes back word
+        by word (parts). The dictionary is the publisher's, not the author's words: use it to understand and explain a
+        word, never quote it as the text."""
+            with _tool_errors():
+                return _json(library.lookup_words(words))
 
     @server.tool(title="Build references", description=docs.get("cite"), annotations=read_only("Build references"),
                  structured_output=False)

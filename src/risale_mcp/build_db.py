@@ -42,6 +42,7 @@ from risale_mcp.normalize import search_words
 from risale_mcp.paths import HADIS_PATH, INTERIM_DIR, QURAN_PATH, RAW_DIR, ROOT
 from risale_mcp.profiles import KISISEL, PROFILES, Profile
 from risale_mcp.hadis_okumalar import READINGS_PATH
+from risale_mcp.lugat import LUGAT_PATH
 from risale_mcp.hadis_bolge import REGION_PATH
 from risale_mcp.arabic_kinds import AYAH_FIXES, AYAH_SUSPECTS, Classifier, read_meal_evidence, write_report
 from risale_mcp.quran import SURA_NAMES, Match, Quote, Quran, pieces, skeleton, sura_ref, verse_context
@@ -163,6 +164,8 @@ class BuildReport:
         if c["hadith_reports"] or c["hadith_stale"]:
             lines.append(f"  hadis        : {c['hadith_reports']} rivayet; eşlemesi olmayan parça {c['hadith_stale']}"
                          + (" (`uv run python -m risale_mcp.hadis`, sonra yeniden kurun)" if c["hadith_stale"] else ""))
+        if c["lugat"]:
+            lines.append(f"  lügat        : {c['lugat']} madde (risaleoku.com)")
         if self.unresolved_ayah:
             lines.append(f"  çözülemeyen âyet kaynağı: {sum(self.unresolved_ayah.values())}")
             lines += [f"      {n}× {s}" for s, n in self.unresolved_ayah.most_common(10)]
@@ -647,6 +650,15 @@ def _insert_quran(conn: sqlite3.Connection, quran: Quran, report: BuildReport) -
         report.counts["quran_ayahs"] += len(sura["ayahs"])
 
 
+def _insert_lugat(conn: sqlite3.Connection, path: Path, report: BuildReport) -> None:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    conn.executemany("INSERT INTO lugat VALUES (?, ?, ?, ?, ?)", [
+        (e["id"], e["word"], e["meaning"], json.dumps(e["variants"], ensure_ascii=False) if e.get("variants") else None,
+         int(bool(e.get("exact")))) for e in data["entries"]])
+    conn.execute("INSERT INTO meta VALUES ('lugat_source', ?)", (json.dumps(data["source"], ensure_ascii=False),))
+    report.counts["lugat"] = len(data["entries"])
+
+
 def _insert_book(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran: Quran | None,
                  report: BuildReport, kinds: Classifier | None = None) -> None:
     work = book["work"]
@@ -732,12 +744,14 @@ def build_profile(profile: Profile, accept_id_changes: bool = False) -> BuildRep
     (`manifest.py`); kasıtlıysa `accept_id_changes`."""
     profile.db.parent.mkdir(parents=True, exist_ok=True)
     return build(profile.book_dirs, profile.db, QURAN_PATH, profile, RAW_DIR / Site.RISALEOKU_APP, HADIS_PATH,
-                 manifest_check=True, accept_id_changes=accept_id_changes)
+                 manifest_check=True, accept_id_changes=accept_id_changes,
+                 lugat_path=LUGAT_PATH if Collection.KULLIYAT in profile.collections else None)
 
 
 def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None = None,
           profile: Profile = KISISEL, meals_from: Path | None = None, hadis_path: Path | None = None,
-          links_dir: Path | None = None, manifest_check: bool = False, accept_id_changes: bool = False) -> BuildReport:
+          links_dir: Path | None = None, manifest_check: bool = False, accept_id_changes: bool = False,
+          lugat_path: Path | None = None) -> BuildReport:
     """`quran_path` verilirse (ve dosya varsa) Kur'ân katmanı kurulur, Risale'deki âyetler onunla eşlenir.
     `links_dir`: bağ dosyaları (varsayılan `data/links`; testler kendi klasörünü verir).
     `profile`: hangi eserlerin gireceği; profil dışındaki JSON'lar atlanır. `meals_from`: risaleoku ham verisi;
@@ -798,6 +812,8 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
                 _insert_region(conn, report)                          # okumayla bulunan: iki profilde de
                 if profile.private and READINGS_PATH.exists():      # hadisçi görmeden genel sunucuya çıkmaz
                     _insert_readings(conn, READINGS_PATH, report)
+            if lugat_path and lugat_path.exists():
+                _insert_lugat(conn, lugat_path, report)
             sura_rows = suras.rows()
             # Veride hiç numarasıyla geçmeyen sûreler de adıyla aranabilsin (Kur'ân katmanının Türkçe adları).
             learned = {key for key, _, _ in sura_rows}

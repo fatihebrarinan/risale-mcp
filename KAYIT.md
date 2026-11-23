@@ -345,6 +345,28 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**A4. Lügat** (bitti ve yayında, 2026-11-23; kullanıcının kararları 2026-11-22 ve 2026-11-23: atıf "risaleoku.com
+lügatı", kaynağı risaleoku'ya sorulmaz; platformda bütün Türkçe metinde; yayın ve Yenilikler taslağı izni):
+- **Kaynak:** risaleoku kataloğunun `dictionary`/`tr` kaydı, sürüm 41, 62 dosya (harf başına `x.txt` "madde=anlam",
+  `x_f.txt` "madde=çeşitler:bayrak"). Tahmin edilen 14 bin değil **39.155 madde** (≈24 bini tamlama). 48 madde iki kez
+  yazılmış (aynı anlam bir kez tutulur), 8 madde anlamsız ("imam-ı ömer="), bayrak 1 olan 30 kısa madde ("as", "âl")
+  yalnız kendisi olarak eşlenir (bizim yorumumuz). Tek başına "hakikat" lügatta yok (yalnız tamlamaları var).
+- **Eşleme** (`lugat.py`): anahtar `search_words`; bulunmazsa son kelimeden Türkçe ekler atılır (yumuşama, düşen
+  ünlü). İlk ölçümde yanlışlar çıktı ve kurallar sıkılaştı: kesme işareti ve ş/s farkı anahtarda yok sayıldığı için
+  "bir" → bi'r (kuyu), "şu" → şu', "sen" → şe'n, "kurtuluşu" → kürdî, "esrarımı" → eşrar, "bütün" → bu'd. Çözüm:
+  harf biçimi (`Form`: ş ç ğ ö ü ve kesmelerin yeri) tutmayan madde eşlenmez; yalnız "n"/"m" eki atılmaz ("olan",
+  "benim"); atılan ek ş/ö taşımaz; metindeki kesmeden sonrası ektir ("Kur’ân’ın" → Kur'ân); sesteş Türkçe kelimeler
+  `STOP` ("dahi" dâhî değildir). Son ölçüm (3.000 cümle, 46 bin kelime): %26 tam, %20 ek atılarak, %2 çeşit
+  yazılıştan; bulunamayanların başı "ve, bu, gibi, bir" gibi Türkçe kelimeler. Rapor `data/interim/lugat/olcum.md`.
+- **Araç:** `lookup_word(words)` (en çok 30), talimata `LUGAT_INSTRUCTIONS` (nâşirin lügatı; anlamı kendi sözüyle ver,
+  adını an, Kaynaklar'a koyma). Uçtan uca deneme (`claude -p`, genel profil, "haşr-i cismanî ne demek?"): model
+  lügate iki kez baktı, lügatın adını ve "Bediüzzaman'ın sözü değildir" notunu verdi, alıntılar `cite`'tan geçti.
+- **Platform:** `oku-veri.py` her birim için `veri/<birim>.lugat.json` (birim 88: 1.575 anahtar, 1.026 madde,
+  ≈175 KB; ilk dokunuşta yüklenir). Dokunulan kelimeyi kapsayan en uzun tamlama metinde belirtilir, kutuda madde ve
+  anlam; "Lügat" düğmesi kapatır; karşılama sayfasına bir madde. Masa (`/taslak/ayet.html`) dışarıda kaldı.
+- **Site:** belgelerde araç satırı (Türkçe, İngilizce), Risale sayfalarında kaynak, dört proje talimatına bir satır
+  (ChatGPT kullanıcıları eklentiyi yenilemeli; Yenilikler taslağı söyler).
+
 **S10. Davet altyapısı ve okuma platformu** (bitti ve yayında, 2026-11-23; kullanıcının kararları 2026-11-22 ve
 2026-11-23: kaldığı yer sunucuda, hesaba bağlı; Notlarım Word dosyası olarak, çünkü okuyucular bilgisayarla haşir neşir
 olmayabilir; "yalnız siz görürsünüz" ifadesi; eski notlar ar-ge kaydı olarak ayrı; taslak sunucusuna giden dışa

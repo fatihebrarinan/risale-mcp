@@ -93,3 +93,38 @@ def check_book(key: str, root: Path) -> tuple[list[str], bool]:
         if hashlib.sha256(data).hexdigest() != sha256:
             bad.append(name)
     return [f"risaleoku_app/{key}: {len(manifest['files'])} dosya, {chars:,} bayt, bozuk: {bad}"], not bad
+
+
+# Lügat (A4): katalogda `kind: dictionary`, dil başına bir kayıt. Dosyalar harf başınadır (`a.txt` "kelime=anlam",
+# `a_f.txt` yazılış çeşitleri); adlarda dosya adına uygun olmayan işaretler var (" .txt", '".txt'), bu yüzden diskte
+# sıra numarasıyla (`lugat-<dil>/<n>.txt.gz`) durur, manifesto adı, dosyayı ve özeti tutar.
+
+
+def dictionary_record(records: list[dict], lang: str) -> dict:
+    return next(r["data"] for r in records if r["kind"] == "dictionary" and r["data"] and r["data"]["lang"] == lang)
+
+
+def fetch_dictionary(lang: str, root: Path, client: PoliteClient, *,
+                     refresh: bool = False, log: Callable[[str], None] = print) -> None:
+    record = dictionary_record(fetch_catalog(root, client), lang)
+    folder = root / f"lugat-{lang}"
+    files = {}
+    for n, (name, file) in enumerate(sorted(record["files"].items())):
+        fetch_cached(folder / f"{n:03d}.txt.gz", file["url"], client, refresh)
+        files[name] = {"file": f"{n:03d}.txt.gz", "sha256": file["sha256"]}
+    write_manifest(folder / "manifest.json", site="risaleoku_app", dictionary=lang, title=record["title"],
+                   title_rules=record.get("title_rules", ""), version=record["version"], files=files)
+    log(f"lugat-{lang}: {record['title']} (v{record['version']}), {len(files)} dosya")
+
+
+def load_dictionary(lang: str, root: Path) -> tuple[dict, dict[str, str]]:
+    """(manifesto, dosya adı -> metin). Özeti katalogla tutmayan dosya hata verir."""
+    folder = root / f"lugat-{lang}"
+    manifest = json.loads((folder / "manifest.json").read_text(encoding="utf-8"))
+    texts = {}
+    for name, info in manifest["files"].items():
+        data = read_raw(folder / info["file"])
+        if hashlib.sha256(data).hexdigest() != info["sha256"]:
+            raise ValueError(f"lugat-{lang}/{name}: özet tutmuyor")
+        texts[name] = data.decode("utf-8")
+    return manifest, texts

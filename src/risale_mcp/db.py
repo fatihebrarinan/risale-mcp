@@ -394,6 +394,16 @@ CREATE TABLE gaps (
     note           TEXT
 );
 
+-- Lügat (A4, `lugat.py`): risaleoku.com'un Osmanlıca–Türkçe lügatı; nâşirindir, müellifin sözü değildir. Yalnız
+-- Risale profillerinde; kaynağı ve sürümü `meta.lugat_source`. Şema sürümü artmadı: tablo yoksa araç yoktur.
+CREATE TABLE lugat (
+    id       INTEGER PRIMARY KEY,
+    word     TEXT NOT NULL,          -- madde, lügatta yazıldığı gibi
+    meaning  TEXT NOT NULL,
+    variants TEXT,                   -- JSON: başka yazılışlar
+    exact    INTEGER NOT NULL        -- 1: ek atılarak eşlenmez, yalnız kelimenin kendisi
+);
+
 -- Arama dizinleri: satır numarası `sentences.seq` / `nodes.seq`. Metin önceden normalleştirilir;
 -- `remove_diacritics 0` ile FTS5 onu yalnızca kelimelere böler, harflere dokunmaz.
 CREATE VIRTUAL TABLE sentences_fts USING fts5(words, tokenize = "unicode61 remove_diacritics 0");
