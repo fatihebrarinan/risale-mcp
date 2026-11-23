@@ -369,6 +369,14 @@ aktarım defter notlarını vermez; deploy ve canlı deneme izni):
   taslak dışı yerde birimin adresi ve "Bu sayfadaki taslaklar yapay zekânındır"); kaldığı yer (`/taslak/api/yer`,
   birime girince ve kaydırınca) ve `/oku/` boş adresle açılınca oraya gider. Telefonda başlıkta "geniş" ve "Usul"
   gizli (taşıyordu).
+- **Notlar metnin içinde** (kullanıcının geri dönüşü ve kararları, aynı gün): işaretlenen söz çok açık sarı zeminle
+  işaretlenir, sonunda (kelime bölünmesin diye kelimenin sonunda) ✎ durur; ✎'ye ya da sarı alana dokununca not
+  paragrafın altında açılır ve kapanır, sarı alan bir an koyulaşır. Açılışta notlar kapalı; "Notlar (n)" düğmesi hepsini
+  açar ve kapar. Aynı söze yazılan notlar tek ✎ altında (✎2), kesişen işaretlerin ortak kısmı daha koyu. Seçimsiz not:
+  paragrafın sonunda ✎. Söz bu sürümde yoksa not açık durur, "bu sürümde bulunamadı" der; söz gizli kısımdaysa (Arapça
+  kapalı) ✎ paragrafın sonunda. Seçici artık boşluksuz metinle saklanır ve aranır (önü ve ardıyla, aynı söz birden çok
+  geçerse doğrusu); ✎ kopyalanan metne girmez; seçim yaparken sarı alana dokunmak notu açmaz. Paragraf değişirse
+  notun görünmemesi açığı PLANLAR "Sonra"da.
 - **Gizlilik politikası** (Türkçe, İngilizce, 23 Kasım 2026): eski metin "notlar sunucuya gönderilmez" diyordu (S7'den
   beri yanlıştı); yeni metin davet, saklananlar, kaldığı yer ve defter notlarını anlatır.
 - **Deneme:** 27 yeni ya da değişen test; yerelde tarayıcıda (masaüstü ve 390 px) davet → karşılama → not → düzenle →

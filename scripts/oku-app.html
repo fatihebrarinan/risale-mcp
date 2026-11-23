@@ -7,14 +7,16 @@
 @font-face { font-family: "Naskh"; src: url("__FONT__") format("truetype"); font-display: swap; }
 :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --soft: #f3f1ec;
   --accent: #1f5c3f; --ai: #5a4a8a; --ai-soft: #eeebf7; --bad: #a3271f; --src: #1f4f7a; --src-soft: #e3eef8;
-  --warn-soft: #fdf0dc; --q: #f6f2e8; --tag: #b45309; }
+  --warn-soft: #fdf0dc; --q: #f6f2e8; --tag: #b45309; --nm: #fcf3c8; --nm2: #f5e18e; --nm3: #efcf52; }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
   --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --soft: #26251f;
   --accent: #7cc49d; --ai: #b9a8ee; --ai-soft: #2a2540; --bad: #f08a80; --src: #8cc0ef; --src-soft: #18293a;
-  --warn-soft: #3a2a14; --q: #24221c; --tag: #f0a35a; } }
+  --warn-soft: #3a2a14; --q: #24221c; --tag: #f0a35a; --nm: rgba(240,200,60,.16); --nm2: rgba(240,200,60,.30);
+  --nm3: rgba(240,200,60,.50); } }
 :root[data-theme="dark"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b;
   --soft: #26251f; --accent: #7cc49d; --ai: #b9a8ee; --ai-soft: #2a2540; --bad: #f08a80; --src: #8cc0ef;
-  --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; --tag: #f0a35a; }
+  --src-soft: #18293a; --warn-soft: #3a2a14; --q: #24221c; --tag: #f0a35a; --nm: rgba(240,200,60,.16);
+  --nm2: rgba(240,200,60,.30); --nm3: rgba(240,200,60,.50); }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.65 system-ui, "Noto Sans", "Naskh", sans-serif; }
 a { color: var(--src); }
@@ -74,6 +76,14 @@ h3 { font-size: .95rem; margin: 18px 0 6px; }
 .acts button.notbtn { font-size: .82rem; color: var(--accent); border-color: var(--line); padding: 1px 10px; margin-top: 2px; }
 .acts button.notbtn:hover { border-color: var(--accent); }
 .note .nt { white-space: pre-wrap; }
+/* not işaretleri metnin içinde (kullanıcının geri dönüşü, 2026-11-23): sarı zemin, sonunda ✎; dokununca not açılır */
+mark.nm { background: var(--nm); color: inherit; border-radius: 2px; cursor: pointer; transition: background .3s; }
+mark.nm mark.nm { background: var(--nm2); }
+mark.nm.flash, mark.nm mark.nm.flash { background: var(--nm3); }
+.nicon { cursor: pointer; user-select: none; -webkit-user-select: none; color: var(--tag); font-size: .78em;
+  vertical-align: super; padding: 0 3px; white-space: nowrap; font-family: system-ui, sans-serif; }
+.nicon.on { color: var(--accent); }
+.notes .note.orphan .lost { color: var(--tag); }
 .note .na a, .note .na button { margin-right: 10px; }
 .note .na button { font-size: .8rem; padding: 0 8px; }
 .welcome { max-width: 680px; } .welcome h2 { margin-top: 22px; } .welcome li { margin: 4px 0; }
@@ -227,7 +237,7 @@ function draftHTML(t) {
   const byId = Object.fromEntries(t.bloklar.map(b => [b.id, b]));
   const paired = new Set(t.bloklar.filter(b => b.tercumesi).map(b => b.tercumesi));
   const mine = id => NOTES.filter(n => n.paragraf === id);
-  const L = [`<p class="small"><button data-v="ar" class="${VIEW.ar ? 'on' : ''}">Arapça</button> <button data-v="izah" class="${VIEW.izah ? 'on' : ''}">İzah</button>
+  const L = [`<p class="small"><button data-v="ar" class="${VIEW.ar ? 'on' : ''}">Arapça</button> <button data-v="izah" class="${VIEW.izah ? 'on' : ''}">İzah</button>${!MASA && NOTES.length ? ` <button data-v="notlar" class="${VIEW.notlar ? 'on' : ''}" title="Bütün notları aç ya da kapa">Notlar (${NOTES.length})</button>` : ''}
     <span class="muted">· taslak sürüm ${t.surum} · <a href="#k-kunye">nasıl yazıldı</a></span></p>`];
   // alt başlıklar ("Ders: …", "Dersin sonu"): eşi olan Arapçanınki Türkçesine geçer; ders kutusu ve Risale'deki genişi
   const pairOf = Object.fromEntries(t.bloklar.filter(b => b.tercumesi).map(b => [b.tercumesi, b.id]));
@@ -289,7 +299,8 @@ function draftHTML(t) {
       h += `<div class="flag">⚠ Bu atıf kaynağın dediğini aşıyor olabilir ([${esc(f.kaynak)}]; yapay zekâ denetçisinin hükmü, denetlenmedi) <details><summary class="small">gerekçe</summary>${esc(f.gerekce)}</details></div>`;
     h += MASA ? `<div class="acts"><a data-act="atif" data-p="${esc(b.id)}">atıf</a><a data-act="not" data-p="${esc(b.id)}">not${notes.length ? ' (' + notes.length + ')' : ''}</a><a href="#/${esc(U.birim)}/${esc(b.id)}">bağlantı</a></div>`
       : `<div class="acts"><button class="notbtn" data-act="not" data-p="${esc(b.id)}">✎ Not ekle</button></div>`;
-    h += notes.map(n => MASA ? noteHTML(n) : myNoteHTML(n)).join('');
+    h += MASA ? notes.map(noteHTML).join('')
+      : (notes.length ? `<div class="notes">${notes.map(n => myNoteHTML(n).replace('<div class="note"', '<div class="note" hidden')).join('')}</div>` : '');
     L.push(h + '</div>');
   }
   if (inDers) L.push('</div>');
@@ -331,13 +342,137 @@ document.addEventListener('selectionchange', () => {
   const blk = el && el.closest('#main .blk');
   if (blk && !el.closest('form')) LAST_SEL = {blk: blk.id, text: String(sel).trim(), at: Date.now()};
 });
+// Paragrafın metni boşluksuz bir dizi olarak (her harfin metin düğümü ve yeriyle): seçilen söz, önü ve ardı bununla
+// saklanır ve bununla yeniden bulunur; boşluk, satır sonu, Arapça yalıtımı ve atıf numarasının etiketi karışmaz.
+const squeeze = x => String(x || '').replace(/✎\d*/g, '').replace(/\s+/g, '');
+function textMap(root, all) {
+  const s = [], pos = [];
+  const walk = n => {
+    if (n.nodeType === 3) {
+      for (let k = 0; k < n.data.length; k++) if (!/\s/.test(n.data[k])) { s.push(n.data[k]); pos.push([n, k]); }
+      return;
+    }
+    if (n.nodeType !== 1 || n.matches('.acts, .notes, form, .nicon, script, style')) return;
+    if (!all && n.hidden) return;
+    if (!all && n.tagName === 'DETAILS' && !n.open) { const sm = n.querySelector(':scope > summary'); if (sm) walk(sm); return; }
+    for (const c of n.childNodes) walk(c);
+  };
+  walk(root);
+  return {s: s.join(''), pos};
+}
+function locate(m, sel) {
+  const ce = squeeze(sel && sel.exact);
+  if (!ce) return -1;
+  const pre = squeeze(sel.prefix), suf = squeeze(sel.suffix);
+  let best = -1, bestScore = -1;
+  for (let i = m.s.indexOf(ce); i >= 0; i = m.s.indexOf(ce, i + 1)) {
+    let a = 0, b = 0;
+    while (a < pre.length && i - 1 - a >= 0 && m.s[i - 1 - a] === pre[pre.length - 1 - a]) a++;
+    while (b < suf.length && m.s[i + ce.length + b] === suf[b]) b++;
+    if (a + b > bestScore) { best = i; bestScore = a + b; }
+  }
+  return best;
+}
 function selectorFor(blk) {
   let t = String(window.getSelection() || '').trim();
   if (!t && LAST_SEL && LAST_SEL.blk === blk.id && Date.now() - LAST_SEL.at < 120000) t = LAST_SEL.text;
+  t = t.replace(/✎\d*/g, '').trim();
   if (!t) return null;
-  const txt = blk.innerText, i = txt.indexOf(t);
-  return i >= 0 ? {exact: t.slice(0, 500), prefix: txt.slice(Math.max(0, i - 32), i), suffix: txt.slice(i + t.length, i + t.length + 32)} : null;
+  const ce = squeeze(t);
+  let m = textMap(blk, false), i = m.s.indexOf(ce);
+  if (i < 0) { m = textMap(blk, true); i = m.s.indexOf(ce); }
+  return i < 0 ? {exact: t.slice(0, 500)} : {exact: t.slice(0, 500), prefix: m.s.slice(Math.max(0, i - 32), i),
+                                            suffix: m.s.slice(i + ce.length, i + ce.length + 32)};
 }
+// sarı zemin: boşluksuz dizideki [i, i+len) aralığının metin düğümlerini parça parça <mark> içine alır
+function wrapRange(m, i, len, gid) {
+  const segs = [];
+  for (let k = i; k < i + len; k++) {
+    const [node, off] = m.pos[k], last = segs[segs.length - 1];
+    if (last && last.node === node) last.end = off + 1; else segs.push({node, start: off, end: off + 1});
+  }
+  let lastMark = null;
+  for (const g of segs.reverse()) {
+    const mid = g.start > 0 ? g.node.splitText(g.start) : g.node;
+    if (g.end - g.start < mid.data.length) mid.splitText(g.end - g.start);
+    const mk = document.createElement('mark');
+    mk.className = 'nm'; mk.dataset.g = gid;
+    mid.parentNode.insertBefore(mk, mid); mk.appendChild(mid);
+    if (!lastMark) lastMark = mk;
+  }
+  return lastMark;
+}
+const OPEN = new Set();          // açık not kümeleri (kümenin ilk notunun kimliği)
+let JUST = null;                 // yeni yazılan not: kümesi açık gelsin
+function icon(gid, n) {
+  const x = document.createElement('span');
+  x.className = 'nicon'; x.dataset.g = gid; x.setAttribute('role', 'button'); x.tabIndex = 0;
+  x.title = n > 1 ? n + ' not' : 'not'; x.textContent = n > 1 ? '✎' + n : '✎';
+  return x;
+}
+function markNotes(blk) {
+  const cards = [...blk.querySelectorAll('.notes > .note')];
+  if (!cards.length) return;
+  const byId = Object.fromEntries(NOTES.map(n => [n.id, n]));
+  const m0 = textMap(blk, false), groups = new Map();
+  for (const c of cards) {
+    const n = byId[c.dataset.note];
+    if (!n) continue;
+    let key = 'p', i = -1;
+    if (n.secici && n.secici.exact) {
+      i = locate(m0, n.secici);
+      if (i >= 0) key = 'r' + i + ':' + squeeze(n.secici.exact).length;
+      else if (locate(textMap(blk, true), n.secici) < 0) key = 'yok';      // bu sürümde yok (gizli kısımda da)
+    }
+    if (!groups.has(key)) groups.set(key, {i, len: n.secici ? squeeze(n.secici.exact).length : 0, cards: []});
+    groups.get(key).cards.push(c);
+  }
+  const target = [...blk.querySelectorAll('p')].filter(x => x.offsetParent !== null && !x.closest('.izah, .notes, form, details, .lab')).pop();
+  for (const [key, g] of groups) {
+    const gid = g.cards[0].dataset.note;
+    const open = key === 'yok' || VIEW.notlar || OPEN.has(gid) || g.cards.some(c => c.dataset.note === JUST);
+    if (open && key !== 'yok') OPEN.add(gid);
+    for (const c of g.cards) {
+      c.dataset.g = gid; c.hidden = !open;
+      if (key === 'yok') { c.classList.add('orphan'); c.insertAdjacentHTML('afterbegin', '<div class="small lost">İşaretlediğiniz söz bu sürümde bulunamadı.</div>'); }
+    }
+    if (key === 'yok') continue;
+    const ic = icon(gid, g.cards.length);
+    ic.classList.toggle('on', open);
+    if (key === 'p') { if (target) target.appendChild(ic); else blk.querySelector('.acts').prepend(ic); continue; }
+    afterWord(wrapRange(textMap(blk, false), g.i, g.len, gid), ic);
+  }
+}
+// seçim kelimenin ortasında bitebilir: ✎ kelimenin sonuna konur (kelime bölünmesin)
+function afterWord(mark, ic) {
+  let n = mark.nextSibling;
+  while (n && n.nodeType === 1 && n.matches('mark.nm')) n = n.nextSibling;    // aynı yere biten başka işaret
+  if (n && n.nodeType === 3) {
+    const k = n.data.search(/[^\p{L}\p{M}\p{N}'’‑-]/u);
+    const end = k < 0 ? n.data.length : k;
+    if (end > 0) { n.splitText(end); n.after(ic); return; }
+  }
+  mark.after(ic);
+}
+function toggleNotes(blk, gid, force) {
+  const open = force ?? !OPEN.has(gid);
+  if (open) OPEN.add(gid); else OPEN.delete(gid);
+  for (const c of blk.querySelectorAll(`.notes > .note[data-g="${CSS.escape(gid)}"]`)) c.hidden = !open;
+  for (const x of blk.querySelectorAll(`.nicon[data-g="${CSS.escape(gid)}"]`)) x.classList.toggle('on', open);
+  const marks = blk.querySelectorAll(`mark.nm[data-g="${CSS.escape(gid)}"]`);
+  marks.forEach(x => x.classList.add('flash'));
+  setTimeout(() => marks.forEach(x => x.classList.remove('flash')), 900);
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('.nicon, mark.nm');
+  if (!t || MASA) return;
+  if (t.matches('mark.nm') && String(window.getSelection() || '').trim()) return;   // seçim yapılıyor: açma
+  e.preventDefault();
+  toggleNotes(t.closest('.blk'), t.dataset.g);
+});
+document.addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches && e.target.matches('.nicon')) { e.preventDefault(); e.target.click(); }
+});
 async function afterNoteChange() {
   if (PAGE === 'notlarim') return myNotes();
   await loadNotes(); render(FOCUS);
@@ -371,7 +506,7 @@ document.addEventListener('click', async e => {
       const body = {surum: U.taslak.surum, paragraf: blk.id, secici, metin, etiket: `${U.sure_adi} ${rng(U.ayet)}`,
                     baglam: lead ? lead.innerText.trim().slice(0, 140) : null};
       const r = await fetch(API + 'notlar/' + encodeURIComponent(U.birim), {method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(body)});
-      if (r.ok) { LAST_SEL = null; await afterNoteChange(); }
+      if (r.ok) { LAST_SEL = null; JUST = (await r.json()).id; await afterNoteChange(); }
       else f.insertAdjacentHTML('beforeend', '<div class="bad small">Kaydedilemedi. Oturumunuz kapanmış olabilir: sayfayı yenileyip tekrar deneyin.</div>');
     };
   } else if (act === 'duzenle') {
@@ -438,6 +573,7 @@ document.addEventListener('click', e => {
   const b = e.target.closest('button[data-v]');
   if (!b) return;
   VIEW[b.dataset.v] = !VIEW[b.dataset.v];
+  if (b.dataset.v === 'notlar') OPEN.clear();
   store.set('oku-view', JSON.stringify({ar: VIEW.ar, izah: VIEW.izah, isar_ar: VIEW.isar_ar, masa_ar: VIEW.masa_ar, hat: VIEW.hat}));
   render();
 });
@@ -549,6 +685,8 @@ function render(focus) {
   L.push('<p class="small" style="margin-top:30px">' + (i > 0 ? `<a href="#/${esc(ids[i - 1])}">← Bakara ${esc(rng(nb(i - 1).ayet))}</a>` : '')
     + (i >= 0 && i < ids.length - 1 ? ` <span style="float:right"><a href="#/${esc(ids[i + 1])}">Bakara ${esc(rng(nb(i + 1).ayet))} →</a></span>` : '') + '</p>');
   $('main').innerHTML = L.join('\n');
+  if (!MASA && tab === 'taslak') document.querySelectorAll('#main .blk[id]').forEach(markNotes);
+  JUST = null;
   if (focus) { const el = document.getElementById(focus); if (el) { el.classList.add('hl'); el.scrollIntoView({block: 'center'}); } }
   $('ttl').textContent = `${MASA ? 'Ar-ge masası · ' : ''}${U.sure_adi} ${rng(U.ayet)}`;
 }
@@ -710,7 +848,7 @@ document.addEventListener('copy', e => {
   if (!sel || sel.isCollapsed || PAGE !== 'birim' || !U) return;
   const node = sel.anchorNode, el = node && (node.nodeType === 1 ? node : node.parentElement);
   if (!el || !el.closest('#main') || el.closest('form, textarea, input')) return;
-  const text = String(sel);
+  const text = String(sel).replace(/✎\d*/g, '');
   if (!text.trim()) return;
   const blk = el.closest('.blk'), place = `${U.sure_adi} ${U.sure}:${rng(U.ayet)}`;
   const line = blk && U.taslak

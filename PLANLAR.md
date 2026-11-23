@@ -181,6 +181,12 @@ kaynağı (A2'nin ön şartı değil).
 "Sonra" 2026-11-22'de baştan gözden geçirildi (kullanıcının kararı: her iş tek tek; sıraya girenler "Sıradaki"nde,
 fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
 
+- **Okuyucu notunun paragrafı değişirse** (S10'un açığı; kullanıcının kararı, 2026-11-23: "aklımızda bulunsun"):
+  platformda paragrafın kimliği metninden üretilir (`d1-yayin.py`). Taslağın yeni sürümünde paragrafın metni değişirse
+  kimliği de değişir; o paragrafa yazılmış not sayfada hiç görünmez, yalnız Notlarım'da ve Word dosyasında kalır.
+  Yeni sürümler seyrek, şimdilik bırakıldı. Çözüm yolu: notun sürümü ve seçicisiyle (`secici`) yeni sürümde en yakın
+  paragrafı bulup notu orada "önceki sürüme yazılmıştı" diye göstermek. (Söz paragrafta bulunamazsa not paragrafın
+  altında açık durur, "bu sürümde bulunamadı" der: bu yapıldı.)
 - **E8 Arap dünyasına açılmak** (kullanıcının kararı, 2026-11-22): ilk adım izin. Külliyatın Arapça tercümesi
   (İhsan Kasım es-Sâlihî; künye: "حقوق الطبع محفوظة للناشر", شركة سوزلر للنشر, Kahire). **Yol değişti (kullanıcının
   kararı, 2026-11-23):** önce risaleoku.com'a soruldu ("Bekleyen" › E8), Sözler'e e-posta cevaba göre (taslak
