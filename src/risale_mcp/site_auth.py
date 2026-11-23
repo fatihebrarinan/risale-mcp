@@ -2,8 +2,14 @@
 
 Kullanıcının kararı (2026-11-14): âyet masası taslakları taşır, yayımlanmaz; yalnız davet edilen kişiler girer.
 Hesaplar MCP sunucusunun hesapları değildir (`auth.py`), yalnız siteye giriş içindir: ayrı veritabanı
-`data/site_auth.db`, kullanıcı adı e-posta adresidir, parolayı yönetici verir (e-posta gönderilmez, dışarıya istek yok).
-Parola özeti ve kilit kuralı `auth.py`'dekiyle aynıdır.
+`data/site_auth.db`, kullanıcı adı e-posta adresidir. Parola özeti ve kilit kuralı `auth.py`'dekiyle aynıdır.
+
+S10 (kullanıcının kararları, 2026-11-22): hesap **davet bağlantısıyla** açılır. Yönetici `davet <e-posta>` der, çıkan
+bağlantıyı kendi e-postasıyla gönderir (site e-posta göndermez, dışarıya istek yok); okuyucu bağlantıyı açıp parolasını
+kendisi koyar ve girmiş olur. Bağlantı tek kullanımlıktır, 7 gün geçerlidir, yalnız özeti saklanır; aynı adrese yeni
+bağlantı eskisini geçersiz kılar. Parolasını unutan okuyucuya da yeni bağlantı verilir (hesap varsa parolası değişir,
+açık oturumları kapanır). Hesabın varsayılan kapsamı `oku`dur; masa açıkça istenir (`--masa`). İlk girişte platform
+karşılama sayfasını gösterir (`welcomed` boşsa); okuyucunun kaldığı yer (`place`: birim ve paragraf) hesabındadır.
 
 Düzen: sayfalar statik dosyadır (`/var/www/ozel/taslak/`); Caddy her istekte bu servise sorar (`forward_auth`,
 `GET /_auth`). Oturum çerezi geçerliyse 200, değilse giriş sayfasına yönlendirme. Giriş ve çıkış sayfaları da bu
@@ -14,11 +20,14 @@ S7.3 (2026-11-21): okuma platformu `/oku/` aynı hesaplarla açılır; çerez bu
 yalnız HttpOnly oturum jetonu). Hesabın kapsamı (`scope`): `masa` hem ar-ge masasına (`/taslak/`) hem platforma,
 `oku` yalnız platforma girer (davetli okuyucular; `add-user --oku`). Önceki hesaplar `masa`dır.
 
-Saklananlar (gizlilik politikası söyler): e-posta, parola özeti, yanlış deneme sayısı, son giriş zamanı; oturumun
-yalnız özeti, açılış ve son görülme zamanı. IP ve gezinti kaydı tutulmaz.
+Saklananlar (gizlilik politikası söyler): e-posta, parola özeti, yanlış deneme sayısı, son giriş zamanı, karşılamanın
+görüldüğü zaman, kaldığı yer; oturumun ve davet bağlantısının yalnız özeti, zamanları. IP ve gezinti kaydı tutulmaz.
+Okuyucunun notları `masa.py`'dedir (kişisel defter); hesap silinince onlar da silinir.
 
     uv run python -m risale_mcp.site_auth serve [--port 8009]
-    uv run python -m risale_mcp.site_auth add-user <e-posta> [--generate] [--name <ad>]   # sunucuda: scripts/sunucu.sh taslak …
+    uv run python -m risale_mcp.site_auth davet <e-posta> [--masa] [--name <ad>]   # sunucuda: scripts/sunucu.sh taslak …
+    uv run python -m risale_mcp.site_auth davetler                                   # bekleyen bağlantılar
+    uv run python -m risale_mcp.site_auth add-user <e-posta> [--generate] [--name <ad>] [--masa]
     uv run python -m risale_mcp.site_auth set-name <e-posta> <ad>
     uv run python -m risale_mcp.site_auth users | sessions | passwd <e-posta> | remove-user <e-posta> | revoke <e-posta>
 """
@@ -27,6 +36,7 @@ import argparse
 import getpass
 import hashlib
 import html
+import json
 import re
 import secrets
 import sqlite3
@@ -44,6 +54,10 @@ COOKIE = "taslak_oturum"
 COOKIE_PATH = "/"                                # /taslak/ ve /oku/ aynı oturumla (S7.3)
 SCOPES = ("masa", "oku")
 SESSION_DAYS = 30
+SITE = "https://risalemcp.com"
+INVITE = "/oku/davet/"
+INVITE_DAYS = 7
+MIN_PASSWORD = 10
 EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
 _DUMMY = hash_password(secrets.token_hex(8))
 
@@ -51,12 +65,23 @@ SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
     email        TEXT PRIMARY KEY,
     name         TEXT,                     -- işaretlerdeki okuyucu adı (isteğe bağlı; yoksa e-posta)
-    scope        TEXT NOT NULL DEFAULT 'masa',   -- masa: /taslak/ ve /oku/; oku: yalnız /oku/
+    scope        TEXT NOT NULL DEFAULT 'oku',    -- masa: /taslak/ ve /oku/; oku: yalnız /oku/ (S10'dan önce varsayılan masa)
     password     TEXT NOT NULL,
     created      REAL NOT NULL,
     failures     INTEGER NOT NULL DEFAULT 0,
     locked_until REAL NOT NULL DEFAULT 0,
-    last_login   REAL
+    last_login   REAL,
+    welcomed     REAL,                     -- karşılama sayfası görüldü (S10)
+    place        TEXT                      -- kaldığı yer {birim, paragraf, zaman} (JSON; S10)
+);
+CREATE TABLE IF NOT EXISTS invites (
+    id       TEXT PRIMARY KEY,             -- bağlantıdaki jetonun SHA-256 özeti
+    email    TEXT NOT NULL,
+    scope    TEXT,                         -- yeni hesabın kapsamı (hesap varsa dokunulmaz, NULL)
+    name     TEXT,
+    created  REAL NOT NULL,
+    expires  REAL NOT NULL,
+    used     REAL
 );
 CREATE TABLE IF NOT EXISTS sessions (
     id        TEXT PRIMARY KEY,            -- çerezdeki jetonun SHA-256 özeti
@@ -87,6 +112,9 @@ class Store:
                 c.execute("ALTER TABLE users ADD COLUMN name TEXT")
             if "scope" not in cols:                                                    # 2026-11-21'den önceki dosya
                 c.execute("ALTER TABLE users ADD COLUMN scope TEXT NOT NULL DEFAULT 'masa'")
+            for col in ("welcomed REAL", "place TEXT"):                                # S10'dan önceki dosya
+                if col.split()[0] not in cols:
+                    c.execute(f"ALTER TABLE users ADD COLUMN {col}")
         path.chmod(0o600)                                # e-postalar ve parola özetleri: yalnız servisin kullanıcısı
 
     def _conn(self) -> sqlite3.Connection:
@@ -101,7 +129,7 @@ class Store:
 
     # ------------------------------------------------------------ hesaplar
 
-    def add_user(self, email: str, password: str, name: str | None = None, scope: str = "masa") -> None:
+    def add_user(self, email: str, password: str, name: str | None = None, scope: str = "oku") -> None:
         if scope not in SCOPES:
             raise ValueError(f"kapsam: {scope}")
         email = norm_email(email)
@@ -141,10 +169,79 @@ class Store:
                   (hash_password(password), email))
         self.revoke(email)
 
+    def exists(self, email: str) -> bool:
+        return bool(self._run("SELECT 1 FROM users WHERE email = ?", (norm_email(email),)))
+
     def remove_user(self, email: str) -> None:
         email = norm_email(email)
         self.revoke(email)
+        self._run("DELETE FROM invites WHERE email = ?", (email,))
         self._run("DELETE FROM users WHERE email = ?", (email,))
+
+    # ------------------------------------------------------------ davet (S10)
+
+    def invite(self, email: str, scope: str | None = None, name: str | None = None, now: float | None = None) -> str:
+        """Tek kullanımlık bağlantının jetonu. Hesap yoksa açılınca `scope` (varsayılan `oku`) ve `name` alır; hesap
+        varsa bağlantı yalnız parolasını yeniler. Aynı adresin kullanılmamış eski bağlantıları geçersiz olur."""
+        now = now or time.time()
+        email = norm_email(email)
+        if not EMAIL.match(email):
+            raise ValueError(f"e-posta adresi değil: {email}")
+        if scope is not None and scope not in SCOPES:
+            raise ValueError(f"kapsam: {scope}")
+        new = not self.exists(email)
+        token = secrets.token_urlsafe(32)
+        self._run("DELETE FROM invites WHERE email = ? AND used IS NULL", (email,))
+        self._run("INSERT INTO invites (id, email, scope, name, created, expires) VALUES (?, ?, ?, ?, ?, ?)",
+                  (_digest(token), email, (scope or "oku") if new else None, (name or "").strip() or None if new else None,
+                   now, now + INVITE_DAYS * 86400))
+        return token
+
+    def invite_email(self, token: str | None, now: float | None = None) -> str | None:
+        """Bağlantı geçerliyse (kullanılmamış, süresi dolmamış) adresi."""
+        if not token:
+            return None
+        rows = self._run("SELECT email FROM invites WHERE id = ? AND used IS NULL AND expires > ?",
+                         (_digest(token), now or time.time()))
+        return rows[0]["email"] if rows else None
+
+    def accept(self, token: str, password: str, now: float | None = None) -> str:
+        """Okuyucu parolasını koyar: hesap yoksa açılır, varsa parolası değişir (oturumları kapanır). Adresi döner."""
+        now = now or time.time()
+        email = self.invite_email(token, now)
+        if not email:
+            raise ValueError("Bu bağlantının süresi dolmuş ya da daha önce kullanılmış.")
+        if len(password) < MIN_PASSWORD:
+            raise ValueError(f"Parola en az {MIN_PASSWORD} karakter olmalı.")
+        row = self._run("SELECT scope, name FROM invites WHERE id = ?", (_digest(token),))[0]
+        if self.exists(email):
+            self.set_password(email, password)
+        else:
+            self.add_user(email, password, row["name"], row["scope"] or "oku")
+        self._run("UPDATE invites SET used = ? WHERE id = ?", (now, _digest(token)))
+        self._run("UPDATE users SET last_login = ? WHERE email = ?", (now, email))
+        return email
+
+    def invites(self, now: float | None = None) -> list[sqlite3.Row]:
+        return self._run("SELECT email, scope, created, expires FROM invites WHERE used IS NULL AND expires > ? "
+                         "ORDER BY created", (now or time.time(),))
+
+    # ------------------------------------------------------------ karşılama ve kaldığı yer (S10)
+
+    def welcomed(self, email: str) -> bool:
+        rows = self._run("SELECT welcomed FROM users WHERE email = ?", (norm_email(email),))
+        return bool(rows and rows[0]["welcomed"])
+
+    def mark_welcomed(self, email: str) -> None:
+        self._run("UPDATE users SET welcomed = coalesce(welcomed, ?) WHERE email = ?", (time.time(), norm_email(email)))
+
+    def place(self, email: str) -> dict | None:
+        rows = self._run("SELECT place FROM users WHERE email = ?", (norm_email(email),))
+        return json.loads(rows[0]["place"]) if rows and rows[0]["place"] else None
+
+    def set_place(self, email: str, birim: str, paragraf: str | None = None) -> None:
+        place = {"birim": str(birim)[:40], "paragraf": str(paragraf)[:80] if paragraf else None, "zaman": time.time()}
+        self._run("UPDATE users SET place = ? WHERE email = ?", (json.dumps(place, ensure_ascii=False), norm_email(email)))
 
     def users(self) -> list[sqlite3.Row]:
         return self._run("SELECT email, name, scope, created, last_login, failures, locked_until FROM users ORDER BY email")
@@ -203,9 +300,9 @@ class Store:
 
 # ---------------------------------------------------------------- web
 
-PAGE = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
+SHELL = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
-<title>Giriş · Davetli bölüm</title><style>
+<meta name="referrer" content="no-referrer"><title>{title} · Davetli bölüm</title><style>
 :root {{ --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --accent: #1f5c3f; --bad: #a3271f; }}
 @media (prefers-color-scheme: dark) {{ :root {{ --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f;
   --card: #1f1e1b; --accent: #7cc49d; --bad: #f08a80; }} }}
@@ -218,18 +315,36 @@ input {{ display: block; width: 100%; box-sizing: border-box; margin-top: 4px; p
   border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); }}
 button {{ width: 100%; padding: 8px; font: inherit; border: 0; border-radius: 6px; background: var(--accent); color: var(--bg); cursor: pointer; }}
 .err {{ color: var(--bad); font-size: .88rem; }} .ok {{ color: var(--accent); font-size: .88rem; }}
-a {{ color: inherit; }}
+a {{ color: inherit; }} input[readonly] {{ color: var(--muted); }}
 </style></head><body><main>
-<h1>Davetli bölüm</h1>
-<p>Bu bölüm yalnız davet edilen kişilere açıktır. Hesabınız yoksa site yöneticisinden isteyin.</p>
+{body}
+<p><a href="/">risalemcp.com</a> · <a href="/gizlilik.html">Gizlilik</a></p>
+</main></body></html>"""
+
+LOGIN = """<h1>Davetli bölüm</h1>
+<p>Bu bölüm yalnız davet edilen kişilere açıktır. Hesabınız yoksa ya da parolanızı unuttuysanız site yöneticisinden
+yeni bir davet bağlantısı isteyin.</p>
 {message}
 <form method="post" action="{action}">
 <label>E-posta<input type="email" name="email" autocomplete="username" required value="{email}"></label>
 <label>Parola<input type="password" name="password" autocomplete="current-password" required></label>
 <button type="submit">Giriş</button>
-</form>
-<p><a href="/">risalemcp.com</a> · <a href="/gizlilik.html">Gizlilik</a></p>
-</main></body></html>"""
+</form>"""
+
+INVITE_FORM = """<h1>Parolanızı belirleyin</h1>
+<p>Bu bağlantı size özeldir ve bir kez kullanılır. Parolanızı belirleyince giriş yapmış olursunuz; sonraki girişlerde
+e-posta adresinizle ve bu parolayla girersiniz.</p>
+{message}
+<form method="post" action="{action}">
+<label>E-posta<input type="email" name="email" autocomplete="username" readonly value="{email}"></label>
+<label>Parola (en az {min} karakter)<input type="password" name="password" autocomplete="new-password" minlength="{min}" required></label>
+<label>Parola (tekrar)<input type="password" name="password2" autocomplete="new-password" minlength="{min}" required></label>
+<button type="submit">Parolayı kaydet ve gir</button>
+</form>"""
+
+INVITE_GONE = """<h1>Bağlantı geçersiz</h1>
+<p>Bu davet bağlantısının süresi dolmuş ya da daha önce kullanılmış. Site yöneticisinden yeni bir bağlantı isteyin.
+Hesabınız varsa <a href="/taslak/giris">giriş sayfasından</a> girebilirsiniz.</p>"""
 
 
 def safe_next(target: str | None, default: str = PREFIX) -> str:
@@ -253,11 +368,19 @@ def build_app(store: Store, masa_store=None):
     from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse
     from starlette.routing import Route
 
+    def shell(title: str, body: str, status: int = 200) -> HTMLResponse:
+        return HTMLResponse(SHELL.format(title=title, body=body), status_code=status,
+                            headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
+
     def page(next_url: str, message: str = "", email: str = "", status: int = 200) -> HTMLResponse:
         action = f"{PREFIX}giris?next={quote(next_url, safe='/')}"
-        return HTMLResponse(PAGE.format(message=message, action=html.escape(action, quote=True),
-                                        email=html.escape(email, quote=True)), status_code=status,
-                            headers={"Cache-Control": "no-store"})
+        return shell("Giriş", LOGIN.format(message=message, action=html.escape(action, quote=True),
+                                           email=html.escape(email, quote=True)), status)
+
+    def set_session(response, email: str, request: Request) -> None:
+        response.delete_cookie(COOKIE, path=PREFIX)                 # 2026-11-21'den önceki çerez (/taslak/ yolunda)
+        response.set_cookie(COOKIE, store.open_session(email), max_age=SESSION_DAYS * 86400, path=COOKIE_PATH,
+                            httponly=True, secure=secure(request), samesite="lax")
 
     def secure(request: Request) -> bool:
         return request.headers.get("x-forwarded-proto", request.url.scheme) == "https"
@@ -288,17 +411,62 @@ def build_app(store: Store, masa_store=None):
         if not next_url or not allowed(scope, next_url):
             next_url = PREFIX if scope == "masa" else OKU
         response = RedirectResponse(next_url, status_code=303)
-        response.delete_cookie(COOKIE, path=PREFIX)                 # 2026-11-21'den önceki çerez (/taslak/ yolunda)
-        response.set_cookie(COOKIE, store.open_session(email), max_age=SESSION_DAYS * 86400, path=COOKIE_PATH,
-                            httponly=True, secure=secure(request), samesite="lax")
+        set_session(response, email, request)
+        return response
+
+    async def invite(request: Request):
+        """S10: davet bağlantısı. Okuyucu parolasını koyar, oturum açılır, platforma gider."""
+        token = request.path_params["token"]
+        email = store.invite_email(token)
+        if not email:
+            return shell("Bağlantı geçersiz", INVITE_GONE, 410)
+        action = html.escape(INVITE + token, quote=True)
+
+        def form(message: str = "", status: int = 200) -> HTMLResponse:
+            return shell("Parola", INVITE_FORM.format(message=message, action=action, min=MIN_PASSWORD,
+                                                      email=html.escape(email, quote=True)), status)
+        if request.method == "GET":
+            return form()
+        data = await request.form()
+        password, again = str(data.get("password", "")), str(data.get("password2", ""))
+        if password != again:
+            return form('<p class="err">İki parola aynı değil.</p>', 400)
+        try:
+            email = store.accept(token, password)
+        except ValueError as e:
+            return form(f'<p class="err">{html.escape(str(e))}</p>', 400)
+        scope = store.scope(email)
+        response = RedirectResponse(PREFIX if scope == "masa" else OKU, status_code=303)
+        set_session(response, email, request)
         return response
 
     async def me(request: Request):
         email = store.check(request.cookies.get(COOKIE))
         if not email:
             return JSONResponse({"error": "oturum yok"}, status_code=401, headers={"Cache-Control": "no-store"})
-        return JSONResponse({"email": email, "name": store.display_name(email), "scope": store.scope(email)},
+        return JSONResponse({"email": email, "name": store.display_name(email), "scope": store.scope(email),
+                             "welcomed": store.welcomed(email), "place": store.place(email)},
                             headers={"Cache-Control": "no-store"})
+
+    async def welcomed(request: Request):
+        """S10 (c): karşılama sayfası görüldü."""
+        email = store.check(request.cookies.get(COOKIE))
+        if not email:
+            return JSONResponse({"error": "oturum yok"}, status_code=401, headers={"Cache-Control": "no-store"})
+        store.mark_welcomed(email)
+        return JSONResponse({"ok": True}, headers={"Cache-Control": "no-store"})
+
+    async def place(request: Request):
+        """S10 (f): kaldığı yer (birim ve paragraf), hesaba bağlı."""
+        email = store.check(request.cookies.get(COOKIE))
+        if not email:
+            return JSONResponse({"error": "oturum yok"}, status_code=401, headers={"Cache-Control": "no-store"})
+        if request.method == "PUT":
+            body = await request.json()
+            if not body.get("birim"):
+                return JSONResponse({"error": "birim gerekli"}, status_code=400, headers={"Cache-Control": "no-store"})
+            store.set_place(email, body["birim"], body.get("paragraf"))
+        return JSONResponse({"place": store.place(email)}, headers={"Cache-Control": "no-store"})
 
     async def logout(request: Request):
         store.close_session(request.cookies.get(COOKIE))
@@ -310,6 +478,9 @@ def build_app(store: Store, masa_store=None):
     from risale_mcp import masa                     # S7.2: ar-ge masası (okumalar, kararlar, notlar)
     return Starlette(routes=[Route("/_auth", check), Route(f"{PREFIX}giris", login, methods=["GET", "POST"]),
                              Route(f"{PREFIX}cikis", logout, methods=["GET", "POST"]), Route(f"{PREFIX}ben", me),
+                             Route(INVITE + "{token}", invite, methods=["GET", "POST"]),
+                             Route(f"{PREFIX}api/karsilandi", welcomed, methods=["POST"]),
+                             Route(f"{PREFIX}api/yer", place, methods=["GET", "PUT"]),
                              *masa.routes(store, masa_store or masa.MasaStore())])
 
 
@@ -325,8 +496,8 @@ def _password(generate: bool) -> str:
         print(f"parola: {pw}")
         return pw
     pw = getpass.getpass("parola: ")
-    if len(pw) < 10:
-        raise SystemExit("parola en az 10 karakter olmalı")
+    if len(pw) < MIN_PASSWORD:
+        raise SystemExit(f"parola en az {MIN_PASSWORD} karakter olmalı")
     if pw != getpass.getpass("parola (tekrar): "):
         raise SystemExit("parolalar aynı değil")
     return pw
@@ -337,13 +508,19 @@ def main(argv: list[str] | None = None) -> None:
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("serve")
     p.add_argument("--port", type=int, default=8009)
+    p = sub.add_parser("davet", help="tek kullanımlık davet bağlantısı (7 gün; hesap varsa parola yenileme)")
+    p.add_argument("email")
+    p.add_argument("--masa", action="store_true", help="yeni hesap ar-ge masasına da girer (varsayılan: yalnız /oku/)")
+    p.add_argument("--name", help="masada işaretlerde görünecek ad (yoksa e-posta)")
+    sub.add_parser("davetler", help="kullanılmamış, süresi dolmamış davetler")
     for name in ("add-user", "passwd"):
         p = sub.add_parser(name)
         p.add_argument("email")
         p.add_argument("--generate", action="store_true", help="parolayı üret ve göster")
         if name == "add-user":
             p.add_argument("--name", help="işaretlerde görünecek okuyucu adı (yoksa e-posta)")
-            p.add_argument("--oku", action="store_true", help="yalnız okuma platformu (/oku/); ar-ge masasına girmez")
+            p.add_argument("--masa", action="store_true", help="ar-ge masasına da girer (varsayılan: yalnız /oku/)")
+            p.add_argument("--oku", action="store_true", help=argparse.SUPPRESS)    # S10'dan önceki adı; artık varsayılan
     p = sub.add_parser("set-scope")
     p.add_argument("email")
     p.add_argument("scope", choices=SCOPES)
@@ -360,9 +537,20 @@ def main(argv: list[str] | None = None) -> None:
         import uvicorn
         uvicorn.run(build_app(store), host="127.0.0.1", port=args.port, proxy_headers=True,
                     forwarded_allow_ips="127.0.0.1", access_log=False)
+    elif args.command == "davet":
+        existed = store.exists(args.email)
+        token = store.invite(args.email, "masa" if args.masa else None, args.name)
+        if existed and args.masa:
+            print("not: hesap zaten var, kapsamı değişmedi (set-scope ile değişir)")
+        print(f"{'parola yenileme' if existed else 'yeni hesap'} ({norm_email(args.email)}, {INVITE_DAYS} gün geçerli, tek kullanımlık):")
+        print(f"{SITE}{INVITE}{token}")
+    elif args.command == "davetler":
+        for d in store.invites():
+            print(f"{d['email']}  {'yeni hesap, ' + d['scope'] if d['scope'] else 'parola yenileme'}  "
+                  f"verildi {_when(d['created'])}  biter {_when(d['expires'])}")
     elif args.command == "add-user":
-        store.add_user(args.email, _password(args.generate), args.name, "oku" if args.oku else "masa")
-        print(f"hesap açıldı: {norm_email(args.email)} ({'yalnız /oku/' if args.oku else '/taslak/ ve /oku/'})")
+        store.add_user(args.email, _password(args.generate), args.name, "masa" if args.masa else "oku")
+        print(f"hesap açıldı: {norm_email(args.email)} ({'/taslak/ ve /oku/' if args.masa else 'yalnız /oku/'})")
     elif args.command == "set-scope":
         store.set_scope(args.email, args.scope)
         print(f"kapsam: {args.scope}")
@@ -373,8 +561,10 @@ def main(argv: list[str] | None = None) -> None:
         store.set_name(args.email, args.name)
         print(f"ad: {store.display_name(args.email)}")
     elif args.command == "remove-user":
+        from risale_mcp.masa import MasaStore
+        n = MasaStore().forget(norm_email(args.email))
         store.remove_user(args.email)
-        print("hesap silindi")
+        print(f"hesap silindi ({n} defter notu da silindi)")
     elif args.command == "revoke":
         print(f"{store.revoke(args.email)} oturum kapatıldı")
     elif args.command == "users":

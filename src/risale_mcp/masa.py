@@ -8,6 +8,12 @@ Giriş servisinin (`site_auth.py`) aynı uygulamasında çalışır: hesap ve ot
 - **Okuyucunun adı dışarı çıkmaz.** Dışa aktarmada okuyucu sabit numarasıyla (`okuyucu_no`) görünür, e-postası yok.
 - **Kör okumada taraflar sunucuda saklı.** Görevin `gizli`'si (A/B'nin hangi taslak olduğu) okuyucu "bitir" diyene kadar
   verilmez; bitirince döner.
+- **S10: notun iki yeri** (kullanıcının kararları, 2026-11-22). Platformdan yazılan not okuyucunun **kişisel
+  defteridir** (`kapsam = 'defter'`): yalnız yazanı görür (yönetici de görmez), yazan düzenler ve gerçekten siler (geçmişi
+  tutulmaz), dışa aktarmaya ve "notlarımla düzelt"e girmez, hesap silinince silinir. "Notlarım" bütün birimlerdekini
+  verir, Word dosyası olarak da (`docx_yaz.py`). S10'dan önce yazılmış notlar **ar-ge kaydıdır** (`kapsam = 'arge'`):
+  yukarıdaki silinmez kuralı onlarındır, masa `?arge=1` ile görür. (İleride "geliştirme için gönder": defter notu ar-ge
+  notu olur; "Fikirler".)
 - **Makine erişimi jetonla.** Taslak sunucusu görev açar (`POST /taslak/api/gorev`) ve sonuçları alır
   (`GET /taslak/api/disa`); jetonun yalnız SHA-256 özeti saklanır (`masa token --new`).
 
@@ -74,7 +80,10 @@ CREATE TABLE IF NOT EXISTS notlar (
     isleyen_surum INTEGER,
     okuma         TEXT,                    -- hangi okumada yazıldı
     zaman         REAL NOT NULL,
-    guncellendi   REAL NOT NULL
+    guncellendi   REAL NOT NULL,
+    kapsam        TEXT NOT NULL DEFAULT 'arge',   -- arge (S10'dan önce; silinmez) | defter (okuyucunun kişisel defteri)
+    etiket        TEXT,                    -- birimin adı ("Bakara 40–46"; Notlarım için)
+    baglam        TEXT                     -- paragrafın ilk sözleri (Notlarım için)
 );
 CREATE TABLE IF NOT EXISTS not_gecmisi (
     id      INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -102,6 +111,10 @@ class MasaStore:
         path.parent.mkdir(parents=True, exist_ok=True)
         with self._conn() as c:
             c.executescript(SCHEMA)
+            cols = {r[1] for r in c.execute("PRAGMA table_info(notlar)")}
+            for col in ("kapsam TEXT NOT NULL DEFAULT 'arge'", "etiket TEXT", "baglam TEXT"):   # S10'dan önceki dosya
+                if col.split()[0] not in cols:
+                    c.execute(f"ALTER TABLE notlar ADD COLUMN {col}")
         path.chmod(0o600)
 
     def _conn(self) -> sqlite3.Connection:
@@ -201,27 +214,72 @@ class MasaStore:
             self._run("UPDATE okumalar SET durum = 'bitti', bitti = ? WHERE id = ?", (time.time(), tid))
         return self.task(tid, email)
 
-    # ------------------------------------------------------------ notlar (S7.4 ve notun hayatı)
+    # ------------------------------------------------------------ notlar (S7.4 ve notun hayatı; S10 kişisel defter)
 
-    def add_note(self, email: str, note: dict) -> str:
+    def add_note(self, email: str, note: dict, kapsam: str = "defter") -> str:
+        """Defter notu (S10; varsayılan) ya da ar-ge notu (`kapsam='arge'`; geçmişi tutulur, silinmez)."""
+        if kapsam not in ("defter", "arge"):
+            raise ValueError(kapsam)
         nid = "n-" + secrets.token_hex(6)
         now = time.time()
-        self.reader_no(email)
-        self._run("INSERT INTO notlar (id, birim, surum, paragraf, secici, okuyucu, tur, metin, okuma, zaman, guncellendi) "
-                  "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                  (nid, note["birim"], note.get("surum"), note.get("paragraf"),
-                   json.dumps(note.get("secici") or {}, ensure_ascii=False), email, note.get("tur") or "not",
-                   note["metin"], note.get("okuma"), now, now))
-        self._run("INSERT INTO not_gecmisi (not_id, zaman, kim, olay, veri) VALUES (?, ?, ?, 'yazildi', ?)",
-                  (nid, now, email, json.dumps({"metin": note["metin"]}, ensure_ascii=False)))
+        clip = lambda v, n: str(v)[:n] if v else None
+        self._run("INSERT INTO notlar (id, birim, surum, paragraf, secici, okuyucu, tur, metin, okuma, zaman, guncellendi, "
+                  "kapsam, etiket, baglam) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                  (nid, str(note["birim"])[:40], note.get("surum"), clip(note.get("paragraf"), 80),
+                   json.dumps(note.get("secici") or {}, ensure_ascii=False), email,
+                   (note.get("tur") or "not") if kapsam == "arge" else "not", str(note["metin"])[:20000],
+                   note.get("okuma"), now, now, kapsam, clip(note.get("etiket"), 80), clip(note.get("baglam"), 300)))
+        if kapsam == "arge":
+            self.reader_no(email)
+            self._run("INSERT INTO not_gecmisi (not_id, zaman, kim, olay, veri) VALUES (?, ?, ?, 'yazildi', ?)",
+                      (nid, now, email, json.dumps({"metin": note["metin"]}, ensure_ascii=False)))
         return nid
+
+    def _own(self, nid: str, email: str) -> bool:
+        return bool(self._run("SELECT 1 FROM notlar WHERE id = ? AND okuyucu = ? AND kapsam = 'defter'", (nid, email)))
+
+    def edit_note(self, nid: str, email: str, metin: str) -> bool:
+        """Defter notunu yalnız yazanı düzenler."""
+        if not metin.strip() or not self._own(nid, email):
+            return False
+        self._run("UPDATE notlar SET metin = ?, guncellendi = ? WHERE id = ?", (metin.strip()[:20000], time.time(), nid))
+        return True
+
+    def delete_note(self, nid: str, email: str) -> bool:
+        """Defter notunu yalnız yazanı siler; gerçekten silinir (S10 (g4))."""
+        if not self._own(nid, email):
+            return False
+        self._run("DELETE FROM not_gecmisi WHERE not_id = ?", (nid,))
+        self._run("DELETE FROM notlar WHERE id = ?", (nid,))
+        return True
+
+    def forget(self, email: str) -> int:
+        """Hesap silinince: okuyucunun defter notları (ar-ge kayıtları numarayla kalır)."""
+        ids = [r["id"] for r in self._run("SELECT id FROM notlar WHERE okuyucu = ? AND kapsam = 'defter'", (email,))]
+        for nid in ids:
+            self._run("DELETE FROM not_gecmisi WHERE not_id = ?", (nid,))
+        self._run("DELETE FROM notlar WHERE okuyucu = ? AND kapsam = 'defter'", (email,))
+        return len(ids)
+
+    @staticmethod
+    def _defter_row(r: sqlite3.Row) -> dict:
+        return {"id": r["id"], "birim": r["birim"], "surum": r["surum"], "paragraf": r["paragraf"],
+                "secici": json.loads(r["secici"]), "metin": r["metin"], "etiket": r["etiket"], "baglam": r["baglam"],
+                "zaman": r["zaman"], "guncellendi": r["guncellendi"], "benim": True}
+
+    def defter(self, email: str, birim: str | None = None) -> list[dict]:
+        """Okuyucunun kendi notları (bir birimde ya da hepsi), yazılış sırasıyla."""
+        sql, params = "SELECT * FROM notlar WHERE okuyucu = ? AND kapsam = 'defter'", [email]
+        if birim is not None:
+            sql, params = sql + " AND birim = ?", params + [birim]
+        return [self._defter_row(r) for r in self._run(sql + " ORDER BY zaman", tuple(params))]
 
     def set_note_state(self, nid: str, who: str, durum: str, surum: int | None = None) -> bool:
         if durum not in ("acik", "islendi", "kapandi", "geri_cekildi"):
             raise ValueError(durum)
-        rows = self._run("SELECT okuyucu FROM notlar WHERE id = ?", (nid,))
+        rows = self._run("SELECT okuyucu FROM notlar WHERE id = ? AND kapsam = 'arge'", (nid,))
         if not rows:
-            return False
+            return False                                   # defter notunun durumu yok (S10)
         if durum == "geri_cekildi" and rows[0]["okuyucu"] != who:
             return False                                   # notu yalnız yazan geri çeker
         now = time.time()
@@ -232,8 +290,10 @@ class MasaStore:
         return True
 
     def notes(self, birim: str, email: str) -> list[dict]:
+        """Ar-ge notları (S10'dan önce yazılanlar; masa görür)."""
         out = []
-        for r in self._run("SELECT * FROM notlar WHERE birim = ? AND durum != 'geri_cekildi' ORDER BY zaman", (birim,)):
+        for r in self._run("SELECT * FROM notlar WHERE birim = ? AND kapsam = 'arge' AND durum != 'geri_cekildi' "
+                           "ORDER BY zaman", (birim,)):
             out.append({"id": r["id"], "surum": r["surum"], "paragraf": r["paragraf"], "secici": json.loads(r["secici"]),
                         "tur": r["tur"], "metin": r["metin"], "durum": r["durum"], "isleyen_surum": r["isleyen_surum"],
                         "benim": r["okuyucu"] == email, "okuyucu_no": self.reader_no(r["okuyucu"]),
@@ -255,10 +315,11 @@ class MasaStore:
         notes = [{k: r[k] for k in ("id", "birim", "surum", "paragraf", "tur", "metin", "durum", "isleyen_surum", "okuma",
                                     "zaman", "guncellendi")} | {"secici": json.loads(r["secici"]),
                                                                 "okuyucu_no": nos.get(r["okuyucu"])}
-                 for r in self._run("SELECT * FROM notlar ORDER BY zaman")]
+                 for r in self._run("SELECT * FROM notlar WHERE kapsam = 'arge' ORDER BY zaman")]
         hist = [{k: r[k] for k in ("not_id", "zaman", "olay")} | {"veri": json.loads(r["veri"] or "null"),
                                                                  "okuyucu_no": nos.get(r["kim"])}
-                for r in self._run("SELECT * FROM not_gecmisi ORDER BY id")]
+                for r in self._run("SELECT g.* FROM not_gecmisi g JOIN notlar n ON n.id = g.not_id "
+                                   "WHERE n.kapsam = 'arge' ORDER BY g.id")]    # defter notları dışarı çıkmaz (S10)
         return {"sema": "masa/1", "aktarildi": time.time(), "okumalar": tasks, "notlar": notes, "not_gecmisi": hist}
 
 
@@ -314,26 +375,58 @@ def routes(auth, store: MasaStore) -> list:
         return JSONResponse(t, headers=H) if t else deny(404)
 
     async def notlar(request: Request):
+        """S10: herkes (yönetici de) yalnız kendi defterini görür; masa ar-ge notlarını `?arge=1` ile alır."""
         email = who(request)
         if not email:
             return deny()
+        birim = request.path_params["birim"]
         if request.method == "POST":
             body = await request.json()
-            if not body.get("birim") or not body.get("metin"):
-                return JSONResponse({"error": "birim ve metin gerekli"}, status_code=400, headers=H)
+            if not str(body.get("metin") or "").strip():
+                return JSONResponse({"error": "metin gerekli"}, status_code=400, headers=H)
+            body["birim"] = birim
             return JSONResponse({"id": store.add_note(email, body)}, headers=H)
-        notes = store.notes(request.path_params["birim"], email)
-        if auth.scope(email) != "masa":                 # platformun okuyucusu yalnız kendi notlarını görür
-            notes = [n for n in notes if n["benim"]]
-        return JSONResponse({"notlar": notes}, headers=H)
+        if request.query_params.get("arge"):
+            return JSONResponse({"notlar": store.notes(birim, email)}, headers=H) if desk(request) else deny()
+        return JSONResponse({"notlar": store.defter(email, birim)}, headers=H)
+
+    async def not_tek(request: Request):
+        """S10 (g4): defter notunu düzenleme (PUT {metin}) ve silme (DELETE); yalnız yazanı."""
+        email = who(request)
+        if not email:
+            return deny()
+        nid = request.path_params["nid"]
+        if request.method == "DELETE":
+            ok = store.delete_note(nid, email)
+        else:
+            ok = store.edit_note(nid, email, str((await request.json()).get("metin") or ""))
+        return JSONResponse({"ok": True}, headers=H) if ok else deny(404)
+
+    async def defter(request: Request):
+        """S10 (g2): Notlarım: bütün birimlerdeki kendi notları."""
+        email = who(request)
+        return JSONResponse({"notlar": store.defter(email)}, headers=H) if email else deny()
+
+    async def defter_docx(request: Request):
+        email = who(request)
+        if not email:
+            return deny()
+        from starlette.responses import Response
+
+        from risale_mcp.docx_yaz import notes_docx
+        name = time.strftime("notlarim-%Y-%m-%d.docx")
+        return Response(notes_docx(store.defter(email)), headers=H | {
+            "Content-Disposition": f'attachment; filename="{name}"'},
+            media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
     async def not_durum(request: Request):
+        """Ar-ge notlarının hayatı (masa); defter notunun durumu yoktur."""
         email = who(request)
         if not email:
             return deny()
         body = await request.json()
         if body.get("durum") != "geri_cekildi" and auth.scope(email) != "masa":
-            return deny(404)                               # işlendi/kapandı masanın işi; okuyucu yalnız geri çeker
+            return deny(404)                               # işlendi/kapandı masanın işi; yazan yalnız geri çeker
         ok = store.set_note_state(request.path_params["nid"], email, body.get("durum"), body.get("surum"))
         return JSONResponse({"ok": True}, headers=H) if ok else deny(404)
 
@@ -361,6 +454,8 @@ def routes(auth, store: MasaStore) -> list:
             Route(API + "okuma/{tid}/bitir", bitir, methods=["POST"]),
             Route(API + "notlar/{birim}", notlar, methods=["GET", "POST"]),
             Route(API + "not/{nid}/durum", not_durum, methods=["PUT"]),
+            Route(API + "not/{nid}", not_tek, methods=["PUT", "DELETE"]),
+            Route(f"{API}defter", defter), Route(f"{API}defter.docx", defter_docx),
             Route(f"{API}gorev", gorev, methods=["POST"]), Route(f"{API}disa", disa),
             Route(f"{API}not-durum", makine_not, methods=["POST"])]
 

@@ -12,7 +12,7 @@ from risale_mcp.site_auth import COOKIE, Store, build_app, safe_next
 @pytest.fixture
 def store(tmp_path):
     s = Store(tmp_path / "site.db")
-    s.add_user("Okur@Example.org ", "dogru-parola-123")
+    s.add_user("Okur@Example.org ", "dogru-parola-123", scope="masa")
     return s
 
 
@@ -90,7 +90,8 @@ def test_gate_flow(client):
     # Caddy, tarayıcının /taslak/… isteğindeki çerezi olduğu gibi /_auth'a iletir
     assert client.get("/_auth", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 200
     r = client.get("/taslak/ben", headers={"Cookie": f"{COOKIE}={token}"})
-    assert r.json() == {"email": "okur@example.org", "name": "okur@example.org", "scope": "masa"}
+    assert r.json() == {"email": "okur@example.org", "name": "okur@example.org", "scope": "masa", "welcomed": False,
+                        "place": None}
     client.cookies.clear()
     assert client.get("/taslak/ben").status_code == 401
     assert client.get("/taslak/cikis", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 303
@@ -117,7 +118,8 @@ def test_masa_scope_reaches_both(store, client):
     assert safe_next("/oku/x") == "/oku/" + "x" and safe_next("//evil") == "/taslak/"
 
 
-def test_reader_sees_only_own_notes(store, client):
+def test_everyone_sees_only_own_notes(store, client):
+    """S10 (g1): kişisel defter: yönetici (masa) de yalnız kendi notunu görür; defter notunun durumu yoktur."""
     store.add_user("okuyucu@example.org", "okuyucu-parola-1", scope="oku")
     client.post("/taslak/giris", data={"email": "okur@example.org", "password": "dogru-parola-123"})
     masa_tok = client.cookies.get(COOKIE)
@@ -134,10 +136,16 @@ def test_reader_sees_only_own_notes(store, client):
     assert [n["metin"] for n in mine] == ["okuyucudan"]
     nid = mine[0]["id"]
     assert client.put(f"/taslak/api/not/{nid}/durum", json={"durum": "kapandi"}).status_code == 404
-    assert client.put(f"/taslak/api/not/{nid}/durum", json={"durum": "geri_cekildi"}).status_code == 200
+    assert client.put(f"/taslak/api/not/{nid}/durum", json={"durum": "geri_cekildi"}).status_code == 404
     client.cookies.clear()
     client.cookies.set(COOKIE, masa_tok)
     assert [n["metin"] for n in client.get("/taslak/api/notlar/30").json()["notlar"]] == ["masadan"]
+    assert client.get("/taslak/api/notlar/30?arge=1").json()["notlar"] == []      # defter notları ar-ge değildir
+    assert client.put(f"/taslak/api/not/{nid}", json={"metin": "x"}).status_code == 404      # başkasınınki
+    assert client.delete(f"/taslak/api/not/{nid}").status_code == 404
+    client.cookies.clear()
+    client.cookies.set(COOKIE, oku_tok)
+    assert client.get("/taslak/api/notlar/30?arge=1").status_code == 401           # ar-ge kaydı masanındır
 
 
 def test_platform_path_behind_rewrite():
@@ -145,3 +153,69 @@ def test_platform_path_behind_rewrite():
     assert allowed("oku", "/taslak/oku/veri/30.json") and allowed("oku", "/oku/")
     assert not allowed("oku", "/taslak/") and not allowed("oku", "/taslak/birim/30.json")
     assert allowed("masa", "/taslak/birim/30.json")
+
+
+def test_default_scope_is_oku(tmp_path):
+    s = Store(tmp_path / "site.db")
+    s.add_user("yeni@example.org", "dogru-parola-123")
+    assert s.scope("yeni@example.org") == "oku"
+
+
+def test_invite_flow(store, client):
+    """S10 (b): tek kullanımlık bağlantı, 7 gün; okuyucu parolasını koyar, girmiş olur; yenisi eskisini bozar."""
+    old = store.invite("davetli@example.org")
+    token = store.invite("Davetli@Example.org ")
+    assert store.invite_email(old) is None and store.invite_email(token) == "davetli@example.org"
+    assert [d["email"] for d in store.invites()] == ["davetli@example.org"]
+    r = client.get(f"/oku/davet/{token}")
+    assert r.status_code == 200 and "davetli@example.org" in r.text and r.headers["referrer-policy"] == "no-referrer"
+    assert client.get(f"/oku/davet/{old}").status_code == 410
+    r = client.post(f"/oku/davet/{token}", data={"password": "kisa", "password2": "kisa"})
+    assert r.status_code == 400 and "en az" in r.text
+    r = client.post(f"/oku/davet/{token}", data={"password": "uzun-parola-1", "password2": "uzun-parola-2"})
+    assert r.status_code == 400 and "aynı değil" in r.text
+    r = client.post(f"/oku/davet/{token}", data={"password": "uzun-parola-1", "password2": "uzun-parola-1"})
+    assert r.status_code == 303 and r.headers["location"] == "/oku/"
+    tok = r.cookies[COOKIE]
+    assert store.check(tok) == "davetli@example.org" and store.scope("davetli@example.org") == "oku"
+    assert client.get(f"/oku/davet/{token}").status_code == 410                      # tek kullanımlık
+    assert store.login("davetli@example.org", "uzun-parola-1")[0]
+    # süresi dolan bağlantı
+    late = store.invite("baska@example.org", now=time.time() - site_auth.INVITE_DAYS * 86400 - 1)
+    assert store.invite_email(late) is None
+
+
+def test_invite_resets_password_and_keeps_scope(store, client):
+    tok = store.open_session("okur@example.org")
+    link = store.invite("okur@example.org", scope="oku")           # hesap var: kapsam değişmez
+    r = client.post(f"/oku/davet/{link}", data={"password": "yepyeni-parola", "password2": "yepyeni-parola"})
+    assert r.status_code == 303 and r.headers["location"] == "/taslak/"
+    assert store.scope("okur@example.org") == "masa" and store.check(tok) is None     # eski oturumlar kapandı
+    assert store.login("okur@example.org", "yepyeni-parola")[0]
+
+
+def test_invite_masa_scope(tmp_path):
+    s = Store(tmp_path / "site.db")
+    s.accept(s.invite("m@example.org", scope="masa", name="M"), "dogru-parola-123")
+    assert s.scope("m@example.org") == "masa" and s.display_name("m@example.org") == "M"
+
+
+def test_welcome_and_place(store, client):
+    tok = store.open_session("okur@example.org")
+    client.cookies.set(COOKIE, tok)
+    assert client.get("/taslak/ben").json()["welcomed"] is False
+    assert client.post("/taslak/api/karsilandi").json() == {"ok": True}
+    assert client.get("/taslak/ben").json()["welcomed"] is True
+    assert client.get("/taslak/api/yer").json() == {"place": None}
+    client.put("/taslak/api/yer", json={"birim": "40-46", "paragraf": "p-abc"})
+    place = client.get("/taslak/ben").json()["place"]
+    assert (place["birim"], place["paragraf"]) == ("40-46", "p-abc")
+    client.cookies.clear()
+    assert client.put("/taslak/api/yer", json={"birim": "1"}).status_code == 401
+    assert client.post("/taslak/api/karsilandi").status_code == 401
+
+
+def test_remove_user_drops_invites(store):
+    store.invite("okur@example.org")
+    store.remove_user("okur@example.org")
+    assert store.invites() == []

@@ -107,6 +107,13 @@ risalemcp.com {
 	# /var/www/ozel/taslak/oku/ altında (D5 sunucusunun kısıtlı anahtarı yalnız taslak klasörüne yazar); /oku/… oraya
 	# çevrilir, giriş servisi /taslak/oku/… yolunu `oku` kapsamına da açar.
 	redir /oku /oku/ 308
+	# S10: davet bağlantısı (okuyucu parolasını koyar); girişsiz açılır, jetonu servis denetler
+	handle /oku/davet/* {
+		header Cache-Control "no-store"
+		header Referrer-Policy "no-referrer"
+		header X-Robots-Tag "noindex, nofollow"
+		reverse_proxy 127.0.0.1:8009
+	}
 	handle /oku/* {
 		rewrite * /taslak{uri}
 		forward_auth 127.0.0.1:8009 {
