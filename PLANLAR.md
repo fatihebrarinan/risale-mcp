@@ -69,7 +69,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   <e-posta>` bağlantıyı verir, kullanıcı kendi e-postasıyla gönderir. Kullanıcıdan beklenen: karşılama sayfasını
   (`/oku/#/~hosgeldin`) ve kopyalama damgasını okuyup düzeltmek, sonra ilk davetler. Sıradaki iş 1: **A4** Türkçe lügat
   (S10 (h) onunla gelir). S4'ün cevapları "Bekleyen"de: Anthropic (S4.3), OpenAI (S4.1). **E8'in izni geldi
-  (2026-11-23):** risaleoku diğer dillerdeki tercümelere de izin verdi ("Sonra" › E8, `docs/izinler.md`). D5'in
+  (2026-11-23):** risaleoku diğer dillerdeki tercümelere de izin verdi; E8 (Arapça tercüme) "Sıradaki" 9'da. D5'in
   kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine sürüyor
   (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
@@ -79,7 +79,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
 - **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 6 (Risale'si az birimlere göz
-  atmak); E8'in ayrıntısı konuşuluyor (kapsam, kimlik, eşleme, arama; sonra sırası).
+  atmak); E8.6 için Arapça okuyan bir denetçi aramak.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -96,8 +96,9 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 | 6 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
 | 7 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
 | 8 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 9 | B3 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 10 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 9 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 10 | B3 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 11 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 
 - S4.7 **Claude eklentisi** (plugin, kullanıcının kararı, 2026-11-22): küçük, herkese açık GitHub deposu (proje
   talimatı skill olarak, dört bağdaştırıcının adresi, README, lisans; metin girmez). Önce yerelde kurulup skill'in
@@ -135,6 +136,37 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   kitaplar "Sonra"da.
 - B9 **Türk hattının iki kaynağı** (S7'nin açığı, 2026-11-21): Diyanet baskısının Türk hattıyla risaleoku'nun Türk hattı
   arasındaki küçük işaret farkları (ör. durak işaretleri) bakılmadı; kaynak risaleoku. Kısa karşılaştırma, rapor.
+- E8 **Külliyatın Arapça tercümesi** (kullanıcının kararları, 2026-11-23; izin ve geçmişi "Sonra"dan taşındı, aşağıda).
+  Kaynak risaleoku'nun "كتب عربية" rafı (`data/raw/risaleoku_app/ar_*`, diskte; Türkçe risaleoku ciltleriyle aynı
+  biçim: `#` sayfa işareti, `toc`, `footnotes`), İhsan Kasım es-Sâlihî'nin tercümesi, Sözler Neşriyat (Kahire).
+  İşârât ve Mesnevî'nin Arapça asılları, Kızıl İcaz, Ta'likat ve Hutbe zaten sistemde.
+  **Kapsam:** الكلمات (≈235 bin kelime), المكتوبات (≈150 bin), اللمعات (≈144 bin), الشعاعات (≈177 bin; 1. ve 8. Şuâ
+  yok), الملاحق (≈100 bin; üç Lâhika'dan seçme, başlıklar mütercimin), صيقل الإسلام'ın kalanı (Muhakemat, Divan-ı
+  Harb-i Örfî, Sünuhat, Hutuvat-ı Sitte…), سيرة ذاتية (≈150 bin; Tarihçe-i Hayat değil, İhsan Kasım'ın Külliyat'tan
+  tarih sırasıyla derlemesi: **mecmua** olur, pasajları öbür Arapça ciltlere eşlenir, `authority: derleme`,
+  derleyen İhsan Kasım). **Kimlikler Osmanlıca gibi kendi yapısıyla** (`sozler-arabi/…`; Türkçe kimliklerle paralel
+  tutmak sonra ayrıca karar). Öbür diller "Sonra"da.
+  Alt adımlar:
+  - E8.1 Ayrıştırma (mekanik): her cilt ayrı eser, dil `ar`, `translation: true`, `translator` İhsan Kasım, baskı
+    kaydı (`catalog/editions.py`), yeni grup; `catalog/permissions.py`'deki risaleoku kaydına diğer diller.
+    Katmanlar: "(المؤلف)" dipnot müellifin hâşiyesi (Sözler'de 268 notun 136'sı), öbürleri mütercimin notu
+    (`notes`: hadis kaynakları, açıklamalar); mütercimin başlıkları, takdimler ("ما الملاحق؟", Mustafa Sungur'un
+    takdimi, "هذه السيرة الذاتية"), "نبذة عن بعض الأعلام" işaretli katman, müellife mal edilmez. Sayfa numarası
+    tutulmaz. Kontrol arayüzünde gözden geçirme.
+  - E8.2 Sîret-i Zâtiyye mecmua olarak (`books/mecmua.py`, aynı dil, aynı mütercim: neredeyse kelimesi kelimesine).
+  - E8.3 Türkçe asılla **bölüm düzeyinde** eşleme (Onuncu Söz ↔ الكلمة العاشرة; numara ve başlıktan, mekanik; bağ ya
+    da `sources` gibi), eşleşmeyen ve yer değiştirenlerin raporu. **Paragraf düzeyi denenir** (çapa: iki metinde
+    aynen duran müellifin Arapçası, âyet, hadis, dua; çok dilli vektörler), "olursa olur, olmazsa olmaz"; bir ciltte
+    ölçülür.
+  - E8.4 Arama: kelime araması hazır; Arapça vektörler (Voyage, maliyet önce ölçülür). **Varsayılan aramaya girmez**
+    (Türkçe sonuçlara karışmasın, Osmanlıca gibi); Arapça sorguda, eser ya da dil verilince gelir.
+  - E8.5 Talimat ve araçlar (Risale eklentisi; ayrı eklenti yok): Arapça soranda Arapça tercümeden alıntı, mütercim
+    anılır, varsa Türkçe aslın adresi; atıf yolu Arapça başlıklarla; kaynakça satırında mütercim, yayınevi ve
+    risaleoku (soruda verilen söz). Deploy'da beklenen fark.
+  - E8.6 Ölçüm: 20–30 Arapça örnek soru ve birkaç uçtan uca deneme; **Arapça okuyan ehil bir denetçi gerekir**
+    (kullanıcı arıyor); bulunana kadar bu adım bekler, öbürleri yürür.
+  - Sonra (ayrı iş): sitenin, proje talimatının ve dizin metinlerinin Arapçası.
+  Model çağrısı yok (Voyage hariç): Pro'da yürür.
 - D16 **Bakara'nın maliyet raporu ve hesap kararı** (D5'ten kalan; kuyruk durunca, Bakara bitmese de): sûre başına
   maliyet (destekçiye "şu kadar para, şu kadar sûre"; kuyruğun birim kayıtları `data/d1/d5/bakara.json`) ve hesap
   ayrımı kararı (ayrı abonelik ya da API hesabı; hat ikisine de tek ayarla geçebilecek şekilde). "Fikirler" ›
@@ -187,25 +219,20 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   Yeni sürümler seyrek, şimdilik bırakıldı. Çözüm yolu: notun sürümü ve seçicisiyle (`secici`) yeni sürümde en yakın
   paragrafı bulup notu orada "önceki sürüme yazılmıştı" diye göstermek. (Söz paragrafta bulunamazsa not paragrafın
   altında açık durur, "bu sürümde bulunamadı" der: bu yapıldı.)
-- **E8 Arap dünyasına açılmak** (kullanıcının kararı, 2026-11-22): ilk adım izin. Külliyatın Arapça tercümesi
-  (İhsan Kasım es-Sâlihî; künye: "حقوق الطبع محفوظة للناشر", شركة سوزلر للنشر, Kahire). **Yol değişti (kullanıcının
-  kararı, 2026-11-23):** önce risaleoku.com'a soruldu (cevap aşağıda), Sözler'e e-posta cevaba göre (taslak
-  `docs/e8-arapca-kulliyat-izin-epostasi.md`). Gerekçe: aynı sohbette, izin vermiş birine; soru 20'yi aşkın dili
-  birden kapsar; Sözler'in Türkçe baskısı ve İhsan Kasım'ın tahkikli Arapça asılları zaten bu izinle kullanılıyor.
-  Sınırı: tercümenin hakkı risaleoku'nun değil, yayıncının ve mütercimin; bu yüzden rıza sorusu da mesajda.
-  **İzin geldi (2026-11-23, "RN Kütüphanesi"):** "yabancı dillerde mütercimler tarafından izinli olarak
+- **E8'in izni ve geçmişi** (iş "Sıradaki" 9'da): külliyatın Arapça tercümesi için ilk adım izindi (kullanıcının
+  kararı, 2026-11-22). Önce risaleoku.com'a, ilk izni veren sohbetin içinden soruldu (2026-11-23; gerekçe: izin vermiş
+  birine, soru 20'yi aşkın dili birden kapsar; tercümenin hakkı yayıncının ve mütercimin olduğu için rıza sorusu da
+  mesajdaydı). **İzin geldi (2026-11-23, "RN Kütüphanesi"):** "yabancı dillerde mütercimler tarafından izinli olarak
   kullanılmaktadır.. ticari bir amacınız olmadığı için bizzat izin almadan kullanabilirsiniz" (ekran görüntüsü
-  `data/raw/kullanici/izinler/risaleoku-cevap-diller.jpeg`; kayıt `docs/izinler.md`). Planın (a) şıkkı: risaleoku
-  tercümeleri mütercimlerin izniyle paylaşıyor, onların izni yeterli; Sözler'e izin değil bilgi e-postası. Şart aynı
-  (kazanç yok, kaynak gösterilir); soruda verdiğimiz söz: tercümelerde mütercim ve yayınevi de anılır. Not: cevap
-  mütercimleri anıyor, Arapça baskının künyesi hakkı yayıncıya veriyor ("حقوق الطبع محفوظة للناشر"); bilgi
-  e-postası bu yüzden Sözler'e gider (Kahire'deki şirkete iletilmesi ricasıyla).
-  **Sözler'e e-posta şimdilik gitmez** (kullanıcının kararı, 2026-11-23; taslak durur). **Sonraki adımlar** (sırası
-  kullanıcının kararı): (2) Hangi dil: önce Arapça (9 cilt diskte,
-  `data/raw/risaleoku_app/ar_*`, İhsan Kasım es-Sâlihî; indirildi, ayrıştırılmadı); öbür diller ayrı karar. (3) Eser
-  kataloğa (tercüme olarak `Work.translation`, `translator`, baskı kaydı ve yayınevi `catalog/editions.py`); Türkçe
-  kimliklerle paralel mi, Osmanlıca gibi ayrı mı ayrıştırmanın başında belirlenir; `catalog/permissions.py`'deki
-  risaleoku kaydına diğer diller yazılır. (4) Sitenin ve talimatın Arapçası sonra.
+  `data/raw/kullanici/izinler/risaleoku-cevap-diller.jpeg`; kayıt `docs/izinler.md`). Şart aynı (kazanç yok, kaynak
+  gösterilir); verdiğimiz söz: tercümelerde mütercim ve yayınevi de anılır. Arapça baskının künyesi hakkı yayıncıya
+  veriyor ("حقوق الطبع محفوظة للناشر"); **Sözler'e e-posta şimdilik gitmez** (kullanıcının kararı, 2026-11-23;
+  taslak `docs/e8-arapca-kulliyat-izin-epostasi.md` durur).
+- **Öbür dillerdeki tercümeler** (kullanıcının kararı, 2026-11-23: E8'in Arapça hattı oturduktan sonra, aynı yoldan):
+  risaleoku'nun "Other Languages" rafı izne dahil. Tam ya da büyük takımlar: Almanca (14 kitap), İngilizce (11),
+  İspanyolca (33), Rusça (20), Urduca (15), Özbekçe (≈97, iki alfabe), Macarca (15); öbürleri küçük kitaplar
+  (Bengalce, Yunanca, Fince, Malayca, Felemenkçe, Lehçe, Portekizce, Türkmence, Uygurca, Çince…). Hangi dilin
+  ekleneceği ayrı karar.
 - **E5'in kalanı:** 3. dilim (el-Mevâhibü'l-Ledünniyye) ve (c) listesi (`docs/eserler/klasik.md`); 2. dilim ve
   tanıtım "Sıradaki"nde.
 - **E7 (b) Yeni hadis kitapları**, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve

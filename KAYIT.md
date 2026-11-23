@@ -1761,7 +1761,10 @@ eklenir).
   izinli olarak kullanılmaktadır.. ticari bir amacınız olmadığı için bizzat izin almadan kullanabilirsiniz". İzin
   Risale'nin diğer dillerdeki tercümelerini de kapsar; şart aynı (kazanç yok, kaynak), tercümelerde mütercim ve yayınevi
   anılır. Ekran görüntüsü `data/raw/kullanici/izinler/risaleoku-cevap-diller.jpeg`; `docs/izinler.md` güncellendi
-  ("Bekleyen"den çıktı). Planın (a) şıkkı: Sözler'e izin değil bilgi e-postası. Sonraki adımlar `PLANLAR.md` › "Sonra" › E8.
+  ("Bekleyen"den çıktı). Planın (a) şıkkı: Sözler'e izin değil bilgi e-postası. Sözler'e e-posta şimdilik gitmez (kullanıcının kararı). E8 "Sıradaki" 9'a girdi (B3'ten önce; kullanıcının
+  kararları: kapsam altı cilt ve Saykal'ın kalanı, Sîret-i Zâtiyye mecmua, kimlikler Osmanlıca gibi kendi yapısıyla,
+  ilk adımda bölüm eşlemesi, paragraf eşlemesi denenir, varsayılan aramaya girmez, öbür diller "Sonra"da); alt
+  adımlar E8.1–E8.6 `PLANLAR.md` › "Sıradaki" › E8.
 
 
 **D3. Başka türden bir birim.** D1 ve D2'nin dersleriyle, yine İşârât'ın kapsadığı aralıkta (cevabı bilinen, kör
