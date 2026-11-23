@@ -71,7 +71,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (`data/interim/lugat/olcum.md`). Önceki adım **S10** de yayında; kullanıcıdan beklenen: karşılama sayfasını
   (`/oku/#/~hosgeldin`) ve kopyalama damgasını okuyup düzeltmek, sonra ilk davetler (`scripts/sunucu.sh taslak davet
   <e-posta>`). Sıradaki iş 1: **E6.1** Elmalılı'nın kaynak adayları: bulundu (E6'nın altında A, B, C),
-  YEK'e izin e-postası taslağı hazır (`docs/yek-izin-epostasi.md`), kullanıcı gönderecek. S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
+  YEK'e izin e-postası gönderildi (2026-11-23, "Bekleyen"). Sıradaki iş: **S4.7** Claude eklentisi. S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
   OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 8'de. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
   sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
@@ -90,7 +90,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | E6 | E6.1 Elmalılı'nın kaynak adayları: arama, örnekleriyle kullanıcıya, seçim (ekleme 9. sırada) | |
+| 1 | E6 | E6.1 Elmalılı'nın kaynağı: adaylar bulundu (A, B, C); YEK'in cevabı bekleniyor ("Bekleyen"); ekleme 9. sırada | |
 | 2 | S4 | S4.7 Claude eklentisi (plugin): depo, yerelde deneme, başvuru | |
 | 3 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
 | 4 | E5 | Klasik 2. dilim ve yeni tanıtım | |
@@ -131,8 +131,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   amacıyla" diye tanımlar, hazırlayanlar çoğaltma ve umuma iletim haklarını Başkanlığa devreder, Başkanlık üçüncü
   kişilere kullandırabilir. Kullanıcının bildiği izin (ticari değilse ve metin başka yerde kendi adımıza
   yayımlanmazsa) yazılı değilse yazılı teyit gerekir.
-  Kullanıcının elinde belge yok: teyit e-postası taslağı `docs/yek-izin-epostasi.md` (kullanıcı gönderir; cevap
-  gelene kadar yedek yol A).
+  Kullanıcının elinde belge yok: teyit e-postası (`docs/yek-izin-epostasi.md`) gönderildi (2026-11-23); cevap
+  gelene kadar yedek yol A.
 - E5 **Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Sırada (b)'nin 2. dilimi (kullanıcı, 2026-11-13); 3. dilim ve (c) "Sonra"da. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
 - A1 **Kaynakçada doğrudan bağlantı** (Aşama 20; e-Risale ile görüşmeden, 2026-10-30): kaynakçada yolun yanında metnin
   kendisine bağlantı; atıf hangi kaynaktaysa (erisale.com, risaleoku.com) onun ilgili yerine. erisale'de bölümün
@@ -217,6 +217,7 @@ araştır, varsa düzelt"):
 | Kimlik | İş | Kimde | Eski adı |
 |---|---|---|---|
 | S4.3 | Claude dizini: Risale başvurusu "In review"; dizin ekibine e-posta gitti (2026-11-16). **Sonraki adım (kullanıcının kararı, 2026-11-22):** belgenin verdiği adrese (mcp-review@anthropic.com) listeleme adı, organizasyon ve durumla e-posta; bir hafta cevap yoksa başvuru silinip `risale.risalemcp.com/mcp` adresiyle yeniden gönderilir. Öncesinde dört sunucu dizin ölçütleriyle denetlenir (araçlarda `title` ve salt okunur işareti, hata iletileri, Voyage'ın beyanı). **Denetlendi (2026-11-22):** bulgular ve e-posta taslağı `docs/s4-dizin-basvurulari.md` §2e; düzeltmeler `aa9083d`. **E-posta gitti (2026-11-22);** dört listeleme yeni İngilizce adlarla incelemede (2026-11-23); alan adı Anthropic'te kanıtlandı (DNS TXT, 2026-11-23; "Verified" talep edilmedi: şirket içindir). Cevap yoksa ≈2026-11-30'da yedek yol | Anthropic | M7 |
+| E6.1 | Elmalılı: Türkiye Yazma Eserler Kurumu'na izin e-postası gönderildi (2026-11-23; `docs/yek-izin-epostasi.md`): Hak Dini Kur'an Dili neşrinin (haz. Köksal, Kaya) ticari olmayan kullanımının yazılı teyidi ve dijital dosyası. İzin gelirse `docs/izinler.md`'ye, neşir C adayı olur; gelmezse yedek yol A (archive.org Mürşit metni). Birkaç hafta cevap yoksa telefon (0212 514 46 35, dahili 281–282) | Türkiye Yazma Eserler Kurumu | |
 | S4.1 | OpenAI: dört başvuru **kullanıcının doğrulanmış kendi adıyla** ("Fatih Ebrar İnan"; site ve paket aynı adla, yayında; organizasyon adı "Risale MCP"). Risale "Risale-i Nur Library" adıyla yeniden gönderildi (2026-11-23); Hadis, Tefsir, Klasik paketleri, alan adı jetonları ve demo videolarıyla Risale'nin sonucu beklenmeden gönderildi (2026-11-23; hakeme notlar `docs/s4-dizin-basvurulari.md` §6–§7). İnceleme ≈1 ay. Ret gelirse gerekçesine göre düzeltme ve itiraz (e-postayı yanıtlayarak) | OpenAI | M7 |
 
 Kapananlar (2026-11-12): E4 Kızıl İcaz'ın Türkçesi (gerek yok, "Biten"); Diyanet (izin yok, "Biten"); Osmanlıcanın
