@@ -64,10 +64,12 @@ Son verilen kimlikler: E8, S10, A4, D16, B9 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde (2026-11-23):** **S4 kapandı** (kullanıcının kararı): dış adımların hepsi gönderildi, cevaplar
-  "Bekleyen"de: Anthropic (S4.3, dört listeleme incelemede), OpenAI (S4.1, dört başvuru incelemede), risaleoku.com (E8,
-  diğer dillerdeki eserler). Sıradaki iş 1: **S10** davet altyapısı ve okuma platformu (ön şartı olduğu davet S8
-  yazısından sonra; Max bitmeden, 2026-12-14). D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine sürüyor
+- **Önde (2026-11-23):** **S10 bitti ve yayında** (davet bağlantısı, kişisel defter, Notlarım ve Word dosyası,
+  karşılama, kopyalamada damga, kaldığı yer; gizlilik politikası yenilendi). Davet: `scripts/sunucu.sh taslak davet
+  <e-posta>` bağlantıyı verir, kullanıcı kendi e-postasıyla gönderir. Kullanıcıdan beklenen: karşılama sayfasını
+  (`/oku/#/~hosgeldin`) ve kopyalama damgasını okuyup düzeltmek, sonra ilk davetler. Sıradaki iş 1: **A4** Türkçe lügat
+  (S10 (h) onunla gelir). S4'ün cevapları "Bekleyen"de: Anthropic (S4.3), OpenAI (S4.1), risaleoku.com (E8). D5'in
+  kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine sürüyor
   (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
   "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
@@ -76,7 +78,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
 - **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek (risaleoku'nun cevabına göre E8'in sonraki
-  adımı); "Sıradaki" 7 (Risale'si az birimlere göz atmak).
+  adımı); "Sıradaki" 6 (Risale'si az birimlere göz atmak).
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -85,37 +87,16 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S10 | Davet altyapısı ve okuma platformu (davet bağlantısı, varsayılan `oku`, karşılama, kişisel defter, kopyalamada damga, kaldığı yer) | |
-| 2 | A4 | Türkçe lügat (risaleoku): indirme, eşleme, platformda kelimeye dokununca anlam, Risale eklentisinde lügat aracı | |
-| 3 | E6 | E6.1 Elmalılı'nın kaynak adayları: arama, örnekleriyle kullanıcıya, seçim (ekleme 10. sırada) | |
-| 4 | S4 | S4.7 Claude eklentisi (plugin): depo, yerelde deneme, başvuru | |
-| 5 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
-| 6 | E5 | Klasik 2. dilim ve yeni tanıtım | |
-| 7 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 8 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 9 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 10 | B3 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 11 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
-
-- S10 **Davet altyapısı ve okuma platformu** (kullanıcının kararları, 2026-11-22; ehil okuyucu davetinin ön şartı, S8
-  yazısı 2026-11-24'te çıkıyor). (a) Hesabın varsayılan kapsamı `oku`, masa açıkça istenir (bugün varsayılan `masa`;
-  tek hesap kullanıcınınki). (b) Tek kullanımlık davet bağlantısı (7 gün): yönetici `davet <e-posta>` der, bağlantıyı
-  kendi e-postasıyla gönderir (site e-posta göndermez), okuyucu parolasını kendisi koyar; unutursa yeni bağlantı.
-  (c) İlk girişte karşılama sayfası (yapay zekâ taslağı, tefsir değildir; not nasıl bırakılır; ne saklanır).
-  (d) Paragraf altındaki "atıf" ve "bağlantı" kalkar, "not" büyür; paragrafın adresi not açılınca adres çubuğuna
-  yazılır. (e) Platformdan metin kopyalanınca damgalı künye satırı kendiliğinden eklenir ("… yapay zekâ taslağı …
-  Tefsir değildir."). (f) Kaldığı yer: okuyucu dönünce son birim ve paragraf.
-  (g) **Not, okuyucunun kendi defteri** (kullanıcının kararı, 2026-11-22): her okuyucunun notu kendisine bağlı
-  saklanır, girince notlarını paragraflarının yanında görür; (g1) herkes yalnız kendi notunu görür, yönetici de
-  (bugün masa hesabı herkesinkini görüyor; notların sunucuda durduğu karşılama sayfasında ve gizlilik politikasında
-  yazar); (g2) "Notlarım" sayfası: bütün birimlerdeki notlar tek listede, paragrafına bağlantıyla, indirilebilir;
-  (g3) tür seçimi (hata, soru, öneri, kaynak) kalkar, tek yazı alanı; (g4) okuyucu notunu düzenler ve gerçekten
-  siler (heyet akışının "silinmez" kuralı kişisel defterde uygulanmaz); (g5) paragrafta seçilen söz notun başında
-  kalır. Yöneticiye bildirim yok, notla taslak düzeltme (`notlarla`) ilk aşamada kullanılmaz (kod durur). Birim
-  sonunda tek soru önerisi kullanıcıya gerekli gelmedi. (h) Türkçe lügat (A4 (a)) hazır olunca platformda kelimeye
-  dokununca anlam. (i) S7'nin platform açıklarından (1) masadan taşınacak kolaylıklar 2026-11-22'deki
-  konuşmayla karşılandı, (2) canlıda girişle bakış S10'un deneme adımıdır, (3) davetli hesapları S10'un davet
-  bağlantısıyla açılır.
+| 1 | A4 | Türkçe lügat (risaleoku): indirme, eşleme, platformda kelimeye dokununca anlam, Risale eklentisinde lügat aracı | |
+| 2 | E6 | E6.1 Elmalılı'nın kaynak adayları: arama, örnekleriyle kullanıcıya, seçim (ekleme 9. sırada) | |
+| 3 | S4 | S4.7 Claude eklentisi (plugin): depo, yerelde deneme, başvuru | |
+| 4 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
+| 5 | E5 | Klasik 2. dilim ve yeni tanıtım | |
+| 6 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 7 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 8 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 9 | B3 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 10 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 
 - S4.7 **Claude eklentisi** (plugin, kullanıcının kararı, 2026-11-22): küçük, herkese açık GitHub deposu (proje
   talimatı skill olarak, dört bağdaştırıcının adresi, README, lisans; metin girmez). Önce yerelde kurulup skill'in
@@ -124,7 +105,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 - A4 **Lügat** (kullanıcının kararı, 2026-11-22): (a) **Osmanlıca–Türkçe**: risaleoku'nun Türkçe lügatı (katalogda
   `kind: dictionary`, `lang: tr`, sürüm 41; harf başına `x.txt` "kelime=anlam", anlamlar " * " ile ayrılır, `x_f.txt`
   yazılış çeşitleri; ≈14 bin madde tahmini, ≈1,2 MB); risaleoku'nun izni bütün içeriğini kapsar (kullanıcı). Nâşirin
-  lügatıdır, müellife mal edilmez (meal gibi). Kullanım: okuma platformunda Türkçe kelimeye dokununca anlam, Risale
+  lügatıdır, müellife mal edilmez (meal gibi). Kullanım: okuma platformunda Türkçe kelimeye dokununca anlam (S10'dan kalan (h)), Risale
   eklentisinde bir lügat aracı; kelimenin ekleri atılarak en uzun madde eşlenir. Hangi basılı lügatten geldiği
   risaleoku'ya sorulur (atıf için). e-Risale'nin lügatı indirilen veride yok (sitede `/api/` üzerinden). Arapça
   lügat "Fikirler"de.
@@ -212,7 +193,7 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   tanıtım "Sıradaki"nde.
 - **E7 (b) Yeni hadis kitapları**, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve
   Abdürrezzâk'ın Musannef'leri (nüshalar seçilirken bakılır). E7'nin (a) ve (c)'si "Sıradaki"nde.
-- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 10),
+- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 9),
   o zaman kimlik alır.
 
 ## Dondurulan
@@ -249,6 +230,10 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   damgalı model tercümesi kuralı.
 
 ## Fikirler (konuşuldu, karar yok)
+
+- **"Geliştirme için gönder"** (kullanıcının fikri, 2026-11-23; şimdi yapılmaz): okuyucu kendi defterindeki bir notu
+  isterse geliştirmeye gönderir, o not ar-ge notu olur (`masa.py` `kapsam`: `defter` → `arge`). Kişisel defter ile
+  ar-ge kaydı arasındaki ayrımı pekiştirir.
 
 "Sonra"dan taşınanlar (kullanıcının kararı, 2026-11-22):
 - **Kur'ân'ın geri kalanının taslakları** (kullanıcının kararı, 2026-11-20: D5 yalnız Bakara). Ön şartlar: bütün
@@ -324,6 +309,12 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- S10 Davet altyapısı ve okuma platformu (2026-11-23, yayında): tek kullanımlık davet bağlantısı (7 gün; okuyucu
+  parolasını kendisi koyar, unutursa yeni bağlantı), varsayılan kapsam `oku`; okuyucunun kişisel defteri (herkes, yönetici
+  de, yalnız kendi notunu görür; düzenler, gerçekten siler; tür seçimi yok; seçilen söz notun başında), Notlarım sayfası
+  ve Word dosyası; paragraf altında yalnız "Not ekle"; ilk girişte karşılama; kopyalamada damgalı künye satırı; kaldığı
+  yer hesapta; telefonda başlık sığar; gizlilik politikası (Türkçe, İngilizce) yenilendi. S10'dan önceki notlar ar-ge
+  kaydı olarak ayrı. (h) lügat A4'te. Ayrıntı `KAYIT.md` › "Kimlikli işler" › S10.
 - S4'ün dış adımları (kapandı, 2026-11-23, kullanıcının kararı): Claude'da dört listeleme İngilizce adlarla
   ("Risale-i Nur Library", "Hadith Library", "Tafsir Library", "Classical Islamic Library") incelemede, dizin ekibine
   e-posta gitti, alan adı kanıtlandı; OpenAI'de dört başvuru kullanıcının adıyla gönderildi; E8 için risaleoku'ya

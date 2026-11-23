@@ -345,6 +345,40 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S10. Davet altyapısı ve okuma platformu** (bitti ve yayında, 2026-11-23; kullanıcının kararları 2026-11-22 ve
+2026-11-23: kaldığı yer sunucuda, hesaba bağlı; Notlarım Word dosyası olarak, çünkü okuyucular bilgisayarla haşir neşir
+olmayabilir; "yalnız siz görürsünüz" ifadesi; eski notlar ar-ge kaydı olarak ayrı; taslak sunucusuna giden dışa
+aktarım defter notlarını vermez; deploy ve canlı deneme izni):
+- **Hesap ve davet** (`site_auth.py`): `davet <e-posta> [--masa] [--name]` tek kullanımlık bağlantı verir
+  (`https://risalemcp.com/oku/davet/<jeton>`, 7 gün, yalnız özeti saklanır, yenisi eskisini bozar); hesap yoksa açılır,
+  varsa parolası yenilenir (oturumları kapanır, kapsamı değişmez). Okuyucu parolasını kendisi koyar (en az 10 karakter),
+  girmiş olur. `davetler` bekleyenleri listeler. `add-user` varsayılanı artık `oku` (`--masa` açıkça). Caddy
+  `/oku/davet/*`'i girişsiz servise verir (`no-referrer`). Girişsiz `/oku/` isteği girişten sonra `/oku/`'ya döner
+  (önceden Caddy'nin iç yolu `/taslak/oku/`).
+- **Kişisel defter** (`masa.py`, `notlar.kapsam`): platformdan yazılan not `defter`dir: herkes (yönetici de) yalnız
+  kendi notunu görür, yazan düzenler (`PUT /taslak/api/not/<id>`) ve gerçekten siler (`DELETE`; geçmişi de), tür ve
+  durum yok, dışa aktarmaya ve `notlarla`ya girmez, hesap silinince (`remove-user`) silinir. Notta birimin adı
+  (`etiket`) ve paragrafın ilk sözleri (`baglam`) durur. S10'dan önceki notlar `arge` (silinmez kuralı, durumları,
+  dışa aktarım onlarındır); masa onları `?arge=1` ile görür (`d1-masa-sablon.html`). Notlarım: `GET /taslak/api/defter`,
+  Word dosyası `defter.docx` (`docx_yaz.py`; yeni bağımlılık yok, düz XML; Word, LibreOffice ve Google Dokümanlar açar).
+- **Platform** (`scripts/oku-app.html`): paragraf altında yalnız "✎ Not ekle" (atıf ve bağlantı kalktı); not açılınca
+  paragrafın adresi adres çubuğuna yazılır; telefonda düğmeye dokununca kaybolan seçim saklanır; not kartında düzenle ve
+  satır içi onaylı sil; ilk girişte karşılama (`#/~hosgeldin`: taslak, tefsir değildir; not nasıl bırakılır; ne
+  saklanır; kopyalama), Notlarım (`#/~notlarim`), giriş sayfası `#/~giris`; kopyalanan metnin sonuna damga ("— Risale
+  MCP okuma platformu, Bakara 2:40, taslak sürüm 1, <paragrafın adresi>. Yapay zekâ taslağıdır; tefsir değildir.";
+  taslak dışı yerde birimin adresi ve "Bu sayfadaki taslaklar yapay zekânındır"); kaldığı yer (`/taslak/api/yer`,
+  birime girince ve kaydırınca) ve `/oku/` boş adresle açılınca oraya gider. Telefonda başlıkta "geniş" ve "Usul"
+  gizli (taşıyordu).
+- **Gizlilik politikası** (Türkçe, İngilizce, 23 Kasım 2026): eski metin "notlar sunucuya gönderilmez" diyordu (S7'den
+  beri yanlıştı); yeni metin davet, saklananlar, kaldığı yer ve defter notlarını anlatır.
+- **Deneme:** 27 yeni ya da değişen test; yerelde tarayıcıda (masaüstü ve 390 px) davet → karşılama → not → düzenle →
+  sil → kopyalama → Notlarım → dönüş; canlıda uydurma bir hesapla curl ile baştan sona (davet, tek kullanım, kapsam,
+  karşılama, yer, not, Word, ar-ge kapalı, silme), sonra hesap silindi. Canlıda tarayıcıyla girişi kullanıcı yapar
+  (model canlı sitede parola girmez).
+- **Taslak sunucusu:** kuyruk her birimden sonra `/oku/index.html`'i ve masa kabuğunu kendi kodundan kurar; yeni kod
+  `taslak-sunucu.sh gonder` ile `~/kod-bekleyen`'e kondu, sıradaki birimin başında geçer. Arada eski kodla biten birim
+  eski uygulamayı geri koyarsa yerelden yeniden gönderildi.
+
 **Küçük açıklar B4, B7, B8 (2026-11-21, kullanıcının onayı: "önerdiğin sıraya başla"; B2 ve B5 aynı gün kapandı):**
 - **B4 Mecmua eşlemesi:** Nutuk'ta "üç elmas kılıç"ın "Birincisi"nin altındaki iki kelimelik "İttihad-ı millî...",
   ikinci geçişte (`_fill_between`) Divan-ı Harb'in uzun "Yaşasın Şerîat-ı Garrâ! … Yaşasın ittihâd-ı millî! …"
