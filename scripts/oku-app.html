@@ -233,6 +233,8 @@ document.addEventListener('click', e => {
 // alıntının tercümesi etiketli kalır (kaynağın sözü ile modelin sözü karışmasın)
 const KIND_LAB = {tercume: '', alinti_tercume: 'Yapay zekâ tercümesi (alıntının)', alinti: 'Alıntı', tr: ''};
 
+// "Ders: …" dersi açar, "Dersin sonu" kapatır: ikisi de "Ders" ile başlar, ayrımı kelime sınırı yapar
+const isDers = h => /^Ders\b/.test(h || '');
 function draftHTML(t) {
   const byId = Object.fromEntries(t.bloklar.map(b => [b.id, b]));
   const paired = new Set(t.bloklar.filter(b => b.tercumesi).map(b => b.tercumesi));
@@ -248,7 +250,7 @@ function draftHTML(t) {
   let cur = null;
   for (const b of visible) {
     const h = head[b.id];
-    if (h) cur = h.startsWith('Ders') ? h : null;
+    if (h) cur = isDers(h) ? h : null;
     if (cur && !wide[cur]) for (const k of (b.metin.match(/\[[^\]\n]*\]/g) || []).flatMap(x => x.match(/\d+/g) || [])) {
       const s = t.kaynaklar[k];
       if (s && s.sunucu === 'risale' && s.kaynak && s.kaynak.bag) { wide[cur] = s; break; }
@@ -263,7 +265,7 @@ function draftHTML(t) {
     const hd = head[b.id];
     if (hd) {
       if (inDers) { L.push('</div>'); inDers = false; }
-      if (hd.startsWith('Ders')) {
+      if (isDers(hd)) {
         const w = wide[hd];
         L.push(`<div class="ders"><h3>${bidi(esc(hd))}</h3>` + (w ? `<p class="small">Risale-i Nur'da genişi: <a href="${esc(w.kaynak.bag)}" target="_blank" rel="noopener">${esc(w.satir.split(' › “')[0])}</a></p>` : ''));
         inDers = true;
