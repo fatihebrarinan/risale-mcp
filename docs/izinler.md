@@ -77,3 +77,4 @@ nurpedia'dan gelir; yalnız nurpedia'nın resim verdiği tablolar PDF'ten, kulla
 | Kaynak | İstek | Durum |
 |---|---|---|
 | Yeni Asya | Ortak proje, izinli PDF'ler | Planda; mevcut veri kullanılmıyor |
+| Türkiye Yazma Eserler Kurumu | Hak Dini Kur'an Dili neşri (haz. Köksal, Kaya): ticari olmayan kullanımın yazılı teyidi ve dijital dosya. Künye "Her hakkı mahfuzdur" der | E-posta gitti (2026-11-23, `docs/yek-izin-epostasi.md`); izin gelmezse Elmalılı'nın kaynağı archive.org'daki Mürşit metni (PLANLAR E6) |

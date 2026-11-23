@@ -70,9 +70,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   önizleme `python3 scripts/site-uret.py onizle`) okuyup yayımlamak; eşleme örneklerine bakmak
   (`data/interim/lugat/olcum.md`). Önceki adım **S10** de yayında; kullanıcıdan beklenen: karşılama sayfasını
   (`/oku/#/~hosgeldin`) ve kopyalama damgasını okuyup düzeltmek, sonra ilk davetler (`scripts/sunucu.sh taslak davet
-  <e-posta>`). Sıradaki iş 1: **E6.1** Elmalılı'nın kaynak adayları: bulundu (E6'nın altında A, B, C),
-  YEK'e izin e-postası gönderildi (2026-11-23, "Bekleyen"). Sıradaki iş: **S4.7** Claude eklentisi. S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
-  OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 8'de. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
+  <e-posta>`). **E6.1 bitti (2026-11-23):** Elmalılı'nın kaynak adayları bulundu, Yazma Eserler Kurumu'na izin
+  e-postası gitti ("Bekleyen"); ekleme Aralık'taki tefsir kurulumunda kalır (kullanıcının kararı). Sıradaki iş 1:
+  **S4.7** Claude eklentisi. S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
+  OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 7'de. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
   sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
   "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
@@ -80,7 +81,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   yedek yolu ("Bekleyen"). (3) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
-- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 5 (Risale'si az birimlere göz
+- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 4 (Risale'si az birimlere göz
   atmak); E8.6 için Arapça okuyan bir denetçi aramak.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
@@ -90,16 +91,15 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | E6 | E6.1 Elmalılı'nın kaynağı: adaylar bulundu (A, B, C); YEK'in cevabı bekleniyor ("Bekleyen"); ekleme 9. sırada | |
-| 2 | S4 | S4.7 Claude eklentisi (plugin): depo, yerelde deneme, başvuru | |
-| 3 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
-| 4 | E5 | Klasik 2. dilim ve yeni tanıtım | |
-| 5 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 6 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 7 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 8 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 9 | B3 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 10 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 1 | S4 | S4.7 Claude eklentisi (plugin): depo, yerelde deneme, başvuru | |
+| 2 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
+| 3 | E5 | Klasik 2. dilim ve yeni tanıtım | |
+| 4 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 5 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 6 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 7 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 8 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 9 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 
 - S4.7 **Claude eklentisi** (plugin, kullanıcının kararı, 2026-11-22): küçük, herkese açık GitHub deposu (proje
   talimatı skill olarak, dört bağdaştırıcının adresi, README, lisans; metin girmez). Önce yerelde kurulup skill'in
@@ -114,25 +114,11 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   telif notu olmayan), kullanıcıya örnekleriyle gösterilir; (2) seçilenden ekleme: tefsir koleksiyonuna, âyet
   birimleriyle, Türkçe cümle bölücüyle; Türkçe anlamsal aramada öne geçmesin diye eser ya da dil seçilmeden
   varsayılan aramaya girmez (`find_ayah` etkilenmez, vefat sırasıyla sonda gelir).
-  **E6.1 adayları (2026-11-23, kullanıcının seçimi bekleniyor):** (A) archive.org `ElmaliliKuranTefsiri`: 114 sûre
-  PDF'i, "Mürşit 3.2"den (2015), sadeleştirilmemiş Latin harfli metin, Eser Neşriyat 1979 (3. baskı) sayfa işaretleri
-  ("Sh:»152"), âyet grubu → "Meali Şerifi" → âyet numaralı izah; telif notu yok, lisans alanı boş; Arapça eski bir
-  yazı tipinin (`Arapca3`) glif kodlarıyla, çözülmesi gerekir (Kur'ân alıntılarıyla eşleme tablosu çıkarılabilir;
-  denenmedi). (B) islamilimleri.com "Elmalılı - Orijinal": aynı metin HTML'de, Arapçası "........" ile silinmiş;
-  telif notu yok. (C) Türkiye Yazma Eserler Kurumu'nun tenkitli neşri (Köksal, Kaya; ekitap.yek.gov.tr PDF'leri,
-  Fikriyat da dağıtıyor): en iyi metin (Unicode Arapça, 1935 baskısının sayfaları), ama "Her hakkı mahfuzdur": kurala
-  göre alınmaz, ancak izin istenirse. Elenenler: archive.org'daki öbür takımlar (Azim, Yenda: sadeleştirilmiş;
-  "(original)" kopyası kaldırılmış), kuranikerim.com (sadeleştirilmiş, kapalı), acikkuran ve kuran.gen.tr (yalnız
-  meal), Osmanlıca 1935 taramaları (metin değil).
-  **YEK'in şartları (2026-11-23):** ticari olmayan kullanıma izin veren yazılı bir hüküm bulunamadı. Bulunanlar:
-  PDF künyesi "izni olmaksızın tümüyle veya kısmen, hiçbir yolla ve hiçbir ortamda yayımlanamaz ve çoğaltılamaz";
-  e-kitap sitesinin alt bilgisi "Tüm Hakları Saklıdır"; PDF'leri açan duyuru (yek.gov.tr, n_id=114) "filigranlı pdf
-  … şahsî bilgisayarlara", amaç okuma ve referans; Çeviri ve Yayım Yönetmeliği elektronik yayını "sadece okunabilmesi
-  amacıyla" diye tanımlar, hazırlayanlar çoğaltma ve umuma iletim haklarını Başkanlığa devreder, Başkanlık üçüncü
-  kişilere kullandırabilir. Kullanıcının bildiği izin (ticari değilse ve metin başka yerde kendi adımıza
-  yayımlanmazsa) yazılı değilse yazılı teyit gerekir.
-  Kullanıcının elinde belge yok: teyit e-postası (`docs/yek-izin-epostasi.md`) gönderildi (2026-11-23); cevap
-  gelene kadar yedek yol A.
+  **E6.1 bitti (2026-11-23):** kaynak adayları bulundu: (A) archive.org'daki Mürşit metni (sadeleştirilmemiş, telif
+  notu yok; Arapçası eski yazı tipinin kodlarıyla, çözülmesi gerekir), (B) islamilimleri.com (aynı metin, Arapçası
+  silinmiş), (C) Türkiye Yazma Eserler Kurumu'nun tenkitli neşri (en iyi metin; "Her hakkı mahfuzdur": izin
+  istendi, "Bekleyen"). Ayrıntı `KAYIT.md` › "Kimlikli işler" › E6.1. **E6.2 ekleme:** Aralık'taki tefsir
+  kurulumunda (B3 ile, kullanıcının kararı 2026-11-23); kaynak YEK'in cevabına göre C ya da A.
 - E5 **Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Sırada (b)'nin 2. dilimi (kullanıcı, 2026-11-13); 3. dilim ve (c) "Sonra"da. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
 - A1 **Kaynakçada doğrudan bağlantı** (Aşama 20; e-Risale ile görüşmeden, 2026-10-30): kaynakçada yolun yanında metnin
   kendisine bağlantı; atıf hangi kaynaktaysa (erisale.com, risaleoku.com) onun ilgili yerine. erisale'de bölümün
@@ -243,7 +229,7 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   tanıtım "Sıradaki"nde.
 - **E7 (b) Yeni hadis kitapları**, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve
   Abdürrezzâk'ın Musannef'leri (nüshalar seçilirken bakılır). E7'nin (a) ve (c)'si "Sıradaki"nde.
-- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 9),
+- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 8),
   o zaman kimlik alır.
 
 ## Dondurulan
@@ -359,6 +345,9 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- E6.1 Elmalılı'nın kaynak adayları (2026-11-23): üç aday (archive.org Mürşit metni, islamilimleri.com, Yazma Eserler
+  Kurumu neşri); Kurum'un şartları araştırıldı (her hakkı saklı), izin e-postası gitti ("Bekleyen"). Ekleme (E6.2)
+  Aralık'ta. Ayrıntı `KAYIT.md` › "Kimlikli işler" › E6.1.
 - S11 Site yazılarını web'de düzenlemek (2026-11-23, yayında; kullanıcının kararları: yalnız kendisi, Markdown,
   telefona da uysun): masanın Okumalar › Yazı taslakları'ndan düzenleyici (`/taslak/onizleme/duzenle.html#<tür>/<ad>`;
   solda metin, sağda sitedeki görünüşü, telefonda sekmeli), her "Kaydet" bir sürüm (`data/yazilar.db`, ana sunucu);

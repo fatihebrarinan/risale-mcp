@@ -345,6 +345,30 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**E6.1. Elmalılı'nın kaynak adayları** (bitti, 2026-11-23).
+Adaylar: (A) archive.org `ElmaliliKuranTefsiri`: 114 sûre
+PDF'i, "Mürşit 3.2"den (2015), sadeleştirilmemiş Latin harfli metin, Eser Neşriyat 1979 (3. baskı) sayfa işaretleri
+("Sh:»152"), âyet grubu → "Meali Şerifi" → âyet numaralı izah; telif notu yok, lisans alanı boş; Arapça eski bir
+yazı tipinin (`Arapca3`) glif kodlarıyla, çözülmesi gerekir (Kur'ân alıntılarıyla eşleme tablosu çıkarılabilir;
+denenmedi). (B) islamilimleri.com "Elmalılı - Orijinal": aynı metin HTML'de, Arapçası "........" ile silinmiş;
+telif notu yok. (C) Türkiye Yazma Eserler Kurumu'nun tenkitli neşri (Köksal, Kaya; ekitap.yek.gov.tr PDF'leri,
+Fikriyat da dağıtıyor): en iyi metin (Unicode Arapça, 1935 baskısının sayfaları), ama "Her hakkı mahfuzdur": kurala
+göre alınmaz, ancak izin istenirse. Elenenler: archive.org'daki öbür takımlar (Azim, Yenda: sadeleştirilmiş;
+"(original)" kopyası kaldırılmış), kuranikerim.com (sadeleştirilmiş, kapalı), acikkuran ve kuran.gen.tr (yalnız
+meal), Osmanlıca 1935 taramaları (metin değil).
+Kurum'un şartları: ticari olmayan kullanıma izin veren yazılı bir hüküm bulunamadı. Bulunanlar:
+PDF künyesi "izni olmaksızın tümüyle veya kısmen, hiçbir yolla ve hiçbir ortamda yayımlanamaz ve çoğaltılamaz";
+e-kitap sitesinin alt bilgisi "Tüm Hakları Saklıdır"; PDF'leri açan duyuru (yek.gov.tr, n_id=114) "filigranlı pdf
+… şahsî bilgisayarlara", amaç okuma ve referans; Çeviri ve Yayım Yönetmeliği elektronik yayını "sadece okunabilmesi
+amacıyla" diye tanımlar, hazırlayanlar çoğaltma ve umuma iletim haklarını Başkanlığa devreder, Başkanlık üçüncü
+kişilere kullandırabilir. Kullanıcının bildiği izin (ticari değilse ve metin başka yerde kendi adımıza
+yayımlanmazsa) yazılı değilse yazılı teyit gerekir.
+Kullanıcının elinde belge yok: teyit e-postası (`docs/yek-izin-epostasi.md`, Çeviri ve Yayım Daire Başkanlığı'na) gönderildi
+(2026-11-23; "Bekleyen"). Kullanıcının kararı (2026-11-23): ekleme (E6.2) Aralık'taki tefsir kurulumunda B3 ile kalır;
+koddan bakıldı: eser eklemek D5'i etkilemez (kuyruk taslak sunucusundaki kendi kopyasını okur, `taslak-sunucu.sh veri`
+elle yeniler; yeni eser var olan kimlikleri değiştirmez), ama bağlar, vektörler ve deploy bir kez yapılsın diye
+birlikte. Kaynak: izin gelirse C, gelmezse A (Arapçanın çözülmesi ayrı iş).
+
 **S11. Site yazılarını web'de düzenlemek** (bitti ve yayında, 2026-11-23; kullanıcının kararları: birinci yol, yani
 aslı taslak süresince sunucuda, yayımlama yerelde; yalnız kendisi düzenler; Markdown yeter; telefona da uysun. Aynı
 gün önce masanın girişine Okumalar › Yazı taslakları kondu, `liste.json`):

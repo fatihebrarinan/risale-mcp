@@ -41,7 +41,7 @@ Kaynak alınmaz (`catalog/excluded.py`, kullanıcının kararı): Muhammed Abduh
 | Eser | Müellif (ö.) | Nüsha | 1 | 2 | 3 | Gerekçe |
 |---|---|---|:-:|:-:|:-:|---|
 | el-Bahru'l-Muhît | Ebû Hayyân (745) | OpenITI `0745AbuHayyanGharnati.TafsirBahrMuhit` (21,4 MB) | ? | ✓ | ✓ | Dil ve i'râb tefsiri; İşârât'ın nazm ve belâgat vurgusunun yanında, D1 denemesine katkısı ölçülebilir |
-| Hak Dini Kur'an Dili | Elmalılı Hamdi Yazır (1942) | OpenITI'de yok (Türkçe); baskı seçilecek | ? | izin bekleniyor | ✓ | Türk okuyucunun en çok başvurduğu tefsir; Diyanet'ten izin istendi (`docs/diyanet-izin-epostasi.md`) |
+| Hak Dini Kur'an Dili | Elmalılı Hamdi Yazır (1942) | OpenITI'de yok (Türkçe); asıl, sadeleştirilmemiş metin: Yazma Eserler Kurumu neşri (izin istendi, 2026-11-23) ya da archive.org'daki Mürşit metni | ? | izin bekleniyor | ✓ | Türk okuyucunun en çok başvurduğu tefsir; Diyanet izin vermedi (2026-11-12). Adaylar ve karar `PLANLAR.md` E6; ekleme Aralık'taki tefsir kurulumunda |
 | Kur'an Yolu | Diyanet heyeti (2003–) | Diyanet'in sitesi | — | izin bekleniyor | ✓ | Günümüz Türkçesiyle; Diyanet'in izniyle |
 
 ## (c) Aklımızda bulunsun
