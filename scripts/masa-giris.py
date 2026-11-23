@@ -228,16 +228,16 @@ function okuma(o) {
 }
 // yayımlanmamış Yenilikler ve Çalışmalar yazıları (site-uret.py → /taslak/onizleme/liste.json): okunup yayımlanır
 function yazi(y) {
-  return `<div class="row"><div class="t"><a href="${esc(y.sayfa)}"><b>${esc(y.baslik)}</b></a>`
+  return `<div class="row"><div class="t"><a href="${esc(y.duzenle || y.sayfa)}"><b>${esc(y.baslik)}</b></a>`
     + `<span class="small st-bekliyor">${esc(y.tur)}${y.yayin_tarihi ? ' · ' + esc(y.yayin_tarihi) + ' günü kendiliğinden yayımlanır' : ''}</span></div>`
     + `<div class="small muted">${esc(y.ozet)}</div>`
-    + `<div class="small muted"><code>${esc(y.kaynak)}</code> · yayımlamak için <code>python3 scripts/site-uret.py yayinla ${esc(y.ad)} --gonder</code></div></div>`;
+    + `<div class="small muted">${y.duzenle ? `<a href="${esc(y.duzenle)}">düzenle</a> · ` : ''}<a href="${esc(y.sayfa)}">önizleme</a> · <code>${esc(y.kaynak)}</code> · yayımlamak için <code>python3 scripts/site-uret.py yayinla ${esc(y.ad)} --gonder</code></div></div>`;
 }
 function okumalar(oks, yazilar) {
   const bek = oks.filter(o => o.durum !== 'bitti'), bit = oks.filter(o => o.durum === 'bitti');
   const n = bek.length + yazilar.length;
   $('nok').innerHTML = n ? `<span class="badge">${n}</span>` : '';
-  $('okumalar').innerHTML = '<h2>Yazı taslakları</h2><p class="small muted">Siteye çıkmadan önce okunacak Yenilikler ve Çalışmalar yazıları, sitedeki görünüşleriyle (<a href="/taslak/onizleme/">önizleme</a>).</p>'
+  $('okumalar').innerHTML = '<h2>Yazı taslakları</h2><p class="small muted">Siteye çıkmadan önce okunacak Yenilikler ve Çalışmalar yazıları. Başlığa dokununca düzenleyici açılır: solda metin, sağda (telefonda "Görünüş" sekmesinde) sitedeki görünüşü; "Kaydet" deyince düzeltme saklanır, yayımlarken depoya alınır.</p>'
     + (yazilar.length ? yazilar.map(yazi).join('') : '<p class="muted">Bekleyen yazı yok.</p>')
     + '<h2>Bekleyen okumalar</h2>' + (bek.length ? bek.map(okuma).join('') : '<p class="muted">Bekleyen okuma yok.</p>')
     + '<h2>Biten</h2>' + (bit.length ? bit.map(okuma).join('') : '<p class="muted">Henüz yok.</p>')

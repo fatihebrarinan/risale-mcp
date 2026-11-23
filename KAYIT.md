@@ -345,6 +345,23 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S11. Site yazılarını web'de düzenlemek** (bitti ve yayında, 2026-11-23; kullanıcının kararları: birinci yol, yani
+aslı taslak süresince sunucuda, yayımlama yerelde; yalnız kendisi düzenler; Markdown yeter; telefona da uysun. Aynı
+gün önce masanın girişine Okumalar › Yazı taslakları kondu, `liste.json`):
+- **Sunucu** (`yazilar.py`, giriş servisinin içinde; `/taslak/api/yazi`): her "Kaydet" `data/yazilar.db`'de yeni
+  sürümdür (silinmez); sürüm başladığı depo metninin özetini (`taban`) taşır. Düzenleyici web sürümünü ya da depodaki
+  dosyayı açar; depo web düzeltmeleri sürerken başka türlü değiştiyse çakışma uyarısı, iki metin, seçim. Yalnız taslak
+  yazı; yetki `yazilar izin <e-posta>` (sunucuda risale kullanıcısıyla). Görünüş sitedeki programla
+  (`site-uret.py preview_html`; `parse_post` metinden okur).
+- **Düzenleyici** (`scripts/yazi-duzenle.html` → önizleme klasöründe `duzenle.html`): solda Markdown, sağda görünüş
+  (yazdıkça, 0,7 sn sonra), Kaydet ve Ctrl+S, sürüm listesinden geri dönme, kaydedilmemiş metin tarayıcıda yedek,
+  sayfadan çıkarken uyarı; 900 pikselin altında "Metin | Görünüş" sekmeleri, 16 piksel yazı (telefon yakınlaştırmasın).
+- **Yerel** (`site-uret.py cek`): SSH ile `yazilar disa`; yerel dosya web sürümlerinin tabanı ya da onlardan biriyse
+  ileri sarar ve commit eder, değilse `<ad>.web.md` yazıp durur. `yayinla`, `zamanla` ve zamanlı yayın (`zamanli`) önce
+  bunu yapar; sunucuya ulaşılamazsa durur (zamanlı yayın masaüstüne haber verir).
+- Testler `tests/test_yazilar.py` (yetki, sürümler, depo yetişince taban, çakışma, yayımlanmış ve kötü adlar,
+  görünüş). Yerelde tarayıcıyla denendi (geniş ve 390 piksel).
+
 **A4. Lügat** (bitti ve yayında, 2026-11-23; kullanıcının kararları 2026-11-22 ve 2026-11-23: atıf "risaleoku.com
 lügatı", kaynağı risaleoku'ya sorulmaz; platformda bütün Türkçe metinde; yayın ve Yenilikler taslağı izni):
 - **Kaynak:** risaleoku kataloğunun `dictionary`/`tr` kaydı, sürüm 41, 62 dosya (harf başına `x.txt` "madde=anlam",

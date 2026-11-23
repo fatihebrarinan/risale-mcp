@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>Yazı düzenle</title>
+<!-- S11: site yazılarının taslaklarını web'de düzenlemek. site-uret.py bu dosyayı önizleme klasörüne
+     (/taslak/onizleme/duzenle.html) koyar; veri ve görünüş masa servisinden (src/risale_mcp/yazilar.py). -->
+<style>
+:root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --soft: #f3f1ec;
+  --accent: #1f5c3f; --bad: #a3271f; --warn: #fdf0dc; --src: #1f4f7a; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --soft: #26251f;
+  --accent: #7cc49d; --bad: #f08a80; --warn: #3a2a14; --src: #8cc0ef; } }
+:root[data-theme="dark"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b;
+  --soft: #26251f; --accent: #7cc49d; --bad: #f08a80; --warn: #3a2a14; --src: #8cc0ef; }
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 system-ui, "Noto Sans", sans-serif;
+  display: flex; flex-direction: column; }
+a { color: var(--src); }
+header { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 8px 16px; border-bottom: 1px solid var(--line); }
+header .t { flex: 1; min-width: 160px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+button, select { font: inherit; background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 6px;
+  padding: 4px 10px; cursor: pointer; }
+button.save { background: var(--accent); color: var(--bg); border-color: var(--accent); font-weight: 600; }
+button.save:disabled { opacity: .5; cursor: default; }
+#durum { font-size: .82rem; color: var(--muted); }
+.msg { margin: 8px 16px 0; padding: 6px 12px; border-radius: 8px; background: var(--warn); font-size: .9rem; }
+.msg button { margin: 4px 6px 0 0; }
+.tabs { display: none; border-bottom: 1px solid var(--line); }
+.tabs a { flex: 1; text-align: center; padding: 8px; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent; }
+.tabs a.on { color: var(--fg); border-bottom-color: var(--accent); font-weight: 600; }
+.panes { flex: 1; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: minmax(0, 1fr); min-height: 0; }
+.pane { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+.pane + .pane { border-left: 1px solid var(--line); }
+textarea { flex: 1; width: 100%; resize: none; border: 0; padding: 12px 16px; background: var(--card); color: var(--fg);
+  font: 15px/1.6 ui-monospace, "DejaVu Sans Mono", monospace; outline: none; }
+iframe { flex: 1; width: 100%; border: 0; background: #fff; }
+.help { font-size: .78rem; color: var(--muted); padding: 4px 16px; border-top: 1px solid var(--line); }
+.help code { background: var(--soft); padding: 0 3px; border-radius: 3px; }
+#hata { color: var(--bad); font-size: .85rem; padding: 6px 16px; }
+.empty { padding: 20px 16px; } .empty li { margin: 6px 0; }
+/* telefon: metin ve görünüş alt alta değil, sekmeyle (iki yarım ekran küçük kalıyordu) */
+@media (max-width: 900px) {
+  .tabs { display: flex; }
+  .panes { grid-template-columns: 1fr; }
+  .pane + .pane { border-left: 0; }
+  body:not(.gor) #gorPane, body.gor #metinPane { display: none; }
+  textarea { font-size: 16px; padding: 10px 12px; }      /* 16px: telefon odaklanınca yakınlaştırmasın */
+  header { padding: 6px 10px; gap: 6px; } .hide-sm { display: none; }
+  header .t { flex-basis: calc(100% - 40px); }
+}
+</style></head><body>
+<header><a href="/taslak/#okumalar" title="Ar-ge masasına dön">←</a><span class="t" id="ttl">Yazı düzenle</span>
+<select id="gecmis" title="Kaydedilmiş sürümler" hidden></select>
+<a class="hide-sm" id="onizBag" href="/taslak/onizleme/">önizleme</a>
+<span id="durum"></span><button class="save" id="kaydet" disabled title="Ctrl+S">Kaydet</button></header>
+<div id="mesajlar"></div>
+<nav class="tabs"><a href="#" data-p="metin" class="on">Metin</a><a href="#" data-p="gor">Görünüş</a></nav>
+<div class="panes" id="panes">
+  <div class="pane" id="metinPane"><textarea id="metin" spellcheck="true" lang="tr" disabled></textarea>
+    <div class="help">Üst bilgi <code>---</code> arasındadır (<code>baslik</code>, <code>ozet</code>, <code>whatsapp</code>…). Gövde: <code>## başlık</code>, <code>**kalın**</code>, <code>*eğik*</code>, <code>&gt; örnek soru</code>, <code>- madde</code>, <code>[metin](adres)</code>.</div></div>
+  <div class="pane" id="gorPane"><div id="hata" hidden></div><iframe id="gor" title="Sitedeki görünüşü"></iframe></div>
+</div>
+<script>
+const API = '/taslak/api/yazi';
+const $ = id => document.getElementById(id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+               set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} },
+               del(k) { try { localStorage.removeItem(k); } catch (e) {} }};
+const when = t => new Date(t * 1000).toLocaleString('tr-TR', {day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit'});
+let AD = decodeURIComponent(location.hash.slice(1)), S = null, SAVED = '', BASE = null, TIMER = null, BUSY = false;
+const ta = $('metin');
+const dirty = () => S && ta.value !== SAVED;
+const key = () => 'yazi-duzenle:' + AD;
+
+async function api(url, opt) {
+  const r = await fetch(url, Object.assign({cache: 'no-store', headers: {'Content-Type': 'application/json'}}, opt || {}));
+  const d = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(d.error || ('HTTP ' + r.status));
+  return d;
+}
+function msg(html, id) {
+  const x = document.createElement('div');
+  x.className = 'msg'; if (id) x.id = id; x.innerHTML = html;
+  $('mesajlar').appendChild(x);
+  return x;
+}
+function status() {
+  $('kaydet').disabled = !dirty() || BUSY;
+  $('durum').textContent = BUSY ? 'kaydediliyor…' : dirty() ? 'kaydedilmedi'
+    : S.surum ? `sürüm ${S.surum}${S.zaman ? ' · ' + when(S.zaman) : ''}` : 'depodaki metin';
+}
+function history() {
+  const g = S.gecmis || [];
+  $('gecmis').hidden = !g.length;
+  $('gecmis').innerHTML = '<option value="">Sürümler</option>' + g.map(v => `<option value="${v.n}">Sürüm ${v.n} · ${when(v.zaman)}</option>`).join('');
+}
+
+// ---- görünüş: yazdıkça (biraz bekleyip) sitedeki programla çizilir; kaydırma yeri korunur
+async function draw() {
+  try {
+    const d = await api(API + '/onizle', {method: 'POST', body: JSON.stringify({ad: AD, metin: ta.value})});
+    if (d.hata) { $('hata').hidden = false; $('hata').textContent = 'Görünüş çizilemedi: ' + d.hata; return; }
+    $('hata').hidden = true;
+    const f = $('gor'), y = f.contentWindow ? f.contentWindow.scrollY : 0;
+    f.onload = () => { try { f.contentWindow.scrollTo(0, y); } catch (e) {} };
+    f.srcdoc = d.html;
+  } catch (e) { $('hata').hidden = false; $('hata').textContent = 'Görünüş alınamadı: ' + e.message; }
+}
+ta.addEventListener('input', () => {
+  status();
+  store.set(key(), JSON.stringify({metin: ta.value, surum: S.surum, zaman: Date.now()}));
+  clearTimeout(TIMER); TIMER = setTimeout(draw, 700);
+});
+
+async function save() {
+  if (!dirty() || BUSY) return;
+  BUSY = true; status();
+  try {
+    const d = await api(API, {method: 'PUT', body: JSON.stringify({ad: AD, metin: ta.value, taban: BASE})});
+    SAVED = ta.value; BASE = null;
+    store.del(key());
+    S = await api(API + '?ad=' + encodeURIComponent(AD));
+    history();
+    const c = $('cakisma'); if (c) c.remove();
+  } catch (e) { msg('Kaydedilemedi: ' + esc(e.message)); }
+  BUSY = false; status();
+}
+$('kaydet').addEventListener('click', save);
+addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 's') { e.preventDefault(); save(); } });
+addEventListener('beforeunload', e => { if (dirty()) { e.preventDefault(); e.returnValue = ''; } });
+
+$('gecmis').addEventListener('change', async e => {
+  const n = e.target.value;
+  e.target.value = '';
+  if (!n) return;
+  try {
+    const d = await api(API + '?ad=' + encodeURIComponent(AD) + '&surum=' + n);
+    ta.value = d.metin; status(); draw();
+    msg(`Sürüm ${esc(n)} yüklendi. Kaydederseniz en yeni sürüm olur.`);
+  } catch (err) { msg('Sürüm okunamadı: ' + esc(err.message)); }
+});
+
+for (const a of document.querySelectorAll('.tabs a')) a.addEventListener('click', e => {
+  e.preventDefault();
+  document.body.classList.toggle('gor', a.dataset.p === 'gor');
+  for (const b of document.querySelectorAll('.tabs a')) b.classList.toggle('on', b === a);
+  if (a.dataset.p === 'gor') draw();
+});
+
+async function pick() {
+  $('panes').hidden = true; document.querySelector('.tabs').hidden = true;
+  let L = [];
+  try { L = await api('/taslak/onizleme/liste.json'); } catch (e) {}
+  const box = document.createElement('div'); box.className = 'empty';
+  box.innerHTML = '<h2>Düzenlenecek yazı</h2>' + (L.length ? '<ul>' + L.map(y => `<li><a href="#${esc(y.ad)}">${esc(y.baslik)}</a> <span style="color:var(--muted)">(${esc(y.tur)})</span></li>`).join('') + '</ul>' : '<p>Taslak yazı yok.</p>');
+  document.body.appendChild(box);
+}
+
+async function load() {
+  try { if (!(await api(API + '/yetki')).duzenleyebilir) { msg('Bu hesabın yazıları düzenleme yetkisi yok.'); return; } }
+  catch (e) { msg('Oturum yok ya da servis yanıt vermiyor: ' + esc(e.message)); return; }
+  if (!AD) return pick();
+  try { S = await api(API + '?ad=' + encodeURIComponent(AD)); }
+  catch (e) { msg('Yazı açılamadı: ' + esc(e.message)); return; }
+  $('ttl').textContent = (S.metin.match(/^baslik:\s*(.*)$/m) || [, AD])[1];
+  $('onizBag').href = '/taslak/onizleme/' + AD + '.html';
+  ta.value = SAVED = S.metin;
+  ta.disabled = !S.taslak;
+  if (!S.taslak) msg('Bu yazı yayımlanmış; yalnız taslaklar burada düzenlenir.');
+  if (S.cakisma) {
+    const box = msg('<b>Dikkat:</b> depodaki metin, web düzeltmeleriniz sürerken başka yerden de değişmiş. Hangisiyle devam edilsin?<br>'
+      + '<button data-c="web">Web sürümüm (açık olan)</button><button data-c="depo">Depodaki metin</button>', 'cakisma');
+    box.addEventListener('click', e => {
+      const c = e.target.dataset && e.target.dataset.c;
+      if (!c) return;
+      if (c === 'depo') ta.value = S.depo_metin;
+      BASE = S.depo_sha; SAVED = ''; box.remove(); status(); draw();   // seçim kaydedilince geçerli olur
+    });
+  }
+  const local = (() => { try { return JSON.parse(store.get(key()) || 'null'); } catch (e) { return null; } })();
+  if (local && local.metin !== S.metin && local.surum === S.surum) {
+    const box = msg('Bu tarayıcıda kaydedilmemiş değişiklikleriniz var. <button data-r="1">Geri yükle</button><button data-r="0">At</button>');
+    box.addEventListener('click', e => {
+      const r = e.target.dataset && e.target.dataset.r;
+      if (r == null) return;
+      if (r === '1') { ta.value = local.metin; draw(); } else store.del(key());
+      box.remove(); status();
+    });
+  }
+  history(); status(); draw();
+}
+addEventListener('hashchange', () => location.reload());
+load();
+</script></body></html>

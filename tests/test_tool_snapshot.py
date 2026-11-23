@@ -21,6 +21,7 @@ def test_call_set_names_are_unique_and_tools_exist():
         return tools, prompts
 
     tools, prompts = asyncio.run(names())
+    tools |= {"lookup_word"}            # A4: yalnız lügatı olan veritabanında (boş kütüphanede yok)
     for call in calls:
         kind = call.get("kind", "tool")
         if kind == "tool":

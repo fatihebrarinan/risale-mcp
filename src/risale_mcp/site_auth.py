@@ -413,7 +413,7 @@ def allowed(scope: str, uri: str) -> bool:
     return scope == "masa" or uri.startswith(("/oku", PREFIX + "oku/")) or not uri.startswith(PREFIX.rstrip("/"))
 
 
-def build_app(store: Store, masa_store=None):
+def build_app(store: Store, masa_store=None, yazi_store=None):
     from starlette.applications import Starlette
     from starlette.requests import Request
     from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse
@@ -532,12 +532,14 @@ def build_app(store: Store, masa_store=None):
         return response
 
     from risale_mcp import masa                     # S7.2: ar-ge masası (okumalar, kararlar, notlar)
+    from risale_mcp import yazilar                  # S11: site yazılarının taslaklarını web'de düzenlemek
     return Starlette(routes=[Route("/_auth", check), Route(f"{PREFIX}giris", login, methods=["GET", "POST"]),
                              Route(f"{PREFIX}cikis", logout, methods=["GET", "POST"]), Route(f"{PREFIX}ben", me),
                              Route(INVITE + "{token}", invite, methods=["GET", "POST"]),
                              Route(f"{PREFIX}api/karsilandi", welcomed, methods=["POST"]),
                              Route(f"{PREFIX}api/yer", place, methods=["GET", "PUT"]),
-                             *masa.routes(store, masa_store or masa.MasaStore())])
+                             *masa.routes(store, masa_store or masa.MasaStore()),
+                             *yazilar.routes(store, yazi_store or yazilar.YaziStore())])
 
 
 # ---------------------------------------------------------------- komut satırı

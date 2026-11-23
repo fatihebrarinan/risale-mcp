@@ -8,6 +8,7 @@ bilgi, sayılar, site haritası.
     python3 scripts/site-uret.py yayinla <ad>       # taslağı yayımlar (durum, tarih, dosya adı; bağlantı denetimi)
     python3 scripts/site-uret.py yayinla <ad> --gonder   # … ve scripts/deploy.sh --site (yalnız site)
     python3 scripts/site-uret.py zamanla <ad> 2026-11-24 # o gün kendiliğinden yayımlansın (`iptal` kaldırır)
+    python3 scripts/site-uret.py cek                     # web düzenleyicideki düzeltmeleri depoya al (S11), commit
     python3 scripts/site-uret.py zamanli --gonder        # günü gelenleri yayımla, commit, deploy.sh --site
                                                          # (günlük zamanlayıcı: docs/site-zamanli.timer)
 
@@ -45,8 +46,10 @@ Sonra: scripts/deploy.sh --code (önizleme de onunla gider: risalemcp.com/taslak
 - Dışarıya istek yok kuralı sürer: "WhatsApp'ta paylaş" yalnız tıklanınca açılan bir bağlantıdır.
 """
 
+import hashlib
 import html
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -166,19 +169,33 @@ def front_matter(text: str, name: str) -> tuple[dict, int]:
 
 
 def read_post(path: Path, kind: Kind) -> Post:
-    text = path.read_text(encoding="utf-8")
-    meta, end = front_matter(text, path.name)
+    return parse_post(path.read_text(encoding="utf-8"), kind, path.stem, path)
+
+
+def parse_post(text: str, kind: Kind, slug: str, path: Path | None = None) -> Post:
+    """Yazının metninden (üst bilgi ve gövde). Hata `sys.exit` ile (S11: web düzenleyici onu yakalar)."""
+    name = path.name if path else f"{slug}.md"
+    meta, end = front_matter(text, name)
     missing = kind.required - set(meta)
     if missing:
-        sys.exit(f"{path.name}: eksik üst bilgi: {', '.join(sorted(missing))}")
+        sys.exit(f"{name}: eksik üst bilgi: {', '.join(sorted(missing))}")
     status = meta.get("durum", "yayinda").strip()
     if status not in STATUSES:
-        sys.exit(f"{path.name}: durum {status!r} (taslak ya da yayinda olmalı)")
-    review = date.fromisoformat(meta["gozden_gecirme"]) if meta.get("gozden_gecirme") else None
-    scheduled = date.fromisoformat(meta["yayin_tarihi"]) if meta.get("yayin_tarihi") else None
-    return Post(kind, path.stem, meta["baslik"], date.fromisoformat(meta["tarih"]), meta["ozet"],
+        sys.exit(f"{name}: durum {status!r} (taslak ya da yayinda olmalı)")
+    try:
+        day = date.fromisoformat(meta["tarih"].strip())
+        review = date.fromisoformat(meta["gozden_gecirme"].strip()) if meta.get("gozden_gecirme") else None
+        scheduled = date.fromisoformat(meta["yayin_tarihi"].strip()) if meta.get("yayin_tarihi") else None
+    except ValueError as e:
+        sys.exit(f"{name}: tarih YYYY-AA-GG biçiminde olmalı ({e})")
+    return Post(kind, slug, meta["baslik"], day, meta["ozet"],
                 meta.get("whatsapp", "").strip(), text[end:], status, review, meta.get("adres") or None, path,
                 scheduled)
+
+
+def preview_html(kind_key: str, slug: str, text: str) -> str:
+    """S11: web düzenleyicinin görünüşü: yazı metninden önizleme sayfası (sitedeki gibi)."""
+    return post_page(parse_post(text, KINDS[kind_key], slug), preview=True)
 
 
 def read_posts(kind: Kind) -> list[Post]:
@@ -454,7 +471,7 @@ def preview_index(drafts: list[Post]) -> str:
   <p class="muted small">{p.kind.title} · taslak{f" · <strong>{date_tr(p.scheduled)} günü yayımlanacak</strong>" if p.scheduled else ""} · <code>{_rel(p.source) if p.source else p.slug}</code></p>
   <h2><a href="{p.preview_path}">{inline(p.title)}</a></h2>
   <p>{inline(p.summary)}</p>
-  <p class="small muted">Hemen yayımlamak için: <code>python3 scripts/site-uret.py yayinla {p.kind.key}/{p.slug}</code></p>
+  <p class="small muted">{"" if p.address else f'<a href="{PREVIEW_URL}/duzenle.html#{p.kind.key}/{p.slug}">Düzenle</a> · '}Hemen yayımlamak için: <code>python3 scripts/site-uret.py yayinla {p.kind.key}/{p.slug}</code></p>
 </article>""" for p in drafts) or '<p class="muted">Bekleyen taslak yok.</p>'
     body = f"""<h1>Önizleme</h1>
 <p class="lead">Yayımlanmamış Yenilikler ve Çalışmalar yazıları, sitedeki görünüşleriyle. Bu sayfayı yalnız girişli hesaplar görür.</p>
@@ -696,9 +713,12 @@ def build(quiet: bool = False) -> dict[str, list[Post]]:
         target.write_text(post_page(post, preview=True), encoding="utf-8")
     PREVIEW.mkdir(parents=True, exist_ok=True)
     (PREVIEW / "index.html").write_text(preview_index(drafts), encoding="utf-8")
+    # S11: web düzenleyici (girişli; veri masa servisinden, src/risale_mcp/yazilar.py)
+    shutil.copyfile(ROOT / "scripts" / "yazi-duzenle.html", PREVIEW / "duzenle.html")
     # ar-ge masasının giriş sayfası (Okumalar sekmesi) okunacak yazı taslaklarını buradan listeler
     (PREVIEW / "liste.json").write_text(json.dumps([
         {"tur": p.kind.title, "baslik": p.title, "ozet": p.summary, "sayfa": p.preview_path,
+         "duzenle": None if p.address else f"{PREVIEW_URL}/duzenle.html#{p.kind.key}/{p.slug}",
          "kaynak": _rel(p.source) if p.source else p.slug, "ad": f"{p.kind.key}/{p.slug}",
          "yayin_tarihi": p.scheduled.isoformat() if p.scheduled else None} for p in drafts],
         ensure_ascii=False, indent=1), encoding="utf-8")
@@ -821,8 +841,65 @@ whatsapp: |
     return changed
 
 
+# ---- S11: web'de düzeltilen taslaklar (src/risale_mcp/yazilar.py) ------------------------------------------------
+
+WEB_HOST = os.environ.get("RISALE_HOST", "root@100.108.174.19")
+WEB_KEY = os.environ.get("RISALE_KEY", str(Path.home() / ".ssh" / "risale_hetzner"))
+
+
+def _sha(text: str) -> str:
+    return hashlib.sha1(text.encode("utf-8")).hexdigest()[:16]
+
+
+def pull_web(only: set[str] | None = None, commit: bool = False) -> list[Path]:
+    """Web düzenleyicideki son sürümleri depodaki dosyalara yazar (sunucudan SSH ile `yazilar disa`). Yerel dosya web
+    sürümlerinin başladığı metin ya da onlardan biriyse ileri sarılır; değilse (iki yerde de değişmiş) durur, web
+    sürümü `<ad>.web.md` olarak yanına yazılır. Değişen dosyaları döndürür."""
+    cmd = ["ssh", "-i", WEB_KEY, "-o", "BatchMode=yes", "-o", "ConnectTimeout=15", WEB_HOST,
+           "cd /home/risale/risale-mcp && sudo -u risale .venv/bin/python -m risale_mcp.yazilar disa"]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        sys.exit(f"web düzeltmeleri alınamadı (sunucuya bağlanılamadı ya da hata): {r.stderr.strip()[-300:]}")
+    data = json.loads(r.stdout or "{}")
+    changed, conflicts = [], []
+    for ad, v in data.items():
+        if only is not None and ad not in only:
+            continue
+        kind, _, slug = ad.partition("/")
+        path = ROOT / "docs" / kind / f"{slug}.md"
+        if kind not in KINDS or not path.exists():          # yayımlanıp adı değişmiş ya da silinmiş
+            continue
+        local = path.read_text(encoding="utf-8")
+        if _sha(local) == v["sha"]:
+            continue
+        if _sha(local) not in v["bilinen"]:
+            path.with_suffix(".web.md").write_text(v["metin"], encoding="utf-8")
+            conflicts.append(ad)
+            continue
+        import difflib
+        diff = list(difflib.unified_diff(local.splitlines(), v["metin"].splitlines(), "depo", f"web sürüm {v['surum']}",
+                                         lineterm="", n=0))
+        path.write_text(v["metin"], encoding="utf-8")
+        changed.append(path)
+        print(f"{ad}: web sürümü {v['surum']} alındı ({sum(1 for x in diff if x[:1] in '+-') - 2} satır farkı)")
+    if conflicts:
+        sys.exit("hem depoda hem web'de değişmiş (web sürümü yanına .web.md olarak yazıldı, birleştirip yeniden "
+                 "deneyin): " + ", ".join(conflicts))
+    if commit and changed:
+        rel = [str(p.relative_to(ROOT)) for p in changed]
+        subprocess.run(["git", "add", "--", *rel], cwd=ROOT, check=True)
+        subprocess.run(["git", "commit", "-q", "-m", "site: web düzeltmeleri alındı (" + ", ".join(p.stem for p in changed) + ")",
+                        "--", *rel], cwd=ROOT, check=False)
+    if not changed:
+        print("web'de alınacak düzeltme yok")
+    return changed
+
+
 def publish(name: str, send: bool) -> None:
-    publish_post(find_post(name))
+    post = find_post(name)
+    if pull_web({f"{post.kind.key}/{post.slug}"}):
+        post = find_post(name)
+    publish_post(post)
     build()
     if send:
         subprocess.run([str(ROOT / "scripts" / "deploy.sh"), "--site"], cwd=ROOT, check=True)
@@ -831,8 +908,10 @@ def publish(name: str, send: bool) -> None:
 
 
 def schedule(name: str, day: str) -> None:
-    """Taslağa yayın günü koyar (`yayin_tarihi`); `iptal` kaldırır."""
+    """Taslağa yayın günü koyar (`yayin_tarihi`); `iptal` kaldırır. Önce web düzeltmeleri alınır (S11)."""
     post = find_post(name)
+    if pull_web({f"{post.kind.key}/{post.slug}"}, commit=True):
+        post = find_post(name)
     value = None if day == "iptal" else date.fromisoformat(day).isoformat()
     post.source.write_text(_set_meta(post.source.read_text(encoding="utf-8"), "yayin_tarihi", value), encoding="utf-8")
     print(f"{post.kind.key}/{post.slug}: " + (f"{value} günü yayımlanacak" if value else "yayın günü kaldırıldı"))
@@ -854,7 +933,14 @@ def publish_due(send: bool) -> None:
     if not due:
         print(f"{today}: yayın günü gelmiş taslak yok")
         return
-    changed: list[Path] = []
+    try:                                                  # S11: web'de yapılan son düzeltmeler önce
+        pulled = pull_web({f"{p.kind.key}/{p.slug}" for p in due})
+    except SystemExit as e:
+        _notify(f"Zamanlı yayın durdu: {e}")
+        raise
+    if pulled:
+        due = [p for kind in KINDS.values() for p in read_posts(kind) if p.draft and p.scheduled and p.scheduled <= today]
+    changed: list[Path] = list(pulled)
     for post in due:
         changed += publish_post(post)
     build()
@@ -903,6 +989,8 @@ def main() -> None:
         schedule(args[1], args[2])
     elif args[:1] == ["zamanli"]:
         publish_due("--gonder" in args)
+    elif args[:1] == ["cek"]:
+        pull_web(commit=True)
     elif args[:1] == ["onizle"]:
         serve()
     elif not args:

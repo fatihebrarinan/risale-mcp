@@ -57,14 +57,15 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E8, S10, A4, D16, B9 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E8, S11, A4, D16, B9 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **Önde (2026-11-23):** **A4 bitti ve yayında** (lügat: Risale eklentisinde `lookup_word`, okuma platformunda
+- **Önde (2026-11-23):** **S11 bitti ve yayında:** site yazılarının taslakları masadan düzenlenir (Okumalar › Yazı
+  taslakları; düzeltmeler yayımlarken depoya alınır). **A4 bitti ve yayında** (lügat: Risale eklentisinde `lookup_word`, okuma platformunda
   kelimeye dokununca anlam). Kullanıcıdan beklenen: Yenilikler taslağını (`docs/yenilikler/2026-11-23-lugat.md`,
   önizleme `python3 scripts/site-uret.py onizle`) okuyup yayımlamak; eşleme örneklerine bakmak
   (`data/interim/lugat/olcum.md`). Önceki adım **S10** de yayında; kullanıcıdan beklenen: karşılama sayfasını
@@ -337,6 +338,11 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- S11 Site yazılarını web'de düzenlemek (2026-11-23, yayında; kullanıcının kararları: yalnız kendisi, Markdown,
+  telefona da uysun): masanın Okumalar › Yazı taslakları'ndan düzenleyici (`/taslak/onizleme/duzenle.html#<tür>/<ad>`;
+  solda metin, sağda sitedeki görünüşü, telefonda sekmeli), her "Kaydet" bir sürüm (`data/yazilar.db`, ana sunucu);
+  `site-uret.py cek` düzeltmeleri depoya alır, `yayinla`, `zamanla` ve zamanlı yayın önce bunu yapar. Ayrıntı
+  `KAYIT.md` › "Kimlikli işler" › S11.
 - A4 Lügat (2026-11-23, yayında): risaleoku.com'un Türkçe lügatı (≈39 bin madde); Risale eklentisinde `lookup_word`
   (ekleri atarak, tamlamalarla; nâşirin lügatı diye), okuma platformunda kelimeye dokununca anlam ("Lügat" düğmesiyle
   kapanır). Atıf "risaleoku.com lügatı" (kullanıcının kararı: kaynağı sorulmaz). Yenilikler yazısı taslakta. Ayrıntı
