@@ -79,8 +79,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
 - **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 6 (Risale'si az birimlere göz
-  atmak); E8 için iki karar: Sözler'e bilgi e-postası gitsin mi (taslak bilgi e-postasına çevrilecek) ve E8 sıraya
-  hangi yerde girer.
+  atmak); E8'in ayrıntısı konuşuluyor (kapsam, kimlik, eşleme, arama; sonra sırası).
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
@@ -201,8 +200,8 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   (kazanç yok, kaynak gösterilir); soruda verdiğimiz söz: tercümelerde mütercim ve yayınevi de anılır. Not: cevap
   mütercimleri anıyor, Arapça baskının künyesi hakkı yayıncıya veriyor ("حقوق الطبع محفوظة للناشر"); bilgi
   e-postası bu yüzden Sözler'e gider (Kahire'deki şirkete iletilmesi ricasıyla).
-  **Sonraki adımlar** (sırası kullanıcının kararı): (1) Sözler'e bilgi e-postası: `docs/e8-arapca-kulliyat-izin-epostasi.md`
-  izin isteğinden bilgiye çevrilir, kullanıcı gönderir. (2) Hangi dil: önce Arapça (9 cilt diskte,
+  **Sözler'e e-posta şimdilik gitmez** (kullanıcının kararı, 2026-11-23; taslak durur). **Sonraki adımlar** (sırası
+  kullanıcının kararı): (2) Hangi dil: önce Arapça (9 cilt diskte,
   `data/raw/risaleoku_app/ar_*`, İhsan Kasım es-Sâlihî; indirildi, ayrıştırılmadı); öbür diller ayrı karar. (3) Eser
   kataloğa (tercüme olarak `Work.translation`, `translator`, baskı kaydı ve yayınevi `catalog/editions.py`); Türkçe
   kimliklerle paralel mi, Osmanlıca gibi ayrı mı ayrıştırmanın başında belirlenir; `catalog/permissions.py`'deki
