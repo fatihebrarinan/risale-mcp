@@ -378,6 +378,11 @@ aktarım defter notlarını vermez; deploy ve canlı deneme izni):
 - **Taslak sunucusu:** kuyruk her birimden sonra `/oku/index.html`'i ve masa kabuğunu kendi kodundan kurar; yeni kod
   `taslak-sunucu.sh gonder` ile `~/kod-bekleyen`'e kondu, sıradaki birimin başında geçer. Arada eski kodla biten birim
   eski uygulamayı geri koyarsa yerelden yeniden gönderildi.
+- **Bulunan açık (S7'den beri):** `deploy.sh --code` yereldeki `data/interim/oku-masa/`'yı (21 Kasım kopyası) `/taslak/`'a
+  gönderiyordu: 21 Kasım'dan beri her deploy masanın girişini, panosunu, birim listesini, deneyler defterini ve bazı
+  `masa-veri` dosyalarını eskisiyle eziyordu (bugünkü iki deploy dahil). Taslak sunucusunun kendi kopyasından geri
+  yüklendi; `deploy.sh` artık platformu ve masayı göndermez (kuyruk gönderir), `data/d1/masa`'yı `-u` ile gönderir;
+  yerelde `oku-veri.py --gonder` yalnız platformu gönderir.
 
 **Küçük açıklar B4, B7, B8 (2026-11-21, kullanıcının onayı: "önerdiğin sıraya başla"; B2 ve B5 aynı gün kapandı):**
 - **B4 Mecmua eşlemesi:** Nutuk'ta "üç elmas kılıç"ın "Birincisi"nin altındaki iki kelimelik "İttihad-ı millî...",
