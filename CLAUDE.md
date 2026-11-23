@@ -554,6 +554,12 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   için `veri/<birim>.lugat.json` yazar (birimin Türkçe metinlerinde bulunan anahtarlar; genel veritabanından), uygulama
   yalnız dokunulan kelimeyi kapsayan en uzun anahtarı arar (`lugatWords` = `search_words`; `tests/test_lugat.py` node
   ile denetler). Lügat nâşirindir, müellife mal edilmez.
+- **Claude eklentisi (plugin, S4.7):** herkese açık depo `github.com/fatihebrarinan/risale-library-plugin` (dört
+  bağdaştırıcının adresi ve sekiz İngilizce skill; metin yok). Kaynakları `packaging/claude-plugin/`, ana skill
+  `site/en/instructions.md`'den üretilir (talimat değişirse `scripts/claude-plugin.py`'deki değişiklik listesi tutmaz,
+  betik durur): `python3 scripts/claude-plugin.py build` (yandaki depoya yazar; commit, push, `version` artırılır),
+  `check`, `zip` (claude.ai'ye elle yükleme), `dene [P1 …]` (Claude Code'da soru seti, hangi skill yüklendi; rapor
+  `data/interim/claude-plugin/`). claude.ai'de eklentiden yalnız skill'ler ve bağdaştırıcılar çalışır.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

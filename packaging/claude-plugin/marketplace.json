@@ -1,0 +1,15 @@
+{
+  "name": "risale-library",
+  "owner": {
+    "name": "Risale MCP",
+    "email": "destek@risalemcp.com"
+  },
+  "description": "Risale MCP's Claude plugin: the Risale-i Nur, hadith, tafsir and classical Arabic libraries with skills for cited answers.",
+  "plugins": [
+    {
+      "name": "risale-library",
+      "source": "./",
+      "description": "The Risale-i Nur, hadith, tafsir and classical Arabic libraries of Risale MCP, with skills for cited answers."
+    }
+  ]
+}

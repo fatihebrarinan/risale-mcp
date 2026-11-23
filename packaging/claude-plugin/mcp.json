@@ -1,0 +1,20 @@
+{
+  "mcpServers": {
+    "risale": {
+      "type": "http",
+      "url": "https://mcp.risalemcp.com/mcp"
+    },
+    "hadith": {
+      "type": "http",
+      "url": "https://hadis.risalemcp.com/mcp"
+    },
+    "tafsir": {
+      "type": "http",
+      "url": "https://tefsir.risalemcp.com/mcp"
+    },
+    "classical": {
+      "type": "http",
+      "url": "https://klasik.risalemcp.com/mcp"
+    }
+  }
+}

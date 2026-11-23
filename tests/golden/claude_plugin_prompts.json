@@ -1,0 +1,14 @@
+[
+  {"id": "P1", "prompt": "Risale-i Nur'da tevekkül nasıl anlatılır?", "expect": ["risale-library"]},
+  {"id": "P2", "prompt": "Âyetü'l-Kürsî'yi Risale-i Nur nasıl ele alıyor, müfessirler ne diyor?", "expect": ["verse-study"]},
+  {"id": "P3", "prompt": "\"Ümmetimin ihtilafı rahmettir\" sözü hadis mi?", "expect": ["hadith-check"]},
+  {"id": "P4", "prompt": "Haşir konusu Risale-i Nur'da hangi risalelerde anlatılıyor? Konu taraması yap.", "expect": ["topic-survey"]},
+  {"id": "P5", "prompt": "Onuncu Söz'ün Birinci Hakikat'inden beni sına.", "expect": ["self-test"]},
+  {"id": "P6", "prompt": "Gençlere hastalıkta sabır üzerine Risale-i Nur'dan bir ders planı hazırla.", "expect": ["lesson-plan"]},
+  {"id": "P7", "prompt": "Müzakere edelim: ihlas.", "expect": ["study-circle"]},
+  {"id": "P8", "prompt": "Birinci Söz'deki iki adam temsilinden bugün ne anlamalıyız? Farklı bakış açılarıyla yorumla.", "expect": ["text-and-commentary"]},
+  {"id": "P9", "prompt": "What does Bediüzzaman say about patience in illness?", "expect": ["risale-library"]},
+  {"id": "P10", "prompt": "Bakara 2:3'teki \"gayba iman\"ı Beyzâvî nasıl açıklıyor?", "expect": ["verse-study"], "optional": true, "note": "Tek tefsir soruluyor: skill yüklenmeden de tefsir eklentisinin talimatıyla doğru cevap geliyor (2026-11-23)."},
+  {"id": "P11", "prompt": "Kader her şeyi yazmışsa cüz'î irade neden var?", "expect": ["risale-library"], "note": "Risale adı geçmiyor: skill kendiliğinden yükleniyor mu?"},
+  {"id": "P12", "prompt": "Python'da bir listeyi nasıl sıralarım?", "expect": [], "note": "denetim: hiçbir skill yüklenmemeli"}
+]

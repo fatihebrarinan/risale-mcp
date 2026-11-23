@@ -71,8 +71,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (`data/interim/lugat/olcum.md`). Önceki adım **S10** de yayında; kullanıcıdan beklenen: karşılama sayfasını
   (`/oku/#/~hosgeldin`) ve kopyalama damgasını okuyup düzeltmek, sonra ilk davetler (`scripts/sunucu.sh taslak davet
   <e-posta>`). **E6.1 bitti (2026-11-23):** Elmalılı'nın kaynak adayları bulundu, Yazma Eserler Kurumu'na izin
-  e-postası gitti ("Bekleyen"); ekleme Aralık'taki tefsir kurulumunda kalır (kullanıcının kararı). Sıradaki iş 1:
-  **S4.7** Claude eklentisi. S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
+  e-postası gitti ("Bekleyen"); ekleme Aralık'taki tefsir kurulumunda kalır (kullanıcının kararı). **S4.7 hazır
+  (2026-11-23):** Claude eklentisi `github.com/fatihebrarinan/risale-library-plugin`'de (dört bağdaştırıcı, sekiz skill),
+  Claude Code'da denendi; **kullanıcıdan beklenen:** isterse zip'i claude.ai'ye yükleyip denemek, sonra portaldan
+  "Plugin bundle" başvurusu (`docs/s4-dizin-basvurulari.md` §9). S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
   OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 7'de. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
   sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
@@ -91,7 +93,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S4 | S4.7 Claude eklentisi (plugin): depo, yerelde deneme, başvuru | |
+| 1 | S4 | S4.7 Claude eklentisi (plugin): depo ve deneme hazır; başvuru kullanıcıda | |
 | 2 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
 | 3 | E5 | Klasik 2. dilim ve yeni tanıtım | |
 | 4 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
@@ -105,6 +107,16 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   talimatı skill olarak, dört bağdaştırıcının adresi, README, lisans; metin girmez). Önce yerelde kurulup skill'in
   sohbette ne zaman yüklendiği denenir (her sohbette değil, açıklaması eşleşince yüklenir: proje talimatının birebir
   yerini tutmayabilir), sonra portaldan "Plugin bundle". S4'ün öbür adımları kapandı (2026-11-23).
+  **Hazır (2026-11-23; kullanıcının kararları: tek eklenti, hazır komutlar skill olur, skill'ler İngilizce):** depo
+  `github.com/fatihebrarinan/risale-library-plugin` (herkese açık, MIT; ad `risale-library`, görünen ad "Risale-i Nur
+  Library", yazar "Risale MCP"), kaynakları `packaging/claude-plugin/`, üretici `scripts/claude-plugin.py`; ana skill
+  `site/en/instructions.md`'den üretilir. Sekiz skill: `risale-library` (ana kurallar), `verse-study`, `hadith-check`
+  (eklentiler arası akışlar), hazır komutlardan `topic-survey`, `text-and-commentary`, `study-circle`, `self-test`,
+  `lesson-plan`. Claude Code'da 12 soruluk deneme (`tests/golden/claude_plugin_prompts.json`; rapor
+  `data/interim/claude-plugin/dene-20261123-16*.md`): 11'inde beklenen skill yüklendi, denetim sorusunda hiçbiri; tek
+  tefsir sorusunda yüklenmedi ama cevap doğru; üç eklentili cevapta tek Kaynaklar listesi. claude.ai'de yükleme
+  denenmedi (orada yalnız skill ve bağdaştırıcı çalışır; komut, hook, alt ajan yok). Kalan: kullanıcının başvurusu
+  (§9); gönderilince "Bekleyen"e.
 - E6 **Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
   2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
   dizgisi baskının yayıncısınındır: kaynak seçilirken bakılır. Bir arkadaşın gönderdiği PDF'ler biçimi bozuk, son çare.

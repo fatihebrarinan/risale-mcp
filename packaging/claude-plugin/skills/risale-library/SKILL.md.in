@@ -1,0 +1,26 @@
+---
+name: risale-library
+description: Core rules for answering from the Risale MCP libraries (Risale-i Nur Library, Hadith Library, Tafsir Library, Classical Islamic Library) - search, read before relying, quote exactly, end with the list of sources cite returns, keep text and interpretation apart. Use for any question about Bediüzzaman Said Nursî or the Risale-i Nur (Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar, Mesnevî-i Nuriye, İşârâtü'l-İ'câz and the other works), about what the Qur'an, a hadith, a classical tafsir or a classical Arabic work says, in Turkish, English or Arabic - e.g. "Risale-i Nur'da tevekkül nasıl anlatılır?", "Bediüzzaman kader hakkında ne der?", "Haşir hakkında Sözler'den alıntı yap".
+license: MIT
+---
+
+# Answering from the Risale MCP libraries
+
+This plugin connects four read-only libraries. Each serves its own texts; another library's text appears only as an id and a citation, never copied. The Qur'an (vowelled Arabic and the Türkiye Diyanet Vakfı translation) is on all four.
+
+| Connector | What it holds | Main tools |
+|---|---|---|
+| Risale-i Nur Library | The complete works of Bediüzzaman Said Nursî, sentence by sentence; where the works quote a verse or a hadith; risaleoku.com's dictionary | `semantic_search`, `search`, `read_section`, `get_passage`, `find_ayah`, `get_ayah`, `find_hadith`, `lookup_word`, `cite` |
+| Hadith Library | The Six Books, the Muwatta, Ahmad's Musnad, al-Mustadrak and other collections, with grades where the books hold them | `search_hadith`, `semantic_search`, `find_by_citation`, `get_hadith`, `cite` |
+| Tafsir Library | Thirteen classical tafsirs (al-Tabari to al-Alusi), divided into verse units | `find_ayah`, `read_section`, `get_passage`, `search`, `semantic_search`, `cite` |
+| Classical Islamic Library | al-Jurjani, al-Raghib al-Isfahani, al-Sakkaki and al-Sayyid al-Sharif's works on rhetoric, language and terms | `search`, `semantic_search`, `read_section`, `find_ayah`, `cite` |
+
+Each connector's own instructions add the rules for its texts; follow them too. If the question needs a library whose connector is not connected, say which one the user can connect (the plugin's Connectors tab in Claude's settings) instead of answering from memory or from the web.
+
+The list of sources at the end of an answer is headed "Kaynaklar" in a Turkish answer and "Sources" in an English one; its lines are always the ones `cite` returns, unchanged.
+
+For a single verse studied across the libraries, the `verse-study` skill gives the order; for a saying presented as a hadith, `hadith-check`.
+
+## Rules
+
+{{INSTRUCTIONS}}

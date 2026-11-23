@@ -658,5 +658,43 @@ Bir hafta cevap gelmezse (≈2026-11-30): başvuru silinir, `risale.risalemcp.co
 - [ ] OpenAI Hadis: paket, video, jeton, gönderildi (Risale'yi beklemeden, kullanıcının kararı 2026-11-23)
 - [ ] OpenAI Tefsir: paket, video, jeton, gönderildi (Risale'yi beklemeden, kullanıcının kararı 2026-11-23)
 - [ ] OpenAI Klasik Eserler: paket, video, jeton, gönderildi (Risale'yi beklemeden, kullanıcının kararı 2026-11-23)
+- [ ] Claude eklentisi (plugin): depo hazır (§9); isteğe bağlı claude.ai denemesi; "Plugin bundle" gönderildi
 - [ ] Kabullerden sonra: sitedeki kurulum sayfalarında dizinden ekleme yolu (`site/claude.html`'deki yorum satırı),
       Yenilikler yazısı
+
+
+## 9. Claude eklentisi (plugin, S4.7; hazır 2026-11-23)
+
+Depo: **https://github.com/fatihebrarinan/risale-library-plugin** (herkese açık, dal `main`, eklenti deponun kökünde).
+İçerik `packaging/claude-plugin/`'den `python3 scripts/claude-plugin.py build` ile üretilir; değişiklikten sonra
+depoda commit ve push, `plugin.json`'daki `version` artırılır (her yeni sürüm otomatik denetimden geçer).
+`claude plugin validate` uyarısız geçti.
+
+**İsteğe bağlı ön deneme (claude.ai):** Customize › Plugins › Add › Upload plugin, dosya
+`data/interim/claude-plugin/risale-library-1.0.0.zip` (`python3 scripts/claude-plugin.py zip`). Sonra eklentinin
+Connectors sekmesinden dört bağdaştırıcı eklenir (kullanıcı her birini ayrıca bağlar). Bakılacak: tevekkül gibi bir
+soruda ve Âyetü'l-Kürsî sorusunda skill yükleniyor mu (Claude Code'da yüklendi; claude.ai'nin seçimi aynı olmayabilir).
+Hesabınızda zaten ekli olan aynı adresli özel bağdaştırıcılar varsa araçlar iki kez görünebilir: denemede onları
+kapatın.
+
+**Portal:** https://claude.ai/directory/manage › Submit new › **Plugin bundle**
+
+| Alan | Değer |
+|---|---|
+| Source: repository | `https://github.com/fatihebrarinan/risale-library-plugin` |
+| Plugin path | `.` (kök) |
+| Branch / tag | `main` |
+| Listing | README listeleme metni olur; ad ve kısa açıklama `plugin.json`'dan ("Risale-i Nur Library") |
+| Data handling | Eklentinin kendisi hiçbir şey göndermez, kod çalıştırmaz. Bağdaştırıcılar yalnız aracın girdisini alır (arama ifadesi, kimlik, alıntılanan sözler); anlamsal aramada arama ifadesi Voyage AI'a gider; istek başına zaman, bağdaştırıcı, araç, süre, hata türü 90 gün; ifade, alıntı ve IP kaydedilmez. Gizlilik: `https://risalemcp.com/en/privacy.html` |
+| Compliance | iletişim `destek@risalemcp.com`, dört onay kutusu |
+| Eşleştirme | Portal sunarsa eklenti, aynı adresli dört bağdaştırıcı listelemesiyle (§2a–§2d) eşleştirilir |
+
+Ek not önerisi (portal sorarsa):
+
+> This plugin bundles our four read-only MCP connectors, already submitted as connector listings with the same URLs
+> (Risale-i Nur Library, Hadith Library, Tafsir Library, Classical Islamic Library), and eight skills that teach Claude
+> how to search, read, quote and cite them: core citation rules, a cross-library workflow for a Qur'anic verse, a
+> hadith-checking workflow, and our former MCP prompts (topic survey, text and commentary, study circle, self test,
+> lesson plan). The plugin holds no texts and runs no code. Test prompts: "Risale-i Nur'da tevekkül nasıl anlatılır?",
+> "Âyetü'l-Kürsî'yi Risale-i Nur nasıl ele alıyor, müfessirler ne diyor?", "\"Ümmetimin ihtilafı rahmettir\" sözü
+> hadis mi?".
