@@ -5,7 +5,8 @@
   `#birimler`).
 - `masa/pano.json`: sayfanın verisi (D5'in ilerlemesi, kota, alarmlar; birimler ve sayfaları). Taslak deposundan
   (`data/d1`) üretilir; D5 kuyruğu her birimden sonra sunucudan yeniler (`d1-birim.durum_sayfasi`), yerelde bu betik.
-- Okumalar sekmesi canlıdır: masa servisinden (`/taslak/api/okumalar`, girişli kişinin görevleri) gelir.
+- Okumalar sekmesi canlıdır: masa servisinden (`/taslak/api/okumalar`, girişli kişinin görevleri) gelir; başında
+  yayımlanmamış Yenilikler ve Çalışmalar yazıları (`/taslak/onizleme/liste.json`, `site-uret.py` yazar, deploy gönderir).
 
 Eski "âyet masası"nın son birim kopyası (`d1-masa.py`'nin `index.html`'i) artık yazılmaz; birimlerin masa sayfaları
 (`<birim>.html`) Birimler sekmesinden açılır.
@@ -225,10 +226,20 @@ function okuma(o) {
     + `<div class="small muted">${o.birim ? 'Bakara ' + esc(o.birim) + ' · ' : ''}${o.karar}/${o.yer} yer${o.dakika ? ' · ≈' + o.dakika + ' dk' : ''}`
     + ` · ${when(o.olusturuldu)}${o.bitti ? ' · bitti ' + when(o.bitti) : ''}</div></div>`;
 }
-function okumalar(oks) {
+// yayımlanmamış Yenilikler ve Çalışmalar yazıları (site-uret.py → /taslak/onizleme/liste.json): okunup yayımlanır
+function yazi(y) {
+  return `<div class="row"><div class="t"><a href="${esc(y.sayfa)}"><b>${esc(y.baslik)}</b></a>`
+    + `<span class="small st-bekliyor">${esc(y.tur)}${y.yayin_tarihi ? ' · ' + esc(y.yayin_tarihi) + ' günü kendiliğinden yayımlanır' : ''}</span></div>`
+    + `<div class="small muted">${esc(y.ozet)}</div>`
+    + `<div class="small muted"><code>${esc(y.kaynak)}</code> · yayımlamak için <code>python3 scripts/site-uret.py yayinla ${esc(y.ad)} --gonder</code></div></div>`;
+}
+function okumalar(oks, yazilar) {
   const bek = oks.filter(o => o.durum !== 'bitti'), bit = oks.filter(o => o.durum === 'bitti');
-  $('nok').innerHTML = bek.length ? `<span class="badge">${bek.length}</span>` : '';
-  $('okumalar').innerHTML = '<h2>Bekleyen</h2>' + (bek.length ? bek.map(okuma).join('') : '<p class="muted">Bekleyen okuma yok.</p>')
+  const n = bek.length + yazilar.length;
+  $('nok').innerHTML = n ? `<span class="badge">${n}</span>` : '';
+  $('okumalar').innerHTML = '<h2>Yazı taslakları</h2><p class="small muted">Siteye çıkmadan önce okunacak Yenilikler ve Çalışmalar yazıları, sitedeki görünüşleriyle (<a href="/taslak/onizleme/">önizleme</a>).</p>'
+    + (yazilar.length ? yazilar.map(yazi).join('') : '<p class="muted">Bekleyen yazı yok.</p>')
+    + '<h2>Bekleyen okumalar</h2>' + (bek.length ? bek.map(okuma).join('') : '<p class="muted">Bekleyen okuma yok.</p>')
     + '<h2>Biten</h2>' + (bit.length ? bit.map(okuma).join('') : '<p class="muted">Henüz yok.</p>')
     + '<p class="small muted">Görevli okumalar burada; daha eskileri (görevsiz okuma turları) Birimler sekmesinde, birimin altında.</p>';
 }
@@ -260,7 +271,12 @@ async function load() {
     const r = await fetch(API + 'okumalar', {cache: 'no-store'});
     if (r.ok) oks = (await r.json()).okumalar;
   } catch (e) {}
-  okumalar(oks);
+  let yazilar = [];
+  try {
+    const r = await fetch('/taslak/onizleme/liste.json', {cache: 'no-store'});
+    if (r.ok) yazilar = await r.json();
+  } catch (e) {}
+  okumalar(oks, yazilar);
   if (d) { pano(d, oks); birimler(d); $('alt').textContent = 'Pano ' + when(d.uretildi) + ' (' + d.makine + ')'; }
   try { const b = await (await fetch('ben', {cache: 'no-store'})).json(); $('ben').textContent = b.name || b.email || ''; } catch (e) {}
 }

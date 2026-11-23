@@ -46,6 +46,7 @@ Sonra: scripts/deploy.sh --code (önizleme de onunla gider: risalemcp.com/taslak
 """
 
 import html
+import json
 import re
 import shutil
 import subprocess
@@ -695,6 +696,12 @@ def build(quiet: bool = False) -> dict[str, list[Post]]:
         target.write_text(post_page(post, preview=True), encoding="utf-8")
     PREVIEW.mkdir(parents=True, exist_ok=True)
     (PREVIEW / "index.html").write_text(preview_index(drafts), encoding="utf-8")
+    # ar-ge masasının giriş sayfası (Okumalar sekmesi) okunacak yazı taslaklarını buradan listeler
+    (PREVIEW / "liste.json").write_text(json.dumps([
+        {"tur": p.kind.title, "baslik": p.title, "ozet": p.summary, "sayfa": p.preview_path,
+         "kaynak": _rel(p.source) if p.source else p.slug, "ad": f"{p.kind.key}/{p.slug}",
+         "yayin_tarihi": p.scheduled.isoformat() if p.scheduled else None} for p in drafts],
+        ensure_ascii=False, indent=1), encoding="utf-8")
     say(f"önizleme: {len(drafts)} taslak, {PREVIEW.relative_to(ROOT)}/ → risalemcp.com{PREVIEW_URL}/")
 
     # `adres`li Çalışmalar kayıtları (başka betiğin sayfası): yayımlanmışsa dizine açık, taslaksa noindex
