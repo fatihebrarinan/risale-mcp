@@ -80,14 +80,13 @@ rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
 # Birim başına bir sayfa (<birim>.html; index.html son birim)
 if [[ -d data/d1/masa ]]; then
     "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel && install -d -o root -g caddy -m 2750 /var/www/ozel/taslak"
-    rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/d1/masa/ "$HOST:/var/www/ozel/taslak/"
+    # -u: sunucudaki daha yeni dosya ezilmez (kuyruk D5 sayfalarını taslak sunucusundan da gönderir)
+    rsync -azu --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/d1/masa/ "$HOST:/var/www/ozel/taslak/"
 fi
-# S7.3: okuma platformu (/oku/ → /var/www/ozel/taslak/oku/) ve masanın birim görünümü; `scripts/oku-veri.py` kurar
-if [[ -f data/interim/oku/index.html ]]; then
-    "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/oku"
-    rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/oku/ "$HOST:/var/www/ozel/taslak/oku/"
-    rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/oku-masa/ "$HOST:/var/www/ozel/taslak/"
-fi
+# Okuma platformu (/oku/) ve masa (ayet.html, masa-veri/, pano…) burada GÖNDERİLMEZ (S10, 2026-11-23): ikisini de
+# taslak sunucusundaki D5 kuyruğu her birimden sonra kurup gönderir; yereldeki data/interim/oku{,-masa}/ eski kalır ve
+# eskiden her deploy masanın yeni dosyalarını 21 Kasım kopyasıyla eziyordu. Elle: `scripts/oku-veri.py --gonder`
+# (önce `git -C data/d1 pull`; yerelden yalnız platformu gönderir).
 # S9: Yenilikler ve Çalışmalar taslaklarının önizlemesi (girişli /taslak/onizleme/; `scripts/site-uret.py` üretir).
 # --delete: yayımlanan taslağın önizlemesi kalkar
 if [[ -f data/interim/onizleme/index.html ]]; then

@@ -484,7 +484,13 @@ def gonder() -> None:
         extra = ["--chown=root:caddy"]
         subprocess.run(["ssh", "-i", str(LOCAL_KEY), "-o", "BatchMode=yes", SITE_HOST,
                         "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/oku"], check=True)
-    for src, dest in ((f"{OUT}/", dest_oku), (f"{OUT_MASA}/", dest_masa)):
+    pairs = [(f"{OUT}/", dest_oku), (f"{OUT_MASA}/", dest_masa)]
+    if not SITE_KEY.exists():
+        # yerelde masa gönderilmez (S10, 2026-11-23): masayı taslak sunucusu kurar, yereldeki kopya eskidir ve onun
+        # daha yeni dosyalarını ezerdi
+        pairs = pairs[:1]
+        print("yerelden yalnız platform gönderiliyor (masa taslak sunucusundan gider)")
+    for src, dest in pairs:
         subprocess.run(["rsync", "-rtz", "--chmod=D2750,F640", *extra, "-e", ssh, src, dest], check=True)
     print("https://risalemcp.com/oku/")
 
