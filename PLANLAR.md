@@ -87,7 +87,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 |---:|---|---|---|
 | 1 | S10 | Davet altyapısı ve okuma platformu (davet bağlantısı, varsayılan `oku`, karşılama, kişisel defter, kopyalamada damga, kaldığı yer) | |
 | 2 | A4 | Türkçe lügat (risaleoku): indirme, eşleme, platformda kelimeye dokununca anlam, Risale eklentisinde lügat aracı | |
-| 3 | E6 | E6.1 Elmalılı'nın kaynak adayları: arama, örnekleriyle kullanıcıya, seçim (ekleme 11. sırada) | |
+| 3 | E6 | E6.1 Elmalılı'nın kaynak adayları: arama, örnekleriyle kullanıcıya, seçim (ekleme 10. sırada) | |
 | 4 | S4 | S4.7 Claude eklentisi (plugin): depo, yerelde deneme, başvuru | |
 | 5 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
 | 6 | E5 | Klasik 2. dilim ve yeni tanıtım | |
