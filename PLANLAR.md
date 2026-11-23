@@ -70,7 +70,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   önizleme `python3 scripts/site-uret.py onizle`) okuyup yayımlamak; eşleme örneklerine bakmak
   (`data/interim/lugat/olcum.md`). Önceki adım **S10** de yayında; kullanıcıdan beklenen: karşılama sayfasını
   (`/oku/#/~hosgeldin`) ve kopyalama damgasını okuyup düzeltmek, sonra ilk davetler (`scripts/sunucu.sh taslak davet
-  <e-posta>`). Sıradaki iş 1: **E6.1** Elmalılı'nın kaynak adayları. S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
+  <e-posta>`). Sıradaki iş 1: **E6.1** Elmalılı'nın kaynak adayları: bulundu (E6'nın altında A, B, C),
+  kullanıcının seçimi bekleniyor. S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
   OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 8'de. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
   sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
@@ -113,6 +114,16 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   telif notu olmayan), kullanıcıya örnekleriyle gösterilir; (2) seçilenden ekleme: tefsir koleksiyonuna, âyet
   birimleriyle, Türkçe cümle bölücüyle; Türkçe anlamsal aramada öne geçmesin diye eser ya da dil seçilmeden
   varsayılan aramaya girmez (`find_ayah` etkilenmez, vefat sırasıyla sonda gelir).
+  **E6.1 adayları (2026-11-23, kullanıcının seçimi bekleniyor):** (A) archive.org `ElmaliliKuranTefsiri`: 114 sûre
+  PDF'i, "Mürşit 3.2"den (2015), sadeleştirilmemiş Latin harfli metin, Eser Neşriyat 1979 (3. baskı) sayfa işaretleri
+  ("Sh:»152"), âyet grubu → "Meali Şerifi" → âyet numaralı izah; telif notu yok, lisans alanı boş; Arapça eski bir
+  yazı tipinin (`Arapca3`) glif kodlarıyla, çözülmesi gerekir (Kur'ân alıntılarıyla eşleme tablosu çıkarılabilir;
+  denenmedi). (B) islamilimleri.com "Elmalılı - Orijinal": aynı metin HTML'de, Arapçası "........" ile silinmiş;
+  telif notu yok. (C) Türkiye Yazma Eserler Kurumu'nun tenkitli neşri (Köksal, Kaya; ekitap.yek.gov.tr PDF'leri,
+  Fikriyat da dağıtıyor): en iyi metin (Unicode Arapça, 1935 baskısının sayfaları), ama "Her hakkı mahfuzdur": kurala
+  göre alınmaz, ancak izin istenirse. Elenenler: archive.org'daki öbür takımlar (Azim, Yenda: sadeleştirilmiş;
+  "(original)" kopyası kaldırılmış), kuranikerim.com (sadeleştirilmiş, kapalı), acikkuran ve kuran.gen.tr (yalnız
+  meal), Osmanlıca 1935 taramaları (metin değil).
 - E5 **Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Sırada (b)'nin 2. dilimi (kullanıcı, 2026-11-13); 3. dilim ve (c) "Sonra"da. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
 - A1 **Kaynakçada doğrudan bağlantı** (Aşama 20; e-Risale ile görüşmeden, 2026-10-30): kaynakçada yolun yanında metnin
   kendisine bağlantı; atıf hangi kaynaktaysa (erisale.com, risaleoku.com) onun ilgili yerine. erisale'de bölümün
