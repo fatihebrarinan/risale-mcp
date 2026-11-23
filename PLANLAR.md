@@ -73,8 +73,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   <e-posta>`). **E6.1 bitti (2026-11-23):** Elmalılı'nın kaynak adayları bulundu, Yazma Eserler Kurumu'na izin
   e-postası gitti ("Bekleyen"); ekleme Aralık'taki tefsir kurulumunda kalır (kullanıcının kararı). **S4.7 hazır
   (2026-11-23):** Claude eklentisi `github.com/fatihebrarinan/risale-library-plugin`'de (dört bağdaştırıcı, sekiz skill),
-  Claude Code'da denendi; **kullanıcıdan beklenen:** isterse zip'i claude.ai'ye yükleyip denemek, sonra portaldan
-  "Plugin bundle" başvurusu (`docs/s4-dizin-basvurulari.md` §9). S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
+  Claude Code'da ve claude.ai'de denendi. Portalın denetimi iki şey istedi (2026-11-23), 1.0.1'de düzeldi: yazar adı
+  "Risale MCP" dizindeki "riddle-mcp"ye benziyordu, artık "Nur Hadimleri" (dizin başvurularındaki yayıncı adı; proje
+  adı değişmedi); skill açıklamaları çift tırnaklı (": " YAML'ı bozuyordu; betik artık tırnaksızı reddeder).
+  **Kullanıcıdan beklenen:** portalda yeniden doğrulayıp göndermek (`docs/s4-dizin-basvurulari.md` §9). S4'ün cevapları "Bekleyen"de: Anthropic (S4.3),
   OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 7'de. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
   sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;

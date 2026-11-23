@@ -107,6 +107,15 @@ def validate(out: dict[str, bytes]) -> None:
             errors.append(f"{path}: üst bilgi yok")
             continue
         meta = dict(line.split(": ", 1) for line in m.group(1).splitlines())
+        # Dizinin denetçisi tırnaksız değerde ": " görünce YAML okuyucusunun durduğunu söylüyor: description
+        # her zaman çift tırnaklı (JSON dizesi YAML'da da geçerli çift tırnaklı değerdir)
+        if not meta.get("description", "").startswith('"'):
+            errors.append(f"{path}: description çift tırnak içinde değil")
+        else:
+            try:
+                meta["description"] = json.loads(meta["description"])
+            except json.JSONDecodeError as e:
+                errors.append(f"{path}: description tırnağı bozuk ({e})")
         # claude.ai'ye yüklenen skill yalnız bu anahtarları kabul eder
         extra = set(meta) - {"name", "description", "license", "compatibility", "metadata", "allowed-tools"}
         if extra:

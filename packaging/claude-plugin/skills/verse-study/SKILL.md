@@ -1,6 +1,6 @@
 ---
 name: verse-study
-description: Study a Qur'anic verse across the Risale MCP libraries - the verse itself, where the Risale-i Nur quotes it or ties to it, what the classical tafsirs say in the order of their authors' death, and related hadiths or rhetoric when they matter - with one Kaynaklar list. Use when the user asks about a verse or a passage of a sura, e.g. "Âyetü'l-Kürsî'yi Risale nasıl açıklar?", "Bakara 2:255 hakkında müfessirler ne der?", "Bu âyet Risale-i Nur'da nerede geçiyor?", "What do the tafsirs say about Yasin 36:82?".
+description: "Study a Qur'anic verse across the Risale MCP libraries - the verse itself, where the Risale-i Nur quotes it or ties to it, what the classical tafsirs say in the order of their authors' death, and related hadiths or rhetoric when they matter - with one Kaynaklar list. Use when the user asks about a verse or a passage of a sura, e.g. \"Âyetü'l-Kürsî'yi Risale nasıl açıklar?\", \"Bakara 2:255 hakkında müfessirler ne der?\", \"Bu âyet Risale-i Nur'da nerede geçiyor?\", \"What do the tafsirs say about Yasin 36:82?\"."
 license: MIT
 ---
 

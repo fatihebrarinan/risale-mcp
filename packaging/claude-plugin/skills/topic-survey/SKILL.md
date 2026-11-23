@@ -1,6 +1,6 @@
 ---
 name: topic-survey
-description: Survey where a topic is treated across Bediüzzaman Said Nursî's works, grouped by work, with citations, marking the central treatments. Use when the user asks where or in which treatises a topic appears, or wants an overview of all the passages on a subject rather than one answer, e.g. "Risale-i Nur'da şefkat nerelerde geçiyor?", "Haşir hangi risalelerde anlatılıyor?", "Konu taraması: tevekkül", "Where does Bediüzzaman write about patience?".
+description: "Survey where a topic is treated across Bediüzzaman Said Nursî's works, grouped by work, with citations, marking the central treatments. Use when the user asks where or in which treatises a topic appears, or wants an overview of all the passages on a subject rather than one answer, e.g. \"Risale-i Nur'da şefkat nerelerde geçiyor?\", \"Haşir hangi risalelerde anlatılıyor?\", \"Konu taraması: tevekkül\", \"Where does Bediüzzaman write about patience?\"."
 license: MIT
 ---
 

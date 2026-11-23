@@ -1,6 +1,6 @@
 ---
 name: risale-library
-description: Core rules for answering from the Risale MCP libraries (Risale-i Nur Library, Hadith Library, Tafsir Library, Classical Islamic Library) - search, read before relying, quote exactly, end with the list of sources cite returns, keep text and interpretation apart. Use for any question about Bediüzzaman Said Nursî or the Risale-i Nur (Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar, Mesnevî-i Nuriye, İşârâtü'l-İ'câz and the other works), about what the Qur'an, a hadith, a classical tafsir or a classical Arabic work says, in Turkish, English or Arabic - e.g. "Risale-i Nur'da tevekkül nasıl anlatılır?", "Bediüzzaman kader hakkında ne der?", "Haşir hakkında Sözler'den alıntı yap".
+description: "Core rules for answering from the Risale MCP libraries (Risale-i Nur Library, Hadith Library, Tafsir Library, Classical Islamic Library) - search, read before relying, quote exactly, end with the list of sources cite returns, keep text and interpretation apart. Use for any question about Bediüzzaman Said Nursî or the Risale-i Nur (Sözler, Mektubat, Lem'alar, Şualar, Lâhikalar, Mesnevî-i Nuriye, İşârâtü'l-İ'câz and the other works), about what the Qur'an, a hadith, a classical tafsir or a classical Arabic work says, in Turkish, English or Arabic - e.g. \"Risale-i Nur'da tevekkül nasıl anlatılır?\", \"Bediüzzaman kader hakkında ne der?\", \"Haşir hakkında Sözler'den alıntı yap\"."
 license: MIT
 ---
 

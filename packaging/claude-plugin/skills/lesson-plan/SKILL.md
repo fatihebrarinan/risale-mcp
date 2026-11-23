@@ -1,6 +1,6 @@
 ---
 name: lesson-plan
-description: Prepare a cited lesson (ders) plan on a topic or a section of the Risale-i Nur - aim, passages to read aloud in order, main points with the sentences they rest on, difficult words, questions for discussion. Use when the user wants to prepare a lesson, a study session or notes for teaching, e.g. "Yarınki ders için Haşir Risalesi'nden plan hazırla", "Gençlere sabır üzerine bir ders hazırla", "Ders notu çıkar", "Prepare a lesson on the First Word".
+description: "Prepare a cited lesson (ders) plan on a topic or a section of the Risale-i Nur - aim, passages to read aloud in order, main points with the sentences they rest on, difficult words, questions for discussion. Use when the user wants to prepare a lesson, a study session or notes for teaching, e.g. \"Yarınki ders için Haşir Risalesi'nden plan hazırla\", \"Gençlere sabır üzerine bir ders hazırla\", \"Ders notu çıkar\", \"Prepare a lesson on the First Word\"."
 license: MIT
 ---
 

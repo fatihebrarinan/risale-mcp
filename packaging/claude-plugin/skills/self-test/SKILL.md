@@ -1,6 +1,6 @@
 ---
 name: self-test
-description: Quiz the user on a section of the Risale-i Nur, one question at a time, checking each answer against the text and quoting the sentence that settles it. Use when the user wants to be tested or to check their understanding of a treatise or section, e.g. "Onuncu Söz'den beni sına", "Bana Birinci Lem'a'dan soru sor", "Ne kadar anladım, test et", "Quiz me on the Twenty-Third Word".
+description: "Quiz the user on a section of the Risale-i Nur, one question at a time, checking each answer against the text and quoting the sentence that settles it. Use when the user wants to be tested or to check their understanding of a treatise or section, e.g. \"Onuncu Söz'den beni sına\", \"Bana Birinci Lem'a'dan soru sor\", \"Ne kadar anladım, test et\", \"Quiz me on the Twenty-Third Word\"."
 license: MIT
 ---
 

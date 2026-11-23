@@ -1,10 +1,10 @@
 {
   "name": "risale-library",
   "displayName": "Risale-i Nur Library",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Answer from the complete works of Bediüzzaman Said Nursî, the Qur'an, the hadith collections, classical tafsir and classical Arabic rhetoric, with every quotation tied to a cited sentence. Bundles the four read-only Risale MCP libraries and the skills that teach Claude how to search, read, quote and cite them.",
   "author": {
-    "name": "Risale MCP",
+    "name": "Nur Hadimleri",
     "email": "destek@risalemcp.com",
     "url": "https://risalemcp.com/en/"
   },

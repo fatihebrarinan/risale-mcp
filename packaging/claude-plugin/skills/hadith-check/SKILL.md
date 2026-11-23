@@ -1,6 +1,6 @@
 ---
 name: hadith-check
-description: Check a saying presented as a hadith across the Risale MCP libraries - where the Risale-i Nur quotes it and the evidence for it, the reports in the hadith collections and their grades as the books give them - without ruling on it yourself. Use when the user asks whether something is a hadith, where a hadith comes from, or how a hadith in the Risale-i Nur is sourced, e.g. "Bu söz hadis mi?", "Risale'deki bu hadisin kaynağı ne?", "Buharî, Ezân: 148'deki hadis hangisi?", "Is 'the differences of my community are a mercy' a hadith?".
+description: "Check a saying presented as a hadith across the Risale MCP libraries - where the Risale-i Nur quotes it and the evidence for it, the reports in the hadith collections and their grades as the books give them - without ruling on it yourself. Use when the user asks whether something is a hadith, where a hadith comes from, or how a hadith in the Risale-i Nur is sourced, e.g. \"Bu söz hadis mi?\", \"Risale'deki bu hadisin kaynağı ne?\", \"Buharî, Ezân: 148'deki hadis hangisi?\", \"Is 'the differences of my community are a mercy' a hadith?\"."
 license: MIT
 ---
 

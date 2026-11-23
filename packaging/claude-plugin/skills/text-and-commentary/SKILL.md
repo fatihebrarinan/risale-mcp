@@ -1,6 +1,6 @@
 ---
 name: text-and-commentary
-description: Answer a question about the Risale-i Nur in two clearly separated parts - what the text says (quoted, cited) and interpretation (yours, or several perspectives, each tied to the sentences it rests on). Use when the user asks for an interpretation, an explanation of meaning, a comparison of readings or a personal application, e.g. "Bu cümleden ne anlamalıyız?", "Farklı bakış açılarıyla yorumla", "Bu temsil bugün bize ne söyler?", "How should this passage be understood?".
+description: "Answer a question about the Risale-i Nur in two clearly separated parts - what the text says (quoted, cited) and interpretation (yours, or several perspectives, each tied to the sentences it rests on). Use when the user asks for an interpretation, an explanation of meaning, a comparison of readings or a personal application, e.g. \"Bu cümleden ne anlamalıyız?\", \"Farklı bakış açılarıyla yorumla\", \"Bu temsil bugün bize ne söyler?\", \"How should this passage be understood?\"."
 license: MIT
 ---
 

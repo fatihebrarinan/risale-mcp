@@ -1,6 +1,6 @@
 ---
 name: study-circle
-description: Think through a topic or a passage of the Risale-i Nur together with the user, as in a müzakere (study circle) - asking questions, offering readings and testing them against other passages, always tied to the text. Use when the user wants a dialogue rather than a single answer, e.g. "Müzakere edelim: ihlas", "Bu bahsi birlikte düşünelim", "Bu konuyu tartışalım", "Let's discuss the parable of the two soldiers".
+description: "Think through a topic or a passage of the Risale-i Nur together with the user, as in a müzakere (study circle) - asking questions, offering readings and testing them against other passages, always tied to the text. Use when the user wants a dialogue rather than a single answer, e.g. \"Müzakere edelim: ihlas\", \"Bu bahsi birlikte düşünelim\", \"Bu konuyu tartışalım\", \"Let's discuss the parable of the two soldiers\"."
 license: MIT
 ---
 
