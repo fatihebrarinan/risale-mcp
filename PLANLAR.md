@@ -64,6 +64,8 @@ Son verilen kimlikler: E8, S11, A4, D16, B9 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
+- **2026-11-24:** **A1 donduruldu** (kullanıcının kararı; sebepleri "Dondurulan"da); "Sıradaki"nin başında
+  artık E5 var.
 - **Önde (2026-11-23):** **S11 bitti ve yayında:** site yazılarının taslakları masadan düzenlenir (Okumalar › Yazı
   taslakları; düzeltmeler yayımlarken depoya alınır). **A4 bitti ve yayında** (lügat: Risale eklentisinde `lookup_word`, okuma platformunda
   kelimeye dokununca anlam). Kullanıcıdan beklenen: Yenilikler taslağını (`docs/yenilikler/2026-11-23-lugat.md`,
@@ -73,7 +75,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   <e-posta>`). **E6.1 bitti (2026-11-23):** Elmalılı'nın kaynak adayları bulundu, Yazma Eserler Kurumu'na izin
   e-postası gitti ("Bekleyen"); ekleme Aralık'taki tefsir kurulumunda kalır (kullanıcının kararı). **S4.7 bitti (2026-11-23):** Claude eklentisi
   (plugin) 1.0.1 dizine gönderildi; cevap "Bekleyen"de. S4'ün bütün cevapları "Bekleyen"de: Anthropic (S4.3 dört
-  bağdaştırıcı, S4.7 eklenti), OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 6'da. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
+  bağdaştırıcı, S4.7 eklenti), OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 5'te. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
   sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
   "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
@@ -81,7 +83,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   yedek yolu ("Bekleyen"). (3) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
-- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 3 (Risale'si az birimlere göz
+- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 2 (Risale'si az birimlere göz
   atmak); E8.6 için Arapça okuyan bir denetçi aramak.
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
@@ -91,14 +93,13 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | A1 | Kaynakçada doğrudan bağlantı (e-Risale'nin önerisi) | Aşama 20 |
-| 2 | E5 | Klasik 2. dilim ve yeni tanıtım | |
-| 3 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 4 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 5 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 6 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 7 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 8 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 1 | E5 | Klasik 2. dilim ve yeni tanıtım | |
+| 2 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 3 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 4 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 5 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 6 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 7 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 
 - E6 **Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
   2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
@@ -115,11 +116,6 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   istendi, "Bekleyen"). Ayrıntı `KAYIT.md` › "Kimlikli işler" › E6.1. **E6.2 ekleme:** Aralık'taki tefsir
   kurulumunda (B3 ile, kullanıcının kararı 2026-11-23); kaynak YEK'in cevabına göre C ya da A.
 - E5 **Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Sırada (b)'nin 2. dilimi (kullanıcı, 2026-11-13); 3. dilim ve (c) "Sonra"da. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
-- A1 **Kaynakçada doğrudan bağlantı** (Aşama 20; e-Risale ile görüşmeden, 2026-10-30): kaynakçada yolun yanında metnin
-  kendisine bağlantı; atıf hangi kaynaktaysa (erisale.com, risaleoku.com) onun ilgili yerine. erisale'de bölümün
-  `url`'si outline'da var; risaleoku'da bölüme doğrudan bağlantının biçimi işin başında araştırılır. `cite` sonucu,
-  sunucu talimatı, proje talimatları ve `citations.CITE_NOTE` değişir (deploy'da beklenen fark `cite`); bağlantı
-  veriden gelir, tahmin edilmez; karşılığı olmayan atıf bağlantısız kalır. Yerel eserler ve Kur'ân ayrı düşünülür.
 - **Risale'si az birimlere göz atmak** (eski D5.2; isteğe bağlı, bir kez, kullanıcının işi): bir kıssa birimi
   (İsrâiloğulları, 40–74; yazıldı) ve bir ahkâm birimi (178–283; Aralık'a doğru). Sebep: sınanan birimlerin hepsi
   Risale'ce zengindi; Bakara 34–283'te âyetlerin ≈%78'inde Risale'den doğrudan alıntı yok. Okuma değil, göz atmak
@@ -225,12 +221,29 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   tanıtım "Sıradaki"nde.
 - **E7 (b) Yeni hadis kitapları**, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve
   Abdürrezzâk'ın Musannef'leri (nüshalar seçilirken bakılır). E7'nin (a) ve (c)'si "Sıradaki"nde.
-- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 7),
+- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 6),
   o zaman kimlik alır.
 
 ## Dondurulan
 
 Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır olur.
+
+2026-11-24 (kullanıcının kararı, birkaç kişiyle konuştuktan sonra):
+- **A1 Kaynakçada doğrudan bağlantı** (Aşama 20; e-Risale'nin 2026-10-30 görüşmesindeki önerisi): kaynakçadaki her
+  satırın yanına, metnin kaynak sitedeki yerine giden bağlantı. **Yoklama (2026-11-24):** erisale'de adres paragrafa
+  kadar iner (`/tr/sozler/altinci-soz#180`; sayı ayrıştırıcıdaki `blockIndex`, eser JSON'una yazılmıyor);
+  risaleoku'da yalnız sayfaya iner (`#reader/<kitap>?page=<n>`), bu da sayfa bilgisini saklamayı gerektirir
+  ("Risale'de sayfa numarası yoktur" ilkesine dokunur), adres de kırılgandır (site Ekim'de baştan değişti, uygulama
+  ≈45 MB); Tanzil'in âyet adresi basittir (`tanzil.net/#2:255`). **Dondurma sebepleri:** (1) Günlük kullanan
+  okuyucunun kaynakçadaki yere bakmaya ihtiyacı yok; akademik kullanan okuyucunun o eserlere zaten erişimi var.
+  (2) Külfeti çok: erisale sayfa ya da paragraf kimliklerini değiştirirse bizim de veriyi ve programı güncellememiz
+  gerekir; bizim kimliklerimiz değişmez, onların adresleri değişebilir. (3) Kaynakça uzar: bir adres satırın kendisi
+  kadar (≈80 karakter); 17 kaynaklı ciddi bir çalışmada kaynakça iki katına çıkar, model her seferinde bunu yazar,
+  cevap yavaşlar. (4) Model adresi kısaltabilir, "düzeltebilir" ya da uydurabilir (ChatGPT satırları kendi yazmaya
+  meyilliydi); bozuk bağlantı, hiç olmamasından kötü görünür. Bugün oturmuş olan kaynakça biçimi bozulmasın.
+  (5) Tutarsızlık: risaleoku'dan gelen eserler, Ta'likat'ın Türkçesi ve yerel eserler bağlantısız kalırdı.
+  e-Risale'nin şartı ("kaynak gösterilsin") bugün zaten yerine geliyor: her kaynakça satırında kaynak adı var.
+  Konuşulan ara yol (bağlantılar `cite`'ta ayrı alanda, yalnız kullanıcı isterse) da yapılmadı. Kod değişmedi.
 
 2026-11-22 (kullanıcının kararı; "Sonra"nın gözden geçirilmesi):
 - **Konu fihristi** (Aşama 15): anlamsal arama bu işi büyük ölçüde görüyor. Konunun ortak adres olduğu karar yazılı
