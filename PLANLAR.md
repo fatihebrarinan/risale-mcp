@@ -139,6 +139,16 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   - E5.3 Profil, vektörler, talimat (`KLASIK_INSTRUCTIONS`: kelâm, tasavvuf ve siyer de), tanıtım (site, dizin
     metinleri, eklenti skill'i), çağrı seti, yayın; Yenilikler taslağı.
   - E5.4 İhyâu Ulûmi'd-Dîn: ayrı kurulum, anlamsal aramaya etkisi ölçülür.
+  **Önceden verilen kararlar (kullanıcı, 2026-11-24):** (1) şerhin içindeki metin (Îcî'nin Mevâkıf'ı, Sadrüşşerîa'nın
+  Tavzîh'i) aynı eserde işaretli katmandır, eser şârihindir, ayrı eser çıkarılmaz; (2) `risale_refs` yalnız müellifin
+  sözündeki havale, nakil ve değerlendirmeyi kapsar (tefe'ül, yalnız anma, talebe sözü girmez; kopyalar asıl yere
+  indirgenir), 1. dilim eserleri dahil; liste rapordan çıkarılıp okunur, kullanıcı bakar, sonra kataloğa girer;
+  (3) nüsha kötü çıkarsa OpenITI'deki başka sürüme geçilir, sebebi örnekle bildirilir; (4) dizin metinleri (Anthropic,
+  OpenAI) başvurular sonuçlanınca değişir, taslağı hazır bekler; site, talimat ve eklenti skill'i E5.3'te; (5) uçtan
+  uca deneme temiz ve araç çıktısı farkı yalnız beklenen farksa yayın sorulmadan yapılır, sorun çıkarsa durulur;
+  (6) İhyâ anlamsal aramada öbürlerinin önüne geçerse (ölçüm) varsayılan aramadan çıkar, eser verilince aranır;
+  (7) İhyâ'da Irâkî'nin tahrici varsa ayrı katman; Risale'nin İhyâ künyeli hadisleri İhyâ'daki yerine mekanik lafız
+  bağıyla bağlanır.
 - **Risale'si az birimlere göz atmak** (eski D5.2; isteğe bağlı, bir kez, kullanıcının işi): bir kıssa birimi
   (İsrâiloğulları, 40–74; yazıldı) ve bir ahkâm birimi (178–283; Aralık'a doğru). Sebep: sınanan birimlerin hepsi
   Risale'ce zengindi; Bakara 34–283'te âyetlerin ≈%78'inde Risale'den doğrudan alıntı yok. Okuma değil, göz atmak
