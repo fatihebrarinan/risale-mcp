@@ -72,6 +72,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   **Kullanıcıdan beklenen (E5 bitince):** `risale_refs` listesine ve E5.1'in kurallarına sonradan bakmak, Yenilikler
   taslağını okuyup yayımlamak. **B10 açıldı** ("Sıradaki" 2: Arapça Mesnevî'nin sonundaki muhakkik eki). A1
   donduruldu (sebepleri "Dondurulan"da).
+  **E5'ten sonra, pencerede yer kalırsa: E7'nin ön çalışması** (kullanıcının onayı, 2026-11-24): karar gerektirmeyen
+  kısım, yayın yok, bağ dosyasına yazılmaz, model okuması başlatılmaz. (a) rivayet grupları birkaç lafız eşiğiyle
+  deneme (kaç grup, örnekler, sınırdaki şüpheliler); (c) 101 aday künyeli/künyesiz ayrılır, künyelilerde bölgenin
+  darlığı. Çıktı: rapor ve karar listesi (`docs/e7-on-calisma.md`); kararlar kullanıcıyla.
 - **Önde (2026-11-23):** **S11 bitti ve yayında:** site yazılarının taslakları masadan düzenlenir (Okumalar › Yazı
   taslakları; düzeltmeler yayımlarken depoya alınır). **A4 bitti ve yayında** (lügat: Risale eklentisinde `lookup_word`, okuma platformunda
   kelimeye dokununca anlam). Kullanıcıdan beklenen: Yenilikler taslağını (`docs/yenilikler/2026-11-23-lugat.md`,
