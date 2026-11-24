@@ -57,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E8, S11, A4, D16, B9 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E8, S11, A4, D16, B10 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -69,7 +69,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   diye (`docs/e5-risalede-anilan-eserler.md`; 102 eser, 792 cümle, havale yalnız 24 cümle). Kullanıcıdan beklenen:
   raporu okuyup 2. dilimi ve tanıtımın sözünü yeniden değerlendirmek (Şerhu'l-Mevâkıf öne mi, Risâle-i Hamîdiyye
   listeye mi); `risale_refs` fikrine karar. Yan bulgu: Arapça Mesnevî'nin sonunda muhakkikin biyografi eki
-  müellifin metni olarak duruyor (öneri: yeni bir B işi).
+  müellifin metni olarak duruyor: B10 açıldı ("Sıradaki" 2).
 - **Önde (2026-11-23):** **S11 bitti ve yayında:** site yazılarının taslakları masadan düzenlenir (Okumalar › Yazı
   taslakları; düzeltmeler yayımlarken depoya alınır). **A4 bitti ve yayında** (lügat: Risale eklentisinde `lookup_word`, okuma platformunda
   kelimeye dokununca anlam). Kullanıcıdan beklenen: Yenilikler taslağını (`docs/yenilikler/2026-11-23-lugat.md`,
@@ -98,12 +98,13 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
 | 1 | E5 | Klasik 2. dilim ve yeni tanıtım | |
-| 2 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 3 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 4 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 5 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 6 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 7 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 2 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
+| 3 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 4 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 5 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 6 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 7 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 8 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 
 - E6 **Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
   2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
@@ -120,6 +121,14 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   istendi, "Bekleyen"). Ayrıntı `KAYIT.md` › "Kimlikli işler" › E6.1. **E6.2 ekleme:** Aralık'taki tefsir
   kurulumunda (B3 ile, kullanıcının kararı 2026-11-23); kaynak YEK'in cevabına göre C ya da A.
 - E5 **Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Sırada (b)'nin 2. dilimi (kullanıcı, 2026-11-13); 3. dilim ve (c) "Sonra"da. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
+  **Ön çalışma ve kararlar (2026-11-24):** Risale'de adı geçen eserler türleriyle (`docs/e5-risalede-anilan-eserler.md`:
+  102 eser, 792 cümle; havale yalnız 24 cümle). Kullanıcının kararları: (1) tanıtımın sözü **"Risale'nin havale ettiği
+  ve dayandığı klasikler"**, her eserin Risale'deki yeri türüyle (havale, nakil, değerlendirme); (2) **`risale_refs`**:
+  her klasik eserin kaydında Risale'nin onu andığı cümlelerin kimliği ve türü (`catalog/klasik.py`'de elle, onaylı
+  liste), `build` atfı genel veritabanından alır, `list_works` döndürür (Risale'nin metni kopyalanmaz); (3)
+  **Şerhu'l-Mevâkıf (c)'den 2. dilime** (nüsha: OpenITI `0756CadudDinIji.Mawaqif.JK001335`, Umeyre, Dâru'l-Cîl 1997:
+  adı "el-Mevâkıf" ama Seyyid Şerîf'in şerhi, metin `# المتن #` ile ayrılıyor; 460 bin kelime); (4)
+  **er-Risâletü'l-Hamîdiyye** (Hüseyin el-Cisr) (c)'ye: OpenITI'de yok, izinli nüsha aranır.
 - **Risale'si az birimlere göz atmak** (eski D5.2; isteğe bağlı, bir kez, kullanıcının işi): bir kıssa birimi
   (İsrâiloğulları, 40–74; yazıldı) ve bir ahkâm birimi (178–283; Aralık'a doğru). Sebep: sınanan birimlerin hepsi
   Risale'ce zengindi; Bakara 34–283'te âyetlerin ≈%78'inde Risale'den doğrudan alıntı yok. Okuma değil, göz atmak
@@ -128,6 +137,11 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   2026-11-20–22): (a) hadis – hadis rivayet grupları (Y2.1'in kalanı): aynı hadisin rivayetleri, lafızla (mekanik);
   (c) yalnız Türkçe aktarılan hadisler (HA7, 101 aday cümle, Adım 4): künye varsa künyenin bölgesinde aranır. (b) yeni
   kitaplar "Sonra"da.
+- B10 **Arapça Mesnevî'nin muhakkik eki** (E5 ön çalışmasının yan bulgusu, 2026-11-24): `el-mesnevi-el-arabi/nur/tetimme`'nin
+  64–128. cümleleri risaleoku baskısının ekidir (resim etiketleri `img alt=…`, yazma nüshaların resim altları, Ziriklî'nin
+  el-A'lâm'ından "نبذة عن بعض الأعلام" biyografi sözlüğü); araçlarda müellifin metni gibi dönüyor. `isaratul-icaz-arabi`'de
+  de bir `img alt` satırı var. Düzeltme ayrıştırıcıda (`books/risaleoku_app.py` ya da şablon): ek atılır ya da `notes`'a
+  geçer; öbür risaleoku eserlerinde aynı ek var mı bakılır. Kimlik değişikliği (`--accept-id-changes`), sonra deploy.
 - B9 **Türk hattının iki kaynağı** (S7'nin açığı, 2026-11-21): Diyanet baskısının Türk hattıyla risaleoku'nun Türk hattı
   arasındaki küçük işaret farkları (ör. durak işaretleri) bakılmadı; kaynak risaleoku. Kısa karşılaştırma, rapor.
 - E8 **Külliyatın Arapça tercümesi** (kullanıcının kararları, 2026-11-23; izin `docs/izinler.md`, geçmişi `KAYIT.md`; Sözler'e e-posta şimdilik
