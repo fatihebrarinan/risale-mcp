@@ -64,14 +64,14 @@ Son verilen kimlikler: E8, S11, A4, D16, B10 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **2026-11-24 (gece):** **E5 sürüyor, kesintisiz** (kullanıcının kararı: 5 saatlik pencere 2026-11-25 00.20'de
-  yenilenince başlanır, E5 bitene kadar durulmaz; bu seferlik E5.1'in örnekleri gösterilmez). Kapsam ve önceden
-  verilen kararlar "Sıradaki" › E5'te: bu tur Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber,
-  el-Munkız, el-Mevâhib (E5.1–E5.3), sonra İhyâ (E5.4); temizse yayın sorulmadan; dizin metinleri başvurular
-  sonuçlanınca. Girdi: `docs/e5-risalede-anilan-eserler.md` (Risale'de adı geçen 102 eser; havale yalnız 24 cümle).
-  **Kullanıcıdan beklenen (E5 bitince):** `risale_refs` listesine ve E5.1'in kurallarına sonradan bakmak, Yenilikler
-  taslağını okuyup yayımlamak. **B10 açıldı** ("Sıradaki" 2: Arapça Mesnevî'nin sonundaki muhakkik eki). A1
-  donduruldu (sebepleri "Dondurulan"da).
+- **2026-11-25 (gece):** **E5 bitti ve yayında** (kesintisiz, kullanıcının izniyle). Klasik eklentide 12 eser:
+  yedi yeni eser (Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber, el-Munkız, el-Mevâhib, İhyâ),
+  `risale_refs`, İhyâ'da Irâkî'nin tahrici şerh ve Risale hadislerine lafız bağı; site ve talimat yeni tanıtımla.
+  **Kullanıcıdan beklenen:** (1) `risale_refs` listesine bakmak (`catalog/klasik.py` sonunda, 24 kayıt); (2)
+  Yenilikler taslağını okuyup yayımlamak (`docs/yenilikler/2026-11-25-klasik-eserler-2.md`; masada Okumalar › Yazı
+  taslakları); (3) eklenti 1.0.2'yi yandaki depodan push etmek (`../risale-library-plugin`, commit hazır; dizin yeniden
+  tarar); (4) dizin metinleri başvurular sonuçlanınca (`docs/e5-dizin-metni-taslagi.md`); (5) ana depoya push.
+  **B10 açık** ("Sıradaki" 1).
   **E5'ten sonra, pencerede yer kalırsa: E7'nin ön çalışması** (kullanıcının onayı, 2026-11-24): karar gerektirmeyen
   kısım, yayın yok, bağ dosyasına yazılmaz, model okuması başlatılmaz. (a) rivayet grupları birkaç lafız eşiğiyle
   deneme (kaç grup, örnekler, sınırdaki şüpheliler); (c) 101 aday künyeli/künyesiz ayrılır, künyelilerde bölgenin
@@ -103,14 +103,13 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | E5 | Klasik 2. dilim ve yeni tanıtım | |
-| 2 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
-| 3 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 4 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 5 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 6 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 7 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 8 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 1 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
+| 2 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 3 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 4 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 5 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 6 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 7 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 
 - E6 **Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
   2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
@@ -126,35 +125,6 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   silinmiş), (C) Türkiye Yazma Eserler Kurumu'nun tenkitli neşri (en iyi metin; "Her hakkı mahfuzdur": izin
   istendi, "Bekleyen"). Ayrıntı `KAYIT.md` › "Kimlikli işler" › E6.1. **E6.2 ekleme:** Aralık'taki tefsir
   kurulumunda (B3 ile, kullanıcının kararı 2026-11-23); kaynak YEK'in cevabına göre C ya da A.
-- E5 **Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Sırada (b)'nin 2. dilimi (kullanıcı, 2026-11-13); 3. dilim ve (c) "Sonra"da. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
-  **Ön çalışma ve kararlar (2026-11-24):** Risale'de adı geçen eserler türleriyle (`docs/e5-risalede-anilan-eserler.md`:
-  102 eser, 792 cümle; havale yalnız 24 cümle). Kullanıcının kararları: (1) tanıtımın sözü **"Risale'nin havale ettiği
-  ve dayandığı klasikler"**, her eserin Risale'deki yeri türüyle (havale, nakil, değerlendirme); (2) **`risale_refs`**:
-  her klasik eserin kaydında Risale'nin onu andığı cümlelerin kimliği ve türü (`catalog/klasik.py`'de elle, onaylı
-  liste), `build` atfı genel veritabanından alır, `list_works` döndürür (Risale'nin metni kopyalanmaz); (3)
-  **Şerhu'l-Mevâkıf (c)'den 2. dilime** (nüsha: OpenITI `0756CadudDinIji.Mawaqif.JK001335`, Umeyre, Dâru'l-Cîl 1997:
-  adı "el-Mevâkıf" ama Seyyid Şerîf'in şerhi, metin `# المتن #` ile ayrılıyor; 460 bin kelime); (4)
-  **er-Risâletü'l-Hamîdiyye** (Hüseyin el-Cisr) (c)'ye: OpenITI'de yok, izinli nüsha aranır.
-  **Bu turun eserleri (kullanıcının kararı, 2026-11-24):** Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh (tamamı;
-  `risale_refs` Mukaddemât-ı İsnâ Aşer'i gösterir), el-Fıkhu'l-Ekber, el-Munkız (tanıtımda "Risale'de adıyla anılmaz"),
-  el-Mevâhibü'l-Ledünniyye (3. dilimden alındı: havale edilen eser); ≈1,44 milyon kelime. İhyâ son alt adım.
-  - E5.1 İndirme (`fetch klasik`) ve ham verinin incelemesi: başlık yapısı, katmanlar (Îcî'nin metni ve Cürcânî'nin
-    şerhi `# المتن #` ile; Telvîh'te Tavzîh'in metni), sayfa ve dipnotlar; örnekler kullanıcıya.
-  - E5.2 Ayrıştırma (`books/klasik_openiti.py`), testler; `risale_refs` listesi (rapordan, kullanıcı onaylar) ve
-    `list_works`'te gösterimi.
-  - E5.3 Profil, vektörler, talimat (`KLASIK_INSTRUCTIONS`: kelâm, tasavvuf ve siyer de), tanıtım (site, dizin
-    metinleri, eklenti skill'i), çağrı seti, yayın; Yenilikler taslağı.
-  - E5.4 İhyâu Ulûmi'd-Dîn: ayrı kurulum, anlamsal aramaya etkisi ölçülür.
-  **Önceden verilen kararlar (kullanıcı, 2026-11-24):** (1) şerhin içindeki metin (Îcî'nin Mevâkıf'ı, Sadrüşşerîa'nın
-  Tavzîh'i) aynı eserde işaretli katmandır, eser şârihindir, ayrı eser çıkarılmaz; (2) `risale_refs` yalnız müellifin
-  sözündeki havale, nakil ve değerlendirmeyi kapsar (tefe'ül, yalnız anma, talebe sözü girmez; kopyalar asıl yere
-  indirgenir), 1. dilim eserleri dahil; liste rapordan çıkarılıp okunur, kullanıcı bakar, sonra kataloğa girer;
-  (3) nüsha kötü çıkarsa OpenITI'deki başka sürüme geçilir, sebebi örnekle bildirilir; (4) dizin metinleri (Anthropic,
-  OpenAI) başvurular sonuçlanınca değişir, taslağı hazır bekler; site, talimat ve eklenti skill'i E5.3'te; (5) uçtan
-  uca deneme temiz ve araç çıktısı farkı yalnız beklenen farksa yayın sorulmadan yapılır, sorun çıkarsa durulur;
-  (6) İhyâ anlamsal aramada öbürlerinin önüne geçerse (ölçüm) varsayılan aramadan çıkar, eser verilince aranır;
-  (7) İhyâ'da Irâkî'nin tahrici varsa ayrı katman; Risale'nin İhyâ künyeli hadisleri İhyâ'daki yerine mekanik lafız
-  bağıyla bağlanır.
 - **Risale'si az birimlere göz atmak** (eski D5.2; isteğe bağlı, bir kez, kullanıcının işi): bir kıssa birimi
   (İsrâiloğulları, 40–74; yazıldı) ve bir ahkâm birimi (178–283; Aralık'a doğru). Sebep: sınanan birimlerin hepsi
   Risale'ce zengindi; Bakara 34–283'te âyetlerin ≈%78'inde Risale'den doğrudan alıntı yok. Okuma değil, göz atmak
@@ -261,8 +231,9 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   İspanyolca (33), Rusça (20), Urduca (15), Özbekçe (≈97, iki alfabe), Macarca (15); öbürleri küçük kitaplar
   (Bengalce, Yunanca, Fince, Malayca, Felemenkçe, Lehçe, Portekizce, Türkmence, Uygurca, Çince…). Hangi dilin
   ekleneceği ayrı karar.
-- **E5'in kalanı:** 3. dilim (el-Mevâhibü'l-Ledünniyye) ve (c) listesi (`docs/eserler/klasik.md`); 2. dilim ve
-  tanıtım "Sıradaki"nde.
+- **Kalan klasik eserler** (E5'ten sonra, `docs/eserler/klasik.md` (c)): er-Risâletü'l-Hamîdiyye (Risale'nin havale
+  ettiği; OpenITI'de yok, izinli nüsha aranır), el-Mîzânü'l-Kübrâ (havale; OpenITI'de yok), el-Fütûhâtü'l-Mekkiyye
+  (havale; 1,8 milyon kelime), Fütûhu'l-Gayb, Mektûbât, Mesnevî ve öbürleri; sıraya girince kimlik alır.
 - **E7 (b) Yeni hadis kitapları**, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve
   Abdürrezzâk'ın Musannef'leri (nüshalar seçilirken bakılır). E7'nin (a) ve (c)'si "Sıradaki"nde.
 - **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 6),
@@ -398,6 +369,11 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- E5 Kalan klasik eserler ve yeni tanıtım (2026-11-25, yayında): Risale'de adı geçen eserlerin raporu
+  (`docs/e5-risalede-anilan-eserler.md`), yedi eser (Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber,
+  el-Munkız, el-Mevâhib, İhyâ; Îcî'nin metni ve Irâkî'nin tahrici ayrı katman), `risale_refs` (Risale'nin eseri andığı
+  yerler, türüyle), İhyâ künyeli hadislere lafız bağı, tanıtım "Risale'nin havale ettiği ve dayandığı klasikler" (site,
+  talimat, eklenti 1.0.2). Dizin metni taslağı başvurular sonuçlanınca. Ayrıntı `KAYIT.md` › "Kimlikli işler" › E5.
 - S4.7 Claude eklentisi (2026-11-23, dizine gönderildi): herkese açık depo `fatihebrarinan/risale-library-plugin` (dört bağdaştırıcı, sekiz İngilizce skill, metin yok; kaynak `packaging/claude-plugin/`, üretici `scripts/claude-plugin.py`); Claude Code'da ve claude.ai'de denendi; portalın denetimiyle yazar adı "Nur Hadimleri" oldu, skill açıklamaları tırnaklandı (1.0.1). Cevap "Bekleyen"de. Ayrıntı `KAYIT.md` › "Kimlikli işler" › S4.
 - E6.1 Elmalılı'nın kaynak adayları (2026-11-23): üç aday (archive.org Mürşit metni, islamilimleri.com, Yazma Eserler
   Kurumu neşri); Kurum'un şartları araştırıldı (her hakkı saklı), izin e-postası gitti ("Bekleyen"). Ekleme (E6.2)

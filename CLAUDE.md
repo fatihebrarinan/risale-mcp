@@ -491,7 +491,17 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   fıkraları düğüm; Müfredât'ta madde kökün ilk harfinden). Profil `klasik` (`data/dist/klasik/`), sunucu
   `KLASIK_INSTRUCTIONS` (tefsirinkiyle aynı araç seti), tefsir makinesinde 8003, `klasik.risalemcp.com/mcp`
   (`PROFIL=klasik scripts/tefsir-sunucu.sh gonder`), çağrı seti `tests/golden/tool_calls_klasik.json`. Kalan dilimler
-  ve bekleyenler `docs/eserler/klasik.md` (b), (c), E5.
+  ve bekleyenler `docs/eserler/klasik.md` (b), (c).
+  **E5 (2026-11-25):** yedi eser daha (Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber, el-Munkız,
+  el-Mevâhib, İhyâ); seçim Risale'deki anmalardan (`docs/e5-risalede-anilan-eserler.md`), tanıtım "Risale'nin havale
+  ettiği ve dayandığı klasikler". Ayrıştırma `books/klasik_serh.py` (kurallar başında: seri kuralıyla başlık ağacı,
+  Mevâkıf'ta Îcî'nin metni katman `authority: metin`, Makāsıd'da bölümler metin içi "قال …" aktarmalarından, Telvîh
+  ve İhyâ'da başlıklar başka sürümden ilk kelime eşleştirmesiyle, İhyâ'da Irâkî'nin tahrici şerh `commentator`).
+  Risale'nin eseri andığı yerler `catalog/klasik.RISALE_REFS` (elle, onaylı; yalnız müellifin sözü, türüyle: havale,
+  nakil, değerlendirme; adıyla anılmayan `RISALE_UNNAMED`), `build_db` klasik profilde `work_refs` (atıf genel
+  veritabanından), `list_works` `risale_refs`; İhyâ künyeli Risale hadislerine lafız bağı `risale_quotes` (her
+  kurulumda hesaplanır), İhyâ cümlesinde `in_risale`. Telvîh'in yayımlanan kimlikleri altı kelimelik eşleştirmeyle
+  kuruldu: ayarı değişirse cümleler kayar (`parse_telvih`).
 - **Taslak hattı ve kullanım sınırı:** `scripts/d1-*.py`'nin bütün `claude -p` çağrıları `d1-prova.claude_p`'den geçer
   (önce Haiku yoklamasıyla 5 saatlik pencerenin doluluğu, eşiğin üstündeyse sıfırlanmaya kadar bekleme; sınıra
   takılırsa döküm `basarisiz/`'e, bekleme, yeniden deneme). Bir birimin durumu ve sıradaki adımı

@@ -18,6 +18,7 @@ eklenti skill'i E5.3'te değişti; dizin metni değişene kadar oradaki "beş es
 >   Miftah al-'Ulum, al-Raghib al-Isfahani's al-Mufradat, al-Sayyid al-Sharif al-Jurjani's al-Ta'rifat.
 > - Kalam and legal theory: al-Sayyid al-Sharif's Sharh al-Mawaqif (with al-Iji's base text as a separate layer),
 >   al-Taftazani's Sharh al-Maqasid and al-Talwih, Abu Hanifa's al-Fiqh al-Akbar, al-Ghazali's al-Munqidh.
+> - Sufism: al-Ghazali's Ihya' 'Ulum al-Din, with al-'Iraqi's notes on its hadiths as a separate layer.
 > - The Prophet's life: al-Qastallani's al-Mawahib al-Laduniyya.
 >
 > For each work the server records where the Risale-i Nur names it and how (it refers the reader there, quotes it,
@@ -38,10 +39,10 @@ eklenti skill'i E5.3'te değişti; dizin metni değişene kadar oradaki "beş es
 
 ## OpenAI "Content" satırı
 
-> - Content: eleven classical Arabic works the Risale-i Nur refers to and relies on (rhetoric: al-Jurjani's Dala'il
+> - Content: twelve classical Arabic works the Risale-i Nur refers to and relies on (rhetoric: al-Jurjani's Dala'il
 >   al-I'jaz and Asrar al-Balagha, al-Raghib's al-Mufradat, al-Sakkaki's Miftah al-'Ulum, al-Sayyid al-Sharif's
->   al-Ta'rifat; kalam and usul: Sharh al-Mawaqif, Sharh al-Maqasid, al-Talwih, al-Fiqh al-Akbar, al-Munqidh; siyar:
+>   al-Ta'rifat; kalam and usul: Sharh al-Mawaqif, Sharh al-Maqasid, al-Talwih, al-Fiqh al-Akbar, al-Munqidh; Sufism: the Ihya'; siyar:
 >   al-Mawahib al-Laduniyya) in their original Arabic, from OpenITI (KITAB project), licensed CC BY-NC-SA 4.0, each in
 >   the edition named in its record.
 
-İhyâ (E5.4) eklenirse "eleven" ve tasavvuf satırı güncellenir.
+İhyâ (E5.4) eklendi, metin buna göredir.

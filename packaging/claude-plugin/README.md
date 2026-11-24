@@ -13,7 +13,7 @@ The plugin holds no texts: it holds the addresses of the four connectors and ins
 | Risale-i Nur Library | `https://mcp.risalemcp.com/mcp` | The complete works of Bediüzzaman Said Nursî (the Risale-i Nur Collection, the early works, the compilations, the Hizbs, the works he wrote in Arabic with their Turkish translations, Ottoman volumes), the Qur'an, risaleoku.com's dictionary |
 | Hadith Library | `https://hadis.risalemcp.com/mcp` | The Six Books, the Muwatta, Ahmad's Musnad, al-Mustadrak and other collections, with grades where the books hold them |
 | Tafsir Library | `https://tefsir.risalemcp.com/mcp` | Thirteen classical works of tafsir, from al-Tabari to al-Alusi, divided into verse units |
-| Classical Islamic Library | `https://klasik.risalemcp.com/mcp` | The classical works the Risale-i Nur refers to and relies on: rhetoric and language, kalam and usul (Sharh al-Mawaqif, Sharh al-Maqasid, al-Talwih), the Prophet's life (al-Mawahib) |
+| Classical Islamic Library | `https://klasik.risalemcp.com/mcp` | The classical works the Risale-i Nur refers to and relies on: rhetoric and language, kalam and usul (Sharh al-Mawaqif, Sharh al-Maqasid, al-Talwih), Sufism (the Ihya'), the Prophet's life (al-Mawahib) |
 
 **Skills** (instructions Claude loads when a question calls for them):
 

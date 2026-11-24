@@ -2209,6 +2209,74 @@ kayıtlı sözün genellenmesi ("قد", "من معاني" → "hâssa-i âmme") 
 altı not. Klasik kaynaklar tefsir kaynaklarının yerini almadı, yanlarına geldi (5–8 kaynak). Ezber şüphesi artmadı.
 Dersler D8'e (aşağıda).
 
+**E5. Kalan klasik eserler ve yeni tanıtım (bitti, 2026-11-25; yayında).** "Sıradaki"deki kayıt (kararlar dahil):
+
+- E5 **Kalan klasik eserler:** E2'den sonra, aynı ölçütle (`docs/eserler/klasik.md`). Sırada (b)'nin 2. dilimi (kullanıcı, 2026-11-13); 3. dilim ve (c) "Sonra"da. **Tanıtım** (kullanıcının kararı, 2026-11-22: eklenti zayıf kaldı, bu hafta 68 çağrı): eklenti "Risale'nin havale ettiği klasikler" diye tanıtılır (seçim Risale'deki anmalardan); sitede, sunucu talimatında ve dizin metinlerinde.
+  **Ön çalışma ve kararlar (2026-11-24):** Risale'de adı geçen eserler türleriyle (`docs/e5-risalede-anilan-eserler.md`:
+  102 eser, 792 cümle; havale yalnız 24 cümle). Kullanıcının kararları: (1) tanıtımın sözü **"Risale'nin havale ettiği
+  ve dayandığı klasikler"**, her eserin Risale'deki yeri türüyle (havale, nakil, değerlendirme); (2) **`risale_refs`**:
+  her klasik eserin kaydında Risale'nin onu andığı cümlelerin kimliği ve türü (`catalog/klasik.py`'de elle, onaylı
+  liste), `build` atfı genel veritabanından alır, `list_works` döndürür (Risale'nin metni kopyalanmaz); (3)
+  **Şerhu'l-Mevâkıf (c)'den 2. dilime** (nüsha: OpenITI `0756CadudDinIji.Mawaqif.JK001335`, Umeyre, Dâru'l-Cîl 1997:
+  adı "el-Mevâkıf" ama Seyyid Şerîf'in şerhi, metin `# المتن #` ile ayrılıyor; 460 bin kelime); (4)
+  **er-Risâletü'l-Hamîdiyye** (Hüseyin el-Cisr) (c)'ye: OpenITI'de yok, izinli nüsha aranır.
+  **Bu turun eserleri (kullanıcının kararı, 2026-11-24):** Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh (tamamı;
+  `risale_refs` Mukaddemât-ı İsnâ Aşer'i gösterir), el-Fıkhu'l-Ekber, el-Munkız (tanıtımda "Risale'de adıyla anılmaz"),
+  el-Mevâhibü'l-Ledünniyye (3. dilimden alındı: havale edilen eser); ≈1,44 milyon kelime. İhyâ son alt adım.
+  - E5.1 İndirme (`fetch klasik`) ve ham verinin incelemesi: başlık yapısı, katmanlar (Îcî'nin metni ve Cürcânî'nin
+    şerhi `# المتن #` ile; Telvîh'te Tavzîh'in metni), sayfa ve dipnotlar; örnekler kullanıcıya.
+  - E5.2 Ayrıştırma (`books/klasik_openiti.py`), testler; `risale_refs` listesi (rapordan, kullanıcı onaylar) ve
+    `list_works`'te gösterimi.
+  - E5.3 Profil, vektörler, talimat (`KLASIK_INSTRUCTIONS`: kelâm, tasavvuf ve siyer de), tanıtım (site, dizin
+    metinleri, eklenti skill'i), çağrı seti, yayın; Yenilikler taslağı.
+  - E5.4 İhyâu Ulûmi'd-Dîn: ayrı kurulum, anlamsal aramaya etkisi ölçülür.
+  **Önceden verilen kararlar (kullanıcı, 2026-11-24):** (1) şerhin içindeki metin (Îcî'nin Mevâkıf'ı, Sadrüşşerîa'nın
+  Tavzîh'i) aynı eserde işaretli katmandır, eser şârihindir, ayrı eser çıkarılmaz; (2) `risale_refs` yalnız müellifin
+  sözündeki havale, nakil ve değerlendirmeyi kapsar (tefe'ül, yalnız anma, talebe sözü girmez; kopyalar asıl yere
+  indirgenir), 1. dilim eserleri dahil; liste rapordan çıkarılıp okunur, kullanıcı bakar, sonra kataloğa girer;
+  (3) nüsha kötü çıkarsa OpenITI'deki başka sürüme geçilir, sebebi örnekle bildirilir; (4) dizin metinleri (Anthropic,
+  OpenAI) başvurular sonuçlanınca değişir, taslağı hazır bekler; site, talimat ve eklenti skill'i E5.3'te; (5) uçtan
+  uca deneme temiz ve araç çıktısı farkı yalnız beklenen farksa yayın sorulmadan yapılır, sorun çıkarsa durulur;
+  (6) İhyâ anlamsal aramada öbürlerinin önüne geçerse (ölçüm) varsayılan aramadan çıkar, eser verilince aranır;
+  (7) İhyâ'da Irâkî'nin tahrici varsa ayrı katman; Risale'nin İhyâ künyeli hadisleri İhyâ'daki yerine mekanik lafız
+  bağıyla bağlanır.
+
+Yapılanlar (2026-11-24 gece – 2026-11-25; kullanıcı bu seferlik E5.1'in örneklerini göstermeden sürmeye izin verdi):
+- **Ön çalışma:** `docs/e5-risalede-anilan-eserler.md`: Risale'de adı geçen 102 eser, 792 cümle; havale yalnız 24
+  cümle (14 eser). Yan bulgu B10 (Arapça Mesnevî'nin muhakkik eki).
+- **E5.1 nüshalar** (ham verinin incelemesinden): Şerhu'l-Mevâkıf OpenITI'de Îcî'nin adı altında "المواقف"
+  (Umeyre, Dâru'l-Cîl 1997; içi Seyyid Şerîf'in şerhi): ShamAY0033881 (başlıklı) alındı, JK001335 aynı baskı,
+  başlıksız. Şerhu'l-Makāsıd JK001157 (başlık satırı yok; ShamAY da öyle). Telvîh: JK007110 yalnız Teftâzânî'nin
+  şerhi, başlıksız; ShamAY0034200 aynı baskıda Tavzîh'le sayfa sayfa iç içe: metin JK'dan, başlıklar ShamAY'den
+  eşleştirmeyle. Munkız ShamAY0033739 (Câbir; JK 23 uzun paragraf). Fıkh-ı Ekber Shamela0006388. Mevâhib
+  Shamela0023685. İhyâ JK000001 (Irâkî'nin tahrici metnin içinde "+ حديث … +"), başlıklar Shamela0009472'den.
+- **E5.2 ayrıştırma** (`books/klasik_serh.py`): seri kuralıyla başlık ağacı (sıra sayılı başlık ancak serisinin
+  sıradaki numarasıysa bölüm açar; içindekiler satırları ve tekrarlar metin kalır; Mevâkıf'ta 396 başlıktan 19'u
+  reddedildi, bir başlık tür kelimesiyle düzeltildi). Mevâkıf'ta baskının "المتن"/"الشرح" satırları alt bölüm,
+  metin bölümü katman (`authority: metin`, Îcî; 146). Makāsıd'da bölümler "قال المبحث …" aktarmalarından, sabit
+  seviyeyle (مقصد > فصل > مبحث). Telvîh ve İhyâ'da paragraf başlıklı sürümde ilk kelimeleriyle bulunur (Telvîh 6
+  kelime, yayımlanan kimlikler bununla; İhyâ 8 kelime, pencereli: sık kalıplar imleci kaydırıyordu). İhyâ'da 4.486
+  tahric ve Irâkî'nin mukaddimesi (hutbenin ortasında) Irâkî'nin şerhi (`commentator`), Gazâlî'nin metninde "+"
+  kalmadı; açık kalan tahric sonraki paragrafa yalnız oradaki ilk "+" kapanışsa sürer. Muhakkikin «1» işaretleri
+  (Mevâhib) ayrıldı. Sınırlama: Makāsıd ve Telvîh noktalamasız (cümle ortalama ≈250 ve ≈110 kelime; B3 gibi).
+- **`risale_refs`** (`catalog/klasik.RISALE_REFS`, `RISALE_UNNAMED`): 24 kayıt, müellifin sözündeki havale, nakil,
+  değerlendirme; kopyalar asıl yere; Telvîh'te Mukaddemât'ın yeri `section_here`. `build_db` klasik profilde
+  `work_refs` (atıf genel veritabanından), `list_works` döndürür. İhyâ künyeli hadisler: `risale_quotes` (her
+  kurulumda hesaplanır, Osmanlıca ciltler hariç; 13 hadis, 45 yer), İhyâ cümlesinde `in_risale`.
+- **E5.3 sunum:** `KLASIK_INSTRUCTIONS` (kelâm, usûl, tasavvuf, siyer; katmanlar; `risale_refs` türleri;
+  `in_risale`), klasik `list_works` açıklaması (`KLASIK_DOCS`), site (`klasik.html`, `en/classical.html`, ana sayfa
+  kartı), eklenti 1.0.2 (yandaki depoda commit, push kullanıcıda), çağrı seti, Yenilikler taslağı
+  `docs/yenilikler/2026-11-25-klasik-eserler-2.md`, dizin metni taslağı `docs/e5-dizin-metni-taslagi.md`.
+- **Vektörler:** 57.510 cümle, Voyage ≈4,8 milyon token (2,91 + 1,91). İhyâ'nın anlamsal aramaya etkisi (12 soru):
+  ilk 10'un %23'ü, tasavvuf sorusunda 10/10, öbür alanlarda 0–6/10, öbür eserleri dışarı itmiyor: varsayılan aramada
+  kaldı (karar 6).
+- **Uçtan uca deneme** (claude -p, yalnız klasik sunucu, üç soru): `risale_refs`'i türüyle kullanıyor, Risale'yi
+  okumadığını söylüyor; Îcî'nin metni ile şerhi ayrı alıntılıyor; Telvîh'te "dört mukaddime" ile Risale'nin "isnâ
+  aşer"ini tespit edemediğini açıkça söylüyor; İhyâ'da tahrici Irâkî'ye veriyor.
+- **Yayın:** `PROFIL=klasik scripts/tefsir-sunucu.sh gonder` iki kez (kayıtlar `klasik-yayin-20261125-005834`,
+  `klasik-yayin-20261125-012923`; beklenen farklar talimat, eser listesi, arama sırası, yeni çağrılar, âyet alıntı
+  sayısı), tefsir sunucusunun çıktısı değişmedi; site `scripts/deploy.sh --site`. Klasik veritabanı 177 MB.
+
 **E2. Belâgat eserleri ve Risale'nin andığı önemli kaynaklar (bitti, 2026-11-13; 1. dilim)** (kullanıcının kararı, 2026-11-12: klasik eserler iki
 parçaya ayrıldı; kalanı E5). Ölçüt (kullanıcı onayladı, 2026-11-09): bir eser şu üç şarttan en
 az ikisini tutarsa girer:

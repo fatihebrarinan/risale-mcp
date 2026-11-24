@@ -2,9 +2,9 @@
 baslik: Klasik Eserler'e Risale-i Nur'un havale ettiği kitaplar geldi
 tarih: 2026-11-25
 durum: taslak
-ozet: Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, Teftâzânî'nin Telvîh'i, Kastalânî'nin Mevâhib'i, Fıkh-ı Ekber ve Munkız artık Klasik Eserler eklentisinde. Yapay zekâ her eserin Risale-i Nur'da nerede anıldığını da biliyor.
+ozet: Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, Teftâzânî'nin Telvîh'i, Kastalânî'nin Mevâhib'i, Gazâlî'nin İhyâ'sı, Fıkh-ı Ekber ve Munkız artık Klasik Eserler eklentisinde. Yapay zekâ her eserin Risale-i Nur'da nerede anıldığını da biliyor.
 whatsapp: |
-  Klasik Eserler eklentisine altı eser daha eklendi: Risale-i Nur'un kelâmın tafsilatını havale ettiği Şerhu'l-Mevâkıf ve Şerhu'l-Makāsıd, Teftâzânî'nin Telvîh'i, Kastalânî'nin Mevâhib-i Ledünniye'si, Ebû Hanîfe'nin Fıkh-ı Ekber'i ve Gazâlî'nin Munkız'ı.
+  Klasik Eserler eklentisine yedi eser daha eklendi: Risale-i Nur'un kelâmın tafsilatını havale ettiği Şerhu'l-Mevâkıf ve Şerhu'l-Makāsıd, Teftâzânî'nin Telvîh'i, Kastalânî'nin Mevâhib-i Ledünniye'si, Ebû Hanîfe'nin Fıkh-ı Ekber'i, Gazâlî'nin İhyâ'sı ve Munkız'ı.
   Yapay zekâ artık her eserin Risale-i Nur'da nerede, nasıl anıldığını da biliyor. Ücretsiz, üyelik gerekmiyor.
 ---
 Otuz Üçüncü Söz'ün Otuzuncu Penceresi'nde Bediüzzaman kelâm delillerinin tafsilatını şöyle havale eder:
@@ -21,8 +21,9 @@ Muhakemat'ta da "Eğer bir şübhen varsa “Makàsıd” ve “Mevâkıf”a gi
 - **el-Mevâhibü'l-Ledünniyye**, Kastalânî: Şuââtü Ma'rifeti'n-Nebî'nin, mu'cizâtın tafsili için Şifâ ile birlikte gösterdiği siyer kitabı.
 - **el-Fıkhu'l-Ekber**, Ebû Hanîfe: akîdenin en kısa klasik metni.
 - **el-Munkız mine'd-Dalâl**, Gazâlî: Gazâlî'nin kendi yolunu anlattığı kısa eser.
+- **İhyâu Ulûmi'd-Dîn**, Gazâlî: Risale-i Nur'daki seksen kadar hadisin nâşir künyesinin gösterdiği eser. Irâkî'nin hadislerin kaynağını gösteren notları (tahric) Gazâlî'nin sözünden ayrı durur.
 
-Eklentideki eser sayısı böylece on bire çıktı. Seçim Risale-i Nur'daki anmalardan yapıldı.
+Eklentideki eser sayısı böylece on ikiye çıktı. Seçim Risale-i Nur'daki anmalardan yapıldı.
 
 ## Yapay zekâ Risale'deki yerini de biliyor
 
