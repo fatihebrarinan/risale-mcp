@@ -31,7 +31,7 @@ Kaynak alınmaz (`catalog/excluded.py`, kullanıcının kararı): Muhammed Abduh
 ## (b) Eklenmesi çok iyi olacaklar
 
 E2.1'in aday listesinden (`docs/e2-adaylar.md`, 2026-11-13); seçim kullanıcının (E2.2, 2026-11-13). Sıra: 1. dilim şimdi
-(E2.3), 2. dilim sonra, 3. dilim ondan sonra (E5). Nüsha sütunu öneridir; muhakkiki yazılmamış olanlarda E2.3'te
+(E2.3), 2. dilim sonra, 3. dilim ondan sonra (E5). E5'in turu (2026-11-24): 2. dilim ve el-Mevâhib; İhyâ son alt adım (E5.4). Nüsha sütunu öneridir; muhakkiki yazılmamış olanlarda E2.3'te
 sürümün kendisinde bakılır. "Anma": Risale'de eserin adı / müellifin adı (cümle sayısı).
 
 **1. dilim: belâgat ve terim** eklendi (E2.3, 2026-11-13): yukarıda (a). Sürüm değişiklikleri ham verinin
@@ -52,12 +52,9 @@ değerlendirme (D), anma (A), cümle sayısıyla. Bu sütun `risale_refs`'in kay
 | el-Munkız mine'd-Dalâl | Gazâlî (505) | `0505Ghazali.Munqidh.JK009330`: Muhammed M. Câbir | 11 bin | Eser anılmaz; Gazâlî eser adı anılmadan N5, D3, A3 | ✗ | ✓ | ✓ | Gazâlî'nin kendi yolunu anlattığı kısa eser |
 | el-Fıkhu'l-Ekber | Ebû Hanîfe (150) | `0150AbuHanifa.FiqhAkbar.JK001085`: Furkân (şerhten ayıklanmış) | 1.656 | D1 (Sünuhat, selefin kitabı) | ✓ | ◐ | ✓ | Akîdenin en kısa klasik metni |
 | İhyâu Ulûmi'd-Dîn | Gazâlî (505) | `0505Ghazali.IhyaCulumDin.JK000001`: Dâru'l-Ma'rife (muhakkik yazılmamış) | 992 bin | Müellifin sözünde adıyla yok (bir talebe mektubunda N1); nâşirin 82 hadis künyesi | ✓ | ◐ | ✓ | Risale'deki hadislerin nâşir künyeleri ona gider |
+| el-Mevâhibü'l-Ledünniyye | Kastalânî (923) | `0923AhmadQastallani.MawahibLaduniyya.Shamela0023685`: Tevfîkıyye (muhakkik yazılmamış) | 441 bin | H1 (Şuââtü Ma'rifeti'n-Nebî › Mukaddime: mu'cizâtın tafsili, Şifâ ile birlikte); 4 künye | ✓ | ◐ | ◐ | 3. dilimden bu tura alındı (kullanıcının kararı, 2026-11-24) |
 
-**3. dilim: siyer ve mu'cizât (2. dilimden sonra, E5)**
-
-| Eser | Müellif (ö.) | Nüsha (OpenITI) | Kelime | Anma | 1 | 2 | 3 | Gerekçe |
-|---|---|---|---:|---|:-:|:-:|:-:|---|
-| el-Mevâhibü'l-Ledünniyye | Kastalânî (923) | `0923AhmadQastallani.MawahibLaduniyya.Shamela0023685`: Tevfîkıyye (muhakkik yazılmamış) | 441 bin | 1 / 1, 4 künye | ✓ | ◐ | ◐ | Şuââtü Ma'rifeti'n-Nebî mu'cizâtın tafsili için onu Şifâ ile birlikte anar |
+**3. dilim: siyer ve mu'cizât** el-Mevâhib 2026-11-24'te 2. dilimle birlikte E5'e alındı.
 
 3. dilimin öbür eseri Şerhu'ş-Şifâ hadis sunucusuna girer (kullanıcının kararı, 2026-11-13): `docs/eserler/hadis.md` (b).
 

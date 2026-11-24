@@ -129,6 +129,16 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   **Şerhu'l-Mevâkıf (c)'den 2. dilime** (nüsha: OpenITI `0756CadudDinIji.Mawaqif.JK001335`, Umeyre, Dâru'l-Cîl 1997:
   adı "el-Mevâkıf" ama Seyyid Şerîf'in şerhi, metin `# المتن #` ile ayrılıyor; 460 bin kelime); (4)
   **er-Risâletü'l-Hamîdiyye** (Hüseyin el-Cisr) (c)'ye: OpenITI'de yok, izinli nüsha aranır.
+  **Bu turun eserleri (kullanıcının kararı, 2026-11-24):** Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh (tamamı;
+  `risale_refs` Mukaddemât-ı İsnâ Aşer'i gösterir), el-Fıkhu'l-Ekber, el-Munkız (tanıtımda "Risale'de adıyla anılmaz"),
+  el-Mevâhibü'l-Ledünniyye (3. dilimden alındı: havale edilen eser); ≈1,44 milyon kelime. İhyâ son alt adım.
+  - E5.1 İndirme (`fetch klasik`) ve ham verinin incelemesi: başlık yapısı, katmanlar (Îcî'nin metni ve Cürcânî'nin
+    şerhi `# المتن #` ile; Telvîh'te Tavzîh'in metni), sayfa ve dipnotlar; örnekler kullanıcıya.
+  - E5.2 Ayrıştırma (`books/klasik_openiti.py`), testler; `risale_refs` listesi (rapordan, kullanıcı onaylar) ve
+    `list_works`'te gösterimi.
+  - E5.3 Profil, vektörler, talimat (`KLASIK_INSTRUCTIONS`: kelâm, tasavvuf ve siyer de), tanıtım (site, dizin
+    metinleri, eklenti skill'i), çağrı seti, yayın; Yenilikler taslağı.
+  - E5.4 İhyâu Ulûmi'd-Dîn: ayrı kurulum, anlamsal aramaya etkisi ölçülür.
 - **Risale'si az birimlere göz atmak** (eski D5.2; isteğe bağlı, bir kez, kullanıcının işi): bir kıssa birimi
   (İsrâiloğulları, 40–74; yazıldı) ve bir ahkâm birimi (178–283; Aralık'a doğru). Sebep: sınanan birimlerin hepsi
   Risale'ce zengindi; Bakara 34–283'te âyetlerin ≈%78'inde Risale'den doğrudan alıntı yok. Okuma değil, göz atmak
