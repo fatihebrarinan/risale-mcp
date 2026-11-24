@@ -1,6 +1,6 @@
 # Risale-i Nur Library — Claude plugin
 
-This plugin lets Claude answer questions about the works of Bediüzzaman Said Nursî (1878–1960), the Qur'an, the hadith collections, classical tafsir and classical Arabic rhetoric from the texts themselves, with every quotation tied to a sentence the user can find. It bundles the four read-only libraries of [Risale MCP](https://risalemcp.com/en/) and the skills that teach Claude how to search, read, quote and cite them.
+This plugin lets Claude answer questions about the works of Bediüzzaman Said Nursî (1878–1960), the Qur'an, the hadith collections, classical tafsir and the classical works the Risale-i Nur relies on from the texts themselves, with every quotation tied to a sentence the user can find. It bundles the four read-only libraries of [Risale MCP](https://risalemcp.com/en/) and the skills that teach Claude how to search, read, quote and cite them.
 
 The plugin holds no texts: it holds the addresses of the four connectors and instructions. The texts stay on the servers.
 
@@ -13,7 +13,7 @@ The plugin holds no texts: it holds the addresses of the four connectors and ins
 | Risale-i Nur Library | `https://mcp.risalemcp.com/mcp` | The complete works of Bediüzzaman Said Nursî (the Risale-i Nur Collection, the early works, the compilations, the Hizbs, the works he wrote in Arabic with their Turkish translations, Ottoman volumes), the Qur'an, risaleoku.com's dictionary |
 | Hadith Library | `https://hadis.risalemcp.com/mcp` | The Six Books, the Muwatta, Ahmad's Musnad, al-Mustadrak and other collections, with grades where the books hold them |
 | Tafsir Library | `https://tefsir.risalemcp.com/mcp` | Thirteen classical works of tafsir, from al-Tabari to al-Alusi, divided into verse units |
-| Classical Islamic Library | `https://klasik.risalemcp.com/mcp` | Classical works on rhetoric, language and terms: al-Jurjani, al-Raghib al-Isfahani, al-Sakkaki, al-Sayyid al-Sharif al-Jurjani |
+| Classical Islamic Library | `https://klasik.risalemcp.com/mcp` | The classical works the Risale-i Nur refers to and relies on: rhetoric and language, kalam and usul (Sharh al-Mawaqif, Sharh al-Maqasid, al-Talwih), the Prophet's life (al-Mawahib) |
 
 **Skills** (instructions Claude loads when a question calls for them):
 

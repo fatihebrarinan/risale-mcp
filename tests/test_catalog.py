@@ -20,9 +20,11 @@ def test_every_listed_work_is_present():
     # 2026-11-12'de katalogdan çıktı (kullanıcının kararı: model tercümesi damgalı yeter).
     risale = [w for w in WORKS if w.collection not in (Collection.TEFSIR, Collection.KLASIK)]
     assert len(risale) == 73
-    # Klasik eserlerin 1. dilimi (E2.2, 2026-11-13): beş belâgat ve terim eseri
+    # Klasik eserler: 1. dilim (E2.2, 2026-11-13) beş belâgat ve terim eseri; E5 (2026-11-24) kelâm, usûl ve siyerden
+    # altı eser. Sıra müellifin vefatına göre.
     assert [w.slug for w in WORKS if w.collection is Collection.KLASIK] == [
-        "delailul-icaz", "esrarul-belaga", "mufredat", "miftahul-ulum", "tarifat"]
+        "fikhul-ekber", "delailul-icaz", "esrarul-belaga", "mufredat", "munkiz", "miftahul-ulum", "telvih",
+        "serhul-makasid", "tarifat", "serhul-mevakif", "mevahib"]
     assert sum(w.group == "osmanlica" for w in WORKS) == 16
     # Müfessirlerin eserleri ayrı sayılır: MVP'nin 13 tefsiri (`docs/mvp-kitaplar.md`); genel çıkış kararına (M7)
     # kadar hepsi yalnız yerelde.

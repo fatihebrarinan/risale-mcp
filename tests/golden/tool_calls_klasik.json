@@ -1,5 +1,5 @@
 {
- "note": "E2.4: klasik eserler sunucusunun sabit çağrı seti (risale_mcp.tool_snapshot --profile klasik). Çağrı eklenebilir; var olan çağrı değiştirilirse eski kayıtlarla karşılaştırma o çağrıda fark verir.",
+ "note": "E2.4: klasik eserler sunucusunun sabit çağrı seti (risale_mcp.tool_snapshot --profile klasik). Çağrı eklenebilir; var olan çağrı değiştirilirse eski kayıtlarla karşılaştırma o çağrıda fark verir. E5 (2026-11-25): Şerhu'l-Mevâkıf (metin katmanı), Makāsıd, Telvîh, Mevâhib, Fıkh-ı Ekber çağrıları eklendi.",
  "calls": [
   {
    "name": "list_works",
@@ -202,6 +202,61 @@
       "id": "yok/c001"
      }
     ]
+   }
+  },
+  {
+   "name": "outline_mevakif",
+   "tool": "get_outline",
+   "args": {
+    "section": "serhul-mevakif",
+    "depth": 2
+   }
+  },
+  {
+   "name": "read_mevakif_matn_layer",
+   "tool": "read_section",
+   "args": {
+    "section": "serhul-mevakif/1/1/1",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "passage_mevakif_matn",
+   "tool": "get_passage",
+   "args": {
+    "id": "serhul-mevakif/1/1/1/m1/c001"
+   }
+  },
+  {
+   "name": "outline_makasid",
+   "tool": "get_outline",
+   "args": {
+    "section": "serhul-makasid",
+    "depth": 2
+   }
+  },
+  {
+   "name": "read_telvih_mukaddemat",
+   "tool": "read_section",
+   "args": {
+    "section": "telvih/3/3/4/3",
+    "max_words": 300
+   }
+  },
+  {
+   "name": "outline_mevahib",
+   "tool": "get_outline",
+   "args": {
+    "section": "mevahib",
+    "depth": 1
+   }
+  },
+  {
+   "name": "read_fikhul_ekber",
+   "tool": "read_section",
+   "args": {
+    "section": "fikhul-ekber/1",
+    "max_words": 200
    }
   }
  ]

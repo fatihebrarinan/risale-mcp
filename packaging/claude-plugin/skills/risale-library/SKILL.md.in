@@ -13,7 +13,7 @@ This plugin connects four read-only libraries. Each serves its own texts; anothe
 | Risale-i Nur Library | The complete works of Bediüzzaman Said Nursî, sentence by sentence; where the works quote a verse or a hadith; risaleoku.com's dictionary | `semantic_search`, `search`, `read_section`, `get_passage`, `find_ayah`, `get_ayah`, `find_hadith`, `lookup_word`, `cite` |
 | Hadith Library | The Six Books, the Muwatta, Ahmad's Musnad, al-Mustadrak and other collections, with grades where the books hold them | `search_hadith`, `semantic_search`, `find_by_citation`, `get_hadith`, `cite` |
 | Tafsir Library | Thirteen classical tafsirs (al-Tabari to al-Alusi), divided into verse units | `find_ayah`, `read_section`, `get_passage`, `search`, `semantic_search`, `cite` |
-| Classical Islamic Library | al-Jurjani, al-Raghib al-Isfahani, al-Sakkaki and al-Sayyid al-Sharif's works on rhetoric, language and terms | `search`, `semantic_search`, `read_section`, `find_ayah`, `cite` |
+| Classical Islamic Library | The classics the Risale-i Nur refers to and relies on: rhetoric and language (al-Jurjani, al-Sakkaki, al-Raghib, al-Sayyid al-Sharif's Ta'rifat), kalam and usul (Sharh al-Mawaqif, Sharh al-Maqasid, al-Talwih, al-Fiqh al-Akbar, al-Munqidh), the Prophet's life (al-Mawahib); `list_works` gives where the Risale names each (`risale_refs`) | `search`, `semantic_search`, `read_section`, `find_ayah`, `cite` |
 
 Each connector's own instructions add the rules for its texts; follow them too. If the question needs a library whose connector is not connected, say which one the user can connect (the plugin's Connectors tab in Claude's settings) instead of answering from memory or from the web.
 
