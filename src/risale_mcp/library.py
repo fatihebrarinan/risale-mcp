@@ -282,6 +282,17 @@ class Library:
             out.append(record)
         return out
 
+    def _risale_quotes(self, ids: list[str]) -> dict[str, list[dict]]:
+        """Klasik profil (E5.4): İhyâ'nın bu cümlesinde lafzı geçen, künyesi İhyâ'yı gösteren Risale hadisleri (kimlik
+        ve atıf; metin Risale sunucusunda). Tablo öbür profillerde yoktur."""
+        if not ids or not self.conn.execute("SELECT 1 FROM sqlite_master WHERE name = 'risale_quotes'").fetchone():
+            return {}
+        out: dict[str, list[dict]] = {}
+        for r in self.conn.execute(f"SELECT sentence_id, risale_id, cite_as FROM risale_quotes WHERE sentence_id IN "
+                                   f"({_placeholders(ids)}) ORDER BY rowid", ids):
+            out.setdefault(r[0], []).append({"id": r[1], "cite_as": r[2], "link": "hadith wording, mechanical"})
+        return out
+
     def _work_refs(self) -> dict[str, list[dict]]:
         """Klasik profil (E5): Risale'nin eseri andığı yerler, kimlik ve atıfla (metin Risale sunucusunda); eser
         Risale'de adıyla anılmıyorsa bunu söyleyen tek kayıt (`kind: unnamed`). Tablo öbür profillerde yoktur."""
@@ -457,6 +468,11 @@ class Library:
                 wanted):
             sentences[s["paragraph_id"]].append({"id": s["id"], "text": s["text"],
                                                  **({"printed": json.loads(s["printed"])} if s["printed"] else {})})
+        if quotes := self._risale_quotes([x["id"] for group in sentences.values() for x in group]):
+            for group in sentences.values():
+                for x in group:
+                    if x["id"] in quotes:
+                        x["in_risale"] = quotes[x["id"]]
         arabic = defaultdict(list)
         for a in self.conn.execute(
                 "SELECT a.paragraph_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) AS text,"
@@ -542,6 +558,7 @@ class Library:
         targets = {r["id"] for r in rows}
         hasiye = self._hasiye_of([r["id"] for r in shown]) if not hasiye_only else {}
         arabic = self._arabic_of([r["id"] for r in shown])
+        quotes = self._risale_quotes([r["id"] for r in shown])
         out = []
         for r in shown:
             record = {"id": r["id"], "ref": r["ref"], "incipit": r["incipit"], "text": r["text"]}
@@ -553,6 +570,8 @@ class Library:
                 record["arabic"] = arabic[r["id"]]
             if hasiye.get(r["id"]):
                 record["hasiye"] = hasiye[r["id"]]
+            if quotes.get(r["id"]):
+                record["in_risale"] = quotes[r["id"]]
             out.append(record)
         node = self._node(first["node_id"])
         result = {"section": node["id"], "section_ref": node["ref"], "sentences": out} | self._work_status(node["work"])

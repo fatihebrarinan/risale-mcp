@@ -23,7 +23,7 @@ def test_every_listed_work_is_present():
     # Klasik eserler: 1. dilim (E2.2, 2026-11-13) beş belâgat ve terim eseri; E5 (2026-11-24) kelâm, usûl ve siyerden
     # altı eser. Sıra müellifin vefatına göre.
     assert [w.slug for w in WORKS if w.collection is Collection.KLASIK] == [
-        "fikhul-ekber", "delailul-icaz", "esrarul-belaga", "mufredat", "munkiz", "miftahul-ulum", "telvih",
+        "fikhul-ekber", "delailul-icaz", "esrarul-belaga", "mufredat", "ihya", "munkiz", "miftahul-ulum", "telvih",
         "serhul-makasid", "tarifat", "serhul-mevakif", "mevahib"]
     assert sum(w.group == "osmanlica" for w in WORKS) == 16
     # Müfessirlerin eserleri ayrı sayılır: MVP'nin 13 tefsiri (`docs/mvp-kitaplar.md`); genel çıkış kararına (M7)

@@ -1,5 +1,5 @@
 {
- "note": "E2.4: klasik eserler sunucusunun sabit çağrı seti (risale_mcp.tool_snapshot --profile klasik). Çağrı eklenebilir; var olan çağrı değiştirilirse eski kayıtlarla karşılaştırma o çağrıda fark verir. E5 (2026-11-25): Şerhu'l-Mevâkıf (metin katmanı), Makāsıd, Telvîh, Mevâhib, Fıkh-ı Ekber çağrıları eklendi.",
+ "note": "E2.4: klasik eserler sunucusunun sabit çağrı seti (risale_mcp.tool_snapshot --profile klasik). Çağrı eklenebilir; var olan çağrı değiştirilirse eski kayıtlarla karşılaştırma o çağrıda fark verir. E5 (2026-11-25): Şerhu'l-Mevâkıf (metin katmanı), Makāsıd, Telvîh, Mevâhib, Fıkh-ı Ekber çağrıları eklendi. E5.4: İhyâ (Irâkî'nin tahrici şerh, in_risale).",
  "calls": [
   {
    "name": "list_works",
@@ -257,6 +257,22 @@
    "args": {
     "section": "fikhul-ekber/1",
     "max_words": 200
+   }
+  },
+  {
+   "name": "outline_ihya",
+   "tool": "get_outline",
+   "args": {
+    "section": "ihya",
+    "depth": 2
+   }
+  },
+  {
+   "name": "read_ihya_tahric",
+   "tool": "read_section",
+   "args": {
+    "section": "ihya/1/1/1",
+    "max_words": 300
    }
   }
  ]

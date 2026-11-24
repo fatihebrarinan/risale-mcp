@@ -506,6 +506,44 @@ def _work_refs(conn: sqlite3.Connection) -> int:
     return len(rows)
 
 
+def _risale_quotes(conn: sqlite3.Connection) -> int:
+    """Klasik profil (E5.4, kullanıcının kararı 2026-11-24): Risale'nin künyesi İhyâ'yı gösteren hadis parçaları
+    İhyâ'daki yerine mekanik lafız bağıyla bağlanır. Parçanın ilk on kelimesi (bulunmazsa, parça altı kelimeden
+    uzunsa ilk altısı) İhyâ'nın bir cümlesinde (Gazâlî'nin sözü ya da Irâkî'nin şerhi) art arda geçiyorsa bağ kurulur;
+    dört kelimeden kısa parça bağlanmaz. Lafız farkı (müellifin kendi ifadesi) bağ kurmaz: "bulunamadı" "İhyâ'da
+    yok" demek değildir. Her kurulumda genel veritabanından hesaplanır (dosya yok); Risale'nin metni kopyalanmaz."""
+    from risale_mcp.links import cite_as
+    from risale_mcp.normalize import search_words
+    from risale_mcp.paths import PUBLIC_DB_PATH
+    conn.execute("CREATE TABLE risale_quotes (sentence_id TEXT, risale_id TEXT, cite_as TEXT, method TEXT)")
+    conn.execute("CREATE INDEX risale_quotes_sentence ON risale_quotes(sentence_id)")
+    if not PUBLIC_DB_PATH.exists() or not conn.execute("SELECT 1 FROM works WHERE slug = 'ihya' AND built = 1").fetchone():
+        return 0
+    src = sqlite3.connect(f"{PUBLIC_DB_PATH.resolve().as_uri()}?mode=ro", uri=True)
+    parts = src.execute(
+        "SELECT a.sentence_id, substr(p.text, a.span_start + 1, a.span_end - a.span_start) FROM arabic a"
+        " JOIN paragraphs p ON p.id = a.paragraph_id JOIN works w ON w.slug = p.work"
+        " WHERE w.group_name != 'osmanlica' AND (a.source LIKE '%hya%' OR a.source LIKE '%İhyâ%'"
+        " OR a.source LIKE '%إحياء%') ORDER BY a.sentence_id").fetchall()   # Osmanlıca ciltler Türkçenin kopyası
+    ihya = [(sid, f" {' '.join(search_words(text))} ") for sid, text in
+            conn.execute("SELECT id, text FROM sentences WHERE work = 'ihya'")]
+    rows = []
+    for risale_id, text in parts:
+        words = search_words(text)
+        if len(words) < 4:
+            continue
+        for probe in [words[:10]] + ([words[:6]] if len(words) > 6 else []):
+            needle = f" {' '.join(probe)} "
+            hits = [sid for sid, t in ihya if needle in t]
+            if hits:
+                display = cite_as(src, risale_id, None)
+                rows += [(sid, risale_id, display, f"lafız, ilk {len(probe)} kelime") for sid in hits[:5]]
+                break
+    src.close()
+    conn.executemany("INSERT INTO risale_quotes VALUES (?, ?, ?, ?)", rows)
+    return len(rows)
+
+
 def _load_reviews(conn: sqlite3.Connection, report: BuildReport, root: Path | None = None) -> None:
     """Denetim kararları (`link_reviews.py`): geçerli olanlar, bağı bu veritabanında bulunanlar. Geçersiz kayıt
     (listede olmayan denetçi, eksik gerekçe…) kurulumu durdurur."""
@@ -857,6 +895,7 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
             report.counts["risale_refs"] = _risale_refs(conn)
         if profile.name == "klasik":
             report.counts["work_refs"] = _work_refs(conn)
+            report.counts["risale_quotes"] = _risale_quotes(conn)
         if manifest_check:
             from risale_mcp import manifest
             report.id_changes = manifest.check_build(conn, profile.name, accept_id_changes)

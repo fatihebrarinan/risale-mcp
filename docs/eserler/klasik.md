@@ -6,8 +6,8 @@
 
 ## (a) Eklenenler
 
-- **Ham veri:** 11/11 eser indirildi.
-- **Ayrıştırma:** 11/11 eser.
+- **Ham veri:** 12/12 eser indirildi.
+- **Ayrıştırma:** 12/12 eser.
 - **Kaynağı bulunamayan:** yok.
 
 İşaretler: ✅ tamam · ⚠️ kısmen · ⬜ yapılmadı · ❌ kaynak yok · ⏸️ ertelendi
@@ -20,13 +20,14 @@
 | 2 | Delâilü'l-İ'câz | `openiti/delailul-icaz` | ✅ indirildi | ✅ 760 düğüm, 3023 paragraf, 4507 cümle | OpenITI Shamela0012055 (Medenî, 3. baskı 1413). Muhakkikin fıkra numaraları düğümdür. |
 | 3 | Esrârü'l-Belâğa | `openiti/esrarul-belaga` | ✅ indirildi | ✅ 36 düğüm, 1257 paragraf, 1635 cümle | OpenITI Shamela0008187 (Medenî; muhakkik satırı boş). Sürümün sonunda son paragrafın devamı eksik. |
 | 4 | el-Müfredât fî Garîbi'l-Kur'ân | `openiti/mufredat` | ✅ indirildi | ✅ 1630 düğüm, 2392 paragraf, 4494 cümle | OpenITI JK001150 (Kîlânî, Dâru'l-Ma'rife). Harf kitabı ve madde (kök) düğümdür. Dâvûdî baskısının Shamela sürümünde madde başlığı işareti kelimelerin içine girmiş, metin kurulamıyor. |
-| 5 | el-Munkız mine'd-Dalâl | `openiti/munkiz` | ✅ indirildi | ✅ 1 düğüm, 31 paragraf, 327 cümle | OpenITI ShamAY0033739 (Câbir, el-Mektebetü's-Sekâfiyye). Sürümde başlık yok: eser tek bölümdür. |
-| 6 | Miftâhu'l-Ulûm | `openiti/miftahul-ulum` | ✅ indirildi | ✅ 130 düğüm, 1386 paragraf, 2237 cümle | OpenITI Shamela0026581 (Dâru'l-Kütübi'l-İlmiyye, 2. baskı 1407; muhakkik yazılmamış). |
-| 7 | et-Telvîh ilâ Keşfi Hakāiki't-Tenkîh | `openiti/telvih` | ✅ indirildi | ✅ 199 düğüm, 2028 paragraf, 2028 cümle | OpenITI JK007110 (Umeyrât, Dâru'l-Kütübi'l-İlmiyye 1416): yalnız Teftâzânî'nin şerhi; Sadrüşşerîa'nın Tavzîh'i yok, "قوله" ile anılır. Başlıklar aynı baskının ShamAY0034200 sürümünün içindekilerinden. |
-| 8 | Şerhu'l-Makāsıd | `openiti/serhul-makasid` | ✅ indirildi | ✅ 126 düğüm, 1177 paragraf, 1183 cümle | OpenITI JK001157 (Nu'mâniyye, Lahor 1401; muhakkik yazılmamış). Başlık satırı yok: bölümler Teftâzânî'nin kendi metnini "قال" ile aktardığı yerlerden. |
-| 9 | et-Ta'rîfât | `openiti/tarifat` | ✅ indirildi | ✅ 30 düğüm, 2088 paragraf, 2275 cümle | OpenITI Shamela0007312 (Dâru'l-Kütübi'l-İlmiyye, 1403; "ضبطه وصححه جماعة من العلماء بإشراف الناشر"). |
-| 10 | Şerhu'l-Mevâkıf | `openiti/serhul-mevakif` | ✅ indirildi | ✅ 705 düğüm, 14291 paragraf, 14344 cümle | OpenITI ShamAY0033881 (Umeyre, Dâru'l-Cîl 1417; OpenITI'de Îcî'nin adı altında "المواقف"). Îcî'nin metni baskının "المتن" diye ayırdığı yerde ayrı katmandır. Başlıklar Şâmile'nin içindekilerinden. |
-| 11 | el-Mevâhibü'l-Ledünniyye | `openiti/mevahib` | ✅ indirildi | ✅ 354 düğüm, 11630 paragraf, 20096 cümle | OpenITI Shamela0023685 (Tevfîkıyye, Kahire; muhakkik yazılmamış). |
+| 5 | İhyâu Ulûmi'd-Dîn | `openiti/ihya` | ✅ indirildi | ✅ 645 düğüm, 15032 paragraf, 19519 cümle | OpenITI JK000001 (Dâru'l-Ma'rife, Beyrut; muhakkik yazılmamış). Irâkî'nin hadis tahrici metinden ayrıldı, şerh olarak geçtiği cümleye bağlı. Başlıklar aynı baskının Shamela0009472 sürümünün içindekilerinden. |
+| 6 | el-Munkız mine'd-Dalâl | `openiti/munkiz` | ✅ indirildi | ✅ 1 düğüm, 31 paragraf, 327 cümle | OpenITI ShamAY0033739 (Câbir, el-Mektebetü's-Sekâfiyye). Sürümde başlık yok: eser tek bölümdür. |
+| 7 | Miftâhu'l-Ulûm | `openiti/miftahul-ulum` | ✅ indirildi | ✅ 130 düğüm, 1386 paragraf, 2237 cümle | OpenITI Shamela0026581 (Dâru'l-Kütübi'l-İlmiyye, 2. baskı 1407; muhakkik yazılmamış). |
+| 8 | et-Telvîh ilâ Keşfi Hakāiki't-Tenkîh | `openiti/telvih` | ✅ indirildi | ✅ 199 düğüm, 2028 paragraf, 2028 cümle | OpenITI JK007110 (Umeyrât, Dâru'l-Kütübi'l-İlmiyye 1416): yalnız Teftâzânî'nin şerhi; Sadrüşşerîa'nın Tavzîh'i yok, "قوله" ile anılır. Başlıklar aynı baskının ShamAY0034200 sürümünün içindekilerinden. |
+| 9 | Şerhu'l-Makāsıd | `openiti/serhul-makasid` | ✅ indirildi | ✅ 126 düğüm, 1177 paragraf, 1183 cümle | OpenITI JK001157 (Nu'mâniyye, Lahor 1401; muhakkik yazılmamış). Başlık satırı yok: bölümler Teftâzânî'nin kendi metnini "قال" ile aktardığı yerlerden. |
+| 10 | et-Ta'rîfât | `openiti/tarifat` | ✅ indirildi | ✅ 30 düğüm, 2088 paragraf, 2275 cümle | OpenITI Shamela0007312 (Dâru'l-Kütübi'l-İlmiyye, 1403; "ضبطه وصححه جماعة من العلماء بإشراف الناشر"). |
+| 11 | Şerhu'l-Mevâkıf | `openiti/serhul-mevakif` | ✅ indirildi | ✅ 705 düğüm, 14291 paragraf, 14344 cümle | OpenITI ShamAY0033881 (Umeyre, Dâru'l-Cîl 1417; OpenITI'de Îcî'nin adı altında "المواقف"). Îcî'nin metni baskının "المتن" diye ayırdığı yerde ayrı katmandır. Başlıklar Şâmile'nin içindekilerinden. |
+| 12 | el-Mevâhibü'l-Ledünniyye | `openiti/mevahib` | ✅ indirildi | ✅ 354 düğüm, 11630 paragraf, 20096 cümle | OpenITI Shamela0023685 (Tevfîkıyye, Kahire; muhakkik yazılmamış). |
 
 Kaynak alınmaz (`catalog/excluded.py`, kullanıcının kararı): Muhammed Abduh: kaynak alınmaz; Tefsîru'l-Menâr: Abduh'un derslerine dayanır, kaynak alınmaz.
 

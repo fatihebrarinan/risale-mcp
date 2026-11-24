@@ -140,3 +140,16 @@ def test_risale_refs_point_to_works():
     assert not set(RISALE_REFS) & set(RISALE_UNNAMED)
     assert all(r["kind"] in ("havale", "nakil", "degerlendirme") and r["note"] for refs in RISALE_REFS.values()
                for r in refs)
+
+
+def test_ihya_tahric_is_iraqis_commentary():
+    book, report = _book("ihya")
+    body = [p for p in book["paragraphs"] if p["kind"] != "hasiye"]
+    notes = [p for p in book["paragraphs"] if p["kind"] == "hasiye"]
+    assert report.lost == 0 and len(notes) > 4400
+    assert all(p["commentator"] == "Zeynüddîn el-Irâkî" for p in notes)
+    assert not any("+" in p["text"] for p in body)                     # "+ حديث … +" işaretleri metinden ayrıldı
+    assert any(p["text"] == "فيه ميزابان يصبان فيه من الكوثر" for p in body)   # tahric paragraf sonunda biter
+    assert any(p["text"].startswith("الحمد لله الذي أحيا علوم الدين") for p in notes)  # Irâkî'nin mukaddimesi
+    assert not any(p["text"].startswith("الحمد لله الذي أحيا علوم الدين") for p in body)
+    assert len(book["outline"]) > 600

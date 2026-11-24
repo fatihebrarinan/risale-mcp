@@ -26,6 +26,9 @@ KLASIK_WORKS: tuple[Work, ...] = (
     _klasik("mufredat", "el-Müfredât fî Garîbi'l-Kur'ân", "Râgıb el-İsfahânî", "Muhammed Seyyid Kîlânî",
             "OpenITI JK001150 (Kîlânî, Dâru'l-Ma'rife). Harf kitabı ve madde (kök) düğümdür. Dâvûdî baskısının "
             "Shamela sürümünde madde başlığı işareti kelimelerin içine girmiş, metin kurulamıyor."),
+    _klasik("ihya", "İhyâu Ulûmi'd-Dîn", "Gazâlî", None,
+            "OpenITI JK000001 (Dâru'l-Ma'rife, Beyrut; muhakkik yazılmamış). Irâkî'nin hadis tahrici metinden "
+            "ayrıldı, şerh olarak geçtiği cümleye bağlı. Başlıklar aynı baskının Shamela0009472 sürümünün içindekilerinden."),
     _klasik("munkiz", "el-Munkız mine'd-Dalâl", "Gazâlî", "Muhammed Muhammed Câbir",
             "OpenITI ShamAY0033739 (Câbir, el-Mektebetü's-Sekâfiyye). Sürümde başlık yok: eser tek bölümdür."),
     _klasik("miftahul-ulum", "Miftâhu'l-Ulûm", "Sekkâkî", None,
@@ -118,6 +121,9 @@ RISALE_REFS: dict[str, tuple[dict, ...]] = {
     ),
 }
 RISALE_UNNAMED = {   # eser Risale'de adıyla anılmaz: araç bunu söyler (tanıtımın sözü "havale ettiği ve dayandığı")
+    "ihya": "Bediüzzaman does not name this work in his own words (a student's letter does once); the publisher's "
+            "source notes to about 80 hadiths in the Risale-i Nur cite it (hadith_support and cited_in on the Risale-i "
+            "Nur connector).",
     "munkiz": "The Risale-i Nur does not name this work; it cites al-Ghazali often as a source, without a title.",
     "mufredat": "The Risale-i Nur does not name this work or its author.",
     "tarifat": "The Risale-i Nur does not name this work; it names its author as the commentator of al-Mawaqif.",

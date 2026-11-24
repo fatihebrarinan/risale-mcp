@@ -243,7 +243,8 @@ TEFSIR_INSTRUCTIONS = TEFSIR_INSTRUCTIONS.replace("{work_ids}", ", ".join(
 # değildir; Risale'nin metni burada yoktur ve eserler arasındaki ilişki kayıtlı değilse kurulmaz.
 KLASIK_INSTRUCTIONS = """\
 Read access to the classical works the Risale-i Nur refers its reader to and relies on, and to the Qur'an: \
-rhetoric (balagha), language and terms, kalam, usul and the Prophet's life (siyar): {work_list} (list_works). \
+rhetoric (balagha), language and terms, kalam, usul, Sufism and the Prophet's life (siyar): {work_list} \
+(list_works). \
 Texts are in their original Arabic, split into sentences with stable ids, in the sections of the chosen edition \
 (al-Mufradat: by root; al-Ta'rifat: by chapter of the alphabet; some unpunctuated editions give long sentences).
 
@@ -284,13 +285,17 @@ the Risale-i Nur names it, by id and citation, with their kind (havale: sends th
 nakil: quotes or reports it; degerlendirme: judges or compares it; unnamed: the Risale does not name the work). \
 Use them to say why a work is here, by their kind (never call a nakil a referral); which passage of the work is \
 meant is not recorded unless section_here gives it. Quote or explain the Risale-i Nur only after reading it with \
-the Risale-i Nur connector in this conversation, and cite it there; otherwise say you have not checked it there.
+the Risale-i Nur connector in this conversation, and cite it there; otherwise say you have not checked it there. In \
+al-Ihya, a sentence with in_risale holds the wording of a hadith that the Risale-i Nur quotes and whose publisher's \
+note cites al-Ihya (a mechanical match of the wording): give it by id and citation; the hadith's evidence is on the \
+Risale-i Nur connector (find_hadith). In al-Ihya, commentary_by marks al-'Iraqi's takhrij (his source notes on the \
+hadiths), never al-Ghazali's words.
 6. Your own summary, comparison or draft is never a tafsir. A rhetorical point you derive yourself is your \
 interpretation: say so.
 7. Answer in the user's language."""
 KLASIK_INSTRUCTIONS = KLASIK_INSTRUCTIONS.replace("{work_list}", "Abu Hanifa's al-Fiqh al-Akbar, al-Jurjani's "
     "Dala'il al-I'jaz and Asrar al-Balagha, al-Raghib al-Isfahani's al-Mufradat fi Gharib al-Qur'an, al-Ghazali's "
-    "al-Munqidh min al-Dalal, al-Sakkaki's Miftah al-'Ulum, al-Taftazani's al-Talwih and Sharh al-Maqasid, al-Sayyid "
+    "al-Munqidh min al-Dalal and Ihya' 'Ulum al-Din (with al-'Iraqi's takhrij as commentary), al-Sakkaki's Miftah al-'Ulum, al-Taftazani's al-Talwih and Sharh al-Maqasid, al-Sayyid "
     "al-Sharif al-Jurjani's al-Ta'rifat and Sharh al-Mawaqif, and al-Qastallani's al-Mawahib al-Laduniyya").replace("{work_ids}", ", ".join(f"{w.slug} ({w.author})" for w in KLASIK_WORKS))
 
 HADIS_INSTRUCTIONS = """\
