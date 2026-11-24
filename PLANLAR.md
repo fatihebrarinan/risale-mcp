@@ -64,12 +64,14 @@ Son verilen kimlikler: E8, S11, A4, D16, B10 (yeni iş bir sonrakini alır).
 Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş notları `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
-- **2026-11-24:** **A1 donduruldu** (kullanıcının kararı; sebepleri "Dondurulan"da); "Sıradaki"nin başında
-  artık E5 var. **E5 ön çalışması:** Risale'de adı geçen eserler, havale / nakil / değerlendirme / tefe'ül / anma
-  diye (`docs/e5-risalede-anilan-eserler.md`; 102 eser, 792 cümle, havale yalnız 24 cümle). Kullanıcıdan beklenen:
-  raporu okuyup 2. dilimi ve tanıtımın sözünü yeniden değerlendirmek (Şerhu'l-Mevâkıf öne mi, Risâle-i Hamîdiyye
-  listeye mi); `risale_refs` fikrine karar. Yan bulgu: Arapça Mesnevî'nin sonunda muhakkikin biyografi eki
-  müellifin metni olarak duruyor: B10 açıldı ("Sıradaki" 2).
+- **2026-11-24 (gece):** **E5 sürüyor, kesintisiz** (kullanıcının kararı: 5 saatlik pencere 2026-11-25 00.20'de
+  yenilenince başlanır, E5 bitene kadar durulmaz; bu seferlik E5.1'in örnekleri gösterilmez). Kapsam ve önceden
+  verilen kararlar "Sıradaki" › E5'te: bu tur Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber,
+  el-Munkız, el-Mevâhib (E5.1–E5.3), sonra İhyâ (E5.4); temizse yayın sorulmadan; dizin metinleri başvurular
+  sonuçlanınca. Girdi: `docs/e5-risalede-anilan-eserler.md` (Risale'de adı geçen 102 eser; havale yalnız 24 cümle).
+  **Kullanıcıdan beklenen (E5 bitince):** `risale_refs` listesine ve E5.1'in kurallarına sonradan bakmak, Yenilikler
+  taslağını okuyup yayımlamak. **B10 açıldı** ("Sıradaki" 2: Arapça Mesnevî'nin sonundaki muhakkik eki). A1
+  donduruldu (sebepleri "Dondurulan"da).
 - **Önde (2026-11-23):** **S11 bitti ve yayında:** site yazılarının taslakları masadan düzenlenir (Okumalar › Yazı
   taslakları; düzeltmeler yayımlarken depoya alınır). **A4 bitti ve yayında** (lügat: Risale eklentisinde `lookup_word`, okuma platformunda
   kelimeye dokununca anlam). Kullanıcıdan beklenen: Yenilikler taslağını (`docs/yenilikler/2026-11-23-lugat.md`,
