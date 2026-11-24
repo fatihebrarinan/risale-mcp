@@ -45,7 +45,7 @@ sürümün kendisinde bakılır. "Anma": Risale'de eserin adı / müellifin adı
 incelemesinden: Ta'rîfât'ta Shamela sürümü (Ebyârî'nin JK sürümünde OCR artıkları var), Müfredât'ta Kîlânî'nin JK
 sürümü (Dâvûdî'nin Shamela sürümünde madde başlığı işareti kelimelerin içine girmiş). Kurallar `books/klasik_openiti.py`.
 
-**2. dilim: Risale'nin havale ettiği ve dayandığı kelâm ve tasavvuf eserleri (E5)**
+**2. dilim: Risale'nin havale ettiği ve dayandığı kelâm ve tasavvuf eserleri: eklendi (E5, 2026-11-25), yukarıda (a)**
 
 "Risale'deki yeri" sütunu `docs/e5-risalede-anilan-eserler.md`'den (2026-11-24): müellifin sözünde havale (H), nakil (N),
 değerlendirme (D), anma (A), cümle sayısıyla. Bu sütun `risale_refs`'in kaynağıdır. Şerhu'l-Mevâkıf (c)'den buraya alındı
