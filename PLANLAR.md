@@ -65,7 +65,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş):
 - **2026-11-24:** **A1 donduruldu** (kullanıcının kararı; sebepleri "Dondurulan"da); "Sıradaki"nin başında
-  artık E5 var.
+  artık E5 var. **E5 ön çalışması:** Risale'de adı geçen eserler, havale / nakil / değerlendirme / tefe'ül / anma
+  diye (`docs/e5-risalede-anilan-eserler.md`; 102 eser, 792 cümle, havale yalnız 24 cümle). Kullanıcıdan beklenen:
+  raporu okuyup 2. dilimi ve tanıtımın sözünü yeniden değerlendirmek (Şerhu'l-Mevâkıf öne mi, Risâle-i Hamîdiyye
+  listeye mi); `risale_refs` fikrine karar. Yan bulgu: Arapça Mesnevî'nin sonunda muhakkikin biyografi eki
+  müellifin metni olarak duruyor (öneri: yeni bir B işi).
 - **Önde (2026-11-23):** **S11 bitti ve yayında:** site yazılarının taslakları masadan düzenlenir (Okumalar › Yazı
   taslakları; düzeltmeler yayımlarken depoya alınır). **A4 bitti ve yayında** (lügat: Risale eklentisinde `lookup_word`, okuma platformunda
   kelimeye dokununca anlam). Kullanıcıdan beklenen: Yenilikler taslağını (`docs/yenilikler/2026-11-23-lugat.md`,
