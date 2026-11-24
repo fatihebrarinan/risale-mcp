@@ -480,6 +480,32 @@ def _risale_refs(conn: sqlite3.Connection) -> int:
     return len(rows)
 
 
+def _work_refs(conn: sqlite3.Connection) -> int:
+    """Klasik profil (E5): Risale'nin bu eserleri andığı yerler (`catalog.klasik.RISALE_REFS`), kimlik ve atıfla;
+    atıf genel profilin veritabanından (metin yok). Genel veritabanında olmayan kimlik kurulumu durdurur."""
+    from risale_mcp.catalog.klasik import RISALE_REFS, RISALE_UNNAMED
+    from risale_mcp.links import cite_as
+    from risale_mcp.paths import PUBLIC_DB_PATH
+    conn.execute("CREATE TABLE work_refs (work TEXT, ord INTEGER, id TEXT, kind TEXT, target TEXT, note TEXT,"
+                 " cite_as TEXT)")
+    if not PUBLIC_DB_PATH.exists():
+        return 0
+    src = sqlite3.connect(f"{PUBLIC_DB_PATH.resolve().as_uri()}?mode=ro", uri=True)
+    rows = []
+    for work, refs in RISALE_REFS.items():
+        for k, ref in enumerate(refs):
+            if not src.execute("SELECT 1 FROM sentences WHERE id = ?", (ref["id"],)).fetchone():
+                raise ValueError(f"risale_refs: genel veritabanında cümle yok: {ref['id']}")
+            if ref.get("target") and not conn.execute("SELECT 1 FROM nodes WHERE id = ?", (ref["target"],)).fetchone():
+                raise ValueError(f"risale_refs: hedef bölüm yok: {ref['target']}")
+            rows.append((work, k, ref["id"], ref["kind"], ref.get("target"), ref["note"], cite_as(src, ref["id"], None)))
+    for work, note in RISALE_UNNAMED.items():
+        rows.append((work, 0, None, "unnamed", None, note, None))
+    src.close()
+    conn.executemany("INSERT INTO work_refs VALUES (?, ?, ?, ?, ?, ?, ?)", rows)
+    return len(rows)
+
+
 def _load_reviews(conn: sqlite3.Connection, report: BuildReport, root: Path | None = None) -> None:
     """Denetim kararları (`link_reviews.py`): geçerli olanlar, bağı bu veritabanında bulunanlar. Geçersiz kayıt
     (listede olmayan denetçi, eksik gerekçe…) kurulumu durdurur."""
@@ -829,6 +855,8 @@ def build(books_dir: Path | Iterable[Path], out: Path, quran_path: Path | None =
         _verify(conn, report)
         if profile.name == "tefsir":
             report.counts["risale_refs"] = _risale_refs(conn)
+        if profile.name == "klasik":
+            report.counts["work_refs"] = _work_refs(conn)
         if manifest_check:
             from risale_mcp import manifest
             report.id_changes = manifest.check_build(conn, profile.name, accept_id_changes)

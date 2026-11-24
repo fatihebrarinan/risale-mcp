@@ -242,9 +242,10 @@ TEFSIR_INSTRUCTIONS = TEFSIR_INSTRUCTIONS.replace("{work_ids}", ", ".join(
 # aynı zemin: eser kendi yazarınındır, muhakkikin girişi ve fıkra numaraları ayrı katmandır, modelin yazdığı tefsir
 # değildir; Risale'nin metni burada yoktur ve eserler arasındaki ilişki kayıtlı değilse kurulmaz.
 KLASIK_INSTRUCTIONS = """\
-Read access to classical Arabic works on rhetoric (balagha), language and terms, and to the Qur'an: {work_list} \
-(list_works). Texts are in their original Arabic, split into sentences with stable ids, in the sections of the \
-chosen edition (al-Mufradat: by root; al-Ta'rifat: by chapter of the alphabet).
+Read access to the classical works the Risale-i Nur refers its reader to and relies on, and to the Qur'an: \
+rhetoric (balagha), language and terms, kalam, usul and the Prophet's life (siyar): {work_list} (list_works). \
+Texts are in their original Arabic, split into sentences with stable ids, in the sections of the chosen edition \
+(al-Mufradat: by root; al-Ta'rifat: by chapter of the alphabet; some unpunctuated editions give long sentences).
 
 Workflow:
 1. Find: search for the works' own Arabic words and terms (an Arabic word also matches its forms with attached \
@@ -269,22 +270,28 @@ after the quotation give your own translation into the user's language on a sepa
 translation (in Turkish: "Yapay zekâ tercümesi:"), and say it is not a published translation. Never put your \
 translation inside the quotation, never cite it, never attribute it to the author. Every translation you make \
 yourself carries that label where it begins. Add no vowel marks to the quoted Arabic.
-3. Each work belongs to its author: name the author (author). A section with layer is another person's text (the \
-editor's introduction), never the author's. Section titles are the edition's, and al-Jurjani's Dala'il is divided \
-into the editor's (Mahmud Shakir's) numbered paragraphs: name them as the edition's, not as the author's division. \
-printed is the edition's volume/page, secondary to the id.
+3. Each work belongs to its author: name the author (author). A section with layer is another person's text, \
+never the author's: the editor's introduction, or in Sharh al-Mawaqif the base text (المتن, layer by al-Iji) that \
+Sayyid Sharif's commentary explains. Section titles are the edition's (in Sharh al-Mawaqif and al-Talwih: the \
+Shamela table of contents; in Sharh al-Maqasid: taken from the text, with the subtitle saying so), and al-Jurjani's \
+Dala'il is divided into the editor's (Mahmud Shakir's) numbered paragraphs: name them as the edition's, not as the \
+author's division. printed is the edition's volume/page, secondary to the id.
 4. Keep what each work says apart, each with its own citation. Never say one work follows, quotes or answers \
 another unless you have read both places; a relation you notice yourself is your interpretation, under a separate \
 heading, with both ends quoted.
-5. This server holds no text of the Risale-i Nur. The Isharat al-I'jaz names al-Jurjani and al-Sakkaki, but which \
-passage it relies on is not recorded here: say what the Risale-i Nur says only after reading it with the Risale-i \
-Nur connector in this conversation, and cite it there; otherwise say you have not checked it there.
+5. This server holds no text of the Risale-i Nur. list_works gives, for each work, risale_refs: the places where \
+the Risale-i Nur names it, by id and citation, with their kind (havale: sends the reader there for the details; \
+nakil: quotes or reports it; degerlendirme: judges or compares it; unnamed: the Risale does not name the work). \
+Use them to say why a work is here, by their kind (never call a nakil a referral); which passage of the work is \
+meant is not recorded unless section_here gives it. Quote or explain the Risale-i Nur only after reading it with \
+the Risale-i Nur connector in this conversation, and cite it there; otherwise say you have not checked it there.
 6. Your own summary, comparison or draft is never a tafsir. A rhetorical point you derive yourself is your \
 interpretation: say so.
 7. Answer in the user's language."""
-KLASIK_INSTRUCTIONS = KLASIK_INSTRUCTIONS.replace("{work_list}", "al-Jurjani's Dala'il al-I'jaz and Asrar al-Balagha, "
-    "al-Raghib al-Isfahani's al-Mufradat fi Gharib al-Qur'an, al-Sakkaki's Miftah al-'Ulum and al-Sayyid al-Sharif "
-    "al-Jurjani's al-Ta'rifat").replace("{work_ids}", ", ".join(f"{w.slug} ({w.author})" for w in KLASIK_WORKS))
+KLASIK_INSTRUCTIONS = KLASIK_INSTRUCTIONS.replace("{work_list}", "Abu Hanifa's al-Fiqh al-Akbar, al-Jurjani's "
+    "Dala'il al-I'jaz and Asrar al-Balagha, al-Raghib al-Isfahani's al-Mufradat fi Gharib al-Qur'an, al-Ghazali's "
+    "al-Munqidh min al-Dalal, al-Sakkaki's Miftah al-'Ulum, al-Taftazani's al-Talwih and Sharh al-Maqasid, al-Sayyid "
+    "al-Sharif al-Jurjani's al-Ta'rifat and Sharh al-Mawaqif, and al-Qastallani's al-Mawahib al-Laduniyya").replace("{work_ids}", ", ".join(f"{w.slug} ({w.author})" for w in KLASIK_WORKS))
 
 HADIS_INSTRUCTIONS = """\
 Read access to hadith collections and to the Qur'an: the Six Books and the Muwatta (with scholars' grades where the \
@@ -507,6 +514,11 @@ TEXTS_DOCS = {
             "quoted words that are not in those sentences, with where they occur), and the bibliography lines "
             "\"[n] cite_as\" for the answer's Kaynaklar list (copy them unchanged).",
 }
+KLASIK_DOCS = TEXTS_DOCS | {      # E5: Risale'nin eseri andığı yerler (`risale_refs`) yalnız klasik sunucuda
+    "list_works": "List the works on this server with their ids, titles, authors, language, sizes (sections, "
+                  "sentences), the edition each comes from (note) and where the Risale-i Nur names each work "
+                  "(risale_refs: id, citation, kind, note).",
+}
 TEFSIR_DOCS = TEXTS_DOCS | {
     "get_outline": TEXTS_DOCS["get_outline"] + " A tafsir is divided by sura, then into verse units (the part that "
                    "treats a verse or verses).",
@@ -585,7 +597,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     klasik = profile == "klasik"                # klasik eserler sunucusu (E2.4): tefsirinkiyle aynı araç seti
     texts_only = tefsir or klasik               # Risale'ye özgü araçlar (hadis), kaynaklar ve hazır komutlar yok
     hadis = profile == "hadis"                  # hadis sunucusu (MVP M5): birimi hadis, kendi araçları
-    docs = TEFSIR_DOCS if tefsir else TEXTS_DOCS if klasik else {}     # boşsa docstring (Risale)
+    docs = TEFSIR_DOCS if tefsir else KLASIK_DOCS if klasik else {}     # boşsa docstring (Risale)
     which = 1 if tefsir else 2 if klasik else 0
     helps = {key: values[which] for key, values in PARAM_HELP.items()}
     meta = {"version": _version(),

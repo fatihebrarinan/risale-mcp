@@ -107,6 +107,14 @@ PLANS: dict[str, Plan] = {
         start=Mark("=" + BESMELE, 1), end=Mark("بحمد الله وتوفيقه تم طبع كتاب"), preface="مقدمة المؤلف",
         notes=("Baştaki başlık satırı (\"كذلك نصرف الآيات لقوم يشكرون\", kapak) ve sondaki baskı kapanışı "
                "(\"بحمد الله وتوفيقه تم طبع كتاب…\") alınmadı.",)),
+    "fikhul-ekber": Plan(
+        start=Mark("=" + BESMELE, 1),
+        notes=("Başlıklar baskının (Furkân): metnin kendisinde başlık yoktur, eserin bölümleri yayıncınındır.",
+               "Metin bu baskıda Aliyyü'l-Kārî'nin şerhinden ayıklanmıştır.")),
+    "munkiz": Plan(
+        start=Mark("=المقدمة والمدخل"),
+        notes=("Baştaki Şâmile künyesi ve besmele alınmadı; sürümde başlık işareti yok, eser tek bölümdür. Şâmile'nin "
+               "sayfa etiketleri (\"صفحة رقم\") atıldı.",)),
     "tarifat": Plan(
         start=Mark("=مقدمة"), end=Mark("=باب: الفهارس"),
         notes=("Baştaki \"المجلد الأول\" satırı ve sondaki fihrist (\"باب: الفهارس\") alınmadı.",)),
@@ -123,8 +131,11 @@ class Report(_Report):
     verses: int = 0                                       # tek beyit paragrafları
 
 
+_PAGE_LABEL = re.compile(r'\s*"{3,}\s*صفحة رقم \d+\s*"{3,}\s*')     # Munkız'ın Şâmile sürümü: sayfa etiketi
+
+
 def _clean(text: str) -> str:
-    return text.replace("</span>", "").strip()
+    return _PAGE_LABEL.sub(" ", text.replace("</span>", "")).strip()
 
 
 def _ends(para: Para | None) -> bool:
@@ -160,6 +171,9 @@ def _book(work: Work) -> Book:
 def parse(work: Work, raw_root=RAW_DIR / "openiti") -> tuple[Book, Report]:
     if work.slug == "mufredat":
         return parse_mufredat(work, raw_root)
+    from risale_mcp.books import klasik_serh
+    if work.slug in klasik_serh.PARSERS:
+        return klasik_serh.PARSERS[work.slug](work, raw_root)
     plan = PLANS[work.slug]
     MARKS["removed"] = 0
     doc = openiti.load(work.source.book, raw_root)

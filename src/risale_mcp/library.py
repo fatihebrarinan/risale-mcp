@@ -277,7 +277,22 @@ class Library:
                 record["note"] = w["note"]
             if w["slug"] in written:
                 record["written"] = json.loads(written[w["slug"]])
+            if refs := self._work_refs().get(w["slug"]):
+                record["risale_refs"] = refs
             out.append(record)
+        return out
+
+    def _work_refs(self) -> dict[str, list[dict]]:
+        """Klasik profil (E5): Risale'nin eseri andığı yerler, kimlik ve atıfla (metin Risale sunucusunda); eser
+        Risale'de adıyla anılmıyorsa bunu söyleyen tek kayıt (`kind: unnamed`). Tablo öbür profillerde yoktur."""
+        if not self.conn.execute("SELECT 1 FROM sqlite_master WHERE name = 'work_refs'").fetchone():
+            return {}
+        out: dict[str, list[dict]] = {}
+        for r in self.conn.execute("SELECT work, id, kind, target, note, cite_as FROM work_refs ORDER BY work, ord"):
+            item = {"kind": r["kind"], "note": r["note"]} if r["kind"] == "unnamed" else \
+                {"id": r["id"], "kind": r["kind"], "cite_as": r["cite_as"], "note": r["note"],
+                 **({"section_here": r["target"]} if r["target"] else {})}
+            out.setdefault(r["work"], []).append(item)
         return out
 
     def _node(self, node_id: str) -> sqlite3.Row:
@@ -703,8 +718,10 @@ class Library:
             row = self.conn.execute("SELECT extra FROM nodes WHERE id = ?", (node,)).fetchone()
             if row and row[0] and "authority" in (extra := json.loads(row[0])):
                 by = extra.get("by")
-                return {"authority": extra["authority"], **({"by": by} if by else {}),
-                        "note": f"This section is {by or 'the editor'}'s text, not the work's author's."}
+                note = (f"This section is the base text (matn) by {by} that the commentary explains, not the "
+                        "commentator's words." if extra["authority"] == "metin"
+                        else f"This section is {by or 'the editor'}'s text, not the work's author's.")
+                return {"authority": extra["authority"], **({"by": by} if by else {}), "note": note}
             node = node.rpartition("/")[0]
         return None
 

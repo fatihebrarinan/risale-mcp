@@ -63,3 +63,80 @@ def test_mufredat_entries_from_roots():
 def test_no_unpaged_front_matter_page():
     book, _ = _book("delailul-icaz")
     assert not any(p.get("printed", {}).get("volume") == 0 for p in book["paragraphs"])
+
+
+# ---------------------------------------------------------------- E5 (`books/klasik_serh.py`)
+
+from risale_mcp.books import klasik_serh  # noqa: E402
+from risale_mcp.books.model import Book  # noqa: E402
+
+
+def test_ordinals():
+    o = lambda s: klasik_serh.ordinal(klasik_serh.fold(s).split())
+    assert o("الأول في المقدمات") == 1 and o("الثانى") == 2 and o("الحادي عشر") == 11
+    assert o("الرابع العشر") == 14 and o("الثالث والعشرون") == 23 and o("في الطريق") is None
+    assert klasik_serh.heading_kind("المقصر الثاني") == ("المقصد", 2)          # dizgi hatası
+    assert klasik_serh.heading_kind("قدم مباحث الوجود") == (None, None)
+
+
+def _tree(relaxed=False, ranks=None):
+    book = Book("x", "X", {})
+    return book, klasik_serh.Tree(book, klasik_serh.Report(), relaxed=relaxed, ranks=ranks)
+
+
+def test_series_rule():
+    book, t = _tree()
+    m1 = t.place("الموقف الأول", None)
+    r1 = t.place("المرصد الأول", None)
+    assert t.place("المقصد الأول", None).parent is r1
+    assert t.place("المرصد الثالث في الكم", None) is None        # içindekiler satırı: seri tutmuyor, metin kalır
+    r2 = t.place("المرصد الثاني", None)
+    assert r2.parent is m1
+    assert t.place("المرصد الثاني", None) is None                # tekrar
+    intro = t.place("المقدمة", None)
+    assert intro.parent is r2
+    assert t.place("الفصل الأول", None).parent is r2              # sırasız bölüm kapanır
+    assert t.place("الموقف الثاني", None).parent is book.root
+
+
+def test_relaxed_ranks_keep_levels():
+    # Makāsıd: serinin ilki eksik olsa da fasıl mebhasın altına girmez
+    book, t = _tree(relaxed=True, ranks={"المقصد": 1, "الفصل": 2, "المبحث": 3})
+    m = t.place("المقصد الثالث", None)
+    b = t.place("المبحث الثاني", None)
+    assert b.parent is m
+    f = t.place("الفصل الثاني", None)
+    assert f.parent is m
+    assert t.place("الفصل الثاني", None) is None                 # aktarmanın tekrarı
+    assert t.place("المبحث الأول", None).parent is f
+
+
+def test_mevakif_layers_and_tree():
+    book, report = _book("serhul-mevakif")
+    nodes = {n["id"]: n for n in book["outline"]}
+    assert nodes["serhul-mevakif/1/1"]["title"].startswith("المرصد الأول")
+    assert nodes["serhul-mevakif/1/2"]["title"].startswith("المرصد الثاني")
+    matn = [n for n in book["outline"] if n.get("authority") == "metin"]
+    assert len(matn) > 140 and all(n["by"] == "Adudüddîn el-Îcî" and n["title"] == "المتن" for n in matn)
+    fixed = next(n for n in book["outline"] if n["title"] == "المرصد الرابع في الوحدة والكثرة")
+    assert "düzeltildi" in fixed["subtitle"]
+
+
+def test_makasid_and_telvih():
+    book, _ = _book("serhul-makasid")
+    tops = [n["title"] for n in book["outline"] if n.get("parent_id") == "serhul-makasid"]
+    assert tops[0] == "مقدمة المؤلف" and tops[1:] == [f"المقصد {x}" for x in
+                                                       ("الأول", "الثاني", "الثالث", "الرابع", "الخامس", "السادس")]
+    book, report = _book("telvih")
+    assert report.unmatched < 60 and len(book["outline"]) > 150
+    assert any(p["text"].startswith("قوله المقدمة الأولى") for p in book["paragraphs"]
+               if p["node_id"] == "telvih/3/3/4/3")                # Risale'nin andığı Mukaddemât (risale_refs)
+
+
+def test_risale_refs_point_to_works():
+    from risale_mcp.catalog.klasik import KLASIK_WORKS, RISALE_REFS, RISALE_UNNAMED
+    slugs = {w.slug for w in KLASIK_WORKS}
+    assert set(RISALE_REFS) <= slugs and set(RISALE_UNNAMED) <= slugs
+    assert not set(RISALE_REFS) & set(RISALE_UNNAMED)
+    assert all(r["kind"] in ("havale", "nakil", "degerlendirme") and r["note"] for refs in RISALE_REFS.values()
+               for r in refs)
