@@ -570,7 +570,7 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   betik durur): `python3 scripts/claude-plugin.py build` (yandaki depoya yazar; commit, push, `version` artırılır),
   `check`, `zip` (claude.ai'ye elle yükleme), `dene [P1 …]` (Claude Code'da soru seti, hangi skill yüklendi; rapor
   `data/interim/claude-plugin/`). claude.ai'de eklentiden yalnız skill'ler ve bağdaştırıcılar çalışır. Yazar adı "Nur Hadimleri" ("Risale MCP" dizinde başka bir ada benziyor); skill açıklamaları çift tırnaklı (betik denetler). Dizine gönderildi (2026-11-23, 1.0.1, auto-publish); yeni sürüm yeniden taranır.
-- **Sohbet sayfası (S12, 2026-11-25'te bitti; deneme ayı 2026-12-25'e kadar, sonra S13; ayrıntı `KAYIT.md` › S12):**
+- **Sohbet sayfası (S12, 2026-11-25'te bitti; deneme 5 kişi ve bir hafta, S13.1'den sonra; ayrıntı `KAYIT.md` › S12):**
   `risalemcp.com/sohbet` (geçici; ileride kendi adı ve
   alan adı, S12.8: yol, site, ad ve gönderen `SOHBET_*` ayarlarından), Claude API ile, yalnız Risale, model Haiku 5.5
   medium (`SOHBET_MODEL`, `SOHBET_EFFORT`; S12.1 ölçümü: `golden run … --model`, yan yana okuma `scripts/s12-karsilastir.py`). Hesaplar `sohbet_hesap.py`:
@@ -585,7 +585,11 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   altın soruları API'den sorar, raporu `golden.report` kurar (gerçek maliyet); `olc --hizli` 8 soruluk hızlı set
   (her değişiklikte), 29 soru model ya da talimat değişince ve deploy'dan önce. Sohbetin talimatı kendisinindir,
   kaynağa bağlılığın kuralları `server.py`'deki ortak bloklardan gelir (MCP talimatı bayt bayt aynı kalmalı).
-  Sayfa: solda Kaynaklar (kaynak adı `catalog/permissions.SOURCE_LABELS`), telefonda çekmece; 👍/👎 geri bildirim
+  Sayfa (S13.1): solda konuşmalar (geçmiş, "Yeni konuşma", altta ayarlar penceresi: çıkış, saklama, hepsini sil,
+  gizlilik ve şartlar, hesabı sil), sağda Kaynaklar (kaynak adı `catalog/permissions.SOURCE_LABELS`); ikisi de açılıp
+  kapanır, dar ekranda çekmece; alt satırda "Tefsir ve fetva değildir, müellife mal edilmez." ve günün kalan hakkı.
+  Konuşmalar hesapta (`conversations`, `turns`; `users.keep_history` varsayılan açık, kapalıyken yalnız tarayıcıda);
+  yalnız sahibine gösterilir, ekip okumaz; saklanan konuşmanın geçmişi sunucudan okunur; adres `#k/<kimlik>`. 👍/👎 geri bildirim
   (`sohbet geri-bildirim`); kota ve bütçe `sohbet.Limits` (kişi günde 10 soru, servis günde 5 $, ayda 100 $, 2 $'da
   ntfy, konu sunucuda `data/sohbet-ntfy`). Arayüz denemesi `uv run --no-project --with playwright python
   scripts/sohbet-arayuz-dene.py` (başsız Brave). Yayında: `deploy.sh` servisi `risale-sohbet` (:8010) kurar, Caddy
