@@ -193,6 +193,10 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     sunucuda denetlenmişti). **İkinci örnek düzeltti (2026-11-25, 11. Söz konuşması):** orada ilk cevap Şems
     Sûresi için "Türkiye Diyanet Vakfı meali, metinde verilen çeviriyle aynıdır" dedi ama `get_ayah` hiç
     çağrılmamıştı (yalnız `get_outline` ve `read_section`); ikinci cevaptaki "kontrol etmedim" düzeltmesi yerindeydi.
+    **Üçüncü örnek (aynı konuşma, 4. cevap):** "Fatiha 1:5'i yayıncının çevirisi olarak sundum… kontrol etmedim,
+    doğrulanmamış sayın" dedi; oysa 3. cevap `read_section sozler/11` ile c103 ve c109'u okumuştu, araç sonucunda âyet
+    (`Fâtiha Sûresi, 1:5`, `exact`) ve nâşirin meali vardı: haksız itiraf, okuyucuyu doğru bilgiden şüpheye düşürüyor.
+    Üç örnekte ikisi haksız, biri yerinde: model geçmişte araç kaydını görmeden ikisini ayıramıyor.
     Yani sunucu yalnız işaretli alıntıları denetler, işaretsiz söz denetlenmez: "önceki cevaplar denetlendi" demek
     yanlış olur. Çözüm: geçmişe her cevabın altına o turda çağrılan araçların kısa listesi ("okunanlar:
     read_section sozler/11, get_ayah 91:1–10"), talimata "önceki cevaptaki işaretli alıntılar denetlendi; bir sözün
