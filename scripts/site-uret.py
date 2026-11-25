@@ -944,11 +944,14 @@ def publish_due(send: bool) -> None:
     for post in due:
         changed += publish_post(post)
     build()
-    def known(p: Path) -> bool:                           # git'e verilecek yol: diskte ya da depoda olan
-        return p.exists() or subprocess.run(["git", "ls-files", "--error-unmatch", str(p)], cwd=ROOT,
-                                            capture_output=True).returncode == 0
-    paths = sorted({str(p.relative_to(ROOT)) for p in changed if known(p)} | {"site"})
-    subprocess.run(["git", "add", "-A", "--", *paths], cwd=ROOT, check=True)
+    def git_ok(*args: str) -> bool:
+        return subprocess.run(["git", *args], cwd=ROOT, capture_output=True).returncode == 0
+    # `git add` yalnız diskte ya da dizinde olan yolu alır; `git mv` ile taşınan eski dosya ikisinde de yoktur ama
+    # HEAD'dedir: silinişi commit'e o yolla girer (önceden dışarıda kalıyordu, 2026-11-24)
+    rel = {str(p.relative_to(ROOT)) for p in changed}
+    add = sorted({r for r in rel if (ROOT / r).exists() or git_ok("ls-files", "--error-unmatch", r)} | {"site"})
+    paths = sorted(set(add) | {r for r in rel if git_ok("cat-file", "-e", f"HEAD:{r}")})
+    subprocess.run(["git", "add", "-A", "--", *add], cwd=ROOT, check=True)
     titles = ", ".join(f"«{p.title}»" for p in due)
     subprocess.run(["git", "commit", "-q", "-m", f"site: scheduled publish of {', '.join(p.slug for p in due)}",
                     "--", *paths], cwd=ROOT, check=False)

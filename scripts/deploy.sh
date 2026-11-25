@@ -23,6 +23,11 @@ KEY="${RISALE_KEY:-$HOME/.ssh/risale_hetzner}"
 DEST=/home/risale/risale-mcp
 SSH=(ssh -i "$KEY" -o BatchMode=yes)
 cd "$(dirname "$0")/.."
+# S11: web düzenleyici yazının aslını sunucudaki depodan okur (yazilar.py): taslaklar commit edilmeden de gitsin,
+# yayımlanıp adı değişen eski dosya kalksın. Yalnız iki klasör; kod gitmez.
+send_posts() {
+    rsync -az --delete --chown=risale:risale -e "${SSH[*]}" docs/yenilikler docs/calismalar "$HOST:$DEST/docs/"
+}
 CODE_ONLY=0; HADIS=0; SITE_ONLY=0
 for arg in "$@"; do
     case "$arg" in --code) CODE_ONLY=1 ;; --hadis) HADIS=1 ;; --site) SITE_ONLY=1 ;;
@@ -36,6 +41,7 @@ if [[ $SITE_ONLY == 1 ]]; then
         "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/onizleme"
         rsync -az --delete --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/onizleme/ "$HOST:/var/www/ozel/taslak/onizleme/"
     fi
+    send_posts
     echo "site gönderildi"
     exit 0
 fi
@@ -93,6 +99,7 @@ if [[ -f data/interim/onizleme/index.html ]]; then
     "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/onizleme"
     rsync -az --delete --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/onizleme/ "$HOST:/var/www/ozel/taslak/onizleme/"
 fi
+send_posts
 # Caddy yapılandırması (docs/Caddyfile) değiştiyse yeniden yüklenir
 rsync -az -e "${SSH[*]}" docs/Caddyfile "$HOST:/etc/caddy/Caddyfile.new"
 "${SSH[@]}" "$HOST" "cmp -s /etc/caddy/Caddyfile.new /etc/caddy/Caddyfile && rm /etc/caddy/Caddyfile.new \

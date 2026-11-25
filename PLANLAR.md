@@ -67,15 +67,17 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **2026-11-25 (gece):** **E5 bitti ve yayında** (kesintisiz, kullanıcının izniyle). Klasik eklentide 12 eser:
   yedi yeni eser (Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber, el-Munkız, el-Mevâhib, İhyâ),
   `risale_refs`, İhyâ'da Irâkî'nin tahrici şerh ve Risale hadislerine lafız bağı; site ve talimat yeni tanıtımla.
-  **Kullanıcıdan beklenen:** (1) `risale_refs` listesine bakmak (`catalog/klasik.py` sonunda, 24 kayıt); (2)
+  `risale_refs` listesine kullanıcı baktı (2026-11-25). **Kullanıcıdan beklenen:** (2)
   Yenilikler taslağını okuyup yayımlamak (`docs/yenilikler/2026-11-25-klasik-eserler-2.md`; masada Okumalar › Yazı
-  taslakları); (3) eklenti 1.0.2'yi yandaki depodan push etmek (`../risale-library-plugin`, commit hazır; dizin yeniden
-  tarar); (4) dizin metinleri başvurular sonuçlanınca (`docs/e5-dizin-metni-taslagi.md`); (5) ana depoya push.
+  taslakları; açılmıyordu, sunucudaki `docs/` eskiydi: `deploy.sh --site` artık yazıların aslını da gönderir); (3)
+  Claude eklentisi (plugin) 1.0.2'yi yandaki depodan push etmek (`../risale-library-plugin`, commit hazır; dizin
+  yeniden tarar); (4) dizin metinleri başvurular sonuçlanınca (`docs/e5-dizin-metni-taslagi.md`); (5) ana depoya push.
   **B10 açık** ("Sıradaki" 1).
   **E7'nin ön çalışması bitti** (2026-11-25, yayınsız; `docs/e7-on-calisma.md`): (a) Kütüb-i Sitte ve Muvatta'da
   lafız gruplaması denendi; geçişli grup zincirleme yapıyor (0,4'te 439'luk grup), öneri çift çift ortak lafız bağı;
   (c) 101 Türkçe sözün 9'unda yalnız kitap düzeyinde künye var; anlamsal arama 10 sözde 0,6'nın üstünde aday buldu.
-  **Kullanıcıdan beklenen:** raporun sonundaki beş karar.
+  Raporun sonundaki beş kararı kullanıcı **E7'nin başında** verecek (kullanıcının kararı, 2026-11-25): E7'ye
+  geçilince önce bu kararlar sorulur, sonra iş başlar.
 - **Önde (2026-11-23):** **S11 bitti ve yayında:** site yazılarının taslakları masadan düzenlenir (Okumalar › Yazı
   taslakları; düzeltmeler yayımlarken depoya alınır). **A4 bitti ve yayında** (lügat: Risale eklentisinde `lookup_word`, okuma platformunda
   kelimeye dokununca anlam). Kullanıcıdan beklenen: Yenilikler taslağını (`docs/yenilikler/2026-11-23-lugat.md`,
@@ -88,8 +90,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   bağdaştırıcı, S4.7 eklenti), OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 5'te. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
   sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
-  "Sıradaki"de). (1) **2026-11-24:** S8'in site sürümü sabah kendiliğinden yayımlanır
-  (`site-zamanli.timer`); yayımlandığına bakılır. (2) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün
+  "Sıradaki"de). (1) S8'in site sürümü 2026-11-24'te kendiliğinden yayımlandı;
+  Yeniliklere duyurusu taslak (`docs/yenilikler/2026-11-24-isarat-misli.md`). Zamanlı yayının commit'i taşınan eski
+  dosyanın silinişini dışarıda bırakıyordu (düzeltildi, 2026-11-25). (2) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün
   yedek yolu ("Bekleyen"). (3) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
   (aynı aboneliği kullanır, Pro kotasını yer).
@@ -132,7 +135,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 - E7 **Hadis tarafını derinleştirmek** (kullanıcının kararı, 2026-11-22; kullanımda hadis eklentisi Risale'yi geçti,
   2026-11-20–22): (a) hadis – hadis rivayet grupları (Y2.1'in kalanı): aynı hadisin rivayetleri, lafızla (mekanik);
   (c) yalnız Türkçe aktarılan hadisler (HA7, 101 aday cümle, Adım 4): künye varsa künyenin bölgesinde aranır. (b) yeni
-  kitaplar "Sonra"da. Ön çalışma ve karar listesi: `docs/e7-on-calisma.md` (2026-11-25).
+  kitaplar "Sonra"da. Ön çalışma ve karar listesi: `docs/e7-on-calisma.md` (2026-11-25). **E7'nin ilk adımı:**
+  raporun sonundaki beş kararı kullanıcıya sormak; kullanıcı onları E7'nin başında verecek (2026-11-25).
 - B10 **Arapça Mesnevî'nin muhakkik eki** (E5 ön çalışmasının yan bulgusu, 2026-11-24): `el-mesnevi-el-arabi/nur/tetimme`'nin
   64–128. cümleleri risaleoku baskısının ekidir (resim etiketleri `img alt=…`, yazma nüshaların resim altları, Ziriklî'nin
   el-A'lâm'ından "نبذة عن بعض الأعلام" biyografi sözlüğü); araçlarda müellifin metni gibi dönüyor. `isaratul-icaz-arabi`'de
