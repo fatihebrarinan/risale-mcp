@@ -258,6 +258,9 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 #metin-govde mark.acik { background: none; box-shadow: inset 0 -3px 0 var(--mark); }   /* parçanın öbür cümleleri */
 .kaynak-grup { margin: 0 0 12px; }
 .kaynak-grup h3 { font-size: .8rem; font-weight: 600; color: var(--muted); margin: 0 0 4px; }
+/* sağ panelde bölüm başlığı kayarken üstte kalır; altındaki grup gelince yerini ona bırakır */
+.yan .kaynak-grup h3 { position: sticky; top: -10px; z-index: 1; background: var(--card); margin: 0 -14px 4px;
+  padding: 10px 14px 6px; border-bottom: 1px solid var(--line); }
 .kaynak-listesi > .kaynak-adi { margin: 4px 0 0; }
 #metin-govde .meal { font-family: system-ui, sans-serif; font-size: .82rem; color: var(--muted); margin: 0 0 .5em 1em; }
 #metin-govde .hasiye { font-size: .92rem; border-left: 2px solid var(--line); padding-left: 10px; margin: .4em 0 .4em 1em; }
