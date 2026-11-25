@@ -312,7 +312,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     `--sohbet` yetmez).
     (C) kullanıcının kararı: sohbette satır içi kısa alıntı serbest; sohbetin kendi kuralı `sohbet.QUOTE_EXACTLY`
     (bir ibare ya da kısa tek cümle, işareti kapanış tırnağının hemen ardında; işaretsizse yine tek terim), MCP'ninki
-    aynı kaldı; test satır içi alıntının da asıl yerine taşındığını sınar. **Açık:** (B) ve (D) hafta sonunda model
+    aynı kaldı; test satır içi alıntının da asıl yerine taşındığını sınar. Yayında (`70a35bb`, `yayin-20261126-013044`,
+    beklenmeyen fark yok; sunucuda Nokta `original_text` veriyor). **Açık:** (B) ve (D) hafta sonunda model
     yönlendirme konuşulurken örnek; Mukaddime'nin kendi telif kaydı yok, eserin kaydını ("Arapça … Metnimiz
     tercümedir") miras alıyor: tarihi kaynaktan bulunmadan yazılmaz; (E)'nin lügat sesteşleri ayrı iş.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
