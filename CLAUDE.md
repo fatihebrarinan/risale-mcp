@@ -581,7 +581,14 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   Sohbet servisi `sohbet.py` (S12.3; kuralları modülün başında): araçlar süreç içinde `create_server`'dan, talimat
   Risale talimatından türetilir; model `[[kimlik]]` yazar, Kaynaklar'ı sunucu kurar, alıntıyı denetler ve tutmayanı kendisi düzeltir (S12.9: başka yerde bulunan alıntıya taşır, bulunmayanı "doğrulanamadı" diye gösterir; model turu `SOHBET_MODEL_FIX`). Komutlar
   `uv run --extra sohbet python -m risale_mcp.sohbet serve [--dev] | sor "<soru>" | olc [soru…] | usage`; `olc`
-  altın soruları API'den sorar, raporu `golden.report` kurar (gerçek maliyet).
+  altın soruları API'den sorar, raporu `golden.report` kurar (gerçek maliyet); `olc --hizli` 8 soruluk hızlı set
+  (her değişiklikte), 29 soru model ya da talimat değişince ve deploy'dan önce. Sohbetin talimatı kendisinindir,
+  kaynağa bağlılığın kuralları `server.py`'deki ortak bloklardan gelir (MCP talimatı bayt bayt aynı kalmalı).
+  Sayfa: solda Kaynaklar (kaynak adı `catalog/permissions.SOURCE_LABELS`), telefonda çekmece; 👍/👎 geri bildirim
+  (`sohbet geri-bildirim`); kota ve bütçe `sohbet.Limits` (kişi günde 10 soru, servis günde 5 $, ayda 100 $, 2 $'da
+  ntfy, konu sunucuda `data/sohbet-ntfy`). Arayüz denemesi `uv run --no-project --with playwright python
+  scripts/sohbet-arayuz-dene.py` (başsız Brave). Yayında: `deploy.sh` servisi `risale-sohbet` (:8010) kurar, Caddy
+  `/sohbet/*`'ı tamponsuz ve sıkıştırmasız geçirir, `.env`'den sohbet anahtarlarını da yazar.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 
