@@ -17,8 +17,9 @@ cd "$(dirname "$0")/.."
 [[ $# -ge 1 ]] || { echo "kullanım: scripts/taslak-gonder.sh data/d1/masa/<sayfa>.html …"; exit 2; }
 for f in "$@"; do
     [[ -f $f ]] || { echo "yok: $f"; exit 1; }
-    [[ $(realpath "$f") == $(realpath data/d1/masa)/* || $(realpath "$f") == $(realpath data/interim/oku-masa)/* ]] \
-        || { echo "data/d1/masa/ ya da data/interim/oku-masa/ altında değil: $f"; exit 1; }
+    [[ $(realpath "$f") == $(realpath data/d1/masa)/* || $(realpath "$f") == $(realpath data/interim/oku-masa)/* \
+       || $(realpath "$f") == $(realpath -m data/interim/sohbet)/* ]] \
+        || { echo "data/d1/masa/, data/interim/oku-masa/ ya da data/interim/sohbet/ altında değil: $f"; exit 1; }
 done
 "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel && install -d -o root -g caddy -m 2750 /var/www/ozel/taslak"
 rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" "$@" "$HOST:/var/www/ozel/taslak/"

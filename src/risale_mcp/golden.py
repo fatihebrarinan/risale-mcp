@@ -48,6 +48,8 @@ TIMEOUT = 15 * 60                 # bir soru için saniye
 BUILTIN_TOOLS = ("Bash", "Read", "Edit", "Write", "Glob", "Grep", "NotebookEdit", "WebFetch", "WebSearch", "Agent")
 # İç içe çalıştırmada üst Claude Code oturumunun ortam değişkenleri yeni oturuma geçmesin.
 PARENT_ENV = ("CLAUDECODE", "CLAUDE_CODE_ENTRYPOINT", "CLAUDE_JOB_DIR")
+# Ölçüm aboneliği kullanır: `.env`'deki sohbet sayfasının API anahtarı (S12) ortamdaysa geçmesin, kredi harcanmasın.
+SUBSCRIPTION_ONLY = ("ANTHROPIC_API_KEY",)
 
 
 def load_questions(path: Path = QUESTIONS) -> list[dict]:
@@ -74,14 +76,15 @@ def library_for(profile: str | None) -> Library:
 
 # ---------------------------------------------------------------- çalıştırma
 
-def run_question(question: dict, out_dir: Path, workdir: Path, config: Path, servers: list[str] | None = None) -> Path:
+def run_question(question: dict, out_dir: Path, workdir: Path, config: Path, servers: list[str] | None = None,
+                 model: str | None = None) -> Path:
     """Soruyu temiz bir Claude Code oturumunda sorar; dökümü `<soru>.jsonl`'e yazar. `servers` verilirse (M6) üç
-    bağdaştırıcı birlikte açıktır, sorunun kendi sunucusu değil."""
+    bağdaştırıcı birlikte açıktır, sorunun kendi sunucusu değil. `model` verilirse o modelle (S12.1)."""
     allowed = ",".join(f"mcp__{n}" for n in servers) if servers else f"mcp__{question.get('profile') or SERVER}"
     command = ["claude", "-p", question["question"], "--output-format", "stream-json", "--verbose",
                "--mcp-config", str(config), "--strict-mcp-config", "--tools", "",
-               "--allowedTools", allowed, "--no-session-persistence"]
-    env = {k: v for k, v in os.environ.items() if k not in PARENT_ENV}
+               "--allowedTools", allowed, "--no-session-persistence"] + (["--model", model] if model else [])
+    env = {k: v for k, v in os.environ.items() if k not in PARENT_ENV + SUBSCRIPTION_ONLY}
     out = out_dir / f"{question['id']}.jsonl"
     started = time.monotonic()
     with out.open("w", encoding="utf-8") as stdout:
@@ -96,14 +99,17 @@ def run_question(question: dict, out_dir: Path, workdir: Path, config: Path, ser
 MULTI_RISALE_PROFILE = "genel"          # üç bağdaştırıcı kipinde risale yayındaki hâliyle (müfessirler tefsirde)
 
 
-def run(ids: list[str], servers: list[str] | None = None) -> Path:
+def run(ids: list[str], servers: list[str] | None = None, model: str | None = None) -> Path:
     questions = load_questions()
     chosen = questions if not ids else [q for q in questions if q["id"] in ids]
     unknown = set(ids) - {q["id"] for q in questions}
     if unknown:
         sys.exit(f"Bilinmeyen soru: {sorted(unknown)}")
-    out_dir = RUNS_DIR / (datetime.now().strftime("%Y%m%d-%H%M%S") + ("-coklu" if servers else ""))
+    out_dir = RUNS_DIR / (datetime.now().strftime("%Y%m%d-%H%M%S") + ("-coklu" if servers else "")
+                          + (f"-{model}" if model else ""))
     out_dir.mkdir(parents=True)
+    if model:
+        (out_dir / "model.json").write_text(json.dumps({"model": model}), encoding="utf-8")
     if servers:
         (out_dir / "servers.json").write_text(json.dumps({"servers": servers, "risale_profile": MULTI_RISALE_PROFILE}),
                                               encoding="utf-8")
@@ -120,7 +126,7 @@ def run(ids: list[str], servers: list[str] | None = None) -> Path:
                 configs[profile].write_text(json.dumps(server_config(profile)), encoding="utf-8")
         print(f"{len(chosen)} soru; döküm: {out_dir.relative_to(ROOT)}", flush=True)
         for question in chosen:
-            run_question(question, out_dir, workdir, configs[question.get("profile")], servers)
+            run_question(question, out_dir, workdir, configs[question.get("profile")], servers, model)
     report(out_dir)
     return out_dir
 
@@ -465,6 +471,7 @@ def main() -> None:
     run_parser.add_argument("ids", nargs="*", help="soru kimlikleri (A1, D14, K2…)")
     run_parser.add_argument("--all", action="store_true", help="bütün sorular")
     run_parser.add_argument("--servers", help="üç bağdaştırıcı kipi (M6): virgülle, ör. risale,hadis,tefsir")
+    run_parser.add_argument("--model", help="Claude Code'un modeli (S12.1), ör. claude-haiku-5-5")
     report_parser = commands.add_parser("report", help="bir çalıştırmanın raporunu yeniden üret")
     report_parser.add_argument("run_dir", nargs="?", type=Path, help="varsayılan: son çalıştırma")
     sandbox_parser = commands.add_parser("sandbox", help="elle deneme klasörü hazırla")
@@ -476,7 +483,7 @@ def main() -> None:
     if args.command == "run":
         if not (args.all or args.ids):
             sys.exit("Soru kimliği ya da --all verin.")
-        run([] if args.all else args.ids, args.servers.split(",") if args.servers else None)
+        run([] if args.all else args.ids, args.servers.split(",") if args.servers else None, args.model)
     elif args.command == "report":
         runs = sorted(p for p in RUNS_DIR.iterdir() if p.is_dir()) if RUNS_DIR.exists() else []
         if not (args.run_dir or runs):
