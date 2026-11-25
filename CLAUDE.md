@@ -570,6 +570,14 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   betik durur): `python3 scripts/claude-plugin.py build` (yandaki depoya yazar; commit, push, `version` artırılır),
   `check`, `zip` (claude.ai'ye elle yükleme), `dene [P1 …]` (Claude Code'da soru seti, hangi skill yüklendi; rapor
   `data/interim/claude-plugin/`). claude.ai'de eklentiden yalnız skill'ler ve bağdaştırıcılar çalışır. Yazar adı "Nur Hadimleri" ("Risale MCP" dizinde başka bir ada benziyor); skill açıklamaları çift tırnaklı (betik denetler). Dizine gönderildi (2026-11-23, 1.0.1, auto-publish); yeni sürüm yeniden taranır.
+- **Sohbet sayfası (S12, sürüyor; plan `PLANLAR.md` S12):** `risalemcp.com/sohbet` (geçici; ileride kendi adı ve
+  alan adı, S12.8: yol, site, ad ve gönderen `SOHBET_*` ayarlarından), Claude API ile, yalnız Risale, model Haiku 5.5
+  (S12.1 ölçümü: `golden run … --model`, yan yana okuma `scripts/s12-karsilastir.py`). Hesaplar `sohbet_hesap.py`:
+  davetli bölümden ayrı (`data/sohbet.db`, çerez `sohbet_oturum`), e-posta doğrulama koduyla kayıt ve parola yenileme
+  tek akış, sınırlar modülün başında; e-posta Scaleway Transactional Email (AB; `.env` `SCW_SECRET_KEY`,
+  `SCW_PROJECT_ID`; kökteki SPF'te `include:_spf.tem.scaleway.com`, MX'ler `destek@` yönlendirmesinindir, dokunulmaz),
+  geliştirmede `serve --dev` (e-posta `data/interim/sohbet/eposta.log`'a). API anahtarı `ANTHROPIC_API_KEY`
+  (Console'da ayrı çalışma alanı, aylık tavan 100 $); `golden` ölçümü aboneliği kullanır, anahtarı alt sürece geçirmez.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

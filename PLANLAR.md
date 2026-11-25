@@ -65,9 +65,17 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
 `KAYIT.md` › "Sıradaki'nin notları"):
-- **Son adım (2026-11-25):** E5 bitti ve yayında (Klasik eklentide 12 eser); duyurusu ve İşârât'ın misli çalışmasının
-  duyurusu yayımlandı; Claude eklentisi 1.0.2 push edildi. **Önde:** S12 sohbet sayfası (kullanıcının kararı,
-  2026-11-25; "Sıradaki" 1): ilk adım S12.0 (kullanıcı: API kredisi ve anahtar) ve S12.1 (Haiku – Sonnet ölçümü).
+- **Son adım (2026-11-25):** S12 sohbet sayfası başladı ("Sıradaki" 1). Bitti: S12.0 (API anahtarı `.env`'de,
+  Console'da ayrı çalışma alanı, aylık tavan 100 $), S12.1 (model **Haiku 5.5**), S12.2'nin yerel kısmı
+  (`sohbet_hesap.py`, e-posta doğrulama kodu; Scaleway bağlı, deneme e-postası gelen kutusuna düştü, SPF/DKIM/DMARC
+  geçti). **Önde: S12.3 sohbet servisi** (yeni oturumda başlar). Yön (bu oturumda konuşuldu): araçlar MCP'den değil
+  servis içinden `library.py` ile (tanımları `server.py`'den, kopya yok); Claude API, Anthropic Python SDK yalnız bu
+  servisin bağımlılığı; Haiku 5.5, akışla (streaming), araçlar ve talimat önbellekte; talimat Risale talimatından,
+  sohbete özgü değişiklik: model alıntıyı cümle kimliğiyle işaretler, Kaynaklar'ı sunucu kurar ve alıntıları denetler,
+  tutmayanı bir kez geri gönderir, alıntıya tıklayınca metin bağlamıyla açılır (S12.5 (a)); soru başına araç ve
+  konuşma başına tur sınırı; konuşma sunucuda saklanmaz, yalnız kullanım satırı. Önce yerelde çalışan sürüm
+  kullanıcıya gösterilir; sonra S12.4 (kota, bütçe), S12.6 (gizlilik, şartlar) ve tek deploy (S12.2 ile birlikte:
+  servis `risale-sohbet` :8010, Caddy `/sohbet/*`), kendi düzenimizde kısa yeniden ölçüm (Haiku'nun teyidi).
   Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
   `https://risalemcp.com/taslak/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
@@ -133,7 +141,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     (ayda 300) yeter; DNS: kökteki SPF'e `include:_spf.tem.scaleway.com` eklendi, DKIM `<proje>._domainkey`, DMARC
     `p=none`; MX'lere dokunulmadı (`destek@` Cloudflare yönlendirmesi). Alan adı `checked`, ilk gönderim
     `destek@risalemcp.com`'a `250 Ok` (API biçimi `ScalewayMailer`'ınkiyle aynı). `.env`: `SCW_SECRET_KEY`,
-    `SCW_PROJECT_ID` (`SCW_ACCESS_ID` da duruyor, gerekmiyor). **Kalan:** servis birimi `risale-sohbet` (:8010),
+    `SCW_PROJECT_ID` (`SCW_ACCESS_ID` da duruyor, gerekmiyor). Deneme e-postası gelen kutusuna düştü, SPF, DKIM ve
+    DMARC geçti (kullanıcı baktı). **Kalan:** servis birimi `risale-sohbet` (:8010),
     Caddy `/sohbet/*`, deploy (`.env`'den yalnız `SCW_*` ve `ANTHROPIC_API_KEY` gider); S12.3'ün servisiyle birlikte. Doğrulama sınırsız hesabı zorlaştırır ama
     engellemez: asıl sınır kişi kotası ve bütçe tavanıdır (S12.4).
   - S12.3 **Sohbet servisi:** `risale-sohbet` (ana makine, 127.0.0.1:8010; Caddy `/sohbet/` sayfası ve `/sohbet/api/`,
