@@ -190,8 +190,15 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     **Bekleyen düzeltmeler** (henüz yapılmadı; sırası denemenin sonucuyla): (c) **Geçmişte araç sonucu yok:** ikinci
     soruda model "önceki cevabımda … doğrulamadan verdim, okumadan kullandım" dedi; geçmişe yalnız cevap metni
     giriyor (`Chat.messages`), model ilk turun okumalarını görmeyince kendi atıflarını doğrulanmamış sanıyor (atıflar
-    sunucuda denetlenmişti). Çözüm: talimata "önceki cevaplardaki işaretli alıntıları sunucu metinle denetledi"
-    satırı, ya da geçmişe önceki turda okunan bölümlerin kısa listesi. (d) **Yan yana aynı işaret:** "[23] [23]";
+    sunucuda denetlenmişti). **İkinci örnek düzeltti (2026-11-25, 11. Söz konuşması):** orada ilk cevap Şems
+    Sûresi için "Türkiye Diyanet Vakfı meali, metinde verilen çeviriyle aynıdır" dedi ama `get_ayah` hiç
+    çağrılmamıştı (yalnız `get_outline` ve `read_section`); ikinci cevaptaki "kontrol etmedim" düzeltmesi yerindeydi.
+    Yani sunucu yalnız işaretli alıntıları denetler, işaretsiz söz denetlenmez: "önceki cevaplar denetlendi" demek
+    yanlış olur. Çözüm: geçmişe her cevabın altına o turda çağrılan araçların kısa listesi ("okunanlar:
+    read_section sozler/11, get_ayah 91:1–10"), talimata "önceki cevaptaki işaretli alıntılar denetlendi; bir sözün
+    dayanağını o listeden bil". (h) **Okunmadan söz:** ilk cevaptaki Vakıf meali iddiası, aracını çağırmadan
+    verilmiş bir bilgi; talimata "bir meali, âyeti ya da başka bir metni ancak bu cevapta araçla okuduysan anlat"
+    (Haiku'da ölçülür). Aynı cevapta "Verse göre" (İngilizce sızıntı, (f) ile birlikte). (d) **Yan yana aynı işaret:** "[23] [23]";
     `check` art arda gelen aynı işareti teke indirsin. (e) **Telif tarihi gereksiz yere metinde:** "kaynak
     1936–1943, Kastamonu'dur (kastamonur.com)", "Hayrat listesi 1933–34 der" (`written` alanından); talimat: tarih
     yalnız soruyla ilgiliyse. (f) **Yabancı harf:** "göktə" (Azerice ə); şimdilik yalnız not, tekrarlarsa cevapta
