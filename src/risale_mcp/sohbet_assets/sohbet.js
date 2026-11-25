@@ -1,12 +1,18 @@
 // S12.3: sohbet sayfası. Konuşma yalnız bu tarayıcıda (localStorage) durur; her soruda önceki sorular ve cevapların
 // ham metni (cümle kimliği işaretleriyle) sunucuya yeniden gönderilir. Cevap Server-Sent Events ile akar.
+// S12.11: konuşmanın kaynakları solda (telefonda alttan çekmece), kaynak adıyla; kaynağa ya da alıntıya dokununca metin
+// aynı panelde bağlamıyla açılır, cevap yanında kalır.
 "use strict";
 
 const P = document.body.dataset.prefix;
 const KEY = "sohbet:konusma";
 const $ = (id) => document.getElementById(id);
 const els = { list: $("konusma"), empty: $("bos"), form: $("soru-formu"), input: $("soru"), send: $("gonder"),
-  fresh: $("yeni"), dialog: $("metin"), dpath: $("metin-yol"), dbody: $("metin-govde"), dclose: $("metin-kapat") };
+  fresh: $("yeni"), side: $("yan"), sideList: $("yan-liste"), sideText: $("yan-metin"), sideTitle: $("yan-baslik"),
+  back: $("yan-geri"), close: $("yan-kapat"), open: $("yan-ac"), count: $("yan-sayi"), shade: $("perde"),
+  dpath: $("metin-yol"), dsource: $("metin-kaynak"), dbody: $("metin-govde") };
+const SIDE_EMPTY = els.sideList.innerHTML;
+const wide = window.matchMedia("(min-width: 960px)");
 
 let turns = load();
 let busy = false;
@@ -101,24 +107,60 @@ function el(tag, cls, html) {
   return e;
 }
 
-function renderSources(box, sources) {
-  if (!sources || !sources.length) return;
-  const wrap = el("div", "kaynaklar");
-  wrap.append(el("h4", "", "Kaynaklar"));
+function sourceList(sources, turnIndex) {
   const ol = el("ol");
   for (const s of sources) {
     const li = el("li");
     const b = el("button", "kaynak" + (s.problem ? " kotu" : ""));
     b.type = "button";
     b.dataset.n = s.n;
-    b.innerHTML = `<span class="no">[${s.n}]</span><span class="yol-metin">${esc(s.cite_as || "Adresi bulunamadı")}</span>`;
+    if (turnIndex !== undefined) b.dataset.turn = turnIndex;
+    b.innerHTML = `<span class="no">[${s.n}]</span><span class="yol-metin">${esc(s.cite_as || "Adresi bulunamadı")}</span>`
+      + (s.source_name ? `<span class="kaynak-adi">Kaynak: ${esc(s.source_name)}</span>` : "");
     li.append(b);
     for (const e of s.embedded || []) li.append(el("div", "gomulu", "– " + esc(e.line)));
     if (s.problem) li.append(el("div", "uyari", "⚠ Bu alıntı eserlerin metniyle doğrulanamadı."));
     ol.append(li);
   }
-  wrap.append(ol);
+  return ol;
+}
+
+function renderSources(box, sources) {          // cevabın altında (telefonda; masaüstünde solda)
+  if (!sources || !sources.length) return;
+  const wrap = el("div", "kaynaklar");
+  wrap.append(el("h4", "", "Kaynaklar"));
+  wrap.append(sourceList(sources));
   box.append(wrap);
+}
+
+function renderSide() {                          // konuşmanın bütün kaynakları, cevaplara göre
+  els.sideList.innerHTML = "";
+  let total = 0;
+  turns.forEach((t, i) => {
+    if (!t.sources || !t.sources.length) return;
+    total += t.sources.length;
+    const group = el("section", "yan-tur");
+    group.append(el("h3", "", `${i + 1}. ${esc(t.q)}`));
+    group.append(sourceList(t.sources, i));
+    els.sideList.append(group);
+  });
+  if (!total) els.sideList.innerHTML = SIDE_EMPTY;
+  els.count.textContent = total;
+  els.count.hidden = !total;
+}
+
+function showList() {
+  els.sideText.hidden = true;
+  els.sideList.hidden = false;
+  els.back.hidden = true;
+  els.sideTitle.textContent = "Kaynaklar";
+}
+
+function setDrawer(open) {
+  if (wide.matches) open = false;
+  els.side.classList.toggle("acik", open);
+  els.shade.hidden = !open;
+  els.open.setAttribute("aria-expanded", String(open));
 }
 
 function renderTurn(turn) {
@@ -138,8 +180,9 @@ function renderTurn(turn) {
 
 function renderAll() {
   els.list.innerHTML = "";
-  for (const t of turns) els.list.append(renderTurn(t));
+  turns.forEach((t, i) => { const box = renderTurn(t); box._index = i; els.list.append(box); });
   els.empty.hidden = turns.length > 0;
+  renderSide();
 }
 
 function sourceOf(box, n) {
@@ -156,15 +199,42 @@ els.list.addEventListener("click", (ev) => {
   }
   if (!target) return;
   const src = sourceOf(box, target.dataset.n);
-  if (src) openText(src);
+  if (src) openText(src, box._index);
 });
+
+els.sideList.addEventListener("click", (ev) => {
+  const b = ev.target.closest(".kaynak");
+  if (!b) return;
+  const turn = turns[Number(b.dataset.turn)];
+  const src = turn && (turn.sources || []).find((s) => s.n === Number(b.dataset.n));
+  if (src) openText(src, Number(b.dataset.turn));
+});
+els.back.addEventListener("click", showList);
+els.open.addEventListener("click", () => { showList(); setDrawer(true); });
+els.close.addEventListener("click", () => setDrawer(false));
+els.shade.addEventListener("click", () => setDrawer(false));
+document.addEventListener("keydown", (ev) => {
+  if (ev.key !== "Escape") return;
+  if (els.side.classList.contains("acik")) setDrawer(false);
+  else if (!els.sideText.hidden) showList();
+});
+wide.addEventListener("change", () => setDrawer(false));
 
 // ------------------------------------------------------------ metin penceresi
 
-async function openText(src) {
+async function openText(src, turnIndex) {
   els.dpath.textContent = src.cite_as || "Adresi bulunamadı";
+  els.dsource.textContent = src.source_name ? `Kaynak: ${src.source_name}` : "";
   els.dbody.innerHTML = '<p class="small">Yükleniyor…</p>';
-  if (!els.dialog.open) els.dialog.showModal();
+  els.sideList.hidden = true;
+  els.sideText.hidden = false;
+  els.back.hidden = false;
+  els.sideTitle.textContent = turnIndex !== undefined ? `[${src.n}]` : "Metin";
+  els.sideText.scrollTop = 0;
+  for (const b of els.sideList.querySelectorAll(".kaynak.secili")) b.classList.remove("secili");
+  const item = els.sideList.querySelector(`.kaynak[data-turn="${turnIndex}"][data-n="${src.n}"]`);
+  if (item) item.classList.add("secili");
+  setDrawer(true);
   try {
     const r = await fetch(`${P}api/metin?id=${encodeURIComponent(src.id)}`, { credentials: "same-origin" });
     if (!r.ok) throw new Error((await r.json()).error || "Metin açılamadı.");
@@ -192,8 +262,6 @@ async function openText(src) {
     els.dbody.innerHTML = `<p class="hata">${esc(e.message)}</p>`;
   }
 }
-els.dclose.addEventListener("click", () => els.dialog.close());
-els.dialog.addEventListener("click", (ev) => { if (ev.target === els.dialog) els.dialog.close(); });
 
 // ------------------------------------------------------------ soru
 
@@ -237,7 +305,9 @@ async function ask(question) {
       turns.push(turn);
       save();
       const fresh = renderTurn(turn);
+      fresh._index = turns.length - 1;
       box.replaceWith(fresh);
+      renderSide();
     } else if (event === "error") {
       finished = true;
       status.remove();
@@ -301,7 +371,7 @@ els.input.addEventListener("input", grow);
 for (const b of document.querySelectorAll(".ornek")) b.addEventListener("click", () => ask(b.textContent));
 els.fresh.addEventListener("click", () => {
   if (busy) return;
-  turns = []; save(); renderAll(); els.input.focus();
+  turns = []; save(); showList(); renderAll(); els.input.focus();
 });
 
 renderAll();

@@ -66,51 +66,68 @@ RELATED_HELP = "Also search sources about the works that are not by the author. 
                "when the question calls for them, and keep them apart from the text."
 RESOURCE_TEXT_WORDS = 20000      # kaynak olarak eklenen bölüm metninin üst sınırı
 
-INSTRUCTIONS = """\
+# Risale talimatı bloklardan kurulur (S12.10): sohbet sayfası (`sohbet.instructions`) kaynağa bağlılığın ortak
+# bloklarını (bulma ve okuma, metne dayanma, alıntı, metin ve yorum ayrımı, müellifin sözü olmayan katmanlar) buradan
+# alır, kopyalamaz; MCP'ye özgü kısımları (web, `cite`, kaynakça, bağdaştırıcılar arası numaralama) almaz. MCP'nin
+# metni bloklara bölünmeden önceki hâliyle bayt bayt aynıdır (araç çıktısı kaydı denetler).
+RISALE_INTRO = """\
 Read access to the complete works of Bediüzzaman Said Nursî (the Risale-i Nur volumes, the early works, the \
 compilations (mecmua), the Hizbs, the works he wrote in Arabic with their Turkish translations, and Ottoman volumes) and to the \
 Qur'an. Texts are split into sentences with stable ids.
-
-Workflow:
-1. Find: semantic_search for concepts and questions in today's words (the text often uses older words); search \
-for the text's own words, names and terms. Results are candidates, not evidence.
-2. Read what you will rely on, in context: get_passage (a sentence or a range first..last, with context) or \
+"""
+FIND = """\
+Find: semantic_search for concepts and questions in today's words (the text often uses older words); search \
+for the text's own words, names and terms. Results are candidates, not evidence."""
+READ = """\
+Read what you will rely on, in context: get_passage (a sentence or a range first..last, with context) or \
 read_section. When the text you read sends the reader to another place for this topic ("tafsilen", "müracaat et", \
 "… izah edilmiştir"), read that place too before answering; a passing mention or a list of treatises is not such a \
-pointer. Old names in the text: {old_names}. text_elsewhere on a section gives the same.
-3. Before writing the answer, call cite once with every sentence or range you quote or rely on, in the order of \
+pointer. Old names in the text: {old_names}. text_elsewhere on a section gives the same.""".replace(
+    "{old_names}", old_names_note())
+MCP_CITE_STEP = """\
+Before writing the answer, call cite once with every sentence or range you quote or rely on, in the order of \
 their numbers, and the exact words you quote: every quotation you will show, each with its words. Fix what it \
-flags.
-
-Answering:
-1. Every statement about the works rests on text you read with these tools: what the works say, where, and what \
-a section is about never come from a web search or memory. Use the web only for outside context, listed apart. \
+flags."""
+GROUNDED = """\
+Every statement about the works rests on text you read with these tools: what the works say, where, and what \
+a section is about never come from a web search or memory. """
+MCP_WEB = "Use the web only for outside context, listed apart. "
+NEVER_INVENT = """\
 Never invent references, ids, quotations or titles; if the tools do not return something, say you could not find \
-it in the works.
-2. Quote the works only in block quotes on their own line (> "…"), exactly as returned; in your prose put \
+it in the works."""
+QUOTE_EXACTLY = """\
+Quote the works only in block quotes on their own line (> "…"), exactly as returned; in your prose put \
 quotation marks around at most a single term. A parable or one line of thought running over consecutive \
 sentences of one section is quoted as one block with one source (a range, at most 8 sentences); a longer passage \
-is quoted as consecutive blocks, each with its own range.
-3. The texts are served with the permission of their sources (e-Risale, risaleoku.com and the others the works \
-name), on condition that the source is named, which the bibliography does.
-4. Always cite through a bibliography, in short answers too: end each quotation (and each claim drawn from a \
+is quoted as consecutive blocks, each with its own range."""
+MCP_PERMISSION = """\
+The texts are served with the permission of their sources (e-Risale, risaleoku.com and the others the works \
+name), on condition that the source is named, which the bibliography does."""
+MCP_BIBLIOGRAPHY = """\
+Always cite through a bibliography, in short answers too: end each quotation (and each claim drawn from a \
 source) with its number, e.g. [1], and finish the answer with a "Kaynaklar" list, the bibliography lines cite \
 returns, unchanged, with the indented Âyet and Hadis lines under a source and their notes such as (doğrulanmadı); \
 sources outside the works go in a separate list after it. Never write references in the body or give sentence \
 numbers. If the same answer also cites another connector (Risale-i Nur, tafsir, hadith), keep one Kaynaklar list: \
 call each server's cite with first set to the number after the last one already used, and give all the \
-lines in one list, in number order.
-5. Keep what the text says apart from your own interpretation, under separate headings. Answer in the user's \
-language.
+lines in one list, in number order."""
+TEXT_APART = "Keep what the text says apart from your own interpretation, under separate headings."
 
+
+def risale_layers(connectors: bool = True) -> str:
+    """Müellifin sözü olmayan katmanlar: MCP ile sohbetin ortak bloğu. `connectors=False` (sohbet): başka
+    bağdaştırıcının metni ve yalnız yerel profilde gelen model okumaları anılmaz."""
+    readings = ("Its \
+model_readings, report_flags and verdicts (where present) are model readers' leads and rule-based checks, never a \
+verdict." if connectors else "")
+    return """\
 Layers that are not the author's words:
 - Hadiths: a hadith part carries hadith_support, the evidence for it (found, partly_found, located_chapter, read_chapter, cited, phrase_found, marked, unsupported). \
 It is evidence, not a verdict: never rule on a hadith yourself, never call it sound or weak from memory. With \
 phrase_found or cited do not present a listed report as the source of the words; located_reports are the ones found \
 through the citation. find_hadith \
-gives the reports and their books; give grades only as get_hadith lists them, with the scholar's name. Its \
-model_readings, report_flags and verdicts (where present) are model readers' leads and rule-based checks, never a \
-verdict.
+gives the reports and their books; give grades only as get_hadith lists them, with the scholar's name.""" + \
+        (" " + readings if readings else "") + """
 - A part with kind_unverified was called a hadith only by the words around it: say it is presented as a hadith in the text, do not vouch for it.
 - Translations of verses and hadiths in the works (publisher_translation) are the publishers'. Use them only to \
 convey the meaning, say whose they are, never quote them as the text. The author's own explanation ("Yani, …") \
@@ -118,8 +135,9 @@ is text.
 - Qur'an: copy the vowelled Arabic from get_ayah (or as the works quote it), never from memory. Cite a verse as \
 get_ayah's ref ("Bakara Sûresi, 2:255", no ›), name the translation (Türkiye Diyanet Vakfı) and mention covers_verses. \
 A translation aids the meaning; it does not replace the Arabic.
-- Your own translation (of Arabic the tools return without a translation: a hadith, a passage of the Arabic works, \
-another connector's text) is labelled where it begins, in Turkish "Yapay zekâ tercümesi:", a phrase or a long \
+- Your own translation (of Arabic the tools return without a translation: a hadith, a passage of the Arabic works""" + \
+        (""", \
+another connector's text""" if connectors else "") + """) is labelled where it begins, in Turkish "Yapay zekâ tercümesi:", a phrase or a long \
 passage alike; it is never a quotation, never cited, never attributed to the author.
 - Writing dates (written, in list_works, get_outline and read_section): state when, where and in which language a \
 work was written only from this field, never from memory. Dates come from secondary lists: name its source, say \
@@ -138,7 +156,23 @@ cite it as his. Check subtitles and paragraph kinds.
 another author's text; nakil: a memoir or report; serh: a commentary; modern: a modern explanation). Say whose it is, \
 never present it as his words; reported sayings stay reports. translation: true marks a work that is a translation \
 of the original (the work's note names the translator where known): say so when it matters.
-""".replace("{old_names}", old_names_note())
+"""
+
+
+INSTRUCTIONS = (RISALE_INTRO + f"""
+Workflow:
+1. {FIND}
+2. {READ}
+3. {MCP_CITE_STEP}
+
+Answering:
+1. {GROUNDED}{MCP_WEB}{NEVER_INVENT}
+2. {QUOTE_EXACTLY}
+3. {MCP_PERMISSION}
+4. {MCP_BIBLIOGRAPHY}
+5. {TEXT_APART} Answer in the user's language.
+
+""" + risale_layers())
 
 
 class ReportSource(BaseModel):

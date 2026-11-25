@@ -8,15 +8,17 @@
     --accent: #7cc49d; --accent-soft: #22352a; --bad: #f08a80; --mark: #4a3f1c; }
 }
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html, body { height: 100%; }
 body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif;
-  display: flex; flex-direction: column; }
+  display: flex; flex-direction: column; height: 100dvh; overflow: hidden; }
 a { color: inherit; }
 button { font: inherit; cursor: pointer; }
 .small { font-size: .82rem; color: var(--muted); }
 
 .top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 16px;
-  border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 2; }
+  border-bottom: 1px solid var(--line); background: var(--bg); flex: none; z-index: 3; }
+.brand { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
 .brand span { color: var(--muted); margin-left: 4px; }
 nav { display: flex; align-items: center; gap: 8px; }
 .ghost { background: none; border: 1px solid var(--line); color: var(--fg); border-radius: 6px; padding: 4px 10px; }
@@ -29,7 +31,45 @@ nav { display: flex; align-items: center; gap: 8px; }
 .hesap .menu p { margin: 0; word-break: break-all; }
 .hesap .menu form { margin: 0; }
 
-main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px 24px; }
+/* düzen: solda kaynaklar (masaüstü) ya da alttan çekmece (telefon), sağda sohbet; her biri kendi içinde kayar */
+.govde { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr; }
+.sohbet { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+main { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 16px 24px; }
+main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
+.yan { display: flex; flex-direction: column; min-height: 0; background: var(--card); }
+.yan-ust { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-bottom: 1px solid var(--line);
+  flex: none; }
+.yan-ust h2 { font-size: .95rem; margin: 0; flex: 1; }
+.yan-icerik { flex: 1; min-height: 0; overflow-y: auto; padding: 10px 14px 18px; }
+.yan-bos { margin: 4px 0; }
+.yan-tur { margin: 0 0 14px; }
+.yan-tur h3 { font-size: .8rem; font-weight: 600; color: var(--muted); margin: 0 0 4px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis; }
+.yan .kaynak.secili { background: var(--accent-soft); border-radius: 6px; }
+.kaynak-adi { display: block; font-size: .76rem; color: var(--muted); }
+.yan .kaynak { padding: 4px 6px; font-size: .88rem; }
+.sayi { display: inline-block; min-width: 1.4em; margin-left: 5px; padding: 0 5px; border-radius: 9px; font-size: .78rem;
+  background: var(--accent); color: var(--bg); text-align: center; }
+.perde { position: fixed; inset: 0; background: rgba(0, 0, 0, .35); z-index: 9; }
+.yalniz-tel { display: inline-block; }
+@media (min-width: 960px) {
+  .govde { grid-template-columns: minmax(300px, 380px) 1fr; }
+  .yan { border-right: 1px solid var(--line); }
+  .yalniz-tel, .perde { display: none !important; }
+  .tur .kaynaklar { display: none; }           /* masaüstünde kaynaklar solda */
+}
+@media (max-width: 959.98px) {
+  .yan { position: fixed; left: 0; right: 0; bottom: 0; height: 82dvh; z-index: 10; border-top: 1px solid var(--line);
+    border-radius: 14px 14px 0 0; box-shadow: 0 -6px 24px rgba(0, 0, 0, .18); transform: translateY(105%);
+    transition: transform .22s ease; visibility: hidden; }
+  .yan.acik { transform: none; visibility: visible; }
+  .top { padding: 8px 12px; }
+  .brand span { display: none; }
+  nav { gap: 6px; flex: none; }
+  nav .ghost, .hesap summary { padding: 4px 8px; font-size: .9rem; white-space: nowrap; }
+  .genis { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .yan { transition: none; } }
 .bos h1 { font-family: var(--serif); font-weight: 600; font-size: 1.6rem; margin: 6vh 0 8px; }
 .bos p { color: var(--muted); }
 .ornekler { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-top: 16px; }
@@ -50,8 +90,8 @@ main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16p
 .cevap ul, .cevap ol { padding-left: 1.4em; }
 .cevap code { font-size: .9em; background: var(--soft); padding: 0 3px; border-radius: 3px; }
 .cevap hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
-.ref { font-family: system-ui, sans-serif; font-size: .78em; vertical-align: super; line-height: 0; color: var(--accent);
-  text-decoration: none; padding: 0 1px; cursor: pointer; background: none; border: 0; }
+.ref { font-family: system-ui, sans-serif; font-size: .78em; vertical-align: super; line-height: 1; color: var(--accent);
+  text-decoration: none; padding: 2px 3px; margin: -2px -1px; cursor: pointer; background: none; border: 0; }
 .ref:hover { text-decoration: underline; }
 .ref.kotu { color: var(--bad); }
 .isaret { color: var(--muted); font-size: .75em; vertical-align: super; }
@@ -65,7 +105,7 @@ main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16p
 
 .kaynaklar { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 8px; font-size: .88rem; }
 .kaynaklar h4 { margin: 0 0 6px; font-size: .88rem; }
-.kaynaklar ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.kaynaklar ol, .yan ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
 .kaynak { background: none; border: 0; padding: 2px 0; text-align: left; color: var(--fg); width: 100%; }
 .kaynak:hover .yol-metin { text-decoration: underline; }
 .kaynak .no { color: var(--accent); margin-right: 4px; }
@@ -74,7 +114,8 @@ main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16p
 .uyari { color: var(--bad); margin-left: 1.6em; font-size: .82rem; }
 .alt-bilgi { font-size: .78rem; color: var(--muted); margin-top: 6px; }
 
-.alt { position: sticky; bottom: 0; background: var(--bg); border-top: 1px solid var(--line); padding: 10px 16px 6px; }
+.alt { flex: none; background: var(--bg); border-top: 1px solid var(--line);
+  padding: 10px 16px max(6px, env(safe-area-inset-bottom)); }
 #soru-formu { max-width: 760px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end; }
 #soru { flex: 1; resize: none; font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px;
   background: var(--card); color: var(--fg); max-height: 40vh; }
@@ -83,13 +124,10 @@ main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16p
 #gonder:disabled { opacity: .5; cursor: default; }
 .not { max-width: 760px; margin: 6px auto 0; text-align: center; }
 
-dialog { width: min(720px, 94vw); max-height: 86vh; border: 1px solid var(--line); border-radius: 10px; padding: 0;
-  background: var(--card); color: var(--fg); }
-dialog::backdrop { background: rgba(0, 0, 0, .35); }
-.metin-ust { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; padding: 12px 16px;
-  border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--card); }
 .yol { margin: 0; font-size: .86rem; color: var(--muted); }
-#metin-govde { padding: 8px 16px 16px; font-family: var(--serif); font-size: 1.04rem; line-height: 1.75; }
+#metin-kaynak { margin: 2px 0 6px; }
+#metin-govde { padding: 4px 0 16px; font-family: var(--serif); font-size: 1.04rem; line-height: 1.75; }
+#metin-govde .uyari { margin-left: 0; }
 #metin-govde .cumle { margin: .35em 0; }
 #metin-govde mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 2px; }
 #metin-govde .meal { font-family: system-ui, sans-serif; font-size: .82rem; color: var(--muted); margin: 0 0 .5em 1em; }

@@ -7,9 +7,10 @@ Kullanıcının kararları (2026-11-25, `PLANLAR.md` S12): yalnız Risale, model
   açıklaması ve şeması oradan alınır, çağrı `MCPServer.call_tool` ile yapılır. Tanım kopyalanmaz; MCP üzerinden
   gidilmez (hesapsızların ortak sınırını yemez, ağ dolaşması yok, sonuçlar elimizde). `cite` modele verilmez: Kaynaklar'ı
   sunucu kurar.
-- **Talimat** Risale sunucusunun talimatından türetilir (`instructions`): atıfla ilgili iki madde sohbetinkiyle
-  değiştirilir, web cümlesi çıkar, başa sohbetin bağlamı gelir. Değiştirilen metin sunucuda bulunmazsa servis açılmaz
-  (talimat değişti: buradaki değişiklik gözden geçirilmeli).
+- **Talimat** sohbetin kendisinindir (S12.10, `instructions`): giriş, akış, cevabın biçimi (okuyucu, önce kısa cevap,
+  sonra metin, sonra yorum; uzunluk; kapsam) ve işaret kuralları burada; kaynağa bağlılığın kuralları ve müellifin
+  sözü olmayan katmanlar Risale talimatının ortak bloklarından (`server.FIND`, `GROUNDED`, `risale_layers` …) gelir,
+  kopyalanmaz. MCP'ye özgü kısımlar (web, `cite`, kaynakça, bağdaştırıcılar arası numaralama) girmez.
 - **Atıf koddadır** (S12.5 (a)): model alıntının ve dayandığı her sözün ardına yalnız cümle kimliğini yazar
   (`[[sozler/10/…/c032]]`, aralık `[[…/c010..c013]]`). Sunucu cevabı bitince işaretleri toplar, alıntıyı
   `CitationChecker.sources` ile veritabanında denetler, numaraları ve Kaynaklar listesini kendisi yazar. **Düzeltmeyi
@@ -76,55 +77,65 @@ SOURCES_HEADING = re.compile(r"^\s*(?:#{1,6}\s*)?(?:\*\*)?(?:Kaynaklar|Kaynakça
 
 # ---------------------------------------------------------------- talimat
 
-PREAMBLE = """\
+INTRO = """\
 You answer readers' questions on the Risale-i Nur chat page of {name}. The reader sees only your final answer, \
 rendered from Markdown; while you work, each tool call shows as a short status line. Do not write anything before \
 or between tool calls: write only the final answer. You have no web access and no memory of other conversations.
 
-Scope: this page answers only from the works of Bediüzzaman Said Nursî and the Qur'an, through the tools below. For \
-a question outside them, say briefly that this page answers only from the Risale-i Nur. Your answers are an AI's \
-answers: never speak as the author or in his name, and never present your words as tafsir or a fatwa. Answer in the \
-reader's language, plainly; keep the answer as long as the question needs.
-
+You read the works of Bediüzzaman Said Nursî (the Risale-i Nur volumes, the early works, the compilations, the \
+Hizbs, the works he wrote in Arabic with their Turkish translations) and the Qur'an through the tools below. Texts \
+are split into sentences; every sentence has an id.
 """
 
-CHAT_STEP = """\
-3. Mark every quotation, and every statement drawn from a passage, with the id of the sentence or range you read it \
-in, in double square brackets right after it: > "…" [[sozler/10/on-iki-hakikat/hakikat-09/c032]], or a range \
-[[sozler/10/on-iki-hakikat/hakikat-09/c032..c034]] (at most 8 consecutive sentences of one section). Use only ids \
-the tools returned in this conversation. The page checks every marked quotation against the works, numbers the \
-sources and adds the Kaynaklar list itself.
+MARK_STEP = """\
+Mark what you rely on: right after every quotation, and after every statement drawn from a passage (a summary of a \
+parable, what a section says), write in double square brackets the id of the sentence or range you read it in: \
+> "…" [[sozler/10/on-iki-hakikat/hakikat-09/c032]], or a range [[sozler/10/on-iki-hakikat/hakikat-09/c032..c034]] \
+(at most 8 consecutive sentences of one section). A quotation is always marked with a sentence id (ending in c and \
+a number). Only to name a whole section where a topic is treated, without quoting it, mark the section's id \
+([[sozler/31]]); never put a section id after a quotation. Use only ids the tools returned in this conversation. The page checks every marked quotation against the works, numbers the sources and \
+adds the Kaynaklar list itself."""
 
-"""
+SHAPE = """\
+The answer:
+- The readers: people who read the Risale-i Nur, some for years and some for the first time, most of them on a \
+phone, few of them specialists. Write plain, present-day prose in the reader's language; when an old word in a \
+quotation matters to the point, explain it briefly in your own words.
+- Order: first answer the question directly in two or three sentences; then what the text says, in quotations \
+joined by short sentences of your own; then, when the question asks for meaning or application, or a reader would \
+expect it, your interpretation under its own heading (in Turkish "Yorum"), plainly marked as yours. A question \
+about where a topic is treated is answered with the places, grouped by work, the central ones first.
+- Length: as long as the question needs. A simple question gets a few paragraphs and one to three quotations; \
+fewer well-chosen quotations are better than many. Use short headings only when the answer has more than one part.
+- Scope: only the works and the Qur'an through these tools. For a question outside them (news, other books, \
+personal or legal rulings), say briefly that this page answers only from the Risale-i Nur. Your answers are an \
+AI's answers: never speak as the author or in his name, and never present your words as tafsir or a fatwa."""
 
-CHAT_CITING = """\
-4. Never write references, section paths, sentence numbers, [1]-style numbers or a sources list yourself: the \
+NO_REFERENCES = """\
+Never write references, section paths, sentence numbers, [1]-style numbers or a sources list yourself: the \
 [[id]] marks are the references. An id or a sentence number (c033) never appears anywhere else in the answer, not in \
-parentheses either: the reader never sees ids. Quote only words a tool returned, exactly, and put the mark right after the \
-closing quotation mark. Quotations stand only in block quotes on their own line; in your prose put quotation \
-marks around at most a single term. A passage you name or summarize without quoting is marked the same way.
-"""
-
-REPLACEMENTS = [   # (eski metnin başı, sonu: sonu kalır) → yeni
-    ("3. Before writing the answer, call cite once", "\nAnswering:", CHAT_STEP),
-    ("4. Always cite through a bibliography", "5. Keep what the text says apart", CHAT_CITING),
-    ("Use the web only for outside context, listed apart. ", "Never invent references", ""),
-]
+parentheses either: the reader never sees ids. Put the mark right after the closing quotation mark. A verse of the Qur'an is named in the prose by its ref, as below."""
 
 
-def instructions(server_instructions: str, name: str) -> str:
-    """Risale sunucusunun talimatından sohbetinki. Değiştirilecek yer bulunmazsa durur."""
-    text = server_instructions
-    for start, end, new in REPLACEMENTS:
-        i = text.find(start)
-        j = text.find(end, i + 1) if i >= 0 else -1
-        if i < 0 or j < 0:
-            raise RuntimeError(f"sohbet talimatı: sunucu talimatında {start!r} … {end!r} yok; "
-                               "server.INSTRUCTIONS değişti, sohbet.REPLACEMENTS'ı gözden geçirin")
-        text = text[:i] + new + text[j:]
-    if any(phrase in text for phrase in ("call cite", "cite returns", "'s cite")):
-        raise RuntimeError("sohbet talimatı: `cite` hâlâ anılıyor; sohbet.REPLACEMENTS'ı gözden geçirin")
-    return PREAMBLE.format(name=name) + text
+def instructions(name: str, lugat: bool = True) -> str:
+    """Sohbetin talimatı (S12.10): kendi girişi, akışı ve cevap biçimi; kaynağa bağlılığın kuralları ve müellifin sözü
+    olmayan katmanlar Risale talimatının ortak bloklarından (`server`), kopyasız."""
+    from risale_mcp import server as s
+    return (INTRO.format(name=name) + f"""
+Workflow:
+1. {s.FIND}
+2. {s.READ}
+3. {MARK_STEP}
+
+{SHAPE}
+
+Rules:
+1. {s.GROUNDED}{s.NEVER_INVENT}
+2. {s.QUOTE_EXACTLY}
+3. {NO_REFERENCES}
+4. {s.TEXT_APART}
+
+""" + s.risale_layers(connectors=False) + (s.LUGAT_INSTRUCTIONS.lstrip("\n") + "\n" if lugat else ""))
 
 
 # ---------------------------------------------------------------- atıf
@@ -205,8 +216,15 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
                  "Put an id only inside [[ ]] right after the words it supports, or drop it."} for leak in leaks]
     counts = {"fixed": 0, "unverified": 0, "dropped": 0, "leaks": len(leaks)}
     found = marks(text)
+    checker.refresh()
+    nodes = getattr(checker, "nodes", {})
+    sections: set[str] = set()         # bölüm atfı: alıntısız ya da alıntısı bölümün başlığı olan bölüm kimliği
     resolved = []                      # (yeni kimlik ya da None: silinir, alıntı, doğrulandı mı, yer)
     for ident, quote, span in found:
+        if (node := nodes.get(ident)) is not None and (not quote or _heading_quote(node, quote)):
+            sections.add(ident)
+            resolved.append((ident, None, True, span))
+            continue
         record = checker.sources([{"id": ident, **({"quote": quote} if quote else {})}])["sources"][0]
         if not record.get("problem"):
             resolved.append((ident, quote, True, span))
@@ -233,16 +251,26 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
         if quote:
             quotes.setdefault(key, []).append(quote)
     sources = []
-    if keys:
-        items = [{"id": key[0], **({"quote": " … ".join(quotes[key])} if key in quotes else {})} for key in keys]
-        for key, item, record in zip(keys, items, checker.sources(items)["sources"]):
+    plain = [key for key in keys if key[0] not in sections]
+    for key in keys:
+        if key[0] in sections:
+            source = {"n": keys[key], "id": key[0], "cite_as": nodes[key[0]].ref, "section": True}
+            if name := source_name(checker, key[0]):
+                source["source_name"] = name
+            sources.append(source)
+    if plain:
+        items = [{"id": key[0], **({"quote": " … ".join(quotes[key])} if key in quotes else {})} for key in plain]
+        for key, item, record in zip(plain, items, checker.sources(items)["sources"]):
             source = {"n": keys[key], "id": item["id"], "cite_as": record.get("cite_as")}
+            if name := source_name(checker, item["id"]):
+                source["source_name"] = name
             if record.get("embedded"):
                 source["embedded"] = record["embedded"]
             if len(key) > 1 or record.get("problem"):
                 source["problem"] = record.get("problem") or "The quoted words are not in the works."
                 source["unverified"] = True
             sources.append(source)
+    sources.sort(key=lambda source: source["n"])
     raw_out, out, last = [], [], 0          # düz kimlikler işaretlerin arasındaki metinden silinir
     for i, (ident, _, ok, (start, end)) in enumerate(resolved):
         raw_out.append(_drop_leaks(text[last:start]))
@@ -257,6 +285,21 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
     counts.update(_paragraphs(raw))
     markdown = re.sub(r"[ \t]+(\[\d+\])", r" \1", _tidy("".join(out)))
     return Checked(markdown, sources, problems, raw, counts)
+
+
+def source_name(checker, ident: str) -> str | None:
+    """Cümlenin ya da bölümün eserinin kaynağı (S12.11: izinlerin şartı), kısa adıyla: "e-Risale", "risaleoku.com".
+    Kimliğin ilk parçası eserdir."""
+    from risale_mcp.catalog.permissions import SOURCE_LABELS
+    row = checker.refresh().execute("SELECT permission FROM works WHERE slug = ?", (ident.split("/")[0],)).fetchone()
+    return SOURCE_LABELS.get(row[0]) if row else None
+
+
+def _heading_quote(node, quote: str) -> bool:
+    """Bölüm kimliğinin ardındaki alıntı bölümün başlığı ya da alt başlığı mı (C13: alt başlık alıntılanmıştı)."""
+    from risale_mcp.citations import _key
+    q = _key(quote)
+    return bool(q) and any(q in _key(t) for t in (node.ref.rsplit(" › ", 1)[-1], node.subtitle or "") if t)
 
 
 def _tidy(text: str) -> str:
@@ -298,11 +341,12 @@ def _relocate(checker, ident: str, quote: str, read) -> str | None:
         return None
     rows = [row for _, row in checker._quote_sentences(parts[0], None, RELOCATE_CANDIDATES)]
     first_id = ident.split("..")[0].strip()
-    node = first_id.rpartition("/")[0]
+    node = first_id if first_id in getattr(checker, "nodes", {}) else first_id.rpartition("/")[0]
     work = first_id.split("/")[0]
 
     def rank(row):
-        return (row["id"] not in read, row["node_id"] != node, row["work"] != work)
+        inside = row["node_id"] == node or row["node_id"].startswith(node + "/")
+        return (row["id"] not in read, not inside, row["work"] != work)
     for row in sorted(rows, key=rank):          # sıralama kararlıdır: eşitlikte kitap sırası
         for last in _scope(checker, row):
             candidate = _range_id(row["id"], last["id"])
@@ -468,7 +512,8 @@ class Chat:
         self.settings = settings
         self.server = create_server(library, profile="genel")
         self.checker = CitationChecker(library)
-        self.system = instructions(self.server.instructions, config.name)
+        from risale_mcp.server import LUGAT_INSTRUCTIONS
+        self.system = instructions(config.name, lugat=LUGAT_INSTRUCTIONS in self.server.instructions)
         self._tools: list[dict] | None = None
 
     async def tools(self) -> list[dict]:
@@ -621,6 +666,20 @@ def log_usage(store: Store, email: str | None, model: str, tally: Tally, seconds
 
 # ---------------------------------------------------------------- web
 
+def section_opening(checker, ident: str) -> dict:
+    """Bölüm atfının metni: bölümün ilk cümleleri (işaretli cümle yok)."""
+    node = checker.nodes[ident]
+    row = checker.refresh().execute("SELECT id FROM sentences WHERE (node_id = ? OR node_id LIKE ?) AND hasiye = 0 "
+                                    "ORDER BY seq LIMIT 1", (ident, ident + "/%")).fetchone()
+    if row is None:
+        raise LookupError(ident)
+    passage = checker.library.passage(row[0], 6)
+    for sentence in passage.get("sentences", []):
+        sentence["target"] = False
+    passage["section_ref"] = node.ref
+    return passage
+
+
 def page(config: Config, email: str) -> str:
     import html as _html
     version = _asset_version()
@@ -668,7 +727,8 @@ def routes(chat: Chat, store: Store, config: Config):
             return JSONResponse({"error": "oturum yok"}, status_code=401, headers=headers)
         ident = request.query_params.get("id", "")[:300]
         try:
-            passage = await asyncio.to_thread(chat.library.passage, ident, 3)
+            passage = await asyncio.to_thread(section_opening if ident in chat.checker.nodes else chat.library.passage,
+                                              *((chat.checker, ident) if ident in chat.checker.nodes else (ident, 3)))
         except Exception:
             return JSONResponse({"error": "Bu adreste metin bulunamadı."}, status_code=404, headers=headers)
         return JSONResponse(passage, headers=headers)

@@ -8,7 +8,6 @@ import pytest
 
 from risale_mcp import sohbet
 from risale_mcp.profiles import GENEL
-from risale_mcp.server import INSTRUCTIONS
 
 pytest.importorskip("starlette")
 needs_db = pytest.mark.skipif(not GENEL.db.exists(), reason="genel veritabanı yok")
@@ -17,18 +16,30 @@ C32 = "sozler/10/on-iki-hakikat/hakikat-09/c032"
 TEXT_32 = "Teşkilce, sûretçe birbirinden ayrı, hiç şaşırtmaz."
 
 
-def test_instructions_replace_cite():
-    text = sohbet.instructions(INSTRUCTIONS, "Risale MCP")
-    assert "call cite" not in text and "cite returns" not in text
-    assert "[[sozler/10/on-iki-hakikat/hakikat-09/c032]]" in text
-    assert "Use the web only" not in text
+def test_instructions_are_the_chats_own():
+    from risale_mcp import server
+    text = sohbet.instructions("Risale MCP")
     assert text.startswith("You answer readers' questions on the Risale-i Nur chat page of Risale MCP")
-    assert "5. Keep what the text says apart" in text and "\nAnswering:" in text
+    assert "[[sozler/10/on-iki-hakikat/hakikat-09/c032]]" in text and "never put a section id after a quotation" in text
+    # MCP'ye özgü kısımlar yok
+    for phrase in ("cite once", "cite returns", "call each server", "another connector", "Use the web",
+                   "model_readings", "permission of their sources"):
+        assert phrase not in text, phrase
+    # kaynağa bağlılığın blokları ortak: iki talimatta da aynen, kopya değil
+    for block in (server.FIND, server.READ, server.GROUNDED, server.NEVER_INVENT, server.QUOTE_EXACTLY,
+                  server.TEXT_APART):
+        assert block in text and block in server.INSTRUCTIONS
+    assert server.risale_layers(connectors=False).split("\n")[0] == "Layers that are not the author's words:"
+    assert "Dictionary (lookup_word)" in text and "Dictionary" not in sohbet.instructions("R", lugat=False)
 
 
-def test_instructions_stop_when_server_text_changes():
-    with pytest.raises(RuntimeError):
-        sohbet.instructions(INSTRUCTIONS.replace("3. Before writing the answer, call cite once", "3. X"), "R")
+def test_mcp_instructions_keep_their_blocks():
+    """Bloklara bölünme MCP'nin metnini değiştirmedi (ayrıntılı denetim araç çıktısı kaydında)."""
+    from risale_mcp import server
+    assert server.INSTRUCTIONS.startswith(server.RISALE_INTRO + "\nWorkflow:\n1. Find:")
+    assert server.INSTRUCTIONS.endswith(server.risale_layers())
+    assert "another connector's text" in server.INSTRUCTIONS and "model_readings" in server.INSTRUCTIONS
+    assert "{old_names}" not in server.INSTRUCTIONS
 
 
 def test_marks_quotes():
@@ -59,6 +70,9 @@ class FakeChecker:
 
     def _quote_sentences(self, quote, node, limit):     # başka yerde de bulunmaz
         return []
+
+    def refresh(self):                                   # kaynak adı yok
+        return NS(execute=lambda *a: NS(fetchone=lambda: None))
 
 
 def test_check_numbers_and_problems():
@@ -193,6 +207,7 @@ def test_server_moves_quote_to_its_sentence(checker):
     checked = sohbet.check(checker, f'> "{TEXT_32}" [[{C31}]]')
     assert checked.problems and checked.counts["fixed"] == 1 and checked.counts["unverified"] == 0
     assert checked.sources[0]["id"] == C32 and "problem" not in checked.sources[0]
+    assert checked.sources[0]["source_name"] == "e-Risale"
     assert checked.raw == f'> "{TEXT_32}" [[{C32}]]' and checked.markdown == f'> "{TEXT_32}" [1]'
 
 
@@ -317,3 +332,17 @@ def test_bare_ids_are_problems_and_dropped():
     assert [p["id"] for p in checked.problems] == ["(sozler/1/c016)", "(c033)", "(c034–c036)"]
     assert checked.markdown == 'Temsil başta verilir. Nefse hitap eder, çöl diye.\n\n> "söz" [1]'
     assert sohbet.check(FakeChecker(), "Hiç kimlik yok, 2:255 ve c-vitamini.").problems == []
+
+
+@needs_db
+def test_section_marks_are_section_references(checker):
+    subtitle = "Otuz üç Penceredir Bir cihette Otuzüçüncü Mektûb ve bir cihette Otuzüçüncü Söz"
+    checked = sohbet.check(checker, f'Otuz Birinci Söz\'de [[sozler/31]]. Alt başlık: "{subtitle}" [[sozler/33]].')
+    assert [(s["id"], s["cite_as"], s.get("section")) for s in checked.sources] == [
+        ("sozler/31", "Sözler › Otuzbirinci Söz", True), ("sozler/33", "Sözler › Otuzüçüncü Söz", True)]
+    assert checked.counts["dropped"] == 0 and checked.markdown.startswith("Otuz Birinci Söz'de [1].")
+    # bölüm kimliğinin ardındaki gerçek alıntı bölümün içindeki cümlesine taşınır
+    moved = sohbet.check(checker, f'> "{TEXT_32}" [[sozler/10]]')
+    assert moved.sources[0]["id"] == C32 and moved.counts["fixed"] == 1
+    opening = sohbet.section_opening(checker, "sozler/31")
+    assert opening["section_ref"] == "Sözler › Otuzbirinci Söz" and not any(s["target"] for s in opening["sentences"])

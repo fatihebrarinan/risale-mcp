@@ -2,7 +2,7 @@
 <html lang="tr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
 <title>Sohbet · {{NAME}}</title>
@@ -12,7 +12,9 @@
 <header class="top">
   <div class="brand"><strong>{{NAME}}</strong> <span>Sohbet</span></div>
   <nav>
-    <button type="button" id="yeni" class="ghost">Yeni konuşma</button>
+    <button type="button" id="yan-ac" class="ghost yalniz-tel" aria-controls="yan" aria-expanded="false">Kaynaklar<span
+      id="yan-sayi" class="sayi" hidden></span></button>
+    <button type="button" id="yeni" class="ghost" aria-label="Yeni konuşma">Yeni<span class="genis"> konuşma</span></button>
     <details class="hesap">
       <summary>Hesap</summary>
       <div class="menu">
@@ -24,37 +26,52 @@
   </nav>
 </header>
 
-<main id="akis">
-  <section id="bos" class="bos">
-    <h1>Risale-i Nur'a sorun</h1>
-    <p>Cevabı bir yapay zekâ yazar; dayandığı yerleri eserlerden alıntılar. Her alıntı eserlerin metniyle denetlenir ve
-      Kaynaklar'da adresiyle verilir. Alıntıya ya da kaynağa dokunursanız metni bağlamıyla okursunuz.</p>
-    <div class="ornekler">
-      <button type="button" class="ornek">Haşrin aklî delilleri nelerdir?</button>
-      <button type="button" class="ornek">Risale-i Nur'da tevekkül nasıl anlatılır?</button>
-      <button type="button" class="ornek">Ümitsizliğe karşı ne tavsiye edilir?</button>
-      <button type="button" class="ornek">Birinci Söz'deki iki adam temsilini anlatır mısın?</button>
+<div class="govde">
+  <aside id="yan" class="yan" aria-label="Kaynaklar">
+    <div class="yan-ust">
+      <button type="button" id="yan-geri" class="ghost" hidden>← Kaynaklar</button>
+      <h2 id="yan-baslik">Kaynaklar</h2>
+      <button type="button" id="yan-kapat" class="ghost yalniz-tel" aria-label="Kapat">✕</button>
     </div>
-  </section>
-  <div id="konusma"></div>
-</main>
+    <div id="yan-liste" class="yan-icerik">
+      <p class="small yan-bos">Cevaplardaki alıntıların kaynakları burada, eserdeki yeri ve metnin alındığı kaynağın
+        adıyla listelenir. Birine dokunursanız metni bağlamıyla burada okursunuz.</p>
+    </div>
+    <div id="yan-metin" class="yan-icerik" hidden>
+      <p id="metin-yol" class="yol"></p>
+      <p id="metin-kaynak" class="small"></p>
+      <div id="metin-govde"></div>
+    </div>
+  </aside>
+  <div id="perde" class="perde" hidden></div>
 
-<footer class="alt">
-  <form id="soru-formu" autocomplete="off">
-    <textarea id="soru" rows="1" maxlength="2000" placeholder="Sorunuzu yazın…" aria-label="Soru"></textarea>
-    <button type="submit" id="gonder">Sor</button>
-  </form>
-  <p class="small not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Konuşmanız yalnız bu
-    tarayıcıda saklanır. <a href="/gizlilik.html">Gizlilik</a> · <a href="/kullanim-sartlari.html">Kullanım şartları</a></p>
-</footer>
+  <div class="sohbet">
+    <main id="akis">
+      <section id="bos" class="bos">
+        <h1>Risale-i Nur'a sorun</h1>
+        <p>Cevabı bir yapay zekâ yazar; dayandığı yerleri eserlerden alıntılar. Her alıntı eserlerin metniyle denetlenir
+          ve Kaynaklar'da adresiyle verilir. Alıntıya ya da kaynağa dokunursanız metni bağlamıyla okursunuz.</p>
+        <div class="ornekler">
+          <button type="button" class="ornek">Haşrin aklî delilleri nelerdir?</button>
+          <button type="button" class="ornek">Risale-i Nur'da tevekkül nasıl anlatılır?</button>
+          <button type="button" class="ornek">Ümitsizliğe karşı ne tavsiye edilir?</button>
+          <button type="button" class="ornek">Birinci Söz'deki iki adam temsilini anlatır mısın?</button>
+        </div>
+      </section>
+      <div id="konusma"></div>
+    </main>
 
-<dialog id="metin">
-  <div class="metin-ust">
-    <p id="metin-yol" class="yol"></p>
-    <button type="button" id="metin-kapat" class="ghost" aria-label="Kapat">✕</button>
+    <footer class="alt">
+      <form id="soru-formu" autocomplete="off">
+        <textarea id="soru" rows="1" maxlength="2000" placeholder="Sorunuzu yazın…" aria-label="Soru"></textarea>
+        <button type="submit" id="gonder">Sor</button>
+      </form>
+      <p class="small not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Konuşmanız yalnız
+        bu tarayıcıda saklanır. <a href="/gizlilik.html">Gizlilik</a> · <a href="/kullanim-sartlari.html">Kullanım
+        şartları</a></p>
+    </footer>
   </div>
-  <div id="metin-govde"></div>
-</dialog>
+</div>
 
 <script src="{{P}}static/sohbet.js?v={{V}}"></script>
 </body>

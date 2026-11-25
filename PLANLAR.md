@@ -68,9 +68,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **Son adım (2026-11-25):** S12 sohbet sayfası sürüyor ("Sıradaki" 1). Bitti: S12.0 (API anahtarı), S12.1 (model
   Haiku 5.5), S12.2'nin yerel kısmı (hesaplar, Scaleway), **S12.3 yerel sürüm** (`sohbet.py`; araçlar süreç içinde,
   atıf koddadır; teyit ölçümü: 29 soru, beklenen bölüm 28/34, 21 sn, soru başı 0,0047 $). Kritik yapıldı, kararlar
-  alındı (S12.3 altında "Kararlar"). **S12.9 bitti (2026-11-25):** tutmayan alıntıyı sunucu düzeltir, model turu
-  kapalı (ayrıntı S12.9'da). **Önde S12'nin ilk sürüm adımları, bu sırayla:** S12.10 sohbete ayrı talimat,
-  S12.11 sol "Kaynaklar" penceresi, kaynak adı ve telefon görünümü, S12.12 geri bildirim, S12.13 hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.4 kota, bütçe ve harcama uyarısı,
+  alındı (S12.3 altında "Kararlar"). **S12.9, S12.10, S12.11 bitti (2026-11-25):** tutmayan alıntıyı sunucu
+  düzeltir; sohbetin kendi talimatı (ortak bloklar `server.py`'de); solda Kaynaklar paneli, kaynak adı, telefonda
+  çekmece (ayrıntı her birinde). Kullanıcı 2026-11-25'te "S12'yi bitirene kadar durma" dedi; kararları S12.4, S12.6,
+  S12.7, S12.13'te. **Önde, bu sırayla:** S12.12 geri bildirim, S12.13 hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.4 kota, bütçe ve harcama uyarısı,
   S12.6 gizlilik ve şartlar, deploy (S12.2 ile; Caddy akışı tamponlamaz, `uv sync --extra sohbet`), S12.7 deneme
   ayı (davetsiz; adres bilinmiyor). Deneme ayından sonra S13 (asıl geliştirme). B11 (MCP kaynakçasında kaynak adı)
   sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
@@ -202,11 +203,32 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     kısımlar (bağdaştırıcılar arası numaralama, denetçi alanları, `cite`) çıkar. Kaynağa bağlılığın koruması ortak
     blokta kalır, kopya olmaz. S12.9'dan not: işaret yalnız cümle kimliğidir, bölüm kimliği değil (C13); özetlenen
     temsil ve "metnin söylediği" paragrafı da işaretlenir (B7'de işaretsiz kaldı).
+    **Bitti (2026-11-25):** `server.py`'de Risale talimatı bloklardan kurulur (`RISALE_INTRO`, `FIND`, `READ`,
+    `GROUNDED`, `NEVER_INVENT`, `QUOTE_EXACTLY`, `TEXT_APART`, `risale_layers(connectors)`; MCP'ye özgüler `MCP_*`); MCP
+    metni bayt bayt aynı (bölmeden önceki metinle karşılaştırıldı). Sohbetin talimatı `sohbet.instructions`: giriş,
+    akış (bul, oku, işaretle), "The answer" (okuyucu, önce iki üç cümlelik doğrudan cevap, sonra alıntılarla metin,
+    sonra istenirse "Yorum"; uzunluk; kapsam), kurallar (ortak bloklar + işaret kuralı) ve ortak katman bloğu
+    (`connectors=False`: başka bağdaştırıcı ve model okumaları anılmaz; denetçi cümlesi kaldı, çünkü sohbetin araçları
+    da `reviews` döndürür) ve lügat. Bölüm kimliği: talimat yalnız "konunun işlendiği bölüm" için alıntısız bölüm
+    kimliğine izin verir; sunucu alıntısız (ya da alıntısı bölümün başlığı/alt başlığı olan) bölüm işaretini bölüm
+    atfı olarak kabul eder (silmez), alıntılı bölüm işaretini bölümün içindeki cümleye taşır, metin penceresi bölümün
+    ilk cümlelerini açar. **Ölçüm** (29 soru, `20261125-162212-…`, önceki `153523` ile): beklenen bölüm 27/34 (28/34;
+    A1 ve A5'te birer eksik, K3'te kazanç: gürültü sınırında), 21 sn (aynı), toplam 0,125 $ (0,137), model turu yok;
+    sunucu 3 bölüm işaretini sildi (bu ölçümden sonra bölüm atfı oldu), 1 alıntı doğrulanamadı (K4: Tarihçe'de lafız
+    farkı, ⚠ doğru). İşaretsiz paragraf 178/263: talimat bunu pek değiştirmedi (sayı kaba: giriş ve yorum da sayılıyor).
   - S12.11 **Sol "Kaynaklar" penceresi** (kullanıcının kararı, 2026-11-25). Konuşmanın kaynakları cevaplara göre;
     kaynağa ya da alıntıya dokununca metin aynı pencerede bağlamıyla açılır (cevap ve metin yan yana). Her satırda
     **kaynak adı** (e-Risale, risaleoku.com, Keşif, nurpedia; `works.site`): izinlerin şartı. **Telefonda** alttan
     açılan çekmece; kabul ölçütü: telefon görünümünde baştan sona denenmeden açılmaz (bugün tarayıcıda baştan sona
     görülmedi).
+    **Bitti (2026-11-25):** sayfa iki sütun (≥960 px): solda konuşmanın kaynakları cevaplara göre, her satırda yol ve
+    "Kaynak: e-Risale" (`catalog/permissions.SOURCE_LABELS`, `works.permission`'dan; B11 aynı tabloyu kullanır), kaynağa
+    ya da cevaptaki [n]'ye dokununca metin aynı panelde bağlamıyla ve vurgulu (eski açılır pencere kalktı). Telefonda
+    panel alttan çekmece (üstte "Kaynaklar" düğmesi ve sayısı, perde, ✕, Escape), cevabın altındaki liste telefonda
+    kalır, masaüstünde gizlenir. Deneme Chrome eklentisi bağlanmadığı için başsız Brave ile:
+    `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py` (gerçek soru, 12 denetim, ekran
+    görüntüleri `data/interim/sohbet/arayuz/`); masaüstü ve 390 px telefon görünümünde hepsi geçti. Kullanıcının kendi
+    telefonunda denemesi deploy'dan sonra (S12.7).
   - S12.12 **Geri bildirim** (kullanıcının kararı, 2026-11-25: ilk sürüme). Her cevabın altında 👍/👎 ve isteğe bağlı
     not; "soruyu ve cevabı da gönder" kutusu, varsayılanı kapalı (konuşma sunucuda saklanmaz, yalnız onayla gelir;
     altın soru adayları buradan). Gizlilik politikası (S12.6) yazar.
@@ -218,21 +240,29 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     eklenir. Model: hızlı setle üç koşu (Haiku `medium`, Haiku `high`, Sonnet 5.5): gerçek maliyet, süre, sunucunun
     düzelttiği ve doğrulayamadığı alıntı, beklenen bölüm; kullanıcı cevapları yan yana okur
     (`scripts/s12-karsilastir.py`). Ölçüt: aylık 100 $ ÷ beklenen soru sayısı (ayda 1.000 soruda soru başı 0,10 $'a
-    kadar: Sonnet sığar; 10.000'de 0,01 $: Haiku).
+    kadar: Sonnet sığar; 10.000'de 0,01 $: Haiku). Seçimi kullanıcı yapar: üç koşunun yan yana okuma sayfası
+    hazırlanır, beklerken öbür adımlar sürer (kullanıcının kararı, 2026-11-25).
   - S12.4 **Bütçe ve kota:** kişi başına günlük soru sınırı (başlangıç 10), servis düzeyinde günlük ve aylık dolar
     tavanı (100 $; aşılınca "bugünlük doldu"), Console tavanı yedek. Maliyet her cevabın `usage`'ından hesaplanır.
     **Harcama uyarısı:** günlük maliyet bir eşiği geçince kullanıcıya haber (ntfy düzeni hazır). Açılıştan önce hazır
-    olmalı (davet yok; adres bir paylaşımla hızla yayılabilir).
+    olmalı (davet yok; adres bir paylaşımla hızla yayılabilir). **Sayılar (kullanıcının kararı, 2026-11-25):** servis
+    günde 5 $ (dolunca sayfa herkese "bugünlük doldu" der), ayda 100 $; günlük harcama 2 $'ı geçince ntfy bildirimi.
   - S12.5 **API'nin açtığı fazladan imkânlar** (kullanıcının kararı, 2026-11-25: on madde). İlk sürümün üç maddesi
     S12.3'te yapıldı: Kaynaklar'ı sunucu kurar, tutmayan alıntı (S12.9 ile sunucu düzeltir), alıntıya dokununca metin.
     Kalan maddeler, havuz ve S12.8 (ad ve alan adı) **S13'e taşındı** (kullanıcının kararı, 2026-11-25). S12.8'in
     taşınabilirlik kuralı S12'de de geçerlidir: yol öneki, alan adı, ad ve gönderen ayardandır, sayfada sabit adres yok.
   - S12.6 **Gizlilik ve şartlar:** gizlilik politikası (soruların Anthropic'e gitmesi, e-posta servisi, saklanan ve
     saklanmayan, geri bildirim ve onayla gönderilen soru-cevap, konuşmanın tarayıcıda durması), kullanım şartları (yapay zekâ cevabıdır, tefsir ve fetva değildir), `en/` karşılıkları.
+    Önce taslak: kullanıcı okuyup düzeltir, sonra deploy'la çıkar (kullanıcının kararı, 2026-11-25).
   - S12.7 **Deneme ayı:** başlangıç tarihi açılışta yazılır. Ölçüler: kayıtlı ve etkin kullanıcı, günlük soru, soru başı
     gerçek maliyet, atıf denetiminin geçme oranı, 👍/👎 (not isteğe bağlı, kullanıcının onayıyla saklanır). Haftalık
     rapor; ay sonunda sürdürme kararı (eşiği açılıştan önce kullanıcıyla yazılır). Duyuru yok (kullanıcının kararı,
-    2026-11-25: adres bilinmiyor, bilen kullanır); Yenilikler yazısı S13'te.
+    2026-11-25: adres bilinmiyor, bilen kullanır); Yenilikler yazısı S13'te. **Deploy ve açılış (kullanıcının kararı,
+    2026-11-25):** testler ve 29 soru geçince deploy kullanıcıya sormadan yapılır (adres duyurulmadığı için açılış
+    sayılmaz; telefon görünümü önce Chrome'da telefon genişliğinde denenir); kullanıcı kendi telefonunda baştan sona
+    dener, onaylarsa deneme ayı o gün başlar. **Başarı ölçütü (kullanıcının kararı, 2026-11-25):** ay içinde en az
+    10 ayrı hesap açılıp sohbet ederse ve genel olarak olumsuz geri bildirim yoksa (kullanıcıya söylenen ya da çok
+    sayıda 👎) başarılı sayılır. 👍/👎 ölçüt değil, yan bilgidir; "etkin kullanıcı" ölçüt değildir.
 - S13 **Sohbet sayfasının asıl geliştirmesi** (kullanıcının kararı, 2026-11-25): S12'nin deneme ayından sonra, onun
   ölçüleri ve geri bildirimiyle. İlk turda yapılmayan her şey burada: (1) ön arama (soru gelince anlamsal ve kelime
   araması birlikte, aday bölümler baştan; risk: modelin kendi aramasını daraltır), (2) model yönlendirme (Haiku okur,

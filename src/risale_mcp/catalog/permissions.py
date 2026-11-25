@@ -54,6 +54,13 @@ PERMISSIONS: dict[str, Permission] = {p.key: p for p in (
     Permission("yeniasya", "Yeni Asya", Kind.UNRECORDED, "Ortak proje planda; mevcut veri kullanılmıyor", "Kayıt yok"),
 )}
 
+# Okuyucuya gösterilen kısa kaynak adı (izinlerin "kaynak gösterilecek" şartı; S12.11, B11). Anahtar izin kaydıdır
+# (`works.permission`).
+SOURCE_LABELS = {
+    "erisale": "e-Risale", "risaleoku": "risaleoku.com", "kesif": "Keşif Yolculukları Risale-i Nur Eğitim Programı",
+    "nurpedia": "nurpedia.org", "openiti": "OpenITI", "kastamonur": "kastamonur.com",
+}
+
 SITE_PERMISSION = {
     Site.ERISALE: "erisale", Site.RISALEOKU_APP: "risaleoku", Site.RISALEOKU: "risaleoku", Site.KESIF: "kesif",
     Site.KASTAMONUR: "kastamonur", Site.KULLANICI: "kullanici", Site.RISALE_ONLINE: "risale-online",
