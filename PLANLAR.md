@@ -67,11 +67,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **2026-11-25 (gece):** **E5 bitti ve yayında** (kesintisiz, kullanıcının izniyle). Klasik eklentide 12 eser:
   yedi yeni eser (Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber, el-Munkız, el-Mevâhib, İhyâ),
   `risale_refs`, İhyâ'da Irâkî'nin tahrici şerh ve Risale hadislerine lafız bağı; site ve talimat yeni tanıtımla.
-  `risale_refs` listesine kullanıcı baktı (2026-11-25). **Kullanıcıdan beklenen:** (2)
-  Yenilikler taslağını okuyup yayımlamak (`docs/yenilikler/2026-11-25-klasik-eserler-2.md`; masada Okumalar › Yazı
-  taslakları; açılmıyordu, sunucudaki `docs/` eskiydi: `deploy.sh --site` artık yazıların aslını da gönderir); (3)
-  Claude eklentisi (plugin) 1.0.2'yi yandaki depodan push etmek (`../risale-library-plugin`, commit hazır; dizin
-  yeniden tarar); (4) dizin metinleri başvurular sonuçlanınca (`docs/e5-dizin-metni-taslagi.md`); (5) ana depoya push.
+  2026-11-25: kullanıcı `risale_refs` listesine baktı; Yenilikler'de iki duyuru yayımlandı (klasik eserlerin 2.
+  dilimi, İşârât'ın misli çalışması; taslak masada açılmıyordu, sunucudaki `docs/` eskiydi: `deploy.sh --site` artık
+  yazıların aslını da gönderir); Claude eklentisi 1.0.2 ve ana depo push edildi (dizin eklentiyi yeniden tarar).
+  **Kullanıcıdan beklenen:** dizin metinleri başvurular sonuçlanınca (`docs/e5-dizin-metni-taslagi.md`).
   **B10 açık** ("Sıradaki" 1).
   **E7'nin ön çalışması bitti** (2026-11-25, yayınsız; `docs/e7-on-calisma.md`): (a) Kütüb-i Sitte ve Muvatta'da
   lafız gruplaması denendi; geçişli grup zincirleme yapıyor (0,4'te 439'luk grup), öneri çift çift ortak lafız bağı;
@@ -91,7 +90,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
 - **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
   "Sıradaki"de). (1) S8'in site sürümü 2026-11-24'te kendiliğinden yayımlandı;
-  Yeniliklere duyurusu taslak (`docs/yenilikler/2026-11-24-isarat-misli.md`). Zamanlı yayının commit'i taşınan eski
+  Yeniliklere duyurusu 2026-11-25'te yayımlandı. Zamanlı yayının commit'i taşınan eski
   dosyanın silinişini dışarıda bırakıyordu (düzeltildi, 2026-11-25). (2) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün
   yedek yolu ("Bekleyen"). (3) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
   kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
