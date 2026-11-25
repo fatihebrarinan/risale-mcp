@@ -80,3 +80,25 @@ def test_tools_say_whose_text_it_is(related_db):
     assert related_db.search("hasr*")["results"][0]["translation"] is True
     record = next(w for w in related_db.works() if w["id"] == "asa-yi-musa")
     assert record["authority"] == Authority.MODERN and record["collection"] == Collection.ILGILI
+
+
+def test_original_sections_of_a_translation_are_not_called_translations(related_db):
+    """Tercüme eserin müellifin o dilde yazdığı bölümü (Mesnevî-i Nuriye'nin Nokta'sı): orada `translation` yok,
+    `original_text` var; alt bölümleri ve hâşiyeleri de öyle, kardeş ve üst bölümler tercüme kalır."""
+    conn = sqlite3.connect(related_db.path)
+    with conn:
+        conn.execute("""UPDATE nodes SET extra = '{"original": true}' WHERE id = 'sozler/10/hakikat-01'""")
+    conn.close()
+    section = related_db.read_section("sozler/10/hakikat-01")
+    assert "translation" not in section and section["original_text"]
+    passage = related_db.passage("sozler/10/hakikat-01/c001")
+    assert "translation" not in passage and passage["original_text"]
+    assert related_db.read_section("sozler/10")["translation"] is True
+    assert related_db.passage("sozler/10/c001")["translation"] is True
+
+
+def test_original_sections_exist_and_belong_to_translations():
+    for work in WORKS:
+        if work.original_sections:
+            assert work.translation
+            assert all(s.startswith(work.slug + "/") for s in work.original_sections)

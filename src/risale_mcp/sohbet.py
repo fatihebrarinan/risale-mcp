@@ -148,6 +148,17 @@ Never write references, section paths, sentence numbers, [1]-style numbers or a 
 [[id]] marks are the references. An id or a sentence number (c033) never appears anywhere else in the answer, not in \
 parentheses either: the reader never sees ids. Put the mark right after the closing quotation mark. A verse of the Qur'an is named in the prose by its ref, as below."""
 
+# Sohbetin alıntı kuralı (kullanıcının kararı, 2026-11-26): MCP'ninki (`server.QUOTE_EXACTLY`) düz yazıda yalnız tek
+# terime tırnak izin verir; sohbette cümleye örülmüş kısa alıntı serbesttir, çünkü sayfa onu da denetler
+# (`INLINE_QUOTE`: kapanış tırnağının hemen ardındaki işaret). İşaretsiz satır içi alıntı denetlenmez: yasak kalır.
+QUOTE_EXACTLY = """\
+Quote the works exactly as returned. A quotation that carries the point goes in a block quote on its own line \
+(> "…"). A short quotation (a phrase or one short sentence) may run inside your own sentence, in double quotation \
+marks, with its mark right after the closing quotation mark; without the mark, put quotation marks around at most a \
+single term. A parable or one line of thought running over consecutive sentences of one section is quoted as one \
+block with one source (a range, at most 8 sentences); a longer passage is quoted as consecutive blocks, each with its \
+own range."""
+
 
 def instructions(name: str, lugat: bool = True) -> str:
     """Sohbetin talimatı (S12.10): kendi girişi, akışı ve cevap biçimi; kaynağa bağlılığın kuralları ve müellifin sözü
@@ -163,7 +174,7 @@ Workflow:
 
 Rules:
 1. {s.GROUNDED}{s.NEVER_INVENT}
-2. {s.QUOTE_EXACTLY}
+2. {QUOTE_EXACTLY}
 3. {NO_REFERENCES}
 4. {s.TEXT_APART}
 5. {EARLIER}

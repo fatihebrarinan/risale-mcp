@@ -204,7 +204,10 @@ def _depths(outline: list[dict]) -> list[int]:
     return [depth[node["id"]] for node in outline]
 
 
-def _insert_nodes(conn: sqlite3.Connection, work: str, outline: list[dict]) -> None:
+def _insert_nodes(conn: sqlite3.Connection, work: str, outline: list[dict], original: Iterable[str] = ()) -> None:
+    original = set(original)
+    if missing := original - {node["id"] for node in outline}:
+        raise SystemExit(f"{work}: original_sections eserde yok: {sorted(missing)}")
     for ord_, (node, last, depth) in enumerate(zip(outline, _subtree_ends(outline), _depths(outline))):
         cur = conn.execute(
             "INSERT INTO nodes (id, work, parent_id, ord, last_ord, depth, title, subtitle, toc_title,"
@@ -213,7 +216,9 @@ def _insert_nodes(conn: sqlite3.Connection, work: str, outline: list[dict]) -> N
              node.get("toc_title"), node.get("type"), node.get("number"), node.get("heading"),
              node["ref"], node.get("url"),
              json.dumps(node["written"], ensure_ascii=False) if "written" in node else None,
-             json.dumps(extra, ensure_ascii=False) if (extra := {k: node[k] for k in NODE_EXTRA if k in node}) else None))
+             json.dumps(extra, ensure_ascii=False) if (extra := {k: node[k] for k in NODE_EXTRA if k in node}
+                                                          | ({"original": True} if node["id"] in original else {}))
+             else None))
         headings = " ".join(filter(None, (node["title"], node.get("subtitle"), node.get("toc_title"))))
         conn.execute("INSERT INTO nodes_fts (rowid, words) VALUES (?, ?)",
                      (cur.lastrowid, " ".join(search_words(headings))))
@@ -233,6 +238,7 @@ def _insert_paragraphs(conn: sqlite3.Connection, work: str, paragraphs: list[dic
                          [(p["id"], i, source) for i, source in enumerate(p.get("source", []))])
 
 
+WORK_BY_SLUG = {w.slug: w for w in WORKS}
 NODE_EXTRA = ("verses", "printed", "authority", "by")      # başlık ağacının kaynağa özgü alanları (`Node.extra`)
 
 
@@ -726,7 +732,7 @@ def _insert_lugat(conn: sqlite3.Connection, path: Path, report: BuildReport) -> 
 def _insert_book(conn: sqlite3.Connection, book: dict, suras: SuraNames, quran: Quran | None,
                  report: BuildReport, kinds: Classifier | None = None) -> None:
     work = book["work"]
-    _insert_nodes(conn, work, book["outline"])
+    _insert_nodes(conn, work, book["outline"], WORK_BY_SLUG[work].original_sections if work in WORK_BY_SLUG else ())
     _insert_paragraphs(conn, work, book["paragraphs"])
     hasiye = {p["id"] for p in book["paragraphs"] if p["kind"] == "hasiye"}
     _insert_sentences(conn, work, book["sentences"], hasiye)

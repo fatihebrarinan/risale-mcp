@@ -162,6 +162,8 @@ def cite(section_ref: str, opening_words: str, count: int = 1) -> str:
 
 # Arama sonuçlarına eklenen hatırlatma: claude.ai gibi genel istemcilerde model aramadan doğrudan cevaba geçiyordu
 # (2026-10-28, kullanım kaydı: iki arama, hiç okuma ve denetim yok).
+# Tercüme eserin müellifin o dilde yazdığı bölümünde (`Work.original_sections`) `translation` yerine gider.
+ORIGINAL_TEXT = "The author wrote this section in this language himself: it is the original, not a translation."
 SEARCH_NOTE = ("These are candidates, not evidence. Before relying on one, read it in context with get_passage(id, "
                "context=2) or read_section. Quote the text itself in a > block and get the answer's Kaynaklar list "
                "from cite; never give sentence numbers.")
@@ -448,7 +450,7 @@ class Library:
         result = {"section": root["id"], "ref": root["ref"], "items": items, "next_cursor": next_cursor}
         if written := self._written(root):
             result["written"] = written
-        return result | _elsewhere(root["id"]) | self._work_status(root["work"])
+        return result | _elsewhere(root["id"]) | self._work_status(root["work"], root["id"])
 
     def _paragraph_texts(self, paragraphs: list[sqlite3.Row]) -> dict[str, dict]:
         """Paragraf -> {id, kind, sentences, arabic?, hasiye_of?, canonical?}."""
@@ -574,7 +576,7 @@ class Library:
                 record["in_risale"] = quotes[r["id"]]
             out.append(record)
         node = self._node(first["node_id"])
-        result = {"section": node["id"], "section_ref": node["ref"], "sentences": out} | self._work_status(node["work"])
+        result = {"section": node["id"], "section_ref": node["ref"], "sentences": out} | self._work_status(node["work"], node["id"])
         if node["work"] in self._layered_works() and (layer := self._layer(node["id"])):   # muhakkikin girişi (T6)
             result["layer"] = layer
         if len(rows) > 1 and not hasiye_only:
@@ -744,8 +746,22 @@ class Library:
             node = node.rpartition("/")[0]
         return None
 
-    def _work_status(self, work: str) -> dict:
-        return self._status().get(work, {})
+    def _work_status(self, work: str, node_id: str | None = None, status: dict | None = None) -> dict:
+        """Eserin statüsü; tercüme eserde müellifin o dilde kendisinin yazdığı bölümde (`original`, kendisinde ya da
+        üst bölümünde; Mesnevî-i Nuriye'nin Nokta'sı) `translation` yerine `original_text`."""
+        record = (self._status() if status is None else status).get(work, {})
+        if node_id and record.get("translation") and self._original(node_id):
+            record = {k: v for k, v in record.items() if k != "translation"} | {"original_text": ORIGINAL_TEXT}
+        return record
+
+    def _original(self, node_id: str) -> bool:
+        node = node_id
+        while node:
+            row = self.conn.execute("SELECT extra FROM nodes WHERE id = ?", (node,)).fetchone()
+            if row and row[0] and json.loads(row[0]).get("original"):
+                return True
+            node = node.rpartition("/")[0]
+        return False
 
     def _scope(self, work: str | None, group: str | None, include_related: bool) -> str | None:
         """Varsayılan süzgeç yalnız külliyatı olan veritabanında: tefsir sunucusunda külliyat yoktur, süzgeç bütün
@@ -780,7 +796,8 @@ class Library:
             "total": sum(by_work.values()),
             "by_work": by_work,
             "results": [{"id": h.sentence_id, "cite_as": hit_cite(h.ref, h.incipit, h.text), "text": _preview(h.text),
-                         **status.get(h.work, {}), **self._sentence_layer(h.work, h.sentence_id)} for h in hits],
+                         **self._work_status(h.work, h.sentence_id.rsplit("/", 1)[0], status),
+                         **self._sentence_layer(h.work, h.sentence_id)} for h in hits],
             "note": SEARCH_NOTE,
         }
         if sections:
@@ -825,7 +842,8 @@ class Library:
                          "cite_as": hit_cite(rows[h.sentence_id]["ref"], rows[h.sentence_id]["incipit"],
                                              rows[h.sentence_id]["text"]),
                          "text": _preview(rows[h.sentence_id]["text"]), "similarity": round(h.score, 3),
-                         **status.get(h.work, {}), **self._sentence_layer(h.work, h.sentence_id)} for h in hits],
+                         **self._work_status(h.work, h.sentence_id.rsplit("/", 1)[0], status),
+                         **self._sentence_layer(h.work, h.sentence_id)} for h in hits],
             "note": SEARCH_NOTE,
         }
         if refs:

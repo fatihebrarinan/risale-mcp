@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -285,6 +285,36 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     adında da çalışsın), `@font-face` yalnız Arapça harf aralıklarında (`unicode-range`), `size-adjust: 125%` (Latin
     harflerin yanında küçük kalıyordu); bütün yazı tipi dizilerinin başında. Test yazı tipinin sunulduğunu sınar,
     arayüz denemesi 79 denetim.
+  - S13.9 **Hiss-i kable'l-vukû' konuşmasının bulguları** (2026-11-26; kullanıcının konuşması `jLArMwtzIwbJ9Kl_`, üç
+    cevap; okunan bütün yerler veritabanıyla karşılaştırıldı). Bütün işaretli alıntılar doğru, düzeltme yok; hatalar
+    okumada, veride ve kuralda. (A) **Nokta "tercüme" diye sunuldu** ("Bu cümle bir Türkçe çeviri metinden alındı",
+    "Türkçe çeviri metinde şöyle denir"): Mesnevî-i Nuriye eser düzeyinde `translation=True`, Nokta ise aslı Türkçe;
+    bölüm düzeyinde işaret yoktu. (B) **Okuma hataları** (Haiku; talimatla kısmen): (1) sâika ve şâika'yı
+    hiss-i kable'l-vukû'dan ayrı hisler saydı, "metin tanımlamıyor" dedi; oysa Mektubat 28 › Beşincisi c004 onları
+    hiss-i kable'l-vukû'un iki adı diye veriyor (2. turda okunmuştu), Nokta c003–c004 "hiss-i sâdise-i sâdıka olan
+    sâika", "hiss-i sâbia-i bârika olan şâika" diyor; (2) "gayb hakkında kesin bilgi değil, bir tür sezi" dedi, okunan
+    Nokta c005–c006 "O şevk ve sevk yalan söylemez. Yanlış gidemez."; (3) Mektubat c015'in "şu nev'i hassâsiyet"ini
+    (gelen adamı sezmek) yağmur hassasiyetiyle birleştirdi; (4) Lem'alar 16 c029'un teşbihini ("Nasıl …") yağmurun
+    hükmü gibi sundu; (5) "Allah'ın 'sevk-i kaderî' dediği" (terim müellifin); (6) 1. cevabın Yorum'unda dayanaksız
+    "hayatı boyunca önemli bir kavram olmuştur"; Nokta'nın "İkincisi"ne "İkinci mesele" dedi. (C) **Satır içi
+    alıntı:** 2. ve 3. cevapta tam cümleler düz yazıda tırnakla; ortak kural (`server.QUOTE_EXACTLY`) yalnız tek terime
+    izin veriyordu, sayfanın denetleyicisi (`INLINE_QUOTE`) ise bunları denetleyip kabul ediyordu. (D) **Kapsam:**
+    "başka hassalar var mı?" sorusunda arama dardı ("beş duyudan başka hassa", "hassâsiyet"); Lem'alar 16'nın
+    "Letâif-i Aşere" bölümü (`lemalar/16/letaif-i-asere-ve-mana-yi-ismi`) ve "latîfe-i Rabbâniye" (10 cümle) gelmedi,
+    aynı Lem'a'nın başka bölümü okunduğu hâlde. (E) **Yan konuşma** (`XpZEvaWwAxaBcDgW`, "Altıncı ve yedinci his"):
+    "altıncı ve yedinci his diye numaralanmış duyu geçmiyor" dedi, Nokta tam bunu diyor; lügat notu "sâika =
+    yıldırım" (o صاعقه; buradaki sevk eden سائقه): lügat Latin yazılışı aynı sesteş maddeleri ayırmıyor.
+    **Yapıldı (2026-11-26):** (A) `Work.original_sections` (Mesnevî-i Nuriye: `mukaddime`, `nokta`; ikisi de Arapça
+    baskıda "aslı Türkçe" diye işaretli), `build_db` düğümün `extra`sına `original` yazar (eserde olmayan kimlik
+    kurulumu durdurur), `Library._work_status` o bölümde ve altında `translation` yerine `original_text` verir
+    (`read_section`, `get_passage`, `search`, `semantic_search`); katalog notu da söyler. MCP talimatı değişmedi;
+    sabit çağrı setinde yalnız `list_works` değişir (notu; deploy'da `DEPLOY_EXPECT="list_works"`, kod ve veri gider:
+    `--sohbet` yetmez).
+    (C) kullanıcının kararı: sohbette satır içi kısa alıntı serbest; sohbetin kendi kuralı `sohbet.QUOTE_EXACTLY`
+    (bir ibare ya da kısa tek cümle, işareti kapanış tırnağının hemen ardında; işaretsizse yine tek terim), MCP'ninki
+    aynı kaldı; test satır içi alıntının da asıl yerine taşındığını sınar. **Açık:** (B) ve (D) hafta sonunda model
+    yönlendirme konuşulurken örnek; Mukaddime'nin kendi telif kaydı yok, eserin kaydını ("Arapça … Metnimiz
+    tercümedir") miras alıyor: tarihi kaynaktan bulunmadan yazılmaz; (E)'nin lügat sesteşleri ayrı iş.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

@@ -82,7 +82,8 @@ KULLIYAT_WORKS: tuple[Work, ...] = (
          note="Abdülkadir Badıllı'nın \"el-Kâmil\" baskısı (harekeli); yalnızca kullanıcıda, genel sunucuya çıkmaz.",
          language="ar", editor="Abdülkadir Badıllı"),
     Work("mesnevi-i-nuriye", "Mesnevî-i Nuriye", _E, _erisale("mesnevi-i-nuriye"), translation=True,
-         note="el-Mesnevî el-Arabî'nin Türkçesi."),
+         note="el-Mesnevî el-Arabî'nin Türkçesi; Mukaddime ve Nokta aslı Türkçedir.",
+         original_sections=("mesnevi-i-nuriye/mukaddime", "mesnevi-i-nuriye/nokta")),
     Work("nurun-ilk-kapisi", "Nur'un İlk Kapısı", _E, _ilk_donem("nurun-ilk-kapisi")),
     # --- Risale-i Nur ana ciltleri
     Work("sozler", "Sözler", _A, _erisale("sozler", exclude=("lemeat",))),

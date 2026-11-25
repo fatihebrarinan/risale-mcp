@@ -26,9 +26,11 @@ def test_instructions_are_the_chats_own():
                    "model_readings", "permission of their sources"):
         assert phrase not in text, phrase
     # kaynağa bağlılığın blokları ortak: iki talimatta da aynen, kopya değil
-    for block in (server.FIND, server.READ, server.GROUNDED, server.NEVER_INVENT, server.QUOTE_EXACTLY,
-                  server.TEXT_APART):
+    for block in (server.FIND, server.READ, server.GROUNDED, server.NEVER_INVENT, server.TEXT_APART):
         assert block in text and block in server.INSTRUCTIONS
+    # alıntı kuralı sohbetin kendisinin: satır içi kısa alıntı işaretiyle serbest (sayfa onu da denetler)
+    assert sohbet.QUOTE_EXACTLY in text and server.QUOTE_EXACTLY not in text
+    assert server.QUOTE_EXACTLY in server.INSTRUCTIONS
     assert server.risale_layers(connectors=False).split("\n")[0] == "Layers that are not the author's words:"
     assert "Dictionary (lookup_word)" in text and "Dictionary" not in sohbet.instructions("R", lugat=False)
 
@@ -562,3 +564,11 @@ def test_source_text_arabic_refs(library):
     assert by_id[f"{base}/c010"]["refs"] == [{"line": "Âyet: Âl-i İmrân Sûresi, 3:173",
                                               "meal": "Bize Allah yeter. O ne güzel vekildir."}]
     assert "refs" not in by_id[f"{base}/c005"]
+
+
+@needs_db
+def test_inline_quote_is_checked_like_a_block(checker):
+    """Sohbette cümleye örülmüş kısa alıntı serbest (2026-11-26): sayfa onu da denetler ve asıl yerine taşır."""
+    checked = sohbet.check(checker, f'Müellif şöyle der: "{TEXT_32}" [[{C31}]] ve devam eder.')
+    assert checked.counts["fixed"] == 1 and checked.sources[0]["id"] == C32
+    assert checked.markdown == f'Müellif şöyle der: "{TEXT_32}" [1] ve devam eder.'

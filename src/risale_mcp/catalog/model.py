@@ -102,6 +102,10 @@ class Work:
     collection: Collection = Collection.KULLIYAT
     authority: Authority = Authority.MUELLIF
     translation: bool = False       # eser tercümedir: `authority` asıl metnin sahibini söyler, mütercim `translator`
+    # Tercüme eserde müellifin bu dilde kendisinin yazdığı bölümler (tam kimlik; alt bölümleri de): araçlar orada
+    # `translation` demez, `original_text` der. Mesnevî-i Nuriye'nin Nokta'sı aslı Türkçedir (2026-11-26: model onu
+    # "Türkçe çeviri metin" diye sunuyordu).
+    original_sections: tuple[str, ...] = ()
     # Kişiler (H2): yalnız kaynağın ya da kaydın söylediği; bilinmeyen boş kalır, tahmin edilmez.
     author: str | None = AUTHOR     # eserin yazarı; başkasının metninde (Tesbihat) bilinmiyorsa None
     translator: str | None = None   # tercümede mütercim
