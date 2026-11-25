@@ -124,9 +124,34 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     sunucu yalnız kullanım satırı tutar: kullanıcı, zaman, model, token, maliyet, araç sayısı, atıf denetiminin sonucu.
   - S12.4 **Bütçe ve kota:** kişi başına günlük soru sınırı (başlangıç 10), servis düzeyinde günlük ve aylık dolar
     tavanı (100 $; aşılınca "bugünlük doldu"), Console tavanı yedek. Maliyet her cevabın `usage`'ından hesaplanır.
-  - S12.5 **API'nin açtığı fazladan imkânlar** (5. nokta; kullanıcının seçimini bekliyor). Önerilen ilk sürüme:
-    Kaynaklar listesini sunucunun kurması, cevaptaki her alıntının sunucuda denetlenmesi, alıntıya tıklayınca metnin
-    bağlamıyla açılması. Deneme içinde ölçülecekler ve sonrası: sohbet sayfasındaki konuşmada.
+  - S12.5 **API'nin açtığı fazladan imkânlar** (5. nokta; kullanıcının kararı, 2026-11-25: on maddenin hepsi plana,
+    (a) ilk sürüme, (b) deneme ayında ölçülür, (c) sonra; "başka daha birçok şey çıkar"). Talimatla rica edilen şey
+    kodla garanti edilir.
+    (a) **İlk sürüm (güven):** (1) **Kaynaklar'ı sunucu kurar:** model alıntıyı yalnız cümle kimliğiyle işaretler (ör.
+    kimlik ve söz), adres yazmaz; sunucu sözü veritabanında denetler, numaraları ve Kaynaklar listesini kendisi yazar
+    ("her adres veriden gelir" talimattan koda geçer; sohbetin talimatı buna göre, `cite` çağrısı gerekmez).
+    (2) **Tutmayan alıntı geri döner:** denetimden geçmeyen alıntı modele bir kez düzeltmeye gider; yine tutmazsa
+    kullanıcıya işaretli görünür ve kullanım satırına yazılır. (3) **Alıntıya tıklayınca metin:** cümle bağlamıyla
+    açılır (önceki ve sonraki cümleler, hâşiye, bölümün yolu; `get_passage`); okuyucu cevaptan okumaya geçer.
+    (b) **Deneme ayında ölçülür:** (4) **Ön arama:** soru gelince sunucu anlamsal ve kelime aramasını birlikte yapar,
+    aday bölümleri baştan verir; bir iki araç turu kalkar (süre, maliyet). Risk: modelin kendi aramasını daraltır;
+    ölçüyle karar. (5) **Model yönlendirme:** basit soru Haiku'ya, karşılaştırma ve derin soru Sonnet'e (ya da Haiku
+    okur, Sonnet yazar); S12.1'in sonucuna göre. (6) **Gerçek kullanımdan öğrenmek:** 👎 alan ve denetimden düşen
+    cevaplar altın soru adayı olur (kullanıcının onayıyla saklanan notlardan); talimat ölçüyle iyileşir.
+    (c) **Sonra:** (7) **Kipler:** skill'ler düğme olarak (ders hazırla, beni sına, müzakere, konu taraması).
+    (8) **Lügat:** cevaptaki alıntıda kelimeye dokununca anlamı (okuma platformunun `lugatWords`'ü). (9) **Okuma
+    platformuyla bağ:** okurken "bu bölüm hakkında sor" (bölüm kimliğiyle). (10) **Âyet görünümü:** Türk hattı
+    (Medine seçilebilir), meal ayrı ve etiketli.
+    **Havuz (önerildi, konuşulmadı):** ana ekrana eklenebilen uygulama (PWA: "uygulamanın adı ne" geri dönütüne en
+    kısa cevap; mağaza gerekmez); alıntıyı kişisel deftere kaydetmek (`masa.py` defteri); kullanıcı isterse cevabı
+    kalıcı bağlantıyla paylaşmak; cevabın ardından "devamını oku" ve "aynı konunun geçtiği öbür yerler" önerileri;
+    kısa ya da ayrıntılı cevap seçimi; İngilizce ve Arapça arayüz.
+  - S12.8 **Ad ve alan adı (kullanıcının notu, 2026-11-25):** `risalemcp.com/sohbet` geçicidir; ileride vurucu bir ad
+    ve kendi alan adı gelecek (ör. "ustad.com" gibi). Bu yüzden servis **taşınabilir** kurulur: yol öneki ve alan adı
+    ayardan, sayfada sabit adres yok; hesaplar alana bağlı değil (taşınınca yalnız bir kez yeniden giriş, çerez yeni
+    alanda); e-posta gönderen adres ve SPF/DKIM yeni alana göre yeniden. Ad seçilirken dikkat: cevaplar yapay zekânın,
+    müellife mal edilmez; ad, sayfanın müellif adına konuştuğu izlenimini vermemeli (sayfada açık "yapay zekâ
+    cevabıdır" ibaresi).
   - S12.6 **Gizlilik ve şartlar:** gizlilik politikası (soruların Anthropic'e gitmesi, e-posta servisi, saklanan ve
     saklanmayan), kullanım şartları (yapay zekâ cevabıdır, tefsir ve fetva değildir), `en/` karşılıkları.
   - S12.7 **Deneme ayı:** başlangıç tarihi açılışta yazılır. Ölçüler: kayıtlı ve etkin kullanıcı, günlük soru, soru başı
