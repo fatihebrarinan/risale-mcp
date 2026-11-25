@@ -57,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E8, S11, A4, D16, B10 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E8, S12, A4, D16, B10 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -66,8 +66,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
 `KAYIT.md` › "Sıradaki'nin notları"):
 - **Son adım (2026-11-25):** E5 bitti ve yayında (Klasik eklentide 12 eser); duyurusu ve İşârât'ın misli çalışmasının
-  duyurusu yayımlandı; Claude eklentisi 1.0.2 push edildi. **Önde:** B10 ("Sıradaki" 1), sonra E7: ilk iş
-  `docs/e7-on-calisma.md` sonundaki beş kararı kullanıcıya sormak (kullanıcı onları E7'nin başında verecek).
+  duyurusu yayımlandı; Claude eklentisi 1.0.2 push edildi. **Önde:** S12 sohbet sayfası (kullanıcının kararı,
+  2026-11-25; "Sıradaki" 1): ilk adım S12.0 (kullanıcı: API kredisi ve anahtar) ve S12.1 (Haiku – Sonnet ölçümü).
+  Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
   `https://risalemcp.com/taslak/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
 - **Tarihli hatırlatmalar:** (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
@@ -86,14 +87,51 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
-| 2 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 3 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 4 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 5 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 6 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 7 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 1 | S12 | Sohbet sayfası `risalemcp.com/sohbet`: Claude API'siyle, yalnız Risale, e-posta doğrulamalı hesap, bir aylık deneme (tavan 100 $) | |
+| 2 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
+| 3 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 4 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 5 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 6 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 7 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 8 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 
+- S12 **Sohbet sayfası** (kullanıcının kararları, 2026-11-25; fikrin geçmişi "Fikirler" › "Kendi yapay zekâ modeli ve
+  üyelik"). Geri dönüt: insanlar eklenti kurmak istemiyor, "adres yazayım, sorayım" diyor. Model eğitilmez (kaynağa
+  bağlılık); Claude API'si ve Risale'nin araçlarıyla bir sohbet sayfası kurulur. Kararlar: (1) **tavan aylık 100 $**:
+  Max planıyla gelen API kredisi; (2) model **önce ölçülür**: Haiku 5.5 – Sonnet 5.5; (3) **hesap şart**, e-posta
+  doğrulama koduyla (sınırsız hesap açılmasın); (4) ilk deneme `risalemcp.com/sohbet`, **yalnız Risale**; ücretsiz
+  (risaleoku'nun "kazanç olmasın" şartı; bağış ya da üyelik düşünülürse önce kaynaklara sorulur). (5) "Eklentiler ve
+  talimatla sınırlı kalmayalım" (kullanıcı): API'nin açtığı fazladan imkânlar konuşuluyor, seçilenler S12.5'e girer.
+  - S12.0 **Hazırlık (kullanıcı):** Max'ın API kredisini almak, son kullanma tarihine bakmak; Console'da bu iş için ayrı
+    bir çalışma alanı ve anahtar, **aylık harcama tavanı 100 $** (asıl sigorta); anahtar `.env`'de `ANTHROPIC_API_KEY`.
+  - S12.1 **Ölçüm: Haiku 5.5 – Sonnet 5.5.** Altın soruların Risale'ye ait olanları iki modelle (`golden run` modele
+    seçenek alır; `claude -p` aboneliği kullanır, API kredisi harcanmaz). Ölçüler: doğrulanan atıf, beklenen bölüm
+    okundu mu, araç sayısı, süre, eşdeğer maliyet; kullanıcı birkaç cevabı yan yana okur. Sonuç model ve effort
+    seçimidir; S12.3'ün kendi düzeninde kısa bir yeniden ölçümle (API'den, gerçek maliyetle) teyit edilir.
+  - S12.2 **Hesaplar:** `site_auth.py`'ye kayıt: e-posta → 6 haneli kod (10 dk) → parola; yeni kapsam `sohbet`.
+    Adres ve IP başına kayıt ve kod isteme sınırı. E-posta gönderimi için bir gönderim servisi gerekir (site bugün
+    e-posta göndermez; Hetzner'den doğrudan SMTP teslim edilmez): **karar kullanıcının** (adaylar: Brevo, Resend,
+    Postmark, Amazon SES; `risalemcp.com` için SPF/DKIM Cloudflare'de). Doğrulama sınırsız hesabı zorlaştırır ama
+    engellemez: asıl sınır kişi kotası ve bütçe tavanıdır (S12.4).
+  - S12.3 **Sohbet servisi:** `risale-sohbet` (ana makine, 127.0.0.1:8010; Caddy `/sohbet/` sayfası ve `/sohbet/api/`,
+    girişli). Araçlar **süreç içinde** `library.py`'den çağrılır, MCP üzerinden değil: hesapsızların ortak sınırını
+    (dakikada 120, günde 2.000 anlamsal) yemez, bir ağ dolaşması az, araç sonuçları elimizdedir (S12.5 buna dayanır).
+    Anthropic Python SDK'sı yalnız bu servisin bağımlılığıdır (sunucuda "sağlayıcı SDK'sı yok" kuralının bilinçli
+    istisnası; MCP sunucusu etkilenmez). Talimat `server.py`'nin Risale talimatından ve sohbete özgü eklerden;
+    araçlar ve talimat önbellekte (prompt caching). Cevap akışla gelir, araç çağrıları "Sözler okunuyor…" diye
+    görünür. Soru başına araç çağrısı ve konuşma başına tur sınırı. Konuşmalar sunucuda saklanmaz (tarayıcıda);
+    sunucu yalnız kullanım satırı tutar: kullanıcı, zaman, model, token, maliyet, araç sayısı, atıf denetiminin sonucu.
+  - S12.4 **Bütçe ve kota:** kişi başına günlük soru sınırı (başlangıç 10), servis düzeyinde günlük ve aylık dolar
+    tavanı (100 $; aşılınca "bugünlük doldu"), Console tavanı yedek. Maliyet her cevabın `usage`'ından hesaplanır.
+  - S12.5 **API'nin açtığı fazladan imkânlar** (5. nokta; kullanıcının seçimini bekliyor). Önerilen ilk sürüme:
+    Kaynaklar listesini sunucunun kurması, cevaptaki her alıntının sunucuda denetlenmesi, alıntıya tıklayınca metnin
+    bağlamıyla açılması. Deneme içinde ölçülecekler ve sonrası: sohbet sayfasındaki konuşmada.
+  - S12.6 **Gizlilik ve şartlar:** gizlilik politikası (soruların Anthropic'e gitmesi, e-posta servisi, saklanan ve
+    saklanmayan), kullanım şartları (yapay zekâ cevabıdır, tefsir ve fetva değildir), `en/` karşılıkları.
+  - S12.7 **Deneme ayı:** başlangıç tarihi açılışta yazılır. Ölçüler: kayıtlı ve etkin kullanıcı, günlük soru, soru başı
+    gerçek maliyet, atıf denetiminin geçme oranı, 👍/👎 (not isteğe bağlı, kullanıcının onayıyla saklanır). Haftalık
+    rapor; ay sonunda sürdürme kararı (eşiği açılıştan önce kullanıcıyla yazılır). Duyuru Yenilikler'de (taslak).
 - E6 **Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
   2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
   dizgisi baskının yayıncısınındır: kaynak seçilirken bakılır. Bir arkadaşın gönderdiği PDF'ler biçimi bozuk, son çare.
@@ -324,6 +362,7 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   API maliyeti (altın soru çalıştırmalarından ölçülebilir: M6'da soru başına ≈0,31 $). Asıl engel izinler: risaleoku
   "kazanç olmaması", OpenITI CC BY-NC-SA, Tanzil'in Diyanet mealleri ticari olmayan kullanım; ücretli üyelik bunlarla
   çatışır, önce her kaynaktan yeni izin gerekir. Öneri: düşünülecekse ücretsiz ve bağış destekli, kaynaklara sorarak.
+  **2026-11-25: S12 oldu** (ücretsiz sohbet sayfası, model eğitimi yok; "Sıradaki").
 
 - **E3 Sorularla Risale (öneri, 2026-11-09; 2026-11-22'de "Sonra"dan buraya):** İzin e-postası gönderilmedi. Modelin Risale'yi okurken web'deki kaynaklara (Sorularla Risale) bakması
   önerildi. Kullanıcı web aramasına sıcak bakmıyor (belirsizlik, kanıtsızlık). Doğru yol web araması değil, izin
