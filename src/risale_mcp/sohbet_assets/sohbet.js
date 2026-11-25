@@ -66,7 +66,7 @@ function inline(s, refs) {
       const src = refs.get(Number(n));
       if (!src) return m;
       const bad = src.problem ? " kotu" : "";
-      return `<button type="button" class="ref${bad}" data-n="${n}" title="${esc(src.cite_as || "Adresi bulunamadı")}">[${n}]</button>`;
+      return `<button type="button" class="ref${bad}" data-n="${n}" title="${esc(src.cite_as || "Adresi bulunamadı")}">[${num(src)}]</button>`;
     });
   }
   return t;
@@ -254,16 +254,55 @@ function closeDrawers() { drawers.left = drawers.right = false; layout(); }
 
 // ------------------------------------------------------------ Kaynaklar
 
-function sourceList(sources, turnIndex) {
+// S13.5: konuşmanın tek kaynakçası. Sunucu her cevabı kendi kaynakçasıyla (1'den) verir ve saklar; sayfa numaraları
+// konuşma boyunca yeniden verir: kaynak ilk geçtiği yerde numarasını alır, sonra hep onunla anılır. Aynı kaynak aynı
+// kimliktir (cümle ya da aralık; iç içe aralıklar ayrı), doğrulanamayan ayrı. Cevaplar yalnız sona eklendiği için
+// önceki numaralar değişmez. Numara kaynağın nesnesine yazılmaz (yerel kayda girmesin): `globalNo`.
+const globalNo = new WeakMap();
+let catalog = [];                       // konuşmanın kaynakları, numara sırasıyla: { g, src, turn, turns }
+
+function num(src) { return globalNo.get(src) ?? src.n; }
+
+function sourceKey(src, turnIndex) {
+  if (!src.id) return `#${turnIndex}:${src.n}`;
+  return src.id + (src.problem || src.unverified ? "!" : "");
+}
+
+function numberSources() {
+  const seen = new Map();
+  catalog = [];
+  cur.turns.forEach((t, i) => {
+    for (const src of t.sources || []) {
+      const key = sourceKey(src, i);
+      let entry = seen.get(key);
+      if (!entry) {
+        entry = { g: catalog.length + 1, src, turn: i, turns: [] };
+        seen.set(key, entry); catalog.push(entry);
+      }
+      if (!entry.turns.includes(i)) entry.turns.push(i);
+      globalNo.set(src, entry.g);
+    }
+  });
+}
+
+function turnNote(turns) {              // "1. soruda", "1. ve 3. soruda", "1., 2. ve 4. soruda"
+  const ns = turns.map((i) => `${i + 1}.`);
+  return (ns.length > 1 ? `${ns.slice(0, -1).join(", ")} ve ${ns[ns.length - 1]}` : ns[0]) + " soruda";
+}
+
+function sourceList(items) {             // items: [{ src, turn, g, turns? }]
   const ol = el("ol");
-  for (const s of sources) {
+  for (const { src: s, turn, g, turns } of items) {
     const li = el("li");
     const b = el("button", "kaynak" + (s.problem ? " kotu" : ""));
     b.type = "button";
     b.dataset.n = s.n;
-    if (turnIndex !== undefined) b.dataset.turn = turnIndex;
-    b.innerHTML = `<span class="no">[${s.n}]</span><span class="yol-metin">${esc(s.cite_as || "Adresi bulunamadı")}</span>`
-      + (s.source_name ? `<span class="kaynak-adi">Kaynak: ${esc(s.source_name)}</span>` : "");
+    b.dataset.g = g;
+    if (turn !== undefined) b.dataset.turn = turn;
+    const meta = [s.source_name ? `Kaynak: ${esc(s.source_name)}` : "",
+      turns && cur.turns.length > 1 ? turnNote(turns) : ""].filter(Boolean).join(" · ");
+    b.innerHTML = `<span class="no">[${g}]</span><span class="yol-metin">${esc(s.cite_as || "Adresi bulunamadı")}</span>`
+      + (meta ? `<span class="kaynak-adi">${meta}</span>` : "");
     li.append(b);
     for (const e of s.embedded || []) li.append(el("div", "gomulu", "– " + esc(e.line)));
     if (s.problem) li.append(el("div", "uyari", "⚠ Bu alıntı eserlerin metniyle doğrulanamadı."));
@@ -276,24 +315,17 @@ function renderSources(box, sources) {          // cevabın altında (Kaynaklar 
   if (!sources || !sources.length) return;
   const wrap = el("div", "kaynaklar");
   wrap.append(el("h4", "", "Kaynaklar"));
-  wrap.append(sourceList(sources));
+  const items = sources.map((src) => ({ src, g: num(src) })).sort((a, b) => a.g - b.g);
+  wrap.append(sourceList(items));
   box.append(wrap);
 }
 
-function renderSide() {                          // konuşmanın bütün kaynakları, cevaplara göre
+function renderSide() {                          // konuşmanın tek kaynakçası (S13.5)
   els.sideList.innerHTML = "";
-  let total = 0;
-  cur.turns.forEach((t, i) => {
-    if (!t.sources || !t.sources.length) return;
-    total += t.sources.length;
-    const group = el("section", "yan-tur");
-    group.append(el("h3", "", `${i + 1}. ${esc(t.q)}`));
-    group.append(sourceList(t.sources, i));
-    els.sideList.append(group);
-  });
-  if (!total) els.sideList.innerHTML = SIDE_EMPTY;
-  els.count.textContent = total;
-  els.count.hidden = !total;
+  if (catalog.length) els.sideList.append(sourceList(catalog));
+  else els.sideList.innerHTML = SIDE_EMPTY;
+  els.count.textContent = catalog.length;
+  els.count.hidden = !catalog.length;
 }
 
 function showList() {
@@ -377,9 +409,12 @@ function renderTurn(turn) {
 // ------------------------------------------------------------ geri bildirim (S12.12)
 
 function answerText(turn) {          // okuyucunun gördüğü cevap, düz metin: yalnız kullanıcı onaylarsa gönderilir
-  const lines = (turn.sources || []).map((s) => `[${s.n}] ${s.cite_as || "Adresi bulunamadı"}`
-    + (s.source_name ? ` (${s.source_name})` : "") + (s.problem ? " ⚠ doğrulanamadı" : ""));
-  return turn.markdown + (lines.length ? "\n\nKaynaklar\n" + lines.join("\n") : "");
+  const local = new Map((turn.sources || []).map((s) => [s.n, s]));     // sayfadaki numaralarla (S13.5)
+  const text = turn.markdown.replace(/\[(\d+)\]/g, (m, n) => (local.has(Number(n)) ? `[${num(local.get(Number(n)))}]` : m));
+  const lines = (turn.sources || []).slice().sort((a, b) => num(a) - num(b))
+    .map((s) => `[${num(s)}] ${s.cite_as || "Adresi bulunamadı"}`
+      + (s.source_name ? ` (${s.source_name})` : "") + (s.problem ? " ⚠ doğrulanamadı" : ""));
+  return text + (lines.length ? "\n\nKaynaklar\n" + lines.join("\n") : "");
 }
 
 // S13.4: oy tıklanınca gider; not yazmayı bırakınca (ya da kutudan çıkınca) ve onay kutusu değişince aynı kayıt
@@ -466,6 +501,7 @@ function renderTitle() {
 }
 
 function renderAll() {
+  numberSources();
   els.list.innerHTML = "";
   cur.turns.forEach((t, i) => { const box = renderTurn(t); box._index = i; els.list.append(box); });
   els.empty.hidden = cur.turns.length > 0;
@@ -745,9 +781,8 @@ els.list.addEventListener("click", (ev) => {
 els.sideList.addEventListener("click", (ev) => {
   const b = ev.target.closest(".kaynak");
   if (!b) return;
-  const turn = cur.turns[Number(b.dataset.turn)];
-  const src = turn && (turn.sources || []).find((s) => s.n === Number(b.dataset.n));
-  if (src) openText(src, Number(b.dataset.turn));
+  const entry = catalog.find((e) => e.g === Number(b.dataset.g));
+  if (entry) openText(entry.src, entry.turn);
 });
 els.back.addEventListener("click", showList);
 els.open.addEventListener("click", () => {
@@ -781,10 +816,10 @@ async function openText(src, turnIndex) {
   els.sideList.hidden = true;
   els.sideText.hidden = false;
   els.back.hidden = false;
-  els.sideTitle.textContent = turnIndex !== undefined ? `[${src.n}]` : "Metin";
+  els.sideTitle.textContent = turnIndex !== undefined ? `[${num(src)}]` : "Metin";
   els.sideText.scrollTop = 0;
   for (const b of els.sideList.querySelectorAll(".kaynak.secili")) b.classList.remove("secili");
-  const item = els.sideList.querySelector(`.kaynak[data-turn="${turnIndex}"][data-n="${src.n}"]`);
+  const item = els.sideList.querySelector(`.kaynak[data-g="${num(src)}"]`);
   if (item) item.classList.add("secili");
   setPanel("right", true);
   try {
@@ -879,6 +914,7 @@ async function ask(question) {
       renderQuota();
       if (owner !== cur) return;          // başka konuşma açıldıysa sayfaya çizilmez (busy iken açılamaz)
       saveLocal();
+      numberSources();
       const fresh = renderTurn(turn);
       fresh._index = owner.turns.length - 1;
       box.replaceWith(fresh);

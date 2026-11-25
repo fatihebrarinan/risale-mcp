@@ -197,6 +197,16 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     yalnız soruyla ilgiliyse. (f) **Yabancı harf:** "göktə" (Azerice ə); şimdilik yalnız not, tekrarlarsa cevapta
     Türkçe dışı Latin harf denetimi. (g) **İzlenecek sayı:** işaretsiz paragraf oranı öbür deneyenlerde yüksek (4/9,
     6/8, 9/12; kullanıcıda 2/15, 3/9); yorum paragrafları da sayılır, hafta sonunda bakılır.
+  - S13.5 **Konuşmanın tek kaynakçası** (kullanıcının fikri, 2026-11-25): her cevabın ayrı kaynakçası vardı; aynı
+    kaynak bir cevapta [3], öbüründe [7] oluyordu. Numaralar konuşma boyunca verilir: kaynak ilk geçtiği yerde
+    numarasını alır, sonra hep onunla anılır, yeniler kaldığı yerden sürer. Aynı kaynak: aynı cümle ya da aynı aralık
+    (iç içe aralıklar ayrı; doğrulanamayan ayrı). Sağ panel tek liste (her kaynak bir kez, hangi sorularda geçtiği
+    yanında); dar ekranda cevabın altında yalnız o cevabın kaynakları, konuşmadaki numaralarıyla. **Yalnız sayfada**
+    (kullanıcı onayladı): sunucu her cevabı kendi kaynakçasıyla denetler ve saklar; veri, denetim ve ölçüm değişmez,
+    tek cevabın paylaşımı (S13 (9)) kendi kaynakçasıyla kalır. "Soruyu ve bu cevabı da gönder" metni sayfadaki
+    numaralarla gider (not "[7] yanlış" derse aynı kaynağa denk gelsin). **Yapıldı (2026-11-25):** `sohbet.js`
+    `numberSources` (numara kaynağın nesnesine değil `WeakMap`'e; yerel kayda girmez), sağ panelde kaynak adıyla aynı
+    satırda "1. ve 2. soruda"; arayüz denemesine hazır iki turlu konuşmayla 7 denetim (API çağrısı yok), 74 denetim geçti.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

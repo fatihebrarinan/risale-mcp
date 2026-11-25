@@ -1,4 +1,4 @@
-"""S12.11, S13.1: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
+"""S12.11, S13.1, S13.5: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
 
 Yerel sunucu açık olmalı (`SOHBET_GUNLUK_SORU=100 uv run --extra sohbet python -m risale_mcp.sohbet serve --dev`: deneme hesabının
 günlük hakkı her koşuda bir azalır). Deneme hesabına
@@ -29,6 +29,33 @@ def session() -> str:
                           f"s = Store(); print(s.open_session({EMAIL!r}))"], cwd=ROOT, capture_output=True, text=True)
     if out.returncode:
         raise SystemExit(f"oturum açılamadı (hesap {EMAIL} var mı?):\n{out.stderr}")
+    return out.stdout.strip()
+
+
+SEED = """
+import json, sys
+from risale_mcp.sohbet import Conversations
+from risale_mcp.sohbet_hesap import Store
+convs = Conversations(Store())
+if sys.argv[1:2] == ["sil"]:
+    convs.delete(EMAIL, sys.argv[2]); raise SystemExit
+src = lambda n, i: {"n": n, "id": "sozler/11/" + i, "cite_as": "Sözler › Onbirinci Söz › " + i, "source_name": "e-Risale"}
+one = {"raw": "", "markdown": 'Bir [1], iki [2], üç [3].', "sources": [src(1, "c001"), src(2, "c002"), src(3, "c003")]}
+two = {"raw": "", "markdown": 'Dört [1], yine iki [2], aralık [3].',
+       "sources": [src(1, "c004"), src(2, "c002"), src(3, "c003..c004")]}
+ident, _ = convs.add(EMAIL, None, "Kaynak numaralama denemesi", one)
+convs.add(EMAIL, ident, "İkinci soru", two)
+print(ident)
+"""
+
+
+def seed(*args: str) -> str:
+    """S13.5: iki turlu, ortak kaynaklı bir konuşma (API çağrısı yok); `seed("sil", kimlik)` siler."""
+    import subprocess
+    out = subprocess.run(["uv", "run", "python", "-c", f"EMAIL = {EMAIL!r}\n" + SEED, *args], cwd=ROOT,
+                         capture_output=True, text=True)
+    if out.returncode:
+        raise SystemExit(f"deneme konuşması kurulamadı:\n{out.stderr}")
     return out.stdout.strip()
 
 
@@ -270,6 +297,29 @@ async def run(url: str) -> None:
         # silme (deneme hesabının konuşması)
         await page.set_viewport_size({"width": 1440, "height": 880})
         await page.wait_for_timeout(300)
+        # S13.5: konuşmanın tek kaynakçası (hazır konuşma; API yok)
+        seeded = seed()
+        await page.goto(f"{url}#k/{seeded}")
+        await page.reload()
+        await page.wait_for_selector(".tur >> nth=1")
+        refs = await page.locator(".tur >> nth=1").locator(".cevap .ref").all_inner_texts()
+        check("ikinci cevapta konuşmanın numaraları", refs == ["[4]", "[2]", "[5]"])
+        under = await page.locator(".tur >> nth=1").locator(".kaynaklar .no").all_inner_texts()
+        check("cevabın altında yalnız onun kaynakları, sıralı", under == ["[2]", "[4]", "[5]"])
+        side = await page.locator("#yan-liste .kaynak .no").all_inner_texts()
+        check("sağda tek liste, her kaynak bir kez", side == ["[1]", "[2]", "[3]", "[4]", "[5]"])
+        check("ortak kaynakta iki soru", "1. ve 2. soruda" in await page.inner_text('#yan-liste .kaynak[data-g="2"]'))
+        await page.screenshot(path=OUT / "14-tek-kaynakca.png")
+        await page.locator(".tur >> nth=1").locator(".cevap .ref >> nth=1").click()
+        await page.wait_for_selector("#metin-govde .cumle")
+        check("atıf konuşmanın numarasıyla açılır", await page.inner_text("#yan-baslik") == "[2]")
+        await page.click("#yan-geri")
+        check("açılan kaynak listede seçili", await page.locator('#yan-liste .kaynak.secili[data-g="2"]').count() == 1)
+        seed("sil", seeded)
+        await page.goto(url)
+        await page.wait_for_selector("#gecmis li")
+        await page.click("#gecmis li .ac >> text=Arayüz denemesi")
+        await page.wait_for_selector("#gecmis li.secili")
         await page.hover("#gecmis li.secili")
         await page.click("#gecmis li.secili .islem .ikon >> nth=1")
         await page.click("#gecmis .onay .dolu-tehlike")
