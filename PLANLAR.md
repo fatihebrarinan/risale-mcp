@@ -277,6 +277,12 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     dener, onaylarsa deneme ayı o gün başlar. **Başarı ölçütü (kullanıcının kararı, 2026-11-25):** ay içinde en az
     10 ayrı hesap açılıp sohbet ederse ve genel olarak olumsuz geri bildirim yoksa (kullanıcıya söylenen ya da çok
     sayıda 👎) başarılı sayılır. 👍/👎 ölçüt değil, yan bilgidir; "etkin kullanıcı" ölçüt değildir.
+    **Deploy edildi (2026-11-25, `scripts/deploy.sh --code`, araç çıktısında 0 fark, `yayin-20261125-164823`):**
+    `https://risalemcp.com/sohbet/` (Caddy: tamponsuz, sıkıştırmasız, `noindex`), servis `risale-sohbet` (127.0.0.1:8010,
+    model Haiku 5.5 medium), `.env`'e sohbet anahtarları (deploy artık `--code`'da da anahtar satırlarını yazar), ntfy
+    konusu `data/sohbet-ntfy` (sunucuda; adı kullanıcıya verildi). Sunucuda hesapsız deneme (`sohbet sor`) geçti, 12 sn,
+    0,002 $. **Bekleyen:** kullanıcının telefonda denemesi (onaylarsa deneme ayı o gün başlar), gizlilik ve şartların
+    onayı (S12.6; onaylanınca sayfalara işlenir ve `deploy.sh --site`), model seçimi (S12.13).
 - S13 **Sohbet sayfasının asıl geliştirmesi** (kullanıcının kararı, 2026-11-25): S12'nin deneme ayından sonra, onun
   ölçüleri ve geri bildirimiyle. İlk turda yapılmayan her şey burada: (1) ön arama (soru gelince anlamsal ve kelime
   araması birlikte, aday bölümler baştan; risk: modelin kendi aramasını daraltır), (2) model yönlendirme (Haiku okur,
