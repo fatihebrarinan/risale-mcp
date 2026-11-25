@@ -76,7 +76,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (başlarken `sohbet usage` kaydı); ondan önce **S13.2** (panel genişliği, sekmeli ayarlar: yayında,
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
-  (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası (yayında). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
+  kaynakların parçalara toplanması (yayında). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -245,7 +246,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     **Yapıldı (2026-11-26):** `sohbet.js` `numberSources` parçaları kurar (`pieceOf`), `openText(parça, atıf)` parçanın
     aralığını ister, atfın cümleleri dolgulu, öbürleri altı çizili (`mark.acik`); liste `kaynak-grup` başlıklarıyla,
     kaynak adı tekse listenin altında bir kez. "Soruyu ve bu cevabı da gönder" metni parçalarla. Arayüz denemesi:
-    hazır konuşma bitişik, iç içe ve 8'i aşan durumları sınar; 77 denetim geçti.
+    hazır konuşma bitişik, iç içe ve 8'i aşan durumları sınar; 77 denetim geçti. Yayında (`da166fb`, `yayin-20261126-000506`).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
