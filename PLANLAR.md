@@ -230,6 +230,10 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     `numberSources` (numara kaynağın nesnesine değil `WeakMap`'e; yerel kayda girmez), sağ panelde kaynak adıyla aynı
     satırda "1. ve 2. soruda"; arayüz denemesine hazır iki turlu konuşmayla 7 denetim (API çağrısı yok), 74 denetim geçti.
     Yayında (`acd790a`, `yayin-20261125-231927`, araç çıktısında fark yok).
+    **Hata (2026-11-25, kullanıcı buldu; düzeltildi):** kaynağa tıklayınca "Bu adreste metin bulunamadı": metin uç
+    noktası önce atıf dizinine (`checker.nodes`) bakıyordu, dizin ilk alıntı denetiminde kuruluyor; servis yeniden
+    başlayıp soru sorulmadan eski konuşmanın kaynağı açılınca hata yutuluyordu (S12'den beri; gece dört deploy
+    görünür kıldı). `sohbet.source_text` önce dizini kurar; test yeni servisle sınar (`8481d83`, `yayin-20261125-235352`).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
