@@ -946,6 +946,16 @@ def feedback_row(body: dict, email: str, model: str) -> dict:
             "answer": answer or None, "model": model}
 
 
+def source_text(chat: "Chat", ident: str) -> dict:
+    """Kaynağın metni: bölüm atfında bölümün başı, cümle ya da aralıkta işaretli cümleler ve çevresi. Atıf dizini ilk
+    denetimde kurulur: servis yeniden başlayıp henüz soru sorulmadıysa yoktu, her kaynak "bulunamadı" diyordu
+    (2026-11-25); önce kurulur."""
+    chat.checker.refresh()
+    if ident in chat.checker.nodes:
+        return section_opening(chat.checker, ident)
+    return chat.library.passage(ident, 3)
+
+
 def section_opening(checker, ident: str) -> dict:
     """Bölüm atfının metni: bölümün ilk cümleleri (işaretli cümle yok)."""
     node = checker.nodes[ident]
@@ -1026,8 +1036,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             return JSONResponse({"error": "oturum yok"}, status_code=401, headers=headers)
         ident = request.query_params.get("id", "")[:300]
         try:
-            passage = await asyncio.to_thread(section_opening if ident in chat.checker.nodes else chat.library.passage,
-                                              *((chat.checker, ident) if ident in chat.checker.nodes else (ident, 3)))
+            passage = await asyncio.to_thread(source_text, chat, ident)
         except Exception:
             return JSONResponse({"error": "Bu adreste metin bulunamadı."}, status_code=404, headers=headers)
         return JSONResponse(passage, headers=headers)

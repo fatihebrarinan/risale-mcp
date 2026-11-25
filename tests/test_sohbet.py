@@ -309,6 +309,9 @@ def test_web_routes(library, tmp_path):
     assert page.status_code == 200 and "soru-formu" in page.text and "script-src 'self'" in page.headers["content-security-policy"]
     assert web.get("/sohbet/static/sohbet.js").status_code == 200
     assert web.get("/sohbet/static/../sohbet.py").status_code == 404
+    # servis yeni açılmış, henüz soru yok: atıf dizini kurulmadan da kaynağın metni açılır (2026-11-25 hatası)
+    assert web.get("/sohbet/api/metin", params={"id": C32}).status_code == 200
+    assert web.get("/sohbet/api/metin", params={"id": "sozler/31"}).status_code == 200
     r = web.post("/sohbet/api/sor", json={"question": "Dokuzuncu Hakikat?", "history": []})
     assert "event: done" in r.text and '"[1]' not in r.text
     row = store._run("SELECT * FROM usage")[0]
