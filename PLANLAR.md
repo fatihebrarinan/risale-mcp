@@ -67,10 +67,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 `KAYIT.md` › "Sıradaki'nin notları"):
 - **Son adım (2026-11-25):** **S12 bitti ve yayında** (`https://risalemcp.com/sohbet/`, Haiku 5.5 medium; ayrıntı
   `KAYIT.md` › S12). Kullanıcı telefonda denedi ve onayladı, model Haiku medium kaldı, ntfy'ye abone oldu, gizlilik
-  ve şartlar sayfaları yayında. **Deneme ayı sürüyor: 2026-11-25 – 2026-12-25** (ölçüt: en az 10 ayrı hesap ve genel
-  olarak olumsuz geri bildirim yok; duyuru yok). Sırada 1: **B11** (MCP kaynakçasında kaynak adı;
-  `catalog/permissions.SOURCE_LABELS` hazır). Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı
-  sormak). S13 deneme ayından sonra.
+  ve şartlar sayfaları yayında. **Deneme kısaldı** (kullanıcının kararı, 2026-11-25): ay yerine **5 kişi, bir hafta**;
+  maliyet düşük çıktığı için sürdürme kararı büyük ölçüde verildi, deneme gerçek kullanımın sayılarını (düzeltilen,
+  doğrulanamayan, 👎) görmek içindir. Deneyenler iyi bir arayüzle karşılaşsın diye önce **S13.1** (sol panel, sunucuda
+  konuşma geçmişi, sağda Kaynaklar, altta ayarlar), sonra 5 kişiyle bir hafta, sonra S13'ün kalanı. Sırada 1:
+  **S13.1**; B11 ve öbürleri bir sıra aşağı.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -78,9 +79,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   uygulaması "Sonra"da (S13'ten sonra, koşullu).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
   `https://risalemcp.com/taslak/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
-- **Tarihli hatırlatmalar:** (0) **Sohbetin deneme ayı:** haftalık rapor 2026-12-02, 12-09, 12-16, 12-23
-  (sunucuda `.venv/bin/python -m risale_mcp.sohbet usage` ve `geri-bildirim --days 7`); **2026-12-25** ay sonu,
-  sürdürme kararı (S12.7'nin ölçütü), sonra S13. (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
+- **Tarihli hatırlatmalar:** (0) **Sohbetin denemesi:** S13.1 yayına girince 5 kişi, bir hafta; başlamadan ve
+  bitince durum kaydı (sunucuda `.venv/bin/python -m risale_mcp.sohbet usage` ve `geri-bildirim --days 7`), sonra
+  S13'ün sırası yazılır. (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
   **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`):
   Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı (aynı aboneliği kullanır). (3) **Kuyruk durunca
   (Aralık):** tek tefsir kurulumu ("Sıradaki" 7: B3, E6) ve D16.
@@ -96,15 +97,16 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | B11 | Kaynakçada kaynak adı (e-Risale, risaleoku.com…): izinlerin şartı; MCP bağdaştırıcılarında | |
-| 2 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
-| 3 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 4 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 5 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 6 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 7 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 8 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
-| 9 | S13 | Sohbet sayfasının asıl geliştirmesi: S12'nin deneme ayından sonra | |
+| 1 | S13.1 | Sohbet: sol panel ve sunucuda konuşma geçmişi, sağda Kaynaklar, altta ayarlar (5 kişilik denemeden önce) | |
+| 2 | B11 | Kaynakçada kaynak adı (e-Risale, risaleoku.com…): izinlerin şartı; MCP bağdaştırıcılarında | |
+| 3 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
+| 4 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 5 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 6 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 7 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 8 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 9 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 10 | S13 | Sohbet sayfasının asıl geliştirmesi: S12'nin 5 kişilik denemesinden sonra | |
 
 - S13 **Sohbet sayfasının asıl geliştirmesi** (kullanıcının kararı, 2026-11-25): S12'nin deneme ayından sonra, onun
   ölçüleri ve geri bildirimiyle. İlk turda yapılmayan her şey burada: (1) ön arama (soru gelince anlamsal ve kelime
@@ -118,7 +120,19 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   eklentiler (hadis, tefsir, klasik), (12) ad ve alan adı (eski S12.8): `risalemcp.com/sohbet` geçicidir, ileride
   vurucu bir ad ve kendi alan adı (ör. "ustad.com" gibi); hesaplar alana bağlı değil (taşınınca bir kez yeniden
   giriş), e-posta gönderen ve SPF/DKIM yeni alana göre; ad, sayfanın müellif adına konuştuğu izlenimini vermemeli
-  (sayfada açık "yapay zekâ cevabıdır" ibaresi). Sıra deneme ayının sonucuna göre yazılır.
+  (sayfada açık "yapay zekâ cevabıdır" ibaresi). Sıra denemenin sonucuna göre yazılır.
+  **Deneme kısaldı** (kullanıcının kararı, 2026-11-25): ay yerine 5 kişi, bir hafta; başlamadan ve bitince `sohbet usage`
+  kaydı (S13'ün değişiklikleri onunla karşılaştırılır). Maliyet uyarısı: model yönlendirme (Sonnet) ve öbür eklentiler
+  soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır.
+  - S13.1 **Sol panel ve konuşma geçmişi** (kullanıcının kararı, 2026-11-25: denemeden önce, deneyenler iyi bir
+    arayüzle karşılaşsın). Büyük sohbet uygulamalarının düzeni: solda açılıp kapanan panel (geçmiş konuşmalar, "Yeni
+    konuşma" düğmesi, en altta profil ve ayarlar), sağda açılıp kapanan Kaynaklar paneli; telefonda ikisi de çekmece.
+    **Geçmiş sunucuda** (yol (b); kullanıcının kararı: büyük şirketler de öyle, paylaşım bağlantısı da bunu ister):
+    gizlilik ve şartlar sayfaları değişir, konuşma tek tek ve hepsi birden silinir, hesap silinince hepsi gider.
+    Konuşma başlığı ilk sorudan kısaltılır (modele yazdırılmaz). Ayarlar bugün az şey taşır (çıkış, hesabı silme,
+    gizlilik ve şartlar), S13'ün seçeneklerine (dil, hat, cevap boyu) yer kalır. **Çatı yok** (kullanıcının kararı):
+    sade JS, `sohbet.js` modüllere bölünür; asıl altyapı veri biçimidir: konuşma kimliği, turun taşıdıkları (soru,
+    cevap, Kaynaklar, düzeltmeler), API; paylaşım bağlantısına (S13 (9)) uygun kurulur. Tanıtım sitesi statik kalır.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
@@ -394,7 +408,7 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Risale; e-posta doğrulamalı hesap (Scaleway), araçlar süreç içinde, Kaynaklar'ı ve alıntı denetimini sunucu yapar
   (tutmayanı taşır ya da "doğrulanamadı" der), solda Kaynaklar (kaynak adıyla, telefonda çekmece), 👍/👎, kota ve
   bütçe (kişi günde 10, servis günde 5 $, ayda 100 $, ntfy), kendi gizlilik ve şartlar sayfaları. Kullanıcı telefonda
-  denedi; deneme ayı 2026-11-25 – 2026-12-25 (ölçüt: en az 10 hesap, olumsuz geri bildirim yok), sonra S13. Ayrıntı
+  denedi; deneme ayı 2026-11-25 – 2026-12-25 idi, aynı gün 5 kişi ve bir haftaya kısaldı (S13.1'den sonra). Ayrıntı
   `KAYIT.md` › "Kimlikli işler" › S12.
 - E5 Kalan klasik eserler ve yeni tanıtım (2026-11-25, yayında): Risale'de adı geçen eserlerin raporu
   (`docs/e5-risalede-anilan-eserler.md`), yedi eser (Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber,
