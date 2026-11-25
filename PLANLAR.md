@@ -76,7 +76,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (başlarken `sohbet usage` kaydı); ondan önce **S13.2** (panel genişliği, sekmeli ayarlar: yayında,
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
-  (c)–(g) orada. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  (c)–(g) orada. **S13.5** konuşmanın tek kaynakçası (yayında). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -207,6 +207,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     numaralarla gider (not "[7] yanlış" derse aynı kaynağa denk gelsin). **Yapıldı (2026-11-25):** `sohbet.js`
     `numberSources` (numara kaynağın nesnesine değil `WeakMap`'e; yerel kayda girmez), sağ panelde kaynak adıyla aynı
     satırda "1. ve 2. soruda"; arayüz denemesine hazır iki turlu konuşmayla 7 denetim (API çağrısı yok), 74 denetim geçti.
+    Yayında (`acd790a`, `yayin-20261125-231927`, araç çıktısında fark yok).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
