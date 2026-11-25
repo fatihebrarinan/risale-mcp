@@ -212,7 +212,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     düzeltme yerinde (metni yeniden okuyup "c109'da istiğfar geçmiyor"); Şems karşılaştırmasından önce `get_ayah`
     çağrıldı. `olc --hizli` 57/57 atıf doğrulandı (`20261125-233814-…`). (i) **Yeni bulgu:** meal sorusunda model
     nâşirin mealini `>` blokta işaretle alıntıladı; meal cümlenin metni olmadığı için "doğrulanamadı" çıktı (2).
-    Çözüm adayı: işaretli cümlenin Arapça parçasının meali alıntıyla tutuyorsa "nâşirin meali" diye göster. (d) **Yan yana aynı işaret:** "[23] [23]";
+    Çözüm adayı: işaretli cümlenin Arapça parçasının meali alıntıyla tutuyorsa "nâşirin meali" diye göster.
+    (c), (h) yayında (`8928685`, `yayin-20261125-234137`). (d) **Yan yana aynı işaret:** "[23] [23]";
     `check` art arda gelen aynı işareti teke indirsin. (e) **Telif tarihi gereksiz yere metinde:** "kaynak
     1936–1943, Kastamonu'dur (kastamonur.com)", "Hayrat listesi 1933–34 der" (`written` alanından); talimat: tarih
     yalnız soruyla ilgiliyse. (f) **Yabancı harf:** "göktə" (Azerice ə); şimdilik yalnız not, tekrarlarsa cevapta
