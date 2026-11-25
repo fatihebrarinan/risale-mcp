@@ -14,7 +14,8 @@
 # Beklenmeyen fark varsa hiçbir şey gönderilmez; rapor data/interim/tool_snapshot/aday-…/ altındadır.
 #
 # Ayrıştırma ve veritabanı kurulumu bu bilgisayarda yapılır; ham veri sunucuya gitmez. Sunucudaki `data/auth.db`
-# (hesaplar, oturumlar, kullanım kaydı) asıl kopyadır, bu betik onu ezmez. `.env`'den yalnızca VOYAGE_API_KEY gider.
+# (hesaplar, oturumlar, kullanım kaydı) asıl kopyadır, bu betik onu ezmez; sohbetin `data/sohbet.db`'si de öyle.
+# `.env`'den yalnızca VOYAGE_API_KEY ve sohbetin anahtarları (ANTHROPIC_API_KEY, SCW_SECRET_KEY, SCW_PROJECT_ID) gider.
 # Sunucu: Hetzner CAX11 (Helsinki, Ubuntu 24.04), kullanıcı `risale`, servis `risale-mcp` (bkz. CLAUDE.md).
 set -euo pipefail
 
@@ -125,8 +126,10 @@ if [[ $CODE_ONLY == 0 ]]; then
     rsync -az --info=progress2 -e "${SSH[*]}" data/library/kuran/quran.json "$HOST:$DEST/data/library/kuran/"
     uv run python -m risale_mcp.embeddings export-public
     rsync -az --delete -e "${SSH[*]}" data/dist/genel/vectors/ "$HOST:$DEST/data/dist/genel/vectors/"
-    grep '^VOYAGE_API_KEY=' .env | "${SSH[@]}" "$HOST" "cat > $DEST/.env && chmod 600 $DEST/.env"
 fi
+# Anahtarlar (`--code`'da da: S12'nin sohbeti yeni anahtar ister); başka satır gitmez
+grep -E '^(VOYAGE_API_KEY|ANTHROPIC_API_KEY|SCW_SECRET_KEY|SCW_PROJECT_ID)=' .env \
+    | "${SSH[@]}" "$HOST" "cat > $DEST/.env.new && chmod 600 $DEST/.env.new && mv $DEST/.env.new $DEST/.env"
 
 if [[ $HADIS == 1 ]]; then
     # Hadis sunucusu (MVP M5, kullanıcının kararı 2026-11-07: risale ile aynı makine, tefsir ayrı makine).
@@ -152,9 +155,21 @@ rsync -az -e "${SSH[*]}" docs/risale-taslak.service "$HOST:/etc/systemd/system/r
     || { mv /etc/systemd/system/risale-taslak.service.new /etc/systemd/system/risale-taslak.service \
          && systemctl daemon-reload && systemctl enable risale-taslak -q && echo 'taslak servis birimi kuruldu'; }"
 
-"${SSH[@]}" "$HOST" "chown -R risale:risale $DEST && su - risale -c 'cd $DEST && ~/.local/bin/uv sync --no-dev --frozen -q' \
+# S12: sohbet sayfasının servisi (docs/risale-sohbet.service, 127.0.0.1:8010): birim değiştiyse kurulur; ntfy konusu
+# (harcama uyarısı, `sohbet.notify`) yoksa açılır ve bir kez yazdırılır (telefonda abone olunur)
+rsync -az -e "${SSH[*]}" docs/risale-sohbet.service "$HOST:/etc/systemd/system/risale-sohbet.service.new"
+"${SSH[@]}" "$HOST" "cmp -s /etc/systemd/system/risale-sohbet.service.new /etc/systemd/system/risale-sohbet.service \
+    && rm /etc/systemd/system/risale-sohbet.service.new \
+    || { mv /etc/systemd/system/risale-sohbet.service.new /etc/systemd/system/risale-sohbet.service \
+         && systemctl daemon-reload && systemctl enable risale-sohbet -q && echo 'sohbet servis birimi kuruldu'; }"
+"${SSH[@]}" "$HOST" "[ -f $DEST/data/sohbet-ntfy ] || { mkdir -p $DEST/data \
+    && echo \"risale-sohbet-\$(head -c 12 /dev/urandom | od -An -tx1 | tr -d ' \\n')\" > $DEST/data/sohbet-ntfy \
+    && chmod 600 $DEST/data/sohbet-ntfy && echo \"ntfy konusu (telefonda abone olun): \$(cat $DEST/data/sohbet-ntfy)\"; }"
+
+"${SSH[@]}" "$HOST" "chown -R risale:risale $DEST && su - risale -c 'cd $DEST && ~/.local/bin/uv sync --no-dev --frozen --extra sohbet -q' \
     && systemctl restart risale-mcp 2>/dev/null; systemctl is-active risale-mcp || true"
 "${SSH[@]}" "$HOST" "systemctl restart risale-taslak; echo -n 'taslak: '; systemctl is-active risale-taslak || true"
+"${SSH[@]}" "$HOST" "systemctl restart risale-sohbet; echo -n 'sohbet: '; systemctl is-active risale-sohbet || true"
 # Hadis servisi kuruluysa kodla birlikte yeniden başlar
 "${SSH[@]}" "$HOST" "systemctl is-enabled -q risale-mcp-hadis 2>/dev/null \
     && { systemctl restart risale-mcp-hadis; echo -n 'hadis: '; systemctl is-active risale-mcp-hadis; } || true"

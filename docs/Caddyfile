@@ -80,7 +80,19 @@ klasik.risalemcp.com {
 
 # Tanıtım sitesi, belgeler ve gizlilik politikası: depodaki site/ klasörü (scripts/deploy.sh gönderir).
 risalemcp.com {
-	encode gzip
+	# S12: sohbet sayfasının cevap akışı (Server-Sent Events) sıkıştırılmaz: sıkıştırma akışı parça parça göndermez
+	@sikistir not path /sohbet/*
+	encode @sikistir gzip
+	# S12: sohbet sayfası (src/risale_mcp/sohbet.py, docs/risale-sohbet.service, 127.0.0.1:8010): hesap sayfaları,
+	# sohbet, API. Oturumu uygulama kendisi denetler (çerez yalnız /sohbet/ yolunda; davetli bölümün hesapları değil).
+	# Akış tamponlanmaz (flush_interval -1); uzun cevaplar için okuma zaman aşımı yok (varsayılan).
+	redir /sohbet /sohbet/ 308
+	handle /sohbet/* {
+		header X-Robots-Tag "noindex, nofollow"
+		reverse_proxy 127.0.0.1:8010 {
+			flush_interval -1
+		}
+	}
 	# İşârât'ın usul özeti 2026-11-14'e kadar /taslak/'taydı (bağlantısı paylaşıldı): yeni yerine
 	redir /taslak/isarat-usulu.html /isarat-usul/ 301
 	redir /taslak/isarat-usulu.pdf /isarat-usul/isarat-usulu.pdf 301
