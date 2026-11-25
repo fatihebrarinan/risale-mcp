@@ -73,7 +73,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   bildirim, S12.13 hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.4 kota, bütçe ve harcama uyarısı,
   S12.6 gizlilik ve şartlar, deploy (S12.2 ile; Caddy akışı tamponlamaz, `uv sync --extra sohbet`), S12.7 deneme
   ayı (davetsiz; adres bilinmiyor). Deneme ayından sonra S13 (asıl geliştirme). B11 (MCP kaynakçasında kaynak adı)
-  sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
+  sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak). **Devir (2026-11-25):**
+  kullanıcı S12.9'a yeni oturumda başlayacak. Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve
+  --dev` → `http://127.0.0.1:8010/sohbet/` (kod `data/interim/sohbet/eposta.log`'a düşer; yerelde deneme hesabı
+  `deneme@example.com` var). Tek soru `… sohbet sor "<soru>"`, ölçüm `… sohbet olc [soru…]` (hızlı set S12.13'te
+  koda girecek). Telefon uygulaması "Sonra"da (S13'ten sonra, koşullu).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
   `https://risalemcp.com/taslak/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
 - **Tarihli hatırlatmalar:** (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
@@ -350,6 +354,13 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   Yeni sürümler seyrek, şimdilik bırakıldı. Çözüm yolu: notun sürümü ve seçicisiyle (`secici`) yeni sürümde en yakın
   paragrafı bulup notu orada "önceki sürüme yazılmıştı" diye göstermek. (Söz paragrafta bulunamazsa not paragrafın
   altında açık durur, "bu sürümde bulunamadı" der: bu yapıldı.)
+- **Telefon uygulaması: Android ve iOS** (kullanıcının kararı, 2026-11-25: S13'ten sonra, koşullu ve iki basamaklı).
+  Önce S13'te ad ve alan adı, sonra PWA (ana ekrana eklenen web uygulaması; mağaza ve ayrı kod yok); birkaç hafta
+  ölçülür (kaç kişi ekledi). Mağaza uygulaması ancak PWA yetmezse (iOS'ta ekleyemeyenler, bildirim isteği, mağazada
+  görünmek): önce Android (aynı sayfa ince kabukla, TWA; Play Store bir kerelik 25 $, alan adı doğrulaması), iOS en
+  son ve gerekirse (yıllık 99 $; Apple web sarmalayan uygulamayı "asgari işlev" kuralıyla sık reddeder, kabul için
+  bildirim ya da çevrimdışı okuma gibi yerel bir şey gerekir: gerçek geliştirme ve bakım). Mağazadaki ad sonradan zor
+  değişir: ad ve alan adı önce kesinleşir.
 - **Öbür dillerdeki tercümeler** (kullanıcının kararı, 2026-11-23: E8'in Arapça hattı oturduktan sonra, aynı yoldan):
   risaleoku'nun "Other Languages" rafı izne dahil. Tam ya da büyük takımlar: Almanca (14 kitap), İngilizce (11),
   İspanyolca (33), Rusça (20), Urduca (15), Özbekçe (≈97, iki alfabe), Macarca (15); öbürleri küçük kitaplar
