@@ -1,7 +1,7 @@
 ---
 baslik: Klasik Eserler'e Risale-i Nur'un havale ettiği kitaplar geldi
 tarih: 2026-11-25
-durum: taslak
+durum: yayinda
 ozet: Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, Teftâzânî'nin Telvîh'i, Kastalânî'nin Mevâhib'i, Gazâlî'nin İhyâ'sı, Fıkh-ı Ekber ve Munkız artık Klasik Eserler eklentisinde. Yapay zekâ her eserin Risale-i Nur'da nerede anıldığını da biliyor.
 whatsapp: |
   Klasik Eserler eklentisine yedi eser daha eklendi: Risale-i Nur'un kelâmın tafsilatını havale ettiği Şerhu'l-Mevâkıf ve Şerhu'l-Makāsıd, Teftâzânî'nin Telvîh'i, Kastalânî'nin Mevâhib-i Ledünniye'si, Ebû Hanîfe'nin Fıkh-ı Ekber'i, Gazâlî'nin İhyâ'sı ve Munkız'ı.
@@ -27,7 +27,7 @@ Eklentideki eser sayısı böylece on ikiye çıktı. Seçim Risale-i Nur'daki a
 
 ## Yapay zekâ Risale'deki yerini de biliyor
 
-Her eser için Risale-i Nur'un onu nerede andığı kayıtlı: okuyucuyu oraya mı gönderiyor, ondan bir söz mü aktarıyor, yoksa onu değerlendiriyor mu. Örneğin Telvîh'i Risale havale etmez, Teftâzânî'nin kırk-elli sahifede ancak çözdüğü meseleyi Risale'nin kolayca açtığını söyler; yapay zekâ bunu böyle anlatır. Munkız gibi Risale'de adıyla geçmeyen eserlerde de bunu söyler. Risale'nin kendi metni Risale-i Nur eklentisindedir; ikisini birlikte eklerseniz yapay zekâ o yeri de okuyup alıntılar.
+Her eser için Risale-i Nur'un onu nerede andığı kayıtlı: okuyucuyu oraya mı gönderiyor, ondan bir söz mü aktarıyor, yoksa onu değerlendiriyor mu. Örneğin Telvîh'i Risale havale etmez, Teftâzânî'nin kırk-elli sahifede ancak çözdüğü meseleyi Risale'nin kolayca açtığını söyler. Risale'nin kendi metni Risale-i Nur eklentisindedir, ikisini birlikte eklerseniz yapay zekâ o yeri de okuyup alıntılar.
 
 ## Deneyin
 
@@ -37,7 +37,7 @@ Her eser için Risale-i Nur'un onu nerede andığı kayıtlı: okuyucuyu oraya m
 
 ## Bilmenizde fayda var
 
-Metinler Arapçadır; yapay zekânın tercümesinin başında "Yapay zekâ tercümesi" yazar. Şerhu'l-Makāsıd ve Telvîh'in bu baskıları noktalamasızdır, bu yüzden alıntılar uzun paragraflar hâlinde gelebilir. Mevâkıf ve Telvîh'te bölüm başlıkları baskının kendisinden değil, kitabın dijital sürümünün içindekilerinden gelir.
+Metinler Arapçadır, yapay zekânın tercümesinin başında "Yapay zekâ tercümesi" yazar. Mevâkıf ve Telvîh'te bölüm başlıkları baskının kendisinden değil, kitabın dijital sürümünün içindekilerinden gelir.
 
 ## Nasıl eklerim?
 
