@@ -3,6 +3,11 @@
 #
 #   scripts/deploy.sh            # kod + genel profilin veritabanı ve vektörleri + quran.json
 #   scripts/deploy.sh --code     # yalnızca kod, site/ ve taslak bölümü (data/d1/masa/; veri değişmediyse)
+#   scripts/deploy.sh --sohbet   # yalnız sohbet sayfası (S13; ≈10 sn): değişen dosyalar gider, yalnız risale-sohbet yeniden
+#                                # başlar. Sunucudakinden farklı dosyalardan biri sohbetin dışında çalışan koddaysa
+#                                # (src/ altında sohbet olmayan, pyproject.toml, uv.lock, servis birimleri, Caddyfile)
+#                                # durur ve --code ister: MCP araçlarına dokunmadığı için araç çıktısı kaydı gerekmez
+#                                # (kullanıcının kararı, 2026-11-26)
 #   scripts/deploy.sh --site     # yalnız tanıtım sitesi (site/) ve yazıların önizlemesi: kod gitmez, servis yeniden
 #                                # başlamaz, araç çıktısı değişmediği için kaydı da yapılmaz (S9; zamanlı yayın bunu kullanır)
 #   DEPLOY_EXPECT="cite" scripts/deploy.sh   # bu araçların çıktısındaki fark beklenen sayılır
@@ -29,9 +34,9 @@ cd "$(dirname "$0")/.."
 send_posts() {
     rsync -az --delete --chown=risale:risale -e "${SSH[*]}" docs/yenilikler docs/calismalar "$HOST:$DEST/docs/"
 }
-CODE_ONLY=0; HADIS=0; SITE_ONLY=0
+CODE_ONLY=0; HADIS=0; SITE_ONLY=0; SOHBET_ONLY=0
 for arg in "$@"; do
-    case "$arg" in --code) CODE_ONLY=1 ;; --hadis) HADIS=1 ;; --site) SITE_ONLY=1 ;;
+    case "$arg" in --code) CODE_ONLY=1 ;; --hadis) HADIS=1 ;; --site) SITE_ONLY=1 ;; --sohbet) SOHBET_ONLY=1 ;;
         *) echo "bilinmeyen seçenek: $arg"; exit 2 ;; esac
 done
 
@@ -44,6 +49,27 @@ if [[ $SITE_ONLY == 1 ]]; then
     fi
     send_posts
     echo "site gönderildi"
+    exit 0
+fi
+
+if [[ $SOHBET_ONLY == 1 ]]; then
+    # Sunucudakinden içeriği farklı izlenen dosyalar (rsync'in sağlama karşılaştırması; ≈3 sn)
+    changed=$(git ls-files -z | rsync -az --from0 --files-from=- --dry-run --checksum --itemize-changes \
+        -e "${SSH[*]}" ./ "$HOST:$DEST/" | awk '$1 ~ /^<f/ {print $2}')
+    [[ -n "$changed" ]] || { echo "sunucudakiyle aynı: gönderilecek bir şey yok"; exit 0; }
+    # Çalışan kodu etkileyen ama sohbetin olmayan dosya: tam yol (--code), araç çıktısı kaydıyla
+    other=$(grep -E '^(src/|pyproject\.toml$|uv\.lock$|docs/.*\.service$|docs/Caddyfile$)' <<<"$changed" \
+        | grep -vE '^src/risale_mcp/(sohbet\.py|sohbet_hesap\.py|sohbet_assets/)' || true)
+    if [[ -n "$other" ]]; then
+        echo "sohbetin dışında çalışan kod değişmiş; --code ile gönderin (araç çıktısı kaydıyla):"
+        sed 's/^/  /' <<<"$other"
+        exit 1
+    fi
+    echo "gönderiliyor:"; sed 's/^/  /' <<<"$changed"
+    tr '\n' '\0' <<<"$changed" | rsync -az --from0 --files-from=- --chown=risale:risale -e "${SSH[*]}" ./ "$HOST:$DEST/"
+    grep -E '^(VOYAGE_API_KEY|ANTHROPIC_API_KEY|SCW_SECRET_KEY|SCW_PROJECT_ID|SOHBET_SINIRSIZ)=' .env \
+        | "${SSH[@]}" "$HOST" "cat > $DEST/.env.new && chmod 600 $DEST/.env.new && chown risale:risale $DEST/.env.new && mv $DEST/.env.new $DEST/.env"
+    "${SSH[@]}" "$HOST" "systemctl restart risale-sohbet; echo -n 'sohbet: '; systemctl is-active risale-sohbet"
     exit 0
 fi
 
