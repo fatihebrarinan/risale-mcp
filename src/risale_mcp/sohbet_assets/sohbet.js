@@ -372,6 +372,10 @@ async function ask(question) {
       fresh._index = turns.length - 1;
       box.replaceWith(fresh);
       renderSide();
+      if (typeof data.remaining === "number" && data.remaining <= 3) {
+        fresh.append(el("p", "alt-bilgi", data.remaining
+          ? `Bugün ${data.remaining} soru hakkınız kaldı.` : "Bugünlük soru hakkınız doldu; yarın yeniden sorabilirsiniz."));
+      }
     } else if (event === "error") {
       finished = true;
       status.remove();

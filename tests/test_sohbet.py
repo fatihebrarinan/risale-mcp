@@ -355,3 +355,52 @@ def test_section_marks_are_section_references(checker):
     assert moved.sources[0]["id"] == C32 and moved.counts["fixed"] == 1
     opening = sohbet.section_opening(checker, "sozler/31")
     assert opening["section_ref"] == "Sözler › Otuzbirinci Söz" and not any(s["target"] for s in opening["sentences"])
+
+
+# ------------------------------------------------------------ S12.4: kota ve bütçe
+
+def _usage(store, email, cost, ts):
+    store._run("INSERT INTO usage (ts, email, model, rounds, tools, input, output, cache_write, cache_read, cost, "
+               "seconds, outcome) VALUES (?, ?, 'm', 1, 0, 0, 0, 0, 0, ?, 1, 'done')", (ts, email, cost))
+
+
+def test_quota_and_budget(tmp_path):
+    from risale_mcp.sohbet_hesap import Store
+    store = Store(tmp_path / "s.db")
+    limits = sohbet.Limits(questions=3, daily=1.0, monthly=2.0, alert=0.5)
+    now = 1_795_000_000.0                                   # 2026-11-17 civarı
+    day, month = sohbet._starts(now)
+    assert day <= now < day + 86400 and month <= day
+    _usage(store, "a@b.co", 0.1, day - 10)                  # dün: sayılmaz
+    for _ in range(2):
+        _usage(store, "a@b.co", 0.1, now)
+    assert sohbet.refusal(store, "a@b.co", limits, now) is None
+    _usage(store, "a@b.co", 0.1, now)
+    assert "soru hakkınız (3)" in sohbet.refusal(store, "a@b.co", limits, now)
+    assert sohbet.refusal(store, "c@d.co", limits, now) is None
+    _usage(store, "c@d.co", 0.7, now)                       # bugün 1,0 $
+    assert "Bugünlük sohbet bütçesi" in sohbet.refusal(store, "c@d.co", limits, now)
+    assert sohbet.spent(store, now) == pytest.approx((1.0, 1.1))
+    # eşikler bir kez, aşıldığı soruda
+    assert sohbet.alerts((0.4, 1.4), (0.6, 1.6), limits) == ["Günlük harcama 0.60 $ oldu (uyarı eşiği 0.5 $)",
+                                                             "Aylık harcama 1.60 $ (tavanın %80'i: 1.6 $)"]
+    assert sohbet.alerts((0.6, 0.6), (0.7, 0.7), limits) == []
+    assert len(sohbet.alerts((0.9, 1.9), (1.1, 2.1), limits)) == 2
+
+
+@needs_db
+def test_quota_refuses_at_route(library, tmp_path):
+    from starlette.testclient import TestClient
+    from risale_mcp.sohbet_hesap import Config, LogMailer, Store
+    store = Store(tmp_path / "s.db")
+    code, _ = store.new_code("a@b.co", 10)
+    store.redeem("a@b.co", code, "uzun-bir-parola")
+    client = FakeClient([reply(text_block("Cevap."))])
+    app = sohbet.build(sohbet.Chat(library, client, Config()), store, LogMailer(tmp_path / "e.log"), Config(),
+                       sohbet.Limits(questions=1))
+    web = TestClient(app, base_url="https://testserver")
+    web.cookies.set("sohbet_oturum", store.open_session("a@b.co"))
+    first = web.post("/sohbet/api/sor", json={"question": "soru", "history": []})
+    assert '"remaining": 0' in first.text
+    second = web.post("/sohbet/api/sor", json={"question": "soru", "history": []})
+    assert second.status_code == 429 and "soru hakkınız (1)" in second.json()["error"]

@@ -71,8 +71,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   alındı (S12.3 altında "Kararlar"). **S12.9, S12.10, S12.11 bitti (2026-11-25):** tutmayan alıntıyı sunucu
   düzeltir; sohbetin kendi talimatı (ortak bloklar `server.py`'de); solda Kaynaklar paneli, kaynak adı, telefonda
   çekmece (ayrıntı her birinde). Kullanıcı 2026-11-25'te "S12'yi bitirene kadar durma" dedi; kararları S12.4, S12.6,
-  S12.7, S12.13'te. S12.12 (geri bildirim) de bitti. **Önde, bu sırayla:** S12.13 hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.4 kota, bütçe ve harcama uyarısı,
-  S12.6 gizlilik ve şartlar, deploy (S12.2 ile; Caddy akışı tamponlamaz, `uv sync --extra sohbet`), S12.7 deneme
+  S12.7, S12.13'te. S12.12 (geri bildirim) ve S12.4 (kota, bütçe, uyarı) de bitti. **Önde, bu sırayla:** S12.13
+  hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.6 gizlilik ve şartlar, deploy (S12.2 ile; Caddy akışı tamponlamaz, `uv sync --extra sohbet`), S12.7 deneme
   ayı (davetsiz; adres bilinmiyor). Deneme ayından sonra S13 (asıl geliştirme). B11 (MCP kaynakçasında kaynak adı)
   sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/` (kod `data/interim/sohbet/eposta.log`'a düşer; yerelde deneme hesabı
@@ -252,6 +252,12 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     **Harcama uyarısı:** günlük maliyet bir eşiği geçince kullanıcıya haber (ntfy düzeni hazır). Açılıştan önce hazır
     olmalı (davet yok; adres bir paylaşımla hızla yayılabilir). **Sayılar (kullanıcının kararı, 2026-11-25):** servis
     günde 5 $ (dolunca sayfa herkese "bugünlük doldu" der), ayda 100 $; günlük harcama 2 $'ı geçince ntfy bildirimi.
+    **Bitti (2026-11-25):** `sohbet.Limits` (ayar `SOHBET_GUNLUK_SORU`, `SOHBET_GUNLUK_BUTCE`, `SOHBET_AYLIK_BUTCE`,
+    `SOHBET_UYARI`); gün ve ay İstanbul saatiyle, maliyet `usage`'dan. Soru öncesi `refusal`: aylık tavan, günlük tavan,
+    kişinin günlük hakkı (429 ve okuyucuya açık ileti). Her sorudan sonra aşılan eşik bir kez bildirilir (`alerts`:
+    günlük 2 $, günlük tavan, aylık tavanın %80'i ve tamamı); ntfy konusu `SOHBET_NTFY` ya da `data/sohbet-ntfy`
+    (git'e girmez; deploy'da açılır), gönderim sohbeti bekletmez. Okuyucuya kalan hakkı 3 ve altına inince
+    gösterilir. `sohbet usage` bugünkü ve bu ayki harcamayı verir. Console'daki aylık tavan yedek.
   - S12.5 **API'nin açtığı fazladan imkânlar** (kullanıcının kararı, 2026-11-25: on madde). İlk sürümün üç maddesi
     S12.3'te yapıldı: Kaynaklar'ı sunucu kurar, tutmayan alıntı (S12.9 ile sunucu düzeltir), alıntıya dokununca metin.
     Kalan maddeler, havuz ve S12.8 (ad ve alan adı) **S13'e taşındı** (kullanıcının kararı, 2026-11-25). S12.8'in

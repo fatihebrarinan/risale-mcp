@@ -653,6 +653,96 @@ def read_ids(calls: list) -> set[str]:
             for m in _RESULT_ID.findall(result or "")}
 
 
+# ---------------------------------------------------------------- kota ve bütçe (S12.4)
+
+@dataclass
+class Limits:
+    """Kullanıcının kararı (2026-11-25): kişi başına günde 10 soru; servis günde 5 $, ayda 100 $ (dolunca herkese
+    "bugünlük doldu"); günlük harcama 2 $'ı geçince ntfy bildirimi. Gün ve ay İstanbul saatiyle. Console'daki aylık
+    tavan yedektir. Maliyet her cevabın `usage`'ından hesaplanan yaklaşık tutardır (`cost`)."""
+    questions: int = 10
+    daily: float = 5.0
+    monthly: float = 100.0
+    alert: float = 2.0
+
+    @classmethod
+    def from_env(cls) -> "Limits":
+        d = cls()
+        return cls(questions=int(os.environ.get("SOHBET_GUNLUK_SORU", d.questions)),
+                   daily=float(os.environ.get("SOHBET_GUNLUK_BUTCE", d.daily)),
+                   monthly=float(os.environ.get("SOHBET_AYLIK_BUTCE", d.monthly)),
+                   alert=float(os.environ.get("SOHBET_UYARI", d.alert)))
+
+
+TZ = "Europe/Istanbul"
+NTFY_FILE = Path(__file__).resolve().parents[2] / "data" / "sohbet-ntfy"   # ntfy.sh konusu (git'e girmez)
+
+
+def _starts(now: float) -> tuple[float, float]:
+    """Bugünün ve bu ayın başı (İstanbul saatiyle), zaman damgası."""
+    from datetime import datetime
+    from zoneinfo import ZoneInfo
+    t = datetime.fromtimestamp(now, ZoneInfo(TZ))
+    day = t.replace(hour=0, minute=0, second=0, microsecond=0)
+    return day.timestamp(), day.replace(day=1).timestamp()
+
+
+def spent(store: Store, now: float | None = None) -> tuple[float, float]:
+    """Bugün ve bu ay harcanan, $."""
+    day, month = _starts(time.time() if now is None else now)
+    row = store._run("SELECT COALESCE(SUM(CASE WHEN ts >= ? THEN cost END), 0), COALESCE(SUM(cost), 0) FROM usage "
+                     "WHERE ts >= ?", (day, month))[0]
+    return row[0], row[1]
+
+
+def asked_today(store: Store, email: str, now: float | None = None) -> int:
+    day, _ = _starts(time.time() if now is None else now)
+    return store._run("SELECT COUNT(*) FROM usage WHERE email = ? AND ts >= ?", (email, day))[0][0]
+
+
+def refusal(store: Store, email: str, limits: Limits, now: float | None = None) -> str | None:
+    """Soru sorulamıyorsa okuyucuya gösterilecek ileti."""
+    today, month = spent(store, now)
+    if month >= limits.monthly:
+        return "Bu ayın sohbet bütçesi doldu; sayfa gelecek ayın başında yeniden açılır."
+    if today >= limits.daily:
+        return "Bugünlük sohbet bütçesi doldu; yarın yeniden sorabilirsiniz."
+    if asked_today(store, email, now) >= limits.questions:
+        return f"Bugünlük soru hakkınız ({limits.questions}) doldu; yarın yeniden sorabilirsiniz."
+    return None
+
+
+def alerts(before: tuple[float, float], after: tuple[float, float], limits: Limits) -> list[str]:
+    """Bu soruyla aşılan eşikler: günlük uyarı, günlük tavan, aylık tavanın %80'i ve tamamı."""
+    out = []
+    for (b, a), limit, text in (((before[0], after[0]), limits.alert, "Günlük harcama {:.2f} $ oldu (uyarı eşiği {:g} $)"),
+                                ((before[0], after[0]), limits.daily, "Günlük tavan doldu: {:.2f} $ ({:g} $); sayfa yarına kadar kapalı"),
+                                ((before[1], after[1]), limits.monthly * .8, "Aylık harcama {:.2f} $ (tavanın %80'i: {:g} $)"),
+                                ((before[1], after[1]), limits.monthly, "Aylık tavan doldu: {:.2f} $ ({:g} $); sayfa ay sonuna kadar kapalı")):
+        if b < limit <= a:
+            out.append(text.format(a, limit))
+    return out
+
+
+def notify(text: str) -> None:
+    """Telefona bildirim (ntfy.sh; konu `SOHBET_NTFY` ya da `data/sohbet-ntfy`); arka planda, sohbeti bekletmez."""
+    topic = os.environ.get("SOHBET_NTFY") or (NTFY_FILE.read_text().strip() if NTFY_FILE.exists() else None)
+    import logging
+    logging.warning("sohbet: %s", text)
+    if not topic:
+        return
+
+    def send():
+        import urllib.request
+        try:
+            urllib.request.urlopen(urllib.request.Request(f"https://ntfy.sh/{topic}",
+                                                          data=f"Sohbet sayfası\n{text}".encode("utf-8")), timeout=20)
+        except OSError as e:
+            logging.warning("sohbet: bildirim gitmedi: %s", e)
+    import threading
+    threading.Thread(target=send, daemon=True).start()
+
+
 # ---------------------------------------------------------------- kullanım satırı
 
 def log_usage(store: Store, email: str | None, model: str, tally: Tally, seconds: float, outcome: str,
@@ -716,7 +806,7 @@ CSP = ("default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'se
        "font-src 'self'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'")
 
 
-def routes(chat: Chat, store: Store, config: Config):
+def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
     from starlette.requests import Request
     from starlette.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
     from starlette.routing import Route
@@ -764,6 +854,8 @@ def routes(chat: Chat, store: Store, config: Config):
             return JSONResponse({"error": "geçersiz istek"}, status_code=400, headers=headers)
         if email in busy:
             return JSONResponse({"error": "Önceki sorunuzun cevabı sürüyor."}, status_code=429, headers=headers)
+        if message := refusal(store, email, limits):
+            return JSONResponse({"error": message}, status_code=429, headers=headers)
 
         async def stream():
             busy.add(email)
@@ -772,6 +864,7 @@ def routes(chat: Chat, store: Store, config: Config):
                 async for event, data in chat.ask(history, question, tally):
                     if event == "done":
                         outcome, done = "done", data
+                        data["remaining"] = max(0, limits.questions - asked_today(store, email) - 1)
                     elif event == "error":
                         outcome = "error"
                     yield f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
@@ -787,7 +880,10 @@ def routes(chat: Chat, store: Store, config: Config):
             finally:
                 busy.discard(email)
                 if outcome != "refused":
+                    before = spent(store)
                     log_usage(store, email, chat.settings.model, tally, time.time() - start, outcome, done)
+                    for text in alerts(before, spent(store), limits):
+                        notify(text)
 
         return StreamingResponse(stream(), media_type="text/event-stream",
                                  headers={**headers, "X-Accel-Buffering": "no"})
@@ -812,8 +908,8 @@ def routes(chat: Chat, store: Store, config: Config):
                   Route(f"{p}api/geri-bildirim", feedback, methods=["POST"]), Route(f"{p}static/{{name}}", asset)]
 
 
-def build(chat: Chat, store: Store, mailer, config: Config):
-    home, extra = routes(chat, store, config)
+def build(chat: Chat, store: Store, mailer, config: Config, limits: Limits = Limits()):
+    home, extra = routes(chat, store, config, limits)
     return sohbet_hesap.build_app(store, mailer, config, extra_routes=extra, home_page=home)
 
 
@@ -833,7 +929,11 @@ def _library():
     return library
 
 
-# ---------------------------------------------------------------- ölçüm (S12.1'in teyidi)
+# ---------------------------------------------------------------- ölçüm (S12.1'in teyidi, S12.13)
+
+# Hızlı set (S12.13, kullanıcının kararı): her değişiklikte bu 8 soru; 29 sorunun tamamı model ya da talimat
+# değişiminde ve deploy'dan önce. 8 soru yalnız büyük farkı gösterir.
+QUICK = ["A1", "B7", "C11", "D15", "E19", "K2", "K4", "T2"]
 
 def answer_text(done: dict) -> str:
     """Okuyucunun gördüğü cevap düz metin olarak: cevap ve Kaynaklar (altın soru denetimi bunu okur)."""
@@ -851,7 +951,7 @@ async def measure(chat: Chat, ids: list[str]) -> Path:
     from risale_mcp import golden
     questions = [q for q in golden.load_questions() if q["id"] in ids] if ids else \
         [q for q in golden.load_questions() if not q.get("profile")]
-    out = golden.RUNS_DIR / f"{datetime.now():%Y%m%d-%H%M%S}-sohbet-{chat.settings.model}"
+    out = golden.RUNS_DIR / f"{datetime.now():%Y%m%d-%H%M%S}-sohbet-{chat.settings.model}-{chat.settings.effort}"
     out.mkdir(parents=True)
     (out / "model.json").write_text(json.dumps({"model": chat.settings.model, "effort": chat.settings.effort,
                                                 "kind": "sohbet"}), encoding="utf-8")
@@ -902,8 +1002,10 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--dev", action="store_true", help="e-posta gönderilmez, data/interim/sohbet/eposta.log'a yazılır")
     p = sub.add_parser("sor", help="terminalden tek soru")
     p.add_argument("question")
-    p = sub.add_parser("olc", help="altın soruları bu servisle sor (S12.1'in teyidi); varsayılan: Risale soruları")
+    p = sub.add_parser("olc", help="altın soruları bu servisle sor; varsayılan: Risale'nin 29 sorusu. Model ve "
+                                    "düşünme düzeyi SOHBET_MODEL, SOHBET_EFFORT")
     p.add_argument("ids", nargs="*")
+    p.add_argument("--hizli", action="store_true", help=f"hızlı set (S12.13): {' '.join(QUICK)}")
     p = sub.add_parser("usage")
     p.add_argument("--days", type=float, default=7)
     p = sub.add_parser("geri-bildirim", help="geri bildirimleri oku (S12.12)")
@@ -918,7 +1020,7 @@ def main(argv: list[str] | None = None) -> None:
         import uvicorn
         store = Store()
         chat = Chat(_library(), _client(), config, settings)
-        app = build(chat, store, sohbet_hesap.mailer_from_env(config, args.dev), config)
+        app = build(chat, store, sohbet_hesap.mailer_from_env(config, args.dev), config, Limits.from_env())
         uvicorn.run(app, host="127.0.0.1", port=args.port, proxy_headers=True, forwarded_allow_ips="127.0.0.1",
                     access_log=False)
     elif args.command == "sor":
@@ -944,7 +1046,7 @@ def main(argv: list[str] | None = None) -> None:
                   f"okuma {tally.cache_read}), çıktı {tally.output}, ≈{tally.cost:.4f} $, {time.time() - start:.1f} sn")
         asyncio.run(run())
     elif args.command == "olc":
-        asyncio.run(measure(Chat(_library(), _client(), config, settings), args.ids))
+        asyncio.run(measure(Chat(_library(), _client(), config, settings), QUICK if args.hizli else args.ids))
     elif args.command == "geri-bildirim":
         from datetime import datetime
         store = Store()
@@ -964,6 +1066,9 @@ def main(argv: list[str] | None = None) -> None:
                           "FROM usage WHERE ts >= ? GROUP BY outcome", (since,))
         users = store._run("SELECT COUNT(DISTINCT email) FROM usage WHERE ts >= ?", (since,))[0][0]
         votes = store._run("SELECT SUM(vote = 1), SUM(vote = -1) FROM feedback WHERE ts >= ?", (since,))[0]
+        today, month = spent(store)
+        limits = Limits.from_env()
+        print(f"bugün {today:.3f} $ / {limits.daily:g} $, bu ay {month:.3f} $ / {limits.monthly:g} $")
         print(f"son {args.days:g} gün, {users} kullanıcı; geri bildirim 👍 {votes[0] or 0}, 👎 {votes[1] or 0}")
         for r in rows:
             print(f"{r['outcome']:10} {r['n']:5} soru  toplam {r['c'] or 0:.3f} $  soru başı {r['a'] or 0:.4f} $  "
