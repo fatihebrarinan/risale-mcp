@@ -115,11 +115,15 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     0,009, 0,088, 0,30 $ (Claude Code'un istemi dahil). Sonnet'in 17 araç hatası Claude Code'a özgü: aracı önekiz
     çağırıyor (`get_outline` yerine `mcp__risale__get_outline`); kendi servisimizde olmaz. Otomatik ölçü kaliteyi
     tartmaz: kullanıcı yan yana okuyor, `https://risalemcp.com/taslak/s12-modeller.html` (girişli;
-    `scripts/s12-karsilastir.py`, "adları gizle" kipi, tercihler tarayıcıda ve indirilebilir). **Karar bekleniyor.**
+    `scripts/s12-karsilastir.py`, "adları gizle" kipi, tercihler tarayıcıda ve indirilebilir). **Karar (kullanıcı,
+    2026-11-25, ilk beş soruyu okuyarak): Haiku 5.5.** S12.3'te kendi düzenimizde kısa yeniden ölçümle teyit edilir.
   - S12.2 **Hesaplar:** `site_auth.py`'ye kayıt: e-posta → 6 haneli kod (10 dk) → parola; yeni kapsam `sohbet`.
     Adres ve IP başına kayıt ve kod isteme sınırı. E-posta gönderimi için bir gönderim servisi gerekir (site bugün
-    e-posta göndermez; Hetzner'den doğrudan SMTP teslim edilmez): **karar kullanıcının** (adaylar: Brevo, Resend,
-    Postmark, Amazon SES; `risalemcp.com` için SPF/DKIM Cloudflare'de). Doğrulama sınırsız hesabı zorlaştırır ama
+    e-posta göndermez; Hetzner'den doğrudan SMTP teslim edilmez): **karar kullanıcının**. Öneri (2026-11-25):
+    **Scaleway Transactional Email** (Fransa, AB; yalnız işlem e-postası; ayda 300 ücretsiz, sonrası 1.000'i ≈0,25 €;
+    HTTP API, `urllib` yeter). Yedekler: Brevo (AB, günde 300 ücretsiz, pazarlama platformu), Resend (ABD, ayda 3.000).
+    `risalemcp.com`'un SPF'i Cloudflare'de: `destek@` adresinin kaydı varsa yeni kayıt açılmaz, mevcut SPF'e eklenir;
+    DKIM ve DMARC da eklenir. Doğrulama sınırsız hesabı zorlaştırır ama
     engellemez: asıl sınır kişi kotası ve bütçe tavanıdır (S12.4).
   - S12.3 **Sohbet servisi:** `risale-sohbet` (ana makine, 127.0.0.1:8010; Caddy `/sohbet/` sayfası ve `/sohbet/api/`,
     girişli). Araçlar **süreç içinde** `library.py`'den çağrılır, MCP üzerinden değil: hesapsızların ortak sınırını
