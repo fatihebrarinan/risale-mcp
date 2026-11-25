@@ -57,6 +57,8 @@ MAX_HISTORY = 60000           # önceki soru ve cevapların toplamı, karakter
 MAX_NOTE = 1000               # geri bildirim notu, karakter
 MAX_SHARED = 40000            # onayla gönderilen soru ve cevap, karakter
 FEEDBACK_PER_DAY = 50         # kişi başına
+USAGE_DAYS = 90               # kullanım satırlarının saklanma süresi (MCP'nin kullanım kaydıyla aynı; gizlilik politikası)
+FEEDBACK_DAYS = 365           # geri bildirimin saklanma süresi
 EXCLUDED_TOOLS = {"cite"}
 STREAM_ATTEMPTS = 2           # akış ortasında kopan bağlantıda tur bir kez yeniden
 # Akışta okuma zaman aşımı: model düşünürken de sunucu ara ara ping gönderir; 60 sn sessizlik kopmuş bağlantıdır
@@ -755,6 +757,7 @@ def log_usage(store: Store, email: str | None, model: str, tally: Tally, seconds
            "corrected": int(done["corrected"]) if done else None, "outcome": outcome,
            **{k: checks.get(k) if done else None for k in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")}}
     store._run(f"INSERT INTO usage ({', '.join(row)}) VALUES ({', '.join('?' * len(row))})", tuple(row.values()))
+    store._run("DELETE FROM usage WHERE ts < ?", (row["ts"] - USAGE_DAYS * 86400,))
 
 
 # ---------------------------------------------------------------- web
@@ -902,6 +905,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             return JSONResponse({"error": "Bugün için yeterince geri bildirim gönderdiniz; teşekkürler."},
                                 status_code=429, headers=headers)
         store._run(f"INSERT INTO feedback ({', '.join(row)}) VALUES ({', '.join('?' * len(row))})", tuple(row.values()))
+        store._run("DELETE FROM feedback WHERE ts < ?", (row["ts"] - FEEDBACK_DAYS * 86400,))
         return JSONResponse({"ok": True}, headers=headers)
 
     return home, [Route(f"{p}api/sor", ask, methods=["POST"]), Route(f"{p}api/metin", text),

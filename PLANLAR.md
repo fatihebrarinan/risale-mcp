@@ -265,6 +265,9 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   - S12.6 **Gizlilik ve şartlar:** gizlilik politikası (soruların Anthropic'e gitmesi, e-posta servisi, saklanan ve
     saklanmayan, geri bildirim ve onayla gönderilen soru-cevap, konuşmanın tarayıcıda durması), kullanım şartları (yapay zekâ cevabıdır, tefsir ve fetva değildir), `en/` karşılıkları.
     Önce taslak: kullanıcı okuyup düzeltir, sonra deploy'la çıkar (kullanıcının kararı, 2026-11-25).
+    **Taslak yazıldı (2026-11-25):** `docs/s12-gizlilik-taslak.md` (Türkçe ve İngilizce, değişen cümleler ve yeni
+    "Sohbet sayfası" bölümleri; kullanıcının bakacağı tek yer Anthropic'in API verisiyle model eğitmediği cümlesi).
+    Saklama süreleri koda girdi: kullanım satırı 90 gün, geri bildirim bir yıl. Onaydan sonra sayfalara işlenir.
   - S12.7 **Deneme ayı:** başlangıç tarihi açılışta yazılır. Ölçüler: kayıtlı ve etkin kullanıcı, günlük soru, soru başı
     gerçek maliyet, atıf denetiminin geçme oranı, 👍/👎 (not isteğe bağlı, kullanıcının onayıyla saklanır). Haftalık
     rapor; ay sonunda sürdürme kararı (eşiği açılıştan önce kullanıcıyla yazılır). Duyuru yok (kullanıcının kararı,
