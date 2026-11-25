@@ -113,6 +113,18 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 .gomulu { margin: 0 0 0 1.6em; color: var(--muted); }
 .uyari { color: var(--bad); margin-left: 1.6em; font-size: .82rem; }
 .alt-bilgi { font-size: .78rem; color: var(--muted); margin-top: 6px; }
+.geri { margin-top: 10px; }
+.geri-satir { display: flex; align-items: center; gap: 6px; }
+.geri-satir .alt-bilgi { margin: 0 4px 0 0; }
+.oy { background: none; border: 1px solid var(--line); border-radius: 6px; padding: 1px 8px; font-size: .95rem; }
+.oy:hover, .oy.secili { background: var(--accent-soft); border-color: var(--accent); }
+.geri-form { display: grid; gap: 6px; margin-top: 8px; max-width: 560px; }
+.geri-form textarea { font: inherit; font-size: .9rem; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--card); color: var(--fg); resize: vertical; }
+.geri-form label { display: flex; gap: 6px; align-items: flex-start; margin: 0; }
+.geri-dugmeler { display: flex; gap: 8px; }
+.geri-dugmeler button[type="submit"] { border: 0; border-radius: 8px; padding: 4px 14px; background: var(--accent);
+  color: var(--bg); }
 
 .alt { flex: none; background: var(--bg); border-top: 1px solid var(--line);
   padding: 10px 16px max(6px, env(safe-area-inset-bottom)); }

@@ -173,9 +173,73 @@ function renderTurn(turn) {
     answer.innerHTML = markdown(turn.markdown, refs);
     renderSources(box, turn.sources);
     if (turn.corrected) box.append(el("p", "alt-bilgi", "Alıntılar denetimde düzeltildi."));
+    box.append(feedbackBox(turn));
   }
   box._turn = turn;
   return box;
+}
+
+// ------------------------------------------------------------ geri bildirim (S12.12)
+
+function answerText(turn) {          // okuyucunun gördüğü cevap, düz metin: yalnız kullanıcı onaylarsa gönderilir
+  const lines = (turn.sources || []).map((s) => `[${s.n}] ${s.cite_as || "Adresi bulunamadı"}`
+    + (s.source_name ? ` (${s.source_name})` : "") + (s.problem ? " ⚠ doğrulanamadı" : ""));
+  return turn.markdown + (lines.length ? "\n\nKaynaklar\n" + lines.join("\n") : "");
+}
+
+function feedbackBox(turn) {
+  const wrap = el("div", "geri");
+  if (turn.feedback) {
+    wrap.append(el("p", "alt-bilgi", `Geri bildiriminiz alındı (${turn.feedback > 0 ? "👍" : "👎"}). Teşekkürler.`));
+    return wrap;
+  }
+  const row = el("div", "geri-satir");
+  row.append(el("span", "alt-bilgi", "Bu cevap işinize yaradı mı?"));
+  const up = el("button", "oy", "👍"); up.type = "button"; up.setAttribute("aria-label", "Evet, işime yaradı");
+  const down = el("button", "oy", "👎"); down.type = "button"; down.setAttribute("aria-label", "Hayır, yaramadı");
+  row.append(up, down);
+  wrap.append(row);
+  const open = (vote) => {
+    for (const b of [up, down]) b.classList.toggle("secili", b === (vote > 0 ? up : down));
+    let form = wrap.querySelector("form");
+    if (!form) {
+      form = el("form", "geri-form");
+      form.innerHTML = `<textarea rows="2" maxlength="1000" placeholder="Not (isteğe bağlı): ne iyiydi, ne eksik ya da yanlıştı?" aria-label="Not"></textarea>
+        <label class="alt-bilgi"><input type="checkbox"> Soruyu ve bu cevabı da gönder (yalnız bu cevap; konuşmanız
+        başka türlü sunucuda saklanmaz)</label>
+        <div class="geri-dugmeler"><button type="submit">Gönder</button>
+        <button type="button" class="ghost vazgec">Vazgeç</button></div><p class="hata" hidden></p>`;
+      form.querySelector(".vazgec").addEventListener("click", () => {
+        form.remove(); for (const b of [up, down]) b.classList.remove("secili");
+      });
+      form.addEventListener("submit", async (ev) => {
+        ev.preventDefault();
+        const share = form.querySelector("input").checked;
+        const send = form.querySelector('button[type="submit"]');
+        send.disabled = true;
+        try {
+          const r = await fetch(`${P}api/geri-bildirim`, {
+            method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ vote: form._vote, note: form.querySelector("textarea").value, share,
+              ...(share ? { question: turn.q, answer: answerText(turn) } : {}) }),
+          });
+          if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "Gönderilemedi.");
+          turn.feedback = form._vote;
+          save();
+          wrap.replaceWith(feedbackBox(turn));
+        } catch (e) {
+          const err = form.querySelector(".hata"); err.textContent = e.message; err.hidden = false;
+          send.disabled = false;
+        }
+      });
+      wrap.append(form);
+    }
+    form._vote = vote;
+    form.querySelector("textarea").focus();
+  };
+  up.addEventListener("click", () => open(1));
+  down.addEventListener("click", () => open(-1));
+  return wrap;
 }
 
 function renderAll() {

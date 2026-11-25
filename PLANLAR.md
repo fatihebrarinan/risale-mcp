@@ -71,7 +71,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   alındı (S12.3 altında "Kararlar"). **S12.9, S12.10, S12.11 bitti (2026-11-25):** tutmayan alıntıyı sunucu
   düzeltir; sohbetin kendi talimatı (ortak bloklar `server.py`'de); solda Kaynaklar paneli, kaynak adı, telefonda
   çekmece (ayrıntı her birinde). Kullanıcı 2026-11-25'te "S12'yi bitirene kadar durma" dedi; kararları S12.4, S12.6,
-  S12.7, S12.13'te. **Önde, bu sırayla:** S12.12 geri bildirim, S12.13 hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.4 kota, bütçe ve harcama uyarısı,
+  S12.7, S12.13'te. S12.12 (geri bildirim) de bitti. **Önde, bu sırayla:** S12.13 hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.4 kota, bütçe ve harcama uyarısı,
   S12.6 gizlilik ve şartlar, deploy (S12.2 ile; Caddy akışı tamponlamaz, `uv sync --extra sohbet`), S12.7 deneme
   ayı (davetsiz; adres bilinmiyor). Deneme ayından sonra S13 (asıl geliştirme). B11 (MCP kaynakçasında kaynak adı)
   sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
@@ -232,6 +232,11 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   - S12.12 **Geri bildirim** (kullanıcının kararı, 2026-11-25: ilk sürüme). Her cevabın altında 👍/👎 ve isteğe bağlı
     not; "soruyu ve cevabı da gönder" kutusu, varsayılanı kapalı (konuşma sunucuda saklanmaz, yalnız onayla gelir;
     altın soru adayları buradan). Gizlilik politikası (S12.6) yazar.
+    **Bitti (2026-11-25):** cevabın altında "Bu cevap işinize yaradı mı? 👍 👎"; seçince not (en çok 1.000 karakter) ve
+    "Soruyu ve bu cevabı da gönder" kutusu (varsayılan kapalı; işaretlenirse okuyucunun gördüğü cevap ve Kaynaklar düz
+    metin olarak gider). `sohbet.db` `feedback` (zaman, hesap, oy, not, soru, cevap, model); kişi başına günde 50;
+    hesap silinince hesap, not, soru ve cevap silinir, oy kalır. Okuma `uv run --extra sohbet python -m
+    risale_mcp.sohbet geri-bildirim [--days 7]`, `usage` 👍/👎 sayısını verir. Arayüz denemesine katıldı.
   - S12.13 **Hızlı ölçüm seti ve modelin yeniden tartılması** (kullanıcının kararı, 2026-11-25). Her değişiklikte 29
     soru yerine 8 (altın soru kimlikleri küçük harfle, plan kimlikleriyle karışmasın): a1 (yer, iki bölüm), b7 (temsil,
     düzeltmeye gitmişti), c11 (metin), d15 (tuzak), e19 (yorum, uzun), k2 ve k4 (uzun araştırma, üçer bölüm), t2

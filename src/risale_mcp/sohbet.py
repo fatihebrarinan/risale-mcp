@@ -54,6 +54,9 @@ MAX_ROUNDS = 14               # soru başına model çağrısı (düzeltme dahil
 MAX_TURNS = 10                # konuşma başına soru
 MAX_QUESTION = 2000           # karakter
 MAX_HISTORY = 60000           # önceki soru ve cevapların toplamı, karakter
+MAX_NOTE = 1000               # geri bildirim notu, karakter
+MAX_SHARED = 40000            # onayla gönderilen soru ve cevap, karakter
+FEEDBACK_PER_DAY = 50         # kişi başına
 EXCLUDED_TOOLS = {"cite"}
 STREAM_ATTEMPTS = 2           # akış ortasında kopan bağlantıda tur bir kez yeniden
 # Akışta okuma zaman aşımı: model düşünürken de sunucu ara ara ping gönderir; 60 sn sessizlik kopmuş bağlantıdır
@@ -666,6 +669,19 @@ def log_usage(store: Store, email: str | None, model: str, tally: Tally, seconds
 
 # ---------------------------------------------------------------- web
 
+def feedback_row(body: dict, email: str, model: str) -> dict:
+    """S12.12: geri bildirim satırı. Soru ve cevap yalnız `share` işaretliyse saklanır (konuşma sunucuda tutulmaz)."""
+    vote = int(body.get("vote"))
+    if vote not in (1, -1):
+        raise ValueError("vote")
+    note = str(body.get("note") or "").strip()[:MAX_NOTE] or None
+    share = body.get("share") is True
+    question = str(body.get("question") or "").strip()[:MAX_SHARED] if share else None
+    answer = str(body.get("answer") or "").strip()[:MAX_SHARED] if share else None
+    return {"ts": time.time(), "email": email, "vote": vote, "note": note, "question": question or None,
+            "answer": answer or None, "model": model}
+
+
 def section_opening(checker, ident: str) -> dict:
     """Bölüm atfının metni: bölümün ilk cümleleri (işaretli cümle yok)."""
     node = checker.nodes[ident]
@@ -776,8 +792,24 @@ def routes(chat: Chat, store: Store, config: Config):
         return StreamingResponse(stream(), media_type="text/event-stream",
                                  headers={**headers, "X-Accel-Buffering": "no"})
 
+    async def feedback(request: Request):
+        email = user(request)
+        if not email:
+            return JSONResponse({"error": "Oturumunuz kapanmış; yeniden giriş yapın."}, status_code=401, headers=headers)
+        try:
+            body = await request.json()
+            row = feedback_row(body, email, chat.settings.model)
+        except (ValueError, TypeError, AttributeError):
+            return JSONResponse({"error": "geçersiz istek"}, status_code=400, headers=headers)
+        today = store._run("SELECT COUNT(*) FROM feedback WHERE email = ? AND ts >= ?", (email, time.time() - 86400))[0][0]
+        if today >= FEEDBACK_PER_DAY:
+            return JSONResponse({"error": "Bugün için yeterince geri bildirim gönderdiniz; teşekkürler."},
+                                status_code=429, headers=headers)
+        store._run(f"INSERT INTO feedback ({', '.join(row)}) VALUES ({', '.join('?' * len(row))})", tuple(row.values()))
+        return JSONResponse({"ok": True}, headers=headers)
+
     return home, [Route(f"{p}api/sor", ask, methods=["POST"]), Route(f"{p}api/metin", text),
-                  Route(f"{p}static/{{name}}", asset)]
+                  Route(f"{p}api/geri-bildirim", feedback, methods=["POST"]), Route(f"{p}static/{{name}}", asset)]
 
 
 def build(chat: Chat, store: Store, mailer, config: Config):
@@ -874,6 +906,8 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("ids", nargs="*")
     p = sub.add_parser("usage")
     p.add_argument("--days", type=float, default=7)
+    p = sub.add_parser("geri-bildirim", help="geri bildirimleri oku (S12.12)")
+    p.add_argument("--days", type=float, default=7)
     args = parser.parse_args(argv)
     from risale_mcp.env import load_env
     load_env()
@@ -911,6 +945,16 @@ def main(argv: list[str] | None = None) -> None:
         asyncio.run(run())
     elif args.command == "olc":
         asyncio.run(measure(Chat(_library(), _client(), config, settings), args.ids))
+    elif args.command == "geri-bildirim":
+        from datetime import datetime
+        store = Store()
+        for r in store._run("SELECT * FROM feedback WHERE ts >= ? ORDER BY ts", (time.time() - args.days * 86400,)):
+            print(f"\n{datetime.fromtimestamp(r['ts']):%Y-%m-%d %H:%M}  {'👍' if r['vote'] > 0 else '👎'}  "
+                  f"{r['email'] or '(silinmiş hesap)'}  {r['model'] or ''}")
+            if r["note"]:
+                print(f"  not: {r['note']}")
+            if r["question"]:
+                print(f"  soru: {r['question']}\n  cevap:\n" + "\n".join("    " + line for line in r["answer"].splitlines()))
     elif args.command == "usage":
         store = Store()
         since = time.time() - args.days * 86400
@@ -919,7 +963,8 @@ def main(argv: list[str] | None = None) -> None:
                           "SUM(leaks) leak, SUM(paragraphs) par, SUM(unmarked) unm "
                           "FROM usage WHERE ts >= ? GROUP BY outcome", (since,))
         users = store._run("SELECT COUNT(DISTINCT email) FROM usage WHERE ts >= ?", (since,))[0][0]
-        print(f"son {args.days:g} gün, {users} kullanıcı")
+        votes = store._run("SELECT SUM(vote = 1), SUM(vote = -1) FROM feedback WHERE ts >= ?", (since,))[0]
+        print(f"son {args.days:g} gün, {users} kullanıcı; geri bildirim 👍 {votes[0] or 0}, 👎 {votes[1] or 0}")
         for r in rows:
             print(f"{r['outcome']:10} {r['n']:5} soru  toplam {r['c'] or 0:.3f} $  soru başı {r['a'] or 0:.4f} $  "
                   f"araç {r['t'] or 0:.1f}  {r['s'] or 0:.1f} sn  doğrulanamayanlı cevap {r['bad'] or 0}  "

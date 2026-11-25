@@ -297,8 +297,17 @@ def test_web_routes(library, tmp_path):
     assert row["fixed"] == 0 and row["unmarked"] == 0 and row["paragraphs"] == 0
     passage = web.get("/sohbet/api/metin", params={"id": C32}).json()
     assert any(s["target"] for s in passage["sentences"])
+    assert web.get("/sohbet/api/metin", params={"id": "sozler/31"}).json()["section_ref"] == "Sözler › Otuzbirinci Söz"
+    # S12.12: geri bildirim; soru ve cevap yalnız kutu işaretliyse
+    assert web.post("/sohbet/api/geri-bildirim", json={"vote": 1, "note": "iyi", "question": "q", "answer": "a"}).json()["ok"]
+    assert web.post("/sohbet/api/geri-bildirim", json={"vote": -1, "share": True, "question": "q", "answer": "a"}).json()["ok"]
+    assert web.post("/sohbet/api/geri-bildirim", json={"vote": 5}).status_code == 400
+    rows = store._run("SELECT vote, note, question, answer FROM feedback ORDER BY ts")
+    assert [tuple(r) for r in rows] == [(1, "iyi", None, None), (-1, None, "q", "a")]
     store.remove_user("a@b.co")
     assert store._run("SELECT email FROM usage")[0]["email"] is None
+    assert [tuple(r) for r in store._run("SELECT email, vote, note, question, answer FROM feedback ORDER BY ts")] == [
+        (None, 1, None, None, None), (None, -1, None, None, None)]
 
 
 class FlakyClient(FakeClient):

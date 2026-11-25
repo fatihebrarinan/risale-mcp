@@ -130,6 +130,16 @@ CREATE TABLE IF NOT EXISTS usage (      -- S12.3: soru başına bir satır (`soh
     unmarked    INTEGER                 -- içinde hiç işaret olmayanlar (düz cümledeki iddianın sıklığı için)
 );
 CREATE INDEX IF NOT EXISTS usage_ts ON usage(ts);
+CREATE TABLE IF NOT EXISTS feedback (   -- S12.12: cevaba 👍/👎; soru ve cevap yalnız kullanıcı kutuyu işaretlediyse
+    ts        REAL NOT NULL,
+    email     TEXT,                     -- hesap silinince NULL (not, soru ve cevap da silinir; oy kalır)
+    vote      INTEGER NOT NULL,         -- 1 | -1
+    note      TEXT,
+    question  TEXT,
+    answer    TEXT,                     -- okuyucunun gördüğü cevap ve kaynakları, düz metin
+    model     TEXT
+);
+CREATE INDEX IF NOT EXISTS feedback_ts ON feedback(ts);
 """
 # Sonradan eklenen sütunlar: eski veritabanına eklenir (CREATE TABLE IF NOT EXISTS var olan tabloyu değiştirmez).
 ADDED_COLUMNS = {"usage": ("fixed", "dropped", "leaks", "paragraphs", "unmarked")}
@@ -188,6 +198,8 @@ class Store:
         self._run("DELETE FROM codes WHERE email = ?", (email,))
         self._run("DELETE FROM users WHERE email = ?", (email,))
         self._run("UPDATE usage SET email = NULL WHERE email = ?", (email,))    # maliyet sayımı kalır, adsız
+        self._run("UPDATE feedback SET email = NULL, note = NULL, question = NULL, answer = NULL WHERE email = ?",
+                  (email,))                                                  # oy kalır, yazdıkları silinir
 
     def login(self, email: str, password: str, now: float | None = None) -> tuple[bool, str | None]:
         now = time.time() if now is None else now
