@@ -278,6 +278,13 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     yerindeydi: o cevap Lem'alar'ı yalnız aramadan aktarmıştı), telif tarihi yok; `olc --hizli` dört kez, sonuncusu
     79/80 (tek ✗ raporun ayrıştırmasından: başlığında virgül olan bölüm; sayfa doğruladı), Vakıf ve İngilizce
     sızıntı yok. Arayüz denemesi 79 denetim (hadisli hazır tur: listede satır yok, metinde notuyla var). Yayında (`80e28a3`, `deploy.sh --sohbet`).
+  - S13.8 **Arapçada kaybolan harf** (kullanıcı buldu, 2026-11-26): "حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَك۪يلُ"de kef
+    görünmüyordu. Sebep: sohbetin Arapça yazı tipi yoktu; sistem yazı tipleri Risale'nin kesre işaretini (U+06EA ۪)
+    taşımıyor, işaretli harf boş kalıyor (Linux'ta Brave ile yeniden üretildi; system-ui'de kutu). **Yapıldı:**
+    sitenin Noto Naskh'ı (`naskh.woff2`, 63 KB) sohbetin kendi dosyalarında (`static/naskh.woff2`, ileride ayrı alan
+    adında da çalışsın), `@font-face` yalnız Arapça harf aralıklarında (`unicode-range`), `size-adjust: 125%` (Latin
+    harflerin yanında küçük kalıyordu); bütün yazı tipi dizilerinin başında. Test yazı tipinin sunulduğunu sınar,
+    arayüz denemesi 79 denetim.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

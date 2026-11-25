@@ -321,6 +321,8 @@ def test_web_routes(library, tmp_path):
     page = web.get("/sohbet/")
     assert page.status_code == 200 and "soru-formu" in page.text and "script-src 'self'" in page.headers["content-security-policy"]
     assert web.get("/sohbet/static/sohbet.js").status_code == 200
+    font = web.get("/sohbet/static/naskh.woff2")     # S13.8: Arapçanın yazı tipi (kesre işareti U+06EA)
+    assert font.status_code == 200 and font.headers["content-type"] == "font/woff2"
     assert web.get("/sohbet/static/../sohbet.py").status_code == 404
     # servis yeni açılmış, henüz soru yok: atıf dizini kurulmadan da kaynağın metni açılır (2026-11-25 hatası)
     assert web.get("/sohbet/api/metin", params={"id": C32}).status_code == 200

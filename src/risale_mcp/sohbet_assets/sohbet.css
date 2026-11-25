@@ -1,7 +1,11 @@
+/* Arapça (S13.8): sistem yazı tipleri Risale'nin kesre işaretini (U+06EA, "الْوَك۪يلُ") taşımıyor; işaretin harfi
+   boş kalıyor ya da kutu oluyor. Sitenin Noto Naskh'ı yalnız Arapça harflerde kullanılır (unicode-range). */
+@font-face { font-family: "Sohbet Naskh"; src: url("naskh.woff2") format("woff2"); font-display: swap; size-adjust: 125%;
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF; }
 :root {
   --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --soft: #f1efe9; --panel: #f4f2ec;
   --accent: #1f5c3f; --accent-soft: #e3efe7; --bad: #a3271f; --mark: #fff1c2;
-  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+  --serif: "Sohbet Naskh", "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
   --cevap: 1.06rem;                    /* cevapların yazı boyutu (Ayarlar › Görünüm) */
   --sol-w: 272px; --yan-w: 380px;      /* panel genişlikleri (sürüklenerek değişir) */
   color-scheme: light;
@@ -21,7 +25,7 @@
 * { box-sizing: border-box; }
 [hidden] { display: none !important; }
 html, body { height: 100%; }
-body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; overflow: hidden; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 "Sohbet Naskh", system-ui, sans-serif; overflow: hidden; }
 a { color: inherit; }
 button { font: inherit; cursor: pointer; }
 button:disabled { cursor: default; }
@@ -174,7 +178,7 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 .soru-balon { font-size: calc(var(--cevap) * .94); margin: 0 0 12px auto; max-width: 85%; width: fit-content; background: var(--accent-soft);
   border-radius: 12px 12px 2px 12px; padding: 8px 14px; white-space: pre-wrap; }
 .cevap { font-family: var(--serif); font-size: var(--cevap); line-height: 1.7; }
-.cevap h1, .cevap h2, .cevap h3, .cevap h4 { font-family: system-ui, sans-serif; font-size: 1.02rem; margin: 1.2em 0 .4em; }
+.cevap h1, .cevap h2, .cevap h3, .cevap h4 { font-family: "Sohbet Naskh", system-ui, sans-serif; font-size: 1.02rem; margin: 1.2em 0 .4em; }
 .cevap p { margin: .6em 0; }
 .cevap blockquote { margin: .8em 0; padding: .5em 1em; border-left: 3px solid var(--accent); background: var(--card);
   border-radius: 0 6px 6px 0; cursor: pointer; }
@@ -183,7 +187,7 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 .cevap ul, .cevap ol { padding-left: 1.4em; }
 .cevap code { font-size: .9em; background: var(--soft); padding: 0 3px; border-radius: 3px; }
 .cevap hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
-.ref { font-family: system-ui, sans-serif; font-size: .78em; vertical-align: super; line-height: 1; color: var(--accent);
+.ref { font-family: "Sohbet Naskh", system-ui, sans-serif; font-size: .78em; vertical-align: super; line-height: 1; color: var(--accent);
   text-decoration: none; padding: 2px 3px; margin: -2px -1px; cursor: pointer; background: none; border: 0; }
 .ref:hover { text-decoration: underline; }
 .ref.kotu { color: var(--bad); }
@@ -261,7 +265,7 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 .yan .kaynak-grup h3 { position: sticky; top: -10px; z-index: 1; background: var(--card); margin: 0 -14px 4px;
   padding: 10px 14px 6px; border-bottom: 1px solid var(--line); }
 .kaynak-listesi > .kaynak-adi { margin: 4px 0 0; }
-#metin-govde .meal { font-family: system-ui, sans-serif; font-size: .82rem; color: var(--muted); margin: 0 0 .5em 1em; }
+#metin-govde .meal { font-family: "Sohbet Naskh", system-ui, sans-serif; font-size: .82rem; color: var(--muted); margin: 0 0 .5em 1em; }
 #metin-govde .hasiye { font-size: .92rem; border-left: 2px solid var(--line); padding-left: 10px; margin: .4em 0 .4em 1em; }
 
 /* ------------------------------------------------ ayarlar penceresi: solda sekmeler (telefonda üstte) */
