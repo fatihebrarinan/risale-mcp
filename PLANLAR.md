@@ -74,7 +74,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   yayında** (2026-11-25, commit `6ce4a22`, `yayin-20261125-200319`, araç çıktısında fark yok; testler ve 42 denetimli
   arayüz denemesi geçti, gizlilik sayfaları güncel). Sırada: kullanıcı telefonda bakar, sonra 5 kişilik deneme
   (başlarken `sohbet usage` kaydı); ondan önce **S13.2** (panel genişliği, sekmeli ayarlar: yayında,
-  `yayin-20261125-202918`). Sonra B11 ve öbürleri.
+  `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: kodu bitti, yayın bekliyor). Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -159,6 +159,20 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     Enter ya da çift tıklama eski genişlik; Görünüm'de "Panel genişliklerini sıfırla" (telefonda gizli). Tema
     `html[data-tema]`, yazı boyutu `html[data-boyut]` (dört boy; cevap, soru ve metin paneli). Sekmeler ok tuşlarıyla
     gezilir, telefonda üstte. Arayüz denemesi 55 denetim, hepsi geçti.
+  - S13.3 **Karşılama, yeni konuşma sayfası, durum satırları** (kullanıcının isteği, 2026-11-25): (1) girişsiz
+    `/sohbet/` hesap oluşturma sayfasını açar (tanıtımlı, süslü: platformu tanıtan başlık, arka planda desen), altta
+    "Zaten hesabınız var mı? Giriş yapın"; (2) yeni konuşma sayfası daha şık, örnek sorular küçük ve sayfanın farklı
+    yeteneklerini gösterir; (3) cevap beklenirken "Düşünüyor" yerine ne yapıldığı ("Yirmi Dokuzuncu Söz okunuyor",
+    "Kaynaklar hazırlanıyor"). Ad (S13 (12)) konuşuluyor: kullanıcının adayı "Fidanlık".
+    **Kod bitti (2026-11-25), yayın bekliyor.** (1) Girişsiz `/sohbet/` → `kayit`; kayıt ve giriş sayfaları tanıtımlı
+    (`sohbet_hesap.HERO`, `SHELL_STYLE`): solda yeşil zemin, yavaş kayan sekiz köşeli yıldız deseni (satır içi SVG),
+    başlık, üç özellik, veritabanıyla doğrulanmış bir örnek alıntı (Lem'alar › Yirmialtıncı Lem'a › Üçüncü Ricâ); telefonda
+    kısa tanıtım üstte, form ilk ekranda. (2) Yeni konuşma: ortada başlık, sekiz yetenekten (konu taraması, bugünün
+    diliyle, bir bölümü anlamak, temsiller, âyetler, kelimeler, hadisler, meseleler) rastgele altı küçük kart, türüyle;
+    "Başka örnekler". (3) Durum: "Sözler › Yirmidokuzuncu Söz okunuyor" gibi satırlar (`status_line`), araç adımları
+    beklerken dizilir; model beklenirken "Soru inceleniyor…" / "Okunanlar değerlendiriliyor…", sonda "Alıntılar
+    eserlerle denetleniyor, Kaynaklar hazırlanıyor…"; adımlar cevabın üstünde açılır özet ("5 adımda hazırlandı · 3 yer
+    okundu"), saklanan turda da (`turns.steps`). Gizlilik sayfaları buna göre.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

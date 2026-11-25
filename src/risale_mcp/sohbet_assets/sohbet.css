@@ -130,12 +130,45 @@ body.suruklenir .sol, body.suruklenir .yan, body.suruklenir main { pointer-event
 /* ------------------------------------------------ sohbet akışı */
 main { flex: 1; min-height: 0; overflow-y: auto; padding: 16px 16px 24px; }
 main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
-.bos h2 { font-family: var(--serif); font-weight: 600; font-size: 1.6rem; margin: 6vh 0 8px; }
-.bos p { color: var(--muted); }
-.ornekler { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-top: 16px; }
-.ornek { text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
-  color: var(--fg); }
-.ornek:hover { border-color: var(--accent); }
+/* yeni konuşma (S13.3): ortada sade başlık, altında küçük örnek kartlar; her kart bir yeteneği gösterir */
+.bos { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  text-align: center; padding: 3vh 0 4vh; }
+.bos .yildiz { width: 40px; height: 40px; stroke: var(--accent); stroke-width: 1.4; opacity: .85; margin-bottom: 14px; }
+.bos h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.5rem, 3vw, 1.9rem); margin: 0 0 6px; }
+.bos-alt { color: var(--muted); margin: 0 0 26px; font-size: .95rem; max-width: 520px; }
+.ornekler { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 680px;
+  text-align: left; }
+.ornek { display: flex; flex-direction: column; gap: 3px; background: var(--card); border: 1px solid var(--line);
+  border-radius: 12px; padding: 11px 14px; color: var(--fg); font-size: .9rem; line-height: 1.45; text-align: left;
+  transition: border-color .15s, transform .15s, box-shadow .15s; }
+.ornek:hover { border-color: var(--accent); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0, 0, 0, .06); }
+.ornek:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.ornek-tur { display: inline-flex; align-items: center; gap: 6px; font-size: .7rem; font-weight: 600; letter-spacing: .06em;
+  text-transform: uppercase; color: var(--accent); }
+.ornek-tur svg { width: 13px; height: 13px; }
+.baska-ornek { margin-top: 14px; display: inline-flex; align-items: center; gap: 6px; background: none; border: 0;
+  color: var(--muted); font-size: .84rem; padding: 4px 8px; border-radius: 6px; }
+.baska-ornek:hover { color: var(--fg); background: var(--soft); }
+.baska-ornek svg { width: 15px; height: 15px; }
+@media (max-width: 599.98px) {
+  .ornekler { grid-template-columns: 1fr; }
+  .ornek:nth-child(n+5) { display: none; }
+  .bos { justify-content: flex-start; padding-top: 4vh; }
+}
+
+/* cevap beklenirken adımlar (S13.3) ve cevabın altında özetleri */
+.adimlar { list-style: none; margin: 0 0 4px; padding: 0; font-size: .84rem; color: var(--muted); display: grid; gap: 2px; }
+.adimlar li { display: flex; gap: 7px; align-items: baseline; }
+.adimlar li::before { content: "✓"; color: var(--accent); font-size: .8rem; flex: none; }
+.adimlar li.daha::before { content: "…"; }
+.adim-ozet { margin: 0 0 8px; font-size: .82rem; color: var(--muted); }
+.adim-ozet summary { cursor: pointer; width: fit-content; list-style: none; display: inline-flex; gap: 6px;
+  align-items: center; padding: 2px 8px 2px 4px; border-radius: 6px; }
+.adim-ozet summary::-webkit-details-marker { display: none; }
+.adim-ozet summary::before { content: "›"; display: inline-block; transition: transform .15s; font-size: 1rem; line-height: 1; }
+.adim-ozet[open] summary::before { transform: rotate(90deg); }
+.adim-ozet summary:hover { background: var(--soft); color: var(--fg); }
+.adim-ozet .adimlar { margin: 4px 0 0 18px; }
 
 .tur { margin: 0 0 28px; }
 .soru-balon { font-size: calc(var(--cevap) * .94); margin: 0 0 12px auto; max-width: 85%; width: fit-content; background: var(--accent-soft);

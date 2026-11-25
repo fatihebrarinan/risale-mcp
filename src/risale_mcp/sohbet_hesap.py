@@ -167,7 +167,9 @@ CREATE TABLE IF NOT EXISTS turns (
 # Sonradan eklenen sütunlar: eski veritabanına eklenir (CREATE TABLE IF NOT EXISTS var olan tabloyu değiştirmez).
 ADDED_COLUMNS = {"usage": {c: "INTEGER" for c in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")},
                  # S13.1: konuşmaları hesapta sakla (varsayılan açık; kapalıyken konuşma yalnız tarayıcıda)
-                 "users": {"keep_history": "INTEGER NOT NULL DEFAULT 1"}}
+                 "users": {"keep_history": "INTEGER NOT NULL DEFAULT 1"},
+                 # S13.3: cevabın adımları ("… okunuyor"), JSON
+                 "turns": {"steps": "TEXT"}}
 
 
 def norm_email(email: str) -> str:
@@ -413,28 +415,131 @@ def mailer_from_env(config: Config, dev: bool):
 
 # ---------------------------------------------------------------- web
 
+# S13.3: hesap sayfaları. Kayıt ve giriş tanıtımlıdır (solda platformun tanıtımı, arka planda yavaş kayan sekiz köşeli
+# yıldız deseni; telefonda üstte), öbürleri (kod, hesabı silme) yalnız formdur. Desen satır içi SVG'dir: dışarıya istek yok.
 SHELL = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
-<meta name="referrer" content="no-referrer"><title>{title} · {name}</title><style>
-:root {{ --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --accent: #1f5c3f; --bad: #a3271f; }}
-@media (prefers-color-scheme: dark) {{ :root {{ --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f;
-  --card: #1f1e1b; --accent: #7cc49d; --bad: #f08a80; }} }}
-body {{ margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }}
-main {{ max-width: 400px; margin: 10vh auto; padding: 0 16px; }}
-h1 {{ font-size: 1.25rem; margin: 0 0 4px; }} p {{ color: var(--muted); font-size: .92rem; }}
-form {{ background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 16px; margin: 12px 0; }}
-label {{ display: block; font-size: .88rem; margin: 0 0 10px; }}
-input {{ display: block; width: 100%; box-sizing: border-box; margin-top: 4px; padding: 8px 10px; font: inherit;
-  border: 1px solid var(--line); border-radius: 6px; background: var(--bg); color: var(--fg); }}
-input.code {{ font-size: 1.4rem; letter-spacing: .3em; text-align: center; }}
-button {{ width: 100%; padding: 9px; font: inherit; border: 0; border-radius: 6px; background: var(--accent); color: var(--bg); cursor: pointer; }}
-button.link {{ background: none; color: var(--fg); text-decoration: underline; padding: 0; width: auto; }}
-.err {{ color: var(--bad); }} .ok {{ color: var(--accent); }}
-a {{ color: inherit; }} input[readonly] {{ color: var(--muted); }} .small {{ font-size: .82rem; }}
-</style></head><body><main>
+<meta name="referrer" content="no-referrer"><title>{title} · {name}</title><style>{style}</style></head>
+<body class="{kind}"><div class="sayfa">
+{hero}<main><div class="kart">
 {body}
-<p class="small"><a href="/">{site_host}</a> · <a href="{p}gizlilik">Gizlilik</a> · <a href="{p}sartlar">Kullanım şartları</a></p>
-</main></body></html>"""
+</div>
+<p class="alt-not"><a href="/">{site_host}</a> · <a href="{p}gizlilik">Gizlilik</a> · <a href="{p}sartlar">Kullanım şartları</a></p>
+</main></div></body></html>"""
+
+_STAR = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E"
+         "%3Cg fill='none' stroke='white' stroke-width='1'%3E%3Crect x='18' y='18' width='28' height='28'/%3E"
+         "%3Crect x='18' y='18' width='28' height='28' transform='rotate(45 32 32)'/%3E"
+         "%3Ccircle cx='32' cy='32' r='5'/%3E%3Cpath d='M0 32h8M56 32h8M32 0v8M32 56v8'/%3E%3C/g%3E%3C/svg%3E")
+
+SHELL_STYLE = """
+:root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --accent: #1f5c3f; --bad: #a3271f;
+  --hero: #17402d; --hero2: #0f2c1f; --gold: #d9b45a; --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif; }
+@media (prefers-color-scheme: dark) { :root { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f;
+  --card: #1f1e1b; --accent: #7cc49d; --bad: #f08a80; --hero: #12301f; --hero2: #0a1d13; } }
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif; }
+a { color: inherit; }
+.sayfa { min-height: 100dvh; display: flex; }
+main { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 32px 18px; }
+.kart { width: 100%; max-width: 400px; }
+h1 { font-size: 1.4rem; margin: 0 0 6px; } p { color: var(--muted); font-size: .92rem; }
+form { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 18px; margin: 14px 0; }
+label { display: block; font-size: .88rem; margin: 0 0 12px; }
+input { display: block; width: 100%; margin-top: 4px; padding: 10px 12px; font: inherit; border: 1px solid var(--line);
+  border-radius: 8px; background: var(--bg); color: var(--fg); }
+input:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+input.code { font-size: 1.4rem; letter-spacing: .3em; text-align: center; }
+button { width: 100%; padding: 10px; font: inherit; font-weight: 600; border: 0; border-radius: 8px; background: var(--accent);
+  color: var(--bg); cursor: pointer; }
+button:hover { filter: brightness(1.08); }
+button.link { background: none; color: var(--fg); text-decoration: underline; padding: 0; width: auto; font-weight: 400; }
+form.yalin { border: 0; padding: 0; background: none; }
+.err { color: var(--bad); } .ok { color: var(--accent); }
+input[readonly] { color: var(--muted); } .small { font-size: .82rem; }
+.gecis { text-align: center; font-size: .95rem; color: var(--fg); }
+.gecis a { color: var(--accent); font-weight: 600; }
+.alt-not { font-size: .8rem; text-align: center; margin-top: 18px; }
+
+/* tanıtım */
+.tanitim { position: relative; overflow: hidden; flex: 0 0 52%; color: #f3efe4; padding: 56px 56px 40px;
+  display: flex; flex-direction: column; justify-content: center;
+  background: radial-gradient(120% 90% at 15% 10%, #24603f 0%, var(--hero) 45%, var(--hero2) 100%); }
+.tanitim::before { content: ""; position: absolute; inset: -64px; background-image: url("STAR"); background-size: 64px 64px;
+  opacity: .07; animation: kay 90s linear infinite; pointer-events: none; }
+.tanitim::after { content: ""; position: absolute; width: 520px; height: 520px; right: -180px; bottom: -220px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(217, 180, 90, .22), transparent 65%); pointer-events: none; }
+@keyframes kay { to { transform: translate(64px, 64px); } }
+@media (prefers-reduced-motion: reduce) { .tanitim::before { animation: none; } }
+.tanitim > * { position: relative; z-index: 1; max-width: 560px; }
+.ust-yazi { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin: 0 0 18px;
+  font-weight: 600; }
+.tanitim h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.9rem, 3.2vw, 2.7rem); line-height: 1.18;
+  margin: 0 0 16px; color: #fbf8ef; }
+.tanitim .giris-yazi { color: #d7dfd6; font-size: 1.05rem; line-height: 1.65; margin: 0 0 28px; }
+.ozellikler { list-style: none; padding: 0; margin: 0 0 30px; display: grid; gap: 16px; }
+.ozellikler li { display: flex; gap: 14px; align-items: flex-start; }
+.ozellikler svg { flex: none; width: 34px; height: 34px; padding: 7px; border-radius: 9px; background: rgba(255, 255, 255, .08);
+  stroke: var(--gold); fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.ozellikler strong { display: block; color: #fbf8ef; font-size: .98rem; }
+.ozellikler span { color: #c3ccc2; font-size: .9rem; }
+.ornek { background: rgba(255, 255, 255, .06); border: 1px solid rgba(255, 255, 255, .12); border-radius: 14px;
+  padding: 16px 18px; backdrop-filter: blur(2px); }
+.ornek .soru { display: inline-block; background: rgba(255, 255, 255, .12); border-radius: 10px 10px 2px 10px;
+  padding: 5px 12px; font-size: .9rem; color: #fbf8ef; margin: 0 0 10px; }
+.ornek blockquote { margin: 0; padding: 4px 0 4px 14px; border-left: 3px solid var(--gold); font-family: var(--serif);
+  font-size: 1.1rem; color: #fbf8ef; }
+.ornek sup { color: var(--gold); font-family: system-ui, sans-serif; font-size: .7em; margin-left: 3px; }
+.ornek .kaynak { margin: 10px 0 0; font-size: .8rem; color: #b7c2b6; }
+.ornek .etiket { float: right; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: #9fb09f; }
+.uyari-not { font-size: .8rem; color: #a9b6a8; margin: 22px 0 0; }
+@media (max-width: 899.98px) {
+  .sayfa { flex-direction: column; }
+  .tanitim { flex: none; padding: 36px 22px 30px; }
+  .tanitim h2 { font-size: 1.75rem; }
+  .ozellikler { gap: 12px; margin-bottom: 0; }
+  .ornek, .uyari-not { display: none; }
+  main { justify-content: flex-start; padding-top: 24px; }
+}
+@media (max-width: 599.98px) {      /* telefonda form ilk ekranda görünsün: özellikler gizli, tanıtım kısa */
+  .tanitim { padding: 28px 20px 24px; }
+  .ust-yazi { margin-bottom: 10px; }
+  .tanitim h2 { font-size: 1.5rem; margin-bottom: 10px; }
+  .tanitim .giris-yazi { font-size: .95rem; margin: 0; }
+  .ozellikler { display: none; }
+}
+""".replace("STAR", _STAR)
+
+_ICONS = {
+    "kaynak": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/>'
+              '<path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><path d="M9 8h7M9 12h5"/></svg>',
+    "kulliyat": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h4v16H4zM10 4h4v16h-4z"/><path d="m16 5 3.8-1 3 15.5-3.8 1z"/></svg>',
+    "dil": '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 21l1.9-5.4A8 8 0 1 1 21 12z"/>'
+           '<path d="M9 10h6M9 14h4"/></svg>',
+}
+
+HERO = """<aside class="tanitim" aria-label="Tanıtım">
+<p class="ust-yazi">{name} · Sohbet</p>
+<h2>Risale-i Nur'a sorun,<br>cevabı kaynağıyla okuyun.</h2>
+<p class="giris-yazi">Sorularınızı Bediüzzaman Said Nursî'nin eserlerinden cevaplayan bir yapay zekâ. Dayandığı her söz
+eserlerden alıntıdır; alıntılar eserlerin metniyle denetlenir, yeri ve kaynağıyla gösterilir.</p>
+<ul class="ozellikler">
+<li>{i_kaynak}<div><strong>Her alıntı kaynağıyla</strong><span>Alıntıya dokunun, metni eserdeki yerinde, öncesi ve
+sonrasıyla okuyun.</span></div></li>
+<li>{i_kulliyat}<div><strong>Bütün külliyat</strong><span>Sözler'den Lâhikalara, Arapça eserlerden Hizblere; âyetler, hadisler
+ve eski kelimelerin lügat anlamı.</span></div></li>
+<li>{i_dil}<div><strong>Bugünün diliyle sorun</strong><span>Metindeki kelimeyi bilmeseniz de anlamca arar; konunun geçtiği
+yerleri bulur.</span></div></li>
+</ul>
+<div class="ornek"><span class="etiket">Örnek</span>
+<p class="soru">Ümitsizliğe düşen birine ne söylenir?</p>
+<blockquote>Karanlıklı ye'simi, nurlu bir ricâya çevirdi.<sup>[1]</sup></blockquote>
+<p class="kaynak">[1] Lem'alar › Yirmialtıncı Lem'a › Üçüncü Ricâ · Kaynak: e-Risale</p>
+</div>
+<p class="uyari-not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Ücretsizdir.</p>
+</aside>
+"""
+
 
 # S12.6: sohbet sayfasının kendi gizlilik politikası ve kullanım şartları (kullanıcının kararı, 2026-11-25: sitenin
 # ana sayfaları eklentilerin dizin başvurularında gösterildi, onlara dokunulmaz; sohbet kendi alan adına taşınınca
@@ -482,26 +587,27 @@ def doc_page(path: str, config: "Config") -> str:
                             terms="sartlar" if tr else "en/terms", privacy_label="Gizlilik" if tr else "Privacy",
                             terms_label="Kullanım şartları" if tr else "Terms of use")
 
-LOGIN = """<h1>{name} · Sohbet</h1>
-<p>Risale-i Nur hakkındaki sorularınızı, cevapları eserlerden alıntı ve kaynakla veren bir yapay zekâya sorun.</p>
+LOGIN = """<h1>Giriş yapın</h1>
+<p>Tekrar hoş geldiniz.</p>
 {message}
 <form method="post" action="{p}giris">
 <input type="hidden" name="next" value="{next}">
 <label>E-posta<input type="email" name="email" autocomplete="username" required value="{email}"></label>
 <label>Parola<input type="password" name="password" autocomplete="current-password" required></label>
-<button type="submit">Giriş</button>
+<button type="submit">Giriş yap</button>
 </form>
-<p>Hesabınız yok mu? <a href="{p}kayit">Hesap açın</a> · <a href="{p}kayit">Parolamı unuttum</a></p>"""
+<p class="gecis">Hesabınız yok mu? <a href="{p}kayit">Hesap oluşturun</a></p>
+<p class="gecis small"><a href="{p}kayit">Parolamı unuttum</a></p>"""
 
-REGISTER = """<h1>Hesap açın</h1>
-<p>E-posta adresinizi yazın; adresinize 6 haneli bir doğrulama kodu gönderelim. Hesabınız varsa aynı yoldan yeni parola
-belirlersiniz.</p>
+REGISTER = """<h1>Hesap oluşturun</h1>
+<p>E-posta adresinizi yazın; adresinize 6 haneli bir doğrulama kodu gönderelim. Parolanızı unuttuysanız da aynı yoldan
+yenisini belirlersiniz.</p>
 {message}
 <form method="post" action="{p}kayit">
 <label>E-posta<input type="email" name="email" autocomplete="email" required value="{email}"></label>
 <button type="submit">Kod gönder</button>
 </form>
-<p><a href="{p}giris">Giriş sayfasına dön</a></p>"""
+<p class="gecis">Zaten hesabınız var mı? <a href="{p}giris">Giriş yapın</a></p>"""
 
 CODE_FORM = """<h1>Kodu yazın</h1>
 <p><strong>{email_text}</strong> adresine bir doğrulama kodu gönderdik (birkaç dakika sürebilir; gelmezse istenmeyen
@@ -516,7 +622,7 @@ e-posta klasörüne bakın). Kodu ve kendinize bir parola yazın. Hesabınız va
 <p class="small">Devam ederek sohbet sayfasının <a href="{p}sartlar">kullanım şartlarını</a> ve
 <a href="{p}gizlilik">gizlilik politikasını</a> kabul etmiş olursunuz.</p>
 </form>
-<form method="post" action="{p}kayit" style="border:0;padding:0;background:none">
+<form method="post" action="{p}kayit" class="yalin">
 <input type="hidden" name="email" value="{email}"><button class="link" type="submit">Yeni kod gönder</button>
 </form>"""
 
@@ -549,8 +655,12 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
     host = config.site.split("://", 1)[-1]
     esc = lambda s: html.escape(str(s), quote=True)
 
-    def shell(title: str, body: str, status: int = 200) -> HTMLResponse:
-        return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, site_host=esc(host), p=p),
+    hero = HERO.format(name=esc(config.name), **{f"i_{k}": v for k, v in _ICONS.items()})
+
+    def shell(title: str, body: str, status: int = 200, intro: bool = False) -> HTMLResponse:
+        return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, site_host=esc(host), p=p,
+                                         style=SHELL_STYLE, hero=hero if intro else "",
+                                         kind="tanitimli" if intro else "yalin-sayfa"),
                             status_code=status, headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
 
     def err(text: str) -> str:
@@ -581,8 +691,8 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
 
     async def home(request: Request):
         email = user(request)
-        if not email:
-            return RedirectResponse(f"{p}giris", status_code=302)
+        if not email:                    # S13.3: ilk gelen hesap oluşturma sayfasını görür (altta girişe geçiş)
+            return RedirectResponse(f"{p}kayit", status_code=302)
         if home_page:
             return home_page(request, email)
         return shell("Sohbet", HOME.format(p=p, name=esc(config.name), email=esc(email)))
@@ -593,32 +703,32 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
                 return RedirectResponse(safe_next(request.query_params.get("next")), status_code=302)
             msg = '<p class="ok">Oturum kapatıldı.</p>' if request.query_params.get("cikis") else ""
             return shell("Giriş", LOGIN.format(p=p, name=esc(config.name), message=msg, email="",
-                                               next=esc(safe_next(request.query_params.get("next")))))
+                                               next=esc(safe_next(request.query_params.get("next")))), intro=True)
         form = await request.form()
         email, password = str(form.get("email", ""))[:200], str(form.get("password", ""))
         ok, error = store.login(email, password)
         if not ok:
             return shell("Giriş", LOGIN.format(p=p, name=esc(config.name), message=err(error), email=esc(email),
-                                               next=esc(safe_next(str(form.get("next", ""))))), 401)
+                                               next=esc(safe_next(str(form.get("next", ""))))), 401, intro=True)
         return signed_in(RedirectResponse(safe_next(str(form.get("next", ""))), status_code=303), email, request)
 
     async def register(request: Request):
         if request.method == "GET":
-            return shell("Hesap", REGISTER.format(p=p, message="", email=""))
+            return shell("Hesap", REGISTER.format(p=p, message="", email=""), intro=True)
         form = await request.form()
         email = norm_email(str(form.get("email", ""))[:200])
         if not EMAIL.match(email):
             return shell("Hesap", REGISTER.format(p=p, message=err("Geçerli bir e-posta adresi yazın."),
-                                                  email=esc(email)), 400)
+                                                  email=esc(email)), 400, intro=True)
         if not limiter.allow(client_ip(request)):
             return shell("Hesap", REGISTER.format(p=p, message=err("Bu bağlantıdan çok kod istendi. Bir saat sonra "
-                                                                   "yeniden deneyin."), email=esc(email)), 429)
+                                                                   "yeniden deneyin."), email=esc(email)), 429, intro=True)
         try:
             code, existing = store.new_code(email, config.daily_codes)
         except TooSoon as e:                             # kod zaten gönderilmiş: kod sayfası açık kalsın
             return code_page(email, err(str(e)), 429)
         except Refused as e:
-            return shell("Hesap", REGISTER.format(p=p, message=err(str(e)), email=esc(email)), 429)
+            return shell("Hesap", REGISTER.format(p=p, message=err(str(e)), email=esc(email)), 429, intro=True)
         subject, text = code_message(config, code, existing)
         try:
             mailer.send(email, subject, text)
@@ -626,7 +736,7 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
             import logging
             logging.exception("sohbet: doğrulama e-postası gönderilemedi")
             return shell("Hesap", REGISTER.format(p=p, message=err("E-posta şu an gönderilemedi. Biraz sonra yeniden "
-                                                                   "deneyin."), email=esc(email)), 502)
+                                                                   "deneyin."), email=esc(email)), 502, intro=True)
         return code_page(email)
 
     async def redeem(request: Request):

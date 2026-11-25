@@ -162,7 +162,8 @@ def test_loop_with_tool_and_correction(library):
     events = run(chat, "Dokuzuncu Hakikat ne der?")
     kinds = [e for e, _ in events]
     assert kinds[-1] == "done" and "restart" in kinds and "clear" in kinds
-    assert any(e == "status" and d["text"].startswith("Cümleler okunuyor: Sözler › Onuncu Söz") for e, d in events)
+    assert any(e == "status" and d.get("step") and d["text"].startswith("Sözler › Onuncu Söz") and d["text"].endswith(" okunuyor") for e, d in events)
+    assert ("status", {"text": sohbet.CHECKING}) in events and ("status", {"text": sohbet.THINKING_FIRST}) in events
     done = events[-1][1]
     assert done["corrected"] is True and done["problems"] == 0
     assert done["markdown"] == f'Metinde:\n\n> "{TEXT_32}" [1]'

@@ -105,7 +105,7 @@ def test_lockout(store):
 
 
 def test_web_flow(client, mailer):
-    assert client.get("/sohbet/").headers["location"] == "/sohbet/giris"
+    assert client.get("/sohbet/").headers["location"] == "/sohbet/kayit"
     r = client.post("/sohbet/kayit", data={"email": "Okur@Example.com"})
     assert r.status_code == 200 and "Kodu yazın" in r.text
     assert mailer.sent[-1][0] == "okur@example.com" and "hesap açmak" in mailer.sent[-1][2]
@@ -157,7 +157,7 @@ def test_config_prefix_is_portable(store, mailer, monkeypatch):
     config = Config.from_env()
     assert config.prefix == "/"
     c = TestClient(build_app(store, mailer, config), base_url="https://yeni.example", follow_redirects=False)
-    assert c.get("/").headers["location"] == "/giris"
+    assert c.get("/").headers["location"] == "/kayit"
     assert "Yeni Ad" in c.get("/giris").text
 
 

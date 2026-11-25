@@ -6,6 +6,8 @@
 // Açık konuşmanın kimliği adreste (#k/<kimlik>): sayfa yenilenince ve geri tuşunda aynı konuşma açılır.
 // S13.2: panellerin genişliği aradaki çizgiyi sürükleyerek (ya da odaklanıp ok tuşlarıyla) ayarlanır; ayarlar
 // sekmelidir (Hesap, Konuşmalar, Görünüm, Belgeler); görünüm (tema, cevapların yazı boyutu) ve genişlikler bu cihazda.
+// S13.3: yeni konuşmada örnek sorular sayfanın yeteneklerinden seçilir; cevap beklenirken yapılan adımlar ("… okunuyor")
+// dizilir, cevabın üstünde açılır bir özet olarak kalır.
 "use strict";
 
 const P = document.body.dataset.prefix;
@@ -301,11 +303,64 @@ function showList() {
   els.sideTitle.textContent = "Kaynaklar";
 }
 
+// ------------------------------------------------------------ yeni konuşma: örnek sorular (S13.3)
+
+const EXAMPLES = [
+  ["Konu taraması", ["Risale-i Nur'da şefkat hangi eserlerde, nasıl anlatılır?", "Tevekkül hangi risalelerde işlenir?",
+    "Haşir meselesi hangi eserlerde ele alınır?"]],
+  ["Bugünün diliyle", ["Hayatı anlamsız bulan birine Risale ne söyler?", "Ümitsizliğe düşen birine ne tavsiye edilir?",
+    "Yalnızlık duygusuyla nasıl baş edilir?"]],
+  ["Bir bölümü anlamak", ["Onuncu Söz'ün Dokuzuncu Hakikati'ni sade bir dille özetler misin?",
+    "Hastalar Risalesi'nin ilk devalarını özetler misin?", "Yirmi Üçüncü Söz imanın insana ne kazandırdığını nasıl anlatır?"]],
+  ["Temsiller", ["Birinci Söz'deki iki yolcu temsili neyi anlatır?", "Sekizinci Söz'deki kuyu temsilini açıklar mısın?",
+    "Altıncı Söz'deki alışveriş temsili ne anlatır?"]],
+  ["Âyetler", ["Âyetü'l-Kürsî Risale-i Nur'da nerelerde geçer?", "Yâsîn Sûresi'nin son âyetleri hangi bağlamlarda anılır?",
+    "“Her nefis ölümü tadacaktır” âyeti nerelerde geçer?"]],
+  ["Kelimeler", ["“Mânâ-yı harfî” ne demek, Risale'de nasıl kullanılır?", "“Tefekkür” ile “tezekkür” arasında fark var mı?",
+    "“Hiss-i kable'l-vuku” ne demektir?"]],
+  ["Hadisler", ["“Bir saat tefekkür” hadisi Risale'de nerede geçer, kaynağı nedir?",
+    "“Dünya âhiretin tarlasıdır” sözü nerede geçer, kaynağı ne?"]],
+  ["Meseleler", ["Kader ile cüz-i ihtiyarî nasıl bağdaşır?", "Musibetler insan için neden hayır olabilir?"]],
+];
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
+
+function renderExamples() {
+  const box = $("ornekler");
+  const groups = [...EXAMPLES].sort(() => Math.random() - .5).slice(0, 6);
+  box.replaceChildren(...groups.map(([label, questions]) => {
+    const b = el("button", "ornek");
+    b.type = "button";
+    const q = pick(questions);
+    b.dataset.q = q;
+    b.append(el("span", "ornek-tur", esc(label)), el("span", "", esc(q)));
+    return b;
+  }));
+}
+
 // ------------------------------------------------------------ cevaplar
+
+const SHOWN_STEPS = 5;                   // beklerken görünen son adımlar
+
+function stepList(steps, all = false) {
+  const ol = el("ol", "adimlar");
+  const shown = all ? steps : steps.slice(-SHOWN_STEPS);
+  if (shown.length < steps.length) ol.append(el("li", "daha", `${steps.length - shown.length} adım daha`));
+  for (const s of shown) ol.append(el("li", "", esc(s)));
+  return ol;
+}
+
+function stepSummary(steps) {
+  const d = el("details", "adim-ozet");
+  const reads = steps.filter((s) => s.endsWith(" okunuyor")).length;
+  d.append(el("summary", "", `${steps.length} adımda hazırlandı${reads ? ` · ${reads} yer okundu` : ""}`));
+  d.append(stepList(steps, true));
+  return d;
+}
 
 function renderTurn(turn) {
   const box = el("section", "tur");
   box.append(el("div", "soru-balon", esc(turn.q)));
+  if (turn.markdown && turn.steps && turn.steps.length) box.append(stepSummary(turn.steps));
   const answer = el("div", "cevap");
   box.append(answer);
   if (turn.markdown) {
@@ -410,6 +465,7 @@ function newConversation() {
   if (!state.keep) saveLocal();                          // geçici konuşmada "Yeni" eskisini siler
   setHash(null);
   showList();
+  renderExamples();
   renderAll();
   if (!docked.left.matches) closeDrawers();
   els.input.focus();
@@ -755,7 +811,12 @@ async function ask(question) {
   els.list.append(box);
   const answer = box.querySelector(".cevap");
   const status = el("div", "durum", "Soru gönderiliyor…");
+  const steps = [];                      // biten araç adımları
+  let current = null;                    // şu anki satır (araç adımıysa biter bitmez listeye geçer)
+  let trail = stepList(steps);
+  box.insertBefore(trail, answer);
   box.insertBefore(status, answer);
+  const showSteps = () => { const fresh = stepList(steps); trail.replaceWith(fresh); trail = fresh; };
   box.scrollIntoView({ block: "start", behavior: "smooth" });
 
   let draft = "";
@@ -767,7 +828,11 @@ async function ask(question) {
   let finished = false;
 
   const handle = (event, data) => {
-    if (event === "status") { status.textContent = data.text; status.hidden = false; }
+    if (event === "status") {
+      if (current && current.step) { steps.push(current.text); showSteps(); }
+      current = data;
+      status.textContent = data.text; status.hidden = false;
+    }
     else if (event === "delta") {
       draft += data.text;
       status.hidden = true;
@@ -778,7 +843,8 @@ async function ask(question) {
       status.textContent = data.text; status.hidden = false;
     } else if (event === "done") {
       finished = true;
-      Object.assign(turn, { markdown: data.markdown, sources: data.sources, corrected: data.corrected });
+      Object.assign(turn, { markdown: data.markdown, sources: data.sources, corrected: data.corrected,
+        steps: data.steps || [] });
       if (data.conversation) {
         turn.n = data.n;
         if (!owner.id) {
@@ -859,13 +925,18 @@ els.input.addEventListener("keydown", (ev) => {
 });
 function grow() { els.input.style.height = "auto"; els.input.style.height = els.input.scrollHeight + "px"; }
 els.input.addEventListener("input", grow);
-for (const b of document.querySelectorAll(".ornek")) b.addEventListener("click", () => ask(b.textContent));
+$("ornekler").addEventListener("click", (ev) => {
+  const b = ev.target.closest(".ornek");
+  if (b) ask(b.dataset.q);
+});
+$("baska-ornek").addEventListener("click", renderExamples);
 els.fresh.addEventListener("click", newConversation);
 
 // ------------------------------------------------------------ açılış
 
 async function start() {
   layout();
+  renderExamples();
   try {
     const s = await api("durum");
     Object.assign(state, { keep: s.keep, questions: s.questions, remaining: s.remaining });

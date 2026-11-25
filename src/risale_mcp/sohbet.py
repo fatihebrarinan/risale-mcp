@@ -18,7 +18,7 @@ Kullanıcının kararları (2026-11-25, `PLANLAR.md` S12): yalnız Risale, model
   önce), alıntısız işaretin aralığı kısalır ya da kimliği yoksa silinir, düz metne yazılmış kimlik silinir; eserlerde
   hiç bulunmayan alıntı "doğrulanamadı" işaretiyle görünür. Modele düzeltme turu (yol (a)) varsayılan kapalıdır
   (`SOHBET_MODEL_FIX`). Kaç işaretin düzeltildiği, doğrulanamadığı ve işaretsiz paragraf sayısı kullanım satırındadır.
-- **Akış:** cevap Server-Sent Events ile gelir (`status`: araç satırı, `delta`: metin, `clear`: araçtan önceki ara
+- **Akış:** cevap Server-Sent Events ile gelir (`status`: ne yapıldığı; araç adımında `step`, sayfa onları dizer; `delta`: metin, `clear`: araçtan önceki ara
   metin silinir, `restart`: düzeltme başladı, `done`: denetlenmiş cevap ve kaynaklar, `error`).
 - **Konuşmalar** (S13.1, kullanıcının kararları 2026-11-25): hesapta saklanır (`Conversations`; ayar
   `users.keep_history`, varsayılan açık). Saklanan konuşmanın geçmişi sunucudan okunur, tarayıcının gönderdiği
@@ -432,6 +432,7 @@ class Tally:
     cost: float = 0.0
     calls: list = field(default_factory=list)      # (araç, girdi, sonuç, hata mı): ölçüm dökümü için (`olc`)
     model_text: str = ""                           # modelin son cevabı, sunucu düzeltmeden önce (`olc`)
+    steps: list = field(default_factory=list)      # S13.3: okuyucuya gösterilen adımlar ("… okunuyor")
 
     def add(self, model: str, usage) -> None:
         self.rounds += 1
@@ -449,7 +450,20 @@ def _short(text, n: int = 60) -> str:
     return text if len(text) <= n else text[:n - 1] + "…"
 
 
+def _sura(args: dict, with_ayah: bool = True) -> str:
+    """"Bakara 255": sûre numarası ya da adı, âyetiyle."""
+    from risale_mcp.quran import SURA_NAMES
+    sura = args.get("sura")
+    try:
+        sura = SURA_NAMES[int(sura) - 1]
+    except (TypeError, ValueError, IndexError):
+        sura = str(sura or "").strip()
+    ayah = args.get("ayah") if with_ayah else None
+    return f"{sura} {ayah}" if ayah else sura
+
+
 def status_line(library, name: str, args: dict) -> str:
+    """S13.3: okuyucuya o an ne yapıldığını söyleyen satır ("Sözler › Yirmi Dokuzuncu Söz okunuyor")."""
     def where(section: str) -> str:
         try:
             return library.outline(section, 0)["ref"]
@@ -458,31 +472,39 @@ def status_line(library, name: str, args: dict) -> str:
     try:
         match name:
             case "semantic_search":
-                return f"Anlamca aranıyor: “{_short(args.get('query'))}”"
+                return f"“{_short(args.get('query'))}” anlamına yakın yerler aranıyor"
             case "search":
-                return f"Kelime aranıyor: “{_short(args.get('query'))}”"
+                return f"“{_short(args.get('query'))}” geçen cümleler aranıyor"
             case "read_section":
-                return f"Okunuyor: {where(args.get('section', ''))}"
+                return f"{where(args.get('section', ''))} okunuyor"
             case "get_outline":
-                return f"İçindekilere bakılıyor: {where(args.get('section', ''))}"
+                return f"{where(args.get('section', ''))} bölümlerine bakılıyor"
             case "get_passage":
                 ident = str(args.get("id", "")).split("..")[0]
-                return f"Cümleler okunuyor: {where(ident.rsplit('/', 1)[0])}"
+                return f"{where(ident.rsplit('/', 1)[0])} okunuyor"
             case "find_sentence":
-                return f"Cümle aranıyor: “{_short(args.get('incipit'))}”"
+                return f"“{_short(args.get('incipit'))}” cümlesinin yeri aranıyor"
             case "find_ayah":
-                return f"Âyetin geçtiği yerler aranıyor: {args.get('sura')}" + (f":{args['ayah']}" if args.get("ayah") else "")
+                return f"{_sura(args)} âyetinin eserlerde geçtiği yerler aranıyor" if args.get("ayah") else \
+                    f"{_sura(args)} Sûresi'nin eserlerde geçtiği yerler aranıyor"
             case "get_ayah":
-                return f"Âyet okunuyor: {args.get('sura')}:{args.get('ayah')}"
-            case "find_hadith" | "get_hadith":
-                return "Hadis kaynaklarına bakılıyor"
+                return f"Kur'ân'dan {_sura(args)} okunuyor"
+            case "find_hadith":
+                return "Hadisin eserlerdeki yerleri ve kaynakları aranıyor"
+            case "get_hadith":
+                return "Rivayet kaynağında okunuyor"
             case "lookup_word":
-                return f"Lügate bakılıyor: {_short(', '.join(map(str, args.get('words') or [])))}"
+                return f"Lügatte bakılıyor: {_short(', '.join(map(str, args.get('words') or [])))}"
             case "list_works":
                 return "Eserlerin listesine bakılıyor"
     except Exception:
         pass
     return "Eserlere bakılıyor"
+
+
+THINKING_FIRST = "Soru inceleniyor…"
+THINKING_LATER = "Okunanlar değerlendiriliyor…"
+CHECKING = "Alıntılar eserlerle denetleniyor, Kaynaklar hazırlanıyor…"
 
 
 # ---------------------------------------------------------------- sohbet
@@ -590,6 +612,7 @@ class Chat:
             if text is None:
                 return
             tally.model_text = text
+            yield "status", {"text": CHECKING}
             checked = await asyncio.to_thread(check, self.checker, text, read_ids(tally.calls))
             if (self.settings.model_fix and checked.problems and not corrected and tally.rounds < MAX_ROUNDS):
                 corrected = True
@@ -598,6 +621,7 @@ class Chat:
                 continue
             yield "done", {"markdown": checked.markdown, "raw": checked.raw, "sources": checked.sources,
                            "problems": checked.counts["unverified"], "corrected": corrected, "checks": checked.counts,
+                           "steps": tally.steps,
                            "usage": {"cost": round(tally.cost, 5), "tools": tally.tools, "rounds": tally.rounds}}
             return
 
@@ -606,7 +630,7 @@ class Chat:
             if tally.rounds >= MAX_ROUNDS:
                 yield "error", {"message": "Bu soru için okuma sınırına ulaşıldı. Soruyu daraltarak yeniden sorun."}
                 return
-            yield "status", {"text": "Düşünüyor…"}
+            yield "status", {"text": THINKING_LATER if tally.calls else THINKING_FIRST}
             message = None
             for attempt in range(STREAM_ATTEMPTS):
                 try:
@@ -645,7 +669,8 @@ class Chat:
                                                "you have read, and say what you could not check."})
                     continue
                 tally.tools += 1
-                yield "status", {"text": status_line(self.library, block.name, block.input or {})}
+                tally.steps.append(line := status_line(self.library, block.name, block.input or {}))
+                yield "status", {"text": line, "step": True}
                 results.append(result := await self._call_tool(block))
                 tally.calls.append((block.name, block.input or {}, result["content"], bool(result.get("is_error"))))
             messages.append({"role": "user", "content": results})
@@ -786,10 +811,11 @@ class Conversations:
     def turns(self, email: str, ident: str) -> list[dict] | None:
         if not self.owned(email, ident):
             return None
-        rows = self.store._run("SELECT n, question, raw, markdown, sources, corrected, feedback FROM turns "
+        rows = self.store._run("SELECT n, question, raw, markdown, sources, corrected, feedback, steps FROM turns "
                                "WHERE conversation = ? ORDER BY n", (ident,))
         return [{"n": r["n"], "q": r["question"], "a": r["raw"], "markdown": r["markdown"],
-                 "sources": json.loads(r["sources"]), "corrected": bool(r["corrected"]), "feedback": r["feedback"]}
+                 "sources": json.loads(r["sources"]), "corrected": bool(r["corrected"]), "feedback": r["feedback"],
+                 "steps": json.loads(r["steps"] or "[]")}
                 for r in rows]
 
     def get(self, email: str, ident: str) -> dict | None:
@@ -812,10 +838,11 @@ class Conversations:
             else:
                 n = c.execute("SELECT COALESCE(MAX(n) + 1, 0) FROM turns WHERE conversation = ?", (ident,)).fetchone()[0]
                 c.execute("UPDATE conversations SET updated = ? WHERE id = ? AND email = ?", (now, ident, email))
-            c.execute("INSERT INTO turns (conversation, n, ts, question, raw, markdown, sources, corrected) "
-                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            c.execute("INSERT INTO turns (conversation, n, ts, question, raw, markdown, sources, corrected, steps) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
                       (ident, n, now, question.strip(), done["raw"], done["markdown"],
-                       json.dumps(done["sources"], ensure_ascii=False), int(bool(done.get("corrected")))))
+                       json.dumps(done["sources"], ensure_ascii=False), int(bool(done.get("corrected"))),
+                       json.dumps(done.get("steps") or [], ensure_ascii=False)))
         return ident, n
 
     def rename(self, email: str, ident: str, title: str) -> bool:

@@ -48,15 +48,14 @@
 
     <main id="akis">
       <section id="bos" class="bos">
-        <h2>Risale-i Nur'a sorun</h2>
-        <p>Cevabı bir yapay zekâ yazar; dayandığı yerleri eserlerden alıntılar. Her alıntı eserlerin metniyle denetlenir
-          ve Kaynaklar'da adresiyle verilir. Alıntıya ya da kaynağa dokunursanız metni bağlamıyla okursunuz.</p>
-        <div class="ornekler">
-          <button type="button" class="ornek">Haşrin aklî delilleri nelerdir?</button>
-          <button type="button" class="ornek">Risale-i Nur'da tevekkül nasıl anlatılır?</button>
-          <button type="button" class="ornek">Ümitsizliğe karşı ne tavsiye edilir?</button>
-          <button type="button" class="ornek">Birinci Söz'deki iki adam temsilini anlatır mısın?</button>
-        </div>
+        <svg class="yildiz" viewBox="0 0 48 48" aria-hidden="true"><rect x="12" y="12" width="24" height="24"/>
+          <rect x="12" y="12" width="24" height="24" transform="rotate(45 24 24)"/><circle cx="24" cy="24" r="4.5"/></svg>
+        <h2>Ne sormak istersiniz?</h2>
+        <p class="bos-alt">Cevaplar Risale-i Nur'dan alıntılarla gelir; her alıntının yeri Kaynaklar'dadır.</p>
+        <div id="ornekler" class="ornekler"></div>
+        <button type="button" id="baska-ornek" class="baska-ornek">
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M16 10a6 6 0 1 1-1.8-4.3M16 3.5v3.2h-3.2"/></svg>
+          Başka örnekler</button>
       </section>
       <div id="konusma"></div>
     </main>
