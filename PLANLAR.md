@@ -109,6 +109,13 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     seçenek alır; `claude -p` aboneliği kullanır, API kredisi harcanmaz). Ölçüler: doğrulanan atıf, beklenen bölüm
     okundu mu, araç sayısı, süre, eşdeğer maliyet; kullanıcı birkaç cevabı yan yana okur. Sonuç model ve effort
     seçimidir; S12.3'ün kendi düzeninde kısa bir yeniden ölçümle (API'den, gerçek maliyetle) teyit edilir.
+    **Ölçüldü (2026-11-25):** 29 Risale sorusu, genel profil, abonelikle; Haiku `20261125-141205-coklu-claude-haiku-5-5`,
+    Sonnet `…-sonnet-5-5`, karşılaştırma için Opus (M6, 7 Kasım, üç eklenti). Doğrulanan atıf Haiku 212/215,
+    Sonnet 123/123, Opus 167/178; beklenen bölüm okundu 28/34, 19/34, 31/34; süre 29, 22, 41 sn; eşdeğer maliyet
+    0,009, 0,088, 0,30 $ (Claude Code'un istemi dahil). Sonnet'in 17 araç hatası Claude Code'a özgü: aracı önekiz
+    çağırıyor (`get_outline` yerine `mcp__risale__get_outline`); kendi servisimizde olmaz. Otomatik ölçü kaliteyi
+    tartmaz: kullanıcı yan yana okuyor, `https://risalemcp.com/taslak/s12-modeller.html` (girişli;
+    `scripts/s12-karsilastir.py`, "adları gizle" kipi, tercihler tarayıcıda ve indirilebilir). **Karar bekleniyor.**
   - S12.2 **Hesaplar:** `site_auth.py`'ye kayıt: e-posta → 6 haneli kod (10 dk) → parola; yeni kapsam `sohbet`.
     Adres ve IP başına kayıt ve kod isteme sınırı. E-posta gönderimi için bir gönderim servisi gerekir (site bugün
     e-posta göndermez; Hetzner'den doğrudan SMTP teslim edilmez): **karar kullanıcının** (adaylar: Brevo, Resend,

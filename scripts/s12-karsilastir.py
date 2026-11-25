@@ -45,6 +45,19 @@ def _site():
     return mod
 
 
+def tidy(answer: str) -> str:
+    """Model cevabını yazıların Markdown'ına uydurur: başlıktan sonra boş satır, kaynakça satırları liste."""
+    lines = []
+    for line in answer.splitlines():
+        if (h := re.match(r"(#{1,6}) (.+)$", line)):
+            lines += ["", "#" * min(max(len(h.group(1)), 2), 3) + " " + h.group(2), ""]
+        elif re.match(r"\[\d+\] ", line):
+            lines.append("- " + line)
+        else:
+            lines.append(line)
+    return "\n".join(lines)
+
+
 def run_model(run_dir: Path) -> str:
     meta = run_dir / "model.json"
     if meta.exists():
@@ -200,7 +213,7 @@ def page(runs: list[tuple[str, Path, dict]], questions: dict) -> str:
             if r is None:
                 body, metrics, calls = "<p><em>Bu soru bu çalıştırmada yok.</em></p>", "", ""
             else:
-                body = site.markdown(r["answer"]) if r["answer"] else f"<p><em>Cevap yok: {html.escape(str(r['failure']))}</em></p>"
+                body = site.markdown(tidy(r["answer"])) if r["answer"] else f"<p><em>Cevap yok: {html.escape(str(r['failure']))}</em></p>"
                 read = "".join("✓" if x else "✗" for x in r["read"]) or "—"
                 cls = lambda bad, warn=False: ' class="bad"' if bad else (' class="warn"' if warn else "")
                 errors = f" ({r['errors']} hata)" if r["errors"] else ""
