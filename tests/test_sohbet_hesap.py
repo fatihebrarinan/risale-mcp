@@ -159,3 +159,19 @@ def test_config_prefix_is_portable(store, mailer, monkeypatch):
     c = TestClient(build_app(store, mailer, config), base_url="https://yeni.example", follow_redirects=False)
     assert c.get("/").headers["location"] == "/giris"
     assert "Yeni Ad" in c.get("/giris").text
+
+
+def test_policy_pages_are_public(tmp_path):
+    """S12.6: sohbetin kendi gizlilik ve şartlar sayfaları girişsiz açılır, yer tutucu kalmaz, iki dil birbirine
+    bağlanır; hesap sayfaları onlara bağlanır (sitenin ana sayfalarına değil)."""
+    from starlette.testclient import TestClient
+    from risale_mcp.sohbet_hesap import DOCS, LogMailer, Store, build_app, Config
+    web = TestClient(build_app(Store(tmp_path / "s.db"), LogMailer(tmp_path / "e.log"), Config()),
+                     base_url="https://testserver")
+    for path in DOCS:
+        r = web.get(f"/sohbet/{path}")
+        assert r.status_code == 200 and "{{" not in r.text and "risalemcp.com/sohbet/" in r.text, path
+    assert 'href="/sohbet/en/privacy"' in web.get("/sohbet/gizlilik").text
+    assert "Anthropic" in web.get("/sohbet/en/privacy").text
+    login = web.get("/sohbet/giris").text
+    assert 'href="/sohbet/gizlilik"' in login and "/gizlilik.html" not in login

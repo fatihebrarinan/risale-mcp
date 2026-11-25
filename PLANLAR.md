@@ -69,8 +69,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   düzeltir), S12.10 (sohbetin kendi talimatı), S12.11 (solda Kaynaklar, kaynak adı, telefonda çekmece), S12.12 (geri
   bildirim), S12.4 (kota, bütçe, ntfy) ve **deploy** (`https://risalemcp.com/sohbet/`, Haiku 5.5 medium; ayrıntı
   S12.7). S12.13'ün üç koşusu yapıldı, okuma sayfası hazır. **Kullanıcıdan beklenen:** (1) telefonda baştan sona
-  deneme (onaylarsa deneme ayı o gün başlar, S12.7'ye tarih yazılır), (2) gizlilik ve şartlar taslağını okuma
-  (`docs/s12-gizlilik-taslak.md`; onaylanınca sayfalara işlenir, `deploy.sh --site`, taslak silinir), (3) model seçimi
+  deneme (onaylarsa deneme ayı o gün başlar, S12.7'ye tarih yazılır), (2) sohbetin kendi gizlilik ve şartlar sayfalarını okuma
+  (`sohbet_assets/`; kullanıcıya dosya olarak gönderildi; onaylanınca `deploy.sh --code`), (3) model seçimi
   (`/taslak/s12-modeller.html`; öneri Haiku medium), (4) ntfy konusuna telefonda abone olma (`data/sohbet-ntfy`,
   sunucuda). Deneme ayından sonra S13. B11 (MCP kaynakçasında kaynak adı; `catalog/permissions.SOURCE_LABELS` hazır)
   sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
@@ -273,9 +273,14 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   - S12.6 **Gizlilik ve şartlar:** gizlilik politikası (soruların Anthropic'e gitmesi, e-posta servisi, saklanan ve
     saklanmayan, geri bildirim ve onayla gönderilen soru-cevap, konuşmanın tarayıcıda durması), kullanım şartları (yapay zekâ cevabıdır, tefsir ve fetva değildir), `en/` karşılıkları.
     Önce taslak: kullanıcı okuyup düzeltir, sonra deploy'la çıkar (kullanıcının kararı, 2026-11-25).
-    **Taslak yazıldı (2026-11-25):** `docs/s12-gizlilik-taslak.md` (Türkçe ve İngilizce, değişen cümleler ve yeni
-    "Sohbet sayfası" bölümleri; kullanıcının bakacağı tek yer Anthropic'in API verisiyle model eğitmediği cümlesi).
-    Saklama süreleri koda girdi: kullanım satırı 90 gün, geri bildirim bir yıl. Onaydan sonra sayfalara işlenir.
+    Saklama süreleri koda girdi: kullanım satırı 90 gün, geri bildirim bir yıl. **Ayrı sayfalar (kullanıcının kararı,
+    2026-11-25):** sitenin ana gizlilik ve şartlar sayfalarına dokunulmaz (eklentilerin dizin başvurularında
+    gösterildiler; sohbetin verisi oraya girerse eklentinin özelliği sanılabilir). Sohbetin kendi sayfaları servisin
+    içinde, girişsiz: `/sohbet/gizlilik`, `/sohbet/sartlar`, `/sohbet/en/privacy`, `/sohbet/en/terms`
+    (`sohbet_assets/{gizlilik,sartlar,en-privacy,en-terms}.html`, `sohbet_hesap.DOCS`, tarih `POLICY_DATE`); hesap
+    sayfaları ve sohbetin alt satırı bunlara bağlanır. Sohbet kendi alan adına taşınınca sayfalar da onunla gider. İlk
+    taslak (`docs/s12-gizlilik-taslak.md`) kaldırıldı. **Bekleyen:** kullanıcının okuması; onaydan sonra deploy
+    (`--code`), o güne kadar canlı sayfa ana politikaya bağlanıyor.
   - S12.7 **Deneme ayı:** başlangıç tarihi açılışta yazılır. Ölçüler: kayıtlı ve etkin kullanıcı, günlük soru, soru başı
     gerçek maliyet, atıf denetiminin geçme oranı, 👍/👎 (not isteğe bağlı, kullanıcının onayıyla saklanır). Haftalık
     rapor; ay sonunda sürdürme kararı (eşiği açılıştan önce kullanıcıyla yazılır). Duyuru yok (kullanıcının kararı,

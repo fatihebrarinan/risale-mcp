@@ -49,6 +49,7 @@ from risale_mcp.paths import DATA_DIR, INTERIM_DIR
 DB = DATA_DIR / "sohbet.db"
 COOKIE = "sohbet_oturum"
 SESSION_DAYS = 30
+ASSETS = Path(__file__).parent / "sohbet_assets"
 MIN_PASSWORD = 10
 CODE_MINUTES = 10
 CODE_ATTEMPTS = 5
@@ -407,8 +408,54 @@ button.link {{ background: none; color: var(--fg); text-decoration: underline; p
 a {{ color: inherit; }} input[readonly] {{ color: var(--muted); }} .small {{ font-size: .82rem; }}
 </style></head><body><main>
 {body}
-<p class="small"><a href="/">{site_host}</a> · <a href="/gizlilik.html">Gizlilik</a> · <a href="/kullanim-sartlari.html">Kullanım şartları</a></p>
+<p class="small"><a href="/">{site_host}</a> · <a href="{p}gizlilik">Gizlilik</a> · <a href="{p}sartlar">Kullanım şartları</a></p>
 </main></body></html>"""
+
+# S12.6: sohbet sayfasının kendi gizlilik politikası ve kullanım şartları (kullanıcının kararı, 2026-11-25: sitenin
+# ana sayfaları eklentilerin dizin başvurularında gösterildi, onlara dokunulmaz; sohbet kendi alan adına taşınınca
+# sayfaları da onunla gider). Metinler `sohbet_assets/`'te; tarih yayında değişir.
+POLICY_DATE = ("25 Kasım 2026", "25 November 2026")
+DOCS = {   # yol: (dosya, dil, başlık, öbür dildeki yol)
+    "gizlilik": ("gizlilik.html", "tr", "Gizlilik", "en/privacy"),
+    "sartlar": ("sartlar.html", "tr", "Kullanım şartları", "en/terms"),
+    "en/privacy": ("en-privacy.html", "en", "Privacy", "gizlilik"),
+    "en/terms": ("en-terms.html", "en", "Terms of use", "sartlar"),
+}
+DOC_SHELL = """<!doctype html><html lang="{lang}"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer">
+<title>{title} · {name}</title><style>
+:root {{ --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --accent: #1f5c3f; }}
+@media (prefers-color-scheme: dark) {{ :root {{ --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f;
+  --accent: #7cc49d; }} }}
+body {{ margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.65 system-ui, sans-serif; }}
+main {{ max-width: 720px; margin: 0 auto; padding: 24px 18px 48px; }}
+nav {{ display: flex; justify-content: space-between; gap: 12px; font-size: .9rem; margin-bottom: 18px; }}
+h1 {{ font-size: 1.5rem; margin: 0 0 4px; }} h2 {{ font-size: 1.08rem; margin: 1.6em 0 .3em; }}
+.lead {{ color: var(--muted); margin-top: 0; }} a {{ color: var(--accent); }} li {{ margin: .3em 0; }}
+footer {{ margin-top: 40px; border-top: 1px solid var(--line); padding-top: 12px; font-size: .85rem; color: var(--muted); }}
+footer a {{ color: inherit; }}
+</style></head><body><main>
+<nav><a href="{p}">{back}</a><a href="{p}{other}" hreflang="{other_lang}">{other_label}</a></nav>
+{body}
+<footer>{name} · <a href="{p}">{chat}</a> · <a href="{p}{privacy}">{privacy_label}</a> · <a href="{p}{terms}">{terms_label}</a> ·
+<a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
+</main></body></html>"""
+
+
+def doc_page(path: str, config: "Config") -> str:
+    """Sohbet sayfasının gizlilik politikası ya da kullanım şartları (girişsiz)."""
+    file, lang, title, other = DOCS[path]
+    host = config.site.split("://", 1)[-1]
+    body = ((ASSETS / file).read_text(encoding="utf-8").replace("{{P}}", html.escape(config.prefix))
+            .replace("{{HOST}}", html.escape(host)).replace("{{DATE}}", POLICY_DATE[0])
+            .replace("{{DATE_EN}}", POLICY_DATE[1]))
+    tr = lang == "tr"
+    return DOC_SHELL.format(lang=lang, title=html.escape(title), name=html.escape(config.name), p=html.escape(config.prefix),
+                            body=body, back="← Sohbete dön" if tr else "← Back to the chat", other=other,
+                            other_lang="en" if tr else "tr", other_label="English" if tr else "Türkçe",
+                            chat="Sohbet" if tr else "Chat", privacy="gizlilik" if tr else "en/privacy",
+                            terms="sartlar" if tr else "en/terms", privacy_label="Gizlilik" if tr else "Privacy",
+                            terms_label="Kullanım şartları" if tr else "Terms of use")
 
 LOGIN = """<h1>{name} · Sohbet</h1>
 <p>Risale-i Nur hakkındaki sorularınızı, cevapları eserlerden alıntı ve kaynakla veren bir yapay zekâya sorun.</p>
@@ -441,8 +488,8 @@ e-posta klasörüne bakın). Kodu ve kendinize bir parola yazın. Hesabınız va
 <label>Parola (en az {min} karakter)<input type="password" name="password" autocomplete="new-password" minlength="{min}" required></label>
 <label>Parola (tekrar)<input type="password" name="password2" autocomplete="new-password" minlength="{min}" required></label>
 <button type="submit">Doğrula ve gir</button>
-<p class="small">Devam ederek <a href="/kullanim-sartlari.html">kullanım şartlarını</a> ve
-<a href="/gizlilik.html">gizlilik politikasını</a> kabul etmiş olursunuz.</p>
+<p class="small">Devam ederek sohbet sayfasının <a href="{p}sartlar">kullanım şartlarını</a> ve
+<a href="{p}gizlilik">gizlilik politikasını</a> kabul etmiş olursunuz.</p>
 </form>
 <form method="post" action="{p}kayit" style="border:0;padding:0;background:none">
 <input type="hidden" name="email" value="{email}"><button class="link" type="submit">Yeni kod gönder</button>
@@ -478,7 +525,7 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
     esc = lambda s: html.escape(str(s), quote=True)
 
     def shell(title: str, body: str, status: int = 200) -> HTMLResponse:
-        return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, site_host=esc(host)),
+        return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, site_host=esc(host), p=p),
                             status_code=status, headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
 
     def err(text: str) -> str:
@@ -590,6 +637,10 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
         response.delete_cookie(COOKIE, path=p)
         return response
 
+    async def document(request: Request):
+        return HTMLResponse(doc_page(request.url.path[len(p):].rstrip("/"), config),
+                            headers={"Cache-Control": "public, max-age=3600", "Referrer-Policy": "no-referrer"})
+
     async def me(request: Request):
         email = user(request)
         if not email:
@@ -600,7 +651,7 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
         Route(p, home), Route(f"{p}giris", login, methods=["GET", "POST"]),
         Route(f"{p}kayit", register, methods=["GET", "POST"]), Route(f"{p}kayit/kod", redeem, methods=["POST"]),
         Route(f"{p}cikis", logout, methods=["POST"]), Route(f"{p}hesap", delete, methods=["GET", "POST"]),
-        Route(f"{p}api/ben", me), *extra_routes])
+        Route(f"{p}api/ben", me), *[Route(f"{p}{path}", document) for path in DOCS], *extra_routes])
 
 
 # ---------------------------------------------------------------- komut satırı
