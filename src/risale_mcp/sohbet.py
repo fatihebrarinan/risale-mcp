@@ -118,21 +118,30 @@ expect it, your interpretation under its own heading (in Turkish "Yorum"), plain
 about where a topic is treated is answered with the places, grouped by work, the central ones first.
 - Length: as long as the question needs. A simple question gets a few paragraphs and one to three quotations; \
 fewer well-chosen quotations are better than many. Use short headings only when the answer has more than one part.
+- Writing dates: say when or where a treatise was written only when the question asks about it.
 - Scope: only the works and the Qur'an through these tools. For a question outside them (news, other books, \
 personal or legal rulings), say briefly that this page answers only from the Risale-i Nur. Your answers are an \
 AI's answers: never speak as the author or in his name, and never present your words as tafsir or a fatwa."""
 
 EARLIER = """\
 Earlier answers in this conversation: before the reader's new question the page lists, for each of your earlier \
-answers, the tools you called for it (a page note, not the reader's words). An earlier statement rests on what those \
-calls returned: a section you read brings its sentences, its verses with their refs and the publisher's \
-translations. The page checked your earlier marked quotations against the works. Never call an earlier statement \
-unchecked when its calls cover it. Only when a statement clearly had no basis in them (for example, you compared a \
-translation you never read), correct it in one sentence at the start of your new answer. If the list says the calls \
-were not recorded, say nothing about checking.
+answers, the tools you called for it and, after each reading call, the title of the place read (a page note, not the \
+reader's words). An earlier statement rests on what those calls returned: a section you read brings its sentences, \
+its verses with their refs and the publisher's translations. The page checked your earlier marked quotations against \
+the works. Never call an earlier statement unchecked when its calls cover it, and never say you have not read a place \
+the note lists as read. Only when a statement clearly had no basis in them (for example, you compared a translation \
+you never read), correct it in one sentence at the start of your new answer. If the list says the calls were not \
+recorded, say nothing about checking.
 Say what a verse, a translation or any text says only if you read it with a tool in this conversation: the \
 publisher's translation comes with the passage, the Türkiye Diyanet Vakfı translation of a verse only from get_ayah; \
 never compare with a translation you have not read."""
+
+VERSES = """\
+Verses quoted in the works: the translation that comes with a passage (publisher_translation) is the publisher's. \
+If you give it, put it on its own line after the quotation, never inside the quoted block, and call it the \
+publisher's in the reader's language (in Turkish "nâşirin meali", never the English words). Naming the Türkiye Diyanet Vakfı translation is only for a verse you read with get_ayah; otherwise \
+never mention that translation at all, not even to say that a translation is not it."""
+
 
 NO_REFERENCES = """\
 Never write references, section paths, sentence numbers, [1]-style numbers or a sources list yourself: the \
@@ -158,6 +167,7 @@ Rules:
 3. {NO_REFERENCES}
 4. {s.TEXT_APART}
 5. {EARLIER}
+6. {VERSES}
 
 """ + s.risale_layers(connectors=False) + (s.LUGAT_INSTRUCTIONS.lstrip("\n") + "\n" if lugat else ""))
 
@@ -583,7 +593,7 @@ class Chat:
                 continue
             size += len(q) + len(a)
             out += [{"role": "user", "content": q}, {"role": "assistant", "content": a}]
-            notes.append(reads_note(len(notes) + 1, turn.get("r")))
+            notes.append(reads_note(len(notes) + 1, turn.get("r"), self.library))
         if size > MAX_HISTORY:
             raise Refusal("Bu konuşma çok uzadı; yeni bir konuşma başlatın.")
         if notes:     # S13.4 (c): model önceki cevaplarının neye dayandığını görsün (sayfa notu, sorunun önünde)
@@ -708,13 +718,32 @@ def reads(calls: list) -> list[str]:
     return out
 
 
-def reads_note(n: int, calls) -> str:
+def reads_note(n: int, calls, library=None) -> str:
     if calls is None:
         return f"Answer {n}: not recorded."
     if not isinstance(calls, list):          # tarayıcıdan bozuk geldiyse: kayıt yok sayılır
         return f"Answer {n}: not recorded."
-    calls = [str(c)[:MAX_READ_LINE] for c in calls[:MAX_READS]]
+    calls = [read_place(library, str(c)[:MAX_READ_LINE]) for c in calls[:MAX_READS]]
     return f"Answer {n}: " + ("; ".join(calls) if calls else "no tools called.")
+
+
+_READ_CALL = re.compile(r"^(?:(read_section|get_outline)\(section=|get_passage\(id=)([^,)\s]+)")
+_SENTENCE_PART = re.compile(r"/c\d{3}(?:/[hs]\d+/c\d{3})?(?:\.\.c\d{3})?$")
+
+
+def read_place(library, call: str) -> str:
+    """S13.7 (3): okuma çağrısının ardına okunan yerin başlığı ("… = read: Lem'alar › İkinci Lem'a › …"). Model
+    kimlikten yeri çıkaramayıp okuduğu bölüm için "okumadım" diyordu (tevekkül konuşması, 2026-11-25). Başlık notu
+    kurarken bulunur: eski turlarda da çalışır; bulunamazsa çağrı olduğu gibi kalır."""
+    m = _READ_CALL.match(call)
+    if library is None or not m or call.endswith("-> error"):
+        return call
+    section = _SENTENCE_PART.sub("", m.group(2))
+    try:
+        ref = library.outline(section, 0)["ref"]
+    except Exception:
+        return call
+    return f"{call} = {'outline of' if m.group(1) == 'get_outline' else 'read'}: {ref}"
 
 
 READING_TOOLS = {"read_section", "get_passage", "find_sentence"}
@@ -951,9 +980,32 @@ def source_text(chat: "Chat", ident: str) -> dict:
     denetimde kurulur: servis yeniden başlayıp henüz soru sorulmadıysa yoktu, her kaynak "bulunamadı" diyordu
     (2026-11-25); önce kurulur."""
     chat.checker.refresh()
-    if ident in chat.checker.nodes:
-        return section_opening(chat.checker, ident)
-    return chat.library.passage(ident, 3)
+    passage = section_opening(chat.checker, ident) if ident in chat.checker.nodes else chat.library.passage(ident, 3)
+    return arabic_refs(chat.library, passage)
+
+
+def arabic_refs(library, passage: dict) -> dict:
+    """S13.7 (1): her cümlenin âyet ve hadis satırları (`refs`: kaynakçanın alt satırı, "Hadis: … (doğrulanmadı)",
+    ve nâşirin meali). Sayfanın Kaynaklar listesi bu satırları artık göstermez, metin paneli gösterir; meali olmayan
+    parçanın adresi ve hadisin notu da orada görünsün. Adresi olmayan ama meali olan parça (arabi) eskisi gibi."""
+    sentences = passage.get("sentences", [])
+    found: dict[str, list[dict]] = {}
+    for entry in library.embedded([s["id"] for s in sentences]):
+        found.setdefault(entry["sentence_id"], []).append(entry)
+    for sentence in sentences:
+        meals = {a.get("text"): a.get("publisher_translation") for a in sentence.get("arabic") or []
+                 if a.get("publisher_translation")}
+        refs, seen = [], set()
+        for entry in found.get(sentence["id"], []):
+            if entry["line"] not in seen:
+                seen.add(entry["line"])
+                refs.append({"line": entry["line"], "meal": meals.pop(entry["text"], None)})
+        for part in sentence.get("arabic") or []:
+            if part.get("text") in meals:
+                refs.append({"line": part.get("source") or "", "meal": meals.pop(part["text"])})
+        if refs:
+            sentence["refs"] = refs
+    return passage
 
 
 def section_opening(checker, ident: str) -> dict:

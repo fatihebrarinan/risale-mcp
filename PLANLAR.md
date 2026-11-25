@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -248,6 +248,36 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     aralığını ister, atfın cümleleri dolgulu, öbürleri altı çizili (`mark.acik`); liste `kaynak-grup` başlıklarıyla,
     kaynak adı tekse listenin altında bir kez. "Soruyu ve bu cevabı da gönder" metni parçalarla. Arayüz denemesi:
     hazır konuşma bitişik, iç içe ve 8'i aşan durumları sınar; 77 denetim geçti. Yayında (`da166fb`, `yayin-20261126-000506`). Kullanıcının 11. Söz konuşması 44 kaynaktan 21'e indi, vurguyu beğendi.
+  - S13.7 **Tevekkül konuşmasının bulguları** (2026-11-26; kullanıcının konuşması, üç cevap; kullanıcı hepsini
+    onayladı). Bütün işaretli alıntılar doğru, "Diğer yerler" arama sonuçlarıyla tutuyor (iki arama yeniden
+    çalıştırıldı). Bulgular: (1) **Kaynakçada Âyet ve Hadis satırları gereksiz** (kullanıcının fikri): sayfada kaynağa
+    tıklayınca metin açılıyor, âyetin ve hadisin adresi orada; üstelik alıntısız atıfta cümlenin bütün parçaları
+    giriyor (cevapta geçmeyen bir hadis satırı). Ama metin paneli "(doğrulanmadı)" notunu ve meali olmayan parçanın
+    adresini göstermiyor. Çözüm: satırlar listeden kalkar, metin panelinde her âyet ve hadisin altında "Âyet: …" /
+    "Hadis: … (doğrulanmadı)" satırı (meal varsa yanında), meali olmasa da. Yalnız sayfada; sunucunun verisi ve
+    ölçüm metni (`answer_text`) değişmez. (2) **Haksız düzeltme:** 2. cevap "Talâk 65:3'ün mealini okumadan yazdım,
+    dikkate almayın" dedi; meal okunan cümleden gelmişti. Kökü 1. cevapta: okunmamış Vakıf meali anılmış ("Vakıf'ın
+    değil, yayıncının çevirisidir"). Talimat: nâşirin meali yalnız nâşirinki diye anılır, `get_ayah` çağrılmadıysa
+    Vakıf hiç anılmaz. (3) **"O bölümü okumadım":** 1. cevapta okunan Lem'alar › İkinci Lem'a › Beşinci Nükte için;
+    sayfa notu yalnız çağrıları ("get_passage(id=…)") veriyor. Çözüm: notta okunan yerlerin Türkçe başlıkları da
+    (adımlardaki gibi). (4) **Telif tarihi yine metinde** ((e)'nin ikinci örneği, "kaynak sitesinde 1943–1944"):
+    talimat: tarih yalnız soru telif zamanını ya da yerini soruyorsa. (5) **Okuma kalitesi** (talimatla çözülmez,
+    not): 3. cevap Onüçüncü Şuâ'nın bu bölümünü "öğrencilere yönelik" sundu, oysa Denizli hapsindeki arkadaşlara
+    yazılmış (c002: Risale okuyan hapishanede "talebe-i ulûmun şerefini" kazanır); 1. cevap "terettüb-ü netice"yi
+    "sonuç doğduktan sonra" diye açıkladı. Hafta sonunda model yönlendirme konuşulurken örnek olur.
+    **Yapıldı (2026-11-26):** (1) `sohbet.arabic_refs`: metin uç noktası her cümleye `refs` ({line, meal}) koyar
+    (`Library.embedded`'ın satırı, notuyla); `sohbet.js` listede satır göstermez, metin panelinde gösterir. (3)
+    `read_place`: sayfa notunda okuma çağrısının ardına "= read: <başlık>" (not kurulurken bulunur, eski turlarda da).
+    (2) Ölçümde kökün başka olduğu çıktı: tek sorulu cevapta da (A1) "Vakıf çevirisi değil, yayıncının çevirisi"
+    yazılıyor (25 Kasım ölçümlerinde de var; ortak talimatın "name the translation (Türkiye Diyanet Vakfı)" cümlesi);
+    sohbete ayrı kural `VERSES` (6. kural): nâşirin meali alıntı bloğunun dışında, kendi satırında, okuyucunun
+    dilinde ("nâşirin meali") anılır; Vakıf yalnız `get_ayah` okunduysa anılır. Aynı kural İngilizce "publisher's
+    translation" sızıntısını ve mealin alıntı bloğuna girip "doğrulanamadı" çıkmasını ((i)'nin bir biçimi) da
+    azaltır. (4) `SHAPE`: telif tarihi yalnız soru onu soruyorsa. MCP talimatı değişmedi. Ölçüm: tevekkül
+    konuşmasının üç sorusu altı kez art arda (≈0,08 $): haksız "okumadım" ya da düzeltme yok (birindeki düzeltme
+    yerindeydi: o cevap Lem'alar'ı yalnız aramadan aktarmıştı), telif tarihi yok; `olc --hizli` dört kez, sonuncusu
+    79/80 (tek ✗ raporun ayrıştırmasından: başlığında virgül olan bölüm; sayfa doğruladı), Vakıf ve İngilizce
+    sızıntı yok. Arayüz denemesi 79 denetim (hadisli hazır tur: listede satır yok, metinde notuyla var).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

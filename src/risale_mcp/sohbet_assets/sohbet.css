@@ -204,7 +204,6 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 .kaynak:hover .yol-metin { text-decoration: underline; }
 .kaynak .no { color: var(--accent); margin-right: 4px; }
 .kaynak.kotu .no { color: var(--bad); }
-.gomulu { margin: 0 0 0 1.6em; color: var(--muted); }
 .uyari { color: var(--bad); margin-left: 1.6em; font-size: .82rem; }
 .alt-bilgi { font-size: .78rem; color: var(--muted); margin-top: 6px; }
 .geri { margin-top: 10px; }

@@ -357,13 +357,7 @@ function sourceList(pieces) {           // bölüm başlıklarıyla gruplu; grup
         cur.turns.length > 1 ? turnNote(p.turns) : ""].filter(Boolean).join(" · ");
       b.innerHTML = `<span class="no">[${p.g}]</span><span class="yol-metin">${esc(label)}</span>`
         + (meta ? `<span class="kaynak-adi">${meta}</span>` : "");
-      li.append(b);
-      const seen = new Set();
-      for (const m of p.members) {
-        for (const e of m.embedded || []) {
-          if (!seen.has(e.line)) { seen.add(e.line); li.append(el("div", "gomulu", "– " + esc(e.line))); }
-        }
-      }
+      li.append(b);                      // âyet ve hadis satırları listede değil, metin panelinde (S13.7)
       if (bad) li.append(el("div", "uyari", "⚠ Bu alıntı eserlerin metniyle doğrulanamadı."));
       ol.append(li);
     }
@@ -910,10 +904,9 @@ async function openText(piece, focus) {  // parça; `focus` metindeki atfın kay
       const body = esc(s.text);
       const mark = !s.target ? body : strong(s.id) ? `<mark>${body}</mark>` : `<mark class="acik">${body}</mark>`;
       parts.push(`<p class="cumle" dir="auto">${mark}</p>`);
-      for (const a of s.arabic || []) {
-        if (a.publisher_translation) {
-          parts.push(`<p class="meal">${esc(a.source || "")} · nâşirin meali: ${esc(a.publisher_translation)}</p>`);
-        }
+      for (const r of s.refs || []) {    // "Âyet: …" / "Hadis: … (doğrulanmadı)" ve nâşirin meali (S13.7)
+        const line = [r.line, r.meal ? `nâşirin meali: ${r.meal}` : ""].filter(Boolean).join(" · ");
+        if (line) parts.push(`<p class="meal">${esc(line)}</p>`);
       }
       if (s.hasiye && s.hasiye.length) {
         parts.push(`<div class="hasiye" dir="auto">Hâşiye: ${esc(s.hasiye.map((x) => x.text).join(" "))}</div>`);

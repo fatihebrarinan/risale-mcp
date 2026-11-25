@@ -278,6 +278,19 @@ def test_earlier_reads_note(library):
     assert "Answer 2: not recorded." in last and "Answer 3: no tools called." in last
     assert chat.messages([], "tek")[-1]["content"] == "tek"
     assert "Never call an earlier statement unchecked" in chat.system and "only from get_ayah" in chat.system
+    # S13.7 (3): okuma çağrısının ardına okunan yerin başlığı; eski turlarda da (not kurulurken bulunur)
+    sent = chat.messages([{"q": "bir", "a": "cevap", "r": [
+        "get_passage(id=lemalar/2/nukte-05/mesele-02/c008..c013)", "read_section(section=sozler/10, max_words=1500)",
+        "get_outline(section=sozler/23, depth=2)", "search(query=tevekkül, limit=40)"]}], "iki")
+    last = sent[-1]["content"]
+    assert ("get_passage(id=lemalar/2/nukte-05/mesele-02/c008..c013) = read: Lem'alar › İkinci Lem'a › Beşinci Nükte"
+            in last)
+    assert "read_section(section=sozler/10, max_words=1500) = read: Sözler › Onuncu Söz;" in last
+    assert "get_outline(section=sozler/23, depth=2) = outline of: Sözler › " in last
+    assert last.count(" = ") == 3
+    assert "never say you have not read a place" in chat.system and "not even to say" in chat.system
+    assert chat.system.index("6. Verses quoted in the works") > chat.system.index("5. Earlier answers")
+    assert "Writing dates: say when or where" in chat.system
 
 
 @needs_db
@@ -532,3 +545,18 @@ def test_old_database_gets_keep_history(tmp_path):
         c.execute("INSERT INTO users (email, password, created) VALUES ('a@b.co', 'x', 0)")
     store = Store(path)
     assert sohbet.Conversations(store).keeps("a@b.co") is True
+
+
+@needs_db
+def test_source_text_arabic_refs(library):
+    """S13.7 (1): metin panelinde âyet ve hadis satırı, hadisin notu ve nâşirin meali (Kaynaklar listesinde değil)."""
+    chat = sohbet.Chat(library, FakeClient([]))
+    base = "sualar/13/talebe-i-ulumun-hatta-uykusu-dahi"
+    data = sohbet.source_text(chat, f"{base}/c004..c010")
+    by_id = {s["id"]: s for s in data["sentences"]}
+    hadis = by_id[f"{base}/c004"]["refs"]
+    assert hadis == [{"line": "Hadis: el-Aclûnî, Keşfü'l-Hafâ: 1:55 (doğrulanmadı)",
+                      "meal": "İşlerin en hayırlısı zorlu olanıdır."}]
+    assert by_id[f"{base}/c010"]["refs"] == [{"line": "Âyet: Âl-i İmrân Sûresi, 3:173",
+                                              "meal": "Bize Allah yeter. O ne güzel vekildir."}]
+    assert "refs" not in by_id[f"{base}/c005"]

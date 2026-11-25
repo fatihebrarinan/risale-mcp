@@ -1,4 +1,4 @@
-"""S12.11, S13.1, S13.5, S13.6: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
+"""S12.11, S13.1, S13.5, S13.6, S13.7: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
 
 Yerel sunucu açık olmalı (`SOHBET_GUNLUK_SORU=100 uv run --extra sohbet python -m risale_mcp.sohbet serve --dev`: deneme hesabının
 günlük hakkı her koşuda bir azalır). Deneme hesabına
@@ -48,6 +48,10 @@ two = {"raw": "", "markdown": 'Otuz [1], yine iki [2], aralık [3], sekiz [4], d
        "sources": [src(1, 30), src(2, 2), src(3, 19, 21), src(4, 40, 47), src(5, 48)]}
 ident, _ = convs.add(EMAIL, None, "Kaynak numaralama denemesi", one)
 convs.add(EMAIL, ident, "İkinci soru", two)
+hadis = {"n": 1, "id": "sualar/13/talebe-i-ulumun-hatta-uykusu-dahi/c004", "source_name": "e-Risale",
+         "cite_as": "Şualar › Onüçüncü Şuâ › Talebe‑i Ulûmun Hattâ Uykusu Dahi İbâdet Sayılır › “Böyle medresesiz bir zamanda,…”",
+         "embedded": [{"kind": "hadis", "line": "Hadis: el-Aclûnî, Keşfü'l-Hafâ: 1:55 (doğrulanmadı)"}]}
+convs.add(EMAIL, ident, "Üçüncü soru", {"raw": "", "markdown": "Hadisli cümle [1].", "sources": [hadis]})
 print(ident)
 """
 
@@ -311,9 +315,10 @@ async def run(url: str) -> None:
         under = await page.locator(".tur >> nth=1").locator(".kaynaklar .no").all_inner_texts()
         check("cevabın altında yalnız onun kaynakları, sıralı", under == ["[1]", "[2]", "[3]", "[4]", "[5]"])
         side = await page.locator("#yan-liste .kaynak .no").all_inner_texts()
-        check("sağda tek liste, her parça bir kez", side == ["[1]", "[2]", "[3]", "[4]", "[5]"])
+        check("sağda tek liste, her parça bir kez", side == ["[1]", "[2]", "[3]", "[4]", "[5]", "[6]"])
         check("bölüm başlığı bir kez", await page.locator("#yan-liste .kaynak-grup h3").all_inner_texts()
-              == ["Sözler › Onbirinci Söz"])
+              == ["Sözler › Onbirinci Söz", "Şualar › Onüçüncü Şuâ › Talebe‑i Ulûmun Hattâ Uykusu Dahi İbâdet Sayılır"])
+        check("listede âyet ve hadis satırı yok (S13.7)", "Hadis:" not in await page.inner_text("#yan-liste"))
         check("parça birleşik aralıkla", "“İlk19…” ile başlayan 3 cümle" in await page.inner_text('#yan-liste .kaynak[data-g="2"]'))
         check("ortak parçada iki soru", "1. ve 2. soruda" in await page.inner_text('#yan-liste .kaynak[data-g="1"]'))
         await page.screenshot(path=OUT / "14-tek-kaynakca.png")
@@ -325,6 +330,13 @@ async def run(url: str) -> None:
         await page.screenshot(path=OUT / "15-parca-vurgu.png")
         await page.click("#yan-geri")
         check("açılan kaynak listede seçili", await page.locator('#yan-liste .kaynak.secili[data-g="1"]').count() == 1)
+        await page.locator(".tur >> nth=2").locator(".cevap .ref >> nth=0").click()
+        await page.wait_for_selector("#metin-govde .meal")
+        meals = await page.locator("#metin-govde .meal").all_inner_texts()
+        check("metinde hadis satırı notu ve mealiyle (S13.7)",
+              "Hadis: el-Aclûnî, Keşfü'l-Hafâ: 1:55 (doğrulanmadı) · nâşirin meali: İşlerin en hayırlısı zorlu olanıdır." in meals)
+        await page.screenshot(path=OUT / "16-ayet-hadis-satiri.png")
+        await page.click("#yan-geri")
         seed("sil", seeded)
         await page.goto(url)
         await page.wait_for_selector("#gecmis li")
