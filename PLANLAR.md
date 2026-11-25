@@ -68,10 +68,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **Son adım (2026-11-25):** S12 sohbet sayfası sürüyor ("Sıradaki" 1). Bitti: S12.0–S12.3, S12.9 (sunucu
   düzeltir), S12.10 (sohbetin kendi talimatı), S12.11 (solda Kaynaklar, kaynak adı, telefonda çekmece), S12.12 (geri
   bildirim), S12.4 (kota, bütçe, ntfy) ve **deploy** (`https://risalemcp.com/sohbet/`, Haiku 5.5 medium; ayrıntı
-  S12.7). S12.13'ün üç koşusu yapıldı, okuma sayfası hazır. **Kullanıcıdan beklenen:** (1) telefonda baştan sona
-  deneme (onaylarsa deneme ayı o gün başlar, S12.7'ye tarih yazılır), (2) sohbetin kendi gizlilik ve şartlar sayfalarını okuma
-  (`sohbet_assets/`; kullanıcıya dosya olarak gönderildi; onaylanınca `deploy.sh --code`), (3) model seçimi
-  (`/taslak/s12-modeller.html`; öneri Haiku medium), (4) ntfy konusuna telefonda abone olma (`data/sohbet-ntfy`,
+  S12.7). S12.13'ün üç koşusu yapıldı, okuma sayfası hazır. S12.6 (gizlilik ve şartlar) onaylandı ve yayında. **Kullanıcıdan beklenen:** (1) telefonda baştan sona
+  deneme (onaylarsa deneme ayı o gün başlar, S12.7'ye tarih yazılır), (2) model seçimi
+  (`/taslak/s12-modeller.html`; öneri Haiku medium), (3) ntfy konusuna telefonda abone olma (`data/sohbet-ntfy`,
   sunucuda). Deneme ayından sonra S13. B11 (MCP kaynakçasında kaynak adı; `catalog/permissions.SOURCE_LABELS` hazır)
   sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
@@ -279,8 +278,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     içinde, girişsiz: `/sohbet/gizlilik`, `/sohbet/sartlar`, `/sohbet/en/privacy`, `/sohbet/en/terms`
     (`sohbet_assets/{gizlilik,sartlar,en-privacy,en-terms}.html`, `sohbet_hesap.DOCS`, tarih `POLICY_DATE`); hesap
     sayfaları ve sohbetin alt satırı bunlara bağlanır. Sohbet kendi alan adına taşınınca sayfalar da onunla gider. İlk
-    taslak (`docs/s12-gizlilik-taslak.md`) kaldırıldı. **Bekleyen:** kullanıcının okuması; onaydan sonra deploy
-    (`--code`), o güne kadar canlı sayfa ana politikaya bağlanıyor.
+    taslak (`docs/s12-gizlilik-taslak.md`) kaldırıldı. Kullanıcı okudu, onayladı; **yayında** (2026-11-25,
+    `deploy.sh --code`, araç çıktısında 0 fark, `yayin-20261125-190324`).
   - S12.7 **Deneme ayı:** başlangıç tarihi açılışta yazılır. Ölçüler: kayıtlı ve etkin kullanıcı, günlük soru, soru başı
     gerçek maliyet, atıf denetiminin geçme oranı, 👍/👎 (not isteğe bağlı, kullanıcının onayıyla saklanır). Haftalık
     rapor; ay sonunda sürdürme kararı (eşiği açılıştan önce kullanıcıyla yazılır). Duyuru yok (kullanıcının kararı,
@@ -294,8 +293,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     `https://risalemcp.com/sohbet/` (Caddy: tamponsuz, sıkıştırmasız, `noindex`), servis `risale-sohbet` (127.0.0.1:8010,
     model Haiku 5.5 medium), `.env`'e sohbet anahtarları (deploy artık `--code`'da da anahtar satırlarını yazar), ntfy
     konusu `data/sohbet-ntfy` (sunucuda; adı kullanıcıya verildi). Sunucuda hesapsız deneme (`sohbet sor`) geçti, 12 sn,
-    0,002 $. **Bekleyen:** kullanıcının telefonda denemesi (onaylarsa deneme ayı o gün başlar), gizlilik ve şartların
-    onayı (S12.6; onaylanınca sayfalara işlenir ve `deploy.sh --site`), model seçimi (S12.13).
+    0,002 $. **Bekleyen:** kullanıcının telefonda denemesi (onaylarsa deneme ayı o gün başlar), model seçimi (S12.13). Gizlilik
+    ve şartlar (S12.6) onaylanıp yayımlandı.
 - S13 **Sohbet sayfasının asıl geliştirmesi** (kullanıcının kararı, 2026-11-25): S12'nin deneme ayından sonra, onun
   ölçüleri ve geri bildirimiyle. İlk turda yapılmayan her şey burada: (1) ön arama (soru gelince anlamsal ve kelime
   araması birlikte, aday bölümler baştan; risk: modelin kendi aramasını daraltır), (2) model yönlendirme (Haiku okur,
