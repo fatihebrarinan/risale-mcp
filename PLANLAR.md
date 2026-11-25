@@ -71,9 +71,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   maliyet düşük çıktığı için sürdürme kararı büyük ölçüde verildi, deneme gerçek kullanımın sayılarını (düzeltilen,
   doğrulanamayan, 👎) görmek içindir. Deneyenler iyi bir arayüzle karşılaşsın diye önce **S13.1** (sol panel, sunucuda
   konuşma geçmişi, sağda Kaynaklar, altta ayarlar), sonra 5 kişiyle bir hafta, sonra S13'ün kalanı. **S13.1'in kodu
-  hazır** (2026-11-25, commit `6ce4a22`; testler ve 42 denetimli arayüz denemesi geçti, gizlilik sayfaları güncel):
-  **yayına alınmadı**, `scripts/deploy.sh --code` izin denetiminde reddedildi, kullanıcı çalıştıracak. Yayından sonra
-  telefonda bir bakış, sonra 5 kişilik deneme. Sonra B11 ve öbürleri.
+  yayında** (2026-11-25, commit `6ce4a22`, `yayin-20261125-200319`, araç çıktısında fark yok; testler ve 42 denetimli
+  arayüz denemesi geçti, gizlilik sayfaları güncel). Sırada: kullanıcı telefonda bakar, sonra 5 kişilik deneme
+  (başlarken `sohbet usage` kaydı). Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -141,7 +141,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     Claude hazırlar ve yayımlar, kullanıcının ayrıca görmesi gerekmez; (5) giriş kutusunun altındaki gizlilik ve şartlar
     bağlantıları ayarlara taşınır, altta yalnız "Tefsir ve fetva değildir, müellife mal edilmez." ve günün kalan hakkı
     ("8/10" gibi).
-    **Kod bitti (2026-11-25, `6ce4a22`), yayın bekliyor.** Sunucu: `conversations`, `turns`, `users.keep_history`;
+    **Bitti ve yayında (2026-11-25, `6ce4a22`, `yayin-20261125-200319`).** Sunucu: `conversations`, `turns`, `users.keep_history`;
     `sohbet.Conversations`; yollar `api/durum`, `api/ayarlar`, `api/konusmalar`, `api/konusma`, `api/konusma/ad`,
     `api/konusma/sil`; saklanan konuşmanın geçmişi sunucudan (tarayıcınınki yok sayılır), konuşma ilk cevap bitince
     açılır, başkasının kimliği 404; oy saklanan tura da yazılır. Sayfa: sol panel (Bugün, Dün, Son 7 gün… gruplar; ad
