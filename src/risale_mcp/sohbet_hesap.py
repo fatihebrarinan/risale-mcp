@@ -15,7 +15,8 @@ Doğrulama hesapları zorlaştırır, engellemez: asıl sınır kişi başı sor
 
 Saklananlar (gizlilik politikası söyler, S12.6): e-posta, parola özeti, açılış ve son giriş zamanı, yanlış deneme
 sayısı; bekleyen kodun yalnız özeti ve zamanları (kullanılınca ya da bir gün sonra silinir); oturumun özeti; günlük
-gönderilen kod sayısı (adressiz). Hesabı kullanıcı kendisi siler (`hesap`).
+gönderilen kod sayısı (adressiz); sohbetin kullanım satırları (`usage`, soru ve cevap yok; hesap silinince adsız).
+Hesabı kullanıcı kendisi siler (`hesap`).
 
 Taşınabilirlik (S12.8): yol öneki, sitenin adresi, sayfadaki ad ve gönderen adres ayardandır (`Config`, ortam
 değişkenleri `SOHBET_*`); sayfalarda sabit adres yok.
@@ -106,6 +107,24 @@ CREATE TABLE IF NOT EXISTS daily_codes (
     day TEXT PRIMARY KEY,               -- YYYY-AA-GG (UTC); adres yok
     n   INTEGER NOT NULL
 );
+CREATE TABLE IF NOT EXISTS usage (      -- S12.3: soru başına bir satır (`sohbet.log_usage`); soru ve cevap yok
+    ts          REAL NOT NULL,
+    email       TEXT,                   -- hesap silinince NULL
+    model       TEXT NOT NULL,
+    rounds      INTEGER NOT NULL,       -- model çağrısı
+    tools       INTEGER NOT NULL,       -- araç çağrısı
+    input       INTEGER NOT NULL,
+    output      INTEGER NOT NULL,
+    cache_write INTEGER NOT NULL,
+    cache_read  INTEGER NOT NULL,
+    cost        REAL NOT NULL,          -- $, yaklaşık (asıl fatura Console'da)
+    seconds     REAL NOT NULL,
+    sources     INTEGER,                -- cevaptaki kaynak sayısı
+    problems    INTEGER,                -- düzeltmeden sonra da denetimden geçmeyen
+    corrected   INTEGER,                -- düzeltmeye gitti mi
+    outcome     TEXT NOT NULL           -- done | error | cancelled
+);
+CREATE INDEX IF NOT EXISTS usage_ts ON usage(ts);
 """
 
 
@@ -156,6 +175,7 @@ class Store:
         self._run("DELETE FROM sessions WHERE email = ?", (email,))
         self._run("DELETE FROM codes WHERE email = ?", (email,))
         self._run("DELETE FROM users WHERE email = ?", (email,))
+        self._run("UPDATE usage SET email = NULL WHERE email = ?", (email,))    # maliyet sayımı kalır, adsız
 
     def login(self, email: str, password: str, now: float | None = None) -> tuple[bool, str | None]:
         now = time.time() if now is None else now
@@ -420,7 +440,9 @@ DELETE = """<h1>Hesabı sil</h1>
 <p><a href="{p}">Vazgeç</a></p>"""
 
 
-def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimiter | None = None, extra_routes=()):
+def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimiter | None = None, extra_routes=(),
+              home_page=None):
+    """`home_page(request, email)`: girişli kullanıcının ana sayfası (S12.3: sohbet); yoksa yer tutucu sayfa."""
     from starlette.applications import Starlette
     from starlette.requests import Request
     from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
@@ -465,6 +487,8 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
         email = user(request)
         if not email:
             return RedirectResponse(f"{p}giris", status_code=302)
+        if home_page:
+            return home_page(request, email)
         return shell("Sohbet", HOME.format(p=p, name=esc(config.name), email=esc(email)))
 
     async def login(request: Request):

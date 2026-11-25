@@ -68,7 +68,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **Son adım (2026-11-25):** S12 sohbet sayfası başladı ("Sıradaki" 1). Bitti: S12.0 (API anahtarı `.env`'de,
   Console'da ayrı çalışma alanı, aylık tavan 100 $), S12.1 (model **Haiku 5.5**), S12.2'nin yerel kısmı
   (`sohbet_hesap.py`, e-posta doğrulama kodu; Scaleway bağlı, deneme e-postası gelen kutusuna düştü, SPF/DKIM/DMARC
-  geçti). **Önde: S12.3 sohbet servisi** (yeni oturumda başlar). Yön (bu oturumda konuşuldu): araçlar MCP'den değil
+  geçti). **S12.3'ün yerel sürümü yazıldı ve ölçüldü** (2026-11-25; S12.3'teki not: Haiku teyit edildi, soru başı
+  0,0047 $); kullanıcının isteğiyle kritik yapıldı, **üç karar bekleniyor**: 👍/👎 ilk sürüme girsin mi, deneme önce
+  davetle mi, Sonnet'in gerçek maliyet ölçümü (≈1,5 $). Önerilen sıra: kaynak adı (izin şartı) ve kimliği sunucunun
+  düzeltmesi, 👍/👎, S12.4, S12.6, deploy, davetli deneme, Sonnet ölçümü; S12.5'in kalanı ve S12.8 kullanımdan
+  sonra. Aşağıdaki "Yön" bu oturumdan önce yazıldı. Yön (bu oturumda konuşuldu): araçlar MCP'den değil
   servis içinden `library.py` ile (tanımları `server.py`'den, kopya yok); Claude API, Anthropic Python SDK yalnız bu
   servisin bağımlılığı; Haiku 5.5, akışla (streaming), araçlar ve talimat önbellekte; talimat Risale talimatından,
   sohbete özgü değişiklik: model alıntıyı cümle kimliğiyle işaretler, Kaynaklar'ı sunucu kurar ve alıntıları denetler,
@@ -153,6 +157,28 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     araçlar ve talimat önbellekte (prompt caching). Cevap akışla gelir, araç çağrıları "Sözler okunuyor…" diye
     görünür. Soru başına araç çağrısı ve konuşma başına tur sınırı. Konuşmalar sunucuda saklanmaz (tarayıcıda);
     sunucu yalnız kullanım satırı tutar: kullanıcı, zaman, model, token, maliyet, araç sayısı, atıf denetiminin sonucu.
+    **Yerel sürüm yazıldı (2026-11-25):** `sohbet.py` (+ `sohbet_assets/`, testler `tests/test_sohbet.py`). Araçlar
+    `create_server(profile="genel")`'den (`list_tools`, `call_tool`; `cite` verilmez), talimat sunucunun talimatından
+    üç değişiklikle (değişen yer bulunmazsa servis açılmaz). Model alıntıyı `[[kimlik]]` ile işaretler; sunucu
+    `CitationChecker.sources` ile denetler, numaraları ve Kaynaklar'ı kurar; tutmayan alıntı ve düz metne yazılmış
+    kimlik ("(c033)") modele bir kez döner, cevap baştan yazılır; yine kalan kimlik silinir, alıntı işaretli görünür.
+    Akış SSE; kopan akışta tur bir kez yeniden (okuma zaman aşımı 60 sn: bir bağlantı 6 dk askıda kalmıştı). Kullanım
+    satırı `sohbet.db` `usage` (hesap silinince adsız). `anthropic` isteğe bağlı bağımlılık (`--extra sohbet`).
+    Servis birimi `docs/risale-sohbet.service` (Caddy yolu deploy'da). **Teyit ölçümü** (`sohbet olc`, 29 Risale
+    sorusu, API'den; `data/interim/golden/20261125-153523-sohbet-claude-haiku-5-5/`): beklenen bölüm okundu 28/34
+    (S12.1 ile aynı, aynı altı eksik), ortalama 21 sn (S12.1: 29), soru başı **0,0047 $** gerçek fiyat (toplam
+    0,14 $), araç hatası 0, düzeltmeye giden 5/29, düzeltmeden sonra kalan sorun 0. "Doğrulanan atıf" artık ölçü
+    değil (Kaynaklar'ı veritabanı yazıyor). Üç tuzak sorusunun cevabı elle okunacak (raporda "trap"). **Tarayıcıda baştan sona
+    görülmedi** (eklenti koptu; akış `curl` ile, çizici Node ile sınandı).
+    **Kritik (2026-11-25, kullanıcının isteğiyle; kararlar bekliyor):** (1) **Kaynak adı gösterilmiyor**: e-Risale ve
+    risaleoku izni "kaynak gösterilmesi" şartlı, `cite_as` yalnız yol verir; deploy'dan önce sayfada kaynak adı (MCP
+    tarafındaki aynı açık da bakılmalı). (2) Düzeltme turu kaba: denetleyici sözün asıl yerini bulduysa kimliği sunucu
+    düzeltsin, modele yalnız yeri bulunmayan dönsün. (3) Düz cümledeki iddia denetlenmiyor (yalnız alıntı); Haiku eser
+    adını karıştırabiliyor ("Lemeat" yerine "Lem'alar"). (4) S12.7 👍/👎 ile ölçecek ama onu kuran adım "sonra"da:
+    ilk sürüme alınması önerildi. (5) Model kararı gerçek fiyatla: Sonnet'i de `sohbet olc` ile ölçmek ≈1,5 $
+    (tahmin); davetli küçük denemede Sonnet sığabilir. (6) Önce davetli küçük deneme, açık duyuru ölçüden sonra;
+    S12.5'in kalanı ve S12.8 kullanım görüldükten sonra. (7) Deploy: Caddy `encode gzip` akışı tamponlamamalı
+    (`/sohbet/api/sor` muaf), sunucuda `uv sync --extra sohbet`.
   - S12.4 **Bütçe ve kota:** kişi başına günlük soru sınırı (başlangıç 10), servis düzeyinde günlük ve aylık dolar
     tavanı (100 $; aşılınca "bugünlük doldu"), Console tavanı yedek. Maliyet her cevabın `usage`'ından hesaplanır.
   - S12.5 **API'nin açtığı fazladan imkânlar** (5. nokta; kullanıcının kararı, 2026-11-25: on maddenin hepsi plana,

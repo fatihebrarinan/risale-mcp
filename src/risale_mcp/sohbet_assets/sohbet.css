@@ -1,0 +1,96 @@
+:root {
+  --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --soft: #f1efe9;
+  --accent: #1f5c3f; --accent-soft: #e3efe7; --bad: #a3271f; --mark: #fff1c2;
+  --serif: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b; --soft: #242320;
+    --accent: #7cc49d; --accent-soft: #22352a; --bad: #f08a80; --mark: #4a3f1c; }
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.6 system-ui, sans-serif;
+  display: flex; flex-direction: column; }
+a { color: inherit; }
+button { font: inherit; cursor: pointer; }
+.small { font-size: .82rem; color: var(--muted); }
+
+.top { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 10px 16px;
+  border-bottom: 1px solid var(--line); background: var(--bg); position: sticky; top: 0; z-index: 2; }
+.brand span { color: var(--muted); margin-left: 4px; }
+nav { display: flex; align-items: center; gap: 8px; }
+.ghost { background: none; border: 1px solid var(--line); color: var(--fg); border-radius: 6px; padding: 4px 10px; }
+.ghost:hover { background: var(--soft); }
+.hesap { position: relative; }
+.hesap summary { list-style: none; border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+.hesap summary::-webkit-details-marker { display: none; }
+.hesap .menu { position: absolute; right: 0; top: calc(100% + 6px); background: var(--card); border: 1px solid var(--line);
+  border-radius: 8px; padding: 10px 12px; min-width: 220px; display: grid; gap: 8px; }
+.hesap .menu p { margin: 0; word-break: break-all; }
+.hesap .menu form { margin: 0; }
+
+main { flex: 1; width: 100%; max-width: 760px; margin: 0 auto; padding: 16px 16px 24px; }
+.bos h1 { font-family: var(--serif); font-weight: 600; font-size: 1.6rem; margin: 6vh 0 8px; }
+.bos p { color: var(--muted); }
+.ornekler { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 8px; margin-top: 16px; }
+.ornek { text-align: left; background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px;
+  color: var(--fg); }
+.ornek:hover { border-color: var(--accent); }
+
+.tur { margin: 0 0 28px; }
+.soru-balon { margin: 0 0 12px auto; max-width: 85%; width: fit-content; background: var(--accent-soft);
+  border-radius: 12px 12px 2px 12px; padding: 8px 14px; white-space: pre-wrap; }
+.cevap { font-family: var(--serif); font-size: 1.06rem; line-height: 1.7; }
+.cevap h1, .cevap h2, .cevap h3, .cevap h4 { font-family: system-ui, sans-serif; font-size: 1.02rem; margin: 1.2em 0 .4em; }
+.cevap p { margin: .6em 0; }
+.cevap blockquote { margin: .8em 0; padding: .5em 1em; border-left: 3px solid var(--accent); background: var(--card);
+  border-radius: 0 6px 6px 0; cursor: pointer; }
+.cevap blockquote:hover { background: var(--soft); }
+.cevap blockquote p { margin: .2em 0; }
+.cevap ul, .cevap ol { padding-left: 1.4em; }
+.cevap code { font-size: .9em; background: var(--soft); padding: 0 3px; border-radius: 3px; }
+.cevap hr { border: 0; border-top: 1px solid var(--line); margin: 1.2em 0; }
+.ref { font-family: system-ui, sans-serif; font-size: .78em; vertical-align: super; line-height: 0; color: var(--accent);
+  text-decoration: none; padding: 0 1px; cursor: pointer; background: none; border: 0; }
+.ref:hover { text-decoration: underline; }
+.ref.kotu { color: var(--bad); }
+.isaret { color: var(--muted); font-size: .75em; vertical-align: super; }
+[dir="rtl"], .ar { font-family: "Amiri", "Scheherazade New", "Noto Naskh Arabic", var(--serif); font-size: 1.15em; }
+
+.durum { font-size: .86rem; color: var(--muted); margin: 6px 0; display: flex; gap: 8px; align-items: center; }
+.durum::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: var(--accent);
+  animation: nabiz 1.2s ease-in-out infinite; flex: none; }
+@keyframes nabiz { 50% { opacity: .25; } }
+.hata { color: var(--bad); font-size: .92rem; }
+
+.kaynaklar { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 8px; font-size: .88rem; }
+.kaynaklar h4 { margin: 0 0 6px; font-size: .88rem; }
+.kaynaklar ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; }
+.kaynak { background: none; border: 0; padding: 2px 0; text-align: left; color: var(--fg); width: 100%; }
+.kaynak:hover .yol-metin { text-decoration: underline; }
+.kaynak .no { color: var(--accent); margin-right: 4px; }
+.kaynak.kotu .no { color: var(--bad); }
+.gomulu { margin: 0 0 0 1.6em; color: var(--muted); }
+.uyari { color: var(--bad); margin-left: 1.6em; font-size: .82rem; }
+.alt-bilgi { font-size: .78rem; color: var(--muted); margin-top: 6px; }
+
+.alt { position: sticky; bottom: 0; background: var(--bg); border-top: 1px solid var(--line); padding: 10px 16px 6px; }
+#soru-formu { max-width: 760px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end; }
+#soru { flex: 1; resize: none; font: inherit; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px;
+  background: var(--card); color: var(--fg); max-height: 40vh; }
+#soru:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+#gonder { border: 0; border-radius: 10px; padding: 9px 18px; background: var(--accent); color: var(--bg); }
+#gonder:disabled { opacity: .5; cursor: default; }
+.not { max-width: 760px; margin: 6px auto 0; text-align: center; }
+
+dialog { width: min(720px, 94vw); max-height: 86vh; border: 1px solid var(--line); border-radius: 10px; padding: 0;
+  background: var(--card); color: var(--fg); }
+dialog::backdrop { background: rgba(0, 0, 0, .35); }
+.metin-ust { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; padding: 12px 16px;
+  border-bottom: 1px solid var(--line); position: sticky; top: 0; background: var(--card); }
+.yol { margin: 0; font-size: .86rem; color: var(--muted); }
+#metin-govde { padding: 8px 16px 16px; font-family: var(--serif); font-size: 1.04rem; line-height: 1.75; }
+#metin-govde .cumle { margin: .35em 0; }
+#metin-govde mark { background: var(--mark); color: inherit; border-radius: 2px; padding: 0 2px; }
+#metin-govde .meal { font-family: system-ui, sans-serif; font-size: .82rem; color: var(--muted); margin: 0 0 .5em 1em; }
+#metin-govde .hasiye { font-size: .92rem; border-left: 2px solid var(--line); padding-left: 10px; margin: .4em 0 .4em 1em; }

@@ -578,6 +578,10 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   `SCW_PROJECT_ID`; kökteki SPF'te `include:_spf.tem.scaleway.com`, MX'ler `destek@` yönlendirmesinindir, dokunulmaz),
   geliştirmede `serve --dev` (e-posta `data/interim/sohbet/eposta.log`'a). API anahtarı `ANTHROPIC_API_KEY`
   (Console'da ayrı çalışma alanı, aylık tavan 100 $); `golden` ölçümü aboneliği kullanır, anahtarı alt sürece geçirmez.
+  Sohbet servisi `sohbet.py` (S12.3; kuralları modülün başında): araçlar süreç içinde `create_server`'dan, talimat
+  Risale talimatından türetilir; model `[[kimlik]]` yazar, Kaynaklar'ı sunucu kurar ve alıntıyı denetler. Komutlar
+  `uv run --extra sohbet python -m risale_mcp.sohbet serve [--dev] | sor "<soru>" | olc [soru…] | usage`; `olc`
+  altın soruları API'den sorar, raporu `golden.report` kurar (gerçek maliyet).
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

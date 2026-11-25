@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta name="referrer" content="no-referrer">
+<title>Sohbet · {{NAME}}</title>
+<link rel="stylesheet" href="{{P}}static/sohbet.css?v={{V}}">
+</head>
+<body data-prefix="{{P}}">
+<header class="top">
+  <div class="brand"><strong>{{NAME}}</strong> <span>Sohbet</span></div>
+  <nav>
+    <button type="button" id="yeni" class="ghost">Yeni konuşma</button>
+    <details class="hesap">
+      <summary>Hesap</summary>
+      <div class="menu">
+        <p class="small">{{EMAIL}}</p>
+        <form method="post" action="{{P}}cikis"><button type="submit" class="ghost">Çıkış</button></form>
+        <a href="{{P}}hesap">Hesabımı sil</a>
+      </div>
+    </details>
+  </nav>
+</header>
+
+<main id="akis">
+  <section id="bos" class="bos">
+    <h1>Risale-i Nur'a sorun</h1>
+    <p>Cevabı bir yapay zekâ yazar; dayandığı yerleri eserlerden alıntılar. Her alıntı eserlerin metniyle denetlenir ve
+      Kaynaklar'da adresiyle verilir. Alıntıya ya da kaynağa dokunursanız metni bağlamıyla okursunuz.</p>
+    <div class="ornekler">
+      <button type="button" class="ornek">Haşrin aklî delilleri nelerdir?</button>
+      <button type="button" class="ornek">Risale-i Nur'da tevekkül nasıl anlatılır?</button>
+      <button type="button" class="ornek">Ümitsizliğe karşı ne tavsiye edilir?</button>
+      <button type="button" class="ornek">Birinci Söz'deki iki adam temsilini anlatır mısın?</button>
+    </div>
+  </section>
+  <div id="konusma"></div>
+</main>
+
+<footer class="alt">
+  <form id="soru-formu" autocomplete="off">
+    <textarea id="soru" rows="1" maxlength="2000" placeholder="Sorunuzu yazın…" aria-label="Soru"></textarea>
+    <button type="submit" id="gonder">Sor</button>
+  </form>
+  <p class="small not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Konuşmanız yalnız bu
+    tarayıcıda saklanır. <a href="/gizlilik.html">Gizlilik</a> · <a href="/kullanim-sartlari.html">Kullanım şartları</a></p>
+</footer>
+
+<dialog id="metin">
+  <div class="metin-ust">
+    <p id="metin-yol" class="yol"></p>
+    <button type="button" id="metin-kapat" class="ghost" aria-label="Kapat">✕</button>
+  </div>
+  <div id="metin-govde"></div>
+</dialog>
+
+<script src="{{P}}static/sohbet.js?v={{V}}"></script>
+</body>
+</html>
