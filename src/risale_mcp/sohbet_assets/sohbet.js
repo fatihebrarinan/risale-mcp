@@ -255,72 +255,138 @@ function closeDrawers() { drawers.left = drawers.right = false; layout(); }
 // ------------------------------------------------------------ Kaynaklar
 
 // S13.5: konuşmanın tek kaynakçası. Sunucu her cevabı kendi kaynakçasıyla (1'den) verir ve saklar; sayfa numaraları
-// konuşma boyunca yeniden verir: kaynak ilk geçtiği yerde numarasını alır, sonra hep onunla anılır. Aynı kaynak aynı
-// kimliktir (cümle ya da aralık; iç içe aralıklar ayrı), doğrulanamayan ayrı. Cevaplar yalnız sona eklendiği için
-// önceki numaralar değişmez. Numara kaynağın nesnesine yazılmaz (yerel kayda girmesin): `globalNo`.
-const globalNo = new WeakMap();
-let catalog = [];                       // konuşmanın kaynakları, numara sırasıyla: { g, src, turn, turns }
+// konuşma boyunca yeniden verir: kaynak ilk geçtiği yerde numarasını alır, sonra hep onunla anılır. Cevaplar yalnız
+// sona eklendiği için önceki numaralar değişmez.
+// S13.6: kaynak, bir bölümün kesintisiz bir parçasıdır. Aynı bölümde örtüşen ya da bitişik cümleler tek kaynakta
+// (parça) birleşir, en çok PIECE_MAX cümle; hâşiye cümlesi, bölüm atfı ve doğrulanamayan alıntı birleşmez. Parça
+// tıklanınca açılır; o atfın cümleleri koyu, parçanın öbürleri açık vurgulu. Liste bölüm başlıklarıyla gruplu.
+// Numara ve parça kaynağın nesnesine yazılmaz (yerel kayda girmesin): `pieceOf`.
+const PIECE_MAX = 8;
+const pieceOf = new WeakMap();          // kaynak -> parça
+let catalog = [];                       // parçalar, numara sırasıyla
 
-function num(src) { return globalNo.get(src) ?? src.n; }
+function num(src) { const p = pieceOf.get(src); return p ? p.g : src.n; }
 
-function sourceKey(src, turnIndex) {
-  if (!src.id) return `#${turnIndex}:${src.n}`;
-  return src.id + (src.problem || src.unverified ? "!" : "");
+const SENTENCE_ID = /^(.+)\/c(\d{3,})(?:\.\.c(\d{3,}))?$/;
+const pad = (n) => String(n).padStart(3, "0");
+
+function span(src) {                    // birleşebilen kaynakta {node, start, end}
+  if (!src.id || src.problem || src.unverified) return null;
+  const m = src.id.match(SENTENCE_ID);
+  if (!m || /\/c\d{3,}\/[hs]\d+$/.test(m[1])) return null;          // hâşiye ve şerh cümlesi birleşmez
+  return { node: m[1], start: Number(m[2]), end: Number(m[3] || m[2]) };
+}
+
+function splitCite(cite) {              // "Yol › Bölüm › “İlk kelimeler…” ile başlayan 3 cümle" -> [yol, son parça]
+  const i = (cite || "").lastIndexOf(" › ");
+  return i < 0 ? [cite || "Adresi bulunamadı", ""] : [cite.slice(0, i), cite.slice(i + 3)];
 }
 
 function numberSources() {
-  const seen = new Map();
   catalog = [];
+  const byKey = new Map();              // birleşmeyenler: kimlik -> parça
   cur.turns.forEach((t, i) => {
     for (const src of t.sources || []) {
-      const key = sourceKey(src, i);
-      let entry = seen.get(key);
-      if (!entry) {
-        entry = { g: catalog.length + 1, src, turn: i, turns: [] };
-        seen.set(key, entry); catalog.push(entry);
+      const sp = span(src);
+      let piece = null;
+      if (sp) {
+        piece = catalog.find((p) => p.node === sp.node && sp.start <= p.end + 1 && sp.end >= p.start - 1
+          && Math.max(p.end, sp.end) - Math.min(p.start, sp.start) + 1 <= PIECE_MAX);
+        if (piece) {
+          if (sp.start < piece.start) { piece.start = sp.start; piece.first = src; }
+          piece.end = Math.max(piece.end, sp.end);
+        }
+      } else {
+        piece = byKey.get(src.id ? src.id + (src.problem || src.unverified ? "!" : "") : `#${i}:${src.n}`) || null;
       }
-      if (!entry.turns.includes(i)) entry.turns.push(i);
-      globalNo.set(src, entry.g);
+      if (!piece) {
+        piece = { g: catalog.length + 1, node: sp && sp.node, start: sp && sp.start, end: sp && sp.end,
+          first: src, header: splitCite(src.cite_as)[0], members: [], turns: [] };
+        catalog.push(piece);
+        if (!sp) byKey.set(src.id ? src.id + (src.problem || src.unverified ? "!" : "") : `#${i}:${src.n}`, piece);
+      }
+      piece.members.push(src);
+      if (!piece.turns.includes(i)) piece.turns.push(i);
+      pieceOf.set(src, piece);
     }
   });
 }
+
+function pieceId(piece) {               // parçanın metni istenirken
+  if (!piece.node) return piece.first.id;
+  return piece.start === piece.end ? `${piece.node}/c${pad(piece.start)}`
+    : `${piece.node}/c${pad(piece.start)}..c${pad(piece.end)}`;
+}
+
+function pieceLabel(piece) {            // "“İlk kelimeler…”" ya da "“İlk kelimeler…” ile başlayan 3 cümle"
+  const tail = splitCite(piece.first.cite_as)[1];
+  if (!piece.node) return tail;
+  const incipit = tail.replace(/ ile başlayan \d+ cümle$/, "");
+  const count = piece.end - piece.start + 1;
+  return count > 1 ? `${incipit} ile başlayan ${count} cümle` : incipit;
+}
+
+function pieceCite(piece) { const l = pieceLabel(piece); return l ? `${piece.header} › ${l}` : piece.header; }
 
 function turnNote(turns) {              // "1. soruda", "1. ve 3. soruda", "1., 2. ve 4. soruda"
   const ns = turns.map((i) => `${i + 1}.`);
   return (ns.length > 1 ? `${ns.slice(0, -1).join(", ")} ve ${ns[ns.length - 1]}` : ns[0]) + " soruda";
 }
 
-function sourceList(items) {             // items: [{ src, turn, g, turns? }]
-  const ol = el("ol");
-  for (const { src: s, turn, g, turns } of items) {
-    const li = el("li");
-    const b = el("button", "kaynak" + (s.problem ? " kotu" : ""));
-    b.type = "button";
-    b.dataset.n = s.n;
-    b.dataset.g = g;
-    if (turn !== undefined) b.dataset.turn = turn;
-    const meta = [s.source_name ? `Kaynak: ${esc(s.source_name)}` : "",
-      turns && cur.turns.length > 1 ? turnNote(turns) : ""].filter(Boolean).join(" · ");
-    b.innerHTML = `<span class="no">[${g}]</span><span class="yol-metin">${esc(s.cite_as || "Adresi bulunamadı")}</span>`
-      + (meta ? `<span class="kaynak-adi">${meta}</span>` : "");
-    li.append(b);
-    for (const e of s.embedded || []) li.append(el("div", "gomulu", "– " + esc(e.line)));
-    if (s.problem) li.append(el("div", "uyari", "⚠ Bu alıntı eserlerin metniyle doğrulanamadı."));
-    ol.append(li);
+function sourceList(pieces) {           // bölüm başlıklarıyla gruplu; gruplar ilk numaralarının sırasıyla
+  const box = el("div", "kaynak-listesi");
+  const groups = new Map();
+  for (const p of pieces) {
+    if (!groups.has(p.header)) groups.set(p.header, []);
+    groups.get(p.header).push(p);
   }
-  return ol;
+  const names = new Set(pieces.map((p) => p.first.source_name).filter(Boolean));
+  for (const [header, items] of groups) {
+    const group = el("section", "kaynak-grup");
+    group.append(el("h3", "", esc(header)));
+    const ol = el("ol");
+    for (const p of items) {
+      const s = p.first;
+      const bad = p.members.some((m) => m.problem);
+      const li = el("li");
+      const b = el("button", "kaynak" + (bad ? " kotu" : ""));
+      b.type = "button";
+      b.dataset.g = p.g;
+      const label = pieceLabel(p) || "Bölümün tamamı";
+      const meta = [names.size > 1 && s.source_name ? `Kaynak: ${esc(s.source_name)}` : "",
+        cur.turns.length > 1 ? turnNote(p.turns) : ""].filter(Boolean).join(" · ");
+      b.innerHTML = `<span class="no">[${p.g}]</span><span class="yol-metin">${esc(label)}</span>`
+        + (meta ? `<span class="kaynak-adi">${meta}</span>` : "");
+      li.append(b);
+      const seen = new Set();
+      for (const m of p.members) {
+        for (const e of m.embedded || []) {
+          if (!seen.has(e.line)) { seen.add(e.line); li.append(el("div", "gomulu", "– " + esc(e.line))); }
+        }
+      }
+      if (bad) li.append(el("div", "uyari", "⚠ Bu alıntı eserlerin metniyle doğrulanamadı."));
+      ol.append(li);
+    }
+    group.append(ol);
+    box.append(group);
+  }
+  if (names.size === 1) box.append(el("p", "kaynak-adi", `Kaynak: ${esc([...names][0])}`));
+  return box;
+}
+
+function turnPieces(sources) {
+  return [...new Set((sources || []).map((s) => pieceOf.get(s)).filter(Boolean))].sort((a, b) => a.g - b.g);
 }
 
 function renderSources(box, sources) {          // cevabın altında (Kaynaklar paneli yerinde açık değilse görünür)
   if (!sources || !sources.length) return;
   const wrap = el("div", "kaynaklar");
   wrap.append(el("h4", "", "Kaynaklar"));
-  const items = sources.map((src) => ({ src, g: num(src) })).sort((a, b) => a.g - b.g);
-  wrap.append(sourceList(items));
+  wrap.append(sourceList(turnPieces(sources)));
   box.append(wrap);
 }
 
-function renderSide() {                          // konuşmanın tek kaynakçası (S13.5)
+function renderSide() {                          // konuşmanın tek kaynakçası (S13.5, S13.6)
   els.sideList.innerHTML = "";
   if (catalog.length) els.sideList.append(sourceList(catalog));
   else els.sideList.innerHTML = SIDE_EMPTY;
@@ -411,9 +477,8 @@ function renderTurn(turn) {
 function answerText(turn) {          // okuyucunun gördüğü cevap, düz metin: yalnız kullanıcı onaylarsa gönderilir
   const local = new Map((turn.sources || []).map((s) => [s.n, s]));     // sayfadaki numaralarla (S13.5)
   const text = turn.markdown.replace(/\[(\d+)\]/g, (m, n) => (local.has(Number(n)) ? `[${num(local.get(Number(n)))}]` : m));
-  const lines = (turn.sources || []).slice().sort((a, b) => num(a) - num(b))
-    .map((s) => `[${num(s)}] ${s.cite_as || "Adresi bulunamadı"}`
-      + (s.source_name ? ` (${s.source_name})` : "") + (s.problem ? " ⚠ doğrulanamadı" : ""));
+  const lines = turnPieces(turn.sources).map((p) => `[${p.g}] ${pieceCite(p)}`        // parçalarıyla (S13.6)
+    + (p.first.source_name ? ` (${p.first.source_name})` : "") + (p.members.some((m) => m.problem) ? " ⚠ doğrulanamadı" : ""));
   return text + (lines.length ? "\n\nKaynaklar\n" + lines.join("\n") : "");
 }
 
@@ -774,15 +839,20 @@ els.list.addEventListener("click", (ev) => {
     if (quote) target = quote.querySelector(".ref");
   }
   if (!target) return;
+  if (target.classList.contains("kaynak")) {           // cevabın altındaki liste: parçanın tamamı
+    const piece = catalog.find((p) => p.g === Number(target.dataset.g));
+    if (piece) openText(piece);
+    return;
+  }
   const src = sourceOf(box, target.dataset.n);
-  if (src) openText(src, box._index);
+  if (src) openText(pieceOf.get(src) || null, src);
 });
 
 els.sideList.addEventListener("click", (ev) => {
   const b = ev.target.closest(".kaynak");
   if (!b) return;
-  const entry = catalog.find((e) => e.g === Number(b.dataset.g));
-  if (entry) openText(entry.src, entry.turn);
+  const piece = catalog.find((p) => p.g === Number(b.dataset.g));
+  if (piece) openText(piece);
 });
 els.back.addEventListener("click", showList);
 els.open.addEventListener("click", () => {
@@ -809,27 +879,37 @@ resizer($("ayir-yan"), "right");
 
 // ------------------------------------------------------------ metin penceresi
 
-async function openText(src, turnIndex) {
-  els.dpath.textContent = src.cite_as || "Adresi bulunamadı";
+async function openText(piece, focus) {  // parça; `focus` metindeki atfın kaynağıysa onun cümleleri koyu (S13.6)
+  const src = focus || piece.first;
+  const cite = piece ? pieceCite(piece) : src.cite_as;
+  els.dpath.textContent = cite || "Adresi bulunamadı";
   els.dsource.textContent = src.source_name ? `Kaynak: ${src.source_name}` : "";
   els.dbody.innerHTML = '<p class="small">Yükleniyor…</p>';
   els.sideList.hidden = true;
   els.sideText.hidden = false;
   els.back.hidden = false;
-  els.sideTitle.textContent = turnIndex !== undefined ? `[${num(src)}]` : "Metin";
+  els.sideTitle.textContent = `[${num(src)}]`;
   els.sideText.scrollTop = 0;
   for (const b of els.sideList.querySelectorAll(".kaynak.secili")) b.classList.remove("secili");
   const item = els.sideList.querySelector(`.kaynak[data-g="${num(src)}"]`);
   if (item) item.classList.add("secili");
   setPanel("right", true);
+  const sp = focus ? span(focus) : null;
+  const strong = (id) => {               // atfın kendi cümlesi mi (yoksa parçanın öbür cümlesi)
+    if (!sp) return true;
+    const m = id.match(SENTENCE_ID);
+    return !!m && m[1] === sp.node && Number(m[2]) >= sp.start && Number(m[2]) <= sp.end;
+  };
   try {
-    const data = await api(`metin?id=${encodeURIComponent(src.id)}`);
-    els.dpath.textContent = data.section_ref || src.cite_as || "Adresi bulunamadı";
+    const data = await api(`metin?id=${encodeURIComponent(piece ? pieceId(piece) : src.id)}`);
+    els.dpath.textContent = data.section_ref && piece && piece.node
+      ? `${data.section_ref} › ${pieceLabel(piece)}` : data.section_ref || cite || "Adresi bulunamadı";
     const parts = [];
     if (src.unverified) parts.push('<p class="uyari">⚠ Alıntının sözleri bu cümlelerde ve eserlerin başka bir yerinde bulunamadı; cevabın gösterdiği yer bu.</p>');
     for (const s of data.sentences || []) {
       const body = esc(s.text);
-      parts.push(`<p class="cumle" dir="auto">${s.target ? `<mark>${body}</mark>` : body}</p>`);
+      const mark = !s.target ? body : strong(s.id) ? `<mark>${body}</mark>` : `<mark class="acik">${body}</mark>`;
+      parts.push(`<p class="cumle" dir="auto">${mark}</p>`);
       for (const a of s.arabic || []) {
         if (a.publisher_translation) {
           parts.push(`<p class="meal">${esc(a.source || "")} · nâşirin meali: ${esc(a.publisher_translation)}</p>`);
@@ -841,7 +921,7 @@ async function openText(src, turnIndex) {
     }
     if (data.note) parts.push(`<p class="small">${esc(data.note)}</p>`);
     els.dbody.innerHTML = parts.join("") || '<p class="small">Metin yok.</p>';
-    const first = els.dbody.querySelector("mark");
+    const first = els.dbody.querySelector("mark:not(.acik)") || els.dbody.querySelector("mark");
     if (first) first.scrollIntoView({ block: "center" });
   } catch (e) {
     els.dbody.innerHTML = `<p class="hata">${esc(e.message)}</p>`;

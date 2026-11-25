@@ -234,6 +234,18 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     noktası önce atıf dizinine (`checker.nodes`) bakıyordu, dizin ilk alıntı denetiminde kuruluyor; servis yeniden
     başlayıp soru sorulmadan eski konuşmanın kaynağı açılınca hata yutuluyordu (S12'den beri; gece dört deploy
     görünür kıldı). `sohbet.source_text` önce dizini kurar; test yeni servisle sınar (`8481d83`, `yayin-20261125-235352`).
+  - S13.6 **Kaynakların toparlanması** (kullanıcının fikri ve onayı, 2026-11-26): 11. Söz'ü işleyen bir konuşmada 40'tan
+    çok kaynak birikti; çoğu aynı bölümün yan yana ya da iç içe cümleleri (dokuz emir tek tek alıntılanmış). Kural:
+    **kaynak, bir bölümün kesintisiz bir parçasıdır**: aynı bölümde örtüşen ya da bitişik cümleler tek kaynakta
+    birleşir, en çok 8 cümle (projenin aralık sınırı), fazlası yeni kaynak. Numara parçanın ilk geçtiği yerde verilir.
+    Metindeki [n] tıklanınca parça açılır, o atfın dayandığı cümleler koyu, parçanın öbür cümleleri açık vurgulu. Sağ
+    panel bölüm başlıklarıyla gruplu: yol bir kez, altında "[3] “Şu kasrın meliki…” · 3 cümle". Hâşiye cümleleri,
+    bölüm atıfları ve doğrulanamayan alıntılar birleşmez. Yalnız sayfada (S13.5 gibi): sunucunun cümle düzeyindeki
+    kaydı ve denetimi değişmez. Kullanıcının konuşmasında ilk dört cevapta ≈36 kaynak 17'ye iner (elle hesap).
+    **Yapıldı (2026-11-26):** `sohbet.js` `numberSources` parçaları kurar (`pieceOf`), `openText(parça, atıf)` parçanın
+    aralığını ister, atfın cümleleri dolgulu, öbürleri altı çizili (`mark.acik`); liste `kaynak-grup` başlıklarıyla,
+    kaynak adı tekse listenin altında bir kez. "Soruyu ve bu cevabı da gönder" metni parçalarla. Arayüz denemesi:
+    hazır konuşma bitişik, iç içe ve 8'i aşan durumları sınar; 77 denetim geçti.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

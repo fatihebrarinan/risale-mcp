@@ -1,4 +1,4 @@
-"""S12.11, S13.1, S13.5: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
+"""S12.11, S13.1, S13.5, S13.6: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
 
 Yerel sunucu açık olmalı (`SOHBET_GUNLUK_SORU=100 uv run --extra sohbet python -m risale_mcp.sohbet serve --dev`: deneme hesabının
 günlük hakkı her koşuda bir azalır). Deneme hesabına
@@ -39,10 +39,13 @@ from risale_mcp.sohbet_hesap import Store
 convs = Conversations(Store())
 if sys.argv[1:2] == ["sil"]:
     convs.delete(EMAIL, sys.argv[2]); raise SystemExit
-src = lambda n, i: {"n": n, "id": "sozler/11/" + i, "cite_as": "Sözler › Onbirinci Söz › " + i, "source_name": "e-Risale"}
-one = {"raw": "", "markdown": 'Bir [1], iki [2], üç [3].', "sources": [src(1, "c001"), src(2, "c002"), src(3, "c003")]}
-two = {"raw": "", "markdown": 'Dört [1], yine iki [2], aralık [3].',
-       "sources": [src(1, "c004"), src(2, "c002"), src(3, "c003..c004")]}
+def src(n, a, b=None):
+    span = f"c{a:03d}" + (f"..c{b:03d}" if b else "")
+    tail = f"“İlk{a}…”" + (f" ile başlayan {b - a + 1} cümle" if b else "")
+    return {"n": n, "id": "sozler/11/" + span, "cite_as": "Sözler › Onbirinci Söz › " + tail, "source_name": "e-Risale"}
+one = {"raw": "", "markdown": 'Bir [1], iki [2], yirmi [3].', "sources": [src(1, 1), src(2, 2), src(3, 20)]}
+two = {"raw": "", "markdown": 'Otuz [1], yine iki [2], aralık [3], sekiz [4], dokuzuncu [5].',
+       "sources": [src(1, 30), src(2, 2), src(3, 19, 21), src(4, 40, 47), src(5, 48)]}
 ident, _ = convs.add(EMAIL, None, "Kaynak numaralama denemesi", one)
 convs.add(EMAIL, ident, "İkinci soru", two)
 print(ident)
@@ -303,18 +306,25 @@ async def run(url: str) -> None:
         await page.reload()
         await page.wait_for_selector(".tur >> nth=1")
         refs = await page.locator(".tur >> nth=1").locator(".cevap .ref").all_inner_texts()
-        check("ikinci cevapta konuşmanın numaraları", refs == ["[4]", "[2]", "[5]"])
+        # S13.6: bitişik (c001, c002) ve iç içe (c020 ⊂ c019..c021) birleşir; 8'i aşan (c040..c047 + c048) birleşmez
+        check("ikinci cevapta konuşmanın numaraları, parçalarıyla", refs == ["[3]", "[1]", "[2]", "[4]", "[5]"])
         under = await page.locator(".tur >> nth=1").locator(".kaynaklar .no").all_inner_texts()
-        check("cevabın altında yalnız onun kaynakları, sıralı", under == ["[2]", "[4]", "[5]"])
+        check("cevabın altında yalnız onun kaynakları, sıralı", under == ["[1]", "[2]", "[3]", "[4]", "[5]"])
         side = await page.locator("#yan-liste .kaynak .no").all_inner_texts()
-        check("sağda tek liste, her kaynak bir kez", side == ["[1]", "[2]", "[3]", "[4]", "[5]"])
-        check("ortak kaynakta iki soru", "1. ve 2. soruda" in await page.inner_text('#yan-liste .kaynak[data-g="2"]'))
+        check("sağda tek liste, her parça bir kez", side == ["[1]", "[2]", "[3]", "[4]", "[5]"])
+        check("bölüm başlığı bir kez", await page.locator("#yan-liste .kaynak-grup h3").all_inner_texts()
+              == ["Sözler › Onbirinci Söz"])
+        check("parça birleşik aralıkla", "“İlk19…” ile başlayan 3 cümle" in await page.inner_text('#yan-liste .kaynak[data-g="2"]'))
+        check("ortak parçada iki soru", "1. ve 2. soruda" in await page.inner_text('#yan-liste .kaynak[data-g="1"]'))
         await page.screenshot(path=OUT / "14-tek-kaynakca.png")
         await page.locator(".tur >> nth=1").locator(".cevap .ref >> nth=1").click()
         await page.wait_for_selector("#metin-govde .cumle")
-        check("atıf konuşmanın numarasıyla açılır", await page.inner_text("#yan-baslik") == "[2]")
+        check("atıf parçanın numarasıyla açılır", await page.inner_text("#yan-baslik") == "[1]")
+        check("atfın cümlesi koyu, parçanın öbürü açık", await page.locator("#metin-govde mark:not(.acik)").count() == 1
+              and await page.locator("#metin-govde mark.acik").count() == 1)
+        await page.screenshot(path=OUT / "15-parca-vurgu.png")
         await page.click("#yan-geri")
-        check("açılan kaynak listede seçili", await page.locator('#yan-liste .kaynak.secili[data-g="2"]').count() == 1)
+        check("açılan kaynak listede seçili", await page.locator('#yan-liste .kaynak.secili[data-g="1"]').count() == 1)
         seed("sil", seeded)
         await page.goto(url)
         await page.wait_for_selector("#gecmis li")
