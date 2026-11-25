@@ -24,6 +24,43 @@ başlayacak (`/clear`), D15'in başlangıç tarifi aşağıda D15'te.
 D5.0.4 birim bölmesi (kural b5, Bakara 34–286 153 birim). Aynı gün (kullanıcının kararı): yan işler (bölme,
 S7) plana yazılıp bekler, önde tek iş D15; D5.0 alt adımlara bölündü (D5.0.1–D5.0.9); S7 okuma platformu oldu.
 
+**"Şimdi" bloğunun 2026-11-23 – 2026-11-25 notları** (2026-11-25'te sadeleştirildi, kullanıcının isteği):
+- **2026-11-25 (gece):** **E5 bitti ve yayında** (kesintisiz, kullanıcının izniyle). Klasik eklentide 12 eser:
+  yedi yeni eser (Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber, el-Munkız, el-Mevâhib, İhyâ),
+  `risale_refs`, İhyâ'da Irâkî'nin tahrici şerh ve Risale hadislerine lafız bağı; site ve talimat yeni tanıtımla.
+  2026-11-25: kullanıcı `risale_refs` listesine baktı; Yenilikler'de iki duyuru yayımlandı (klasik eserlerin 2.
+  dilimi, İşârât'ın misli çalışması; taslak masada açılmıyordu, sunucudaki `docs/` eskiydi: `deploy.sh --site` artık
+  yazıların aslını da gönderir); Claude eklentisi 1.0.2 ve ana depo push edildi (dizin eklentiyi yeniden tarar).
+  **Kullanıcıdan beklenen:** dizin metinleri başvurular sonuçlanınca (`docs/e5-dizin-metni-taslagi.md`).
+  **B10 açık** ("Sıradaki" 1).
+  **E7'nin ön çalışması bitti** (2026-11-25, yayınsız; `docs/e7-on-calisma.md`): (a) Kütüb-i Sitte ve Muvatta'da
+  lafız gruplaması denendi; geçişli grup zincirleme yapıyor (0,4'te 439'luk grup), öneri çift çift ortak lafız bağı;
+  (c) 101 Türkçe sözün 9'unda yalnız kitap düzeyinde künye var; anlamsal arama 10 sözde 0,6'nın üstünde aday buldu.
+  Raporun sonundaki beş kararı kullanıcı **E7'nin başında** verecek (kullanıcının kararı, 2026-11-25): E7'ye
+  geçilince önce bu kararlar sorulur, sonra iş başlar.
+- **Önde (2026-11-23):** **S11 bitti ve yayında:** site yazılarının taslakları masadan düzenlenir (Okumalar › Yazı
+  taslakları; düzeltmeler yayımlarken depoya alınır). **A4 bitti ve yayında** (lügat: Risale eklentisinde `lookup_word`, okuma platformunda
+  kelimeye dokununca anlam). Kullanıcıdan beklenen: Yenilikler taslağını (`docs/yenilikler/2026-11-23-lugat.md`,
+  önizleme `python3 scripts/site-uret.py onizle`) okuyup yayımlamak; eşleme örneklerine bakmak
+  (`data/interim/lugat/olcum.md`). Önceki adım **S10** de yayında; kullanıcıdan beklenen: karşılama sayfasını
+  (`/oku/#/~hosgeldin`) ve kopyalama damgasını okuyup düzeltmek, sonra ilk davetler (`scripts/sunucu.sh taslak davet
+  <e-posta>`). **E6.1 bitti (2026-11-23):** Elmalılı'nın kaynak adayları bulundu, Yazma Eserler Kurumu'na izin
+  e-postası gitti ("Bekleyen"); ekleme Aralık'taki tefsir kurulumunda kalır (kullanıcının kararı). **S4.7 bitti (2026-11-23):** Claude eklentisi
+  (plugin) 1.0.1 dizine gönderildi; cevap "Bekleyen"de. S4'ün bütün cevapları "Bekleyen"de: Anthropic (S4.3 dört
+  bağdaştırıcı, S4.7 eklenti), OpenAI (S4.1). E8 (Arapça tercüme) "Sıradaki" 5'te. D5'in kuyruğu sunucuda Bakara'nın sonuna kadar kendi kendine
+  sürüyor (`d1-kuyruk`; durum `scripts/taslak-sunucu.sh durum`, `https://risalemcp.com/taslak/d5.html`).
+- **Tarihli hatırlatmalar:** (0) **Kuyruk durunca (Aralık):** B3 (tefsirde uzun cümleler ve kayan âyet birimleri;
+  "Sıradaki"de). (1) S8'in site sürümü 2026-11-24'te kendiliğinden yayımlandı;
+  Yeniliklere duyurusu 2026-11-25'te yayımlandı. Zamanlı yayının commit'i taşınan eski
+  dosyanın silinişini dışarıda bırakıyordu (düzeltildi, 2026-11-25). (2) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün
+  yedek yolu ("Bekleyen"). (3) **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse
+  kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`): Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı
+  (aynı aboneliği kullanır, Pro kotasını yer).
+- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; "Sıradaki" 2 (Risale'si az birimlere göz
+  atmak); E8.6 için Arapça okuyan bir denetçi aramak.
+- Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
+  Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
+
 ## Aşamalar ve kimlikli işler
 
 2026-11-09'a kadar CLAUDE.md'deki aşama ve adım listesi, değiştirilmeden taşındı. Dondurulan işlerin maddeleri
