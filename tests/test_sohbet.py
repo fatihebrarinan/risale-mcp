@@ -404,3 +404,90 @@ def test_quota_refuses_at_route(library, tmp_path):
     assert '"remaining": 0' in first.text
     second = web.post("/sohbet/api/sor", json={"question": "soru", "history": []})
     assert second.status_code == 429 and "soru hakkınız (1)" in second.json()["error"]
+
+
+def test_title_of():
+    assert sohbet.title_of("  Haşrin   aklî\ndelilleri? ") == "Haşrin aklî delilleri?"
+    long = "kelime " * 30
+    title = sohbet.title_of(long)
+    assert title.endswith("…") and len(title) <= sohbet.MAX_TITLE + 1 and not title[:-1].endswith(" ")
+
+
+@needs_db
+def test_conversations_stored(library, tmp_path):
+    """S13.1: konuşma hesapta saklanır; geçmiş sunucudan okunur; başkasının konuşması görünmez; silme ve ayar."""
+    from starlette.testclient import TestClient
+    from risale_mcp.sohbet_hesap import Config, LogMailer, Store
+    store = Store(tmp_path / "s.db")
+    for email in ("a@b.co", "c@d.co"):
+        code, _ = store.new_code(email, 10)
+        store.redeem(email, code, "uzun-bir-parola")
+    client = FakeClient([reply(text_block(f'> "{TEXT_32}" [[{C32}]]')), reply(text_block("İkinci cevap.")),
+                         reply(text_block("Geçici cevap."))])
+    app = sohbet.build(sohbet.Chat(library, client, Config()), store, LogMailer(tmp_path / "e.log"), Config())
+    web = TestClient(app, base_url="https://testserver")
+    web.cookies.set("sohbet_oturum", store.open_session("a@b.co"))
+    status = web.get("/sohbet/api/durum").json()
+    assert status == {"email": "a@b.co", "keep": True, "questions": 10, "remaining": 10}
+
+    first = web.post("/sohbet/api/sor", json={"question": "Dokuzuncu Hakikat ne der?"})
+    assert '"conversation": "' in first.text and '"n": 0' in first.text
+    listed = web.get("/sohbet/api/konusmalar").json()["conversations"]
+    assert len(listed) == 1 and listed[0]["title"] == "Dokuzuncu Hakikat ne der?"
+    ident = listed[0]["id"]
+    # ikinci soru: tarayıcının geçmişi yok sayılır, sunucu kendi kaydını gönderir
+    web.post("/sohbet/api/sor", json={"question": "Devamı?", "conversation": ident, "history": [{"q": "x", "a": "y"}]})
+    sent = client.calls[1]["messages"]
+    assert [m["role"] for m in sent] == ["user", "assistant", "user"] and sent[0]["content"] == "Dokuzuncu Hakikat ne der?"
+    got = web.get("/sohbet/api/konusma", params={"id": ident}).json()
+    assert [t["q"] for t in got["turns"]] == ["Dokuzuncu Hakikat ne der?", "Devamı?"]
+    assert got["turns"][0]["sources"][0]["id"] == C32 and "a" not in got["turns"][0]
+    # oy saklanan tura da yazılır
+    web.post("/sohbet/api/geri-bildirim", json={"vote": 1, "conversation": ident, "n": 1})
+    assert web.get("/sohbet/api/konusma", params={"id": ident}).json()["turns"][1]["feedback"] == 1
+    assert web.post("/sohbet/api/konusma/ad", json={"id": ident, "title": "  Yeni   ad "}).json()["ok"]
+    assert web.get("/sohbet/api/konusmalar").json()["conversations"][0]["title"] == "Yeni ad"
+    assert web.get("/sohbet/api/durum").json()["remaining"] == 8
+
+    # başkası göremez, değiştiremez, silemez, devam edemez
+    other = TestClient(app, base_url="https://testserver")
+    other.cookies.set("sohbet_oturum", store.open_session("c@d.co"))
+    assert other.get("/sohbet/api/konusma", params={"id": ident}).status_code == 404
+    assert other.get("/sohbet/api/konusmalar").json()["conversations"] == []
+    assert other.post("/sohbet/api/konusma/ad", json={"id": ident, "title": "x"}).status_code == 400
+    assert other.post("/sohbet/api/konusma/sil", json={"id": ident}).json()["deleted"] == 0
+    assert other.post("/sohbet/api/sor", json={"question": "q", "conversation": ident}).status_code == 404
+
+    # saklama kapalı: konuşma açılmaz, geçmiş tarayıcıdan gelir
+    assert web.post("/sohbet/api/ayarlar", json={"keep": False}).json()["keep"] is False
+    temp = web.post("/sohbet/api/sor", json={"question": "Geçici?", "history": [{"q": "önce", "a": "cevap"}]})
+    assert '"conversation"' not in temp.text and client.calls[2]["messages"][0]["content"] == "önce"
+    assert len(web.get("/sohbet/api/konusmalar").json()["conversations"]) == 1
+    assert web.post("/sohbet/api/ayarlar", json={"keep": "evet"}).status_code == 400
+
+    # silme: tek tek ve hepsi; hesap silinince konuşmalar da gider
+    assert web.post("/sohbet/api/konusma/sil", json={"id": ident}).json()["deleted"] == 1
+    assert store._run("SELECT COUNT(*) FROM turns")[0][0] == 0
+    store._run("UPDATE users SET keep_history = 1 WHERE email = 'a@b.co'")
+    client.replies += [reply(text_block("Bir.")), reply(text_block("İki."))]
+    web.post("/sohbet/api/sor", json={"question": "Bir"})
+    web.post("/sohbet/api/sor", json={"question": "İki"})
+    assert web.post("/sohbet/api/konusma/sil", json={"all": True}).json()["deleted"] == 2
+    client.replies.append(reply(text_block("Üç.")))
+    web.post("/sohbet/api/sor", json={"question": "Üç"})
+    assert store._run("SELECT COUNT(*) FROM turns")[0][0] == 1
+    store.remove_user("a@b.co")
+    assert store._run("SELECT COUNT(*) FROM conversations")[0][0] == 0
+    assert store._run("SELECT COUNT(*) FROM turns")[0][0] == 0
+
+
+def test_old_database_gets_keep_history(tmp_path):
+    import sqlite3
+    from risale_mcp.sohbet_hesap import Store
+    path = tmp_path / "eski.db"
+    with sqlite3.connect(path) as c:
+        c.execute("CREATE TABLE users (email TEXT PRIMARY KEY, password TEXT NOT NULL, created REAL NOT NULL, "
+                  "failures INTEGER NOT NULL DEFAULT 0, locked_until REAL NOT NULL DEFAULT 0, last_login REAL)")
+        c.execute("INSERT INTO users (email, password, created) VALUES ('a@b.co', 'x', 0)")
+    store = Store(path)
+    assert sohbet.Conversations(store).keeps("a@b.co") is True

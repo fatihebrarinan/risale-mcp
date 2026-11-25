@@ -9,46 +9,44 @@
 <link rel="stylesheet" href="{{P}}static/sohbet.css?v={{V}}">
 </head>
 <body data-prefix="{{P}}">
-<header class="top">
-  <div class="brand"><strong>{{NAME}}</strong> <span>Sohbet</span></div>
-  <nav>
-    <button type="button" id="yan-ac" class="ghost yalniz-tel" aria-controls="yan" aria-expanded="false">Kaynaklar<span
-      id="yan-sayi" class="sayi" hidden></span></button>
-    <button type="button" id="yeni" class="ghost" aria-label="Yeni konuşma">Yeni<span class="genis"> konuşma</span></button>
-    <details class="hesap">
-      <summary>Hesap</summary>
-      <div class="menu">
-        <p class="small">{{EMAIL}}</p>
-        <form method="post" action="{{P}}cikis"><button type="submit" class="ghost">Çıkış</button></form>
-        <a href="{{P}}hesap">Hesabımı sil</a>
-      </div>
-    </details>
-  </nav>
-</header>
+<div class="cerceve">
 
-<div class="govde">
-  <aside id="yan" class="yan" aria-label="Kaynaklar">
-    <div class="yan-ust">
-      <button type="button" id="yan-geri" class="ghost" hidden>← Kaynaklar</button>
-      <h2 id="yan-baslik">Kaynaklar</h2>
-      <button type="button" id="yan-kapat" class="ghost yalniz-tel" aria-label="Kapat">✕</button>
+  <!-- S13.1: solda konuşmalar (masaüstünde açılıp kapanır, telefonda soldan çekmece) -->
+  <aside id="sol" class="sol" aria-label="Konuşmalar">
+    <div class="sol-ust">
+      <div class="marka"><strong>{{NAME}}</strong> <span>Sohbet</span></div>
+      <button type="button" id="sol-kapat" class="ikon" aria-label="Konuşmalar panelini kapat" title="Paneli kapat">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><path d="M7.5 3.5v13"/></svg>
+      </button>
     </div>
-    <div id="yan-liste" class="yan-icerik">
-      <p class="small yan-bos">Cevaplardaki alıntıların kaynakları burada, eserdeki yeri ve metnin alındığı kaynağın
-        adıyla listelenir. Birine dokunursanız metni bağlamıyla burada okursunuz.</p>
-    </div>
-    <div id="yan-metin" class="yan-icerik" hidden>
-      <p id="metin-yol" class="yol"></p>
-      <p id="metin-kaynak" class="small"></p>
-      <div id="metin-govde"></div>
+    <button type="button" id="yeni" class="yeni-dugme">
+      <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M10 4v12M4 10h12"/></svg> Yeni konuşma
+    </button>
+    <nav id="gecmis" class="gecmis" aria-label="Geçmiş konuşmalar"></nav>
+    <div class="sol-alt">
+      <button type="button" id="ayarlar-ac" class="profil" aria-haspopup="dialog">
+        <span class="avatar" aria-hidden="true">{{INITIAL}}</span>
+        <span class="eposta">{{EMAIL}}</span>
+        <svg class="disli" viewBox="0 0 20 20" aria-hidden="true"><circle cx="10" cy="10" r="2.6"/><path d="M10 2.5v2.2M10 15.3v2.2M2.5 10h2.2M15.3 10h2.2M4.7 4.7l1.6 1.6M13.7 13.7l1.6 1.6M4.7 15.3l1.6-1.6M13.7 6.3l1.6-1.6"/></svg>
+        <span class="gizli">Ayarlar</span>
+      </button>
     </div>
   </aside>
-  <div id="perde" class="perde" hidden></div>
 
-  <div class="sohbet">
+  <div class="orta">
+    <header class="top">
+      <button type="button" id="sol-ac" class="ikon" aria-controls="sol" aria-expanded="false" aria-label="Konuşmalar"
+        title="Konuşmalar">
+        <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><path d="M7.5 3.5v13"/></svg>
+      </button>
+      <h1 id="baslik" class="baslik">Yeni konuşma</h1>
+      <button type="button" id="yan-ac" class="ghost" aria-controls="yan" aria-expanded="false">Kaynaklar<span
+        id="yan-sayi" class="sayi" hidden></span></button>
+    </header>
+
     <main id="akis">
       <section id="bos" class="bos">
-        <h1>Risale-i Nur'a sorun</h1>
+        <h2>Risale-i Nur'a sorun</h2>
         <p>Cevabı bir yapay zekâ yazar; dayandığı yerleri eserlerden alıntılar. Her alıntı eserlerin metniyle denetlenir
           ve Kaynaklar'da adresiyle verilir. Alıntıya ya da kaynağa dokunursanız metni bağlamıyla okursunuz.</p>
         <div class="ornekler">
@@ -66,12 +64,60 @@
         <textarea id="soru" rows="1" maxlength="2000" placeholder="Sorunuzu yazın…" aria-label="Soru"></textarea>
         <button type="submit" id="gonder">Sor</button>
       </form>
-      <p class="small not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Konuşmanız yalnız
-        bu tarayıcıda saklanır. <a href="{{P}}gizlilik">Gizlilik</a> · <a href="{{P}}sartlar">Kullanım
-        şartları</a></p>
+      <p class="small not"><span>Tefsir ve fetva değildir, müellife mal edilmez.</span><span id="hak" class="hak"
+        hidden></span></p>
     </footer>
   </div>
+
+  <!-- sağda Kaynaklar (geniş ekranda açılıp kapanır, dar ekranda sağdan çekmece) -->
+  <aside id="yan" class="yan" aria-label="Kaynaklar">
+    <div class="yan-ust">
+      <button type="button" id="yan-geri" class="ghost" hidden>← Kaynaklar</button>
+      <h2 id="yan-baslik">Kaynaklar</h2>
+      <button type="button" id="yan-kapat" class="ikon" aria-label="Kaynaklar panelini kapat" title="Kapat">✕</button>
+    </div>
+    <div id="yan-liste" class="yan-icerik">
+      <p class="small yan-bos">Cevaplardaki alıntıların kaynakları burada, eserdeki yeri ve metnin alındığı kaynağın
+        adıyla listelenir. Birine dokunursanız metni bağlamıyla burada okursunuz.</p>
+    </div>
+    <div id="yan-metin" class="yan-icerik" hidden>
+      <p id="metin-yol" class="yol"></p>
+      <p id="metin-kaynak" class="small"></p>
+      <div id="metin-govde"></div>
+    </div>
+  </aside>
 </div>
+<div id="perde" class="perde" hidden></div>
+
+<dialog id="ayarlar" aria-labelledby="ayarlar-baslik">
+  <div class="dlg-ust">
+    <h2 id="ayarlar-baslik">Ayarlar</h2>
+    <button type="button" id="ayarlar-kapat" class="ikon" aria-label="Kapat">✕</button>
+  </div>
+  <section>
+    <h3>Hesap</h3>
+    <p class="eposta-tam">{{EMAIL}}</p>
+    <form method="post" action="{{P}}cikis"><button type="submit" class="ghost">Çıkış yap</button></form>
+  </section>
+  <section>
+    <h3>Konuşmalar</h3>
+    <label class="secenek"><input type="checkbox" id="sakla"> Konuşmalarımı hesabımda sakla</label>
+    <p class="small">Açıkken konuşmalarınız soldaki listede durur, başka bir cihazdan girdiğinizde de açılır. Onları yalnız
+      siz görürsünüz; proje ekibi okumaz. Kapalıyken yeni konuşmalar yalnız bu tarayıcıda durur ve listeye girmez.</p>
+    <p class="satir"><button type="button" id="hepsini-sil" class="ghost tehlike">Bütün konuşmalarımı sil</button>
+      <span id="hepsini-sil-onay" hidden>Emin misiniz? <button type="button" id="hepsini-sil-evet"
+        class="dolu-tehlike">Evet, hepsini sil</button> <button type="button" id="hepsini-sil-vazgec"
+        class="ghost">Vazgeç</button></span></p>
+    <p id="ayar-hata" class="hata" hidden></p>
+  </section>
+  <section>
+    <h3>Belgeler</h3>
+    <p><a href="{{P}}gizlilik">Gizlilik politikası</a> · <a href="{{P}}sartlar">Kullanım şartları</a></p>
+  </section>
+  <section>
+    <p><a href="{{P}}hesap" class="tehlike">Hesabımı sil</a></p>
+  </section>
+</dialog>
 
 <script src="{{P}}static/sohbet.js?v={{V}}"></script>
 </body>

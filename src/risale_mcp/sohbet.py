@@ -20,9 +20,13 @@ Kullanıcının kararları (2026-11-25, `PLANLAR.md` S12): yalnız Risale, model
   (`SOHBET_MODEL_FIX`). Kaç işaretin düzeltildiği, doğrulanamadığı ve işaretsiz paragraf sayısı kullanım satırındadır.
 - **Akış:** cevap Server-Sent Events ile gelir (`status`: araç satırı, `delta`: metin, `clear`: araçtan önceki ara
   metin silinir, `restart`: düzeltme başladı, `done`: denetlenmiş cevap ve kaynaklar, `error`).
-- **Saklanmayan:** konuşmalar sunucuda tutulmaz (tarayıcıda durur, her soruda önceki sorular ve cevaplar düz metin
-  olarak yeniden gönderilir). Saklanan yalnız kullanım satırıdır (`usage`: hesap, zaman, model, token, maliyet, araç
-  sayısı, atıf denetiminin sonucu; soru ve cevap yok). Hesap silinince satırları adsızlaşır.
+- **Konuşmalar** (S13.1, kullanıcının kararları 2026-11-25): hesapta saklanır (`Conversations`; ayar
+  `users.keep_history`, varsayılan açık). Saklanan konuşmanın geçmişi sunucudan okunur, tarayıcının gönderdiği
+  geçmişe güvenilmez; konuşma ilk cevap bitince açılır (hatalı soru boş konuşma bırakmaz), başlığı ilk sorudan
+  kısaltılır. Yalnız sahibine gösterilir, ekip okumaz (gizlilik sayfası); tek tek ya da hepsi silinir, hesap silinince
+  hepsi gider. Ayar kapalıyken konuşma S12'deki gibi yalnız tarayıcıda durur ve her soruda geçmiş tarayıcıdan gelir.
+  Kullanım satırı (`usage`: hesap, zaman, model, token, maliyet, araç sayısı, atıf denetiminin sonucu) soru ve cevabı
+  taşımaz; hesap silinince adsızlaşır.
 - **Sınırlar:** soru başına araç çağrısı (`MAX_TOOL_CALLS`) ve model turu (`MAX_ROUNDS`), konuşma başına soru
   (`MAX_TURNS`), soru ve geçmiş uzunluğu; kişi başına aynı anda tek soru. Günlük kota ve bütçe tavanı S12.4.
 
@@ -54,6 +58,8 @@ MAX_ROUNDS = 14               # soru başına model çağrısı (düzeltme dahil
 MAX_TURNS = 10                # konuşma başına soru
 MAX_QUESTION = 2000           # karakter
 MAX_HISTORY = 60000           # önceki soru ve cevapların toplamı, karakter
+MAX_TITLE = 80                # konuşma başlığı, karakter
+MAX_LISTED = 500              # sol panelde gösterilen en çok konuşma
 MAX_NOTE = 1000               # geri bildirim notu, karakter
 MAX_SHARED = 40000            # onayla gönderilen soru ve cevap, karakter
 FEEDBACK_PER_DAY = 50         # kişi başına
@@ -745,6 +751,93 @@ def notify(text: str) -> None:
     threading.Thread(target=send, daemon=True).start()
 
 
+# ---------------------------------------------------------------- konuşmalar (S13.1)
+
+def title_of(question: str) -> str:
+    """İlk sorudan başlık: tek satır, kelime sınırında kısaltılır (modele yazdırılmaz)."""
+    text = " ".join(question.split())
+    if len(text) <= MAX_TITLE:
+        return text
+    cut = text[:MAX_TITLE].rsplit(" ", 1)[0]
+    return (cut if len(cut) >= MAX_TITLE // 2 else text[:MAX_TITLE]).rstrip(" ,.;:") + "…"
+
+
+class Conversations:
+    """Hesapta saklanan konuşmalar. Her işlem sahibin adresiyle süzülür: başkasının konuşması yok sayılır."""
+
+    def __init__(self, store: Store) -> None:
+        self.store = store
+
+    def keeps(self, email: str) -> bool:
+        row = self.store._run("SELECT keep_history FROM users WHERE email = ?", (email,))
+        return bool(row and row[0][0])
+
+    def set_keeps(self, email: str, on: bool) -> None:
+        self.store._run("UPDATE users SET keep_history = ? WHERE email = ?", (int(on), email))
+
+    def owned(self, email: str, ident: str) -> bool:
+        return bool(self.store._run("SELECT 1 FROM conversations WHERE id = ? AND email = ?", (ident, email)))
+
+    def listing(self, email: str) -> list[dict]:
+        rows = self.store._run("SELECT id, title, updated FROM conversations WHERE email = ? ORDER BY updated DESC "
+                               "LIMIT ?", (email, MAX_LISTED))
+        return [dict(r) for r in rows]
+
+    def turns(self, email: str, ident: str) -> list[dict] | None:
+        if not self.owned(email, ident):
+            return None
+        rows = self.store._run("SELECT n, question, raw, markdown, sources, corrected, feedback FROM turns "
+                               "WHERE conversation = ? ORDER BY n", (ident,))
+        return [{"n": r["n"], "q": r["question"], "a": r["raw"], "markdown": r["markdown"],
+                 "sources": json.loads(r["sources"]), "corrected": bool(r["corrected"]), "feedback": r["feedback"]}
+                for r in rows]
+
+    def get(self, email: str, ident: str) -> dict | None:
+        turns = self.turns(email, ident)
+        if turns is None:
+            return None
+        title = self.store._run("SELECT title FROM conversations WHERE id = ?", (ident,))[0][0]
+        return {"id": ident, "title": title, "turns": turns}
+
+    def add(self, email: str, ident: str | None, question: str, done: dict, now: float | None = None) -> tuple[str, int]:
+        """Cevabı biten turu yazar; konuşma yoksa açar. (konuşma kimliği, turun sırası)."""
+        import secrets
+        now = time.time() if now is None else now
+        with self.store._conn() as c:
+            if ident is None:
+                ident = secrets.token_urlsafe(12)
+                c.execute("INSERT INTO conversations (id, email, title, created, updated) VALUES (?, ?, ?, ?, ?)",
+                          (ident, email, title_of(question), now, now))
+                n = 0
+            else:
+                n = c.execute("SELECT COALESCE(MAX(n) + 1, 0) FROM turns WHERE conversation = ?", (ident,)).fetchone()[0]
+                c.execute("UPDATE conversations SET updated = ? WHERE id = ? AND email = ?", (now, ident, email))
+            c.execute("INSERT INTO turns (conversation, n, ts, question, raw, markdown, sources, corrected) "
+                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+                      (ident, n, now, question.strip(), done["raw"], done["markdown"],
+                       json.dumps(done["sources"], ensure_ascii=False), int(bool(done.get("corrected")))))
+        return ident, n
+
+    def rename(self, email: str, ident: str, title: str) -> bool:
+        title = " ".join(str(title).split())[:MAX_TITLE]
+        if not title:
+            return False
+        with self.store._conn() as c:
+            return c.execute("UPDATE conversations SET title = ? WHERE id = ? AND email = ?",
+                             (title, ident, email)).rowcount == 1
+
+    def delete(self, email: str, ident: str | None = None) -> int:
+        """Bir konuşmayı ya da (`ident` yoksa) hepsini siler; turları da gider."""
+        with self.store._conn() as c:
+            where, params = ("email = ?", (email,)) if ident is None else ("id = ? AND email = ?", (ident, email))
+            c.execute(f"DELETE FROM turns WHERE conversation IN (SELECT id FROM conversations WHERE {where})", params)
+            return c.execute(f"DELETE FROM conversations WHERE {where}", params).rowcount
+
+    def vote(self, email: str, ident: str, n: int, vote: int) -> None:
+        self.store._run("UPDATE turns SET feedback = ? WHERE conversation = ? AND n = ? AND conversation IN "
+                        "(SELECT id FROM conversations WHERE email = ?)", (vote, ident, n, email))
+
+
 # ---------------------------------------------------------------- kullanım satırı
 
 def log_usage(store: Store, email: str | None, model: str, tally: Tally, seconds: float, outcome: str,
@@ -794,7 +887,8 @@ def page(config: Config, email: str) -> str:
     version = _asset_version()
     return ((ASSETS / "sohbet.html").read_text(encoding="utf-8")
             .replace("{{P}}", _html.escape(config.prefix)).replace("{{NAME}}", _html.escape(config.name))
-            .replace("{{EMAIL}}", _html.escape(email)).replace("{{V}}", version))
+            .replace("{{EMAIL}}", _html.escape(email)).replace("{{INITIAL}}", _html.escape(email[:1].upper()))
+            .replace("{{V}}", version))
 
 
 def _asset_version() -> str:
@@ -817,9 +911,26 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
     p = config.prefix
     busy: set[str] = set()
     headers = {"Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "Content-Security-Policy": CSP}
+    convs = Conversations(store)
+    signed_out = {"error": "Oturumunuz kapanmış; yeniden giriş yapın."}
 
     def user(request: Request) -> str | None:
         return store.check(request.cookies.get(COOKIE))
+
+    def reply(data: dict, status: int = 200) -> JSONResponse:
+        return JSONResponse(data, status_code=status, headers=headers)
+
+    async def json_body(request: Request) -> dict | None:
+        if not request.headers.get("content-type", "").startswith("application/json"):
+            return None
+        try:
+            body = await request.json()
+        except Exception:
+            return None
+        return body if isinstance(body, dict) else None
+
+    def remaining(email: str) -> int:
+        return max(0, limits.questions - asked_today(store, email))
 
     def home(request: Request, email: str) -> HTMLResponse:
         return HTMLResponse(page(config, email), headers=headers)
@@ -845,14 +956,22 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
     async def ask(request: Request):
         email = user(request)
         if not email:
-            return JSONResponse({"error": "Oturumunuz kapanmış; yeniden giriş yapın."}, status_code=401,
-                                headers=headers)
+            return reply(signed_out, 401)
         if not request.headers.get("content-type", "").startswith("application/json"):
             return JSONResponse({"error": "geçersiz istek"}, status_code=415, headers=headers)
         try:
             body = await request.json()
-            history = [t for t in body.get("history", []) if isinstance(t, dict)][:MAX_TURNS + 1]
             question = str(body.get("question", ""))
+            conversation = body.get("conversation")
+            if conversation is not None:
+                conversation = str(conversation)[:64]
+                history = convs.turns(email, conversation)      # saklanan konuşmanın geçmişi sunucudan
+                if history is None:
+                    return reply({"error": "Bu konuşma bulunamadı; yeni bir konuşma başlatın."}, 404)
+                keep = True
+            else:
+                keep = convs.keeps(email)
+                history = [] if keep else [t for t in body.get("history", []) if isinstance(t, dict)][:MAX_TURNS + 1]
         except Exception:
             return JSONResponse({"error": "geçersiz istek"}, status_code=400, headers=headers)
         if email in busy:
@@ -867,7 +986,10 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
                 async for event, data in chat.ask(history, question, tally):
                     if event == "done":
                         outcome, done = "done", data
-                        data["remaining"] = max(0, limits.questions - asked_today(store, email) - 1)
+                        data["remaining"] = max(0, remaining(email) - 1)
+                        data["questions"] = limits.questions
+                        if keep:
+                            data["conversation"], data["n"] = convs.add(email, conversation, question, data)
                     elif event == "error":
                         outcome = "error"
                     yield f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
@@ -894,7 +1016,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
     async def feedback(request: Request):
         email = user(request)
         if not email:
-            return JSONResponse({"error": "Oturumunuz kapanmış; yeniden giriş yapın."}, status_code=401, headers=headers)
+            return reply(signed_out, 401)
         try:
             body = await request.json()
             row = feedback_row(body, email, chat.settings.model)
@@ -906,10 +1028,71 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
                                 status_code=429, headers=headers)
         store._run(f"INSERT INTO feedback ({', '.join(row)}) VALUES ({', '.join('?' * len(row))})", tuple(row.values()))
         store._run("DELETE FROM feedback WHERE ts < ?", (row["ts"] - FEEDBACK_DAYS * 86400,))
+        if isinstance(body.get("conversation"), str) and isinstance(body.get("n"), int):
+            convs.vote(email, body["conversation"], body["n"], row["vote"])     # saklanan turda oy görünsün
         return JSONResponse({"ok": True}, headers=headers)
 
+    # ------------------------------------------------ S13.1: durum, ayar, konuşmalar
+
+    async def status(request: Request):
+        email = user(request)
+        if not email:
+            return reply(signed_out, 401)
+        return reply({"email": email, "keep": convs.keeps(email), "questions": limits.questions,
+                      "remaining": remaining(email)})
+
+    async def settings(request: Request):
+        email = user(request)
+        if not email:
+            return reply(signed_out, 401)
+        body = await json_body(request)
+        if body is None or not isinstance(body.get("keep"), bool):
+            return reply({"error": "geçersiz istek"}, 400)
+        convs.set_keeps(email, body["keep"])
+        return reply({"ok": True, "keep": body["keep"]})
+
+    async def listing(request: Request):
+        email = user(request)
+        if not email:
+            return reply(signed_out, 401)
+        return reply({"conversations": convs.listing(email)})
+
+    async def conversation(request: Request):
+        email = user(request)
+        if not email:
+            return reply(signed_out, 401)
+        found = convs.get(email, request.query_params.get("id", "")[:64])
+        if found is None:
+            return reply({"error": "Bu konuşma bulunamadı."}, 404)
+        for turn in found["turns"]:
+            del turn["a"]                                  # modelin ham metni sayfaya gerekmez
+        return reply(found)
+
+    async def rename(request: Request):
+        email = user(request)
+        if not email:
+            return reply(signed_out, 401)
+        body = await json_body(request)
+        if body is None or not convs.rename(email, str(body.get("id", ""))[:64], str(body.get("title", ""))):
+            return reply({"error": "Ad değiştirilemedi."}, 400)
+        return reply({"ok": True})
+
+    async def remove(request: Request):
+        email = user(request)
+        if not email:
+            return reply(signed_out, 401)
+        body = await json_body(request)
+        if body is None or not (body.get("all") is True or isinstance(body.get("id"), str)):
+            return reply({"error": "geçersiz istek"}, 400)
+        count = convs.delete(email, None if body.get("all") is True else body["id"][:64])
+        return reply({"ok": True, "deleted": count})
+
     return home, [Route(f"{p}api/sor", ask, methods=["POST"]), Route(f"{p}api/metin", text),
-                  Route(f"{p}api/geri-bildirim", feedback, methods=["POST"]), Route(f"{p}static/{{name}}", asset)]
+                  Route(f"{p}api/geri-bildirim", feedback, methods=["POST"]), Route(f"{p}static/{{name}}", asset),
+                  Route(f"{p}api/durum", status), Route(f"{p}api/ayarlar", settings, methods=["POST"]),
+                  Route(f"{p}api/konusmalar", listing), Route(f"{p}api/konusma", conversation),
+                  Route(f"{p}api/konusma/ad", rename, methods=["POST"]),
+                  Route(f"{p}api/konusma/sil", remove, methods=["POST"])]
 
 
 def build(chat: Chat, store: Store, mailer, config: Config, limits: Limits = Limits()):

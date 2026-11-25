@@ -15,7 +15,9 @@ Doğrulama hesapları zorlaştırır, engellemez: asıl sınır kişi başı sor
 
 Saklananlar (gizlilik politikası söyler, S12.6): e-posta, parola özeti, açılış ve son giriş zamanı, yanlış deneme
 sayısı; bekleyen kodun yalnız özeti ve zamanları (kullanılınca ya da bir gün sonra silinir); oturumun özeti; günlük
-gönderilen kod sayısı (adressiz); sohbetin kullanım satırları (`usage`, soru ve cevap yok; hesap silinince adsız).
+gönderilen kod sayısı (adressiz); sohbetin kullanım satırları (`usage`, soru ve cevap yok; hesap silinince adsız);
+S13.1'den beri saklanan konuşmalar (`conversations`, `turns`; ayar `users.keep_history`, varsayılan açık; yalnız
+sahibine gösterilir, ekip okumaz; kullanıcı tek tek ya da hepsini siler, hesapla birlikte hepsi gider).
 Hesabı kullanıcı kendisi siler (`hesap`).
 
 Taşınabilirlik (S12.8): yol öneki, sitenin adresi, sayfadaki ad ve gönderen adres ayardandır (`Config`, ortam
@@ -141,9 +143,31 @@ CREATE TABLE IF NOT EXISTS feedback (   -- S12.12: cevaba 👍/👎; soru ve cev
     model     TEXT
 );
 CREATE INDEX IF NOT EXISTS feedback_ts ON feedback(ts);
+CREATE TABLE IF NOT EXISTS conversations (   -- S13.1: saklanan konuşmalar; yalnız sahibine gösterilir, ekip okumaz
+    id       TEXT PRIMARY KEY,          -- rastgele (paylaşım bağlantısı da ileride bunu kullanabilir)
+    email    TEXT NOT NULL REFERENCES users(email) ON DELETE CASCADE,
+    title    TEXT NOT NULL,             -- ilk sorudan kısaltılır; kullanıcı değiştirebilir
+    created  REAL NOT NULL,
+    updated  REAL NOT NULL
+);
+CREATE INDEX IF NOT EXISTS conversations_user ON conversations(email, updated);
+CREATE TABLE IF NOT EXISTS turns (
+    conversation TEXT NOT NULL REFERENCES conversations(id) ON DELETE CASCADE,
+    n         INTEGER NOT NULL,         -- konuşmadaki sıra, 0'dan
+    ts        REAL NOT NULL,
+    question  TEXT NOT NULL,
+    raw       TEXT NOT NULL,            -- modelin cevabı, işaretler düzeltilmiş (sonraki soruda geçmiş olarak gider)
+    markdown  TEXT NOT NULL,            -- okuyucunun gördüğü cevap
+    sources   TEXT NOT NULL,            -- Kaynaklar, JSON
+    corrected INTEGER NOT NULL DEFAULT 0,
+    feedback  INTEGER,                  -- okuyucunun oyu (1 | -1); geri bildirimin kendisi `feedback` tablosunda
+    PRIMARY KEY (conversation, n)
+);
 """
 # Sonradan eklenen sütunlar: eski veritabanına eklenir (CREATE TABLE IF NOT EXISTS var olan tabloyu değiştirmez).
-ADDED_COLUMNS = {"usage": ("fixed", "dropped", "leaks", "paragraphs", "unmarked")}
+ADDED_COLUMNS = {"usage": {c: "INTEGER" for c in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")},
+                 # S13.1: konuşmaları hesapta sakla (varsayılan açık; kapalıyken konuşma yalnız tarayıcıda)
+                 "users": {"keep_history": "INTEGER NOT NULL DEFAULT 1"}}
 
 
 def norm_email(email: str) -> str:
@@ -170,9 +194,9 @@ class Store:
             c.executescript(SCHEMA)
             for table, columns in ADDED_COLUMNS.items():
                 have = {r["name"] for r in c.execute(f"PRAGMA table_info({table})")}
-                for column in columns:
+                for column, kind in columns.items():
                     if column not in have:
-                        c.execute(f"ALTER TABLE {table} ADD COLUMN {column} INTEGER")
+                        c.execute(f"ALTER TABLE {table} ADD COLUMN {column} {kind}")
         path.chmod(0o600)
 
     def _conn(self) -> sqlite3.Connection:
@@ -197,7 +221,8 @@ class Store:
         email = norm_email(email)
         self._run("DELETE FROM sessions WHERE email = ?", (email,))
         self._run("DELETE FROM codes WHERE email = ?", (email,))
-        self._run("DELETE FROM users WHERE email = ?", (email,))
+        self._run("DELETE FROM users WHERE email = ?", (email,))      # konuşmalar ve turları da (ON DELETE CASCADE)
+        self._run("DELETE FROM conversations WHERE email = ?", (email,))   # yabancı anahtar kapalı eski kayıtlara karşı
         self._run("UPDATE usage SET email = NULL WHERE email = ?", (email,))    # maliyet sayımı kalır, adsız
         self._run("UPDATE feedback SET email = NULL, note = NULL, question = NULL, answer = NULL WHERE email = ?",
                   (email,))                                                  # oy kalır, yazdıkları silinir
@@ -502,7 +527,7 @@ HOME = """<h1>{name} · Sohbet</h1>
 <p><a href="{p}hesap">Hesabımı sil</a></p>"""
 
 DELETE = """<h1>Hesabı sil</h1>
-<p>Hesabınız ({email}) ve oturumlarınız kalıcı olarak silinir. Konuşmalarınız zaten sunucuda saklanmıyor.</p>
+<p>Hesabınız ({email}), oturumlarınız ve saklanan bütün konuşmalarınız kalıcı olarak silinir.</p>
 {message}
 <form method="post" action="{p}hesap">
 <label>Parolanız<input type="password" name="password" autocomplete="current-password" required></label>

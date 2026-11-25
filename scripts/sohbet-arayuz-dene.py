@@ -1,14 +1,18 @@
-"""S12.11: sohbet sayfasını başsız tarayıcıda baştan sona dener (masaüstü ve telefon genişliği).
+"""S12.11, S13.1: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
 
-Yerel sunucu açık olmalı (`uv run --extra sohbet python -m risale_mcp.sohbet serve --dev`). Deneme hesabına
-(`deneme@example.com`, yoksa açılır) oturum açar, bir soru sorar (gerçek API, ≈0,003 $), cevabı, sol Kaynaklar panelini,
-metin görünümünü, telefonda çekmeceyi, perdeyi ve Escape'i dener; ekran görüntüleri `data/interim/sohbet/arayuz/`.
-Tarayıcı Brave (Chromium); Playwright proje bağımlılığı değildir:
+Yerel sunucu açık olmalı (`SOHBET_GUNLUK_SORU=100 uv run --extra sohbet python -m risale_mcp.sohbet serve --dev`: deneme hesabının
+günlük hakkı her koşuda bir azalır). Deneme hesabına
+(`deneme@example.com`, yoksa açılır) oturum açar, bir soru sorar (gerçek API, ≈0,005 $). Dener: sol panel (geçmiş,
+konuşmanın adresi, yeniden yükleyince aynı konuşma, ad değiştirme, yeni konuşma, silme), sağda Kaynaklar ve metin
+görünümü, ayarlar penceresi (saklama ayarı, belgeler), alt satır (uyarı ve günün kalan hakkı), geri bildirim,
+orta genişlikte Kaynaklar çekmecesi, telefonda iki çekmece, perde ve Escape. Ekran görüntüleri
+`data/interim/sohbet/arayuz/`. Tarayıcı Brave (Chromium); Playwright proje bağımlılığı değildir:
 
     uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py [--url http://127.0.0.1:8010/sohbet/]
 """
 import argparse
 import asyncio
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -34,62 +38,172 @@ async def run(url: str) -> None:
     origin = url.split("/sohbet")[0]
     token = session()
     checks: list[tuple[str, bool]] = []
+    check = lambda name, ok: checks.append((name, bool(ok)))
     async with async_playwright() as p:
         browser = await p.chromium.launch(executable_path=BROWSER, headless=True)
-        ctx = await browser.new_context(viewport={"width": 1280, "height": 820})
+        ctx = await browser.new_context(viewport={"width": 1440, "height": 880})
         await ctx.add_cookies([{"name": "sohbet_oturum", "value": token, "url": origin}])
         page = await ctx.new_page()
         errors: list[str] = []
         page.on("pageerror", lambda e: errors.append(f"pageerror {e}"))
         page.on("response", lambda r: r.status >= 400 and errors.append(f"{r.status} {r.url}"))
+        visible = lambda sel: page.locator(sel).first.is_visible()
+
+        async def until(js: str, timeout: float = 10.0) -> None:
+            """Playwright'ın bekleme işlevi sayfanın CSP'sine takılır (eval yok); `evaluate` takılmaz."""
+            for _ in range(int(timeout * 10)):
+                if await page.evaluate(js):
+                    return
+                await page.wait_for_timeout(100)
+            raise TimeoutError(js)
+
+        # ---------------------------------------------- geniş ekran: iki panel yerinde
         await page.goto(url)
+        await page.request.post(f"{url}api/konusma/sil", data={"all": True})     # deneme hesabının eski konuşmaları
+        await page.request.post(f"{url}api/ayarlar", data={"keep": True})       # yarım kalan koşu kapatmış olabilir
         await page.evaluate("localStorage.clear()")
         await page.reload()
-        checks.append(("boş konuşmada rozet gizli", not await page.locator("#yan-sayi").is_visible()))
+        await page.wait_for_selector("#hak:not([hidden])")
+        check("geniş: sol panel açık", await visible("#sol"))
+        check("geniş: Kaynaklar paneli açık", await visible("#yan"))
+        check("geniş: sol paneli açan düğme gizli", not await visible("#sol-ac"))
+        footer = await page.inner_text(".alt .not")
+        check("alt satır: uyarı", "Tefsir ve fetva değildir, müellife mal edilmez." in footer)
+        check("alt satır: kalan hak", re.search(r"Bugünkü soru hakkı: \d+/\d+", footer))
+        check("alt satırda gizlilik bağlantısı yok", await page.locator(".alt a").count() == 0)
+        check("boş konuşmada rozet gizli", not await visible("#yan-sayi"))
         await page.screenshot(path=OUT / "1-bos.png")
+
         await page.fill("#soru", QUESTION)
         await page.click("#gonder")
         await page.wait_for_selector("#yan-liste .kaynak", timeout=180000)
-        await page.screenshot(path=OUT / "2-cevap-masaustu.png")
-        checks.append(("masaüstünde cevabın altındaki liste gizli", not await page.locator(".tur .kaynaklar").first.is_visible()))
-        checks.append(("kaynak adı var", "Kaynak:" in await page.inner_text("#yan-liste")))
+        await until("location.hash.startsWith('#k/')")
+        await page.wait_for_selector("#gecmis li.secili")
+        await page.screenshot(path=OUT / "2-cevap-genis.png")
+        ident = (await page.evaluate("location.hash"))[3:]
+        check("konuşma adreste", len(ident) > 8)
+        check("geçmişte seçili konuşma", QUESTION[:20] in await page.inner_text("#gecmis li.secili"))
+        check("başlıkta konuşmanın adı", QUESTION[:20] in await page.inner_text("#baslik"))
+        check("geniş: cevabın altındaki liste gizli", not await visible(".tur .kaynaklar"))
+        check("kaynak adı var", "Kaynak:" in await page.inner_text("#yan-liste"))
+        hak = await page.inner_text("#hak")
         await page.click(".cevap .ref >> nth=0")
         await page.wait_for_selector("#metin-govde .cumle", timeout=20000)
-        await page.screenshot(path=OUT / "3-metin-masaustu.png")
-        checks.append(("metinde işaretli cümle", await page.locator("#metin-govde mark").count() > 0))
-        checks.append(("metinde kaynak adı", "Kaynak:" in await page.inner_text("#metin-kaynak")))
-        # S12.12: geri bildirim (kutu işaretsiz: soru ve cevap gitmez)
+        await page.screenshot(path=OUT / "3-metin-genis.png")
+        check("metinde işaretli cümle", await page.locator("#metin-govde mark").count() > 0)
+        check("metinde kaynak adı", "Kaynak:" in await page.inner_text("#metin-kaynak"))
+        await page.click("#yan-geri")
+        # S12.12: geri bildirim (kutu işaretsiz: soru ve cevap gitmez); oy saklanan tura da yazılır
         await page.click(".geri .oy >> nth=0")
         await page.fill(".geri-form textarea", "arayüz denemesi")
         await page.click('.geri-form button[type="submit"]')
         await page.wait_for_selector(".geri >> text=Geri bildiriminiz alındı", timeout=10000)
-        checks.append(("geri bildirim gönderildi", True))
+
+        # yeniden yükleyince aynı konuşma, oyuyla
+        await page.reload()
+        await page.wait_for_selector(".tur .cevap p")
+        check("yeniden yüklemede aynı konuşma", await page.locator(".tur").count() == 1)
+        check("oy saklandı", await page.locator(".geri >> text=Geri bildiriminiz alındı").count() == 1)
+        check("kalan hak aynı", await page.inner_text("#hak") == hak)
+
+        # ad değiştirme
+        await page.hover("#gecmis li.secili")
+        await page.click("#gecmis li.secili .islem .ikon >> nth=0")
+        await page.fill("#gecmis input", "Arayüz denemesi")
+        await page.keyboard.press("Enter")
+        await page.wait_for_selector("#gecmis li.secili >> text=Arayüz denemesi")
+        check("ad değişti (liste ve başlık)", "Arayüz denemesi" in await page.inner_text("#baslik"))
+
+        # yeni konuşma ve geri dönüş
+        await page.click("#yeni")
+        check("yeni konuşma boş", await visible("#bos") and await page.locator(".tur").count() == 0)
+        check("yeni konuşmada adres boş", await page.evaluate("location.hash") == "")
+        await page.click("#gecmis li .ac >> text=Arayüz denemesi")
+        await page.wait_for_selector(".tur .cevap p")
+        check("listeden konuşma açılır", await page.locator(".tur").count() == 1)
+
+        # ayarlar
+        await page.click("#ayarlar-ac")
+        await page.wait_for_selector("#ayarlar[open]")
+        await page.screenshot(path=OUT / "4-ayarlar.png")
+        text = await page.inner_text("#ayarlar")
+        check("ayarlarda gizlilik ve şartlar", "Gizlilik politikası" in text and "Kullanım şartları" in text)
+        check("ayarlarda saklama açık", await page.is_checked("#sakla"))
+        await page.click("#sakla")
+        await until("!document.querySelector('#sakla').disabled")
+        check("saklama kapanınca liste uyarır", "Saklama kapalı" in await page.inner_text("#gecmis"))
+        await page.click("#sakla")
+        await until("!document.querySelector('#sakla').disabled")
+        await page.keyboard.press("Escape")
+        check("Escape ayarları kapatır", not await visible("#ayarlar"))
+
+        # panelleri kapatıp açmak
+        await page.click("#sol-kapat")
+        check("sol panel kapanır", not await visible("#sol") and await visible("#sol-ac"))
+        await page.click("#yan-kapat")
+        check("Kaynaklar kapanınca liste cevabın altında", await visible(".tur .kaynaklar"))
+        await page.screenshot(path=OUT / "5-paneller-kapali.png")
+        await page.reload()
+        await page.wait_for_selector(".tur .cevap p")
+        check("panel tercihi kalır", not await visible("#sol") and not await visible("#yan"))
+        await page.click("#sol-ac")
+        await page.click("#yan-ac")
+        check("paneller yeniden açılır", await visible("#sol") and await visible("#yan"))
+
+        # ---------------------------------------------- orta genişlik: sol yerinde, Kaynaklar çekmece
+        await page.set_viewport_size({"width": 1024, "height": 800})
+        await page.wait_for_timeout(300)
+        check("orta: sol yerinde", await visible("#sol"))
+        check("orta: Kaynaklar kapalı, liste cevabın altında", not await visible("#yan") and await visible(".tur .kaynaklar"))
+        await page.click("#yan-ac")
+        await page.wait_for_timeout(400)
+        check("orta: Kaynaklar çekmecesi açılır", await visible("#yan-liste"))
+        await page.screenshot(path=OUT / "6-orta-cekmece.png")
+        await page.click("#perde", position={"x": 100, "y": 300})
+        await page.wait_for_timeout(400)
+
+        # ---------------------------------------------- telefon: iki çekmece
         await page.set_viewport_size({"width": 390, "height": 844})
         await page.reload()
         await page.wait_for_selector(".tur .cevap p")
-        await page.screenshot(path=OUT / "4-telefon-cevap.png")
-        checks.append(("telefonda çekmece kapalı", not await page.locator("#yan").is_visible()))
-        checks.append(("telefonda cevabın altında kaynaklar", await page.locator(".tur .kaynaklar").first.is_visible()))
+        await page.screenshot(path=OUT / "7-telefon-cevap.png")
+        check("telefonda çekmeceler kapalı", not await visible("#sol") and not await visible("#yan"))
+        check("telefonda cevabın altında kaynaklar", await visible(".tur .kaynaklar"))
+        await page.click("#sol-ac")
+        await page.wait_for_timeout(400)
+        check("telefonda sol çekmece açılır", await visible("#gecmis"))
+        await page.screenshot(path=OUT / "8-telefon-sol.png")
+        await page.click("#gecmis li .ac >> text=Arayüz denemesi")
+        await page.wait_for_timeout(400)
+        check("konuşma seçilince çekmece kapanır", not await visible("#sol"))
         await page.click("#yan-ac")
         await page.wait_for_timeout(400)
-        await page.screenshot(path=OUT / "5-telefon-cekmece.png")
-        checks.append(("düğmeyle çekmece açılır", await page.locator("#yan-liste").is_visible()))
+        check("düğmeyle Kaynaklar çekmecesi açılır", await visible("#yan-liste"))
         await page.click("#yan-liste .kaynak >> nth=0")
         await page.wait_for_selector("#metin-govde .cumle")
         await page.wait_for_timeout(300)
-        await page.screenshot(path=OUT / "6-telefon-metin.png")
+        await page.screenshot(path=OUT / "9-telefon-metin.png")
         await page.click("#yan-geri")
-        await page.click("#perde", position={"x": 200, "y": 40})
+        await page.click("#perde", position={"x": 15, "y": 400})
         await page.wait_for_timeout(400)
-        checks.append(("perdeye dokununca kapanır", not await page.locator("#yan").is_visible()))
+        check("perdeye dokununca kapanır", not await visible("#yan"))
         await page.click(".cevap .ref >> nth=0")
         await page.wait_for_timeout(500)
-        checks.append(("[n] çekmeceyi metinle açar", await page.locator("#yan-metin").is_visible()))
+        check("[n] çekmeceyi metinle açar", await visible("#yan-metin"))
         await page.keyboard.press("Escape")
         await page.wait_for_timeout(400)
-        checks.append(("Escape kapatır", not await page.locator("#yan").is_visible()))
+        check("Escape kapatır", not await visible("#yan"))
+
+        # silme (deneme hesabının konuşması)
+        await page.set_viewport_size({"width": 1440, "height": 880})
+        await page.wait_for_timeout(300)
+        await page.hover("#gecmis li.secili")
+        await page.click("#gecmis li.secili .islem .ikon >> nth=1")
+        await page.click("#gecmis .onay .dolu-tehlike")
+        await until("location.hash === ''")
+        check("silinen konuşma listeden gider", await page.locator(f"#gecmis li .ac >> text=Arayüz denemesi").count() == 0)
         await browser.close()
-    checks.append(("tarayıcı hatası yok", not errors))
+    check("tarayıcı hatası yok", not errors)
     for name, ok in checks:
         print(("✓ " if ok else "✗ ") + name)
     for e in errors:

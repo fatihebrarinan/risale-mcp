@@ -1,27 +1,46 @@
-// S12.3: sohbet sayfası. Konuşma yalnız bu tarayıcıda (localStorage) durur; her soruda önceki sorular ve cevapların
-// ham metni (cümle kimliği işaretleriyle) sunucuya yeniden gönderilir. Cevap Server-Sent Events ile akar.
-// S12.11: konuşmanın kaynakları solda (telefonda alttan çekmece), kaynak adıyla; kaynağa ya da alıntıya dokununca metin
-// aynı panelde bağlamıyla açılır, cevap yanında kalır.
+// S12.3: sohbet sayfası. Cevap Server-Sent Events ile akar.
+// S12.11: kaynaklara ya da alıntıya dokununca metin Kaynaklar panelinde bağlamıyla açılır, cevap yanında kalır.
+// S13.1: solda konuşmalar (geçmiş, "Yeni konuşma", en altta ayarlar), sağda Kaynaklar; ikisi de açılıp kapanır, dar
+// ekranda çekmecedir. Konuşmalar hesapta saklanır (ayar açıksa; sunucu geçmişi kendisi okur). Ayar kapalıyken konuşma
+// S12'deki gibi yalnız bu tarayıcıda (localStorage) durur ve her soruda önceki sorular ve cevaplar yeniden gönderilir.
+// Açık konuşmanın kimliği adreste (#k/<kimlik>): sayfa yenilenince ve geri tuşunda aynı konuşma açılır.
 "use strict";
 
 const P = document.body.dataset.prefix;
-const KEY = "sohbet:konusma";
+const KEY = "sohbet:konusma";          // geçici konuşma (saklama kapalıyken)
+const PANELS = "sohbet:paneller";      // geniş ekranda panellerin açık/kapalı tercihi
 const $ = (id) => document.getElementById(id);
 const els = { list: $("konusma"), empty: $("bos"), form: $("soru-formu"), input: $("soru"), send: $("gonder"),
   fresh: $("yeni"), side: $("yan"), sideList: $("yan-liste"), sideText: $("yan-metin"), sideTitle: $("yan-baslik"),
   back: $("yan-geri"), close: $("yan-kapat"), open: $("yan-ac"), count: $("yan-sayi"), shade: $("perde"),
-  dpath: $("metin-yol"), dsource: $("metin-kaynak"), dbody: $("metin-govde") };
+  dpath: $("metin-yol"), dsource: $("metin-kaynak"), dbody: $("metin-govde"),
+  left: $("sol"), leftOpen: $("sol-ac"), leftClose: $("sol-kapat"), history: $("gecmis"), title: $("baslik"),
+  quota: $("hak"), settings: $("ayarlar"), settingsOpen: $("ayarlar-ac"), settingsClose: $("ayarlar-kapat"),
+  keep: $("sakla"), wipe: $("hepsini-sil"), wipeAsk: $("hepsini-sil-onay"), wipeYes: $("hepsini-sil-evet"),
+  wipeNo: $("hepsini-sil-vazgec"), settingsError: $("ayar-hata") };
 const SIDE_EMPTY = els.sideList.innerHTML;
-const wide = window.matchMedia("(min-width: 960px)");
+const docked = { left: window.matchMedia("(min-width: 960px)"), right: window.matchMedia("(min-width: 1200px)") };
 
-let turns = load();
+const state = { keep: true, questions: null, remaining: null, conversations: [] };
+let cur = { id: null, title: "", turns: [] };    // açık konuşma; turda q, markdown, sources, corrected, feedback, n, a
 let busy = false;
 
-function load() {
+function loadLocal() {
   try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch { return []; }
 }
-function save() {
-  try { localStorage.setItem(KEY, JSON.stringify(turns)); } catch { /* dolu ya da kapalı: konuşma yalnız sayfada */ }
+function saveLocal() {
+  if (cur.id) return;                  // saklanan konuşma sunucuda
+  try { localStorage.setItem(KEY, JSON.stringify(cur.turns)); } catch { /* dolu ya da kapalı: konuşma yalnız sayfada */ }
+}
+
+async function api(path, body) {
+  const r = await fetch(`${P}api/${path}`, body === undefined ? { credentials: "same-origin" } : {
+    method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body) });
+  if (r.status === 401) { location.href = `${P}giris?next=${encodeURIComponent(P)}`; throw new Error("Oturum kapandı."); }
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || "İstek yerine getirilemedi.");
+  return data;
 }
 
 // ------------------------------------------------------------ Markdown (küçük, yalnız cevabın kullandıkları)
@@ -98,7 +117,7 @@ function markdown(text, refs) {
   return out.join("\n");
 }
 
-// ------------------------------------------------------------ görünüm
+// ------------------------------------------------------------ paneller
 
 function el(tag, cls, html) {
   const e = document.createElement(tag);
@@ -106,6 +125,41 @@ function el(tag, cls, html) {
   if (html !== undefined) e.innerHTML = html;
   return e;
 }
+
+function prefs() {
+  try { return { left: true, right: true, ...JSON.parse(localStorage.getItem(PANELS)) }; } catch { return { left: true, right: true }; }
+}
+const panels = { left: prefs().left, right: prefs().right };     // geniş ekranda tercih
+const drawers = { left: false, right: false };                     // dar ekranda çekmece
+
+function isOpen(which) { return docked[which].matches ? panels[which] : drawers[which]; }
+
+function layout() {
+  for (const which of ["left", "right"]) {
+    const node = which === "left" ? els.left : els.side;
+    node.classList.toggle("acik", isOpen(which));
+  }
+  document.body.classList.toggle("sol-yerinde", docked.left.matches && panels.left);
+  document.body.classList.toggle("yan-yerinde", docked.right.matches && panels.right);
+  els.leftOpen.setAttribute("aria-expanded", String(isOpen("left")));
+  els.open.setAttribute("aria-expanded", String(isOpen("right")));
+  els.shade.hidden = !((!docked.left.matches && drawers.left) || (!docked.right.matches && drawers.right));
+}
+
+function setPanel(which, open) {
+  if (docked[which].matches) {
+    panels[which] = open;
+    try { localStorage.setItem(PANELS, JSON.stringify(panels)); } catch { /* yok */ }
+  } else {
+    drawers[which] = open;
+    if (open) drawers[which === "left" ? "right" : "left"] = false;     // tek çekmece
+  }
+  layout();
+}
+
+function closeDrawers() { drawers.left = drawers.right = false; layout(); }
+
+// ------------------------------------------------------------ Kaynaklar
 
 function sourceList(sources, turnIndex) {
   const ol = el("ol");
@@ -125,7 +179,7 @@ function sourceList(sources, turnIndex) {
   return ol;
 }
 
-function renderSources(box, sources) {          // cevabın altında (telefonda; masaüstünde solda)
+function renderSources(box, sources) {          // cevabın altında (Kaynaklar paneli yerinde açık değilse görünür)
   if (!sources || !sources.length) return;
   const wrap = el("div", "kaynaklar");
   wrap.append(el("h4", "", "Kaynaklar"));
@@ -136,7 +190,7 @@ function renderSources(box, sources) {          // cevabın altında (telefonda;
 function renderSide() {                          // konuşmanın bütün kaynakları, cevaplara göre
   els.sideList.innerHTML = "";
   let total = 0;
-  turns.forEach((t, i) => {
+  cur.turns.forEach((t, i) => {
     if (!t.sources || !t.sources.length) return;
     total += t.sources.length;
     const group = el("section", "yan-tur");
@@ -156,12 +210,7 @@ function showList() {
   els.sideTitle.textContent = "Kaynaklar";
 }
 
-function setDrawer(open) {
-  if (wide.matches) open = false;
-  els.side.classList.toggle("acik", open);
-  els.shade.hidden = !open;
-  els.open.setAttribute("aria-expanded", String(open));
-}
+// ------------------------------------------------------------ cevaplar
 
 function renderTurn(turn) {
   const box = el("section", "tur");
@@ -205,8 +254,8 @@ function feedbackBox(turn) {
     if (!form) {
       form = el("form", "geri-form");
       form.innerHTML = `<textarea rows="2" maxlength="1000" placeholder="Not (isteğe bağlı): ne iyiydi, ne eksik ya da yanlıştı?" aria-label="Not"></textarea>
-        <label class="alt-bilgi"><input type="checkbox"> Soruyu ve bu cevabı da gönder (yalnız bu cevap; konuşmanız
-        başka türlü sunucuda saklanmaz)</label>
+        <label class="alt-bilgi"><input type="checkbox"> Soruyu ve bu cevabı da gönder (yalnız bu cevap; ekip
+        saklanan konuşmalarınızı okumaz, yalnız böyle gönderdiklerinizi okur)</label>
         <div class="geri-dugmeler"><button type="submit">Gönder</button>
         <button type="button" class="ghost vazgec">Vazgeç</button></div><p class="hata" hidden></p>`;
       form.querySelector(".vazgec").addEventListener("click", () => {
@@ -218,14 +267,12 @@ function feedbackBox(turn) {
         const send = form.querySelector('button[type="submit"]');
         send.disabled = true;
         try {
-          const r = await fetch(`${P}api/geri-bildirim`, {
-            method: "POST", credentials: "same-origin", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ vote: form._vote, note: form.querySelector("textarea").value, share,
-              ...(share ? { question: turn.q, answer: answerText(turn) } : {}) }),
-          });
-          if (!r.ok) throw new Error((await r.json().catch(() => ({}))).error || "Gönderilemedi.");
+          const owner = cur;
+          await api("geri-bildirim", { vote: form._vote, note: form.querySelector("textarea").value, share,
+            ...(share ? { question: turn.q, answer: answerText(turn) } : {}),
+            ...(owner.id && Number.isInteger(turn.n) ? { conversation: owner.id, n: turn.n } : {}) });
           turn.feedback = form._vote;
-          save();
+          if (owner === cur) saveLocal();
           wrap.replaceWith(feedbackBox(turn));
         } catch (e) {
           const err = form.querySelector(".hata"); err.textContent = e.message; err.hidden = false;
@@ -242,12 +289,235 @@ function feedbackBox(turn) {
   return wrap;
 }
 
+// ------------------------------------------------------------ açık konuşma
+
+function renderTitle() {
+  els.title.textContent = cur.title || "Yeni konuşma";
+  if (!cur.id && !state.keep && cur.turns.length) {
+    els.title.append(el("span", "gecici", "· yalnız bu tarayıcıda"));
+  }
+  document.title = `${cur.title ? cur.title + " · " : ""}Sohbet`;
+}
+
 function renderAll() {
   els.list.innerHTML = "";
-  turns.forEach((t, i) => { const box = renderTurn(t); box._index = i; els.list.append(box); });
-  els.empty.hidden = turns.length > 0;
+  cur.turns.forEach((t, i) => { const box = renderTurn(t); box._index = i; els.list.append(box); });
+  els.empty.hidden = cur.turns.length > 0;
   renderSide();
+  renderTitle();
+  renderHistory();
 }
+
+function setHash(id) {
+  const want = id ? `#k/${id}` : "";
+  if (location.hash !== want) history.replaceState(null, "", want || location.pathname + location.search);
+}
+
+function newConversation() {
+  if (busy) return;
+  cur = { id: null, title: "", turns: [] };
+  if (!state.keep) saveLocal();                          // geçici konuşmada "Yeni" eskisini siler
+  setHash(null);
+  showList();
+  renderAll();
+  if (!docked.left.matches) closeDrawers();
+  els.input.focus();
+}
+
+async function openConversation(id, { push = true } = {}) {
+  if (busy || !id) return;
+  if (!docked.left.matches) closeDrawers();
+  if (cur.id === id) return;
+  els.list.innerHTML = '<p class="yukleniyor">Konuşma açılıyor…</p>';
+  els.empty.hidden = true;
+  try {
+    const data = await api(`konusma?id=${encodeURIComponent(id)}`);
+    cur = { id: data.id, title: data.title, turns: data.turns };
+  } catch (e) {
+    cur = { id: null, title: "", turns: [] };
+    renderAll();
+    els.list.innerHTML = `<p class="hata">${esc(e.message)}</p>`;
+    els.empty.hidden = true;
+    setHash(null);
+    return;
+  }
+  if (push && location.hash !== `#k/${id}`) history.pushState(null, "", `#k/${id}`);
+  showList();
+  renderAll();
+  const last = els.list.lastElementChild;
+  if (last) last.scrollIntoView({ block: "start" });
+}
+
+window.addEventListener("popstate", () => {
+  const m = location.hash.match(/^#k\/([\w-]+)$/);
+  if (m) openConversation(m[1], { push: false });
+  else if (cur.id) newConversation();
+});
+
+// ------------------------------------------------------------ sol panel: geçmiş konuşmalar
+
+const GROUPS = [["Bugün", 0], ["Dün", 1], ["Son 7 gün", 7], ["Son 30 gün", 30], ["Daha eski", Infinity]];
+
+function groupOf(ts) {
+  const start = new Date(); start.setHours(0, 0, 0, 0);
+  const days = Math.max(0, Math.ceil((start.getTime() / 1000 - ts) / 86400));
+  return GROUPS.find(([, limit]) => days <= limit)[0];
+}
+
+function renderHistory() {
+  els.history.innerHTML = "";
+  if (!state.keep) {
+    els.history.append(el("p", "small bilgi", "Saklama kapalı: yeni konuşmalar yalnız bu tarayıcıda durur. "
+      + "Ayarlardan açabilirsiniz."));
+  }
+  if (!state.conversations.length) {
+    if (state.keep) els.history.append(el("p", "small bilgi", "Konuşmalarınız burada listelenir."));
+    return;
+  }
+  let group = null, ul = null;
+  for (const c of state.conversations) {
+    const g = groupOf(c.updated);
+    if (g !== group) {
+      group = g;
+      els.history.append(el("h3", "", g));
+      ul = el("ul");
+      els.history.append(ul);
+    }
+    ul.append(historyItem(c));
+  }
+}
+
+const PEN = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M13.5 3.5l3 3L7 16H4v-3z"/></svg>';
+const BIN = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10"/></svg>';
+
+function historyItem(c) {
+  const li = el("li", c.id === cur.id ? "secili" : "");
+  const open = el("button", "ac");
+  open.type = "button";
+  open.textContent = c.title;
+  open.title = c.title;
+  if (c.id === cur.id) open.setAttribute("aria-current", "page");
+  open.addEventListener("click", () => openConversation(c.id));
+  const tools = el("div", "islem");
+  const pen = el("button", "ikon", PEN); pen.type = "button"; pen.setAttribute("aria-label", `Adını değiştir: ${c.title}`);
+  pen.title = "Adını değiştir";
+  const bin = el("button", "ikon", BIN); bin.type = "button"; bin.setAttribute("aria-label", `Sil: ${c.title}`);
+  bin.title = "Sil";
+  tools.append(pen, bin);
+  li.append(open, tools);
+
+  pen.addEventListener("click", () => {
+    const input = el("input");
+    input.value = c.title;
+    input.maxLength = 80;
+    input.setAttribute("aria-label", "Konuşmanın adı");
+    li.replaceChildren(input);
+    input.focus(); input.select();
+    let done = false;
+    const finish = async (saveIt) => {
+      if (done) return; done = true;
+      const title = input.value.trim();
+      if (saveIt && title && title !== c.title) {
+        try {
+          await api("konusma/ad", { id: c.id, title });
+          c.title = title;
+          if (cur.id === c.id) { cur.title = title; renderTitle(); }
+        } catch { /* eski ad kalır */ }
+      }
+      renderHistory();
+    };
+    input.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") { ev.preventDefault(); finish(true); }
+      else if (ev.key === "Escape") { ev.preventDefault(); ev.stopPropagation(); finish(false); }
+    });
+    input.addEventListener("blur", () => finish(true));
+  });
+
+  bin.addEventListener("click", () => {
+    const ask = el("div", "onay");
+    ask.append(el("span", "", "Silinsin mi?"));
+    const yes = el("button", "dolu-tehlike", "Sil"); yes.type = "button";
+    const no = el("button", "ghost", "Vazgeç"); no.type = "button";
+    ask.append(yes, no);
+    li.replaceChildren(ask);
+    no.focus();
+    no.addEventListener("click", renderHistory);
+    yes.addEventListener("click", async () => {
+      yes.disabled = true;
+      try {
+        await api("konusma/sil", { id: c.id });
+        state.conversations = state.conversations.filter((x) => x.id !== c.id);
+        if (cur.id === c.id) newConversation(); else renderHistory();
+      } catch (e) {
+        ask.replaceChildren(el("span", "hata", esc(e.message)));
+        setTimeout(renderHistory, 2500);
+      }
+    });
+  });
+  return li;
+}
+
+async function refreshHistory() {
+  try { state.conversations = (await api("konusmalar")).conversations; } catch { /* liste eski kalır */ }
+  const mine = cur.id && state.conversations.find((c) => c.id === cur.id);
+  if (mine && mine.title !== cur.title) { cur.title = mine.title; renderTitle(); }    // başlığı sunucu koyar
+  renderHistory();
+}
+
+// ------------------------------------------------------------ alt satır: günün kalan hakkı
+
+function renderQuota() {
+  if (state.questions === null || state.remaining === null) { els.quota.hidden = true; return; }
+  els.quota.hidden = false;
+  els.quota.textContent = `Bugünkü soru hakkı: ${state.remaining}/${state.questions}`;
+  els.quota.classList.toggle("bitti", state.remaining <= 0);
+  els.quota.title = state.remaining > 0 ? "Bugün sorabileceğiniz soru sayısı" : "Yarın yeniden sorabilirsiniz";
+}
+
+// ------------------------------------------------------------ ayarlar
+
+els.settingsOpen.addEventListener("click", () => {
+  els.keep.checked = state.keep;
+  els.wipeAsk.hidden = true; els.wipe.hidden = false; els.settingsError.hidden = true;
+  els.settings.showModal();
+});
+els.settingsClose.addEventListener("click", () => els.settings.close());
+els.settings.addEventListener("click", (ev) => { if (ev.target === els.settings) els.settings.close(); });
+els.keep.addEventListener("change", async () => {
+  const want = els.keep.checked;
+  els.keep.disabled = true;
+  try {
+    await api("ayarlar", { keep: want });
+    state.keep = want;
+    els.settingsError.hidden = true;
+    if (!cur.id && !busy) newConversation(); else renderAll();
+  } catch (e) {
+    els.keep.checked = !want;
+    els.settingsError.textContent = e.message; els.settingsError.hidden = false;
+  } finally {
+    els.keep.disabled = false;
+  }
+});
+els.wipe.addEventListener("click", () => { els.wipe.hidden = true; els.wipeAsk.hidden = false; els.wipeNo.focus(); });
+els.wipeNo.addEventListener("click", () => { els.wipeAsk.hidden = true; els.wipe.hidden = false; });
+els.wipeYes.addEventListener("click", async () => {
+  els.wipeYes.disabled = true;
+  try {
+    await api("konusma/sil", { all: true });
+    state.conversations = [];
+    try { localStorage.removeItem(KEY); } catch { /* yok */ }
+    els.wipeAsk.hidden = true; els.wipe.hidden = false;
+    if (!busy) { cur = { id: null, title: "", turns: [] }; newConversation(); }
+    els.settingsError.hidden = true;
+    els.settings.close();
+  } catch (e) {
+    els.settingsError.textContent = e.message; els.settingsError.hidden = false;
+  } finally {
+    els.wipeYes.disabled = false;
+  }
+});
+
+// ------------------------------------------------------------ olaylar
 
 function sourceOf(box, n) {
   return (box._turn.sources || []).find((s) => s.n === Number(n));
@@ -269,20 +539,26 @@ els.list.addEventListener("click", (ev) => {
 els.sideList.addEventListener("click", (ev) => {
   const b = ev.target.closest(".kaynak");
   if (!b) return;
-  const turn = turns[Number(b.dataset.turn)];
+  const turn = cur.turns[Number(b.dataset.turn)];
   const src = turn && (turn.sources || []).find((s) => s.n === Number(b.dataset.n));
   if (src) openText(src, Number(b.dataset.turn));
 });
 els.back.addEventListener("click", showList);
-els.open.addEventListener("click", () => { showList(); setDrawer(true); });
-els.close.addEventListener("click", () => setDrawer(false));
-els.shade.addEventListener("click", () => setDrawer(false));
+els.open.addEventListener("click", () => {
+  const open = !isOpen("right");
+  if (open) showList();
+  setPanel("right", open);
+});
+els.close.addEventListener("click", () => setPanel("right", false));
+els.leftOpen.addEventListener("click", () => setPanel("left", !isOpen("left")));
+els.leftClose.addEventListener("click", () => setPanel("left", false));
+els.shade.addEventListener("click", closeDrawers);
 document.addEventListener("keydown", (ev) => {
-  if (ev.key !== "Escape") return;
-  if (els.side.classList.contains("acik")) setDrawer(false);
+  if (ev.key !== "Escape" || els.settings.open) return;
+  if (!els.shade.hidden) closeDrawers();
   else if (!els.sideText.hidden) showList();
 });
-wide.addEventListener("change", () => setDrawer(false));
+for (const mq of Object.values(docked)) mq.addEventListener("change", () => { drawers.left = drawers.right = false; layout(); });
 
 // ------------------------------------------------------------ metin penceresi
 
@@ -298,11 +574,9 @@ async function openText(src, turnIndex) {
   for (const b of els.sideList.querySelectorAll(".kaynak.secili")) b.classList.remove("secili");
   const item = els.sideList.querySelector(`.kaynak[data-turn="${turnIndex}"][data-n="${src.n}"]`);
   if (item) item.classList.add("secili");
-  setDrawer(true);
+  setPanel("right", true);
   try {
-    const r = await fetch(`${P}api/metin?id=${encodeURIComponent(src.id)}`, { credentials: "same-origin" });
-    if (!r.ok) throw new Error((await r.json()).error || "Metin açılamadı.");
-    const data = await r.json();
+    const data = await api(`metin?id=${encodeURIComponent(src.id)}`);
     els.dpath.textContent = data.section_ref || src.cite_as || "Adresi bulunamadı";
     const parts = [];
     if (src.unverified) parts.push('<p class="uyari">⚠ Alıntının sözleri bu cümlelerde ve eserlerin başka bir yerinde bulunamadı; cevabın gösterdiği yer bu.</p>');
@@ -339,6 +613,7 @@ async function ask(question) {
   if (busy || !question.trim()) return;
   setBusy(true);
   els.empty.hidden = true;
+  const owner = cur;                     // cevap bu konuşmaya yazılır
   const turn = { q: question.trim() };
   const box = renderTurn(turn);
   els.list.append(box);
@@ -350,7 +625,9 @@ async function ask(question) {
   let draft = "";
   let frame = 0;
   const paint = () => { frame = 0; answer.innerHTML = markdown(draft, null); };
-  const history = turns.map((t) => ({ q: t.q, a: t.a }));
+  // saklanan konuşmanın geçmişini sunucu okur; geçici konuşmada tarayıcı gönderir
+  const body = owner.id ? { question: turn.q, conversation: owner.id }
+    : state.keep ? { question: turn.q } : { question: turn.q, history: owner.turns.map((t) => ({ q: t.q, a: t.a })) };
   let finished = false;
 
   const handle = (event, data) => {
@@ -365,17 +642,27 @@ async function ask(question) {
       status.textContent = data.text; status.hidden = false;
     } else if (event === "done") {
       finished = true;
-      Object.assign(turn, { a: data.raw, markdown: data.markdown, sources: data.sources, corrected: data.corrected });
-      turns.push(turn);
-      save();
+      Object.assign(turn, { markdown: data.markdown, sources: data.sources, corrected: data.corrected });
+      if (data.conversation) {
+        turn.n = data.n;
+        if (!owner.id) {
+          owner.id = data.conversation;
+          owner.title = owner.title || turn.q.replace(/\s+/g, " ").slice(0, 80);
+        }
+      } else {
+        turn.a = data.raw;               // geçici konuşma: sonraki soruda geçmiş olarak gider
+      }
+      owner.turns.push(turn);
+      if (typeof data.remaining === "number") { state.remaining = data.remaining; state.questions = data.questions; }
+      renderQuota();
+      if (owner !== cur) return;          // başka konuşma açıldıysa sayfaya çizilmez (busy iken açılamaz)
+      saveLocal();
       const fresh = renderTurn(turn);
-      fresh._index = turns.length - 1;
+      fresh._index = owner.turns.length - 1;
       box.replaceWith(fresh);
       renderSide();
-      if (typeof data.remaining === "number" && data.remaining <= 3) {
-        fresh.append(el("p", "alt-bilgi", data.remaining
-          ? `Bugün ${data.remaining} soru hakkınız kaldı.` : "Bugünlük soru hakkınız doldu; yarın yeniden sorabilirsiniz."));
-      }
+      if (owner.id) { setHash(owner.id); refreshHistory(); }
+      renderTitle();
     } else if (event === "error") {
       finished = true;
       status.remove();
@@ -387,7 +674,7 @@ async function ask(question) {
     const r = await fetch(`${P}api/sor`, {
       method: "POST", credentials: "same-origin",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question: turn.q, history }),
+      body: JSON.stringify(body),
     });
     if (r.status === 401) { location.href = `${P}giris?next=${encodeURIComponent(P)}`; return; }
     if (!r.ok || !r.body) {
@@ -437,9 +724,22 @@ els.input.addEventListener("keydown", (ev) => {
 function grow() { els.input.style.height = "auto"; els.input.style.height = els.input.scrollHeight + "px"; }
 els.input.addEventListener("input", grow);
 for (const b of document.querySelectorAll(".ornek")) b.addEventListener("click", () => ask(b.textContent));
-els.fresh.addEventListener("click", () => {
-  if (busy) return;
-  turns = []; save(); showList(); renderAll(); els.input.focus();
-});
+els.fresh.addEventListener("click", newConversation);
 
-renderAll();
+// ------------------------------------------------------------ açılış
+
+async function start() {
+  layout();
+  try {
+    const s = await api("durum");
+    Object.assign(state, { keep: s.keep, questions: s.questions, remaining: s.remaining });
+  } catch { /* varsayılanlarla sürer */ }
+  renderQuota();
+  await refreshHistory();
+  const m = location.hash.match(/^#k\/([\w-]+)$/);
+  if (m) { await openConversation(m[1], { push: false }); return; }
+  cur = { id: null, title: "", turns: state.keep ? [] : loadLocal() };
+  renderAll();
+}
+
+start();
