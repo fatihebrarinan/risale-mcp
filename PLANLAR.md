@@ -82,9 +82,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   uygulaması "Sonra"da (S13'ten sonra, koşullu).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
   `https://risalemcp.com/taslak/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
-- **Tarihli hatırlatmalar:** (0) **Sohbetin denemesi:** S13.1 yayına girince 5 kişi, bir hafta; başlamadan ve
-  bitince durum kaydı (sunucuda `.venv/bin/python -m risale_mcp.sohbet usage` ve `geri-bildirim --days 7`), sonra
-  S13'ün sırası yazılır. (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
+- **Tarihli hatırlatmalar:** (0) **Sohbetin denemesi başladı (2026-11-25), bitişi ≈2026-12-02:** 5 kişi, bir
+  hafta. Başlangıç kaydı `data/interim/sohbet/deneme-baslangic-20261125.md` (o gün 3 kişi, 8 soru, 0,056 $, soru başı
+  0,007 $, doğrulanamayan 0, 👍 2). Bitince yine `usage` ve `geri-bildirim --days 7` (sunucuda
+  `.venv/bin/python -m risale_mcp.sohbet …`), sonra S13'ün sırası yazılır; öbür eklentiler (S13 (11)) o hafta
+  yalnız yerelde hazırlanır. (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
   **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`):
   Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı (aynı aboneliği kullanır). (3) **Kuyruk durunca
   (Aralık):** tek tefsir kurulumu ("Sıradaki" 7: B3, E6) ve D16.
