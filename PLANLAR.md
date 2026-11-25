@@ -192,17 +192,17 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     `usage`'a `fixed`, `dropped`, `leaks`, `paragraphs`, `unmarked` (eski veritabanına sütun eklenir); `sohbet usage`
     bunları özetler, `olc` dökümü modelin düzeltilmemiş metnini de yazar. **Deneme** (geçen ölçümde düzeltmeye giden
     5 soru, `20261125-160727-…`): model turu yok, ortalama 15 sn ve toplam 0,014 $ (aynı sorular düzeltme turuyla 21 sn, 0,023 $);
-    B8'de 2 işaret sunucuca taşındı, C13'te 1 doğrulanamayan, 1 silinen işaret. C13'ün doğrulanamayanı yanlış alarm:
+    b8'de 2 işaret sunucuca taşındı, c13'te 1 doğrulanamayan, 1 silinen işaret. c13'ün doğrulanamayanı yanlış alarm:
     model cümle yerine bölüm kimliği yazmış (`[[sozler/33]]`), alıntı bölümün alt başlığı (S12.10'da talimata: kimlik
     yalnız cümlenindir; sık görülürse bölüm kimliği bölüm atfı olarak kabul edilir). İşaretsiz paragraf 26/40 (giriş,
-    yorum ve B7'de işaretsiz temsil özeti dahil; ölçü kabadır).
+    yorum ve b7'de işaretsiz temsil özeti dahil; ölçü kabadır).
   - S12.10 **Sohbete ayrı talimat** (kullanıcının kararı, 2026-11-25). `server.py`'nin Risale talimatı bloklara
     ayrılır (iş akışı, cevap kuralları, müellifin sözü olmayan katmanlar); MCP'nin metni bayt bayt aynı kalır (araç
     çıktısı kaydı denetler). Sohbetin talimatı kendi girişi, akışı ve cevap biçiminden (okuyucu kim, önce kısa cevap,
     sonra metin, sonra yorum; uzunluk; sade Türkçe; kapsam) ve **ortak katman bloğundan** kurulur; MCP'ye özgü
     kısımlar (bağdaştırıcılar arası numaralama, denetçi alanları, `cite`) çıkar. Kaynağa bağlılığın koruması ortak
-    blokta kalır, kopya olmaz. S12.9'dan not: işaret yalnız cümle kimliğidir, bölüm kimliği değil (C13); özetlenen
-    temsil ve "metnin söylediği" paragrafı da işaretlenir (B7'de işaretsiz kaldı).
+    blokta kalır, kopya olmaz. S12.9'dan not: işaret yalnız cümle kimliğidir, bölüm kimliği değil (c13); özetlenen
+    temsil ve "metnin söylediği" paragrafı da işaretlenir (b7'de işaretsiz kaldı).
     **Bitti (2026-11-25):** `server.py`'de Risale talimatı bloklardan kurulur (`RISALE_INTRO`, `FIND`, `READ`,
     `GROUNDED`, `NEVER_INVENT`, `QUOTE_EXACTLY`, `TEXT_APART`, `risale_layers(connectors)`; MCP'ye özgüler `MCP_*`); MCP
     metni bayt bayt aynı (bölmeden önceki metinle karşılaştırıldı). Sohbetin talimatı `sohbet.instructions`: giriş,
@@ -213,8 +213,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     kimliğine izin verir; sunucu alıntısız (ya da alıntısı bölümün başlığı/alt başlığı olan) bölüm işaretini bölüm
     atfı olarak kabul eder (silmez), alıntılı bölüm işaretini bölümün içindeki cümleye taşır, metin penceresi bölümün
     ilk cümlelerini açar. **Ölçüm** (29 soru, `20261125-162212-…`, önceki `153523` ile): beklenen bölüm 27/34 (28/34;
-    A1 ve A5'te birer eksik, K3'te kazanç: gürültü sınırında), 21 sn (aynı), toplam 0,125 $ (0,137), model turu yok;
-    sunucu 3 bölüm işaretini sildi (bu ölçümden sonra bölüm atfı oldu), 1 alıntı doğrulanamadı (K4: Tarihçe'de lafız
+    a1 ve a5'te birer eksik, k3'te kazanç: gürültü sınırında), 21 sn (aynı), toplam 0,125 $ (0,137), model turu yok;
+    sunucu 3 bölüm işaretini sildi (bu ölçümden sonra bölüm atfı oldu), 1 alıntı doğrulanamadı (k4: Tarihçe'de lafız
     farkı, ⚠ doğru). İşaretsiz paragraf 178/263: talimat bunu pek değiştirmedi (sayı kaba: giriş ve yorum da sayılıyor).
   - S12.11 **Sol "Kaynaklar" penceresi** (kullanıcının kararı, 2026-11-25). Konuşmanın kaynakları cevaplara göre;
     kaynağa ya da alıntıya dokununca metin aynı pencerede bağlamıyla açılır (cevap ve metin yan yana). Her satırda
