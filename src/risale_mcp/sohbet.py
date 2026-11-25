@@ -122,6 +122,18 @@ fewer well-chosen quotations are better than many. Use short headings only when 
 personal or legal rulings), say briefly that this page answers only from the Risale-i Nur. Your answers are an \
 AI's answers: never speak as the author or in his name, and never present your words as tafsir or a fatwa."""
 
+EARLIER = """\
+Earlier answers in this conversation: before the reader's new question the page lists, for each of your earlier \
+answers, the tools you called for it (a page note, not the reader's words). An earlier statement rests on what those \
+calls returned: a section you read brings its sentences, its verses with their refs and the publisher's \
+translations. The page checked your earlier marked quotations against the works. Never call an earlier statement \
+unchecked when its calls cover it. Only when a statement clearly had no basis in them (for example, you compared a \
+translation you never read), correct it in one sentence at the start of your new answer. If the list says the calls \
+were not recorded, say nothing about checking.
+Say what a verse, a translation or any text says only if you read it with a tool in this conversation: the \
+publisher's translation comes with the passage, the Türkiye Diyanet Vakfı translation of a verse only from get_ayah; \
+never compare with a translation you have not read."""
+
 NO_REFERENCES = """\
 Never write references, section paths, sentence numbers, [1]-style numbers or a sources list yourself: the \
 [[id]] marks are the references. An id or a sentence number (c033) never appears anywhere else in the answer, not in \
@@ -145,6 +157,7 @@ Rules:
 2. {s.QUOTE_EXACTLY}
 3. {NO_REFERENCES}
 4. {s.TEXT_APART}
+5. {EARLIER}
 
 """ + s.risale_layers(connectors=False) + (s.LUGAT_INSTRUCTIONS.lstrip("\n") + "\n" if lugat else ""))
 
@@ -563,15 +576,19 @@ class Chat:
             raise Refusal(f"Soru çok uzun (en çok {MAX_QUESTION} karakter).")
         if len(history) >= MAX_TURNS:
             raise Refusal(f"Bu konuşma {MAX_TURNS} soruya ulaştı; yeni bir konuşma başlatın.")
-        out, size = [], 0
+        out, size, notes = [], 0, []
         for turn in history:
             q, a = str(turn.get("q", "")).strip(), str(turn.get("a", "")).strip()
             if not q or not a:
                 continue
             size += len(q) + len(a)
             out += [{"role": "user", "content": q}, {"role": "assistant", "content": a}]
+            notes.append(reads_note(len(notes) + 1, turn.get("r")))
         if size > MAX_HISTORY:
             raise Refusal("Bu konuşma çok uzadı; yeni bir konuşma başlatın.")
+        if notes:     # S13.4 (c): model önceki cevaplarının neye dayandığını görsün (sayfa notu, sorunun önünde)
+            question = ("[Page note, not the reader's words: the tools you called for your earlier answers.\n"
+                        + "\n".join(notes) + "]\n\n" + question)
         return out + [{"role": "user", "content": question}]
 
     def _params(self, tools: list[dict], messages: list[dict]) -> dict:
@@ -621,7 +638,7 @@ class Chat:
                 continue
             yield "done", {"markdown": checked.markdown, "raw": checked.raw, "sources": checked.sources,
                            "problems": checked.counts["unverified"], "corrected": corrected, "checks": checked.counts,
-                           "steps": tally.steps,
+                           "steps": tally.steps, "reads": reads(tally.calls),
                            "usage": {"cost": round(tally.cost, 5), "tools": tally.tools, "rounds": tally.rounds}}
             return
 
@@ -674,6 +691,30 @@ class Chat:
                 results.append(result := await self._call_tool(block))
                 tally.calls.append((block.name, block.input or {}, result["content"], bool(result.get("is_error"))))
             messages.append({"role": "user", "content": results})
+
+
+MAX_READS = 30              # bir cevabın kaydedilen en çok araç çağrısı
+MAX_READ_LINE = 160
+
+
+def reads(calls: list) -> list[str]:
+    """S13.4 (c): cevabın çağırdığı araçlar, kısa satırlar ("read_section(section=sozler/11)"); sonraki soruda modele
+    sayfa notu olarak gider (geçmişe yalnız cevabın metni girer, araç sonuçları girmez)."""
+    out = []
+    for name, args, _, error in calls[:MAX_READS]:
+        shown = ", ".join(f"{k}={v}" for k, v in (args or {}).items() if v not in (None, "", []))
+        line = f"{name}({shown})" + (" -> error" if error else "")
+        out.append(line if len(line) <= MAX_READ_LINE else line[:MAX_READ_LINE - 1] + "…")
+    return out
+
+
+def reads_note(n: int, calls) -> str:
+    if calls is None:
+        return f"Answer {n}: not recorded."
+    if not isinstance(calls, list):          # tarayıcıdan bozuk geldiyse: kayıt yok sayılır
+        return f"Answer {n}: not recorded."
+    calls = [str(c)[:MAX_READ_LINE] for c in calls[:MAX_READS]]
+    return f"Answer {n}: " + ("; ".join(calls) if calls else "no tools called.")
 
 
 READING_TOOLS = {"read_section", "get_passage", "find_sentence"}
@@ -820,11 +861,11 @@ class Conversations:
     def turns(self, email: str, ident: str) -> list[dict] | None:
         if not self.owned(email, ident):
             return None
-        rows = self.store._run("SELECT n, question, raw, markdown, sources, corrected, feedback, steps FROM turns "
-                               "WHERE conversation = ? ORDER BY n", (ident,))
+        rows = self.store._run("SELECT n, question, raw, markdown, sources, corrected, feedback, steps, reads FROM "
+                               "turns WHERE conversation = ? ORDER BY n", (ident,))
         return [{"n": r["n"], "q": r["question"], "a": r["raw"], "markdown": r["markdown"],
                  "sources": json.loads(r["sources"]), "corrected": bool(r["corrected"]), "feedback": r["feedback"],
-                 "steps": json.loads(r["steps"] or "[]")}
+                 "steps": json.loads(r["steps"] or "[]"), "r": None if r["reads"] is None else json.loads(r["reads"])}
                 for r in rows]
 
     def get(self, email: str, ident: str) -> dict | None:
@@ -847,11 +888,12 @@ class Conversations:
             else:
                 n = c.execute("SELECT COALESCE(MAX(n) + 1, 0) FROM turns WHERE conversation = ?", (ident,)).fetchone()[0]
                 c.execute("UPDATE conversations SET updated = ? WHERE id = ? AND email = ?", (now, ident, email))
-            c.execute("INSERT INTO turns (conversation, n, ts, question, raw, markdown, sources, corrected, steps) "
-                      "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+            c.execute("INSERT INTO turns (conversation, n, ts, question, raw, markdown, sources, corrected, steps, "
+                      "reads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                       (ident, n, now, question.strip(), done["raw"], done["markdown"],
                        json.dumps(done["sources"], ensure_ascii=False), int(bool(done.get("corrected"))),
-                       json.dumps(done.get("steps") or [], ensure_ascii=False)))
+                       json.dumps(done.get("steps") or [], ensure_ascii=False),
+                       json.dumps(done.get("reads") or [], ensure_ascii=False)))
         return ident, n
 
     def rename(self, email: str, ident: str, title: str) -> bool:
@@ -1115,7 +1157,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
         if found is None:
             return reply({"error": "Bu konuşma bulunamadı."}, 404)
         for turn in found["turns"]:
-            del turn["a"]                                  # modelin ham metni sayfaya gerekmez
+            del turn["a"], turn["r"]                       # modelin ham metni ve araç kaydı sayfaya gerekmez
         return reply(found)
 
     async def rename(request: Request):

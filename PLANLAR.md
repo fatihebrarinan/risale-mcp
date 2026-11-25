@@ -76,7 +76,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (başlarken `sohbet usage` kaydı); ondan önce **S13.2** (panel genişliği, sekmeli ayarlar: yayında,
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
-  (c)–(g) orada. **S13.5** konuşmanın tek kaynakçası (yayında). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası (yayında). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -202,7 +202,17 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     read_section sozler/11, get_ayah 91:1–10"), talimata "önceki cevaptaki işaretli alıntılar denetlendi; bir sözün
     dayanağını o listeden bil". (h) **Okunmadan söz:** ilk cevaptaki Vakıf meali iddiası, aracını çağırmadan
     verilmiş bir bilgi; talimata "bir meali, âyeti ya da başka bir metni ancak bu cevapta araçla okuduysan anlat"
-    (Haiku'da ölçülür). Aynı cevapta "Verse göre" (İngilizce sızıntı, (f) ile birlikte). (d) **Yan yana aynı işaret:** "[23] [23]";
+    (Haiku'da ölçülür). Aynı cevapta "Verse göre" (İngilizce sızıntı, (f) ile birlikte).
+    **(c) ve (h) yapıldı (2026-11-25, kullanıcının isteği: "şimdi düzelt"):** her turun çağırdığı araçlar `turns.reads`'e
+    (geçici konuşmada tarayıcı `r` ile geri gönderir), sonraki soruda son sorunun önüne sayfa notu ("Answer 1:
+    read_section(section=sozler/11, …)"; eski turlar "not recorded"); talimatta yeni kural (`EARLIER`): önceki söz o
+    çağrılarla örtülüyorsa "denetlenmedi" denmez, dayanağı yoksa yeni cevabın başında tek cümleyle düzeltilir; meal,
+    âyet ya da metin ancak araçla okunduysa anlatılır, Vakıf meali yalnız `get_ayah`'tan. MCP talimatı değişmedi.
+    Ölçüm: kullanıcının 11. Söz konuşmasının benzeri, beş soru (≈0,027 $): haksız itiraf yok; 4. cevaptaki tek
+    düzeltme yerinde (metni yeniden okuyup "c109'da istiğfar geçmiyor"); Şems karşılaştırmasından önce `get_ayah`
+    çağrıldı. `olc --hizli` 57/57 atıf doğrulandı (`20261125-233814-…`). (i) **Yeni bulgu:** meal sorusunda model
+    nâşirin mealini `>` blokta işaretle alıntıladı; meal cümlenin metni olmadığı için "doğrulanamadı" çıktı (2).
+    Çözüm adayı: işaretli cümlenin Arapça parçasının meali alıntıyla tutuyorsa "nâşirin meali" diye göster. (d) **Yan yana aynı işaret:** "[23] [23]";
     `check` art arda gelen aynı işareti teke indirsin. (e) **Telif tarihi gereksiz yere metinde:** "kaynak
     1936–1943, Kastamonu'dur (kastamonur.com)", "Hayrat listesi 1933–34 der" (`written` alanından); talimat: tarih
     yalnız soruyla ilgiliyse. (f) **Yabancı harf:** "göktə" (Azerice ə); şimdilik yalnız not, tekrarlarsa cevapta

@@ -168,8 +168,8 @@ CREATE TABLE IF NOT EXISTS turns (
 ADDED_COLUMNS = {"usage": {c: "INTEGER" for c in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")},
                  # S13.1: konuşmaları hesapta sakla (varsayılan açık; kapalıyken konuşma yalnız tarayıcıda)
                  "users": {"keep_history": "INTEGER NOT NULL DEFAULT 1"},
-                 # S13.3: cevabın adımları ("… okunuyor"), JSON
-                 "turns": {"steps": "TEXT"}}
+                 # S13.3: cevabın adımları ("… okunuyor"), JSON; S13.4 (c): çağrılan araçlar (sonraki soruda modele), JSON
+                 "turns": {"steps": "TEXT", "reads": "TEXT"}}
 
 
 def norm_email(email: str) -> str:

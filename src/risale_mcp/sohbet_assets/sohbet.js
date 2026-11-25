@@ -879,7 +879,7 @@ async function ask(question) {
   const paint = () => { frame = 0; answer.innerHTML = markdown(draft, null); };
   // saklanan konuşmanın geçmişini sunucu okur; geçici konuşmada tarayıcı gönderir
   const body = owner.id ? { question: turn.q, conversation: owner.id }
-    : state.keep ? { question: turn.q } : { question: turn.q, history: owner.turns.map((t) => ({ q: t.q, a: t.a })) };
+    : state.keep ? { question: turn.q } : { question: turn.q, history: owner.turns.map((t) => ({ q: t.q, a: t.a, r: t.r })) };
   let finished = false;
 
   const handle = (event, data) => {
@@ -908,6 +908,7 @@ async function ask(question) {
         }
       } else {
         turn.a = data.raw;               // geçici konuşma: sonraki soruda geçmiş olarak gider
+        turn.r = data.reads;             // ve çağrılan araçlar (S13.4 (c))
       }
       owner.turns.push(turn);
       if (typeof data.remaining === "number") { state.remaining = data.remaining; state.questions = data.questions; }

@@ -263,6 +263,24 @@ def test_tool_error_reaches_model(library):
 
 
 @needs_db
+def test_earlier_reads_note(library):
+    """S13.4 (c): önceki cevabın çağırdığı araçlar sonraki soruda sayfa notu olarak gider."""
+    client = FakeClient([reply(tool_block("t1", "get_passage", {"id": "yok/c001", "context": 0}), stop="tool_use"),
+                         reply(text_block("Bulamadım."))])
+    done = run(sohbet.Chat(library, client), "soru")[-1][1]
+    assert done["reads"] == ["get_passage(id=yok/c001, context=0) -> error"]
+    chat = sohbet.Chat(library, FakeClient([]))
+    sent = chat.messages([{"q": "bir", "a": "cevap", "r": done["reads"]}, {"q": "iki", "a": "cevap"},
+                          {"q": "üç", "a": "cevap", "r": []}], "dört")
+    last = sent[-1]["content"]
+    assert last.startswith("[Page note") and last.endswith("]\n\ndört")
+    assert "Answer 1: get_passage(id=yok/c001, context=0) -> error" in last
+    assert "Answer 2: not recorded." in last and "Answer 3: no tools called." in last
+    assert chat.messages([], "tek")[-1]["content"] == "tek"
+    assert "Never call an earlier statement unchecked" in chat.system and "only from get_ayah" in chat.system
+
+
+@needs_db
 def test_limits(library):
     chat = sohbet.Chat(library, FakeClient([]))
     with pytest.raises(sohbet.Refusal):
@@ -458,6 +476,7 @@ def test_conversations_stored(library, tmp_path):
     web.post("/sohbet/api/sor", json={"question": "Devamı?", "conversation": ident, "history": [{"q": "x", "a": "y"}]})
     sent = client.calls[1]["messages"]
     assert [m["role"] for m in sent] == ["user", "assistant", "user"] and sent[0]["content"] == "Dokuzuncu Hakikat ne der?"
+    assert sent[2]["content"].startswith("[Page note") and "Answer 1: no tools called." in sent[2]["content"]
     got = web.get("/sohbet/api/konusma", params={"id": ident}).json()
     assert [t["q"] for t in got["turns"]] == ["Dokuzuncu Hakikat ne der?", "Devamı?"]
     assert got["turns"][0]["sources"][0]["id"] == C32 and "a" not in got["turns"][0]
