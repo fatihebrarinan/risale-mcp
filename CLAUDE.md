@@ -570,9 +570,10 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   betik durur): `python3 scripts/claude-plugin.py build` (yandaki depoya yazar; commit, push, `version` artırılır),
   `check`, `zip` (claude.ai'ye elle yükleme), `dene [P1 …]` (Claude Code'da soru seti, hangi skill yüklendi; rapor
   `data/interim/claude-plugin/`). claude.ai'de eklentiden yalnız skill'ler ve bağdaştırıcılar çalışır. Yazar adı "Nur Hadimleri" ("Risale MCP" dizinde başka bir ada benziyor); skill açıklamaları çift tırnaklı (betik denetler). Dizine gönderildi (2026-11-23, 1.0.1, auto-publish); yeni sürüm yeniden taranır.
-- **Sohbet sayfası (S12, sürüyor; plan `PLANLAR.md` S12):** `risalemcp.com/sohbet` (geçici; ileride kendi adı ve
+- **Sohbet sayfası (S12, 2026-11-25'te bitti; deneme ayı 2026-12-25'e kadar, sonra S13; ayrıntı `KAYIT.md` › S12):**
+  `risalemcp.com/sohbet` (geçici; ileride kendi adı ve
   alan adı, S12.8: yol, site, ad ve gönderen `SOHBET_*` ayarlarından), Claude API ile, yalnız Risale, model Haiku 5.5
-  (S12.1 ölçümü: `golden run … --model`, yan yana okuma `scripts/s12-karsilastir.py`). Hesaplar `sohbet_hesap.py`:
+  medium (`SOHBET_MODEL`, `SOHBET_EFFORT`; S12.1 ölçümü: `golden run … --model`, yan yana okuma `scripts/s12-karsilastir.py`). Hesaplar `sohbet_hesap.py`:
   davetli bölümden ayrı (`data/sohbet.db`, çerez `sohbet_oturum`), e-posta doğrulama koduyla kayıt ve parola yenileme
   tek akış, sınırlar modülün başında; e-posta Scaleway Transactional Email (AB; `.env` `SCW_SECRET_KEY`,
   `SCW_PROJECT_ID`; kökteki SPF'te `include:_spf.tem.scaleway.com`, MX'ler `destek@` yönlendirmesinindir, dokunulmaz),
@@ -588,7 +589,10 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   (`sohbet geri-bildirim`); kota ve bütçe `sohbet.Limits` (kişi günde 10 soru, servis günde 5 $, ayda 100 $, 2 $'da
   ntfy, konu sunucuda `data/sohbet-ntfy`). Arayüz denemesi `uv run --no-project --with playwright python
   scripts/sohbet-arayuz-dene.py` (başsız Brave). Yayında: `deploy.sh` servisi `risale-sohbet` (:8010) kurar, Caddy
-  `/sohbet/*`'ı tamponsuz ve sıkıştırmasız geçirir, `.env`'den sohbet anahtarlarını da yazar.
+  `/sohbet/*`'ı tamponsuz ve sıkıştırmasız geçirir, `.env`'den sohbet anahtarlarını da yazar. Kendi gizlilik ve şartlar sayfaları servisin içinde, girişsiz
+  (`/sohbet/gizlilik`, `/sohbet/sartlar`, `/sohbet/en/privacy`, `/sohbet/en/terms`; `sohbet_assets/`,
+  `sohbet_hesap.DOCS`, tarih `POLICY_DATE`): sitenin ana politikasına sohbetin verisi girmez (eklentilerinkidir);
+  saklanan değişirse bu sayfalar da değişir.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
   ~/risale-deneme --servers … --risale-profile genel`. Sunucu kapatılacaksa önce kullanıcıya hatırlatılır.
 

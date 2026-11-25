@@ -65,14 +65,12 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
 `KAYIT.md` › "Sıradaki'nin notları"):
-- **Son adım (2026-11-25):** S12 sohbet sayfası sürüyor ("Sıradaki" 1). Bitti: S12.0–S12.3, S12.9 (sunucu
-  düzeltir), S12.10 (sohbetin kendi talimatı), S12.11 (solda Kaynaklar, kaynak adı, telefonda çekmece), S12.12 (geri
-  bildirim), S12.4 (kota, bütçe, ntfy) ve **deploy** (`https://risalemcp.com/sohbet/`, Haiku 5.5 medium; ayrıntı
-  S12.7). S12.13'ün üç koşusu yapıldı, okuma sayfası hazır. S12.6 (gizlilik ve şartlar) onaylandı ve yayında. **Kullanıcıdan beklenen:** (1) telefonda baştan sona
-  deneme (onaylarsa deneme ayı o gün başlar, S12.7'ye tarih yazılır), (2) model seçimi
-  (`/taslak/s12-modeller.html`; öneri Haiku medium), (3) ntfy konusuna telefonda abone olma (`data/sohbet-ntfy`,
-  sunucuda). Deneme ayından sonra S13. B11 (MCP kaynakçasında kaynak adı; `catalog/permissions.SOURCE_LABELS` hazır)
-  sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
+- **Son adım (2026-11-25):** **S12 bitti ve yayında** (`https://risalemcp.com/sohbet/`, Haiku 5.5 medium; ayrıntı
+  `KAYIT.md` › S12). Kullanıcı telefonda denedi ve onayladı, model Haiku medium kaldı, ntfy'ye abone oldu, gizlilik
+  ve şartlar sayfaları yayında. **Deneme ayı sürüyor: 2026-11-25 – 2026-12-25** (ölçüt: en az 10 ayrı hesap ve genel
+  olarak olumsuz geri bildirim yok; duyuru yok). Sırada 1: **B11** (MCP kaynakçasında kaynak adı;
+  `catalog/permissions.SOURCE_LABELS` hazır). Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı
+  sormak). S13 deneme ayından sonra.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -80,14 +78,16 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   uygulaması "Sonra"da (S13'ten sonra, koşullu).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
   `https://risalemcp.com/taslak/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
-- **Tarihli hatırlatmalar:** (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
+- **Tarihli hatırlatmalar:** (0) **Sohbetin deneme ayı:** haftalık rapor 2026-12-02, 12-09, 12-16, 12-23
+  (sunucuda `.venv/bin/python -m risale_mcp.sohbet usage` ve `geri-bildirim --days 7`); **2026-12-25** ay sonu,
+  sürdürme kararı (S12.7'nin ölçütü), sonra S13. (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
   **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`):
   Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı (aynı aboneliği kullanır). (3) **Kuyruk durunca
-  (Aralık):** tek tefsir kurulumu ("Sıradaki" 6: B3, E6) ve D16.
+  (Aralık):** tek tefsir kurulumu ("Sıradaki" 7: B3, E6) ve D16.
 - **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; dizin metinleri başvurular sonuçlanınca
   (`docs/e5-dizin-metni-taslagi.md`); S10'un karşılama sayfası (`/oku/#/~hosgeldin`) ve kopyalama damgası, sonra ilk
   davetler (`scripts/sunucu.sh taslak davet <e-posta>`); lügatın eşleme örnekleri (`data/interim/lugat/olcum.md`);
-  "Sıradaki" 2 (Risale'si az birimler); E8.6 için Arapça okuyan bir denetçi.
+  "Sıradaki" 3 (Risale'si az birimler); E8.6 için Arapça okuyan bir denetçi.
 - Bir birimin durumu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push. Uzun işler
   `scripts/d1-arka.sh baslat <ad> …` ile.
 
@@ -96,205 +96,16 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S12 | Sohbet sayfası `risalemcp.com/sohbet`: Claude API'siyle, yalnız Risale, e-posta doğrulamalı hesap, bir aylık deneme (tavan 100 $) | |
-| 2 | B11 | Kaynakçada kaynak adı (e-Risale, risaleoku.com…): izinlerin şartı; MCP bağdaştırıcılarında | |
-| 3 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
-| 4 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 5 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 6 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 7 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 8 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 9 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
-| 10 | S13 | Sohbet sayfasının asıl geliştirmesi: S12'nin deneme ayından sonra | |
+| 1 | B11 | Kaynakçada kaynak adı (e-Risale, risaleoku.com…): izinlerin şartı; MCP bağdaştırıcılarında | |
+| 2 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
+| 3 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 4 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 5 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 6 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 7 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 8 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 9 | S13 | Sohbet sayfasının asıl geliştirmesi: S12'nin deneme ayından sonra | |
 
-- S12 **Sohbet sayfası** (kullanıcının kararları, 2026-11-25; fikrin geçmişi "Fikirler" › "Kendi yapay zekâ modeli ve
-  üyelik"). Geri dönüt: insanlar eklenti kurmak istemiyor, "adres yazayım, sorayım" diyor. Model eğitilmez (kaynağa
-  bağlılık); Claude API'si ve Risale'nin araçlarıyla bir sohbet sayfası kurulur. Kararlar: (1) **tavan aylık 100 $**:
-  Max planıyla gelen API kredisi; (2) model **önce ölçülür**: Haiku 5.5 – Sonnet 5.5; (3) **hesap şart**, e-posta
-  doğrulama koduyla (sınırsız hesap açılmasın); (4) ilk deneme `risalemcp.com/sohbet`, **yalnız Risale**; ücretsiz
-  (risaleoku'nun "kazanç olmasın" şartı; bağış ya da üyelik düşünülürse önce kaynaklara sorulur). (5) "Eklentiler ve
-  talimatla sınırlı kalmayalım" (kullanıcı): API'nin açtığı fazladan imkânlar konuşuluyor, seçilenler S12.5'e girer.
-  - S12.0 **Hazırlık (kullanıcı):** Max'ın API kredisini almak, son kullanma tarihine bakmak; Console'da bu iş için ayrı
-    bir çalışma alanı ve anahtar, **aylık harcama tavanı 100 $** (asıl sigorta); anahtar `.env`'de `ANTHROPIC_API_KEY`.
-  - S12.1 **Ölçüm: Haiku 5.5 – Sonnet 5.5.** Altın soruların Risale'ye ait olanları iki modelle (`golden run` modele
-    seçenek alır; `claude -p` aboneliği kullanır, API kredisi harcanmaz). Ölçüler: doğrulanan atıf, beklenen bölüm
-    okundu mu, araç sayısı, süre, eşdeğer maliyet; kullanıcı birkaç cevabı yan yana okur. Sonuç model ve effort
-    seçimidir; S12.3'ün kendi düzeninde kısa bir yeniden ölçümle (API'den, gerçek maliyetle) teyit edilir.
-    **Ölçüldü (2026-11-25):** 29 Risale sorusu, genel profil, abonelikle; Haiku `20261125-141205-coklu-claude-haiku-5-5`,
-    Sonnet `…-sonnet-5-5`, karşılaştırma için Opus (M6, 7 Kasım, üç eklenti). Doğrulanan atıf Haiku 212/215,
-    Sonnet 123/123, Opus 167/178; beklenen bölüm okundu 28/34, 19/34, 31/34; süre 29, 22, 41 sn; eşdeğer maliyet
-    0,009, 0,088, 0,30 $ (Claude Code'un istemi dahil). Sonnet'in 17 araç hatası Claude Code'a özgü: aracı önekiz
-    çağırıyor (`get_outline` yerine `mcp__risale__get_outline`); kendi servisimizde olmaz. Otomatik ölçü kaliteyi
-    tartmaz: kullanıcı yan yana okuyor, `https://risalemcp.com/taslak/s12-modeller.html` (girişli;
-    `scripts/s12-karsilastir.py`, "adları gizle" kipi, tercihler tarayıcıda ve indirilebilir). **Karar (kullanıcı,
-    2026-11-25, ilk beş soruyu okuyarak): Haiku 5.5.** S12.3'te kendi düzenimizde kısa yeniden ölçümle teyit edilir.
-  - S12.2 **Hesaplar:** `site_auth.py`'ye kayıt: e-posta → 6 haneli kod (10 dk) → parola; yeni kapsam `sohbet`.
-    Adres ve IP başına kayıt ve kod isteme sınırı. E-posta gönderimi için bir gönderim servisi gerekir (site bugün
-    e-posta göndermez; Hetzner'den doğrudan SMTP teslim edilmez): **karar kullanıcının**. Öneri (2026-11-25):
-    **Scaleway Transactional Email** (Fransa, AB; yalnız işlem e-postası; ayda 300 ücretsiz, sonrası 1.000'i ≈0,25 €;
-    HTTP API, `urllib` yeter). Yedekler: Brevo (AB, günde 300 ücretsiz, pazarlama platformu), Resend (ABD, ayda 3.000).
-    `risalemcp.com`'un SPF'i Cloudflare'de: `destek@` adresinin kaydı varsa yeni kayıt açılmaz, mevcut SPF'e eklenir;
-    DKIM ve DMARC da eklenir.
-    **Kod yazıldı (2026-11-25):** `sohbet_hesap.py` (ayrı veritabanı `data/sohbet.db`, çerez `sohbet_oturum`; davetli
-    bölümün hesaplarıyla karışmaz: kendi açılan hesap `/taslak/` ve `/oku/`'ya giremez). Tek akış: adres → 6 haneli kod
-    (10 dk, 5 deneme) → kod ve parola → hesap açılır ya da parola yenilenir; sayfa hesabın varlığını söylemez.
-    Sınırlar: adres başına 60 sn'de bir ve günde 5 kod, IP başına saatte 10 (yalnız bellekte), site günde 200. Hesabı
-    kullanıcı kendisi siler. Ayarlar `SOHBET_*` (S12.8). Testler `tests/test_sohbet_hesap.py`; yerelde `--dev` ile
-    uçtan uca denendi (e-posta dosyaya). **Scaleway bağlandı (2026-11-25):** kullanıcı hesabı açtı, ücretsiz kota
-    (ayda 300) yeter; DNS: kökteki SPF'e `include:_spf.tem.scaleway.com` eklendi, DKIM `<proje>._domainkey`, DMARC
-    `p=none`; MX'lere dokunulmadı (`destek@` Cloudflare yönlendirmesi). Alan adı `checked`, ilk gönderim
-    `destek@risalemcp.com`'a `250 Ok` (API biçimi `ScalewayMailer`'ınkiyle aynı). `.env`: `SCW_SECRET_KEY`,
-    `SCW_PROJECT_ID` (`SCW_ACCESS_ID` da duruyor, gerekmiyor). Deneme e-postası gelen kutusuna düştü, SPF, DKIM ve
-    DMARC geçti (kullanıcı baktı). **Kalan:** servis birimi `risale-sohbet` (:8010),
-    Caddy `/sohbet/*`, deploy (`.env`'den yalnız `SCW_*` ve `ANTHROPIC_API_KEY` gider); S12.3'ün servisiyle birlikte. Doğrulama sınırsız hesabı zorlaştırır ama
-    engellemez: asıl sınır kişi kotası ve bütçe tavanıdır (S12.4).
-  - S12.3 **Sohbet servisi:** `risale-sohbet` (ana makine, 127.0.0.1:8010; Caddy `/sohbet/` sayfası ve `/sohbet/api/`,
-    girişli). Araçlar **süreç içinde** `library.py`'den çağrılır, MCP üzerinden değil: hesapsızların ortak sınırını
-    (dakikada 120, günde 2.000 anlamsal) yemez, bir ağ dolaşması az, araç sonuçları elimizdedir (S12.5 buna dayanır).
-    Anthropic Python SDK'sı yalnız bu servisin bağımlılığıdır (sunucuda "sağlayıcı SDK'sı yok" kuralının bilinçli
-    istisnası; MCP sunucusu etkilenmez). Talimat `server.py`'nin Risale talimatından ve sohbete özgü eklerden;
-    araçlar ve talimat önbellekte (prompt caching). Cevap akışla gelir, araç çağrıları "Sözler okunuyor…" diye
-    görünür. Soru başına araç çağrısı ve konuşma başına tur sınırı. Konuşmalar sunucuda saklanmaz (tarayıcıda);
-    sunucu yalnız kullanım satırı tutar: kullanıcı, zaman, model, token, maliyet, araç sayısı, atıf denetiminin sonucu.
-    **Yerel sürüm yazıldı (2026-11-25):** `sohbet.py` (+ `sohbet_assets/`, testler `tests/test_sohbet.py`). Araçlar
-    `create_server(profile="genel")`'den (`list_tools`, `call_tool`; `cite` verilmez), talimat sunucunun talimatından
-    üç değişiklikle (değişen yer bulunmazsa servis açılmaz). Model alıntıyı `[[kimlik]]` ile işaretler; sunucu
-    `CitationChecker.sources` ile denetler, numaraları ve Kaynaklar'ı kurar; tutmayan alıntı ve düz metne yazılmış
-    kimlik ("(c033)") modele bir kez döner, cevap baştan yazılır; yine kalan kimlik silinir, alıntı işaretli görünür.
-    Akış SSE; kopan akışta tur bir kez yeniden (okuma zaman aşımı 60 sn: bir bağlantı 6 dk askıda kalmıştı). Kullanım
-    satırı `sohbet.db` `usage` (hesap silinince adsız). `anthropic` isteğe bağlı bağımlılık (`--extra sohbet`).
-    Servis birimi `docs/risale-sohbet.service` (Caddy yolu deploy'da). **Teyit ölçümü** (`sohbet olc`, 29 Risale
-    sorusu, API'den; `data/interim/golden/20261125-153523-sohbet-claude-haiku-5-5/`): beklenen bölüm okundu 28/34
-    (S12.1 ile aynı, aynı altı eksik), ortalama 21 sn (S12.1: 29), soru başı **0,0047 $** gerçek fiyat (toplam
-    0,14 $), araç hatası 0, düzeltmeye giden 5/29, düzeltmeden sonra kalan sorun 0. "Doğrulanan atıf" artık ölçü
-    değil (Kaynaklar'ı veritabanı yazıyor). Üç tuzak sorusunun cevabı elle okunacak (raporda "trap"). **Tarayıcıda baştan sona
-    görülmedi** (eklenti koptu; akış `curl` ile, çizici Node ile sınandı).
-    **Kritik ve kararlar (kullanıcı, 2026-11-25):** (1) Sohbet sayfasında solda "Kaynaklar" penceresi, kaynak adıyla
-    (S12.11; e-Risale ve risaleoku izni "kaynak gösterilmesi" şartlı, `cite_as` yalnız yolu verir). (2) Düzeltmeyi
-    sunucu yapar (S12.9). (3) Düz cümledeki iddia (yalnız alıntı denetleniyor; Haiku eser adını karıştırabiliyor:
-    "Lemeat" yerine "Lem'alar") zamanla daha çok denetlenir; S12.9'un sayımı yol gösterir. (4) Sohbete MCP'lerinkinden
-    ayrı talimat, ortak katman kurallarıyla (S12.10). (5) Geri bildirim ilk sürüme (S12.12). (6) Deneme ayından sonra
-    asıl geliştirme S13: S12.5'in (b) ve (c)'si, havuz, S12.8 ve öbür eklentiler oraya taşındı. (7) Model gerçek
-    fiyatla yeniden tartılır (S12.13). (8) Davet yok: adres bilinmiyor, bilen hesap açıp kullanır; günlük tavan ve
-    harcama uyarısı açılıştan önce hazır (S12.4). (9) Deploy: Caddy `/sohbet/` yolunu tamponlamaz ve sıkıştırmaz,
-    sunucuda `uv sync --extra sohbet` (deploy adımında; Caddyfile'a önceden girmez, başka bir deploy yolu erken
-    açmasın). (10) Her değişiklikte 29 soru yerine hızlı set (S12.13). (11) MCP kaynakçasında da kaynak adı (B11).
-  - S12.9 **Düzeltmeyi sunucu yapar** (kullanıcının kararı, 2026-11-25). Denetleyici sözü başka bir cümlede bulduysa
-    kimliği sunucu değiştirir (birden çok yerdeyse modelin okuduğu bölümdeki); düz metne yazılmış kimlik sessizce
-    silinir; eserlerde hiç bulunmayan alıntı modele sorulmadan "doğrulanamadı" işaretiyle gösterilir (yol (b)). Model
-    turunun (yol (a)) gerekip gerekmediği zamanla, deneme ayının sayılarıyla anlaşılır. Kullanım satırına: sunucunun
-    düzelttiği, doğrulanamayan alıntı ve işaretsiz paragraf sayısı (düz cümledeki iddianın sıklığı için).
-    **Bitti (2026-11-25):** `sohbet.check` her işareti ayrı denetler: başka yerde bulunan alıntı oraya (kapsayan en kısa
-    aralığa) taşınır, sıra okuma araçlarının döndürdüğü cümle (`read_ids`), sonra işaretin bölümü, sonra eseri, sonra
-    kitap sırası; alıntısız işaretin aralığı 8 cümleye ya da bölüm sonuna kısalır, kimliği yoksa silinir; eserlerde
-    bulunmayan alıntı ayrı numara alır, sayfada ⚠ "doğrulanamadı" (adres yoksa "Adresi bulunamadı"); düz kimlik silinir.
-    Geçmişe giden cevap (`raw`) düzeltilmiş kimliklerle. Model turu `SOHBET_MODEL_FIX=1` ile açılır, varsayılan kapalı.
-    `usage`'a `fixed`, `dropped`, `leaks`, `paragraphs`, `unmarked` (eski veritabanına sütun eklenir); `sohbet usage`
-    bunları özetler, `olc` dökümü modelin düzeltilmemiş metnini de yazar. **Deneme** (geçen ölçümde düzeltmeye giden
-    5 soru, `20261125-160727-…`): model turu yok, ortalama 15 sn ve toplam 0,014 $ (aynı sorular düzeltme turuyla 21 sn, 0,023 $);
-    b8'de 2 işaret sunucuca taşındı, c13'te 1 doğrulanamayan, 1 silinen işaret. c13'ün doğrulanamayanı yanlış alarm:
-    model cümle yerine bölüm kimliği yazmış (`[[sozler/33]]`), alıntı bölümün alt başlığı (S12.10'da talimata: kimlik
-    yalnız cümlenindir; sık görülürse bölüm kimliği bölüm atfı olarak kabul edilir). İşaretsiz paragraf 26/40 (giriş,
-    yorum ve b7'de işaretsiz temsil özeti dahil; ölçü kabadır).
-  - S12.10 **Sohbete ayrı talimat** (kullanıcının kararı, 2026-11-25). `server.py`'nin Risale talimatı bloklara
-    ayrılır (iş akışı, cevap kuralları, müellifin sözü olmayan katmanlar); MCP'nin metni bayt bayt aynı kalır (araç
-    çıktısı kaydı denetler). Sohbetin talimatı kendi girişi, akışı ve cevap biçiminden (okuyucu kim, önce kısa cevap,
-    sonra metin, sonra yorum; uzunluk; sade Türkçe; kapsam) ve **ortak katman bloğundan** kurulur; MCP'ye özgü
-    kısımlar (bağdaştırıcılar arası numaralama, denetçi alanları, `cite`) çıkar. Kaynağa bağlılığın koruması ortak
-    blokta kalır, kopya olmaz. S12.9'dan not: işaret yalnız cümle kimliğidir, bölüm kimliği değil (c13); özetlenen
-    temsil ve "metnin söylediği" paragrafı da işaretlenir (b7'de işaretsiz kaldı).
-    **Bitti (2026-11-25):** `server.py`'de Risale talimatı bloklardan kurulur (`RISALE_INTRO`, `FIND`, `READ`,
-    `GROUNDED`, `NEVER_INVENT`, `QUOTE_EXACTLY`, `TEXT_APART`, `risale_layers(connectors)`; MCP'ye özgüler `MCP_*`); MCP
-    metni bayt bayt aynı (bölmeden önceki metinle karşılaştırıldı). Sohbetin talimatı `sohbet.instructions`: giriş,
-    akış (bul, oku, işaretle), "The answer" (okuyucu, önce iki üç cümlelik doğrudan cevap, sonra alıntılarla metin,
-    sonra istenirse "Yorum"; uzunluk; kapsam), kurallar (ortak bloklar + işaret kuralı) ve ortak katman bloğu
-    (`connectors=False`: başka bağdaştırıcı ve model okumaları anılmaz; denetçi cümlesi kaldı, çünkü sohbetin araçları
-    da `reviews` döndürür) ve lügat. Bölüm kimliği: talimat yalnız "konunun işlendiği bölüm" için alıntısız bölüm
-    kimliğine izin verir; sunucu alıntısız (ya da alıntısı bölümün başlığı/alt başlığı olan) bölüm işaretini bölüm
-    atfı olarak kabul eder (silmez), alıntılı bölüm işaretini bölümün içindeki cümleye taşır, metin penceresi bölümün
-    ilk cümlelerini açar. **Ölçüm** (29 soru, `20261125-162212-…`, önceki `153523` ile): beklenen bölüm 27/34 (28/34;
-    a1 ve a5'te birer eksik, k3'te kazanç: gürültü sınırında), 21 sn (aynı), toplam 0,125 $ (0,137), model turu yok;
-    sunucu 3 bölüm işaretini sildi (bu ölçümden sonra bölüm atfı oldu), 1 alıntı doğrulanamadı (k4: Tarihçe'de lafız
-    farkı, ⚠ doğru). İşaretsiz paragraf 178/263: talimat bunu pek değiştirmedi (sayı kaba: giriş ve yorum da sayılıyor).
-  - S12.11 **Sol "Kaynaklar" penceresi** (kullanıcının kararı, 2026-11-25). Konuşmanın kaynakları cevaplara göre;
-    kaynağa ya da alıntıya dokununca metin aynı pencerede bağlamıyla açılır (cevap ve metin yan yana). Her satırda
-    **kaynak adı** (e-Risale, risaleoku.com, Keşif, nurpedia; `works.site`): izinlerin şartı. **Telefonda** alttan
-    açılan çekmece; kabul ölçütü: telefon görünümünde baştan sona denenmeden açılmaz (bugün tarayıcıda baştan sona
-    görülmedi).
-    **Bitti (2026-11-25):** sayfa iki sütun (≥960 px): solda konuşmanın kaynakları cevaplara göre, her satırda yol ve
-    "Kaynak: e-Risale" (`catalog/permissions.SOURCE_LABELS`, `works.permission`'dan; B11 aynı tabloyu kullanır), kaynağa
-    ya da cevaptaki [n]'ye dokununca metin aynı panelde bağlamıyla ve vurgulu (eski açılır pencere kalktı). Telefonda
-    panel alttan çekmece (üstte "Kaynaklar" düğmesi ve sayısı, perde, ✕, Escape), cevabın altındaki liste telefonda
-    kalır, masaüstünde gizlenir. Deneme Chrome eklentisi bağlanmadığı için başsız Brave ile:
-    `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py` (gerçek soru, 12 denetim, ekran
-    görüntüleri `data/interim/sohbet/arayuz/`); masaüstü ve 390 px telefon görünümünde hepsi geçti. Kullanıcının kendi
-    telefonunda denemesi deploy'dan sonra (S12.7).
-  - S12.12 **Geri bildirim** (kullanıcının kararı, 2026-11-25: ilk sürüme). Her cevabın altında 👍/👎 ve isteğe bağlı
-    not; "soruyu ve cevabı da gönder" kutusu, varsayılanı kapalı (konuşma sunucuda saklanmaz, yalnız onayla gelir;
-    altın soru adayları buradan). Gizlilik politikası (S12.6) yazar.
-    **Bitti (2026-11-25):** cevabın altında "Bu cevap işinize yaradı mı? 👍 👎"; seçince not (en çok 1.000 karakter) ve
-    "Soruyu ve bu cevabı da gönder" kutusu (varsayılan kapalı; işaretlenirse okuyucunun gördüğü cevap ve Kaynaklar düz
-    metin olarak gider). `sohbet.db` `feedback` (zaman, hesap, oy, not, soru, cevap, model); kişi başına günde 50;
-    hesap silinince hesap, not, soru ve cevap silinir, oy kalır. Okuma `uv run --extra sohbet python -m
-    risale_mcp.sohbet geri-bildirim [--days 7]`, `usage` 👍/👎 sayısını verir. Arayüz denemesine katıldı.
-  - S12.13 **Hızlı ölçüm seti ve modelin yeniden tartılması** (kullanıcının kararı, 2026-11-25). Her değişiklikte 29
-    soru yerine 8 (altın soru kimlikleri küçük harfle, plan kimlikleriyle karışmasın): a1 (yer, iki bölüm), b7 (temsil,
-    düzeltmeye gitmişti), c11 (metin), d15 (tuzak), e19 (yorum, uzun), k2 ve k4 (uzun araştırma, üçer bölüm), t2
-    (tefsir türü); 29 sorunun tamamı model ya da talimat değişiminde ve
-    deploy'dan önce. 8 soru yalnız büyük farkı gösterir. Deneme ayında geri bildirimden gelen gerçek sorular sete
-    eklenir. Model: hızlı setle üç koşu (Haiku `medium`, Haiku `high`, Sonnet 5.5): gerçek maliyet, süre, sunucunun
-    düzelttiği ve doğrulayamadığı alıntı, beklenen bölüm; kullanıcı cevapları yan yana okur
-    (`scripts/s12-karsilastir.py`). Ölçüt: aylık 100 $ ÷ beklenen soru sayısı (ayda 1.000 soruda soru başı 0,10 $'a
-    kadar: Sonnet sığar; 10.000'de 0,01 $: Haiku). Seçimi kullanıcı yapar: üç koşunun yan yana okuma sayfası
-    hazırlanır, beklerken öbür adımlar sürer (kullanıcının kararı, 2026-11-25).
-    **Koşular yapıldı (2026-11-25):** hızlı set koda girdi (`sohbet olc --hizli`, `QUICK`; döküm adı düşünme düzeyini
-    taşır). Sonuçlar (8 soru; beklenen bölüm okundu, ortalama süre, soru başı gerçek maliyet): Haiku medium 12/14,
-    23 sn, 0,0056 $; Haiku high 12/14, 49 sn, 0,0105 $, 2 doğrulanamayan alıntı; Sonnet 5.5 medium 7/14, 23 sn,
-    0,070 $ (daha az araç çağırıyor: bölümleri arama sonucundan adlandırıp okumadan anıyor). Ölçüte göre (ayda 100 $)
-    Haiku medium ayda ≈18.000 soruya, Sonnet ≈1.400'e yeter. Öneri Haiku medium (bugünkü ayar); seçim kullanıcının:
-    yan yana sayfa `https://risalemcp.com/taslak/s12-modeller.html` (girişli). Değişirse servis ortamında
-    `SOHBET_MODEL`, `SOHBET_EFFORT`.
-  - S12.4 **Bütçe ve kota:** kişi başına günlük soru sınırı (başlangıç 10), servis düzeyinde günlük ve aylık dolar
-    tavanı (100 $; aşılınca "bugünlük doldu"), Console tavanı yedek. Maliyet her cevabın `usage`'ından hesaplanır.
-    **Harcama uyarısı:** günlük maliyet bir eşiği geçince kullanıcıya haber (ntfy düzeni hazır). Açılıştan önce hazır
-    olmalı (davet yok; adres bir paylaşımla hızla yayılabilir). **Sayılar (kullanıcının kararı, 2026-11-25):** servis
-    günde 5 $ (dolunca sayfa herkese "bugünlük doldu" der), ayda 100 $; günlük harcama 2 $'ı geçince ntfy bildirimi.
-    **Bitti (2026-11-25):** `sohbet.Limits` (ayar `SOHBET_GUNLUK_SORU`, `SOHBET_GUNLUK_BUTCE`, `SOHBET_AYLIK_BUTCE`,
-    `SOHBET_UYARI`); gün ve ay İstanbul saatiyle, maliyet `usage`'dan. Soru öncesi `refusal`: aylık tavan, günlük tavan,
-    kişinin günlük hakkı (429 ve okuyucuya açık ileti). Her sorudan sonra aşılan eşik bir kez bildirilir (`alerts`:
-    günlük 2 $, günlük tavan, aylık tavanın %80'i ve tamamı); ntfy konusu `SOHBET_NTFY` ya da `data/sohbet-ntfy`
-    (git'e girmez; deploy'da açılır), gönderim sohbeti bekletmez. Okuyucuya kalan hakkı 3 ve altına inince
-    gösterilir. `sohbet usage` bugünkü ve bu ayki harcamayı verir. Console'daki aylık tavan yedek.
-  - S12.5 **API'nin açtığı fazladan imkânlar** (kullanıcının kararı, 2026-11-25: on madde). İlk sürümün üç maddesi
-    S12.3'te yapıldı: Kaynaklar'ı sunucu kurar, tutmayan alıntı (S12.9 ile sunucu düzeltir), alıntıya dokununca metin.
-    Kalan maddeler, havuz ve S12.8 (ad ve alan adı) **S13'e taşındı** (kullanıcının kararı, 2026-11-25). S12.8'in
-    taşınabilirlik kuralı S12'de de geçerlidir: yol öneki, alan adı, ad ve gönderen ayardandır, sayfada sabit adres yok.
-  - S12.6 **Gizlilik ve şartlar:** gizlilik politikası (soruların Anthropic'e gitmesi, e-posta servisi, saklanan ve
-    saklanmayan, geri bildirim ve onayla gönderilen soru-cevap, konuşmanın tarayıcıda durması), kullanım şartları (yapay zekâ cevabıdır, tefsir ve fetva değildir), `en/` karşılıkları.
-    Önce taslak: kullanıcı okuyup düzeltir, sonra deploy'la çıkar (kullanıcının kararı, 2026-11-25).
-    Saklama süreleri koda girdi: kullanım satırı 90 gün, geri bildirim bir yıl. **Ayrı sayfalar (kullanıcının kararı,
-    2026-11-25):** sitenin ana gizlilik ve şartlar sayfalarına dokunulmaz (eklentilerin dizin başvurularında
-    gösterildiler; sohbetin verisi oraya girerse eklentinin özelliği sanılabilir). Sohbetin kendi sayfaları servisin
-    içinde, girişsiz: `/sohbet/gizlilik`, `/sohbet/sartlar`, `/sohbet/en/privacy`, `/sohbet/en/terms`
-    (`sohbet_assets/{gizlilik,sartlar,en-privacy,en-terms}.html`, `sohbet_hesap.DOCS`, tarih `POLICY_DATE`); hesap
-    sayfaları ve sohbetin alt satırı bunlara bağlanır. Sohbet kendi alan adına taşınınca sayfalar da onunla gider. İlk
-    taslak (`docs/s12-gizlilik-taslak.md`) kaldırıldı. Kullanıcı okudu, onayladı; **yayında** (2026-11-25,
-    `deploy.sh --code`, araç çıktısında 0 fark, `yayin-20261125-190324`).
-  - S12.7 **Deneme ayı:** başlangıç tarihi açılışta yazılır. Ölçüler: kayıtlı ve etkin kullanıcı, günlük soru, soru başı
-    gerçek maliyet, atıf denetiminin geçme oranı, 👍/👎 (not isteğe bağlı, kullanıcının onayıyla saklanır). Haftalık
-    rapor; ay sonunda sürdürme kararı (eşiği açılıştan önce kullanıcıyla yazılır). Duyuru yok (kullanıcının kararı,
-    2026-11-25: adres bilinmiyor, bilen kullanır); Yenilikler yazısı S13'te. **Deploy ve açılış (kullanıcının kararı,
-    2026-11-25):** testler ve 29 soru geçince deploy kullanıcıya sormadan yapılır (adres duyurulmadığı için açılış
-    sayılmaz; telefon görünümü önce Chrome'da telefon genişliğinde denenir); kullanıcı kendi telefonunda baştan sona
-    dener, onaylarsa deneme ayı o gün başlar. **Başarı ölçütü (kullanıcının kararı, 2026-11-25):** ay içinde en az
-    10 ayrı hesap açılıp sohbet ederse ve genel olarak olumsuz geri bildirim yoksa (kullanıcıya söylenen ya da çok
-    sayıda 👎) başarılı sayılır. 👍/👎 ölçüt değil, yan bilgidir; "etkin kullanıcı" ölçüt değildir.
-    **Deploy edildi (2026-11-25, `scripts/deploy.sh --code`, araç çıktısında 0 fark, `yayin-20261125-164823`):**
-    `https://risalemcp.com/sohbet/` (Caddy: tamponsuz, sıkıştırmasız, `noindex`), servis `risale-sohbet` (127.0.0.1:8010,
-    model Haiku 5.5 medium), `.env`'e sohbet anahtarları (deploy artık `--code`'da da anahtar satırlarını yazar), ntfy
-    konusu `data/sohbet-ntfy` (sunucuda; adı kullanıcıya verildi). Sunucuda hesapsız deneme (`sohbet sor`) geçti, 12 sn,
-    0,002 $. **Bekleyen:** kullanıcının telefonda denemesi (onaylarsa deneme ayı o gün başlar), model seçimi (S12.13). Gizlilik
-    ve şartlar (S12.6) onaylanıp yayımlandı.
 - S13 **Sohbet sayfasının asıl geliştirmesi** (kullanıcının kararı, 2026-11-25): S12'nin deneme ayından sonra, onun
   ölçüleri ve geri bildirimiyle. İlk turda yapılmayan her şey burada: (1) ön arama (soru gelince anlamsal ve kelime
   araması birlikte, aday bölümler baştan; risk: modelin kendi aramasını daraltır), (2) model yönlendirme (Haiku okur,
@@ -445,7 +256,7 @@ fikir olanlar "Fikirler"de, gereği kalmayanlar "Dondurulan"da). Kalanlar:
   (havale; 1,8 milyon kelime), Fütûhu'l-Gayb, Mektûbât, Mesnevî ve öbürleri; sıraya girince kimlik alır.
 - **E7 (b) Yeni hadis kitapları**, OpenITI'de aynı lisansla: Beyhakî'nin es-Sünenü'l-Kübrâ'sı, İbn Ebî Şeybe ve
   Abdürrezzâk'ın Musannef'leri (nüshalar seçilirken bakılır). E7'nin (a) ve (c)'si "Sıradaki"nde.
-- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 6),
+- **el-Bahru'l-Muhît** (Ebû Hayyân, `docs/eserler/tefsir.md` (b)): Aralık'taki tek tefsir kurulumunda ("Sıradaki" 7),
   o zaman kimlik alır.
 
 ## Dondurulan
@@ -579,6 +390,12 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- S12 Sohbet sayfası (2026-11-25, yayında): `risalemcp.com/sohbet`, Claude API'siyle (Haiku 5.5 medium), yalnız
+  Risale; e-posta doğrulamalı hesap (Scaleway), araçlar süreç içinde, Kaynaklar'ı ve alıntı denetimini sunucu yapar
+  (tutmayanı taşır ya da "doğrulanamadı" der), solda Kaynaklar (kaynak adıyla, telefonda çekmece), 👍/👎, kota ve
+  bütçe (kişi günde 10, servis günde 5 $, ayda 100 $, ntfy), kendi gizlilik ve şartlar sayfaları. Kullanıcı telefonda
+  denedi; deneme ayı 2026-11-25 – 2026-12-25 (ölçüt: en az 10 hesap, olumsuz geri bildirim yok), sonra S13. Ayrıntı
+  `KAYIT.md` › "Kimlikli işler" › S12.
 - E5 Kalan klasik eserler ve yeni tanıtım (2026-11-25, yayında): Risale'de adı geçen eserlerin raporu
   (`docs/e5-risalede-anilan-eserler.md`), yedi eser (Şerhu'l-Mevâkıf, Şerhu'l-Makāsıd, et-Telvîh, el-Fıkhu'l-Ekber,
   el-Munkız, el-Mevâhib, İhyâ; Îcî'nin metni ve Irâkî'nin tahrici ayrı katman), `risale_refs` (Risale'nin eseri andığı
