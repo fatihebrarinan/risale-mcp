@@ -15,7 +15,7 @@
 #
 # Ayrıştırma ve veritabanı kurulumu bu bilgisayarda yapılır; ham veri sunucuya gitmez. Sunucudaki `data/auth.db`
 # (hesaplar, oturumlar, kullanım kaydı) asıl kopyadır, bu betik onu ezmez; sohbetin `data/sohbet.db`'si de öyle.
-# `.env`'den yalnızca VOYAGE_API_KEY ve sohbetin anahtarları (ANTHROPIC_API_KEY, SCW_SECRET_KEY, SCW_PROJECT_ID) gider.
+# `.env`'den yalnızca VOYAGE_API_KEY ve sohbetin anahtarları (ANTHROPIC_API_KEY, SCW_SECRET_KEY, SCW_PROJECT_ID) ve sınırsız hesapları (SOHBET_SINIRSIZ) gider.
 # Sunucu: Hetzner CAX11 (Helsinki, Ubuntu 24.04), kullanıcı `risale`, servis `risale-mcp` (bkz. CLAUDE.md).
 set -euo pipefail
 
@@ -128,7 +128,7 @@ if [[ $CODE_ONLY == 0 ]]; then
     rsync -az --delete -e "${SSH[*]}" data/dist/genel/vectors/ "$HOST:$DEST/data/dist/genel/vectors/"
 fi
 # Anahtarlar (`--code`'da da: S12'nin sohbeti yeni anahtar ister); başka satır gitmez
-grep -E '^(VOYAGE_API_KEY|ANTHROPIC_API_KEY|SCW_SECRET_KEY|SCW_PROJECT_ID)=' .env \
+grep -E '^(VOYAGE_API_KEY|ANTHROPIC_API_KEY|SCW_SECRET_KEY|SCW_PROJECT_ID|SOHBET_SINIRSIZ)=' .env \
     | "${SSH[@]}" "$HOST" "cat > $DEST/.env.new && chmod 600 $DEST/.env.new && mv $DEST/.env.new $DEST/.env"
 
 if [[ $HADIS == 1 ]]; then

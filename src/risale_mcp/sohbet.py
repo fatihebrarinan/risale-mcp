@@ -697,6 +697,9 @@ class Limits:
     daily: float = 5.0
     monthly: float = 100.0
     alert: float = 2.0
+    # Günlük soru sınırı olmayan hesaplar (kullanıcının kararı, 2026-11-25: yönetici hata ayıklamak için çok soracak).
+    # Adresler koda değil `.env`'e yazılır (`SOHBET_SINIRSIZ`, virgülle); bütçe tavanları onlar için de geçerlidir.
+    unlimited: frozenset = frozenset()
 
     @classmethod
     def from_env(cls) -> "Limits":
@@ -704,7 +707,13 @@ class Limits:
         return cls(questions=int(os.environ.get("SOHBET_GUNLUK_SORU", d.questions)),
                    daily=float(os.environ.get("SOHBET_GUNLUK_BUTCE", d.daily)),
                    monthly=float(os.environ.get("SOHBET_AYLIK_BUTCE", d.monthly)),
-                   alert=float(os.environ.get("SOHBET_UYARI", d.alert)))
+                   alert=float(os.environ.get("SOHBET_UYARI", d.alert)),
+                   unlimited=frozenset(sohbet_hesap.norm_email(e) for e in
+                                       os.environ.get("SOHBET_SINIRSIZ", "").split(",") if e.strip()))
+
+    def counted(self, email: str) -> bool:
+        """Bu hesabın günlük soru sınırı var mı?"""
+        return email not in self.unlimited
 
 
 TZ = "Europe/Istanbul"
@@ -740,7 +749,7 @@ def refusal(store: Store, email: str, limits: Limits, now: float | None = None) 
         return "Bu ayın sohbet bütçesi doldu; sayfa gelecek ayın başında yeniden açılır."
     if today >= limits.daily:
         return "Bugünlük sohbet bütçesi doldu; yarın yeniden sorabilirsiniz."
-    if asked_today(store, email, now) >= limits.questions:
+    if limits.counted(email) and asked_today(store, email, now) >= limits.questions:
         return f"Bugünlük soru hakkınız ({limits.questions}) doldu; yarın yeniden sorabilirsiniz."
     return None
 
@@ -956,8 +965,9 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             return None
         return body if isinstance(body, dict) else None
 
-    def remaining(email: str) -> int:
-        return max(0, limits.questions - asked_today(store, email))
+    def remaining(email: str) -> int | None:
+        """Bugün kalan soru; sınırsız hesapta None (sayfa hakkı göstermez)."""
+        return max(0, limits.questions - asked_today(store, email)) if limits.counted(email) else None
 
     def home(request: Request, email: str) -> HTMLResponse:
         return HTMLResponse(page(config, email), headers=headers)
@@ -1013,8 +1023,9 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
                 async for event, data in chat.ask(history, question, tally):
                     if event == "done":
                         outcome, done = "done", data
-                        data["remaining"] = max(0, remaining(email) - 1)
-                        data["questions"] = limits.questions
+                        left = remaining(email)
+                        data["remaining"] = None if left is None else max(0, left - 1)
+                        data["questions"] = limits.questions if limits.counted(email) else None
                         if keep:
                             data["conversation"], data["n"] = convs.add(email, conversation, question, data)
                     elif event == "error":
@@ -1049,15 +1060,27 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             row = feedback_row(body, email, chat.settings.model)
         except (ValueError, TypeError, AttributeError):
             return JSONResponse({"error": "geçersiz istek"}, status_code=400, headers=headers)
-        today = store._run("SELECT COUNT(*) FROM feedback WHERE email = ? AND ts >= ?", (email, time.time() - 86400))[0][0]
-        if today >= FEEDBACK_PER_DAY:
-            return JSONResponse({"error": "Bugün için yeterince geri bildirim gönderdiniz; teşekkürler."},
-                                status_code=429, headers=headers)
-        store._run(f"INSERT INTO feedback ({', '.join(row)}) VALUES ({', '.join('?' * len(row))})", tuple(row.values()))
-        store._run("DELETE FROM feedback WHERE ts < ?", (row["ts"] - FEEDBACK_DAYS * 86400,))
+        # S13.4: oy tıklanınca gider (Gönder düğmesi yok); not, onay kutusu ve oyun değişmesi aynı satırı günceller
+        ident = body.get("id")
+        if ident is not None:
+            if not isinstance(ident, int) or isinstance(ident, bool):
+                return JSONResponse({"error": "geçersiz istek"}, status_code=400, headers=headers)
+            if not store._run("UPDATE feedback SET vote = ?, note = ?, question = ?, answer = ? WHERE rowid = ? AND "
+                              "email = ? RETURNING rowid", (row["vote"], row["note"], row["question"], row["answer"],
+                                                             ident, email)):
+                return JSONResponse({"error": "Bu geri bildirim bulunamadı."}, status_code=404, headers=headers)
+        else:
+            today = store._run("SELECT COUNT(*) FROM feedback WHERE email = ? AND ts >= ?",
+                               (email, time.time() - 86400))[0][0]
+            if today >= FEEDBACK_PER_DAY:
+                return JSONResponse({"error": "Bugün için yeterince geri bildirim gönderdiniz; teşekkürler."},
+                                    status_code=429, headers=headers)
+            ident = store._run(f"INSERT INTO feedback ({', '.join(row)}) VALUES ({', '.join('?' * len(row))}) "
+                               "RETURNING rowid", tuple(row.values()))[0][0]
+            store._run("DELETE FROM feedback WHERE ts < ?", (row["ts"] - FEEDBACK_DAYS * 86400,))
         if isinstance(body.get("conversation"), str) and isinstance(body.get("n"), int):
             convs.vote(email, body["conversation"], body["n"], row["vote"])     # saklanan turda oy görünsün
-        return JSONResponse({"ok": True}, headers=headers)
+        return JSONResponse({"ok": True, "id": ident}, headers=headers)
 
     # ------------------------------------------------ S13.1: durum, ayar, konuşmalar
 
@@ -1065,8 +1088,8 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
         email = user(request)
         if not email:
             return reply(signed_out, 401)
-        return reply({"email": email, "keep": convs.keeps(email), "questions": limits.questions,
-                      "remaining": remaining(email)})
+        return reply({"email": email, "keep": convs.keeps(email),
+                      "questions": limits.questions if limits.counted(email) else None, "remaining": remaining(email)})
 
     async def settings(request: Request):
         email = user(request)

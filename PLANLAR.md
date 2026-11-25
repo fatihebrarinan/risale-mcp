@@ -175,6 +175,25 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     beklerken dizilir; model beklenirken "Soru inceleniyor…" / "Okunanlar değerlendiriliyor…", sonda "Alıntılar
     eserlerle denetleniyor, Kaynaklar hazırlanıyor…"; adımlar cevabın üstünde açılır özet ("5 adımda hazırlandı · 3 yer
     okundu"), saklanan turda da (`turns.steps`). Gizlilik sayfaları buna göre.
+  - S13.4 **Denemenin ilk bulguları** (2026-11-25; kayıtlar ve kullanıcının paylaştığı iki 👍 cevaptan; öbür
+    kişilerin konuşmaları okunmadı). Öbür eklentiler (S13 (11)) şimdilik bekler (kullanıcının kararı).
+    (a) **Geri bildirim kolaylaştı (kullanıcının isteği; yapıldı):** emoji yerine çizgi simge (seçilince yeşil), oy
+    tıklanınca gider, not yazmayı bırakınca (1,5 sn) ya da kutudan çıkınca, onay kutusu değişince gider; Gönder ve
+    Vazgeç yok. Sunucu ilk kayıtta numara (`id`) döndürür, sonrakiler aynı satırı günceller (oy değişebilir; kutu
+    kalkınca soru ve cevap silinir). Sayfa yenilenince oy görünür, değiştirilemez. Gizlilik sayfaları buna göre.
+    (b) **Sınırsız hesap (kullanıcının isteği; yapıldı):** `.env` `SOHBET_SINIRSIZ` (virgülle adresler; koda
+    yazılmaz, deploy gönderir): günlük soru sınırı yok, hak satırı görünmez, bütçe tavanları geçerli. Kullanıcı
+    çok soracak, sonra konuşmalara birlikte bakılıp hata ayıklanacak.
+    **Bekleyen düzeltmeler** (henüz yapılmadı; sırası denemenin sonucuyla): (c) **Geçmişte araç sonucu yok:** ikinci
+    soruda model "önceki cevabımda … doğrulamadan verdim, okumadan kullandım" dedi; geçmişe yalnız cevap metni
+    giriyor (`Chat.messages`), model ilk turun okumalarını görmeyince kendi atıflarını doğrulanmamış sanıyor (atıflar
+    sunucuda denetlenmişti). Çözüm: talimata "önceki cevaplardaki işaretli alıntıları sunucu metinle denetledi"
+    satırı, ya da geçmişe önceki turda okunan bölümlerin kısa listesi. (d) **Yan yana aynı işaret:** "[23] [23]";
+    `check` art arda gelen aynı işareti teke indirsin. (e) **Telif tarihi gereksiz yere metinde:** "kaynak
+    1936–1943, Kastamonu'dur (kastamonur.com)", "Hayrat listesi 1933–34 der" (`written` alanından); talimat: tarih
+    yalnız soruyla ilgiliyse. (f) **Yabancı harf:** "göktə" (Azerice ə); şimdilik yalnız not, tekrarlarsa cevapta
+    Türkçe dışı Latin harf denetimi. (g) **İzlenecek sayı:** işaretsiz paragraf oranı öbür deneyenlerde yüksek (4/9,
+    6/8, 9/12; kullanıcıda 2/15, 3/9); yorum paragrafları da sayılır, hafta sonunda bakılır.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

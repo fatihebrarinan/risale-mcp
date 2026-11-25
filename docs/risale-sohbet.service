@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 User=risale
 WorkingDirectory=/home/risale/risale-mcp
-# .env: ANTHROPIC_API_KEY, SCW_SECRET_KEY, SCW_PROJECT_ID, VOYAGE_API_KEY (env.py okur); bağımlılık `uv sync --extra sohbet`
+# .env: ANTHROPIC_API_KEY, SCW_SECRET_KEY, SCW_PROJECT_ID, VOYAGE_API_KEY, SOHBET_SINIRSIZ (env.py okur); bağımlılık `uv sync --extra sohbet`
 ExecStart=/home/risale/risale-mcp/.venv/bin/python -m risale_mcp.sohbet serve --port 8010
 Restart=on-failure
 RestartSec=5

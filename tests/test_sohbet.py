@@ -305,10 +305,21 @@ def test_web_routes(library, tmp_path):
     assert web.post("/sohbet/api/geri-bildirim", json={"vote": 5}).status_code == 400
     rows = store._run("SELECT vote, note, question, answer FROM feedback ORDER BY ts")
     assert [tuple(r) for r in rows] == [(1, "iyi", None, None), (-1, None, "q", "a")]
+    # S13.4: oy tıklanınca gider, not ve onay kutusu aynı satırı günceller; kutu kalkınca soru ve cevap silinir
+    fid = web.post("/sohbet/api/geri-bildirim", json={"vote": 1}).json()["id"]
+    assert web.post("/sohbet/api/geri-bildirim", json={"id": fid, "vote": -1, "note": "eksik", "share": True,
+                                                       "question": "q2", "answer": "a2"}).json()["id"] == fid
+    assert tuple(store._run("SELECT vote, note, question FROM feedback WHERE rowid = ?", (fid,))[0]) == (-1, "eksik", "q2")
+    web.post("/sohbet/api/geri-bildirim", json={"id": fid, "vote": -1, "note": "eksik", "share": False})
+    assert tuple(store._run("SELECT question, answer FROM feedback WHERE rowid = ?", (fid,))[0]) == (None, None)
+    assert store._run("SELECT COUNT(*) FROM feedback")[0][0] == 3
+    assert web.post("/sohbet/api/geri-bildirim", json={"id": 9999, "vote": 1}).status_code == 404
+    assert web.post("/sohbet/api/geri-bildirim", json={"id": "1", "vote": 1}).status_code == 400
+    rows = store._run("SELECT vote FROM feedback ORDER BY ts")
     store.remove_user("a@b.co")
     assert store._run("SELECT email FROM usage")[0]["email"] is None
     assert [tuple(r) for r in store._run("SELECT email, vote, note, question, answer FROM feedback ORDER BY ts")] == [
-        (None, 1, None, None, None), (None, -1, None, None, None)]
+        (None, 1, None, None, None), (None, -1, None, None, None), (None, -1, None, None, None)]
 
 
 class FlakyClient(FakeClient):
@@ -365,7 +376,7 @@ def _usage(store, email, cost, ts):
                "seconds, outcome) VALUES (?, ?, 'm', 1, 0, 0, 0, 0, 0, ?, 1, 'done')", (ts, email, cost))
 
 
-def test_quota_and_budget(tmp_path):
+def test_quota_and_budget(tmp_path, monkeypatch):
     from risale_mcp.sohbet_hesap import Store
     store = Store(tmp_path / "s.db")
     limits = sohbet.Limits(questions=3, daily=1.0, monthly=2.0, alert=0.5)
@@ -379,7 +390,14 @@ def test_quota_and_budget(tmp_path):
     _usage(store, "a@b.co", 0.1, now)
     assert "soru hakkınız (3)" in sohbet.refusal(store, "a@b.co", limits, now)
     assert sohbet.refusal(store, "c@d.co", limits, now) is None
+    # sınırsız hesap: soru sınırı yok, bütçe tavanı var
+    import dataclasses
+    free = dataclasses.replace(limits, unlimited=frozenset({"a@b.co"}))
+    assert sohbet.refusal(store, "a@b.co", free, now) is None
+    monkeypatch.setenv("SOHBET_SINIRSIZ", " A@B.co , x@y.co")
+    assert sohbet.Limits.from_env().unlimited == {"a@b.co", "x@y.co"}
     _usage(store, "c@d.co", 0.7, now)                       # bugün 1,0 $
+    assert "Bugünlük sohbet bütçesi" in sohbet.refusal(store, "a@b.co", free, now)
     assert "Bugünlük sohbet bütçesi" in sohbet.refusal(store, "c@d.co", limits, now)
     assert sohbet.spent(store, now) == pytest.approx((1.0, 1.1))
     # eşikler bir kez, aşıldığı soruda

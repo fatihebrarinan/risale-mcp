@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS usage (      -- S12.3: soru başına bir satır (`soh
     unmarked    INTEGER                 -- içinde hiç işaret olmayanlar (düz cümledeki iddianın sıklığı için)
 );
 CREATE INDEX IF NOT EXISTS usage_ts ON usage(ts);
-CREATE TABLE IF NOT EXISTS feedback (   -- S12.12: cevaba 👍/👎; soru ve cevap yalnız kullanıcı kutuyu işaretlediyse
+CREATE TABLE IF NOT EXISTS feedback (   -- S12.12: cevaba oy (1/-1), S13.4: tıklayınca, not sonra aynı satırda; soru ve cevap yalnız kullanıcı kutuyu işaretlediyse
     ts        REAL NOT NULL,
     email     TEXT,                     -- hesap silinince NULL (not, soru ve cevap da silinir; oy kalır)
     vote      INTEGER NOT NULL,         -- 1 | -1

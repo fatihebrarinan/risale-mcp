@@ -382,56 +382,76 @@ function answerText(turn) {          // okuyucunun gördüğü cevap, düz metin
   return turn.markdown + (lines.length ? "\n\nKaynaklar\n" + lines.join("\n") : "");
 }
 
+// S13.4: oy tıklanınca gider; not yazmayı bırakınca (ya da kutudan çıkınca) ve onay kutusu değişince aynı kayıt
+// güncellenir (`fid`, sunucunun verdiği numara). Gönder düğmesi yok. Sayfa yenilenince oy görünür, değiştirilemez.
+const THUMB = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10v11M15 5.9 14 10h5.8a2 2 0 0 1 1.9 2.6l-2.3 7'
+  + 'A2 2 0 0 1 17.5 21H4a1 1 0 0 1-1-1v-9a1 1 0 0 1 1-1h2.8a2 2 0 0 0 1.8-1.1L12 2a3.1 3.1 0 0 1 3 3.9Z"/></svg>';
+const NOTE_PAUSE = 1500;             // yazmayı bırakınca bu kadar sonra gider (ms)
+
 function feedbackBox(turn) {
   const wrap = el("div", "geri");
-  if (turn.feedback) {
-    wrap.append(el("p", "alt-bilgi", `Geri bildiriminiz alındı (${turn.feedback > 0 ? "👍" : "👎"}). Teşekkürler.`));
+  const row = el("div", "geri-satir");
+  const up = el("button", "oy", THUMB); up.type = "button";
+  up.setAttribute("aria-label", "İşime yaradı"); up.title = "İşime yaradı";
+  const down = el("button", "oy asagi", THUMB); down.type = "button";
+  down.setAttribute("aria-label", "İşime yaramadı"); down.title = "İşime yaramadı";
+  const status = el("span", "alt-bilgi geri-durum");
+  status.setAttribute("aria-live", "polite");
+  row.append(up, down, status);
+  wrap.append(row);
+  const mark = (vote) => {
+    for (const [b, v] of [[up, 1], [down, -1]]) {
+      b.classList.toggle("secili", v === vote); b.setAttribute("aria-pressed", String(v === vote));
+    }
+  };
+  if (turn.feedback && !turn.fid) {          // önceki oturumda verilmiş
+    mark(turn.feedback); up.disabled = down.disabled = true;
+    status.textContent = "Geri bildiriminiz alındı. Teşekkürler.";
     return wrap;
   }
-  const row = el("div", "geri-satir");
-  row.append(el("span", "alt-bilgi", "Bu cevap işinize yaradı mı?"));
-  const up = el("button", "oy", "👍"); up.type = "button"; up.setAttribute("aria-label", "Evet, işime yaradı");
-  const down = el("button", "oy", "👎"); down.type = "button"; down.setAttribute("aria-label", "Hayır, yaramadı");
-  row.append(up, down);
-  wrap.append(row);
-  const open = (vote) => {
-    for (const b of [up, down]) b.classList.toggle("secili", b === (vote > 0 ? up : down));
-    let form = wrap.querySelector("form");
-    if (!form) {
-      form = el("form", "geri-form");
-      form.innerHTML = `<textarea rows="2" maxlength="1000" placeholder="Not (isteğe bağlı): ne iyiydi, ne eksik ya da yanlıştı?" aria-label="Not"></textarea>
-        <label class="alt-bilgi"><input type="checkbox"> Soruyu ve bu cevabı da gönder (yalnız bu cevap; ekip
-        saklanan konuşmalarınızı okumaz, yalnız böyle gönderdiklerinizi okur)</label>
-        <div class="geri-dugmeler"><button type="submit">Gönder</button>
-        <button type="button" class="ghost vazgec">Vazgeç</button></div><p class="hata" hidden></p>`;
-      form.querySelector(".vazgec").addEventListener("click", () => {
-        form.remove(); for (const b of [up, down]) b.classList.remove("secili");
-      });
-      form.addEventListener("submit", async (ev) => {
-        ev.preventDefault();
-        const share = form.querySelector("input").checked;
-        const send = form.querySelector('button[type="submit"]');
-        send.disabled = true;
-        try {
-          const owner = cur;
-          await api("geri-bildirim", { vote: form._vote, note: form.querySelector("textarea").value, share,
-            ...(share ? { question: turn.q, answer: answerText(turn) } : {}),
-            ...(owner.id && Number.isInteger(turn.n) ? { conversation: owner.id, n: turn.n } : {}) });
-          turn.feedback = form._vote;
-          if (owner === cur) saveLocal();
-          wrap.replaceWith(feedbackBox(turn));
-        } catch (e) {
-          const err = form.querySelector(".hata"); err.textContent = e.message; err.hidden = false;
-          send.disabled = false;
-        }
-      });
-      wrap.append(form);
+  const owner = cur;
+  let form = null, timer = null, last = "", queue = Promise.resolve();
+  const current = () => ({ vote: turn.feedback, note: form ? form.querySelector("textarea").value.trim() : "",
+    share: form ? form.querySelector("input").checked : false });
+  const send = async () => {
+    const now = current(), key = JSON.stringify(now);
+    if (key === last) return;
+    status.classList.remove("hata"); status.textContent = "Gönderiliyor…";
+    try {
+      const r = await api("geri-bildirim", { ...now, ...(turn.fid ? { id: turn.fid } : {}),
+        ...(now.share ? { question: turn.q, answer: answerText(turn) } : {}),
+        ...(owner.id && Number.isInteger(turn.n) ? { conversation: owner.id, n: turn.n } : {}) });
+      if (typeof r.id === "number") turn.fid = r.id;
+      last = key; turn.fnote = now.note; turn.fshare = now.share;
+      if (owner === cur) saveLocal();
+      status.textContent = now.note || now.share ? "Notunuz alındı. Teşekkürler." : "Teşekkürler.";
+    } catch (e) {
+      status.textContent = e.message; status.classList.add("hata");
+      if (!turn.fid) { turn.feedback = 0; mark(0); }        // kayıt açılmadı: oya yeniden basılabilsin
     }
-    form._vote = vote;
-    form.querySelector("textarea").focus();
   };
-  up.addEventListener("click", () => open(1));
-  down.addEventListener("click", () => open(-1));
+  const enqueue = () => { clearTimeout(timer); queue = queue.then(send); };   // sırayla: ilk kayıt numarasını alsın
+  const openForm = () => {
+    if (form) return;
+    form = el("div", "geri-form");
+    form.innerHTML = `<textarea rows="2" maxlength="1000" aria-label="Not"
+      placeholder="İsterseniz not ekleyin: ne iyiydi, ne eksik ya da yanlıştı? Yazdığınız kendiliğinden gönderilir."></textarea>
+      <label class="alt-bilgi"><input type="checkbox"> Soruyu ve bu cevabı da gönder (yalnız bu cevap; ekip
+      saklanan konuşmalarınızı okumaz, yalnız böyle gönderdiklerinizi okur)</label>`;
+    const area = form.querySelector("textarea");
+    area.value = turn.fnote || ""; form.querySelector("input").checked = !!turn.fshare;
+    area.addEventListener("input", () => { clearTimeout(timer); timer = setTimeout(enqueue, NOTE_PAUSE); });
+    area.addEventListener("blur", enqueue);
+    form.querySelector("input").addEventListener("change", enqueue);
+    wrap.append(form);
+  };
+  const vote = (v) => {
+    if (turn.feedback === v) return;
+    turn.feedback = v; mark(v); openForm(); enqueue();
+  };
+  if (turn.feedback) { mark(turn.feedback); openForm(); last = JSON.stringify(current()); }   // bu oturumda yeniden çizildi
+  up.addEventListener("click", () => vote(1));
+  down.addEventListener("click", () => vote(-1));
   return wrap;
 }
 

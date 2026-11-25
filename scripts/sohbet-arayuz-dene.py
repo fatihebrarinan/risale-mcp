@@ -103,17 +103,23 @@ async def run(url: str) -> None:
         check("metinde kaynak adı", "Kaynak:" in await page.inner_text("#metin-kaynak"))
         await page.click("#yan-geri")
         # S12.12: geri bildirim (kutu işaretsiz: soru ve cevap gitmez); oy saklanan tura da yazılır
+        # S13.4: oy tıklanınca gider, not yazmayı bırakınca; Gönder düğmesi yok
         await page.click(".geri .oy >> nth=0")
+        await page.wait_for_selector(".geri .geri-durum >> text=Teşekkürler.", timeout=10000)
+        check("oy tıklanınca gitti", await page.locator(".geri .oy.secili").count() == 1)
+        check("Gönder düğmesi yok", await page.locator(".geri button[type=submit]").count() == 0)
+        check("oy simgesi emoji değil", "👍" not in await page.inner_text(".geri"))
         await page.fill(".geri-form textarea", "arayüz denemesi")
-        await page.click('.geri-form button[type="submit"]')
-        await page.wait_for_selector(".geri >> text=Geri bildiriminiz alındı", timeout=10000)
+        await page.wait_for_selector(".geri .geri-durum >> text=Notunuz alındı", timeout=10000)
+        check("not kendiliğinden gitti", True)
 
         # yeniden yükleyince aynı konuşma, oyuyla
         await page.reload()
         await page.wait_for_selector(".tur .cevap p")
         check("adım özeti saklandı", await page.locator(".tur .adim-ozet").count() == 1)
         check("yeniden yüklemede aynı konuşma", await page.locator(".tur").count() == 1)
-        check("oy saklandı", await page.locator(".geri >> text=Geri bildiriminiz alındı").count() == 1)
+        check("oy saklandı", await page.locator(".geri >> text=Geri bildiriminiz alındı").count() == 1
+              and await page.locator(".geri .oy.secili").count() == 1)
         check("kalan hak aynı", await page.inner_text("#hak") == hak)
 
         # ad değiştirme
