@@ -81,7 +81,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
-  kullanım `… sohbet usage`, geri bildirim `… sohbet geri-bildirim` (sunucuda `.venv/bin/python -m …`). Telefon
+  kullanım `… sohbet usage`, geri bildirim `… sohbet geri-bildirim` (sunucuda `.venv/bin/python -m …`). Yalnız sohbetin
+  değişikliği `scripts/deploy.sh --sohbet` ile gider (≈10 sn; kayıt alınmaz, sohbet dışı kod değiştiyse durur; 2026-11-26). Telefon
   uygulaması "Sonra"da (S13'ten sonra, koşullu).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
   `https://risalemcp.com/taslak/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
@@ -246,7 +247,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     **Yapıldı (2026-11-26):** `sohbet.js` `numberSources` parçaları kurar (`pieceOf`), `openText(parça, atıf)` parçanın
     aralığını ister, atfın cümleleri dolgulu, öbürleri altı çizili (`mark.acik`); liste `kaynak-grup` başlıklarıyla,
     kaynak adı tekse listenin altında bir kez. "Soruyu ve bu cevabı da gönder" metni parçalarla. Arayüz denemesi:
-    hazır konuşma bitişik, iç içe ve 8'i aşan durumları sınar; 77 denetim geçti. Yayında (`da166fb`, `yayin-20261126-000506`).
+    hazır konuşma bitişik, iç içe ve 8'i aşan durumları sınar; 77 denetim geçti. Yayında (`da166fb`, `yayin-20261126-000506`). Kullanıcının 11. Söz konuşması 44 kaynaktan 21'e indi, vurguyu beğendi.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
