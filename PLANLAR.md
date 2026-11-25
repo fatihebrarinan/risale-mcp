@@ -123,7 +123,14 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     **Scaleway Transactional Email** (Fransa, AB; yalnız işlem e-postası; ayda 300 ücretsiz, sonrası 1.000'i ≈0,25 €;
     HTTP API, `urllib` yeter). Yedekler: Brevo (AB, günde 300 ücretsiz, pazarlama platformu), Resend (ABD, ayda 3.000).
     `risalemcp.com`'un SPF'i Cloudflare'de: `destek@` adresinin kaydı varsa yeni kayıt açılmaz, mevcut SPF'e eklenir;
-    DKIM ve DMARC da eklenir. Doğrulama sınırsız hesabı zorlaştırır ama
+    DKIM ve DMARC da eklenir.
+    **Kod yazıldı (2026-11-25):** `sohbet_hesap.py` (ayrı veritabanı `data/sohbet.db`, çerez `sohbet_oturum`; davetli
+    bölümün hesaplarıyla karışmaz: kendi açılan hesap `/taslak/` ve `/oku/`'ya giremez). Tek akış: adres → 6 haneli kod
+    (10 dk, 5 deneme) → kod ve parola → hesap açılır ya da parola yenilenir; sayfa hesabın varlığını söylemez.
+    Sınırlar: adres başına 60 sn'de bir ve günde 5 kod, IP başına saatte 10 (yalnız bellekte), site günde 200. Hesabı
+    kullanıcı kendisi siler. Ayarlar `SOHBET_*` (S12.8). Testler `tests/test_sohbet_hesap.py`; yerelde `--dev` ile
+    uçtan uca denendi (e-posta dosyaya). **Kalan:** Scaleway'in bağlanması ve ilk gerçek gönderim (API biçimi o zaman
+    doğrulanır), servis birimi `risale-sohbet` (:8010) ve Caddy `/sohbet/*`, deploy; S12.3'ün servisiyle birlikte. Doğrulama sınırsız hesabı zorlaştırır ama
     engellemez: asıl sınır kişi kotası ve bütçe tavanıdır (S12.4).
   - S12.3 **Sohbet servisi:** `risale-sohbet` (ana makine, 127.0.0.1:8010; Caddy `/sohbet/` sayfası ve `/sohbet/api/`,
     girişli). Araçlar **süreç içinde** `library.py`'den çağrılır, MCP üzerinden değil: hesapsızların ortak sınırını
