@@ -587,7 +587,8 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   kaynağa bağlılığın kuralları `server.py`'deki ortak bloklardan gelir (MCP talimatı bayt bayt aynı kalmalı).
   Sayfa (S13.1): solda konuşmalar (geçmiş, "Yeni konuşma", altta ayarlar penceresi: çıkış, saklama, hepsini sil,
   gizlilik ve şartlar, hesabı sil), sağda Kaynaklar (kaynak adı `catalog/permissions.SOURCE_LABELS`); ikisi de açılıp
-  kapanır, dar ekranda çekmece; alt satırda "Tefsir ve fetva değildir, müellife mal edilmez." ve günün kalan hakkı.
+  kapanır ve genişlikleri aradaki çizgiyle ayarlanır (S13.2), dar ekranda çekmece; ayarlar sekmeli (Hesap, Konuşmalar,
+  Görünüm: tema ve yazı boyutu, Belgeler; görünüm ve genişlik tarayıcıda); alt satırda "Tefsir ve fetva değildir, müellife mal edilmez." ve günün kalan hakkı.
   Konuşmalar hesapta (`conversations`, `turns`; `users.keep_history` varsayılan açık, kapalıyken yalnız tarayıcıda);
   yalnız sahibine gösterilir, ekip okumaz; saklanan konuşmanın geçmişi sunucudan okunur; adres `#k/<kimlik>`. 👍/👎 geri bildirim
   (`sohbet geri-bildirim`); kota ve bütçe `sohbet.Limits` (kişi günde 10 soru, servis günde 5 $, ayda 100 $, 2 $'da

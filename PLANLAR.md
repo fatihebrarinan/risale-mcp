@@ -73,7 +73,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   konuşma geçmişi, sağda Kaynaklar, altta ayarlar), sonra 5 kişiyle bir hafta, sonra S13'ün kalanı. **S13.1'in kodu
   yayında** (2026-11-25, commit `6ce4a22`, `yayin-20261125-200319`, araç çıktısında fark yok; testler ve 42 denetimli
   arayüz denemesi geçti, gizlilik sayfaları güncel). Sırada: kullanıcı telefonda bakar, sonra 5 kişilik deneme
-  (başlarken `sohbet usage` kaydı). Sonra B11 ve öbürleri.
+  (başlarken `sohbet usage` kaydı); ondan önce **S13.2** (panel genişliği, sekmeli ayarlar: kodu bitti, yayın
+  bekliyor: `scripts/deploy.sh --code`). Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -149,6 +150,15 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     daha darda çekmece; 960'tan darda sol panel de çekmece), panel tercihi tarayıcıda, ayarlar `<dialog>`. `sohbet.js`
     tek dosya kaldı (bölmek önbellek sürümlemesini değiştirirdi; büyüyünce). Gizlilik sayfaları (tr, en) güncel.
     `olc --hizli` çalıştırılmadı: cevap yolu değişmedi (geçmiş aynı metin, yalnız yeri sunucu).
+  - S13.2 **Panel genişliği ve sekmeli ayarlar** (kullanıcının isteği, 2026-11-25; S13.1'i telefonda denedi, uygun
+    buldu): (1) sol ve sağ panelin genişliği aradaki çizgiyi sürükleyerek ayarlanır (geniş ekranda; tercih tarayıcıda,
+    klavyeyle de, çift tıklayınca eski genişlik); (2) ayarlar sekmelere ayrılır: Hesap, Konuşmalar, Görünüm (tema: sistem,
+    açık, koyu; cevapların yazı boyutu), Belgeler; ileride öbür eklentiler gelince "Eklentiler" sekmesi (açıp kapama).
+    **Kod bitti (2026-11-25), yayın bekliyor.** Sürükleme çizgileri yalnız panel yerinde ve açıkken (sol 200–440,
+    Kaynaklar 280–720 piksel; sohbet en az 420 piksel kalır); odaklanınca ok tuşları (Shift ile büyük adım), Home/End,
+    Enter ya da çift tıklama eski genişlik; Görünüm'de "Panel genişliklerini sıfırla" (telefonda gizli). Tema
+    `html[data-tema]`, yazı boyutu `html[data-boyut]` (dört boy; cevap, soru ve metin paneli). Sekmeler ok tuşlarıyla
+    gezilir, telefonda üstte. Arayüz denemesi 55 denetim, hepsi geçti.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

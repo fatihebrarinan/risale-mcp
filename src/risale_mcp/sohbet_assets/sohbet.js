@@ -4,11 +4,15 @@
 // ekranda çekmecedir. Konuşmalar hesapta saklanır (ayar açıksa; sunucu geçmişi kendisi okur). Ayar kapalıyken konuşma
 // S12'deki gibi yalnız bu tarayıcıda (localStorage) durur ve her soruda önceki sorular ve cevaplar yeniden gönderilir.
 // Açık konuşmanın kimliği adreste (#k/<kimlik>): sayfa yenilenince ve geri tuşunda aynı konuşma açılır.
+// S13.2: panellerin genişliği aradaki çizgiyi sürükleyerek (ya da odaklanıp ok tuşlarıyla) ayarlanır; ayarlar
+// sekmelidir (Hesap, Konuşmalar, Görünüm, Belgeler); görünüm (tema, cevapların yazı boyutu) ve genişlikler bu cihazda.
 "use strict";
 
 const P = document.body.dataset.prefix;
 const KEY = "sohbet:konusma";          // geçici konuşma (saklama kapalıyken)
 const PANELS = "sohbet:paneller";      // geniş ekranda panellerin açık/kapalı tercihi
+const WIDTHS = "sohbet:genislik";      // geniş ekranda panellerin genişliği
+const LOOK = "sohbet:gorunum";         // tema ve yazı boyutu
 const $ = (id) => document.getElementById(id);
 const els = { list: $("konusma"), empty: $("bos"), form: $("soru-formu"), input: $("soru"), send: $("gonder"),
   fresh: $("yeni"), side: $("yan"), sideList: $("yan-liste"), sideText: $("yan-metin"), sideTitle: $("yan-baslik"),
@@ -117,6 +121,89 @@ function markdown(text, refs) {
   return out.join("\n");
 }
 
+// ------------------------------------------------------------ görünüm (bu cihazda)
+
+function stored(key) {
+  try { return JSON.parse(localStorage.getItem(key)) || {}; } catch { return {}; }
+}
+function store(key, value) {
+  try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* yok */ }
+}
+
+const look = { tema: "", boyut: "", ...stored(LOOK) };
+function applyLook() {
+  const root = document.documentElement;
+  for (const k of ["tema", "boyut"]) {
+    if (look[k]) root.dataset[k] = look[k]; else delete root.dataset[k];
+  }
+}
+applyLook();
+
+// ------------------------------------------------------------ panel genişlikleri (S13.2)
+
+const SIZE = { left: { def: 272, min: 200, max: 440 }, right: { def: 380, min: 280, max: 720 } };
+const MIN_MIDDLE = 420;                 // sohbetin en dar hâli
+const widths = { left: SIZE.left.def, right: SIZE.right.def, ...stored(WIDTHS) };
+
+function clampWidth(which, w) {
+  const other = which === "left" ? "right" : "left";
+  const otherDocked = docked[other].matches && panels[other] ? widths[other] : 0;
+  const room = window.innerWidth - otherDocked - MIN_MIDDLE;
+  return Math.round(Math.max(SIZE[which].min, Math.min(SIZE[which].max, room, w)));
+}
+
+function applyWidths() {
+  const root = document.documentElement.style;
+  root.setProperty("--sol-w", `${widths.left}px`);
+  root.setProperty("--yan-w", `${widths.right}px`);
+  for (const [which, handle] of [["left", $("ayir-sol")], ["right", $("ayir-yan")]]) {
+    handle.setAttribute("aria-valuenow", widths[which]);
+    handle.setAttribute("aria-valuemin", SIZE[which].min);
+    handle.setAttribute("aria-valuemax", SIZE[which].max);
+  }
+}
+
+function setWidth(which, w, save = true) {
+  widths[which] = clampWidth(which, w);
+  applyWidths();
+  if (save) store(WIDTHS, { left: widths.left, right: widths.right });
+}
+
+function resizer(handle, which) {
+  // sol panel sağ kenarından, Kaynaklar sol kenarından büyür
+  const sign = which === "left" ? 1 : -1;
+  handle.addEventListener("pointerdown", (ev) => {
+    if (ev.button !== 0) return;
+    ev.preventDefault();
+    handle.setPointerCapture(ev.pointerId);
+    const startX = ev.clientX, startW = widths[which];
+    handle.classList.add("suruklenen");
+    document.body.classList.add("suruklenir");
+    const move = (e) => setWidth(which, startW + sign * (e.clientX - startX), false);
+    const up = () => {
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", up);
+      handle.removeEventListener("pointercancel", up);
+      handle.classList.remove("suruklenen");
+      document.body.classList.remove("suruklenir");
+      setWidth(which, widths[which]);
+    };
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", up);
+    handle.addEventListener("pointercancel", up);
+  });
+  handle.addEventListener("dblclick", () => setWidth(which, SIZE[which].def));
+  handle.addEventListener("keydown", (ev) => {
+    const step = ev.shiftKey ? 48 : 16;
+    const delta = { ArrowLeft: -step * sign, ArrowRight: step * sign }[ev.key];
+    if (delta) { ev.preventDefault(); setWidth(which, widths[which] + delta); }
+    else if (ev.key === "Home" || ev.key === "End") {
+      ev.preventDefault();
+      setWidth(which, ev.key === "Home" ? SIZE[which].min : SIZE[which].max);
+    } else if (ev.key === "Enter") { ev.preventDefault(); setWidth(which, SIZE[which].def); }
+  });
+}
+
 // ------------------------------------------------------------ paneller
 
 function el(tag, cls, html) {
@@ -144,6 +231,10 @@ function layout() {
   els.leftOpen.setAttribute("aria-expanded", String(isOpen("left")));
   els.open.setAttribute("aria-expanded", String(isOpen("right")));
   els.shade.hidden = !((!docked.left.matches && drawers.left) || (!docked.right.matches && drawers.right));
+  for (const which of ["left", "right"]) {          // pencere daraldıysa ya da öbür panel açıldıysa sığdır
+    if (docked[which].matches && panels[which]) widths[which] = clampWidth(which, widths[which]);
+  }
+  applyWidths();
 }
 
 function setPanel(which, open) {
@@ -474,10 +565,49 @@ function renderQuota() {
   els.quota.title = state.remaining > 0 ? "Bugün sorabileceğiniz soru sayısı" : "Yarın yeniden sorabilirsiniz";
 }
 
-// ------------------------------------------------------------ ayarlar
+// ------------------------------------------------------------ ayarlar (S13.2: sekmeli)
+
+const tabs = [...els.settings.querySelectorAll('[role="tab"]')];
+function selectTab(tab, focus = false) {
+  for (const t of tabs) {
+    const on = t === tab;
+    t.setAttribute("aria-selected", String(on));
+    t.tabIndex = on ? 0 : -1;
+    $(t.getAttribute("aria-controls")).hidden = !on;
+  }
+  if (focus) tab.focus();
+}
+for (const tab of tabs) {
+  tab.addEventListener("click", () => selectTab(tab));
+  tab.addEventListener("keydown", (ev) => {
+    const i = tabs.indexOf(tab);
+    const next = { ArrowDown: i + 1, ArrowRight: i + 1, ArrowUp: i - 1, ArrowLeft: i - 1, Home: 0, End: tabs.length - 1 }[ev.key];
+    if (next === undefined) return;
+    ev.preventDefault();
+    selectTab(tabs[(next + tabs.length) % tabs.length], true);
+  });
+}
+for (const name of ["tema", "boyut"]) {
+  for (const input of els.settings.querySelectorAll(`input[name="${name}"]`)) {
+    input.addEventListener("change", () => {
+      if (!input.checked) return;
+      look[name] = input.value;
+      store(LOOK, look);
+      applyLook();
+    });
+  }
+}
+$("genislik-sifirla").addEventListener("click", () => {
+  widths.left = SIZE.left.def; widths.right = SIZE.right.def;
+  try { localStorage.removeItem(WIDTHS); } catch { /* yok */ }
+  layout();
+});
 
 els.settingsOpen.addEventListener("click", () => {
   els.keep.checked = state.keep;
+  for (const name of ["tema", "boyut"]) {
+    for (const input of els.settings.querySelectorAll(`input[name="${name}"]`)) input.checked = input.value === look[name];
+  }
   els.wipeAsk.hidden = true; els.wipe.hidden = false; els.settingsError.hidden = true;
   els.settings.showModal();
 });
@@ -559,6 +689,12 @@ document.addEventListener("keydown", (ev) => {
   else if (!els.sideText.hidden) showList();
 });
 for (const mq of Object.values(docked)) mq.addEventListener("change", () => { drawers.left = drawers.right = false; layout(); });
+let resizeFrame = 0;
+window.addEventListener("resize", () => {
+  if (!resizeFrame) resizeFrame = requestAnimationFrame(() => { resizeFrame = 0; layout(); });
+});
+resizer($("ayir-sol"), "left");
+resizer($("ayir-yan"), "right");
 
 // ------------------------------------------------------------ metin penceresi
 

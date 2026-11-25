@@ -32,6 +32,8 @@
       </button>
     </div>
   </aside>
+  <div id="ayir-sol" class="ayirici" role="separator" aria-orientation="vertical" aria-controls="sol" tabindex="0"
+    aria-label="Konuşmalar panelinin genişliği" title="Sürükleyin; çift tıklayınca eski genişlik"></div>
 
   <div class="orta">
     <header class="top">
@@ -69,6 +71,9 @@
     </footer>
   </div>
 
+  <div id="ayir-yan" class="ayirici" role="separator" aria-orientation="vertical" aria-controls="yan" tabindex="0"
+    aria-label="Kaynaklar panelinin genişliği" title="Sürükleyin; çift tıklayınca eski genişlik"></div>
+
   <!-- sağda Kaynaklar (geniş ekranda açılıp kapanır, dar ekranda sağdan çekmece) -->
   <aside id="yan" class="yan" aria-label="Kaynaklar">
     <div class="yan-ust">
@@ -94,29 +99,68 @@
     <h2 id="ayarlar-baslik">Ayarlar</h2>
     <button type="button" id="ayarlar-kapat" class="ikon" aria-label="Kapat">✕</button>
   </div>
-  <section>
-    <h3>Hesap</h3>
-    <p class="eposta-tam">{{EMAIL}}</p>
-    <form method="post" action="{{P}}cikis"><button type="submit" class="ghost">Çıkış yap</button></form>
-  </section>
-  <section>
-    <h3>Konuşmalar</h3>
-    <label class="secenek"><input type="checkbox" id="sakla"> Konuşmalarımı hesabımda sakla</label>
-    <p class="small">Açıkken konuşmalarınız soldaki listede durur, başka bir cihazdan girdiğinizde de açılır. Onları yalnız
-      siz görürsünüz; proje ekibi okumaz. Kapalıyken yeni konuşmalar yalnız bu tarayıcıda durur ve listeye girmez.</p>
-    <p class="satir"><button type="button" id="hepsini-sil" class="ghost tehlike">Bütün konuşmalarımı sil</button>
-      <span id="hepsini-sil-onay" hidden>Emin misiniz? <button type="button" id="hepsini-sil-evet"
-        class="dolu-tehlike">Evet, hepsini sil</button> <button type="button" id="hepsini-sil-vazgec"
-        class="ghost">Vazgeç</button></span></p>
-    <p id="ayar-hata" class="hata" hidden></p>
-  </section>
-  <section>
-    <h3>Belgeler</h3>
-    <p><a href="{{P}}gizlilik">Gizlilik politikası</a> · <a href="{{P}}sartlar">Kullanım şartları</a></p>
-  </section>
-  <section>
-    <p><a href="{{P}}hesap" class="tehlike">Hesabımı sil</a></p>
-  </section>
+  <div class="dlg-govde">
+    <div class="sekmeler" role="tablist" aria-label="Ayar bölümleri" aria-orientation="vertical">
+      <button type="button" role="tab" id="sekme-hesap" aria-controls="ayar-hesap" aria-selected="true">Hesap</button>
+      <button type="button" role="tab" id="sekme-konusmalar" aria-controls="ayar-konusmalar" aria-selected="false"
+        tabindex="-1">Konuşmalar</button>
+      <button type="button" role="tab" id="sekme-gorunum" aria-controls="ayar-gorunum" aria-selected="false"
+        tabindex="-1">Görünüm</button>
+      <button type="button" role="tab" id="sekme-belgeler" aria-controls="ayar-belgeler" aria-selected="false"
+        tabindex="-1">Belgeler</button>
+    </div>
+
+    <section id="ayar-hesap" role="tabpanel" aria-labelledby="sekme-hesap" class="sekme-icerik">
+      <h3>E-posta</h3>
+      <p class="eposta-tam">{{EMAIL}}</p>
+      <form method="post" action="{{P}}cikis"><button type="submit" class="ghost">Çıkış yap</button></form>
+      <h3>Hesabı silmek</h3>
+      <p class="small">Hesabınız, oturumlarınız ve saklanan bütün konuşmalarınız kalıcı olarak silinir.</p>
+      <p><a href="{{P}}hesap" class="tehlike">Hesabımı sil</a></p>
+    </section>
+
+    <section id="ayar-konusmalar" role="tabpanel" aria-labelledby="sekme-konusmalar" class="sekme-icerik" hidden>
+      <label class="secenek"><input type="checkbox" id="sakla"> Konuşmalarımı hesabımda sakla</label>
+      <p class="small">Açıkken konuşmalarınız soldaki listede durur, başka bir cihazdan girdiğinizde de açılır. Onları
+        yalnız siz görürsünüz; proje ekibi okumaz. Kapalıyken yeni konuşmalar yalnız bu tarayıcıda durur ve listeye
+        girmez.</p>
+      <p class="satir"><button type="button" id="hepsini-sil" class="ghost tehlike">Bütün konuşmalarımı sil</button>
+        <span id="hepsini-sil-onay" hidden>Emin misiniz? <button type="button" id="hepsini-sil-evet"
+          class="dolu-tehlike">Evet, hepsini sil</button> <button type="button" id="hepsini-sil-vazgec"
+          class="ghost">Vazgeç</button></span></p>
+      <p id="ayar-hata" class="hata" hidden></p>
+    </section>
+
+    <section id="ayar-gorunum" role="tabpanel" aria-labelledby="sekme-gorunum" class="sekme-icerik" hidden>
+      <fieldset>
+        <legend>Tema</legend>
+        <div class="secimler" id="tema">
+          <label><input type="radio" name="tema" value=""> Sistem</label>
+          <label><input type="radio" name="tema" value="acik"> Açık</label>
+          <label><input type="radio" name="tema" value="koyu"> Koyu</label>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Cevapların yazı boyutu</legend>
+        <div class="secimler" id="boyut">
+          <label><input type="radio" name="boyut" value="kucuk"> Küçük</label>
+          <label><input type="radio" name="boyut" value=""> Orta</label>
+          <label><input type="radio" name="boyut" value="buyuk"> Büyük</label>
+          <label><input type="radio" name="boyut" value="cok-buyuk"> Çok büyük</label>
+        </div>
+      </fieldset>
+      <p class="small yalniz-genis">Paneller: aradaki çizgiyi sürükleyerek genişliklerini ayarlarsınız.
+        <button type="button" id="genislik-sifirla" class="ghost">Panel genişliklerini sıfırla</button></p>
+      <p class="small">Görünüm ayarları bu cihazda saklanır.</p>
+    </section>
+
+    <section id="ayar-belgeler" role="tabpanel" aria-labelledby="sekme-belgeler" class="sekme-icerik" hidden>
+      <ul class="belgeler">
+        <li><a href="{{P}}gizlilik">Gizlilik politikası</a></li>
+        <li><a href="{{P}}sartlar">Kullanım şartları</a></li>
+      </ul>
+    </section>
+  </div>
 </dialog>
 
 <script src="{{P}}static/sohbet.js?v={{V}}"></script>
