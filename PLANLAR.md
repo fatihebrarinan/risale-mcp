@@ -129,8 +129,12 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     (10 dk, 5 deneme) → kod ve parola → hesap açılır ya da parola yenilenir; sayfa hesabın varlığını söylemez.
     Sınırlar: adres başına 60 sn'de bir ve günde 5 kod, IP başına saatte 10 (yalnız bellekte), site günde 200. Hesabı
     kullanıcı kendisi siler. Ayarlar `SOHBET_*` (S12.8). Testler `tests/test_sohbet_hesap.py`; yerelde `--dev` ile
-    uçtan uca denendi (e-posta dosyaya). **Kalan:** Scaleway'in bağlanması ve ilk gerçek gönderim (API biçimi o zaman
-    doğrulanır), servis birimi `risale-sohbet` (:8010) ve Caddy `/sohbet/*`, deploy; S12.3'ün servisiyle birlikte. Doğrulama sınırsız hesabı zorlaştırır ama
+    uçtan uca denendi (e-posta dosyaya). **Scaleway bağlandı (2026-11-25):** kullanıcı hesabı açtı, ücretsiz kota
+    (ayda 300) yeter; DNS: kökteki SPF'e `include:_spf.tem.scaleway.com` eklendi, DKIM `<proje>._domainkey`, DMARC
+    `p=none`; MX'lere dokunulmadı (`destek@` Cloudflare yönlendirmesi). Alan adı `checked`, ilk gönderim
+    `destek@risalemcp.com`'a `250 Ok` (API biçimi `ScalewayMailer`'ınkiyle aynı). `.env`: `SCW_SECRET_KEY`,
+    `SCW_PROJECT_ID` (`SCW_ACCESS_ID` da duruyor, gerekmiyor). **Kalan:** servis birimi `risale-sohbet` (:8010),
+    Caddy `/sohbet/*`, deploy (`.env`'den yalnız `SCW_*` ve `ANTHROPIC_API_KEY` gider); S12.3'ün servisiyle birlikte. Doğrulama sınırsız hesabı zorlaştırır ama
     engellemez: asıl sınır kişi kotası ve bütçe tavanıdır (S12.4).
   - S12.3 **Sohbet servisi:** `risale-sohbet` (ana makine, 127.0.0.1:8010; Caddy `/sohbet/` sayfası ve `/sohbet/api/`,
     girişli). Araçlar **süreç içinde** `library.py`'den çağrılır, MCP üzerinden değil: hesapsızların ortak sınırını
