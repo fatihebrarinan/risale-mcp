@@ -57,6 +57,9 @@ class FakeChecker:
             out.append(record)
         return {"sources": out}
 
+    def _quote_sentences(self, quote, node, limit):     # başka yerde de bulunmaz
+        return []
+
 
 def test_check_numbers_and_problems():
     text = '> "doğru söz" [[x/c001]]\n\nBir daha [[x/c001]], başka [[y/c002]].\n\n> "yanlis söz" [[z/c003]]'
@@ -64,6 +67,9 @@ def test_check_numbers_and_problems():
     assert checked.markdown == '> "doğru söz" [1]\n\nBir daha [1], başka [2].\n\n> "yanlis söz" [3]'
     assert [s["n"] for s in checked.sources] == [1, 2, 3]
     assert [p["id"] for p in checked.problems] == ["z/c003"]
+    assert checked.sources[2]["unverified"] and "unverified" not in checked.sources[0]
+    assert checked.counts == {"fixed": 0, "unverified": 1, "dropped": 0, "leaks": 0, "paragraphs": 1, "unmarked": 0}
+    assert checked.raw == text
 
 
 def test_cost():
@@ -138,7 +144,7 @@ def test_loop_with_tool_and_correction(library):
         reply(text_block(f'Metinde:\n\n> "Teşkilce, sûretçe birbirinden ayrı, hiç yanılmaz." [[{C32}]]')),
         reply(text_block(f'Metinde:\n\n> "{TEXT_32}" [[{C32}]]\n\nKaynaklar\n[1] uydurma')),
     ])
-    chat = sohbet.Chat(library, client)
+    chat = sohbet.Chat(library, client, settings=sohbet.Settings(model_fix=True))     # yol (a), varsayılan kapalı
     events = run(chat, "Dokuzuncu Hakikat ne der?")
     kinds = [e for e, _ in events]
     assert kinds[-1] == "done" and "restart" in kinds and "clear" in kinds
@@ -163,9 +169,71 @@ def test_loop_with_tool_and_correction(library):
 @needs_db
 def test_problem_after_correction_is_flagged(library):
     wrong = f'> "hiç yanılmaz ve uydurma" [[{C32}]]'
-    chat = sohbet.Chat(library, FakeClient([reply(text_block(wrong)), reply(text_block(wrong))]))
+    chat = sohbet.Chat(library, FakeClient([reply(text_block(wrong)), reply(text_block(wrong))]),
+                       settings=sohbet.Settings(model_fix=True))
     done = run(chat, "soru")[-1][1]
-    assert done["problems"] == 1 and "problem" in done["sources"][0]
+    assert done["problems"] == 1 and "problem" in done["sources"][0] and done["corrected"]
+
+
+# ------------------------------------------------------------ S12.9: düzeltmeyi sunucu yapar
+
+C31 = "sozler/10/on-iki-hakikat/hakikat-09/c031"
+SINEK = "Bütün hayvanatı icâd etmek, bir sinek icâdı kadar kudretine kolay gelir bir Zât’tır."
+SINEK_A, SINEK_B = "sozler/10/parca-04/c025", "sozler/25/sule-02/nur-02/nukte-06/sir-07/c041"
+
+
+@pytest.fixture(scope="module")
+def checker(library):
+    from risale_mcp.citations import CitationChecker
+    return CitationChecker(library)
+
+
+@needs_db
+def test_server_moves_quote_to_its_sentence(checker):
+    checked = sohbet.check(checker, f'> "{TEXT_32}" [[{C31}]]')
+    assert checked.problems and checked.counts["fixed"] == 1 and checked.counts["unverified"] == 0
+    assert checked.sources[0]["id"] == C32 and "problem" not in checked.sources[0]
+    assert checked.raw == f'> "{TEXT_32}" [[{C32}]]' and checked.markdown == f'> "{TEXT_32}" [1]'
+
+
+@needs_db
+def test_server_prefers_read_section(checker):
+    other = "sozler/1/c001"
+    assert sohbet.check(checker, f'> "{SINEK}" [[{other}]]').sources[0]["id"] == SINEK_A    # okunan yok: kitap sırası
+    assert sohbet.check(checker, f'> "{SINEK}" [[{other}]]', {SINEK_B}).sources[0]["id"] == SINEK_B
+    # işaretin bölümündeki yer okunmuş yerden sonra gelir
+    assert sohbet.check(checker, f'> "{SINEK}" [[{SINEK_B[:-4]}c001]]').sources[0]["id"] == SINEK_B
+
+
+@needs_db
+def test_server_trims_and_drops_marks_without_quote(checker):
+    section = C32.rsplit("/", 1)[0]
+    checked = sohbet.check(checker, f"Uzun aralık [[{section}/c001..c020]]. Uydurma [[{section}/c999]] yer.")
+    assert checked.sources[0]["id"] == f"{section}/c001..c008" and "problem" not in checked.sources[0]
+    assert checked.counts["fixed"] == 1 and checked.counts["dropped"] == 1
+    assert checked.markdown == "Uzun aralık [1]. Uydurma yer."
+    assert "c999" not in checked.raw
+
+
+@needs_db
+def test_unverified_quote_gets_its_own_number(checker):
+    text = f'> "{TEXT_32}" [[{C32}]]\n\n> "Bu söz eserlerde hiç geçmez, uydurmadır efendim." [[{C32}]]'
+    checked = sohbet.check(checker, text)
+    assert checked.markdown.endswith("[1]\n\n> \"Bu söz eserlerde hiç geçmez, uydurmadır efendim.\" [2]")
+    assert [s["id"] for s in checked.sources] == [C32, C32]
+    assert "problem" not in checked.sources[0] and checked.sources[1]["unverified"]
+    assert checked.counts["unverified"] == 1 and checked.counts["fixed"] == 0
+
+
+def test_read_ids_only_from_reading_tools():
+    calls = [("read_section", {}, '{"id":"a/b/c001","x":[{"id":"a/b/c002/h1/c001"}]}', False),
+             ("search", {}, '{"id":"z/c001"}', False), ("get_passage", {}, '{"id":"y/c001"}', True)]
+    assert sohbet.read_ids(calls) == {"a/b/c001", "a/b/c002/h1/c001"}
+
+
+def test_paragraph_counts():
+    text = "## Başlık\n\nGiriş paragrafı.\n\n> alıntı [[a/c001]]\n\nYorum [[a/c001]] burada.\n\nSon söz.\n\n---"
+    assert sohbet._paragraphs(text) == {"paragraphs": 3, "unmarked": 2}
 
 
 @needs_db
@@ -211,6 +279,7 @@ def test_web_routes(library, tmp_path):
     assert "event: done" in r.text and '"[1]' not in r.text
     row = store._run("SELECT * FROM usage")[0]
     assert row["email"] == "a@b.co" and row["outcome"] == "done" and row["sources"] == 1
+    assert row["fixed"] == 0 and row["unmarked"] == 0 and row["paragraphs"] == 0
     passage = web.get("/sohbet/api/metin", params={"id": C32}).json()
     assert any(s["target"] for s in passage["sentences"])
     store.remove_user("a@b.co")

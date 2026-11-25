@@ -35,7 +35,7 @@ function inline(s, refs) {
       const src = refs.get(Number(n));
       if (!src) return m;
       const bad = src.problem ? " kotu" : "";
-      return `<button type="button" class="ref${bad}" data-n="${n}" title="${esc(src.cite_as || src.id)}">[${n}]</button>`;
+      return `<button type="button" class="ref${bad}" data-n="${n}" title="${esc(src.cite_as || "Adresi bulunamadı")}">[${n}]</button>`;
     });
   }
   return t;
@@ -111,7 +111,7 @@ function renderSources(box, sources) {
     const b = el("button", "kaynak" + (s.problem ? " kotu" : ""));
     b.type = "button";
     b.dataset.n = s.n;
-    b.innerHTML = `<span class="no">[${s.n}]</span><span class="yol-metin">${esc(s.cite_as || s.id)}</span>`;
+    b.innerHTML = `<span class="no">[${s.n}]</span><span class="yol-metin">${esc(s.cite_as || "Adresi bulunamadı")}</span>`;
     li.append(b);
     for (const e of s.embedded || []) li.append(el("div", "gomulu", "– " + esc(e.line)));
     if (s.problem) li.append(el("div", "uyari", "⚠ Bu alıntı eserlerin metniyle doğrulanamadı."));
@@ -162,15 +162,16 @@ els.list.addEventListener("click", (ev) => {
 // ------------------------------------------------------------ metin penceresi
 
 async function openText(src) {
-  els.dpath.textContent = src.cite_as || src.id;
+  els.dpath.textContent = src.cite_as || "Adresi bulunamadı";
   els.dbody.innerHTML = '<p class="small">Yükleniyor…</p>';
   if (!els.dialog.open) els.dialog.showModal();
   try {
     const r = await fetch(`${P}api/metin?id=${encodeURIComponent(src.id)}`, { credentials: "same-origin" });
     if (!r.ok) throw new Error((await r.json()).error || "Metin açılamadı.");
     const data = await r.json();
-    els.dpath.textContent = data.section_ref || src.cite_as || src.id;
+    els.dpath.textContent = data.section_ref || src.cite_as || "Adresi bulunamadı";
     const parts = [];
+    if (src.unverified) parts.push('<p class="uyari">⚠ Alıntının sözleri bu cümlelerde ve eserlerin başka bir yerinde bulunamadı; cevabın gösterdiği yer bu.</p>');
     for (const s of data.sentences || []) {
       const body = esc(s.text);
       parts.push(`<p class="cumle" dir="auto">${s.target ? `<mark>${body}</mark>` : body}</p>`);

@@ -12,9 +12,11 @@ Kullanıcının kararları (2026-11-25, `PLANLAR.md` S12): yalnız Risale, model
   (talimat değişti: buradaki değişiklik gözden geçirilmeli).
 - **Atıf koddadır** (S12.5 (a)): model alıntının ve dayandığı her sözün ardına yalnız cümle kimliğini yazar
   (`[[sozler/10/…/c032]]`, aralık `[[…/c010..c013]]`). Sunucu cevabı bitince işaretleri toplar, alıntıyı
-  `CitationChecker.sources` ile veritabanında denetler, numaraları ve Kaynaklar listesini kendisi yazar. Tutmayan
-  alıntı modele bir kez düzeltmeye gider (cevap baştan yazılır); yine tutmazsa kullanıcıya işaretli görünür ve kullanım
-  satırına yazılır.
+  `CitationChecker.sources` ile veritabanında denetler, numaraları ve Kaynaklar listesini kendisi yazar. **Düzeltmeyi
+  sunucu yapar** (S12.9, `check`): eserlerde başka yerde bulunan alıntının işareti oraya taşınır (modelin okuduğu yer
+  önce), alıntısız işaretin aralığı kısalır ya da kimliği yoksa silinir, düz metne yazılmış kimlik silinir; eserlerde
+  hiç bulunmayan alıntı "doğrulanamadı" işaretiyle görünür. Modele düzeltme turu (yol (a)) varsayılan kapalıdır
+  (`SOHBET_MODEL_FIX`). Kaç işaretin düzeltildiği, doğrulanamadığı ve işaretsiz paragraf sayısı kullanım satırındadır.
 - **Akış:** cevap Server-Sent Events ile gelir (`status`: araç satırı, `delta`: metin, `clear`: araçtan önceki ara
   metin silinir, `restart`: düzeltme başladı, `done`: denetlenmiş cevap ve kaynaklar, `error`).
 - **Saklanmayan:** konuşmalar sunucuda tutulmaz (tarayıcıda durur, her soruda önceki sorular ve cevaplar düz metin
@@ -39,6 +41,7 @@ from pathlib import Path
 from typing import AsyncIterator
 
 from risale_mcp import sohbet_hesap
+from risale_mcp.library import MAX_CITED as MAX_RANGE   # bir işaretin en çok cümlesi
 from risale_mcp.sohbet_hesap import COOKIE, Config, Store
 
 ASSETS = Path(__file__).parent / "sohbet_assets"
@@ -67,6 +70,7 @@ INLINE_QUOTE = re.compile(r"[\"“]([^\"“”]{8,})[\"”]\s*$")
 _ID = r"(?:[a-z0-9][a-z0-9-]*/)*c\d{3}(?:/[hs]\d+/c\d{3})?"
 BARE_ID = re.compile(rf"[ \t]*\(\s*{_ID}(?:\s*(?:\.\.|[–—-])\s*{_ID})?\s*\)|(?<![\w/])[a-z][a-z0-9-]*(?:/[a-z0-9-]+)+/c\d{{3}}\b")
 MARK = re.compile(r"\[\[\s*([^\[\]\s]+?)\s*\]\]")
+RELOCATE_CANDIDATES = 30      # başka yerde aranan alıntının bakılan en çok geçişi
 SOURCES_HEADING = re.compile(r"^\s*(?:#{1,6}\s*)?(?:\*\*)?(?:Kaynaklar|Kaynakça|Sources)(?:\*\*)?\s*:?\s*(?:\*\*)?\s*$",
                              re.M | re.I)
 
@@ -128,8 +132,10 @@ def instructions(server_instructions: str, name: str) -> str:
 @dataclass
 class Checked:
     markdown: str                      # işaretler [n] olmuş, modelin kendi Kaynaklar'ı atılmış
-    sources: list[dict]                # n, id, cite_as, embedded, problem
-    problems: list[dict] = field(default_factory=list)
+    sources: list[dict]                # n, id, cite_as, embedded; doğrulanamayanda problem, unverified
+    problems: list[dict] = field(default_factory=list)   # denetimden ilk geçişte düşen her işaret ve düz kimlik
+    raw: str = ""                      # modelin cevabı, işaretler düzeltilmiş (sonraki soruda geçmiş olarak gider)
+    counts: dict = field(default_factory=dict)          # fixed, unverified, dropped, leaks, paragraphs, unmarked
 
 
 def strip_own_sources(text: str) -> str:
@@ -181,46 +187,157 @@ def _quote_text(text: str) -> str | None:
     return text.strip('"“”«» \n') or None
 
 
-def check(checker, text: str) -> Checked:
-    """İşaretleri numaralar, alıntıları denetler. Aynı kimlik aynı numarayı alır; birden çok alıntısı "…" ile
-    birleşip birlikte denetlenir."""
+def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> Checked:
+    """İşaretleri denetler, düzeltir ve numaralar (S12.9: düzeltmeyi sunucu yapar). Her işaret ayrı denetlenir:
+
+    - tutan işaret kalır;
+    - alıntısı işaretin cümlelerinde olmayan, ama eserlerde bulunan işaret alıntının bulunduğu cümleye (ya da kapsayan
+      en kısa aralığa) taşınır; birden çok yerde geçiyorsa modelin okuduğu (`read`: okuma araçlarının döndürdüğü
+      cümle kimlikleri), sonra işaretin bölümündeki, sonra eserindeki yer seçilir;
+    - alıntısız işaretin aralığı uzunsa ya da bölümü aşıyorsa geçerli kısmına kısalır; kimliği yoksa işaret silinir;
+    - eserlerde hiç bulunmayan alıntı ayrı numara alır, kaynağı "doğrulanamadı" işaretiyle (`unverified`) görünür;
+    - düz metne yazılmış kimlik ("(c033)") silinir.
+
+    Aynı kimlik aynı numarayı alır; birden çok alıntısı "…" ile birleşip birlikte denetlenir."""
     text = strip_own_sources(text)
-    leaks = [m.group().strip() for m in BARE_ID.finditer(MARK.sub(" ", text))]
+    leaks = list(dict.fromkeys(m.group().strip() for m in BARE_ID.finditer(MARK.sub(" ", text))))
+    problems = [{"id": leak, "problem": "An id or sentence number written in the prose: the reader must not see ids. "
+                 "Put an id only inside [[ ]] right after the words it supports, or drop it."} for leak in leaks]
+    counts = {"fixed": 0, "unverified": 0, "dropped": 0, "leaks": len(leaks)}
     found = marks(text)
-    order: dict[str, int] = {}
-    quotes: dict[str, list[str]] = {}
-    for ident, quote, _ in found:
-        order.setdefault(ident, len(order) + 1)
+    resolved = []                      # (yeni kimlik ya da None: silinir, alıntı, doğrulandı mı, yer)
+    for ident, quote, span in found:
+        record = checker.sources([{"id": ident, **({"quote": quote} if quote else {})}])["sources"][0]
+        if not record.get("problem"):
+            resolved.append((ident, quote, True, span))
+            continue
+        problems.append({"id": ident, "quote": quote, "problem": record["problem"]})
+        fixed = _relocate(checker, ident, quote, read) if quote else _trim(checker, ident)
+        if fixed:
+            counts["fixed"] += 1
+            resolved.append((fixed, quote, True, span))
+        elif quote:
+            counts["unverified"] += 1
+            resolved.append((ident, quote, False, span))
+        else:
+            counts["dropped"] += 1
+            resolved.append((None, None, True, span))
+    # numaralar: doğrulanan işaretler kimliğe göre birleşir, doğrulanamayan her alıntı ayrı numara alır
+    keys: dict[tuple, int] = {}
+    quotes: dict[tuple, list[str]] = {}
+    for i, (ident, quote, ok, _) in enumerate(resolved):
+        if ident is None:
+            continue
+        key = (ident,) if ok else (ident, i)
+        keys.setdefault(key, len(keys) + 1)
         if quote:
-            quotes.setdefault(ident, []).append(quote)
-    leak_problems = [{"id": leak, "problem": "An id or sentence number written in the prose: the reader must not "
-                      "see ids. Put an id only inside [[ ]] right after the words it supports, or drop it."}
-                     for leak in dict.fromkeys(leaks)]
-    if not order:
-        return Checked(_drop_leaks(text), [], leak_problems)
-    items = [{"id": ident, **({"quote": " … ".join(quotes[ident])} if ident in quotes else {})} for ident in order]
-    result = checker.sources(items)
-    sources, problems = [], []
-    for item, record in zip(items, result["sources"]):
-        source = {"n": record["n"], "id": item["id"], "cite_as": record.get("cite_as")}
-        if record.get("embedded"):
-            source["embedded"] = record["embedded"]
-        if record.get("problem"):
-            source["problem"] = record["problem"]
-            problems.append({"id": item["id"], "quote": item.get("quote"), "problem": record["problem"]})
-        sources.append(source)
-    out, last = [], 0
-    for ident, _, (start, end) in found:
-        out.append(text[last:start])
-        out.append(f"[{order[ident]}]")
+            quotes.setdefault(key, []).append(quote)
+    sources = []
+    if keys:
+        items = [{"id": key[0], **({"quote": " … ".join(quotes[key])} if key in quotes else {})} for key in keys]
+        for key, item, record in zip(keys, items, checker.sources(items)["sources"]):
+            source = {"n": keys[key], "id": item["id"], "cite_as": record.get("cite_as")}
+            if record.get("embedded"):
+                source["embedded"] = record["embedded"]
+            if len(key) > 1 or record.get("problem"):
+                source["problem"] = record.get("problem") or "The quoted words are not in the works."
+                source["unverified"] = True
+            sources.append(source)
+    raw_out, out, last = [], [], 0          # düz kimlikler işaretlerin arasındaki metinden silinir
+    for i, (ident, _, ok, (start, end)) in enumerate(resolved):
+        raw_out.append(_drop_leaks(text[last:start]))
+        out.append(raw_out[-1])
+        if ident is not None:
+            raw_out.append(f"[[{ident}]]")
+            out.append(f"[{keys[(ident,) if ok else (ident, i)]}]")
         last = end
-    out.append(text[last:])
-    markdown = re.sub(r"[ \t]+(\[\d+\])", r" \1", _drop_leaks("".join(out)))
-    return Checked(markdown, sources, problems + leak_problems)
+    raw_out.append(_drop_leaks(text[last:]))
+    out.append(raw_out[-1])
+    raw = _tidy("".join(raw_out))
+    counts.update(_paragraphs(raw))
+    markdown = re.sub(r"[ \t]+(\[\d+\])", r" \1", _tidy("".join(out)))
+    return Checked(markdown, sources, problems, raw, counts)
+
+
+def _tidy(text: str) -> str:
+    """Silinen işaretin bıraktığı boşluk."""
+    return re.sub(r"(?<=\S)[ \t]+([.,;:!?])", r"\1", re.sub(r"(?<=\S)[ \t]{2,}(?=\S)", " ", text))
+
+
+def _paragraphs(text: str) -> dict:
+    """Düz cümledeki iddianın sıklığı için (S12.9): düz yazı paragrafları ve içinde hiç işaret olmayanlar.
+    Başlık, alıntı bloğu ve ayraç sayılmaz; giriş ve yorum paragrafları da sayılır, sayı kabadır."""
+    blocks = [b.strip() for b in re.split(r"\n\s*\n", text) if b.strip()]
+    prose = [b for b in blocks if not b.startswith(("#", ">")) and not re.fullmatch(r"[-*_\s]{3,}", b)]
+    return {"paragraphs": len(prose), "unmarked": sum(not MARK.search(b) for b in prose)}
+
+
+def _scope(checker, row) -> list:
+    """Cümlenin aralık kurabileceği cümleler (bölümün ana metni ya da aynı hâşiye), ondan başlayarak."""
+    where = ("paragraph_id = ?", row["paragraph_id"]) if row["hasiye"] else ("node_id = ? AND hasiye = 0", row["node_id"])
+    return checker.refresh().execute(f"SELECT id FROM sentences WHERE {where[0]} AND seq >= ? ORDER BY seq LIMIT ?",
+                                     (where[1], row["seq"], MAX_RANGE)).fetchall()
+
+
+def _range_id(first: str, last: str) -> str:
+    if first == last:
+        return first
+    prefix, _, local = last.rpartition("/")
+    return f"{first}..{local}" if prefix == first.rpartition("/")[0] else f"{first}..{last}"
+
+
+def _passes(checker, ident: str, quote: str | None) -> bool:
+    return not checker.sources([{"id": ident, **({"quote": quote} if quote else {})}])["sources"][0].get("problem")
+
+
+def _relocate(checker, ident: str, quote: str, read) -> str | None:
+    """Alıntının eserlerde bulunduğu en kısa aralık; yoksa None."""
+    from risale_mcp.citations import _block_parts
+    parts = [p for p in re.split(r"…|\.\.\.", quote) if _block_parts(p)]
+    if not parts:
+        return None
+    rows = [row for _, row in checker._quote_sentences(parts[0], None, RELOCATE_CANDIDATES)]
+    first_id = ident.split("..")[0].strip()
+    node = first_id.rpartition("/")[0]
+    work = first_id.split("/")[0]
+
+    def rank(row):
+        return (row["id"] not in read, row["node_id"] != node, row["work"] != work)
+    for row in sorted(rows, key=rank):          # sıralama kararlıdır: eşitlikte kitap sırası
+        for last in _scope(checker, row):
+            candidate = _range_id(row["id"], last["id"])
+            if _passes(checker, candidate, quote):
+                return candidate
+    return None
+
+
+def _trim(checker, ident: str) -> str | None:
+    """Alıntısız işaret: aralığın geçerli kısmı (ters aralık düzelir, uzun aralık 8 cümleye, bölümü aşan aralık bölümün
+    sonuna kısalır); kimlik yoksa None."""
+    first_id, _, last_id = ident.partition("..")
+    try:
+        first = checker.library._sentence(first_id.strip())
+    except Exception:
+        return None
+    if last_id:
+        from risale_mcp.citations import _full_id
+        try:
+            last = checker.library._sentence(_full_id(first["id"], last_id.strip()))
+            if last["seq"] < first["seq"]:
+                first, last = last, first
+        except Exception:
+            last = None
+        ids = [r["id"] for r in _scope(checker, first)]
+        if last is not None and last["id"] in ids:
+            ids = ids[:ids.index(last["id"]) + 1]
+        candidate = _range_id(ids[0], ids[-1])
+    else:
+        candidate = first["id"]
+    return candidate if _passes(checker, candidate, None) else None
 
 
 def _drop_leaks(text: str) -> str:
-    """Düzeltmeden sonra da kalan düz kimlikler okuyucuya gösterilmez."""
+    """Düz kimlikler okuyucuya gösterilmez."""
     return re.sub(r"[ \t]+([.,;:])", r"\1", BARE_ID.sub("", text))
 
 
@@ -259,6 +376,7 @@ class Tally:
     cache_read: int = 0
     cost: float = 0.0
     calls: list = field(default_factory=list)      # (araç, girdi, sonuç, hata mı): ölçüm dökümü için (`olc`)
+    model_text: str = ""                           # modelin son cevabı, sunucu düzeltmeden önce (`olc`)
 
     def add(self, model: str, usage) -> None:
         self.rounds += 1
@@ -330,10 +448,14 @@ class Refusal(Exception):
 class Settings:
     model: str = MODEL
     effort: str = EFFORT
+    # S12.9: tutmayan alıntıyı sunucu düzeltir; model turu (yol (a)) kapalı. Gerekip gerekmediği deneme ayının
+    # sayılarıyla anlaşılır (`SOHBET_MODEL_FIX=1`: önce modele bir kez döner, kalanı sunucu düzeltir).
+    model_fix: bool = False
 
     @classmethod
     def from_env(cls) -> "Settings":
-        return cls(model=os.environ.get("SOHBET_MODEL", MODEL), effort=os.environ.get("SOHBET_EFFORT", EFFORT))
+        return cls(model=os.environ.get("SOHBET_MODEL", MODEL), effort=os.environ.get("SOHBET_EFFORT", EFFORT),
+                   model_fix=os.environ.get("SOHBET_MODEL_FIX", "") not in ("", "0"))
 
 
 class Chat:
@@ -411,14 +533,15 @@ class Chat:
                     yield event
             if text is None:
                 return
-            checked = await asyncio.to_thread(check, self.checker, text)
-            if checked.problems and not corrected and tally.rounds < MAX_ROUNDS:
+            tally.model_text = text
+            checked = await asyncio.to_thread(check, self.checker, text, read_ids(tally.calls))
+            if (self.settings.model_fix and checked.problems and not corrected and tally.rounds < MAX_ROUNDS):
                 corrected = True
                 messages.append({"role": "user", "content": correction(checked.problems)})
                 yield "restart", {"text": "Alıntılar eserlerle denetleniyor; düzeltiliyor…"}
                 continue
-            yield "done", {"markdown": checked.markdown, "raw": strip_own_sources(text), "sources": checked.sources,
-                           "problems": len(checked.problems), "corrected": corrected,
+            yield "done", {"markdown": checked.markdown, "raw": checked.raw, "sources": checked.sources,
+                           "problems": checked.counts["unverified"], "corrected": corrected, "checks": checked.counts,
                            "usage": {"cost": round(tally.cost, 5), "tools": tally.tools, "rounds": tally.rounds}}
             return
 
@@ -472,15 +595,28 @@ class Chat:
             messages.append({"role": "user", "content": results})
 
 
+READING_TOOLS = {"read_section", "get_passage", "find_sentence"}
+_RESULT_ID = re.compile(r'"id"\s*:\s*"([^"]+/c\d{3}(?:/[hs]\d+/c\d{3})?)"')
+
+
+def read_ids(calls: list) -> set[str]:
+    """Modelin okuduğu cümleler: okuma araçlarının sonucundaki cümle kimlikleri (arama sonuçları okuma sayılmaz)."""
+    return {m for name, _, result, error in calls if name in READING_TOOLS and not error
+            for m in _RESULT_ID.findall(result or "")}
+
+
 # ---------------------------------------------------------------- kullanım satırı
 
 def log_usage(store: Store, email: str | None, model: str, tally: Tally, seconds: float, outcome: str,
               done: dict | None = None) -> None:
-    store._run("INSERT INTO usage VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-               (time.time(), email, model, tally.rounds, tally.tools, tally.input, tally.output, tally.cache_write,
-                tally.cache_read, round(tally.cost, 6), round(seconds, 2),
-                len(done["sources"]) if done else None, done["problems"] if done else None,
-                int(done["corrected"]) if done else None, outcome))
+    checks = (done or {}).get("checks", {})
+    row = {"ts": time.time(), "email": email, "model": model, "rounds": tally.rounds, "tools": tally.tools,
+           "input": tally.input, "output": tally.output, "cache_write": tally.cache_write,
+           "cache_read": tally.cache_read, "cost": round(tally.cost, 6), "seconds": round(seconds, 2),
+           "sources": len(done["sources"]) if done else None, "problems": done["problems"] if done else None,
+           "corrected": int(done["corrected"]) if done else None, "outcome": outcome,
+           **{k: checks.get(k) if done else None for k in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")}}
+    store._run(f"INSERT INTO usage ({', '.join(row)}) VALUES ({', '.join('?' * len(row))})", tuple(row.values()))
 
 
 # ---------------------------------------------------------------- web
@@ -611,7 +747,7 @@ def answer_text(done: dict) -> str:
     """Okuyucunun gördüğü cevap düz metin olarak: cevap ve Kaynaklar (altın soru denetimi bunu okur)."""
     lines = [done["markdown"].rstrip(), "", "Kaynaklar"]
     for s in done["sources"]:
-        lines.append(f"[{s['n']}] {s.get('cite_as') or s['id']}")
+        lines.append(f"[{s['n']}] {s.get('cite_as') or 'Adresi bulunamadı'}" + (" ⚠ doğrulanamadı" if s.get("unverified") else ""))
         lines += [f"  - {e['line']}" for e in s.get("embedded", ())]
     return "\n".join(lines) if done["sources"] else done["markdown"]
 
@@ -651,12 +787,16 @@ async def measure(chat: Chat, ids: list[str]) -> Path:
                       "total_cost_usd": tally.cost, "num_turns": tally.rounds,
                       "duration_ms": int((time.time() - start) * 1000), "usage": {"output_tokens": tally.output},
                       "sohbet": {"corrected": bool(done and done["corrected"]), "problems": done and done["problems"],
+                                 "checks": done and done["checks"], "model_text": tally.model_text,
                                  "failure": failure, "input": tally.input, "cache_write": tally.cache_write,
                                  "cache_read": tally.cache_read}})
         (out / f"{q['id']}.jsonl").write_text("\n".join(json.dumps(x, ensure_ascii=False) for x in lines) + "\n",
                                               encoding="utf-8")
         print(f"  {q['id']}: {time.time() - start:.0f} sn, {tally.tools} araç, {tally.cost:.4f} $"
-              + (" düzeltildi" if done and done["corrected"] else "") + (f" HATA {failure}" if failure else ""),
+              + (" model düzeltti" if done and done["corrected"] else "")
+              + (f" sunucu {done['checks']['fixed']} düzeltti" if done and done["checks"]["fixed"] else "")
+              + (f" {done['problems']} doğrulanamadı" if done and done["problems"] else "")
+              + (f" HATA {failure}" if failure else ""),
               flush=True)
     golden.report(out)
     return out
@@ -700,6 +840,7 @@ def main(argv: list[str] | None = None) -> None:
                 elif event == "error":
                     print("HATA:", data["message"])
                 elif event == "done":
+                    print(f"  denetim: {data['checks']}")
                     print("\n" + data["markdown"] + "\n\nKaynaklar")
                     for s in data["sources"]:
                         print(f"[{s['n']}] {s.get('cite_as') or s['id']}" + (f"  ⚠ {s['problem']}" if s.get("problem") else ""))
@@ -714,12 +855,16 @@ def main(argv: list[str] | None = None) -> None:
         store = Store()
         since = time.time() - args.days * 86400
         rows = store._run("SELECT outcome, COUNT(*) n, SUM(cost) c, AVG(cost) a, AVG(tools) t, AVG(seconds) s, "
-                          "SUM(problems > 0) bad, SUM(corrected) fix FROM usage WHERE ts >= ? GROUP BY outcome", (since,))
+                          "SUM(problems > 0) bad, SUM(corrected) fix, SUM(fixed) srv, SUM(dropped) drop_, "
+                          "SUM(leaks) leak, SUM(paragraphs) par, SUM(unmarked) unm "
+                          "FROM usage WHERE ts >= ? GROUP BY outcome", (since,))
         users = store._run("SELECT COUNT(DISTINCT email) FROM usage WHERE ts >= ?", (since,))[0][0]
         print(f"son {args.days:g} gün, {users} kullanıcı")
         for r in rows:
             print(f"{r['outcome']:10} {r['n']:5} soru  toplam {r['c'] or 0:.3f} $  soru başı {r['a'] or 0:.4f} $  "
-                  f"araç {r['t'] or 0:.1f}  {r['s'] or 0:.1f} sn  düzeltilen {r['fix'] or 0}  denetimden düşen {r['bad'] or 0}")
+                  f"araç {r['t'] or 0:.1f}  {r['s'] or 0:.1f} sn  doğrulanamayanlı cevap {r['bad'] or 0}  "
+                  f"sunucunun düzelttiği işaret {r['srv'] or 0}, sildiği {r['drop_'] or 0}, düz kimlik {r['leak'] or 0}  "
+                  f"işaretsiz paragraf {r['unm'] or 0}/{r['par'] or 0}  model turu {r['fix'] or 0}")
 
 
 if __name__ == "__main__":

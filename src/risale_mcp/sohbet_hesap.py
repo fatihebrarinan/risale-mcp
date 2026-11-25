@@ -122,10 +122,17 @@ CREATE TABLE IF NOT EXISTS usage (      -- S12.3: soru başına bir satır (`soh
     sources     INTEGER,                -- cevaptaki kaynak sayısı
     problems    INTEGER,                -- düzeltmeden sonra da denetimden geçmeyen
     corrected   INTEGER,                -- düzeltmeye gitti mi
-    outcome     TEXT NOT NULL           -- done | error | cancelled
+    outcome     TEXT NOT NULL,          -- done | error | cancelled
+    fixed       INTEGER,                -- S12.9: sunucunun yerini düzelttiği işaret
+    dropped     INTEGER,                -- kimliği olmadığı için silinen alıntısız işaret
+    leaks       INTEGER,                -- düz metne yazılmış, silinen kimlik
+    paragraphs  INTEGER,                -- cevabın düz yazı paragrafları
+    unmarked    INTEGER                 -- içinde hiç işaret olmayanlar (düz cümledeki iddianın sıklığı için)
 );
 CREATE INDEX IF NOT EXISTS usage_ts ON usage(ts);
 """
+# Sonradan eklenen sütunlar: eski veritabanına eklenir (CREATE TABLE IF NOT EXISTS var olan tabloyu değiştirmez).
+ADDED_COLUMNS = {"usage": ("fixed", "dropped", "leaks", "paragraphs", "unmarked")}
 
 
 def norm_email(email: str) -> str:
@@ -150,6 +157,11 @@ class Store:
         path.parent.mkdir(parents=True, exist_ok=True)
         with self._conn() as c:
             c.executescript(SCHEMA)
+            for table, columns in ADDED_COLUMNS.items():
+                have = {r["name"] for r in c.execute(f"PRAGMA table_info({table})")}
+                for column in columns:
+                    if column not in have:
+                        c.execute(f"ALTER TABLE {table} ADD COLUMN {column} INTEGER")
         path.chmod(0o600)
 
     def _conn(self) -> sqlite3.Connection:

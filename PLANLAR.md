@@ -68,14 +68,13 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **Son adım (2026-11-25):** S12 sohbet sayfası sürüyor ("Sıradaki" 1). Bitti: S12.0 (API anahtarı), S12.1 (model
   Haiku 5.5), S12.2'nin yerel kısmı (hesaplar, Scaleway), **S12.3 yerel sürüm** (`sohbet.py`; araçlar süreç içinde,
   atıf koddadır; teyit ölçümü: 29 soru, beklenen bölüm 28/34, 21 sn, soru başı 0,0047 $). Kritik yapıldı, kararlar
-  alındı (S12.3 altında "Kararlar"). **Önde S12'nin ilk sürüm adımları, bu sırayla:** S12.9 sunucunun düzeltmesi,
-  S12.10 sohbete ayrı talimat, S12.11 sol "Kaynaklar" penceresi, kaynak adı ve telefon görünümü, S12.12 geri
-  bildirim, S12.13 hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.4 kota, bütçe ve harcama uyarısı,
+  alındı (S12.3 altında "Kararlar"). **S12.9 bitti (2026-11-25):** tutmayan alıntıyı sunucu düzeltir, model turu
+  kapalı (ayrıntı S12.9'da). **Önde S12'nin ilk sürüm adımları, bu sırayla:** S12.10 sohbete ayrı talimat,
+  S12.11 sol "Kaynaklar" penceresi, kaynak adı ve telefon görünümü, S12.12 geri bildirim, S12.13 hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.4 kota, bütçe ve harcama uyarısı,
   S12.6 gizlilik ve şartlar, deploy (S12.2 ile; Caddy akışı tamponlamaz, `uv sync --extra sohbet`), S12.7 deneme
   ayı (davetsiz; adres bilinmiyor). Deneme ayından sonra S13 (asıl geliştirme). B11 (MCP kaynakçasında kaynak adı)
-  sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak). **Devir (2026-11-25):**
-  kullanıcı S12.9'a yeni oturumda başlayacak. Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve
-  --dev` → `http://127.0.0.1:8010/sohbet/` (kod `data/interim/sohbet/eposta.log`'a düşer; yerelde deneme hesabı
+  sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
+  Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/` (kod `data/interim/sohbet/eposta.log`'a düşer; yerelde deneme hesabı
   `deneme@example.com` var). Tek soru `… sohbet sor "<soru>"`, ölçüm `… sohbet olc [soru…]` (hızlı set S12.13'te
   koda girecek). Telefon uygulaması "Sonra"da (S13'ten sonra, koşullu).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
@@ -184,12 +183,25 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     silinir; eserlerde hiç bulunmayan alıntı modele sorulmadan "doğrulanamadı" işaretiyle gösterilir (yol (b)). Model
     turunun (yol (a)) gerekip gerekmediği zamanla, deneme ayının sayılarıyla anlaşılır. Kullanım satırına: sunucunun
     düzelttiği, doğrulanamayan alıntı ve işaretsiz paragraf sayısı (düz cümledeki iddianın sıklığı için).
+    **Bitti (2026-11-25):** `sohbet.check` her işareti ayrı denetler: başka yerde bulunan alıntı oraya (kapsayan en kısa
+    aralığa) taşınır, sıra okuma araçlarının döndürdüğü cümle (`read_ids`), sonra işaretin bölümü, sonra eseri, sonra
+    kitap sırası; alıntısız işaretin aralığı 8 cümleye ya da bölüm sonuna kısalır, kimliği yoksa silinir; eserlerde
+    bulunmayan alıntı ayrı numara alır, sayfada ⚠ "doğrulanamadı" (adres yoksa "Adresi bulunamadı"); düz kimlik silinir.
+    Geçmişe giden cevap (`raw`) düzeltilmiş kimliklerle. Model turu `SOHBET_MODEL_FIX=1` ile açılır, varsayılan kapalı.
+    `usage`'a `fixed`, `dropped`, `leaks`, `paragraphs`, `unmarked` (eski veritabanına sütun eklenir); `sohbet usage`
+    bunları özetler, `olc` dökümü modelin düzeltilmemiş metnini de yazar. **Deneme** (geçen ölçümde düzeltmeye giden
+    5 soru, `20261125-160727-…`): model turu yok, ortalama 15 sn ve toplam 0,014 $ (aynı sorular düzeltme turuyla 21 sn, 0,023 $);
+    B8'de 2 işaret sunucuca taşındı, C13'te 1 doğrulanamayan, 1 silinen işaret. C13'ün doğrulanamayanı yanlış alarm:
+    model cümle yerine bölüm kimliği yazmış (`[[sozler/33]]`), alıntı bölümün alt başlığı (S12.10'da talimata: kimlik
+    yalnız cümlenindir; sık görülürse bölüm kimliği bölüm atfı olarak kabul edilir). İşaretsiz paragraf 26/40 (giriş,
+    yorum ve B7'de işaretsiz temsil özeti dahil; ölçü kabadır).
   - S12.10 **Sohbete ayrı talimat** (kullanıcının kararı, 2026-11-25). `server.py`'nin Risale talimatı bloklara
     ayrılır (iş akışı, cevap kuralları, müellifin sözü olmayan katmanlar); MCP'nin metni bayt bayt aynı kalır (araç
     çıktısı kaydı denetler). Sohbetin talimatı kendi girişi, akışı ve cevap biçiminden (okuyucu kim, önce kısa cevap,
     sonra metin, sonra yorum; uzunluk; sade Türkçe; kapsam) ve **ortak katman bloğundan** kurulur; MCP'ye özgü
     kısımlar (bağdaştırıcılar arası numaralama, denetçi alanları, `cite`) çıkar. Kaynağa bağlılığın koruması ortak
-    blokta kalır, kopya olmaz.
+    blokta kalır, kopya olmaz. S12.9'dan not: işaret yalnız cümle kimliğidir, bölüm kimliği değil (C13); özetlenen
+    temsil ve "metnin söylediği" paragrafı da işaretlenir (B7'de işaretsiz kaldı).
   - S12.11 **Sol "Kaynaklar" penceresi** (kullanıcının kararı, 2026-11-25). Konuşmanın kaynakları cevaplara göre;
     kaynağa ya da alıntıya dokununca metin aynı pencerede bağlamıyla açılır (cevap ve metin yan yana). Her satırda
     **kaynak adı** (e-Risale, risaleoku.com, Keşif, nurpedia; `works.site`): izinlerin şartı. **Telefonda** alttan
