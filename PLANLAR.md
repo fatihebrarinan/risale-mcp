@@ -133,6 +133,12 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     gizlilik ve şartlar), S13'ün seçeneklerine (dil, hat, cevap boyu) yer kalır. **Çatı yok** (kullanıcının kararı):
     sade JS, `sohbet.js` modüllere bölünür; asıl altyapı veri biçimidir: konuşma kimliği, turun taşıdıkları (soru,
     cevap, Kaynaklar, düzeltmeler), API; paylaşım bağlantısına (S13 (9)) uygun kurulur. Tanıtım sitesi statik kalır.
+    **Kararlar (kullanıcı, 2026-11-25):** (1) saklama varsayılan açık, ayarlarda kapatılabilir (geçici konuşma: yalnız
+    tarayıcıda, bugünkü gibi); (2) konuşma kullanıcı silene kadar durur, hesap silinince hepsi gider; (3) ekip
+    konuşmaları okumaz, yalnız 👎/👍 ile gönderilenleri (gizlilik sayfası bunu söyler); (4) gizlilik ve şartlar metnini
+    Claude hazırlar ve yayımlar, kullanıcının ayrıca görmesi gerekmez; (5) giriş kutusunun altındaki gizlilik ve şartlar
+    bağlantıları ayarlara taşınır, altta yalnız "Tefsir ve fetva değildir, müellife mal edilmez." ve günün kalan hakkı
+    ("8/10" gibi).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
