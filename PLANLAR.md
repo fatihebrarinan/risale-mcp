@@ -74,7 +74,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   yayında** (2026-11-25, commit `6ce4a22`, `yayin-20261125-200319`, araç çıktısında fark yok; testler ve 42 denetimli
   arayüz denemesi geçti, gizlilik sayfaları güncel). Sırada: kullanıcı telefonda bakar, sonra 5 kişilik deneme
   (başlarken `sohbet usage` kaydı); ondan önce **S13.2** (panel genişliği, sekmeli ayarlar: yayında,
-  `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`). Sonra B11 ve öbürleri.
+  `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
+  **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
+  (c)–(g) orada. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -183,7 +185,8 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     kalkınca soru ve cevap silinir). Sayfa yenilenince oy görünür, değiştirilemez. Gizlilik sayfaları buna göre.
     (b) **Sınırsız hesap (kullanıcının isteği; yapıldı):** `.env` `SOHBET_SINIRSIZ` (virgülle adresler; koda
     yazılmaz, deploy gönderir): günlük soru sınırı yok, hak satırı görünmez, bütçe tavanları geçerli. Kullanıcı
-    çok soracak, sonra konuşmalara birlikte bakılıp hata ayıklanacak.
+    çok soracak, sonra konuşmalara birlikte bakılıp hata ayıklanacak. (a) ve (b) yayında (`a765aa5`,
+    `yayin-20261125-220248`, araç çıktısında fark yok).
     **Bekleyen düzeltmeler** (henüz yapılmadı; sırası denemenin sonucuyla): (c) **Geçmişte araç sonucu yok:** ikinci
     soruda model "önceki cevabımda … doğrulamadan verdim, okumadan kullandım" dedi; geçmişe yalnız cevap metni
     giriyor (`Chat.messages`), model ilk turun okumalarını görmeyince kendi atıflarını doğrulanmamış sanıyor (atıflar
