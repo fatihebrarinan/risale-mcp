@@ -65,19 +65,20 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
 `KAYIT.md` › "Sıradaki'nin notları"):
-- **Son adım (2026-11-25):** S12 sohbet sayfası sürüyor ("Sıradaki" 1). Bitti: S12.0 (API anahtarı), S12.1 (model
-  Haiku 5.5), S12.2'nin yerel kısmı (hesaplar, Scaleway), **S12.3 yerel sürüm** (`sohbet.py`; araçlar süreç içinde,
-  atıf koddadır; teyit ölçümü: 29 soru, beklenen bölüm 28/34, 21 sn, soru başı 0,0047 $). Kritik yapıldı, kararlar
-  alındı (S12.3 altında "Kararlar"). **S12.9, S12.10, S12.11 bitti (2026-11-25):** tutmayan alıntıyı sunucu
-  düzeltir; sohbetin kendi talimatı (ortak bloklar `server.py`'de); solda Kaynaklar paneli, kaynak adı, telefonda
-  çekmece (ayrıntı her birinde). Kullanıcı 2026-11-25'te "S12'yi bitirene kadar durma" dedi; kararları S12.4, S12.6,
-  S12.7, S12.13'te. S12.12 (geri bildirim) ve S12.4 (kota, bütçe, uyarı) de bitti. **Önde, bu sırayla:** S12.13
-  hızlı ölçüm seti ve modelin yeniden tartılması (üç koşu), S12.6 gizlilik ve şartlar, deploy (S12.2 ile; Caddy akışı tamponlamaz, `uv sync --extra sohbet`), S12.7 deneme
-  ayı (davetsiz; adres bilinmiyor). Deneme ayından sonra S13 (asıl geliştirme). B11 (MCP kaynakçasında kaynak adı)
+- **Son adım (2026-11-25):** S12 sohbet sayfası sürüyor ("Sıradaki" 1). Bitti: S12.0–S12.3, S12.9 (sunucu
+  düzeltir), S12.10 (sohbetin kendi talimatı), S12.11 (solda Kaynaklar, kaynak adı, telefonda çekmece), S12.12 (geri
+  bildirim), S12.4 (kota, bütçe, ntfy) ve **deploy** (`https://risalemcp.com/sohbet/`, Haiku 5.5 medium; ayrıntı
+  S12.7). S12.13'ün üç koşusu yapıldı, okuma sayfası hazır. **Kullanıcıdan beklenen:** (1) telefonda baştan sona
+  deneme (onaylarsa deneme ayı o gün başlar, S12.7'ye tarih yazılır), (2) gizlilik ve şartlar taslağını okuma
+  (`docs/s12-gizlilik-taslak.md`; onaylanınca sayfalara işlenir, `deploy.sh --site`, taslak silinir), (3) model seçimi
+  (`/taslak/s12-modeller.html`; öneri Haiku medium), (4) ntfy konusuna telefonda abone olma (`data/sohbet-ntfy`,
+  sunucuda). Deneme ayından sonra S13. B11 (MCP kaynakçasında kaynak adı; `catalog/permissions.SOURCE_LABELS` hazır)
   sırada 2. Sonra B10, E7 (ilk iş `docs/e7-on-calisma.md` sonundaki beş kararı sormak).
-  Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/` (kod `data/interim/sohbet/eposta.log`'a düşer; yerelde deneme hesabı
-  `deneme@example.com` var). Tek soru `… sohbet sor "<soru>"`, ölçüm `… sohbet olc [soru…]` (hızlı set S12.13'te
-  koda girecek). Telefon uygulaması "Sonra"da (S13'ten sonra, koşullu).
+  Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
+  (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
+  `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
+  kullanım `… sohbet usage`, geri bildirim `… sohbet geri-bildirim` (sunucuda `.venv/bin/python -m …`). Telefon
+  uygulaması "Sonra"da (S13'ten sonra, koşullu).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
   `https://risalemcp.com/taslak/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
 - **Tarihli hatırlatmalar:** (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
@@ -247,6 +248,13 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     (`scripts/s12-karsilastir.py`). Ölçüt: aylık 100 $ ÷ beklenen soru sayısı (ayda 1.000 soruda soru başı 0,10 $'a
     kadar: Sonnet sığar; 10.000'de 0,01 $: Haiku). Seçimi kullanıcı yapar: üç koşunun yan yana okuma sayfası
     hazırlanır, beklerken öbür adımlar sürer (kullanıcının kararı, 2026-11-25).
+    **Koşular yapıldı (2026-11-25):** hızlı set koda girdi (`sohbet olc --hizli`, `QUICK`; döküm adı düşünme düzeyini
+    taşır). Sonuçlar (8 soru; beklenen bölüm okundu, ortalama süre, soru başı gerçek maliyet): Haiku medium 12/14,
+    23 sn, 0,0056 $; Haiku high 12/14, 49 sn, 0,0105 $, 2 doğrulanamayan alıntı; Sonnet 5.5 medium 7/14, 23 sn,
+    0,070 $ (daha az araç çağırıyor: bölümleri arama sonucundan adlandırıp okumadan anıyor). Ölçüte göre (ayda 100 $)
+    Haiku medium ayda ≈18.000 soruya, Sonnet ≈1.400'e yeter. Öneri Haiku medium (bugünkü ayar); seçim kullanıcının:
+    yan yana sayfa `https://risalemcp.com/taslak/s12-modeller.html` (girişli). Değişirse servis ortamında
+    `SOHBET_MODEL`, `SOHBET_EFFORT`.
   - S12.4 **Bütçe ve kota:** kişi başına günlük soru sınırı (başlangıç 10), servis düzeyinde günlük ve aylık dolar
     tavanı (100 $; aşılınca "bugünlük doldu"), Console tavanı yedek. Maliyet her cevabın `usage`'ından hesaplanır.
     **Harcama uyarısı:** günlük maliyet bir eşiği geçince kullanıcıya haber (ntfy düzeni hazır). Açılıştan önce hazır
