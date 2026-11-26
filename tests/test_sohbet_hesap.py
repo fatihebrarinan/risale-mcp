@@ -175,3 +175,28 @@ def test_policy_pages_are_public(tmp_path):
     assert "Anthropic" in web.get("/sohbet/en/privacy").text
     login = web.get("/sohbet/giris").text
     assert 'href="/sohbet/gizlilik"' in login and "/gizlilik.html" not in login
+
+
+def test_support_address_and_reply_to(tmp_path, monkeypatch):
+    """S13.15.4: destek adresi ve ad ayardan gelir (sayfaların iletişim satırı, e-postanın Reply-To'su)."""
+    import json
+    from risale_mcp.sohbet_hesap import DOCS, ScalewayMailer, doc_page
+    monkeypatch.setenv("SOHBET_DESTEK", "destek@yeni.example")
+    monkeypatch.setenv("SOHBET_NAME", "Yeni Ad")
+    config = Config.from_env()
+    for path in DOCS:
+        page = doc_page(path, config)
+        assert "destek@yeni.example" in page and "destek@risalemcp.com" not in page, path
+        assert "Yeni Ad" in page and "{{" not in page, path
+    sent = []
+
+    class Response:
+        def __enter__(self): return self
+        def __exit__(self, *a): return False
+        def read(self): return b"{}"
+
+    monkeypatch.setattr(sh.urllib.request, "urlopen", lambda req, timeout: sent.append(req) or Response())
+    ScalewayMailer("anahtar", "proje", "noreply@yeni.example", "Yeni Ad", config.support).send("a@b.co", "Konu", "Metin")
+    body = json.loads(sent[0].data)
+    assert body["from"] == {"email": "noreply@yeni.example", "name": "Yeni Ad"}
+    assert body["additional_headers"] == [{"key": "Reply-To", "value": "destek@yeni.example"}]

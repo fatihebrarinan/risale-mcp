@@ -69,6 +69,7 @@ class Config:
     site: str = "https://risalemcp.com"
     name: str = "Risale MCP"
     sender: str = "noreply@risalemcp.com"
+    support: str = "destek@risalemcp.com"     # S13.15.4: sayfaların iletişim adresi ve e-postanın Reply-To'su
     daily_codes: int = 200
 
     @classmethod
@@ -79,6 +80,7 @@ class Config:
                    site=os.environ.get("SOHBET_SITE", d.site).rstrip("/"),
                    name=os.environ.get("SOHBET_NAME", d.name),
                    sender=os.environ.get("SOHBET_FROM", d.sender),
+                   support=os.environ.get("SOHBET_DESTEK", d.support),
                    daily_codes=int(os.environ.get("SOHBET_GUNLUK_KOD", d.daily_codes)))
 
 
@@ -394,11 +396,14 @@ class ScalewayMailer:
     project: str
     sender: str
     name: str
+    reply_to: str = ""
     region: str = "fr-par"
 
     def send(self, to: str, subject: str, text: str) -> None:
         body = {"from": {"email": self.sender, "name": self.name}, "to": [{"email": to}], "subject": subject,
                 "text": text, "project_id": self.project}
+        if self.reply_to:           # gönderen noreply: okuyucunun cevabı destek adresine gitsin
+            body["additional_headers"] = [{"key": "Reply-To", "value": self.reply_to}]
         req = urllib.request.Request(
             f"https://api.scaleway.com/transactional-email/v1alpha1/regions/{self.region}/emails",
             data=json.dumps(body).encode(), method="POST",
@@ -410,7 +415,7 @@ class ScalewayMailer:
 def mailer_from_env(config: Config, dev: bool):
     secret, project = os.environ.get("SCW_SECRET_KEY"), os.environ.get("SCW_PROJECT_ID")
     if secret and project and not dev:
-        return ScalewayMailer(secret, project, config.sender, config.name)
+        return ScalewayMailer(secret, project, config.sender, config.name, config.support)
     if dev:
         return LogMailer()
     raise SystemExit("SCW_SECRET_KEY ve SCW_PROJECT_ID yok: e-posta gönderilemez (geliştirmede --dev)")
@@ -571,7 +576,7 @@ footer a {{ color: inherit; }}
 <nav><a href="{p}">{back}</a><a href="{p}{other}" hreflang="{other_lang}">{other_label}</a></nav>
 {body}
 <footer>{name} · <a href="{p}">{chat}</a> · <a href="{p}{privacy}">{privacy_label}</a> · <a href="{p}{terms}">{terms_label}</a> ·
-<a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></footer>
+<a href="mailto:{support}">{support}</a></footer>
 </main></body></html>"""
 
 
@@ -581,9 +586,11 @@ def doc_page(path: str, config: "Config") -> str:
     host = config.site.split("://", 1)[-1]
     body = ((ASSETS / file).read_text(encoding="utf-8").replace("{{P}}", html.escape(config.prefix))
             .replace("{{HOST}}", html.escape(host)).replace("{{DATE}}", POLICY_DATE[0])
-            .replace("{{DATE_EN}}", POLICY_DATE[1]))
+            .replace("{{DATE_EN}}", POLICY_DATE[1]).replace("{{NAME}}", html.escape(config.name))
+            .replace("{{SUPPORT}}", html.escape(config.support)))
     tr = lang == "tr"
     return DOC_SHELL.format(lang=lang, title=html.escape(title), name=html.escape(config.name), p=html.escape(config.prefix),
+                            support=html.escape(config.support),
                             body=body, back="← Sohbete dön" if tr else "← Back to the chat", other=other,
                             other_lang="en" if tr else "tr", other_label="English" if tr else "Türkçe",
                             chat="Sohbet" if tr else "Chat", privacy="gizlilik" if tr else "en/privacy",

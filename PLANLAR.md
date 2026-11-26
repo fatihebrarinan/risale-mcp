@@ -74,7 +74,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   **Ad Âyinedâr** (2026-11-26 akşam; Tahkik'ten döndü), çatı `ayinedar.org`, projeler işlevli, İngilizce alt alan adlarında
   (`chat.`, `read.`, `lab.`, `connect.`); adımlar S13.15.1–S13.15.7; S13.15.1 (alan adları
   alındı, marka başvurusu yapılmaz) S13.15.2 (DNS, Caddy, "hazırlanıyor" sayfası yayında) ve S13.15.3 (logo: kemerli aynada
-  kırmızı kapaklı kitap) bitti, **önde S13.15.4** (sohbetin `chat.ayinedar.org`'a taşınması). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
+  kırmızı kapaklı kitap) bitti, **önde S13.15.4** (sohbetin `chat.ayinedar.org`'a taşınması; yedi alt adım, deneme bitmeden;
+  ilk adım e-posta kayıtları: Scaleway'de `ayinedar.org` gönderici alanı açıldı, 2026-11-26; kayıtlar
+  `data/interim/ayinedar-eposta-kayitlari.txt`, kullanıcı Cloudflare'e girecek; kodda destek adresi `SOHBET_DESTEK`
+  ve Reply-To hazır, adresler 5. adımda birlikte değişir). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -196,6 +199,20 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     değildir", Diyanet'in 24 Kasım 2026 bildirgesi), kayıt ve giriş, gizlilik ve şartlar yeni adla; tanıtımdan önce PWA
     (eski S13 (8)) ve ilk izlenimin (karşılama, örnekler) yeni adla gözden geçirilmesi. Yapılmayan: mağaza uygulaması
     ("Sonra").
+    **Alt adımlar** (kullanıcı onayladı, 2026-11-26; taşınma deneme bitmeden, şimdi: site neredeyse kimseyle
+    paylaşılmadı): (1) **E-posta:** `ayinedar.org`'da Scaleway gönderici alanı (DKIM, SPF, DMARC), gönderen
+    `noreply@ayinedar.org` ("Âyinedâr"), doğrulama e-postasının metni yeni adla; `destek@ayinedar.org` Cloudflare
+    yönlendirmesiyle (SPF tek kayıtta). (2) **Ad ve adres kodda:** sitenin sayfalarına kökten bağlantılar tam adres
+    (S13.15.6'ya kadar risalemcp.com), alt satırdaki site bağlantısı çatıya, gizlilik ve şartlarda ad, adres ve
+    `POLICY_DATE`, logo ve "Âyinedâr · Sohbet" yazısı (Literata alt kümesi, kendi sunucumuzdan). (3) **PWA:**
+    manifesto, simgeler, yalnız "çevrimdışısınız" sayfası (cevap önbelleğe alınmaz), iPhone için ana ekrana ekleme
+    ipucu. (4) **Tanıtım:** açılıştaki tanıtım kısa kalır, ayrı "Hakkında" sayfası (`/hakkinda`: nedir, nasıl
+    çalışır, neye güvenilir, sınırları, Diyanet'in bildirgesi). (5) **Yayın:** Caddy `chat.ayinedar.org` → 8010,
+    `risalemcp.com/sohbet/*` 308 ile yeni adrese, güvenlik başlıkları (HSTS, CSP, `frame-ancestors 'none'`), çerez
+    `__Host-` önekli, tanıtıma kadar `noindex`, paylaşım kartı (Open Graph), adla 404; gönderim `--code` ile, kayıtla;
+    tarayıcıda saklanan konuşmalar taşınmaz (`keep_history = 0` sayısına bakılır). (6) **İlk izlenim:** telefon ve
+    masaüstünde gözden geçirme, `sohbet-arayuz-dene.py` yeni adrese. (7) **Haber:** deneme kullanıcılarına yeni adres
+    ve bir kez yeniden giriş (kullanıcı gönderir).
   - **S13.15.5 Okuma platformu ve masanın taşınması:** `read.`, `lab.`; davetlerden önce (davet bağlantıları adres
     taşır); çerez yolu, `site_auth.py`, sunucunun kısıtlı gönderme anahtarının hedefi, `d5.html`, ntfy bağlantıları.
   - **S13.15.6 Çatı sitesi:** `ayinedar.org`; ana sayfa önce sohbete çağırır, öbür projeler ikinci sırada; yenilikler,
