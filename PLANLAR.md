@@ -71,7 +71,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kapalı). Kullanıcı canlıda deneyecek. B12 plana girdi.
   Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
-  **Ad Tahkik** (2026-11-26), alan adı tahkik.org, sohbet sohbet.tahkik.org; sıradaki logo, site taşınması
+  **Ad Tahkik** (2026-11-26; yedek Âyinedâr), alan adı tahkik.org, sohbet sohbet.tahkik.org; sıradaki logo, site taşınması
   kullanıcının kararında (ayrıntı S13.15'in altında). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın
   çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
@@ -143,8 +143,12 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   başvuru); (c) eklentilerin MCP adresleri (mcp., hadis., tefsir., klasik.risalemcp.com) her durumda yerinde kalır:
   kullanıcıların ayarlarında, dizin başvurularında ve eklenti deposunda kayıtlı. Sıradaki: logo (2).
   **Yeni bulgu (2026-11-26):** tahkik.app'te "Tahkîk — Akademik Araştırma ve Doğrulama Çalışma Alanı" (Türkçe, yapay
-  zekâlı, davetli; "atıf doğrulama", "kanıt temelli"; alan adı 2026-08-08). Vaadi bizimkine çok yakın: ad yeniden
-  tartılıyor, logo bekliyor.
+  zekâlı, davetli; "atıf doğrulama", "kanıt temelli"; alan adı 2026-08-08). Yeni adaylar da tarandı (Hemdem düştü:
+  hemdem.app Türkçe tanışma uygulaması, hemdem.net sohbet odası; öne çıkanlar Âyinedâr, Bezm, Hüdhüd).
+  **Karar yerinde (kullanıcı, 2026-11-26): ad Tahkik kalır.** Gerekçe: iki site kendi hâlinde, aramada görünmüyor;
+  sohbet ilk aşamada bağlantıyla yayılacak. Hukuki sorun çıkarsa yedek ad **Âyinedâr** (bütün uzantılar boş, .com da).
+  Geçişi ucuz tutmak için: ad yalnız ayarlarda (`SOHBET_NAME` …) ve metinlerde durur, kimliklere ve kalıcı adreslere
+  girmez; logonun simgesi addan bağımsız çizilir (ad değişse de simge kalabilsin). Sıradaki: logo (2).
 - S13.17 **Öbür kütüphaneler sohbette** (eski S13 (11) ve S13.12'nin 2. aşaması): hadis, tefsir, klasik; erişim kararı
   (süreç içi kopya ya da uzak çağrı, ölçerek), alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması
   kipi. Maliyet uyarısı: soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır. Hassas alanlarda (hadis,
