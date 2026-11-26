@@ -73,8 +73,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
   **Ad Âyinedâr** (2026-11-26 akşam; Tahkik'ten döndü), çatı `ayinedar.org`, projeler işlevli, İngilizce alt alan adlarında
   (`chat.`, `read.`, `lab.`, `connect.`); adımlar S13.15.1–S13.15.7; S13.15.1 (alan adları
-  alındı, marka başvurusu yapılmaz) ve S13.15.2 (DNS, Caddy, "hazırlanıyor" sayfası yayında) bitti, **önde S13.15.3**
-  (logo; yarıda kalmıştı). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
+  alındı, marka başvurusu yapılmaz) S13.15.2 (DNS, Caddy, "hazırlanıyor" sayfası yayında) ve S13.15.3 (logo: kemerli aynada
+  kırmızı kapaklı kitap) bitti, **önde S13.15.4** (sohbetin `chat.ayinedar.org`'a taşınması). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -179,8 +179,17 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     gönderimde ve `--site`'ta `/var/www/ayinedar`'a gönderir. Bu sefer yalnız sayfa ve Caddyfile gönderildi
     (kullanıcının kararı: kod gitmedi, servis yeniden başlamadı); önceki Caddyfile sunucuda
     `/etc/caddy/Caddyfile.onceki-20261126`.
-  - **S13.15.3 Logo** (yarıda kaldı, 2026-11-26): SVG, `scripts/ikon.sh` hattı, favicon ve PWA simgeleri; simge addan
-    bağımsız.
+  - **S13.15.3 Logo** (bitti, 2026-11-26): kullanıcının seçimi **kemerli aynada açık, kırmızı kapaklı kitap**
+    ("eserlerin ne dediğini yansıtır"). Taslaklar claude.ai'de: Tahkik'in altı fikri
+    (`claude.ai/artifact/VCzNVxxTiu2fcRPwUEfzrj`), ayna üzerine dört çeşit (kemerli, oval, aynada kitap, güneş ve
+    aksi; `claude.ai/artifact/7wdoa4VY7eYXiWqVhy35jG`, dosyaları `data/interim/ayinedar-logo/`); kullanıcı 3'ü seçti,
+    kemerli aynaya aldırdı, kapağı kırmızı ve aynanın içini kitabın etrafında boşluk kalacak kadar geniş istedi.
+    Renkler: zemin `#1d4d3c` (eklentilerin yeşili), cam `#2b6a53`, çerçeve ve taban `#e8c766`, kapak `#b8322a`/
+    `#9e2a23`, sayfalar `#f6efdc`/`#e6dbbd`. Dosyalar `site-ayinedar/`: `icon.svg` (asıl), `icon-kucuk.svg` (16 ve 32
+    piksel: kalın çerçeve, parıltısız, kitap iki düz parça), `icon-maskable.svg` (köşesiz, güvenli alanda; PWA ve
+    Apple); `scripts/ikon-ayinedar.sh` `favicon.ico`, `icon.png`, `icon-192.png`, `icon-512.png`,
+    `icon-maskable-512.png`, `apple-touch-icon.png` üretir. Yazı: Literata 500 ("Âyinedâr"; OFL); sayfalara
+    girerken kendi sunucumuzdan verilir (dışarıya istek yok). Eklentilerin simgeleri değişmedi (`scripts/ikon.sh`).
   - **S13.15.4 Sohbetin taşınması:** `chat.ayinedar.org`; Caddy, `SOHBET_NAME`/`SOHBET_SITE`/`SOHBET_PREFIX`/
     `SOHBET_FROM`, Scaleway gönderici alan doğrulaması (SPF/DKIM), eski adresten yönlendirme, oturumlar bir kez yeniden
     giriş; tanıtım sayfası (nedir, nasıl çalışır, neye güvenebilirsiniz ve sınırları: "araştırma aracıdır, fetva makamı
