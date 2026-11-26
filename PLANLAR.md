@@ -71,9 +71,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kapalı). Kullanıcı canlıda deneyecek. B12 plana girdi.
   Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
-  **Ad Tahkik** (2026-11-26; yedek Âyinedâr), alan adı tahkik.org, sohbet sohbet.tahkik.org; sıradaki logo, site taşınması
-  kullanıcının kararında (ayrıntı S13.15'in altında). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın
-  çevreyle sürüyor.
+  **Ad Âyinedâr** (2026-11-26 akşam; Tahkik'ten döndü), çatı `ayinedar.org`, projeler işlevli alt alan adlarında
+  (`sohbet.`, `oku.`, `masa.`, `eklenti.`); adımlar S13.15.1–S13.15.7, **önde S13.15.1** (alan adları ve marka;
+  logo yarıda, S13.15.3'te sürer). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -102,7 +102,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S13.15 | Sohbetin kendi adı, logosu ve sitesi: tanıtımdan önce (kullanıcının kararı, 2026-11-26) | S12.8 |
+| 1 | S13.15 | Ad, logo ve site düzeni (Âyinedâr; S13.15.1–S13.15.7): tanıtımdan önce (kullanıcının kararı, 2026-11-26) | S12.8 |
 | 2 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
 | 3 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
 | 4 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
@@ -116,39 +116,67 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 | 12 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
 | 13 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
 
-- S13.15 **Sohbetin kendi adı, logosu ve sitesi** (kullanıcının kararı, 2026-11-26; eski S13 (12) ve S12.8): kullanıcı
-  platformu yakın çevresi dışında kimseye tanıtmadı; insanlar onu kendi adıyla, logosuyla, sitesiyle tanısın, bu
-  hâliyle (`risalemcp.com/sohbet`) tanıtılmaz. Gerçek geri bildirim tanıtımdan sonra gelir; 5 kişilik deneme yakın
-  çevreyle sürer. Adımlar: (1) **ad**: ölçütler (müellif adına konuşuyor izlenimi vermez; "Risale-i Nur" adını tek
-  başına almaz; kısa, Türkçe söylenişi kolay; alan adı alınabilir; marka çakışması yok; ileride hadis, tefsir eklenince
-  de uyar), aday listesi (kullanıcının önceki adayı "Fidanlık", S13.3 sırasında; Fihrist ve Emirdağ 263'te
-  Mesnevî ve Lemeât için "fidanlık" geçer), alan adı ve marka denetimi, kullanıcının seçimi; (2) **logo** (SVG; `scripts/ikon.sh` hattı,
-  favicon ve PWA simgeleri); (3) **site**: tanıtım sayfası (nedir, nasıl çalışır, neye güvenebilirsiniz ve sınırları:
-  "araştırma aracıdır, fetva makamı değildir", Diyanet'in 24 Kasım 2026 bildirgesi), kayıt ve giriş, gizlilik ve
-  şartlar yeni adla; risalemcp.com eklentilerin sitesi kalır, iki yönlü bağlantı; (4) **taşınma**: alan adı
-  (Cloudflare DNS only), Caddy ve sertifika, `SOHBET_NAME`/`SOHBET_SITE`/`SOHBET_PREFIX`/`SOHBET_FROM`, e-posta
-  göndericisi (Scaleway alan doğrulaması, SPF/DKIM), eski adresten yönlendirme, oturumlar bir kez yeniden giriş; (5)
-  **tanıtımdan önce**: PWA (ana ekrana eklenen uygulama; eski S13 (8)), ilk izlenim (karşılama, örnekler) yeni adla gözden
-  geçirme. Yapılmayan: mağaza uygulaması ("Sonra").
-  **Ad, ara durum (2026-11-26):** kullanıcının adayları: Tahkik, Hemdem, Kubbe. Ölçü markadır, sözlük tanımı değil
-  (kullanıcı: "Claude", "Gemini" de mantıkla bakınca mantıksız). Alan adı: Tahkik .org .ai .net .io .co boş; Hemdem
-  .org .ai .io boş; Kubbe yalnız .ai. TÜRKPATENT 9/41/42 (kullanıcı baktı): Tahkik'te kayıt yok, Hemdem'de çok kayıt.
-  tahkik.com'da tescilsiz, çalışan bir Türk hukuk yazılımı ("Tahkik Hukuk Bürosu"; 2022'den beri). Öbür adaylardan
-  Müzakere sohbetin bir kipine, Fidanlık bir bölüme, "ilim asistanı" alt başlığa ayrılabilir.
-  **Karar (kullanıcı, 2026-11-26): ad Tahkik.** Alan adı tahkik.org (kullanıcı alıyor); .ai alınmadı (iki yıllık 160 $).
-  Sohbet tahkik.org'un altında: sohbet.tahkik.org (kullanıcının "sohbet/tahkik.org"u alt alan adı diye okundu; teyit
-  bekliyor; tahkik.org/sohbet oraya yönlenir). Açık: (a) risalemcp.com sitesinin (tanıtım, kurulum, yenilikler,
-  çalışmalar, belgeler) tahkik.org'a taşınması ve eklentilerin Tahkik markasına girmesi (kullanıcı düşünüyor);
-  (b) TÜRKPATENT'e "Tahkik" başvurusu (öneri: 9 ve 42, istenirse 41; tahkik.com'daki tescilsiz kullanım yüzünden erken
-  başvuru); (c) eklentilerin MCP adresleri (mcp., hadis., tefsir., klasik.risalemcp.com) her durumda yerinde kalır:
-  kullanıcıların ayarlarında, dizin başvurularında ve eklenti deposunda kayıtlı. Sıradaki: logo (2).
-  **Yeni bulgu (2026-11-26):** tahkik.app'te "Tahkîk — Akademik Araştırma ve Doğrulama Çalışma Alanı" (Türkçe, yapay
-  zekâlı, davetli; "atıf doğrulama", "kanıt temelli"; alan adı 2026-08-08). Yeni adaylar da tarandı (Hemdem düştü:
-  hemdem.app Türkçe tanışma uygulaması, hemdem.net sohbet odası; öne çıkanlar Âyinedâr, Bezm, Hüdhüd).
-  **Karar yerinde (kullanıcı, 2026-11-26): ad Tahkik kalır.** Gerekçe: iki site kendi hâlinde, aramada görünmüyor;
-  sohbet ilk aşamada bağlantıyla yayılacak. Hukuki sorun çıkarsa yedek ad **Âyinedâr** (bütün uzantılar boş, .com da).
-  Geçişi ucuz tutmak için: ad yalnız ayarlarda (`SOHBET_NAME` …) ve metinlerde durur, kimliklere ve kalıcı adreslere
-  girmez; logonun simgesi addan bağımsız çizilir (ad değişse de simge kalabilsin). Sıradaki: logo (2).
+- S13.15 **Ad, logo ve site düzeni: Âyinedâr** (kullanıcının kararı, 2026-11-26; eski S13 (12) ve S12.8; önce
+  "sohbetin kendi adı, logosu ve sitesi"ydi, 2026-11-26 akşam bütün projelerin düzenine genişledi): kullanıcı platformu
+  yakın çevresi dışında kimseye tanıtmadı; insanlar onu kendi adıyla, logosuyla, sitesiyle tanısın, bu hâliyle
+  (`risalemcp.com/sohbet`) tanıtılmaz. Gerçek geri bildirim tanıtımdan sonra gelir; 5 kişilik deneme yakın çevreyle
+  sürer. Adın ölçütleri: müellif adına konuşuyor izlenimi vermez; "Risale-i Nur" adını tek başına almaz; kısa, Türkçe
+  söylenişi kolay; alan adı alınabilir; marka çakışması yok; hadis, tefsir eklenince de uyar; ölçü markadır, sözlük
+  tanımı değil (kullanıcı: "Claude", "Gemini" de mantıkla bakınca mantıksız).
+  **Adın geçmişi (2026-11-26):** adaylar Fidanlık (S13.3), Tahkik, Hemdem, Kubbe; sonra Âyinedâr, Bezm, Hüdhüd. Önce
+  Tahkik seçildi (tahkik.org; TÜRKPATENT 9/41/42'de kayıt yok); tahkik.com'da tescilsiz bir Türk hukuk yazılımı
+  (2022'den beri), tahkik.app'te aynı alanda yapay zekâlı bir doğrulama aracı ("Tahkîk — Akademik Araştırma ve
+  Doğrulama Çalışma Alanı", alan adı 2026-08-08) çıktı; Âyinedâr yedek kaldı. Hemdem düştü (hemdem.app tanışma
+  uygulaması, TÜRKPATENT'te çok kayıt).
+  **Karar (kullanıcı, 2026-11-26 akşam): ad Âyinedâr.** Gerekçe: işi anlatıyor (ayna kendi ışığını vermez, gösterdiğini
+  kaynağa borçludur: "yapay zekânın ürettiği hiçbir şey tefsir diye anılmaz" ilkesinin adı gibi), bütün uzantılar boş,
+  web aramasında marka ya da uygulama çıkmadı. Eserlerde 82 cümlede geçer (Sözler › Otuz Üçüncü Söz › Otuz Birinci
+  Pencere'de iki bölüm başlığı "… Âyinedârlık İse"); çoğunlukla varlıkların Esmâ-i Hüsnâ'ya âyinedârlığı için,
+  Hanımlar Rehberi'nin "Nurcuların Kasidesi"nde Risale-i Nur'un kendisi için ("Kur'ân'ın bir âyinedarlığını"). Bu yüzden
+  **tanıtımın ölçüsü** "eserlerin ne dediğini yansıtır"dır, "Kur'ân'ın âyinedârı" denmez (Risale'ye verilen vasıf
+  yapay zekâya verilmez). Yazım: metinde ve logoda "Âyinedâr", alan adında `ayinedar`.
+  **Düzenin kararları (kullanıcı onayladı, 2026-11-26):**
+  (a) Alt alan adları **işlevli, Türkçe ve kalıcı**; proje adları üstüne giyen markadır, adrese girmez (ad bir günde
+  iki kez değişti; "kimlikler değişmez" ilkesi). Harita: `ayinedar.org` çatı (projeler, yenilikler, çalışmalar,
+  belgeler, gizlilik; ana sayfa önce sohbete çağırır), `sohbet.ayinedar.org`, `oku.ayinedar.org` (okuma platformu,
+  davetli), `masa.ayinedar.org` (ar-ge masası, bugünkü `/taslak/`), `eklenti.ayinedar.org` (eklentilerin tanıtımı ve
+  kurulumu; ya da risalemcp.com kalır). Kazancı: her alt alan ayrı servis, gerekirse ayrı makine; çerezler kendiliğinden
+  ayrılır. "ai." kullanılmaz (ehil okuyucuya yapay zekâ öne çıkmasın).
+  (b) **Asıl adres .org**, .com ona 301 ile yönlenir (izinlerin çoğu "kazanç olmadığı sürece" şartlı; e-posta
+  göndericisi tek alanda: `noreply@ayinedar.org`). tahkik.org alındıysa ve yayımlanmadıysa yenilenmez.
+  (c) **İç ad ile dışa açık ad ayrı:** okuyucu tek ad ve işlev görür ("Âyinedâr · Sohbet", "Âyinedâr · Okuma"); iç
+  proje adları aramızda ve planda serbest. Proje adının kuralı: (1) eser ya da bölüm adıyla çakışmaz (araçlar onları
+  adresler), (2) müellife ya da eserine verilmiş bir vasıf değildir, (3) yapay zekânın ürününe hüküm yüklemez. Bu
+  yüzden "Miftah" düştü (Barla Lâhikası'nda Üstad için "Hazine-i Kur'ân'ın bir miftahıdır" başlığı; klasik kütüphanede
+  Sekkâkî'nin Miftâhu'l-Ulûm'u); taslaklar için alçakgönüllü bir ad aranır (öneri "Müsvedde"; karar yok).
+  (d) **Model adları:** "Habbe / Kubbe" düştü ("habbeyi kubbe yapmak" abartmak demek, Emirdağ Lâhikası'nda bu anlamda
+  başlık; Habbe Mesnevî-i Nuriye'nin bir risalesi, `mesnevi-i-nuriye/habbe`). İkinci model gelirse seçicide işlevsel
+  etiket ("Hızlı", "Derinlemesine"), ayrıntıda çalışan model açıkça; ad modelin kimliğini saklamaz. Maliyet, kota ve
+  ölçüm birlikte tartılır ("Fikirler" › Sohbette model kademeleri).
+  (e) **Dokunulmayanlar:** eklentilerin MCP adresleri (mcp., hadis., tefsir., klasik.risalemcp.com: kullanıcıların
+  ayarlarında, dizin başvurularında, eklenti deposunda, OpenAI alan doğrulamasında kayıtlı); risalemcp.com kökünün
+  favicon'u (Claude eklenti simgesini oradan alır; kök yönlense de favicon sunulur); dizin başvurularında adı geçen
+  gizlilik ve kurulum sayfaları, başvurular sonuçlanana kadar. Geçişi ucuz tutmak için ad yalnız ayarlarda
+  (`SOHBET_NAME` …) ve metinlerde durur; logonun simgesi addan bağımsız çizilir.
+  Adımlar (sıra bu; kullanıcının onayı, 2026-11-26):
+  - **S13.15.1 Ad, alan adları ve marka** (önde): kullanıcı `ayinedar.org` ve `ayinedar.com`'u alır, Cloudflare'de
+    (DNS only, proxy kapalı); TÜRKPATENT'e "Âyinedâr" başvurusu (9, 42, istenirse 41), alan adlarıyla aynı günlerde.
+  - **S13.15.2 Alt alan haritası:** (a)'nın haritası kesinleşir (eklenti tanıtımı `eklenti.` mi risalemcp.com mu),
+    DNS kayıtları, Caddy blokları ve sertifikalar; boş "yakında" sayfalarıyla.
+  - **S13.15.3 Logo** (yarıda kaldı, 2026-11-26): SVG, `scripts/ikon.sh` hattı, favicon ve PWA simgeleri; simge addan
+    bağımsız.
+  - **S13.15.4 Sohbetin taşınması:** `sohbet.ayinedar.org`; Caddy, `SOHBET_NAME`/`SOHBET_SITE`/`SOHBET_PREFIX`/
+    `SOHBET_FROM`, Scaleway gönderici alan doğrulaması (SPF/DKIM), eski adresten yönlendirme, oturumlar bir kez yeniden
+    giriş; tanıtım sayfası (nedir, nasıl çalışır, neye güvenebilirsiniz ve sınırları: "araştırma aracıdır, fetva makamı
+    değildir", Diyanet'in 24 Kasım 2026 bildirgesi), kayıt ve giriş, gizlilik ve şartlar yeni adla; tanıtımdan önce PWA
+    (eski S13 (8)) ve ilk izlenimin (karşılama, örnekler) yeni adla gözden geçirilmesi. Yapılmayan: mağaza uygulaması
+    ("Sonra").
+  - **S13.15.5 Okuma platformu ve masanın taşınması:** `oku.`, `masa.`; davetlerden önce (davet bağlantıları adres
+    taşır); çerez yolu, `site_auth.py`, sunucunun kısıtlı gönderme anahtarının hedefi, `d5.html`, ntfy bağlantıları.
+  - **S13.15.6 Çatı sitesi:** `ayinedar.org`; ana sayfa önce sohbete çağırır, öbür projeler ikinci sırada; yenilikler,
+    çalışmalar, belgeler, gizlilik buraya (`scripts/site-uret.py`).
+  - **S13.15.7 Eklentilerin tanıtımı:** en son, dizin kararlarından sonra; risalemcp.com'dan yönlendirme (favicon ve
+    MCP adresleri yerinde).
 - S13.17 **Öbür kütüphaneler sohbette** (eski S13 (11) ve S13.12'nin 2. aşaması): hadis, tefsir, klasik; erişim kararı
   (süreç içi kopya ya da uzak çağrı, ölçerek), alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması
   kipi. Maliyet uyarısı: soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır. Hassas alanlarda (hadis,
@@ -385,6 +413,11 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   damgalı model tercümesi kuralı.
 
 ## Fikirler (konuşuldu, karar yok)
+
+- **Sohbette model kademeleri** (kullanıcının fikri, 2026-11-26; S13.15 (d)): hızlı ve derin iki model, okuyucu
+  seçer. Ad işlevsel etiket ("Hızlı", "Derinlemesine"), çalışan model açıkça yazılır; eser ya da bölüm adı
+  kullanılmaz. Açılırsa birlikte tartılır: maliyet (Sonnet soru başı Haiku'nun katları), kota (günlük sorunun kaçı
+  derin), ölçüm (`sohbet olc` iki modelde).
 
 - **Sohbette ön arama ve model yönlendirme** (eski S13 (1) ve (2), 2026-11-26'da sıradan çıktı): (1) soru gelince
   anlamsal ve kelime araması birlikte, aday bölümler baştan (konu taraması kipinin dosyası bunun bir kısmını yapıyor;
