@@ -13,6 +13,20 @@ Puan bunların ağırlıklı toplamıdır (`_points`); sıra yalnız okunacak ye
 geçen yer konuyu işliyor demek değildir. Her adayda okunacak yer (`focus`: kelimelerin ya da anlamın en çok düştüğü alt
 bölümler) ve en yakın cümleler (`closest`) vardır; mektupsa imzası (`signed`).
 
+**Kopyalar** (S13.13): Tarihçe-i Hayat risalelerden parçalar derler (Tarihçe'deki "Meyve'nin Altıncı ve Yedinci
+Mes'eleleri" Meyve Risalesi'nindir). Tarihçe'deki bir adayın kelimelerin geçtiği cümlelerinin en az `COPY_SHARE`'i
+Tarihçe dışındaki daha büyük bir adayda da bulunuyorsa ayrı yer sayılmaz: asla katılır, onda `also_in` diye anılır.
+Yalnız Tarihçe (`COPY_WORKS`): öbür eserlerde aynı metin müellifin bilerek iki yere koyduğu ayrı risaledir (Dokuzuncu
+Şuâ Onuncu Söz'ün lâhikasıdır, On Dokuzuncu Söz Ondokuzuncu Mektub'da da durur), birleşirse risale listeden düşer. Cümle, ilk `COPY_KEY`
+kelimesiyle (`normalize.search_words`) karşılaştırılır, metin özetiyle değil: iki yer cümleyi farklı bölebilir
+(Tarihçe'deki Meyve'nin cümlelerinin yarısı özetle tutmuyor); daha kısa cümle karşılaştırılmaz.
+
+**Sayım** (S13.13: okuyucu "say" dedi, model aday toplamını "647 yer" diye sundu): `count` kelimelerin geçtiği cümle ve
+risale sayısıdır (kopyalar bir kez); `candidates_total` dört aramanın aday toplamıdır, sayım değildir. Sayım kelimeyedir:
+arama ş ile s'yi bir saydığı için aynı harflerle yazılan başka kelimeler de girebilir ("haşr*" "hasret"i de tutar;
+kullanıcının kararı, 2026-11-26: İngilizce klavyeyle yazan okuyucu için böyle kalır). `places` kelimelerin geçtiği
+bütün yerlerdir; sohbet onu modele göndermez, cevabın sonundaki listeye koyar.
+
 **Risale düzeyi** (`unit_of`): eserin birinci kat bölümü (Sözler › Onuncu Söz); o bölüm bir kapsa (Lâhikalar,
 Tarihçe, Sikke: `CONTAINER_WORKS`; ya da `BIG_UNIT`'ten çok cümle) bir alt kat (mektup). Fihrist bölümleri özettir,
 aday olmaz; Hizbler Kur'ân ve dua metnidir. Mecmualar ve ilgili kaynaklar varsayılan
@@ -29,6 +43,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from risale_mcp import normalize
 from risale_mcp import search as fts
 from risale_mcp.catalog import Collection
 
@@ -37,6 +52,10 @@ CANDIDATES = 25          # modele ayrıntısıyla giden aday
 OTHERS = 40              # sondaki "öbür yerler" listesine girebilecek en çok aday
 CLOSEST = 2              # adayın en yakın cümleleri
 FOCUS = 2                # adayın okunacak alt bölümleri
+COPY_SHARE = 0.6         # kelime cümlelerinin bu kadarı daha büyük bir adayda da varsa aday onun kopyasıdır
+COPY_MIN = 3             # kopya sayılmak için en az bu kadar kelime cümlesi
+COPY_KEY = 8             # cümlenin karşılaştırılan ilk kelimeleri
+COPY_WORKS = {"tarihce-i-hayat"}    # parçaları başka risalelerin kopyası olan derleme
 TEXT = 220               # cümle önizlemesi
 EXCLUDED_GROUPS = ("mecmua", "osmanlica", "hizb")    # hizbler Kur'ân'ın ve duaların metnidir
 # Birinci katı mektup ve parça kapları olan eserler: aday bir alt kattır (Lâhikalarda mektup, Tarihçe'de bölüm)
@@ -54,6 +73,8 @@ class Candidate:
     meaning: float = 0.0
     meaning_hits: list = field(default_factory=list)   # (puan, cümle kimliği, düğüm)
     points: float = 0.0
+    hashes: set = field(default_factory=set)           # kelimelerin geçtiği cümlelerin ilk kelimeleri (kopya bulmak için)
+    copies: list = field(default_factory=list)         # bu adaya katılan kopyalar (risale kimlikleri)
 
 
 class Dossier:
@@ -114,12 +135,14 @@ class Dossier:
         lexical = " OR ".join(terms) if terms else topic
         try:
             where, params = fts._filters(None, None, Collection.KULLIYAT)
-            for (node_id,) in self.conn.execute(
-                    "SELECT s.node_id FROM sentences_fts JOIN sentences s ON s.seq = sentences_fts.rowid"
+            for node_id, text in self.conn.execute(
+                    "SELECT s.node_id, s.text FROM sentences_fts JOIN sentences s ON s.seq = sentences_fts.rowid"
                     f" WHERE sentences_fts MATCH ?{where}", [fts.to_fts(lexical, prefix_all=True), *params]):
                 if (c := cand(node_id)) is not None:
                     c.words += 1
                     c.word_nodes[node_id] += 1
+                    if len(key := tuple(normalize.search_words(text)[:COPY_KEY])) == COPY_KEY:
+                        c.hashes.add(key)
             for hit in fts.search_nodes(self.conn, lexical, limit=40, collection=Collection.KULLIYAT, prefix_all=True):
                 if (c := cand(hit.node_id)) is not None:
                     c.headings.append(hit.node_id)
@@ -138,13 +161,44 @@ class Dossier:
                     c.meaning_hits.append((h.score, h.sentence_id, h.node_id))
         except Exception:                      # vektör ya da anahtar yoksa dosya yine kelimeyle kurulur
             semantic_ok = False
-        ranked = self._rank(list(cands.values()))
-        out = {"topic": topic, "terms": terms, "candidates": [self._record(c) for c in ranked[:CANDIDATES]],
+        kept = self._merge_copies(cands)
+        ranked = self._rank(kept)
+        worded = sorted((c for c in kept if c.words), key=lambda c: (-c.words, self.library._node(c.unit)["seq"]))
+        out = {"topic": topic, "terms": terms,
+               "count": {"sentences": sum(c.words for c in worded), "places": len(worded)},
+               "candidates": [self._record(c) for c in ranked[:CANDIDATES]],
                "others": [self._brief(c) for c in ranked[CANDIDATES:CANDIDATES + OTHERS]],
-               "total_places": len(ranked), "note": NOTE}
+               "candidates_total": len(ranked), "note": NOTE,
+               "places": [{**self._brief(c), "sentences": c.words} for c in worded]}
         if not semantic_ok:
             out["meaning_search"] = "unavailable: candidates come from words, headings and names only"
         return out
+
+    def _merge_copies(self, cands: dict[str, Candidate]) -> list[Candidate]:
+        """Kopya adayları daha büyük asıllarına katar (bkz. modülün başı); kalanları verir."""
+        where = defaultdict(set)
+        for c in cands.values():
+            for digest in c.hashes:
+                where[digest].add(c.unit)
+        copy_of: dict[str, str] = {}
+        for c in sorted(cands.values(), key=lambda c: self.size(c.unit)):
+            if len(c.hashes) < COPY_MIN or c.unit.split("/")[0] not in COPY_WORKS:
+                continue
+            shared = defaultdict(int)
+            for digest in c.hashes:
+                for unit in where[digest]:
+                    if unit.split("/")[0] not in COPY_WORKS:
+                        shared[unit] += 1
+            best = max(shared, key=lambda u: (shared[u], self.size(u)), default=None)
+            if best and shared[best] >= COPY_SHARE * len(c.hashes) and self.size(best) > self.size(c.unit):
+                copy_of[c.unit] = best
+        for unit, target in copy_of.items():
+            original = cands[target]
+            original.copies.append(unit)
+            # kopyanın anlamsal isabetleri asla geçer (sıraya katkısı kaybolmasın); kelime sayısı geçmez (aynı metin)
+            original.named = original.named or cands[unit].named
+            original.meaning = max(original.meaning, cands[unit].meaning)
+        return [c for c in cands.values() if c.unit not in copy_of]
 
     def _rank(self, cands: list[Candidate]) -> list[Candidate]:
         top_meaning = max((c.meaning for c in cands), default=0) or 1
@@ -157,7 +211,10 @@ class Dossier:
     # ------------------------------------------------------------ kayıtlar
 
     def _brief(self, c: Candidate) -> dict:
-        return {"id": c.unit, "ref": self.library._node(c.unit)["ref"]}
+        out = {"id": c.unit, "ref": self.library._node(c.unit)["ref"]}
+        if c.copies:
+            out["also_in"] = [{"id": u, "ref": self.library._node(u)["ref"]} for u in c.copies]
+        return out
 
     def _record(self, c: Candidate) -> dict:
         why = []
@@ -194,8 +251,11 @@ class Dossier:
 
 NOTE = ("Candidates the page gathered from every search: names of treatises (named), headings, the topic's words "
         "with their suffixed forms, and meaning. why says how each came; a word match alone is not a treatment. "
-        "Read the central ones (focus) before relying on them. The page lists the candidates you do not cite at the "
-        "end of your answer itself.")
+        "also_in: the same text also stands there (a copy), not a separate place. Read the central ones (focus) before "
+        "relying on them. count is how many sentences and treatises contain the words (it may include other words "
+        "spelled alike); candidates_total is not a count of places. If the reader asks how many, give count as the "
+        "page's word count. The page lists the candidates you do not cite, and every place with the words and their "
+        "count, at the end of your answer itself.")
 
 
 def survey(library, topic: str, terms: list[str] | None = None) -> dict:

@@ -112,6 +112,15 @@ function markdown(text, refs) {
       i++; continue;
     }
     if (/^\s*(-{3,}|\*{3,})\s*$/.test(line)) { flush(); out.push("<hr>"); i++; continue; }
+    if ((m = line.match(/^:::ek\s+(.*)$/))) {          // S13.13: kapalı ek (taramanın bütün yerleri), sayfanın eki
+      flush();
+      const block = [];
+      i++;
+      while (i < lines.length && !/^:::\s*$/.test(lines[i])) { block.push(lines[i]); i++; }
+      i++;
+      out.push(`<details class="ek"><summary dir="auto">${inline(m[1], refs)}</summary>${markdown(block.join("\n"), refs)}</details>`);
+      continue;
+    }
     if (/^\s*>/.test(line)) {
       flush();
       const block = [];
@@ -1010,6 +1019,8 @@ async function ask(question) {
         turn.r = data.reads;             // ve çağrılan araçlar (S13.4 (c))
       }
       owner.turns.push(turn);
+      // S13.13: tarama bir sorunun kipidir; ardından gelen soru (karşılaştırma, ayrıntı) serbest sorudur
+      if (turn.mode && turn.mode !== "serbest" && state.mode === turn.mode) { state.mode = "serbest"; renderModes(); }
       if (typeof data.remaining === "number") { state.remaining = data.remaining; state.questions = data.questions; }
       renderQuota();
       if (owner !== cur) return;          // başka konuşma açıldıysa sayfaya çizilmez (busy iken açılamaz)

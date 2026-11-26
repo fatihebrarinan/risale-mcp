@@ -5,8 +5,8 @@ canlı sohbete gitmez, denemenin sayılarına karışmaz. `sor`dan farkı: bir k
 sorulur (takip soruları sayfadaki gibi: geçmişe modelin düzeltilmiş ham cevabı ve sayfa notu girer) ve her turun
 bütün araç çağrıları sonuçlarıyla birlikte yazılır, yani modelin gördüğü her şey.
 
-Soru dosyası düz metindir: `## ad` bir konuşma açar (`## ad [kip: tarama]`: konuşmanın kipi, S13.12; yoksa serbest
-soru), altındaki her dolu satır bir sorudur, `#` ile başlayan öbür satırlar açıklamadır (sorulmaz). Konuşmalar aynı
+Soru dosyası düz metindir: `## ad` bir konuşma açar (`## ad [kip: tarama]`: konuşmanın ilk sorusunun kipi, S13.12;
+sayfadaki gibi takip soruları serbesttir, S13.13; yoksa serbest soru), altındaki her dolu satır bir sorudur, `#` ile başlayan öbür satırlar açıklamadır (sorulmaz). Konuşmalar aynı
 anda sorulur (`--paralel`).
 
     uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-01.txt [ad …]
@@ -53,10 +53,11 @@ def load(path: Path) -> list[dict]:
 async def converse(chat, conversation: dict) -> dict:
     from risale_mcp.sohbet import Tally
     history, turns = [], []
-    for question in conversation["sorular"]:
+    for i, question in enumerate(conversation["sorular"]):
         tally, start, done, error = Tally(), time.time(), None, None
+        mode = conversation.get("kip") if i == 0 else None        # S13.13: sayfa tarama cevabından sonra serbeste döner
         try:
-            async for event, data in chat.ask(history, question, tally, conversation.get("kip")):
+            async for event, data in chat.ask(history, question, tally, mode):
                 if event == "done":
                     done = data
                 elif event == "error":

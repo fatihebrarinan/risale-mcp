@@ -1,8 +1,8 @@
-"""S12.11, S13.1, S13.5, S13.6, S13.7: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
+"""S12.11, S13.1, S13.5, S13.6, S13.7, S13.13: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
 
 Yerel sunucu açık olmalı (`SOHBET_GUNLUK_SORU=100 uv run --extra sohbet python -m risale_mcp.sohbet serve --dev`: deneme hesabının
 günlük hakkı her koşuda bir azalır). Deneme hesabına
-(`deneme@example.com`, yoksa açılır) oturum açar, bir soru sorar (gerçek API, ≈0,005 $). Dener: sol panel (geçmiş,
+(`deneme@example.com`, yoksa açılır) oturum açar, iki soru sorar (gerçek API, ≈0,02 $; ikincisi konu taraması kipinde). Dener: sol panel (geçmiş,
 konuşmanın adresi, yeniden yükleyince aynı konuşma, ad değiştirme, yeni konuşma, silme), sağda Kaynaklar ve metin
 görünümü, ayarlar penceresi (saklama ayarı, belgeler), alt satır (uyarı ve günün kalan hakkı), geri bildirim,
 orta genişlikte Kaynaklar çekmecesi, telefonda iki çekmece, perde ve Escape. Ekran görüntüleri
@@ -51,7 +51,8 @@ convs.add(EMAIL, ident, "İkinci soru", two)
 hadis = {"n": 1, "id": "sualar/13/talebe-i-ulumun-hatta-uykusu-dahi/c004", "source_name": "e-Risale",
          "cite_as": "Şualar › Onüçüncü Şuâ › Talebe‑i Ulûmun Hattâ Uykusu Dahi İbâdet Sayılır › “Böyle medresesiz bir zamanda,…”",
          "embedded": [{"kind": "hadis", "line": "Hadis: el-Aclûnî, Keşfü'l-Hafâ: 1:55 (doğrulanmadı)"}]}
-convs.add(EMAIL, ident, "Üçüncü soru", {"raw": "", "markdown": "Hadisli cümle [1].", "sources": [hadis]})
+convs.add(EMAIL, ident, "Üçüncü soru", {"raw": "", "markdown": "Hadisli cümle [1].\\n\\n:::ek Bütün yerler: 3 cümle, 2 yer\\n"
+          "- Sözler › Onuncu Söz · 2 cümle\\n- Şualar › Meyve Risalesi (Tarihçe-i Hayat'ta da) · 1 cümle\\n:::", "sources": [hadis]})
 print(ident)
 """
 
@@ -337,6 +338,12 @@ async def run(url: str) -> None:
               "Hadis: el-Aclûnî, Keşfü'l-Hafâ: 1:55 (doğrulanmadı) · nâşirin meali: İşlerin en hayırlısı zorlu olanıdır." in meals)
         await page.screenshot(path=OUT / "16-ayet-hadis-satiri.png")
         await page.click("#yan-geri")
+        # S13.13: taramanın bütün yerleri kapalı ekte; açılınca liste
+        ek = page.locator(".tur >> nth=2").locator("details.ek")
+        check("kapalı ek: başlık görünür, liste kapalı", await ek.count() == 1 and not await ek.locator("li >> nth=0").is_visible())
+        await ek.locator("summary").click()
+        check("kapalı ek açılır", await ek.locator("li").count() == 2 and "Tarihçe-i Hayat'ta da" in await ek.inner_text())
+        check("ekin işaretleri metne sızmaz", ":::" not in await page.inner_text(".tur >> nth=2"))
         seed("sil", seeded)
         await page.goto(url)
         await page.wait_for_selector("#gecmis li")
@@ -347,6 +354,21 @@ async def run(url: str) -> None:
         await page.click("#gecmis .onay .dolu-tehlike")
         await until("location.hash === ''")
         check("silinen konuşma listeden gider", await page.locator(f"#gecmis li .ac >> text=Arayüz denemesi").count() == 0)
+        # S13.13: tarama kipinde bir soru (gerçek API); cevaptan sonra kip serbeste döner, sonda bütün yerler eki
+        await page.click("#yeni")
+        await page.click("#kipler .kip >> text=Konu taraması")
+        check("tarama kipi seçilir", "Konu taraması" in await page.inner_text("#kipler .kip.secili"))
+        await page.fill("#soru", "Mevlânâ")
+        await page.click("#gonder")
+        await page.wait_for_selector(".tur .cevap details.ek", timeout=240000)
+        check("tarama cevabında öbür yerler ve bütün yerler eki", "Konunun geçtiği öbür yerler" in await page.inner_text(".tur .cevap")
+              and "Kelimelerin geçtiği bütün yerler" in await page.inner_text(".tur .cevap details.ek summary"))
+        check("tarama cevabından sonra kip serbest", "Serbest soru" in await page.inner_text("#kipler .kip.secili"))
+        await page.screenshot(path=OUT / "17-tarama.png")
+        await page.hover("#gecmis li.secili")
+        await page.click("#gecmis li.secili .islem .ikon >> nth=1")
+        await page.click("#gecmis .onay .dolu-tehlike")
+        await until("location.hash === ''")
         # girişsiz: hesap oluşturma sayfası, tanıtımlı (S13.3)
         anon = await browser.new_context(viewport={"width": 1440, "height": 880})
         apage = await anon.new_page()

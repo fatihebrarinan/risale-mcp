@@ -31,7 +31,8 @@ why it came and where to read (focus).
 alone is not a treatment; a candidate signed by a student is a student's letter.
 3. Answer: the places grouped by work, the central ones first, each with what it says, quoted and marked. Name only \
 places you read. Do not write a list of further places yourself: the page adds the candidates you did not cite at the \
-end, as candidates."""
+end, as candidates, and every place with the words and their count. If the reader asks how many, give the page's \
+count (sentences and places with the words); the number of candidates is not a count."""
 
 KIPLER: dict[str, Kip] = {k.id: k for k in (
     Kip("serbest", "Serbest soru", "Risale-i Nur'a dair bir soru yazın"),

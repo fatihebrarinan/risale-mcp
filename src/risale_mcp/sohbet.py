@@ -580,6 +580,7 @@ class Tally:
     calls: list = field(default_factory=list)      # (araç, girdi, sonuç, hata mı): ölçüm dökümü için (`olc`)
     model_text: str = ""                           # modelin son cevabı, sunucu düzeltmeden önce (`olc`)
     steps: list = field(default_factory=list)      # S13.3: okuyucuya gösterilen adımlar ("… okunuyor")
+    survey_places: list | None = None              # S13.13: taramanın bütün yerleri (modele gitmez, sona eklenir)
 
     def add(self, model: str, usage) -> None:
         self.rounds += 1
@@ -767,7 +768,8 @@ class Chat:
                     raise ValueError("Give the topic.")
                 terms = [str(t) for t in (args.get("terms") or []) if str(t).strip()][:12]
                 result = await asyncio.to_thread(dosya.survey, self.library, topic, terms)
-                return {"type": "tool_result", "tool_use_id": block.id,
+                places = result.pop("places", [])        # S13.13: bütün yerler sayfaya; modele sayımı gider
+                return {"type": "tool_result", "tool_use_id": block.id, PAGE_ONLY: places,
                         "content": json.dumps(result, ensure_ascii=False, separators=(",", ":"))}
             raise ValueError(f"Unknown tool {block.name}.")
         except ValueError as e:
@@ -806,8 +808,12 @@ class Chat:
                 yield "restart", {"text": "Alıntılar eserlerle denetleniyor; düzeltiliyor…"}
                 continue
             markdown, raw = checked.markdown, checked.raw
-            if "other_places" in kip.post and (others := other_places(tally.calls, checked.sources)):
-                markdown, raw = markdown + "\n\n" + others, raw + "\n\n" + others
+            if "other_places" in kip.post:
+                earlier = earlier_places(history)
+                if others := other_places(tally.calls, checked.sources, earlier):
+                    markdown, raw = markdown + "\n\n" + others, raw + "\n\n" + others
+                if every := all_places(tally.survey_places):    # yalnız sayfada: geçmişe (modele) girmez
+                    markdown += "\n\n" + every
             yield "done", {"markdown": markdown, "raw": raw, "sources": checked.sources, "mode": kip.id,
                            "problems": checked.counts["unverified"], "corrected": corrected, "checks": checked.counts,
                            "steps": tally.steps, "reads": reads(tally.calls),
@@ -860,18 +866,47 @@ class Chat:
                 tally.tools += 1
                 tally.steps.append(line := status_line(self.library, block.name, block.input or {}))
                 yield "status", {"text": line, "step": True}
-                results.append(result := await self._call_tool(block))
+                result = await self._call_tool(block)
+                if PAGE_ONLY in result:                  # API'ye gitmeyen, sayfanın kullandığı kısım
+                    tally.survey_places = result.pop(PAGE_ONLY)
+                results.append(result)
                 tally.calls.append((block.name, block.input or {}, result["content"], bool(result.get("is_error"))))
             messages.append({"role": "user", "content": results})
 
 
 OTHER_PLACES = 15           # konu taramasının sonundaki aday listesinde en çok yer
 OTHER_PLACES_TITLE = "**Konunun geçtiği öbür yerler** (sayfanın aramasından adaylar; okunmadı, sırası hüküm değildir)"
+PAGE_ONLY = "_page"         # yerel aracın sonucunda API'ye gitmeyen kısım (S13.13)
+ALL_PLACES_TITLE = ("Kelimelerin geçtiği bütün yerler: {sentences} cümle, {places} yer (kelimeye göre sayıldı; aynı "
+                    "harflerle yazılan başka kelimeler de girmiş olabilir)")
 
 
-def other_places(calls: list, sources: list[dict]) -> str:
+def _also(c: dict) -> str:
+    """Kopyanın durduğu öbür yer (Tarihçe): "(Tarihçe-i Hayat'ta da)"."""
+    works = []
+    for x in c.get("also_in", []):
+        work = x["ref"].split(" › ")[0]
+        if work not in works:
+            works.append(work)
+    return f" ({', '.join(works)}'ta da)" if works else ""
+
+
+def earlier_places(history: list[dict]) -> set[str]:
+    """S13.13: konuşmanın önceki turlarında okunan ve alıntılanan yerler; "okunmadı" listesine girmezler (haşir
+    konuşmasında 1. turda okunan Nokta 2. turun listesinde "okunmadı" diye duruyordu)."""
+    out = set()
+    for turn in history or []:
+        for call in turn.get("r") or []:
+            if isinstance(call, str) and (m := _READ_CALL.match(call)) and m.group(1) != "get_outline":
+                out.add(_SENTENCE_PART.sub("", m.group(2)))
+        out.update(MARK.findall(str(turn.get("a") or "")))
+    return {p.split("..")[0] for p in out}
+
+
+def other_places(calls: list, sources: list[dict], earlier: set[str] = frozenset()) -> str:
     """S13.12: konu taramasının dosyasında olup cevapta anılmayan adaylar, mekanik liste (kullanıcının kararı,
-    2026-11-26). Cevabın bir kaynağı adayın içindeyse (ya da aday kaynağın içindeyse) aday anılmış sayılır."""
+    2026-11-26). Cevabın bir kaynağı adayın içindeyse (ya da aday kaynağın içindeyse) aday anılmış sayılır; bu
+    cevapta ya da önceki turlarda okunan yer de (S13.13: liste "okunmadı" der)."""
     dossier = None
     for name, _, result, error in calls:
         if name == "survey" and not error:
@@ -881,14 +916,29 @@ def other_places(calls: list, sources: list[dict]) -> str:
                 pass
     if not dossier:
         return ""
-    cited = {s["id"].split("..")[0] for s in sources if s.get("id")}
+    cited = {s["id"].split("..")[0] for s in sources if s.get("id")} | set(earlier)
+    for name, args, _, error in calls:
+        if not error and name in ("read_section", "get_passage"):
+            place = str((args or {}).get("section") or (args or {}).get("id") or "").split("..")[0]
+            if place:
+                cited.add(_SENTENCE_PART.sub("", place))
 
     def mentioned(unit: str) -> bool:
         return any(c == unit or c.startswith(unit + "/") or unit.startswith(c + "/") for c in cited)
     rows = [c for c in [*dossier.get("candidates", []), *dossier.get("others", [])] if not mentioned(c["id"])]
     if not rows:
         return ""
-    return OTHER_PLACES_TITLE + "\n\n" + "\n".join(f"- {c['ref']}" for c in rows[:OTHER_PLACES])
+    return OTHER_PLACES_TITLE + "\n\n" + "\n".join(f"- {c['ref']}{_also(c)}" for c in rows[:OTHER_PLACES])
+
+
+def all_places(places: list | None) -> str:
+    """S13.13: kelimelerin geçtiği bütün yerler ve sayıları, kapalı bir ek ("her yeri say" isteği; öbür yerler
+    listesi 15'le sınırlı). Okunup okunmadığına bakılmaz: sayımdır, hüküm değildir."""
+    if not places:
+        return ""
+    title = ALL_PLACES_TITLE.format(sentences=sum(p["sentences"] for p in places), places=len(places))
+    lines = [f"- {p['ref']}{_also(p)} · {p['sentences']} cümle" for p in places]
+    return f":::ek {title}\n" + "\n".join(lines) + "\n:::"
 
 
 MAX_READS = 30              # bir cevabın kaydedilen en çok araç çağrısı

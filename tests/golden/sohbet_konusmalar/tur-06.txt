@@ -25,3 +25,9 @@ Risale-i Nur'da Mevlânâ nerelerde anılır?
 ## serbest-ihlas
 # karşılaştırma: aynı soru kipsiz (bugünkü akış, ama yeni araçlarla)
 Risale-i Nur'da ihlas hangi risalelerde işlenir?
+
+# S13.13: kullanıcının haşir konuşması (2026-11-26): sayım, bütün yerler, kopyalar, kipin serbeste dönmesi
+## hasir [kip: tarama]
+Selam. Haşir bahsinin irili ufaklı geçtiği her yeri bul ve bana say
+Güzel. O zaman Dokuzuncu Şua ve ve 29. Sözde haşrin nasıl farklarla ele alındığını tartışalım.
+Anladım. Peki Nokta risalesindeki haşir kısmını bu iki risaleyle karşılaştırır mısın?

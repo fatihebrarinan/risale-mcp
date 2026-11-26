@@ -661,3 +661,43 @@ def test_s13_12_survey_tool_runs_locally(library):
     ids = [c["id"] for c in _json.loads(result["content"])["candidates"]]
     assert set(ids[:2]) == {"lemalar/20", "lemalar/21"}          # sıra anlamsal aramaya göre değişebilir
     assert asyncio.run(chat._call_tool(NS(id="t2", name="survey", input={})))["is_error"]
+
+
+def test_s13_13_other_places_skip_earlier_reads_and_full_list():
+    import json as _json
+    dossier = {"candidates": [{"id": "nokta/kisim-02", "ref": "Nokta › İkinci Kısım"},
+                              {"id": "sualar/11", "ref": "Şualar › Meyve Risalesi",
+                               "also_in": [{"id": "tarihce-i-hayat/x", "ref": "Tarihçe-i Hayat › X"}]},
+                              {"id": "sualar/9", "ref": "Şualar › Dokuzuncu Şuâ"},
+                              {"id": "muhakemat/makale-03", "ref": "Muhakemat › Unsuru'l-Akîde"}]}
+    calls = [("survey", {"topic": "haşir"}, _json.dumps(dossier), False),
+             ("read_section", {"section": "sualar/9", "max_words": 1800}, "{}", False)]
+    history = [{"q": "haşir", "a": "… [[muhakemat/makale-03/maksad-03/c003]] …",
+                "r": ["read_section(section=nokta/kisim-02/hasir, max_words=900)"]}]
+    earlier = sohbet.earlier_places(history)
+    assert earlier == {"nokta/kisim-02/hasir", "muhakemat/makale-03/maksad-03/c003"}
+    listed = sohbet.other_places(calls, [], earlier)
+    # önceki turda okunan (Nokta), alıntılanan (Muhakemat) ve bu cevapta okunan (Dokuzuncu Şuâ) "okunmadı" diye girmez
+    assert listed.splitlines()[2:] == ["- Şualar › Meyve Risalesi (Tarihçe-i Hayat'ta da)"]
+    every = sohbet.all_places([{"id": "sozler/10", "ref": "Sözler › Onuncu Söz", "sentences": 80},
+                               {"id": "sualar/11", "ref": "Şualar › Meyve Risalesi", "sentences": 28}])
+    assert every.startswith(":::ek Kelimelerin geçtiği bütün yerler: 108 cümle, 2 yer") and every.endswith("\n:::")
+    assert "- Sözler › Onuncu Söz · 80 cümle" in every and sohbet.all_places([]) == ""
+
+
+@needs_db
+def test_s13_13_survey_counts_and_keeps_the_full_list_from_the_model(library):
+    import json as _json
+    from risale_mcp import dosya
+    result = dosya.survey(library, "haşir", ["haşir*", "haşr*"])
+    places = {p["id"]: p for p in result["places"]}
+    assert result["count"]["places"] == len(result["places"]) and "total_places" not in result
+    assert result["count"]["sentences"] == sum(p["sentences"] for p in result["places"])
+    # Tarihçe'deki Meyve parçası Meyve'ye katılır; Dokuzuncu Şuâ (Onuncu Söz'ün lâhikası) ayrı risale kalır
+    meyve = "tarihce-i-hayat/besinci-kisim-denizli-hayati/meyvenin-altinci-ve-yedinci-meseleleri"
+    assert meyve not in places and meyve in [x["id"] for x in places["sualar/11"]["also_in"]]
+    assert "sualar/9" in places and "sozler/10" in places
+    chat = sohbet.Chat(library, client=None)
+    block = NS(id="t1", name="survey", input={"topic": "haşir", "terms": ["haşir*", "haşr*"]})
+    out = asyncio.run(chat._call_tool(block))
+    assert sohbet.PAGE_ONLY in out and "places" not in _json.loads(out["content"])

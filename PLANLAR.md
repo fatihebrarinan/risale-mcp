@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 ve durum değerlendirmesi bitti, Haiku sürer; **S13.12** kipler: belge, ad dizini, bölüm künyesi ve konu taraması kipi yapıldı ve yayında; sırada aşama 2 (ikinci kütüphane) ya da tarama kipinin denemesi. **S13.13** (2026-11-26) haşir konuşması: tarama kipinin ilk gerçek kullanımı; kip çalıştı, alıntılar doğru; sayım, ş=s eşleşmesi, kipin açık kalması ve okuma hataları yazıldı, çözüm kararı bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 ve durum değerlendirmesi bitti, Haiku sürer; **S13.12** kipler: belge, ad dizini, bölüm künyesi ve konu taraması kipi yapıldı ve yayında; sırada aşama 2 (ikinci kütüphane) ya da tarama kipinin denemesi. **S13.13** (2026-11-26) haşir konuşması: tarama kipinin ilk gerçek kullanımı; sayım, bütün yerler eki, Tarihçe kopyaları, kipin serbeste dönmesi yapıldı (ş=s kalır); okuma hataları ve tek kelimelik soruda İngilizce cevap (talimat önerisi) karar bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -557,6 +557,25 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     saysın; (5)–(8) talimatla kısmen: karşılaştırmada iki tarafın da karşılaştırılan bütün kısımları okunur, okunmayan
     kısım hakkında "özgü/yok/daha kısa" denmez; bölümün kendi hakkında söylediği (amaç, yer, hangi esere bağlandığı)
     önce okunur (karşılaştırma kipi, S13.12 aşama 3).
+    **Kullanıcının kararı (2026-11-26):** (1), (3), (4) yapılsın; (2) kalsın (okuyucu İngilizce klavyeyle ş yerine s
+    yazabilir; model sonuçlardan bağlama göre doğru seçtikçe). **Yapıldı:** (1) `dosya` `count` verir (kelimelerin
+    geçtiği cümle ve yer, kopyalar bir kez), `total_places` yerine `candidates_total`; notta ve kipin talimatında "okuyucu
+    sayı sorarsa sayfanın sayımı, aday toplamı sayı değildir". (3) `places`: kelimelerin geçtiği bütün yerler, sayılarıyla;
+    modele gitmez (`sohbet.PAGE_ONLY`), cevabın sonuna kapalı ek olarak (`:::ek` → `<details class="ek">`, yalnız sayfada;
+    geçmişe girmez). Kopyalar: Tarihçe'deki adayın kelime cümlelerinin %60'ı (ilk 8 kelimeyle; metin özeti, cümle farklı
+    bölündüğünde tutmuyordu) Tarihçe dışında daha büyük bir adayda varsa asla katılır, "(Tarihçe-i Hayat'ta da)".
+    Yalnız Tarihçe: genel kural Dokuzuncu Şuâ'yı Onuncu Söz'e (lâhikası), On Dokuzuncu Söz'ü Ondokuzuncu Mektub'a
+    katıyordu. (4) Sayfa tarama cevabından sonra kipi serbeste döndürür (`sohbet dene` de: kip yalnız ilk soruda);
+    "öbür yerler" bu cevapta ya da önceki turlarda okunan ve alıntılanan yerleri saymaz (`earlier_places`).
+    `deploy.sh --sohbet` `dosya.py`, `kipler.py`, `sohbet_dene.py`'yi de sohbetin sayar. **Sınama:** testler (iki yeni),
+    arayüz denemesi (kapalı ek, gerçek API ile tarama sorusu ve kipin dönüşü; hepsi geçti), haşir konuşması yeniden
+    (`tur-06.txt` › `hasir`, Haiku ≈0,026 $): 1. cevap "194 yerde, 710 cümlede" dedi, sonda bütün yerler, Meyve
+    Tarihçe'yle tek satır; 2. tur serbest kipte, `survey` ve liste yok; model Şuâ'yı Onuncu Söz'ün zeyli ve Rûm
+    âyetlerinin tefsiri diye andı (önceki koşuda yoktu), dokuz makamın yazılmadığını yine bilmedi ("okumadım"); 3. turda
+    okuma hataları sürüyor ("Söz'deki gibi altı soruyla ilerlemez", menba'a "mâden"). **Yeni bulgu:** arayüz denemesinde
+    tek kelimelik tarama sorusuna ("Mevlânâ") İngilizce cevap: dil kuralı "son sorunun dili" diyor, ad tek başına dil
+    belirtmez; tarama kipi tek kelimeli konuyu teşvik ediyor. Talimat önerisi (karar bekliyor): dili belli olmayan soru
+    (yalnız ad ya da terim) Türkçe cevaplanır.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

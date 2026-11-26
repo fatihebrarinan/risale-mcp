@@ -173,6 +173,11 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 .adim-ozet[open] summary::before { transform: rotate(90deg); }
 .adim-ozet summary:hover { background: var(--soft); color: var(--fg); }
 .adim-ozet .adimlar { margin: 4px 0 0 18px; }
+/* S13.13: cevabın sonundaki kapalı ek (taramanın bütün yerleri) */
+.cevap details.ek { margin: 10px 0; font-size: .92em; }
+.cevap details.ek summary { cursor: pointer; color: var(--muted); }
+.cevap details.ek summary:hover { color: var(--fg); }
+.cevap details.ek ul { margin-top: 6px; }
 
 .tur { margin: 0 0 28px; }
 .soru-balon { font-size: calc(var(--cevap) * .94); margin: 0 0 12px auto; max-width: 85%; width: fit-content; background: var(--accent-soft);
