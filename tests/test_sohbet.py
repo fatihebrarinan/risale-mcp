@@ -643,8 +643,8 @@ def test_s13_12_survey_mode_note_tools_and_other_places(library):
     plain = chat.messages([], "ihlas")[-1]["content"]
     survey = chat.messages([], "ihlas", "tarama")[-1]["content"]
     assert plain == "ihlas" and survey.startswith("[Page note") and "survey" in survey and survey.endswith("ihlas")
-    tools = asyncio.run(chat.tools("tarama"))
-    assert tools[-1]["name"] == "survey" and "survey" not in [t["name"] for t in asyncio.run(chat.tools())]
+    tools, _ = asyncio.run(chat.tools("tarama"))
+    assert tools[-1]["name"] == "survey" and "survey" not in [t["name"] for t in asyncio.run(chat.tools())[0]]
     dossier = {"candidates": [{"id": "lemalar/20", "ref": "Lem'alar › Yirminci Lem'a"},
                               {"id": "lemalar/21", "ref": "Lem'alar › Yirmibirinci Lem'a"}],
                "others": [{"id": "sualar/13", "ref": "Şualar › Onüçüncü Şuâ"}]}

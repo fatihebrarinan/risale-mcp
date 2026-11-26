@@ -165,12 +165,14 @@ CREATE TABLE IF NOT EXISTS turns (
 );
 """
 # Sonradan eklenen sütunlar: eski veritabanına eklenir (CREATE TABLE IF NOT EXISTS var olan tabloyu değiştirmez).
-ADDED_COLUMNS = {"usage": {c: "INTEGER" for c in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")},
+ADDED_COLUMNS = {"usage": {**{c: "INTEGER" for c in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")},
+                           "libraries": "TEXT"},     # S13.17: sorunun açık öbür kütüphaneleri ("tefsir,hadis")
                  # S13.1: konuşmaları hesapta sakla (varsayılan açık; kapalıyken konuşma yalnız tarayıcıda)
                  "users": {"keep_history": "INTEGER NOT NULL DEFAULT 1"},
                  # S13.3: cevabın adımları ("… okunuyor"), JSON; S13.4 (c): çağrılan araçlar (sonraki soruda modele), JSON
                  "turns": {"steps": "TEXT", "reads": "TEXT",
-                           "mode": "TEXT"}}          # S13.12: turun kipi (serbest, tarama…)
+                           "mode": "TEXT",           # S13.12: turun kipi (serbest, tarama…)
+                           "libraries": "TEXT"}}     # S13.17: turda açık öbür kütüphaneler, JSON
 
 
 def norm_email(email: str) -> str:

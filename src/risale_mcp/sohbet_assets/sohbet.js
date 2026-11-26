@@ -31,6 +31,42 @@ const state = { keep: true, questions: null, remaining: null, conversations: [],
 // S13.12: kipler (sunucunun kip kaydından; okuyucu açıkça seçer)
 const KIPLER = (() => { try { return JSON.parse($("kipler").dataset.kipler); } catch { return []; } })();
 const kipTitle = (id) => (KIPLER.find((k) => k.id === id) || {}).title || "";
+// S13.17: öbür kütüphaneler (tefsir, hadis, klasik): okuyucu açar, seçim tarayıcıda kalır; Risale-i Nur hep açık
+const KUTUPHANELER = (() => { try { return JSON.parse($("kutuphaneler").dataset.kutuphaneler); } catch { return []; } })();
+const LIB_KEY = "sohbet:kutuphaneler";
+const libTitle = (id) => (KUTUPHANELER.find((k) => k.id === id) || {}).title || id;
+state.libraries = (() => {
+  try { const v = JSON.parse(localStorage.getItem(LIB_KEY)) || [];
+    return v.filter((id) => KUTUPHANELER.some((k) => k.id === id)); } catch { return []; }
+})();
+
+function renderLibraries() {
+  const box = $("kutuphaneler");
+  box.innerHTML = "";
+  box.hidden = !KUTUPHANELER.length;
+  if (box.hidden) return;
+  box.append(el("span", "baslik", "Kütüphaneler:"));
+  const fixed = el("button", "kip kutuphane sabit", "Risale-i Nur");
+  fixed.type = "button";
+  fixed.setAttribute("aria-pressed", "true");
+  fixed.disabled = true;
+  fixed.title = "Bediüzzaman Said Nursî'nin eserleri; her soruda açık";
+  box.append(fixed);
+  for (const k of KUTUPHANELER) {
+    const on = state.libraries.includes(k.id);
+    const b = el("button", "kip kutuphane", esc(k.title));
+    b.type = "button";
+    b.setAttribute("aria-pressed", String(on));
+    b.title = k.hint + (on ? " (açık)" : " (kapalı; açmak için dokunun)");
+    b.addEventListener("click", () => {
+      state.libraries = on ? state.libraries.filter((x) => x !== k.id) : [...state.libraries, k.id];
+      try { localStorage.setItem(LIB_KEY, JSON.stringify(state.libraries)); } catch { /* yalnız bu sayfada */ }
+      renderLibraries();
+      els.input.focus();
+    });
+    box.append(b);
+  }
+}
 
 function renderModes() {
   const box = $("kipler");
@@ -306,6 +342,11 @@ function span(src) {                    // birleşebilen kaynakta {node, start, 
   return { node: m[1], start: Number(m[2]), end: Number(m[3] || m[2]) };
 }
 
+function libHeader(src) {               // S13.17: künyesi tek parça olan kaynakta (hadis) başlık kütüphanenin adı
+  return src.library && !(src.cite_as || "").includes(" › ") ? (src.library_title || libTitle(src.library))
+    : splitCite(src.cite_as)[0];
+}
+
 function splitCite(cite) {              // "Yol › Bölüm › “İlk kelimeler…” ile başlayan 3 cümle" -> [yol, son parça]
   const i = (cite || "").lastIndexOf(" › ");
   return i < 0 ? [cite || "Adresi bulunamadı", ""] : [cite.slice(0, i), cite.slice(i + 3)];
@@ -330,7 +371,7 @@ function numberSources() {
       }
       if (!piece) {
         piece = { g: catalog.length + 1, node: sp && sp.node, start: sp && sp.start, end: sp && sp.end,
-          first: src, header: splitCite(src.cite_as)[0], members: [], turns: [] };
+          first: src, header: libHeader(src), members: [], turns: [] };
         catalog.push(piece);
         if (!sp) byKey.set(src.id ? src.id + (src.problem || src.unverified ? "!" : "") : `#${i}:${src.n}`, piece);
       }
@@ -348,6 +389,7 @@ function pieceId(piece) {               // parçanın metni istenirken
 }
 
 function pieceLabel(piece) {            // "“İlk kelimeler…”" ya da "“İlk kelimeler…” ile başlayan 3 cümle"
+  if (piece.first.library && !(piece.first.cite_as || "").includes(" › ")) return piece.first.cite_as || "";
   const tail = splitCite(piece.first.cite_as)[1];
   if (!piece.node) return tail;
   const incipit = tail.replace(/ ile başlayan \d+ cümle$/, "");
@@ -483,6 +525,7 @@ function stepSummary(steps) {
 function renderTurn(turn) {
   const box = el("section", "tur");
   const asked = el("div", "soru-balon", esc(turn.q));
+  for (const id of [...(turn.libraries || [])].reverse()) asked.prepend(el("span", "kip-etiket", esc(libTitle(id))));
   if (turn.mode && turn.mode !== "serbest" && kipTitle(turn.mode))
     asked.prepend(el("span", "kip-etiket", esc(kipTitle(turn.mode))));
   box.append(asked);
@@ -968,7 +1011,7 @@ async function ask(question) {
   setBusy(true);
   els.empty.hidden = true;
   const owner = cur;                     // cevap bu konuşmaya yazılır
-  const turn = { q: question.trim(), mode: state.mode };
+  const turn = { q: question.trim(), mode: state.mode, libraries: [...state.libraries] };
   const box = renderTurn(turn);
   els.list.append(box);
   const answer = box.querySelector(".cevap");
@@ -988,6 +1031,7 @@ async function ask(question) {
   const body = owner.id ? { question: turn.q, conversation: owner.id }
     : state.keep ? { question: turn.q } : { question: turn.q, history: owner.turns.map((t) => ({ q: t.q, a: t.a, r: t.r })) };
   body.mode = turn.mode;
+  body.libraries = turn.libraries;
   let finished = false;
 
   const handle = (event, data) => {
@@ -1105,6 +1149,7 @@ async function start() {
   layout();
   renderExamples();
   renderModes();
+  renderLibraries();
   try {
     const s = await api("durum");
     Object.assign(state, { keep: s.keep, questions: s.questions, remaining: s.remaining });

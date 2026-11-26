@@ -6,7 +6,8 @@ sorulur (takip soruları sayfadaki gibi: geçmişe modelin düzeltilmiş ham cev
 bütün araç çağrıları sonuçlarıyla birlikte yazılır, yani modelin gördüğü her şey.
 
 Soru dosyası düz metindir: `## ad` bir konuşma açar (`## ad [kip: tarama]`: konuşmanın ilk sorusunun kipi, S13.12;
-sayfadaki gibi takip soruları serbesttir, S13.13; yoksa serbest soru), altındaki her dolu satır bir sorudur, `#` ile başlayan öbür satırlar açıklamadır (sorulmaz). Konuşmalar aynı
+sayfadaki gibi takip soruları serbesttir, S13.13; yoksa serbest soru; `[kütüphane: tefsir,hadis]`: konuşmanın her
+sorusunda açık öbür kütüphaneler, S13.17, sayfadaki seçim gibi), altındaki her dolu satır bir sorudur, `#` ile başlayan öbür satırlar açıklamadır (sorulmaz). Konuşmalar aynı
 anda sorulur (`--paralel`).
 
     uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-01.txt [ad …]
@@ -36,8 +37,10 @@ def load(path: Path) -> list[dict]:
         line = line.strip()
         if line.startswith("## "):
             head = line[3:].strip()
-            m = re.match(r"^(\S+)\s*\[kip:\s*([\w-]+)\]$", head)
-            out.append({"ad": m.group(1) if m else head, "kip": m.group(2) if m else None, "sorular": []})
+            tags = dict(re.findall(r"\[(kip|kütüphane):\s*([\w,-]+)\]", head))
+            name = re.sub(r"\s*\[(?:kip|kütüphane):[^\]]*\]", "", head).strip()
+            out.append({"ad": name, "kip": tags.get("kip"),
+                        "kutuphaneler": [k for k in tags.get("kütüphane", "").split(",") if k], "sorular": []})
         elif not line or line.startswith("#"):
             continue
         elif not out:
@@ -57,7 +60,7 @@ async def converse(chat, conversation: dict) -> dict:
         tally, start, done, error = Tally(), time.time(), None, None
         mode = conversation.get("kip") if i == 0 else None        # S13.13: sayfa tarama cevabından sonra serbeste döner
         try:
-            async for event, data in chat.ask(history, question, tally, mode):
+            async for event, data in chat.ask(history, question, tally, mode, conversation.get("kutuphaneler") or ()):
                 if event == "done":
                     done = data
                 elif event == "error":
@@ -76,7 +79,8 @@ async def converse(chat, conversation: dict) -> dict:
         if done is None:
             break
         history.append({"q": question, "a": done["raw"], "r": done["reads"]})
-    return {"ad": conversation["ad"], "kip": conversation.get("kip"), "turns": turns}
+    return {"ad": conversation["ad"], "kip": conversation.get("kip"),
+            "kutuphaneler": conversation.get("kutuphaneler") or [], "turns": turns}
 
 
 def summary(results: list[dict], model: str, source: Path) -> str:

@@ -267,7 +267,7 @@ def _quote_text(text: str) -> str | None:
     return text.strip('"“”«» \n') or None
 
 
-def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> Checked:
+def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), foreign=None) -> Checked:
     """İşaretleri denetler, düzeltir ve numaralar (S12.9: düzeltmeyi sunucu yapar). Her işaret ayrı denetlenir:
 
     - tutan işaret kalır;
@@ -280,19 +280,40 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
     - işaretsiz tırnaklı söz (dört kelime ve üstü) aranır: bulunursa işaret alır, bulunmazsa uyarı (S13.16);
     - düz metne yazılmış kimlik ("(c033)") silinir.
 
-    Aynı kimlik aynı numarayı alır; birden çok alıntısı "…" ile birleşip birlikte denetlenir."""
-    text, unmarked = unmarked_quotes(checker, _split_blocks(strip_own_sources(text)), read)
+    Aynı kimlik aynı numarayı alır; birden çok alıntısı "…" ile birleşip birlikte denetlenir.
+
+    S13.17: öbür kütüphanenin işareti (`[[tefsir:…]]`) o kütüphanenin `cite`'ıyla denetlenir (`foreign(kütüphane,
+    öğeler) -> kayıtlar`, `Kutuphaneler.verify`); tutmayan alıntı "doğrulanamadı" olur (taşınmaz), bilinmeyen kimlik
+    silinir. `foreign` yoksa öneki olan işaret silinir. Risale'nin `risale:` öneki atılır."""
+    text, unmarked = unmarked_quotes(checker, _marks_before_translation(_split_blocks(strip_own_sources(text))), read)
     leaks = list(dict.fromkeys(m.group().strip() for m in BARE_ID.finditer(MARK.sub(" ", text))))
     problems = [{"id": leak, "problem": "An id or sentence number written in the prose: the reader must not see ids. "
                  "Put an id only inside [[ ]] right after the words it supports, or drop it."} for leak in leaks]
     counts = {"fixed": 0, "repaired": 0, "unverified": 0, "dropped": 0, "leaks": len(leaks), **unmarked}
-    found = marks(text)
+    found = [(_risale_id(ident), quote, span) for ident, quote, span in marks(text)]
+    outside = _verify_foreign(found, foreign)        # (kütüphane, kimlik, alıntı) -> kayıt
     edits: dict[int, list[tuple[str, str]]] = {}     # S13.16 (c): onarılan alıntının cevaptaki sözleri
     checker.refresh()
     nodes = getattr(checker, "nodes", {})
     sections: set[str] = set()         # bölüm atfı: alıntısız ya da alıntısı bölümün başlığı olan bölüm kimliği
     resolved = []                      # (yeni kimlik ya da None: silinir, alıntı, doğrulandı mı, yer)
     for ident, quote, span in found:
+        if (where := _foreign(ident)) is not None:
+            record = outside.get((where[0], where[1], quote))
+            if record is None or (record.get("problem") and (record.get("unknown") or not quote)):
+                problems.append({"id": ident, "quote": quote, "problem": (record or {}).get("problem")
+                                 or "This library is not open in this conversation."})
+                counts["dropped"] += 1
+                resolved.append((None, None, True, span))
+            elif record.get("problem"):
+                problems.append({"id": ident, "quote": quote, "problem": record["problem"]})
+                counts["unverified"] += 1
+                resolved.append((ident, quote, False, span))
+            else:
+                if record.get("section"):
+                    sections.add(ident)
+                resolved.append((ident, quote if not record.get("section") else None, True, span))
+            continue
         if (node := nodes.get(ident)) is not None and (not quote or _heading_quote(node, quote)):
             sections.add(ident)
             resolved.append((ident, None, True, span))
@@ -337,8 +358,23 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
         if quote:
             quotes.setdefault(key, []).append(quote)
     sources = []
-    plain = [key for key in keys if key[0] not in sections]
-    for key in keys:
+    plain = [key for key in keys if key[0] not in sections and _foreign(key[0]) is None]
+    for key in list(keys):
+        if (where := _foreign(key[0])) is not None:
+            record = next((r for (k, i, q), r in outside.items() if k == where[0] and i == where[1]
+                           and (q == (quotes.get(key) or [None])[0])), None) or {}
+            from risale_mcp.kutuphaneler import KUTUPHANELER
+            source = {"n": keys[key], "id": key[0], "cite_as": record.get("cite_as"), "library": where[0],
+                      "library_title": KUTUPHANELER[where[0]].title}
+            if record.get("source_name"):
+                source["source_name"] = record["source_name"]
+            if record.get("section"):
+                source["section"] = True
+            if len(key) > 1 or record.get("problem"):
+                source["problem"] = record.get("problem") or "The quoted words are not in this source."
+                source["unverified"] = True
+            sources.append(source)
+            continue
         if key[0] in sections:
             source = {"n": keys[key], "id": key[0], "cite_as": nodes[key[0]].ref, "section": True}
             if name := source_name(checker, key[0]):
@@ -371,6 +407,38 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
     counts.update(_paragraphs(raw))
     markdown = _dedupe(re.sub(r"[ \t]+(\[\d+\])", r" \1", _tidy("".join(out))), NUMBER_REPEAT)
     return Checked(markdown, sources, problems, raw, counts)
+
+
+def _risale_id(ident: str) -> str:
+    return ident[len("risale:"):] if ident.startswith("risale:") else ident
+
+
+def _foreign(ident: str) -> tuple[str, str] | None:
+    """Öbür kütüphanenin işareti mi: (kütüphane, kimlik)."""
+    from risale_mcp.kutuphaneler import split_id
+    where, local = split_id(ident)
+    return (where, local) if where else None
+
+
+def _verify_foreign(found: list, foreign) -> dict:
+    """Öbür kütüphanelerin işaretleri kütüphane başına tek denetimde: (kütüphane, kimlik, alıntı) -> kayıt."""
+    wanted: dict[str, list[tuple[str, str | None]]] = {}
+    for ident, quote, _ in found:
+        if (where := _foreign(ident)) is not None and (where[1], quote) not in wanted.setdefault(where[0], []):
+            wanted[where[0]].append((where[1], quote))
+    out = {}
+    if foreign is None:
+        return out
+    for kutuphane, items in wanted.items():
+        try:
+            records = foreign(kutuphane, [{"id": i, **({"quote": q} if q else {})} for i, q in items])
+        except Exception:
+            import logging
+            logging.exception("sohbet: %s işaretleri denetlenemedi", kutuphane)
+            records = [{"id": i, "problem": "The library could not check this source."} for i, _ in items]
+        for (ident, quote), record in zip(items, records):
+            out[(kutuphane, ident, quote)] = record
+    return out
 
 
 # S13.11: taşınan işaret yanındakiyle aynı yere düşünce "[2] [2]" kalıyordu (Haiku, kimin-sözü konuşması)
@@ -595,6 +663,37 @@ def _repair(checker, ident: str, quote: str, segment: str) -> tuple[str, list[tu
 UNMARKED_WORDS = 4
 UNMARKED_QUOTE = re.compile(r"([\"“«])([^\"“”«»\n\[\]]{3,}?)([\"”»])(?![ \t]*\[\[)")
 UNMARKED_NOTE = " (⚠ eserlerde bu sözlerle bulunamadı)"
+# S13.17: modelin kendi tercümesinin satırı ("Yapay zekâ tercümesi: …"): alıntı değildir, denetlenmez
+TRANSLATION_LINE = re.compile(r"^\s*(?:[*_]{1,2})?(?:Yapay zek[âa] tercümesi|AI translation|Translation \(AI\))"
+                              r"(?:[*_]{1,2})?\s*:", re.I)
+
+
+def _marks_before_translation(text: str) -> str:
+    """S13.17: alıntı bloğunun ardından modelin tercüme satırı gelir; model işareti tercümenin sonuna ya da altındaki
+    satıra yazınca işaret alıntıya değil tercümeye bağlanıyordu (alıntı denetlenmiyordu). Böyle işaretler bloğun son
+    satırına taşınır."""
+    lines = text.split("\n")
+    i = 0
+    while i < len(lines):
+        if TRANSLATION_LINE.match(lines[i]):
+            block = i - 1
+            while block >= 0 and not lines[block].strip():
+                block -= 1
+            if block >= 0 and lines[block].lstrip().startswith(">") and not MARK.search(lines[block]):
+                moved = MARK.findall(lines[i])
+                lines[i] = MARK.sub("", lines[i]).rstrip()
+                nxt = i + 1
+                while nxt < len(lines) and not lines[nxt].strip():         # arada boş satır olabilir
+                    nxt += 1
+                if nxt < len(lines) and MARK.search(lines[nxt]) and not MARK.sub("", lines[nxt]).strip():
+                    moved += MARK.findall(lines[nxt])
+                    del lines[nxt]
+                if moved:
+                    lines[block] = lines[block].rstrip() + " " + " ".join(f"[[{m}]]" for m in moved)
+        i += 1
+    return "\n".join(lines)
+
+
 ARABIC = re.compile(r"[؀-ۿ]")
 _TRANSLATIONS: dict[int, list[str]] = {}
 
@@ -698,6 +797,9 @@ def unmarked_quotes(checker, text: str, read=frozenset()) -> tuple[str, dict]:
             i = j + 1
             continue
         line, out, last = lines[i], [], 0
+        if TRANSLATION_LINE.match(line):                # S13.17: modelin kendi tercümesi alıntı değildir
+            i += 1
+            continue
         for m in UNMARKED_QUOTE.finditer(line):
             # işaret aynı cümlede biraz sonra geliyorsa ("… sözü geçer [[…]].") söz işaretlidir
             tail = re.split(r"[\"“«]|[.!?](?:\s|$)", line[m.end():], maxsplit=1)[0]
@@ -796,6 +898,7 @@ class Tally:
     model_text: str = ""                           # modelin son cevabı, sunucu düzeltmeden önce (`olc`)
     steps: list = field(default_factory=list)      # S13.3: okuyucuya gösterilen adımlar ("… okunuyor")
     survey_places: list | None = None              # S13.13: taramanın bütün yerleri (modele gitmez, sona eklenir)
+    libraries: tuple = ()                          # S13.17: bu soruda açık olan öbür kütüphaneler
 
     def add(self, model: str, usage) -> None:
         self.rounds += 1
@@ -901,7 +1004,8 @@ class Settings:
 
 
 class Chat:
-    def __init__(self, library, client, config: Config = Config(), settings: Settings = Settings()) -> None:
+    def __init__(self, library, client, config: Config = Config(), settings: Settings = Settings(),
+                 libraries=None) -> None:
         from risale_mcp.citations import CitationChecker
         from risale_mcp.server import create_server
         self.library = library
@@ -913,15 +1017,37 @@ class Chat:
         from risale_mcp.server import LUGAT_INSTRUCTIONS
         self.system = instructions(config.name, lugat=LUGAT_INSTRUCTIONS in self.server.instructions)
         self._tools: list[dict] | None = None
+        from risale_mcp.kutuphaneler import Kutuphaneler
+        self.libraries = libraries if libraries is not None else Kutuphaneler()    # S13.17: öbür kütüphaneler
 
-    async def tools(self, mode: str | None = None) -> list[dict]:
-        """MCP araçları; seçilen kipin sohbete özgü araçları sona eklenir (S13.12: önbellek önek tutar)."""
+    async def tools(self, mode: str | None = None, chosen: tuple[str, ...] = ()) -> tuple[list[dict], tuple[str, ...]]:
+        """MCP araçları; seçilen kütüphanelerin araçları (S13.17, önekli) ve kipin sohbete özgü araçları sona eklenir
+        (S13.12: önbellek önek tutar). (araçlar, ulaşılamayan kütüphaneler)."""
         from risale_mcp import kipler
+        from risale_mcp.kutuphaneler import Unavailable
         if self._tools is None:
             self._tools = [{"name": t.name, "description": t.description or "", "input_schema": t.input_schema}
                            for t in await self.server.list_tools() if t.name not in EXCLUDED_TOOLS]
-        extra = [kipler.LOCAL_TOOLS[name] for name in kipler.get(mode).tools]
-        return self._tools + extra if extra else self._tools
+        tools, missing = list(self._tools), []
+        for kutuphane in chosen:
+            try:
+                tools += await self.libraries.tools(kutuphane)
+            except (Unavailable, Exception):
+                import logging
+                logging.warning("sohbet: %s kütüphanesine ulaşılamadı", kutuphane)
+                missing.append(kutuphane)
+        tools += [kipler.LOCAL_TOOLS[name] for name in kipler.get(mode).tools]
+        return tools, tuple(missing)
+
+    def chosen(self, libraries) -> tuple[str, ...]:
+        """Okuyucunun seçtiği kütüphanelerden bu sunucuda bulunanlar (S13.17)."""
+        from risale_mcp.kutuphaneler import selected
+        return tuple(k for k in selected(libraries) if k in self.libraries.available())
+
+    def system_for(self, chosen: tuple[str, ...], missing: tuple[str, ...] = ()) -> str:
+        from risale_mcp.kutuphaneler import instructions as library_instructions
+        usable = tuple(k for k in chosen if k not in missing)
+        return self.system + ("\n" + library_instructions(usable, missing) if chosen else "")
 
     def messages(self, history: list[dict], question: str, mode: str | None = None) -> list[dict]:
         question = (question or "").strip()
@@ -949,18 +1075,27 @@ class Chat:
             question = f"[Page note, not the reader's words. {instructions}]\n\n" + question
         return out + [{"role": "user", "content": question}]
 
-    def _params(self, tools: list[dict], messages: list[dict]) -> dict:
+    def _params(self, tools: list[dict], messages: list[dict], system: str | None = None) -> dict:
         return {"model": self.settings.model, "max_tokens": MAX_TOKENS,
-                "system": [{"type": "text", "text": self.system, "cache_control": {"type": "ephemeral"}}],
+                "system": [{"type": "text", "text": system or self.system, "cache_control": {"type": "ephemeral"}}],
                 "tools": tools, "messages": messages, "cache_control": {"type": "ephemeral"},
                 "output_config": {"effort": self.settings.effort}}
 
-    async def _call_tool(self, block) -> dict:
+    async def _call_tool(self, block, chosen: tuple[str, ...] = ()) -> dict:
         from mcp.server.mcpserver.exceptions import ToolError
         from risale_mcp import kipler
         args = block.input if isinstance(block.input, dict) else {}
         if block.name in kipler.LOCAL_TOOLS:        # S13.12: sohbetin kendi araçları (kipin)
             return await self._call_local(block, args)
+        if owner := self.libraries.owner(block.name, chosen):      # S13.17: öbür kütüphane
+            try:
+                text, error = await self.libraries.call(owner[0], owner[1], args)
+            except Exception:
+                import logging
+                logging.exception("sohbet: araç hatası %s", block.name)
+                text, error = f"The tool {block.name} failed; try another way.", True
+            return {"type": "tool_result", "tool_use_id": block.id, "content": text,
+                    **({"is_error": True} if error else {})}
         try:
             result = await self.server.call_tool(block.name, args)
             text = "".join(getattr(c, "text", "") for c in result.content)
@@ -996,18 +1131,25 @@ class Chat:
                     "content": f"The tool {block.name} failed; try another way."}
 
     async def ask(self, history: list[dict], question: str, tally: Tally | None = None,
-                  mode: str | None = None) -> AsyncIterator[tuple[str, dict]]:
+                  mode: str | None = None, libraries=()) -> AsyncIterator[tuple[str, dict]]:
         """(olay, veri) üretir; sonuncusu `done` ya da `error`. `tally` kullanım satırı için doldurulur. `mode`: kip
-        (S13.12, `kipler.py`); yoksa serbest soru."""
+        (S13.12, `kipler.py`); yoksa serbest soru. `libraries`: okuyucunun açtığı öbür kütüphaneler (S13.17)."""
         from risale_mcp import kipler
         kip = kipler.get(mode)
         tally = tally if tally is not None else Tally()
+        chosen = self.chosen(libraries)
         messages = self.messages(history, question, kip.id)
-        tools = await self.tools(kip.id)
+        tools, missing = await self.tools(kip.id, chosen)
+        system = self.system_for(chosen, missing)
+        tally.libraries = chosen
+        loop = asyncio.get_running_loop()
+
+        def foreign(kutuphane: str, items: list[dict]) -> list[dict]:      # denetim iş parçacığından
+            return asyncio.run_coroutine_threadsafe(self.libraries.verify(kutuphane, items), loop).result(90)
         corrected = False
         while True:
             text = None
-            async for event in self._loop(tools, messages, tally):
+            async for event in self._loop(tools, messages, tally, system, chosen):
                 if event[0] == "final":
                     text = event[1]["text"]
                 else:
@@ -1016,7 +1158,7 @@ class Chat:
                 return
             tally.model_text = text
             yield "status", {"text": CHECKING}
-            checked = await asyncio.to_thread(check, self.checker, text, read_ids(tally.calls))
+            checked = await asyncio.to_thread(check, self.checker, text, read_ids(tally.calls), foreign)
             if (self.settings.model_fix and checked.problems and not corrected and tally.rounds < MAX_ROUNDS):
                 corrected = True
                 messages.append({"role": "user", "content": correction(checked.problems)})
@@ -1032,12 +1174,14 @@ class Chat:
                 if every := all_places(tally.survey_places):    # yalnız sayfada: geçmişe (modele) girmez
                     markdown += "\n\n" + every
             yield "done", {"markdown": markdown, "raw": raw, "sources": checked.sources, "mode": kip.id,
+                           "libraries": list(chosen),
                            "problems": checked.counts["unverified"], "corrected": corrected, "checks": checked.counts,
                            "steps": tally.steps, "reads": reads(tally.calls),
                            "usage": {"cost": round(tally.cost, 5), "tools": tally.tools, "rounds": tally.rounds}}
             return
 
-    async def _loop(self, tools: list[dict], messages: list[dict], tally: Tally):
+    async def _loop(self, tools: list[dict], messages: list[dict], tally: Tally, system: str | None = None,
+                    chosen: tuple[str, ...] = ()):
         while True:
             if tally.rounds >= MAX_ROUNDS:
                 yield "error", {"message": "Bu soru için okuma sınırına ulaşıldı. Soruyu daraltarak yeniden sorun."}
@@ -1046,7 +1190,7 @@ class Chat:
             message = None
             for attempt in range(STREAM_ATTEMPTS):
                 try:
-                    async with self.client.messages.stream(**self._params(tools, messages)) as stream:
+                    async with self.client.messages.stream(**self._params(tools, messages, system)) as stream:
                         async for event in stream:
                             if event.type == "text" and event.text:
                                 yield "delta", {"text": event.text}
@@ -1081,9 +1225,15 @@ class Chat:
                                                "you have read, and say what you could not check."})
                     continue
                 tally.tools += 1
-                tally.steps.append(line := status_line(self.library, block.name, block.input or {}))
+                owner = self.libraries.owner(block.name, chosen)
+                if owner:
+                    from risale_mcp.kutuphaneler import status_line as library_status
+                    line = library_status(owner[0], owner[1], block.input or {})
+                else:
+                    line = status_line(self.library, block.name, block.input or {})
+                tally.steps.append(line)
                 yield "status", {"text": line, "step": True}
-                result = await self._call_tool(block)
+                result = await self._call_tool(block, chosen)
                 if PAGE_ONLY in result:                  # API'ye gitmeyen, sayfanın kullandığı kısım
                     tally.survey_places = result.pop(PAGE_ONLY)
                 results.append(result)
@@ -1227,10 +1377,12 @@ def scope_note(calls: list, sources: list[dict], history: list[dict] | None = No
             continue
         seen.add(ids)
         pending.append((" / ".join(t.get("ref") or t["id"] for t in targets), _place_ref(library, source)))
-    ids = read_ids(calls)
+    ids = read_ids(calls) | foreign_read_ids(calls)
     unread = []
     for src in sources:
         first = str(src.get("id") or "").split("..")[0]
+        if src.get("library") and src.get("section") and first in ids:
+            continue
         if first and first not in ids and not _within(first.rsplit("/", 1)[0], earlier | read_places):
             ref = str(src.get("cite_as") or first).split(" › “")[0]
             if ref not in unread:
@@ -1305,6 +1457,22 @@ def read_place(library, call: str) -> str:
 
 
 READING_TOOLS = {"read_section", "get_passage", "find_sentence"}
+FOREIGN_READING = {"read_section", "get_passage", "find_sentence", "get_hadith", "read_chapter"}   # S13.17
+_RESULT_ANY_ID = re.compile(r'"id"\s*:\s*"([^"]+)"')
+
+
+def foreign_read_ids(calls: list) -> set[str]:
+    """Öbür kütüphanelerde okunanlar, alan adıyla (`tefsir:ibnkesir/2/255/c001`, `hadis:bukhari/1`): okuma
+    araçlarının sonucundaki kimlikler (bölüm kimlikleri de)."""
+    out = set()
+    for name, args, result, error in calls:
+        head, _, tool = name.partition("_")
+        if error or tool not in FOREIGN_READING or head not in ("tefsir", "hadis", "klasik"):
+            continue
+        out.update(f"{head}:{m}" for m in _RESULT_ANY_ID.findall(result or ""))
+        if place := (args or {}).get("section"):         # okunan bölümün kendisi
+            out.add(f"{head}:{place}")
+    return out
 _RESULT_ID = re.compile(r'"id"\s*:\s*"([^"]+/c\d{3}(?:/[hs]\d+/c\d{3})?)"')
 
 
@@ -1448,12 +1616,13 @@ class Conversations:
     def turns(self, email: str, ident: str) -> list[dict] | None:
         if not self.owned(email, ident):
             return None
-        rows = self.store._run("SELECT n, question, raw, markdown, sources, corrected, feedback, steps, reads, mode FROM "
+        rows = self.store._run("SELECT n, question, raw, markdown, sources, corrected, feedback, steps, reads, mode, "
+                               "libraries FROM "
                                "turns WHERE conversation = ? ORDER BY n", (ident,))
         return [{"n": r["n"], "q": r["question"], "a": r["raw"], "markdown": r["markdown"],
                  "sources": json.loads(r["sources"]), "corrected": bool(r["corrected"]), "feedback": r["feedback"],
                  "steps": json.loads(r["steps"] or "[]"), "r": None if r["reads"] is None else json.loads(r["reads"]),
-                 "mode": r["mode"] or "serbest"}
+                 "mode": r["mode"] or "serbest", "libraries": json.loads(r["libraries"] or "[]")}
                 for r in rows]
 
     def get(self, email: str, ident: str) -> dict | None:
@@ -1477,11 +1646,12 @@ class Conversations:
                 n = c.execute("SELECT COALESCE(MAX(n) + 1, 0) FROM turns WHERE conversation = ?", (ident,)).fetchone()[0]
                 c.execute("UPDATE conversations SET updated = ? WHERE id = ? AND email = ?", (now, ident, email))
             c.execute("INSERT INTO turns (conversation, n, ts, question, raw, markdown, sources, corrected, steps, "
-                      "reads, mode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                      "reads, mode, libraries) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                       (ident, n, now, question.strip(), done["raw"], done["markdown"],
                        json.dumps(done["sources"], ensure_ascii=False), int(bool(done.get("corrected"))),
                        json.dumps(done.get("steps") or [], ensure_ascii=False),
-                       json.dumps(done.get("reads") or [], ensure_ascii=False), done.get("mode") or "serbest"))
+                       json.dumps(done.get("reads") or [], ensure_ascii=False), done.get("mode") or "serbest",
+                       json.dumps(done.get("libraries") or [])))
         return ident, n
 
     def rename(self, email: str, ident: str, title: str) -> bool:
@@ -1514,7 +1684,8 @@ def log_usage(store: Store, email: str | None, model: str, tally: Tally, seconds
            "cache_read": tally.cache_read, "cost": round(tally.cost, 6), "seconds": round(seconds, 2),
            "sources": len(done["sources"]) if done else None, "problems": done["problems"] if done else None,
            "corrected": int(done["corrected"]) if done else None, "outcome": outcome,
-           **{k: checks.get(k) if done else None for k in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")}}
+           **{k: checks.get(k) if done else None for k in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")},
+           "libraries": ",".join(tally.libraries) or None}
     store._run(f"INSERT INTO usage ({', '.join(row)}) VALUES ({', '.join('?' * len(row))})", tuple(row.values()))
     store._run("DELETE FROM usage WHERE ts < ?", (row["ts"] - USAGE_DAYS * 86400,))
 
@@ -1581,10 +1752,11 @@ def section_opening(checker, ident: str) -> dict:
     return passage
 
 
-def page(config: Config, email: str) -> str:
+def page(config: Config, email: str, libraries: list[dict] | None = None) -> str:
     import html as _html
     version = _asset_version()
     return ((ASSETS / "sohbet.html").read_text(encoding="utf-8")
+            .replace("{{KUTUPHANELER}}", _html.escape(json.dumps(libraries or [], ensure_ascii=False)))
             .replace("{{P}}", _html.escape(config.prefix)).replace("{{NAME}}", _html.escape(config.name))
             .replace("{{EMAIL}}", _html.escape(email)).replace("{{INITIAL}}", _html.escape(email[:1].upper()))
             .replace("{{V}}", version)
@@ -1639,7 +1811,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
         return max(0, limits.questions - asked_today(store, email)) if limits.counted(email) else None
 
     def home(request: Request, email: str) -> HTMLResponse:
-        return HTMLResponse(page(config, email), headers=headers)
+        return HTMLResponse(page(config, email, chat.libraries.public()), headers=headers)
 
     async def asset(request: Request):
         name = request.path_params["name"]
@@ -1653,7 +1825,14 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             return JSONResponse({"error": "oturum yok"}, status_code=401, headers=headers)
         ident = request.query_params.get("id", "")[:300]
         try:
-            passage = await asyncio.to_thread(source_text, chat, ident)
+            from risale_mcp.kutuphaneler import split_id
+            where, local = split_id(ident)
+            if where:                                          # S13.17: öbür kütüphanenin metni
+                if where not in chat.libraries.available():
+                    raise LookupError(ident)
+                passage = await chat.libraries.text(where, local)
+            else:
+                passage = await asyncio.to_thread(source_text, chat, local)
         except Exception:
             return JSONResponse({"error": "Bu adreste metin bulunamadı."}, status_code=404, headers=headers)
         return JSONResponse(passage, headers=headers)
@@ -1669,6 +1848,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             question = str(body.get("question", ""))
             from risale_mcp import kipler
             mode = kipler.get(str(body.get("mode") or "")).id      # S13.12: bilinmeyen kip serbest soru sayılır
+            libraries = chat.chosen(body.get("libraries"))         # S13.17: bilinmeyen ya da olmayan atılır
             conversation = body.get("conversation")
             if conversation is not None:
                 conversation = str(conversation)[:64]
@@ -1690,7 +1870,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             busy.add(email)
             tally, start, outcome, done = Tally(), time.time(), "cancelled", None
             try:
-                async for event, data in chat.ask(history, question, tally, mode):
+                async for event, data in chat.ask(history, question, tally, mode, libraries):
                     if event == "done":
                         outcome, done = "done", data
                         left = remaining(email)
@@ -1909,6 +2089,7 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--dev", action="store_true", help="e-posta gönderilmez, data/interim/sohbet/eposta.log'a yazılır")
     p = sub.add_parser("sor", help="terminalden tek soru")
     p.add_argument("question")
+    p.add_argument("--kutuphane", default="", help="öbür kütüphaneler, virgülle (S13.17): tefsir,hadis,klasik")
     p = sub.add_parser("olc", help="altın soruları bu servisle sor; varsayılan: Risale'nin 29 sorusu. Model ve "
                                     "düşünme düzeyi SOHBET_MODEL, SOHBET_EFFORT")
     p.add_argument("ids", nargs="*")
@@ -1940,7 +2121,7 @@ def main(argv: list[str] | None = None) -> None:
 
         async def run():
             tally, start = Tally(), time.time()
-            async for event, data in chat.ask([], args.question, tally):
+            async for event, data in chat.ask([], args.question, tally, None, args.kutuphane.split(",")):
                 if event == "status":
                     print(f"  · {data['text']}", flush=True)
                 elif event == "restart":
