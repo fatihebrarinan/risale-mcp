@@ -2188,6 +2188,7 @@ def main(argv: list[str] | None = None) -> None:
     p = sub.add_parser("sor", help="terminalden tek soru")
     p.add_argument("question")
     p.add_argument("--kutuphane", default="", help="öbür kütüphaneler, virgülle (S13.17): tefsir,hadis,klasik")
+    p.add_argument("--kip", default=None, help="kip (kipler.py): serbest, tarama, ayet")
     p = sub.add_parser("olc", help="altın soruları bu servisle sor; varsayılan: Risale'nin 29 sorusu. Model ve "
                                     "düşünme düzeyi SOHBET_MODEL, SOHBET_EFFORT")
     p.add_argument("ids", nargs="*")
@@ -2219,7 +2220,7 @@ def main(argv: list[str] | None = None) -> None:
 
         async def run():
             tally, start = Tally(), time.time()
-            async for event, data in chat.ask([], args.question, tally, None, args.kutuphane.split(",")):
+            async for event, data in chat.ask([], args.question, tally, args.kip, args.kutuphane.split(",")):
                 if event == "status":
                     print(f"  · {data['text']}", flush=True)
                 elif event == "restart":
