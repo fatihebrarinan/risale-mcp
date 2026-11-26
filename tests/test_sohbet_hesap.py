@@ -105,7 +105,8 @@ def test_lockout(store):
 
 
 def test_web_flow(client, mailer):
-    assert client.get("/sohbet/").headers["location"] == "/sohbet/kayit"
+    home = client.get("/sohbet/")                      # S13.15.6: girişsiz açılış kökte, yönlendirmesiz
+    assert home.status_code == 200 and 'action="/sohbet/kayit"' in home.text and "noindex" not in home.text
     r = client.post("/sohbet/kayit", data={"email": "Okur@Example.com"})
     assert r.status_code == 200 and "Kodu yazın" in r.text
     assert mailer.sent[-1][0] == "okur@example.com" and "hesap açmak" in mailer.sent[-1][2]
@@ -157,8 +158,27 @@ def test_config_prefix_is_portable(store, mailer, monkeypatch):
     config = Config.from_env()
     assert config.prefix == "/"
     c = TestClient(build_app(store, mailer, config), base_url="https://yeni.example", follow_redirects=False)
-    assert c.get("/").headers["location"] == "/kayit"
+    home = c.get("/")
+    assert home.status_code == 200 and 'action="/kayit"' in home.text
     assert "Yeni Ad" in c.get("/giris").text
+
+
+def test_search_engines(store, mailer, monkeypatch):
+    """S13.15.6: tanıtımlı sayfalar dizine açık, kanonik adres kök; robots.txt ve site haritası; öbürleri noindex."""
+    monkeypatch.setenv("SOHBET_PREFIX", "/")
+    monkeypatch.setenv("SOHBET_SITE", "https://chat.example")
+    c = TestClient(build_app(store, mailer, Config.from_env()), base_url="https://chat.example", follow_redirects=False)
+    for path in ("/", "/kayit", "/giris"):
+        page = c.get(path).text
+        assert "noindex" not in page and '<link rel="canonical" href="https://chat.example/">' in page
+        assert '"@type": "WebApplication"' in page and "Yapay Zekâ</title>" in page
+    assert "noindex" in c.get("/cevrimdisi").text
+    robots = c.get("/robots.txt")
+    assert robots.status_code == 200 and "Disallow: /api/" in robots.text
+    assert "Sitemap: https://chat.example/sitemap.xml" in robots.text
+    sitemap = c.get("/sitemap.xml").text
+    assert "<loc>https://chat.example/</loc>" in sitemap and "<loc>https://chat.example/gizlilik</loc>" in sitemap
+    assert '<link rel="canonical" href="https://chat.example/gizlilik">' in c.get("/gizlilik").text
 
 
 def test_policy_pages_are_public(tmp_path):

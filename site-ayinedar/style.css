@@ -1,0 +1,206 @@
+/* Görünüm tarayıcının ayarına uyar; menüdeki düğme öbürünü seçer (site.js, localStorage) */
+:root {
+  color-scheme: dark;
+  --bg: #141917; --fg: #e8ece9; --muted: #a3ada7; --accent: #7cc59d;
+  --card: #1c2320; --line: #2c3530; --code: #222a26;
+  --ok: #7cc59d; --bad: #f09a7a; --okbg: #1d3328; --badbg: #3a241c;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    color-scheme: light;
+    --bg: #fbfaf7; --fg: #1f2a24; --muted: #5b6660; --accent: #1f5c3f;
+    --card: #ffffff; --line: #e3e0d8; --code: #f1efe9;
+    --ok: #1f7a4d; --bad: #b3401f; --okbg: #e3f2e9; --badbg: #fbe7df;
+  }
+}
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #fbfaf7; --fg: #1f2a24; --muted: #5b6660; --accent: #1f5c3f;
+  --card: #ffffff; --line: #e3e0d8; --code: #f1efe9;
+  --ok: #1f7a4d; --bad: #b3401f; --okbg: #e3f2e9; --badbg: #fbe7df;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 17px/1.65 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
+nav { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; padding-bottom: 16px; margin-bottom: 24px; border-bottom: 1px solid var(--line); }
+nav .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; color: var(--fg); text-decoration: none; margin-right: auto; }
+nav .brand img { width: 32px; height: 32px; border-radius: 8px; }
+nav a { color: var(--muted); text-decoration: none; }
+nav a:hover, nav a[aria-current] { color: var(--accent); }
+.theme-toggle { width: 34px; height: 34px; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: var(--card); color: var(--muted); font-size: 1rem; line-height: 1; cursor: pointer; }
+.theme-toggle:hover { color: var(--accent); border-color: var(--accent); }
+.theme-toggle::before { content: "☀"; }
+@media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) .theme-toggle::before { content: "☾"; } }
+:root[data-theme="light"] .theme-toggle::before { content: "☾"; }
+h1 { font-size: 1.75rem; line-height: 1.25; margin: 0 0 8px; }
+h2 { font-size: 1.25rem; margin: 36px 0 8px; }
+h3 { font-size: 1.05rem; margin: 24px 0 4px; }
+p, li { color: var(--fg); }
+.lead, .muted { color: var(--muted); }
+a { color: var(--accent); }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 16px 18px; margin: 20px 0; }
+code { font: 0.92em ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--code); padding: 1px 5px; border-radius: 4px; word-break: break-word; }
+pre { background: var(--code); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+pre code { background: none; padding: 0; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 0.95rem; }
+th, td { text-align: left; vertical-align: top; padding: 8px 10px; border-bottom: 1px solid var(--line); }
+th { color: var(--muted); font-weight: 600; }
+.table-wrap { overflow-x: auto; }
+footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.9rem; }
+
+/* Ana sayfa */
+body { overflow-x: clip; }
+.hero h1 { font-size: 2rem; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; margin: 20px 0 8px; }
+.button { display: inline-block; padding: 10px 18px; border-radius: 10px; border: 1px solid var(--accent); color: var(--accent); background: none; font: inherit; font-weight: 600; text-decoration: none; cursor: pointer; }
+.button.primary { background: var(--accent); color: var(--bg); }
+.button:hover { filter: brightness(1.1); }
+ol.steps-list { padding-left: 1.3em; }
+ol.steps-list li { margin: 8px 0; }
+.copybox { position: relative; }
+.copybox pre { white-space: pre-wrap; font-size: 0.85rem; max-height: 340px; overflow-y: auto; margin: 0; padding-top: 44px; }
+.copybox .button { position: absolute; top: 8px; right: 8px; padding: 4px 12px; font-size: 0.9rem; background: var(--card); }
+.small { font-size: 0.9rem; }
+.note { background: var(--card); border: 1px solid var(--line); border-left: 4px solid var(--accent); border-radius: 8px; padding: 12px 16px; margin: 16px 0; }
+.fields { display: grid; grid-template-columns: auto 1fr auto; gap: 8px 12px; align-items: center; margin: 8px 0 4px; }
+.fields code { overflow-wrap: anywhere; }
+.fields .button { padding: 3px 12px; font-size: 0.85rem; }
+
+/* Karşılaştırma: iki cevap yan yana, yazılıyormuş gibi */
+.cmp { width: min(1080px, calc(100vw - 32px)); position: relative; left: 50%; transform: translateX(-50%); margin: 20px 0; }
+.cmp-panels { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cmp-panel { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; }
+.cmp-panel > header { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 0.95rem; }
+.cmp-panel .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--muted); }
+.cmp-panel[data-side="on"] .dot { background: var(--ok); }
+.cmp-body { height: 560px; overflow-y: auto; padding: 16px; font-size: 0.93rem; line-height: 1.6; }
+.msg.user { margin-left: auto; max-width: 85%; width: fit-content; background: var(--code); border-radius: 14px; padding: 8px 14px; margin-bottom: 14px; }
+.answer > :first-child { margin-top: 0; }
+.answer h3, .answer h4 { font-size: 1rem; margin: 16px 0 4px; }
+.answer blockquote { margin: 10px 0; padding: 2px 0 2px 12px; border-left: 3px solid var(--line); color: var(--fg); }
+.answer blockquote p { margin: 4px 0; }
+.tool-steps { list-style: none; padding: 0; margin: 0 0 14px; font-size: 0.85rem; color: var(--muted); }
+.tool-steps li { display: flex; gap: 8px; align-items: center; padding: 2px 0; }
+.tool-steps li::before { content: "✓"; width: 14px; text-align: center; color: var(--ok); }
+.cmp.playing .tool-steps li.run::before { content: ""; width: 10px; height: 10px; margin: 0 2px; border: 2px solid var(--line); border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.cmp.playing .pending { display: none; }
+.cmp.playing .w { display: none; }
+.cmp.playing .w.on { display: inline; animation: fadein .3s; }
+@keyframes fadein { from { opacity: 0; } }
+.cmp-controls { display: flex; justify-content: center; margin-top: 12px; }
+.cmp-tabs { display: none; }
+.flag { background: none; color: inherit; border-radius: 3px; transition: background .4s; }
+.cmp.done .flag.bad { background: var(--badbg); box-shadow: inset 0 -2px var(--bad); }
+.cmp.done .flag.ok { background: var(--okbg); box-shadow: inset 0 -2px var(--ok); }
+.cmp.done .flag[data-note]::after { content: attr(data-note); display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 6px; font-size: 0.75rem; font-weight: 600; vertical-align: 1px; }
+.cmp.done .flag.bad[data-note]::after { background: var(--bad); color: var(--card); }
+.cmp.done .flag.ok[data-note]::after { background: var(--ok); color: var(--card); }
+@media (max-width: 760px) {
+  .cmp-panels { grid-template-columns: 1fr; }
+  .cmp-tabs { display: flex; gap: 6px; margin-bottom: 10px; }
+  .cmp-tabs button { flex: 1; padding: 8px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--muted); font: inherit; font-size: 0.9rem; cursor: pointer; }
+  .cmp-tabs button[aria-selected="true"] { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .cmp-panel:not(.active) { display: none; }
+  .cmp-body { height: 480px; }
+}
+.tool-steps li.narr { color: var(--fg); font-size: 0.93rem; padding: 6px 0; }
+.tool-steps li.narr::before { content: none; }
+.answer ol.sources { padding-left: 2em; font-size: 0.88rem; }
+.answer ol.sources li::marker { content: "[" counter(list-item) "] "; }
+.cmp.playing .tool-steps li.narr.run::before { content: none; }
+/* Amiri'nin (SIL Open Font License) yalnızca sayfadaki hadisin harflerini taşıyan alt kümesi; site dışarıdan bir şey yüklemez */
+@font-face { font-family: "Amiri Hadis"; src: url("/fonts/amiri-hadis.woff2") format("woff2"); font-display: swap; }
+.ar { font-family: "Amiri Hadis", "Amiri", "Scheherazade New", serif; font-size: 1.15em; }
+h4 { font-size: 1rem; margin: 20px 0 4px; }
+#claude h3 { font-size: 1.1rem; margin-top: 28px; }
+
+/* Kurulum sorunları: açılır sorular */
+.faq details { border-bottom: 1px solid var(--line); padding: 10px 0; }
+.faq details:first-of-type { border-top: 1px solid var(--line); }
+.faq summary { cursor: pointer; font-weight: 600; }
+.faq summary:hover { color: var(--accent); }
+.faq details p { margin: 8px 0 4px; }
+.fields:has(> code:first-child) { grid-template-columns: 1fr auto; }
+
+/* Kurulum ekran görüntüleri; tıklanınca tam boyu açılır */
+.shot { display: block; margin: 10px 0 14px; }
+.shot img { display: block; width: auto; max-width: 100%; height: auto; border: 1px solid var(--line); border-radius: 8px; }
+.phones { display: flex; gap: 10px; overflow-x: auto; padding: 4px 0 8px; margin: 10px 0; }
+.phones .shot { flex: 0 0 180px; margin: 0; }
+details.shots { margin: 12px 0; }
+details.shots > summary { cursor: pointer; font-weight: 600; color: var(--accent); }
+h4 { margin: 20px 0 4px; }
+/* Yenilikler (scripts/site-uret.py) */
+.post-item { border-bottom: 1px solid var(--line); padding: 4px 0 12px; }
+.post-item h2 { margin: 0 0 4px; }
+.post-item h2 a { text-decoration: none; }
+.post-item p { margin: 4px 0; }
+.post blockquote { margin: 16px 0; padding: 4px 0 4px 14px; border-left: 3px solid var(--accent); color: var(--fg); }
+.share h2 { margin-top: 0; }
+.share pre { white-space: pre-wrap; font: inherit; font-size: 0.95rem; }
+/* Ana sayfa (S2) */
+.hero { padding: 8px 0 4px; }
+.hero-logo { display: block; width: 88px; height: 88px; border-radius: 20px; margin: 12px 0 18px; }
+.hero h1 { font-size: clamp(1.6rem, 4.4vw, 2.3rem); line-height: 1.2; letter-spacing: -0.01em; }
+.hero .lead { font-size: 1.08rem; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 28px 0 8px; }
+.stat { background: var(--card); border: 1px solid var(--line); border-top: 3px solid var(--accent); border-radius: 12px; padding: 14px 14px 12px; }
+.stat strong { display: block; font-size: 1.35rem; line-height: 1.2; color: var(--fg); }
+.stat span { display: block; margin-top: 4px; font-size: 0.86rem; line-height: 1.4; color: var(--muted); }
+.plugins, .audience { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
+.plugins, .audience { width: min(1000px, calc(100vw - 32px)); position: relative; left: 50%; transform: translateX(-50%); }
+.plugin, .audience article { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px; }
+.plugin h3, .audience h3 { margin: 6px 0 6px; font-size: 1.12rem; }
+.plugin p, .audience p { margin: 0 0 10px; font-size: 0.95rem; }
+.plugin > a { margin-top: auto; font-weight: 600; text-decoration: none; }
+.plugin-icon { width: 34px; height: 34px; fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.try { color: var(--muted); font-style: italic; }
+.example { display: flex; flex-direction: column; background: var(--card); border: 1px solid var(--line); border-radius: 14px; overflow: hidden; margin: 16px 0 8px; }
+.example > header { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 0.95rem; }
+.example .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--ok); }
+.example .answer h4 { font-size: 0.98rem; margin: 14px 0 4px; color: var(--accent); }
+.example blockquote.ok { border-left-color: var(--ok); background: var(--okbg); border-radius: 0 8px 8px 0; padding: 4px 10px 4px 12px; }
+.example blockquote.ok::after { content: "✓ metinde var"; display: inline-block; margin: 2px 0 4px; padding: 0 6px; border-radius: 6px; font: 600 0.72rem system-ui, sans-serif; background: var(--ok); color: var(--card); }
+.example blockquote.ar { font-family: "Noto Naskh Arabic", "Amiri", "Scheherazade New", "Geeza Pro", serif; font-size: 1.12em; border-left: 0; border-right: 3px solid var(--ok); border-radius: 8px 0 0 8px; }
+.example .answer ol.sources ul { padding-left: 1.1em; color: var(--muted); }
+.audience .try { margin-top: auto; }
+ul.checks { list-style: none; padding: 0; }
+ul.checks li { position: relative; padding-left: 28px; margin: 10px 0; }
+ul.checks li::before { content: "✓"; position: absolute; left: 4px; top: 0; color: var(--ok); font-weight: 700; }
+.addresses .fields span { font-weight: 600; font-size: 0.92rem; }
+ul.news { list-style: none; padding: 0; }
+ul.news li { padding: 8px 0; border-bottom: 1px solid var(--line); }
+footer br + a { margin-top: 4px; }
+@media (max-width: 760px) {
+  .stats { grid-template-columns: 1fr 1fr; }
+  .plugins, .audience { grid-template-columns: 1fr; width: auto; left: auto; transform: none; }
+  .addresses .fields { grid-template-columns: 1fr auto; }
+  .addresses .fields span { grid-column: 1 / -1; margin-top: 6px; }
+}
+/* Okur sürümü: İşârât'ın usul özeti (scripts/d1-okur.py) */
+/* Arapça: sitedeki amiri-hadis.woff2 yalnız ana sayfadaki bir hadisin harflerini taşır (alt küme); burada cihazın
+   Arapça yazı tipi kullanılır (dışarıdan yazı tipi yüklenmez) */
+.reader blockquote.quote p { line-height: 1.9; }
+.reader h2 { margin-top: 44px; padding-bottom: 4px; border-bottom: 1px solid var(--line); }
+.reader blockquote.quote { margin: 14px 0 18px; padding: 10px 14px; border-left: 3px solid var(--accent); background: var(--card); border-radius: 0 10px 10px 0; }
+.reader blockquote.quote p { margin: 0 0 6px; }
+.reader blockquote.quote footer { margin: 0; padding: 0; border: 0; font-size: 0.85rem; color: var(--muted); }
+.reader .mine { display: inline-block; padding: 0 7px; border-radius: 6px; font-size: 0.78rem; font-weight: 600; background: var(--badbg); color: var(--bad); vertical-align: 1px; }
+.reader .note p { margin: 8px 0; }
+
+/* S9 Çalışmalar: uzun yazılar. Noto Naskh Arabic (SIL Open Font License 1.1) kendi sitemizden; dışarıdan yüklenmez */
+@font-face { font-family: "Naskh Site"; src: url("/fonts/naskh.woff2") format("woff2"); font-display: swap; }
+.study [lang="ar"], .reader [lang="ar"], .reader p.ar { font-family: "Naskh Site", "Noto Naskh Arabic", "Amiri", "Scheherazade New", serif; }
+.study span[lang="ar"] { font-size: 1.12em; }
+.study p[dir="rtl"], .study blockquote[dir="rtl"] { text-align: right; font-size: 1.25rem; line-height: 2; }
+.post.study blockquote[dir="rtl"] { border-left: 0; border-right: 3px solid var(--accent); padding: 4px 14px 4px 0; }
+.study .lead { font-size: 1.08rem; }
+.study .box-title { margin: 0 0 4px; }
+.study .box p:last-child, .study .box ul:last-child { margin-bottom: 0; }
+.study .table-wrap { overflow-x: auto; }
+.study hr { border: 0; border-top: 1px solid var(--line); margin: 28px 0; }
+.toc { margin: 16px 0 24px; }
+.toc ol { margin: 4px 0; padding-left: 22px; }
+.toc p { margin: 0; }
+.preview-banner { border-left-color: #b8860b; }

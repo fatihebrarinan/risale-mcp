@@ -79,14 +79,29 @@ klasik.risalemcp.com {
 }
 
 # S13.15: Âyinedâr, çatı ve projeler (PLANLAR.md › S13.15 (a); DNS Cloudflare'de "DNS only", alt alan adları CNAME
-# ile köke). Taşınmamış olanlar depodaki site-ayinedar/'ın "hazırlanıyor" sayfası (scripts/deploy.sh gönderir); projeler
-# taşındıkça kendi bloklarını alır: chat (S13.15.4), read ve lab (S13.15.5), kök (S13.15.6), connect (S13.15.7).
-ayinedar.org, connect.ayinedar.org {
+# ile köke). S13.15.6 (2026-11-27): kök çatı sitesidir (depodaki site-ayinedar/, scripts/site-uret.py üretir,
+# scripts/deploy.sh gönderir): ana sayfa, Yenilikler, Çalışmalar, belgeler; arama motorlarına açık.
+ayinedar.org {
 	encode gzip
-	header X-Robots-Tag "noindex, nofollow"
+	header Strict-Transport-Security "max-age=31536000"
+	header X-Content-Type-Options nosniff
+	header Referrer-Policy strict-origin-when-cross-origin
 	root * /var/www/ayinedar
-	try_files {path} /index.html
 	file_server
+	# Caddy 2.6: handle_errors durum kodu almaz, eşleyiciyle
+	handle_errors {
+		@yok expression {err.status_code} == 404
+		handle @yok {
+			root * /var/www/ayinedar
+			rewrite * /404.html
+			file_server
+		}
+	}
+}
+
+# Eklentilerin tanıtımı (S13.22'de buraya taşınacak); o zamana kadar risalemcp.com'a, geçici
+connect.ayinedar.org {
+	redir https://risalemcp.com{uri} 302
 }
 
 # S13.15.5: okuma platformu ve ar-ge masası (2026-11-27'ye kadar risalemcp.com/oku/ ve /taslak/). Dosyalar statik:
@@ -156,18 +171,19 @@ lab.ayinedar.org {
 		}
 		# Yazı önizlemesi (/onizleme/) sitenin sayfalarıdır, stil ve resimleri kökten ister: masada olmayan dosya
 		# sitede varsa oradan, girişsiz (zaten herkese açık)
+		# S13.15.6: yazılar çatıda (ayinedar.org), önizleme onun stilini kullanır
 		@site {
 			not file {
 				root /var/www/ozel/taslak
 				try_files {path} {path}/index.html
 			}
 			file {
-				root /var/www/risalemcp
+				root /var/www/ayinedar
 				try_files {path}
 			}
 		}
 		handle @site {
-			root * /var/www/risalemcp
+			root * /var/www/ayinedar
 			file_server
 		}
 		handle {
@@ -186,10 +202,10 @@ lab.ayinedar.org {
 # S13.15.4: sohbet (src/risale_mcp/sohbet.py, docs/risale-sohbet.service, 127.0.0.1:8010; 2026-11-27'ye kadar
 # risalemcp.com/sohbet/). Hesap sayfaları, sohbet, API; oturumu uygulama kendisi denetler. Güvenlik başlıkları
 # (CSP …) uygulamadadır, HSTS burada. Cevap akışı (Server-Sent Events) sıkıştırılmaz ve tamponlanmaz
-# (flush_interval -1); uzun cevaplar için okuma zaman aşımı yok (varsayılan). Tanıtıma kadar arama motorlarına kapalı.
+# (flush_interval -1); uzun cevaplar için okuma zaman aşımı yok (varsayılan). S13.15.6: arama motorlarına açık
+# (tanıtımlı sayfalar; kod, hesap ve çevrimdışı sayfaları uygulamada noindex, robots.txt ve site haritası uygulamada).
 chat.ayinedar.org {
 	header Strict-Transport-Security "max-age=31536000"
-	header X-Robots-Tag "noindex, nofollow"
 	reverse_proxy 127.0.0.1:8010 {
 		flush_interval -1
 	}
@@ -209,9 +225,12 @@ risalemcp.com {
 	handle_path /sohbet/* {
 		redir https://chat.ayinedar.org{uri} 308
 	}
-	# İşârât'ın usul özeti 2026-11-14'e kadar /taslak/'taydı (bağlantısı paylaşıldı): yeni yerine
-	redir /taslak/isarat-usulu.html /isarat-usul/ 301
-	redir /taslak/isarat-usulu.pdf /isarat-usul/isarat-usulu.pdf 301
+	# İşârât'ın usul özeti 2026-11-14'e kadar /taslak/'taydı (bağlantısı paylaşıldı): yeni yerine (S13.15.6'dan beri çatıda)
+	redir /taslak/isarat-usulu.html https://ayinedar.org/isarat-usul/ 301
+	redir /taslak/isarat-usulu.pdf https://ayinedar.org/isarat-usul/isarat-usulu.pdf 301
+	# S13.15.6: Yenilikler, Çalışmalar ve usul özeti çatıya taşındı (2026-11-27); eski adresler aynı yola
+	@cati path /yenilikler.html /yenilikler.xml /yenilikler/* /calismalar.html /calismalar.xml /calismalar/* /isarat-usul /isarat-usul/*
+	redir @cati https://ayinedar.org{uri} 308
 	# S13.15.5: masa lab.ayinedar.org'a, okuma platformu read.ayinedar.org'a taşındı (2026-11-27); eski adresler aynı
 	# yola (/oku/davet/<jeton> → read.ayinedar.org/davet/<jeton>; adres çubuğundaki #… tarayıcıda kalır)
 	redir /oku https://read.ayinedar.org/ 308

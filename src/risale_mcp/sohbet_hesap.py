@@ -429,9 +429,12 @@ def mailer_from_env(config: Config, dev: bool):
 
 # S13.3: hesap sayfaları. Kayıt ve giriş tanıtımlıdır (solda platformun tanıtımı, arka planda yavaş kayan sekiz köşeli
 # yıldız deseni; telefonda üstte), öbürleri (kod, hesabı silme) yalnız formdur. Desen satır içi SVG'dir: dışarıya istek yok.
+# S13.15.6 (kullanıcının kararı, 2026-11-27): sohbet arama motorlarına açıldı. Tanıtımlı sayfalar (girişsiz açılış,
+# kayıt, giriş) dizine açıktır, kanonik adresleri köktür ve yapılandırılmış veri taşır (`seo`); öbürleri (kod, hesabı
+# silme, çevrimdışı) `noindex`.
 SHELL = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
-<meta name="referrer" content="no-referrer"><title>{title} · {name}</title>{head}<style>{style}</style></head>
+<meta name="viewport" content="width=device-width, initial-scale=1">{robots}
+<meta name="referrer" content="no-referrer"><title>{title}</title>{head}{seo}<style>{style}</style></head>
 <body class="{kind}"><div class="sayfa">
 {hero}<main><div class="kart">
 {body}
@@ -536,13 +539,15 @@ _ICONS = {
 HERO = """<aside class="tanitim" aria-label="Tanıtım">
 <p class="ust-yazi"><span class="ad">{name}</span> · Sohbet</p>
 <h2>Risale-i Nur'a sorun,<br>cevabı kaynağıyla okuyun.</h2>
-<p class="giris-yazi">Sorularınızı Bediüzzaman Said Nursî'nin eserlerinden cevaplayan bir yapay zekâ. Dayandığı her söz
-eserlerden alıntıdır; alıntılar eserlerin metniyle denetlenir, yeri ve kaynağıyla gösterilir.</p>
+<p class="giris-yazi">Sorularınızı Bediüzzaman Said Nursî'nin eserlerinden, isterseniz klasik tefsirlerden, hadis
+kitaplarından ve klasik eserlerden cevaplayan bir yapay zekâ. Dayandığı her söz eserlerden alıntıdır; alıntılar eserlerin
+metniyle denetlenir, yeri ve kaynağıyla gösterilir.</p>
 <ul class="ozellikler">
 <li>{i_kaynak}<div><strong>Her alıntı kaynağıyla</strong><span>Alıntıya dokunun, metni eserdeki yerinde, öncesi ve
 sonrasıyla okuyun.</span></div></li>
-<li>{i_kulliyat}<div><strong>Bütün külliyat</strong><span>Sözler'den Lâhikalara, Arapça eserlerden Hizblere; âyetler, hadisler
-ve eski kelimelerin lügat anlamı.</span></div></li>
+<li>{i_kulliyat}<div><strong>Bütün külliyat, isterseniz daha fazlası</strong><span>Sözler'den Lâhikalara, Arapça eserlerden
+Hizblere; âyetler, hadisler ve eski kelimelerin lügat anlamı. Klasik tefsirleri, hadis kitaplarını ve klasik eserleri de
+açabilirsiniz.</span></div></li>
 <li>{i_dil}<div><strong>Bugünün diliyle sorun</strong><span>Metindeki kelimeyi bilmeseniz de anlamca arar; konunun geçtiği
 yerleri bulur.</span></div></li>
 </ul>
@@ -630,7 +635,41 @@ OFFLINE = """<h1>Bağlantı yok</h1>
 <p>Konuşmalarınız kaybolmaz: hesabınızda saklananlar bağlantı gelince yeniden görünür.</p>"""
 
 
-DESCRIPTION = "İslâmî kaynaklar üzerine sorduğunuz soruyu, kaynakların kendi sözleriyle ve yerleriyle cevaplayan bir yapay zekâ."
+DESCRIPTION = ("Bediüzzaman Said Nursî'nin eserlerinden, isterseniz klasik tefsirlerden, hadis kitaplarından ve klasik İslâm "
+               "eserlerinden kaynağıyla cevaplayan ücretsiz yapay zekâ sohbeti. Her alıntı, eserdeki yeri ve kaynağıyla "
+               "gösterilir.")
+# Arama sonucunda görünen başlık (S13.15.6): bütün kütüphaneleri kapsar, "yapay zekâ" başlıkta da geçer
+SEO_TITLE = "{name} · Sohbet: Risale-i Nur, Tefsir, Hadis ve Klasik Eserler için Yapay Zekâ"
+ROBOTS_TXT = """User-agent: *
+Allow: /
+Disallow: {p}api/
+Disallow: {p}hesap
+Disallow: {p}kayit/kod
+Disallow: {p}cikis
+Disallow: {p}cevrimdisi
+
+Sitemap: {site}{p}sitemap.xml
+"""
+
+
+def seo_head(config: "Config") -> str:
+    """Tanıtımlı sayfanın kanonik adresi ve yapılandırılmış verisi (WebApplication; çatıdaki kaydın aynısı)."""
+    url = f"{config.site}{config.prefix}"
+    data = {"@context": "https://schema.org", "@type": "WebApplication", "@id": f"{url}#app",
+            "name": f"{config.name} · Sohbet", "url": url, "applicationCategory": "EducationalApplication",
+            "operatingSystem": "Web", "inLanguage": "tr", "isAccessibleForFree": True,
+            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TRY"}, "description": DESCRIPTION}
+    if config.home:
+        data["publisher"] = {"@type": "Organization", "name": "Nur Hadimleri", "url": config.home.rstrip("/") + "/"}
+    return (f'<link rel="canonical" href="{html.escape(url)}">'
+            f'<script type="application/ld+json">{json.dumps(data, ensure_ascii=False)}</script>')
+
+
+def sitemap_xml(config: "Config") -> str:
+    paths = [""] + list(DOCS)
+    urls = "\n".join(f"  <url><loc>{html.escape(config.site + config.prefix + path)}</loc></url>" for path in paths)
+    return (f'<?xml version="1.0" encoding="utf-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            f"{urls}\n</urlset>\n")
 
 
 def head_links(config: "Config") -> str:
@@ -662,7 +701,8 @@ def doc_page(path: str, config: "Config") -> str:
             .replace("{{SUPPORT}}", html.escape(config.support)))
     tr = lang == "tr"
     return DOC_SHELL.format(lang=lang, title=html.escape(title), name=html.escape(config.name), p=html.escape(config.prefix),
-                            support=html.escape(config.support), head=head_links(config),
+                            support=html.escape(config.support),
+                            head=head_links(config) + f'<link rel="canonical" href="{html.escape(config.site + config.prefix + path)}">',
                             body=body, back="← Sohbete dön" if tr else "← Back to the chat",
                             other_link=(f'<a href="{html.escape(config.prefix)}{other}" hreflang="{"en" if tr else "tr"}">'
                                         f'{"English" if tr else "Türkçe"}</a>' if other else ""),
@@ -741,7 +781,10 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
     hero = HERO.format(name=esc(config.name), p=p, **{f"i_{k}": v for k, v in _ICONS.items()})
 
     def shell(title: str, body: str, status: int = 200, intro: bool = False) -> HTMLResponse:
-        return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, p=p, head=head_links(config),
+        full = SEO_TITLE.format(name=config.name) if intro else f"{title} · {config.name}"
+        return HTMLResponse(SHELL.format(title=esc(full), name=esc(config.name), body=body, p=p, head=head_links(config),
+                                         robots="" if intro else '<meta name="robots" content="noindex">',
+                                         seo=seo_head(config) if intro else "",
                                          home=esc(config.home), home_host=esc(config.home.split("://", 1)[-1]),
                                          style=SHELL_STYLE, hero=hero if intro else "",
                                          kind="tanitimli" if intro else "yalin-sayfa"),
@@ -775,8 +818,9 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
 
     async def home(request: Request):
         email = user(request)
-        if not email:                    # S13.3: ilk gelen hesap oluşturma sayfasını görür (altta girişe geçiş)
-            return RedirectResponse(f"{p}kayit", status_code=302)
+        if not email:                    # S13.3: ilk gelen hesap oluşturma sayfasını görür (altta girişe geçiş);
+            # S13.15.6: yönlendirmeden, kökte (arama motorları kök adresi dizine alsın)
+            return shell("Hesap", REGISTER.format(p=p, message="", email=""), intro=True)
         if home_page:
             return home_page(request, email)
         return shell("Sohbet", HOME.format(p=p, name=esc(config.name), email=esc(email)))
@@ -864,6 +908,14 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
         return Response(service_worker(config), media_type="text/javascript",
                         headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": p})
 
+    async def robots(request: Request):           # S13.15.6
+        return Response(ROBOTS_TXT.format(p=p, site=config.site), media_type="text/plain; charset=utf-8",
+                        headers={"Cache-Control": "public, max-age=3600"})
+
+    async def site_map(request: Request):
+        return Response(sitemap_xml(config), media_type="application/xml",
+                        headers={"Cache-Control": "public, max-age=3600"})
+
     async def offline(request: Request):
         return shell("Bağlantı yok", OFFLINE.format(p=p))
 
@@ -888,7 +940,8 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
         Route(f"{p}kayit", register, methods=["GET", "POST"]), Route(f"{p}kayit/kod", redeem, methods=["POST"]),
         Route(f"{p}cikis", logout, methods=["POST"]), Route(f"{p}hesap", delete, methods=["GET", "POST"]),
         Route(f"{p}api/ben", me), Route(f"{p}manifest.webmanifest", web_manifest), Route(f"{p}sw.js", worker),
-        Route(f"{p}cevrimdisi", offline), *[Route(f"{p}{path}", document) for path in DOCS], *extra_routes]))
+        Route(f"{p}cevrimdisi", offline), Route(f"{p}robots.txt", robots), Route(f"{p}sitemap.xml", site_map),
+        *[Route(f"{p}{path}", document) for path in DOCS], *extra_routes]))
 
 
 # S13.15.4 (5): güvenlik başlıkları, her yanıtta. Betik yalnız kendi sunucumuzdan (satır içi betik yok); hesap sayfaları

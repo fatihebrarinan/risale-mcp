@@ -1,9 +1,17 @@
 #!/usr/bin/env python3
-"""Sitenin üretilen parçaları (PLANLAR.md S1, S2, S9): Yenilikler, Çalışmalar, önizleme, Open Graph, menü ve alt
-bilgi, sayılar, site haritası.
+"""Sitelerin üretilen parçaları (PLANLAR.md S1, S2, S9, S13.15.6): Yenilikler, Çalışmalar, önizleme, Open Graph, menü
+ve alt bilgi, sayılar, site haritaları.
+
+İki site var (S13.15.6, 2026-11-27): **çatı** `ayinedar.org` (`site-ayinedar/`: ana sayfa, Yenilikler, Çalışmalar,
+belgeler, gizlilik ve şartlar; `en/`) ve **eklentilerin tanıtımı** `risalemcp.com` (`site/`; S13.22'de
+`connect.ayinedar.org`'a taşınacak). Yazılar yalnız çatıdadır; risalemcp.com'daki eski adresleri Caddy 308 ile çatıya
+yönlendirir (`docs/Caddyfile`). Çatının `style.css`, `site.js` ve Naskh yazı tipi `site/`'tan kopyalanır (tek kaynak);
+çatıya özgü görünüş `site-ayinedar/ayinedar.css`'tedir. Yazının içindeki, çatıda olmayan ama risalemcp.com'da olan
+iç bağlantı (`/klasik.html`, `/claude.html`…) tam adrese çevrilir (`cross_links`).
 
     python3 scripts/site-uret.py                    # hepsi (taslaklar yalnız önizlemeye)
-    python3 scripts/site-uret.py --resim            # bir de paylaşım resmi (site/img/paylasim.png; uvx cairosvg)
+    python3 scripts/site-uret.py --resim            # bir de risalemcp.com'un paylaşım resmi (site/img/paylasim.png;
+                                                    # uvx cairosvg); çatınınki scripts/paylasim-ayinedar.py cati
     python3 scripts/site-uret.py onizle             # üretir ve yerelde açar: http://127.0.0.1:8090/onizleme/
     python3 scripts/site-uret.py yayinla <ad>       # taslağı yayımlar (durum, tarih, dosya adı; bağlantı denetimi)
     python3 scripts/site-uret.py yayinla <ad> --gonder   # … ve scripts/deploy.sh --site (yalnız site)
@@ -15,7 +23,7 @@ bilgi, sayılar, site haritası.
 Sonra: scripts/deploy.sh --code (önizleme de onunla gider: lab.ayinedar.org/onizleme/, girişli, masa hesabı)
 
 - İki tür yazı (`KINDS`): **Yenilikler** `docs/yenilikler/<tarih>-<ad>.md` (eklentide ne değişti; kısa) ve
-  **Çalışmalar** `docs/calismalar/<tarih>-<ad>.md` (ne denendi, ne öğrenildi; uzun, kaynaklı; S9). site/ olduğu gibi
+  **Çalışmalar** `docs/calismalar/<tarih>-<ad>.md` (ne denendi, ne öğrenildi; uzun, kaynaklı; S9). Siteler olduğu gibi
   yayımlandığı için kaynak orada durmaz. Üst bilgi: `baslik`, `tarih` (YYYY-AA-GG), `ozet` (dizinde ve önizlemede),
   `whatsapp` (`|` ile çok satırlı; paylaşım kutusundaki metin, sonuna yazının adresi eklenir; Yeniliklerde zorunlu),
   `durum` (`taslak` | `yayinda`; yoksa `yayinda`), Çalışmalarda isteğe bağlı `gozden_gecirme` (son gözden geçirme
@@ -25,23 +33,24 @@ Sonra: scripts/deploy.sh --code (önizleme de onunla gider: lab.ayinedar.org/oni
   `[metin](adres)`, `---` çizgi, `|` tablo (ikinci satır `|---|`), kutu (`:::kisa` … `:::`: "Kısa cevap";
   `:::not Başlık` … `:::`). Arapça kendiliğinden işaretlenir: çoğu Arapça olan alıntı ve paragraf sağdan sola,
   metin içindeki Arapça `lang="ar"` (sitenin Naskh yazı tipi, `site/fonts/naskh.woff2`).
-- **Taslak** yazı `site/`'a yazılmaz; listeye, RSS'e, site haritasına, ana sayfa şeridine girmez. Önizlemesi
+- **Taslak** yazı çatıya yazılmaz; listeye, RSS'e, site haritasına, ana sayfa şeridine girmez. Önizlemesi
   `data/interim/onizleme/<tür>/<ad>.html`'dedir (sitedeki görünüşüyle, başında önizleme şeridi, `noindex`); deploy onu
   girişli `lab.ayinedar.org/onizleme/`'ye gönderir. `yayinla`: önce önizlemedeki iç bağlantılar denetlenir (yoksa durur), sonra
   `durum: yayinda`, `tarih` bugün, dosya adı bugünün tarihiyle (adres yayından sonra değişmez); Çalışmalar yazısıysa
   Yeniliklere kısa duyuru **taslak** olarak yazılır (o da `yayinla` ile).
-- Çıktı: `site/<tür>/<ad>.html`, `site/<tür>.html` (en yeni üstte), `site/<tür>.xml` (RSS 2.0).
-- Open Graph: `site/` ve `site/en/` altındaki her sayfada `<!-- og -->` ile `<!-- /og -->` arası her seferinde
+- Çıktı: `site-ayinedar/<tür>/<ad>.html`, `site-ayinedar/<tür>.html` (en yeni üstte), `site-ayinedar/<tür>.xml`
+  (RSS 2.0; `guid` eski risalemcp.com adresidir, okuyucular taşınan yazıyı yeni sanmasın).
+- Open Graph: iki sitenin kökündeki ve `en/` altındaki her sayfada `<!-- og -->` ile `<!-- /og -->` arası her seferinde
   yeniden yazılır (yoksa `</title>` satırından sonra eklenir); başlık `<title>`'dan, açıklama `description`'dan.
   WhatsApp önizlemeyi adres başına önbelleğe alır: etiket değişince eski paylaşımlar bir süre eski görünür.
-- Ana sayfa (`site/index.html`): `<!-- son-yenilik -->` arasında son yazıya şerit, `<!-- son-yenilikler -->` arasında
+- Ana sayfalar (`site-ayinedar/index.html`, `site/index.html` tam adresle): `<!-- son-yenilik -->` arasında son yazıya şerit, `<!-- son-yenilikler -->` arasında
   son üç yazı.
 - Menü ve alt bilgi: sayfaların `<nav>` ve `<footer>` blokları her seferinde buradan yazılır (`nav_html`, `FOOTER`;
   İngilizcede `nav_en`, `FOOTER_EN`). Öbür dile giden bağlantı sayfanın `hreflang` adresidir.
 - Sayılar: sayfalardaki `<!-- sayi:ad -->…<!-- /sayi -->` arası yerel veritabanlarından (`data/dist/`) yazılır
   (`numbers`; İngilizce sayfalarda `ad_en`: "131,000"); veritabanı yoksa olduğu gibi kalır.
-- `site/sitemap.xml`: bütün sayfalar ve yayımlanmış yazılar. Alt klasördeki sayfalar (ör. `scripts/d1-okur.py`'nin
-  ürettiği `site/isarat-usul/`) menü, alt bilgi ve Open Graph alır; haritaya yalnız bir Çalışmalar kaydı (`adres`)
+- `sitemap.xml` iki sitede: sayfalar; yazılar yalnız çatınınkinde. Alt klasördeki sayfalar (ör. `scripts/d1-okur.py`'nin
+  ürettiği `site-ayinedar/isarat-usul/`) menü, alt bilgi ve Open Graph alır; haritaya yalnız bir Çalışmalar kaydı (`adres`)
   yayımlanmışsa girer.
 - Dışarıya istek yok kuralı sürer: "WhatsApp'ta paylaş" yalnız tıklanınca açılan bir bağlantıdır.
 """
@@ -63,11 +72,16 @@ from pathlib import Path
 from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
-SITE = ROOT / "site"
+SITE = ROOT / "site"                       # risalemcp.com: eklentilerin tanıtımı
+CATI = ROOT / "site-ayinedar"              # ayinedar.org: çatı (S13.15.6); yazılar burada
 PREVIEW = ROOT / "data" / "interim" / "onizleme"     # deploy: /var/www/ozel/taslak/onizleme/ (lab.ayinedar.org, girişli)
 PREVIEW_URL = "/onizleme"                 # lab.ayinedar.org; sitenin dosyalarını Caddy orada da verir
 BASE = "https://risalemcp.com"
-IMAGE = "/img/paylasim.png"
+CATI_BASE = "https://ayinedar.org"
+CHAT = "https://chat.ayinedar.org/"
+IMAGE = "/img/paylasim.png"                # iki sitede de aynı yolda, ayrı resim (çatınınki `--resim` ile değil,
+                                           # scripts/paylasim-ayinedar.py ile)
+SHARED = ("style.css", "site.js", "fonts/naskh.woff2")   # site/'tan çatıya kopyalanır
 ASSET_VERSION = 12                      # style.css ve site.js sürümü (sayfalardaki ?v=N ile aynı tutulur)
 MONTHS = ("Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık")
 STATUSES = ("taslak", "yayinda")
@@ -87,7 +101,7 @@ class Kind:
 
     @property
     def out(self) -> Path:
-        return SITE / self.key
+        return CATI / self.key
 
     @property
     def index(self) -> str:
@@ -96,15 +110,16 @@ class Kind:
 
 KINDS = {
     "yenilikler": Kind("yenilikler", "Yenilikler",
-                       "Eklentilerde yeni olanlar, iyileştirmeler ve duyurular. Her yazının sonunda paylaşmak için kısa "
-                       "bir metin var.",
-                       "Risale-i Nur, Hadis ve Tefsir eklentilerinde yeni olanlar, iyileştirmeler ve duyurular.",
+                       "Sohbette ve eklentilerde yeni olanlar, iyileştirmeler ve duyurular. Her yazının sonunda "
+                       "paylaşmak için kısa bir metin var.",
+                       "Âyinedâr'da yeni olanlar: sohbet, Risale-i Nur, Hadis, Tefsir ve Klasik Eserler eklentileri; "
+                       "iyileştirmeler ve duyurular.",
                        frozenset({"baslik", "tarih", "ozet", "whatsapp"})),
     "calismalar": Kind("calismalar", "Çalışmalar",
                        "Projenin ne denediği ve ne öğrendiği: usul, ölçüler, sonuçlar ve sınırlar. Uzun ve kaynaklı "
                        "yazılar; hiçbiri tefsir değildir.",
-                       "Risale-i Nur MCP'nin çalışmaları: İşârâtü'l-İ'câz'ın usulü, yapay zekâ taslakları, ölçüler, "
-                       "sonuçlar ve sınırlar.",
+                       "Âyinedâr'ın çalışmaları: İşârâtü'l-İ'câz'ın usulü, yapay zekâ taslakları, ölçüler, sonuçlar "
+                       "ve sınırlar.",
                        frozenset({"baslik", "tarih", "ozet"})),
 }
 
@@ -288,30 +303,36 @@ def _items(lines: list[str], marker: str) -> list[str]:
 
 # ---- sayfa iskeleti -------------------------------------------------------------------------------------------
 
-def og_block(title: str, description: str, path: str, lang: str = "tr", kind: str = "website") -> str:
-    tags = [("og:type", kind), ("og:site_name", "Risale-i Nur MCP"), ("og:title", title),
-            ("og:description", description), ("og:url", BASE + path), ("og:image", BASE + IMAGE),
-            ("og:image:width", "1200"), ("og:image:height", "630"),
-            ("og:image:alt", "Risale-i Nur MCP: Risale-i Nur, Hadis ve Tefsir eklentileri" if lang == "tr"
-             else "Risale-i Nur MCP: the Risale-i Nur, hadith and tafsir connectors"),
+def og_block(title: str, description: str, path: str, lang: str = "tr", kind: str = "website",
+             cati: bool = False) -> str:
+    base = CATI_BASE if cati else BASE
+    if cati:
+        alt = ("Âyinedâr: Risale-i Nur, tefsir, hadis ve klasik eserlerden kaynağıyla cevaplayan yapay zekâ"
+               if lang == "tr" else "Âyinedâr: an AI that answers from the Risale-i Nur, tafsir, hadith and classical "
+               "works, with sources")
+    else:
+        alt = ("Risale-i Nur MCP: Risale-i Nur, Hadis ve Tefsir eklentileri" if lang == "tr"
+               else "Risale-i Nur MCP: the Risale-i Nur, hadith and tafsir connectors")
+    tags = [("og:type", kind), ("og:site_name", "Âyinedâr" if cati else "Risale-i Nur MCP"), ("og:title", title),
+            ("og:description", description), ("og:url", base + path), ("og:image", base + IMAGE),
+            ("og:image:width", "1200"), ("og:image:height", "630"), ("og:image:alt", alt),
             ("og:locale", "tr_TR" if lang == "tr" else "en_US")]
     lines = [f'<meta property="{k}" content="{html.escape(v)}">' for k, v in tags]
     lines.append('<meta name="twitter:card" content="summary_large_image">')
     return "<!-- og -->\n" + "\n".join(lines) + "\n<!-- /og -->"
 
 
-NAV = [("/#eklentiler", "Eklentiler"), ("/#ekle", "Kurulum"), ("/yenilikler.html", "Yenilikler"),
-       ("/calismalar.html", "Çalışmalar"), ("/belgeler.html", "Belgeler")]
+NAV = [("/#eklentiler", "Eklentiler"), ("/#ekle", "Kurulum"), (CATI_BASE + "/yenilikler.html", "Yenilikler"),
+       (CATI_BASE + "/calismalar.html", "Çalışmalar"), ("/belgeler.html", "Belgeler")]
 # Sayfa -> menüde işaretli olan (sayfa adı; yazılar "yenilikler")
 CURRENT = {"risale.html": "/#eklentiler", "hadis.html": "/#eklentiler", "tefsir.html": "/#eklentiler",
            "klasik.html": "/#eklentiler",
-           "claude.html": "/#ekle", "chatgpt.html": "/#ekle", "yenilikler.html": "/yenilikler.html",
-           "calismalar.html": "/calismalar.html",
-           "belgeler.html": "/belgeler.html"}
+           "claude.html": "/#ekle", "chatgpt.html": "/#ekle", "belgeler.html": "/belgeler.html"}
 FOOTER = ("<footer>Risale MCP: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti "
           "değildir.<br><a href=\"/gizlilik.html\">Gizlilik</a> · <a href=\"/kullanim-sartlari.html\">Kullanım "
-          "şartları</a> · <a href=\"/katki.html\">Hata bildirin</a> · <a href=\"/yenilikler.xml\">RSS</a> · "
-          "<a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a></footer>")
+          "şartları</a> · <a href=\"/katki.html\">Hata bildirin</a> · <a href=\"" + CATI_BASE + "/yenilikler.xml\">RSS</a> · "
+          "<a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a> · <a href=\"" + CATI_BASE + "/\">Âyinedâr"
+          "</a>'ın eklentileri</footer>")
 
 
 NAV_EN = [("/en/#connectors", "Connectors"), ("/en/#add", "Setup"), ("/en/docs.html", "Documentation")]
@@ -320,8 +341,9 @@ CURRENT_EN = {"risale.html": "/en/#connectors", "hadith.html": "/en/#connectors"
               "claude.html": "/en/#add", "chatgpt.html": "/en/#add", "docs.html": "/en/docs.html"}
 FOOTER_EN = ("<footer>Risale MCP: a volunteer, independent project, not an official service of any publisher or "
              "community.<br><a href=\"/en/privacy.html\">Privacy</a> · <a href=\"/en/terms.html\">Terms of use</a> · "
-             "<a href=\"/en/contribute.html\">Report a mistake</a> · <a href=\"/yenilikler.html\" lang=\"tr\">News "
-             "(Turkish)</a> · <a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a></footer>")
+             "<a href=\"/en/contribute.html\">Report a mistake</a> · <a href=\"" + CATI_BASE + "/yenilikler.html\" "
+             "lang=\"tr\">News (Turkish)</a> · <a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a> · "
+             "the connectors of <a href=\"" + CATI_BASE + "/en/\">Âyinedâr</a></footer>")
 
 
 def nav_en(current: str = "", tr: str = "/") -> str:
@@ -332,6 +354,40 @@ def nav_en(current: str = "", tr: str = "/") -> str:
 {links}
   <a href="{tr}" lang="tr">Türkçe</a>
   <button class="theme-toggle" type="button" data-theme-toggle aria-label="Switch between light and dark mode" title="Switch between light and dark mode"></button>
+</nav>"""
+
+
+# Çatı (ayinedar.org, S13.15.6): menünün başı sohbet; "Projeler" ana sayfadaki kartlar
+NAV_CATI = [(CHAT, "Sohbet"), ("/#projeler", "Projeler"), ("/yenilikler.html", "Yenilikler"),
+            ("/calismalar.html", "Çalışmalar"), ("/belgeler.html", "Belgeler")]
+CURRENT_CATI = {"yenilikler.html": "/yenilikler.html", "calismalar.html": "/calismalar.html",
+                "belgeler.html": "/belgeler.html"}
+INDEPENDENT = "gönüllü ve bağımsız bir hizmettir; herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir"
+FOOTER_CATI = (f"<footer>Âyinedâr: {INDEPENDENT}. Yayıncısı Nur Hadimleri. Ücretsizdir, reklam ve ziyaretçi sayacı "
+               "yoktur.<br><a href=\"/gizlilik.html\">Gizlilik</a> · <a href=\"/kullanim-sartlari.html\">Kullanım "
+               "şartları</a> · <a href=\"/belgeler.html\">Belgeler</a> · <a href=\"/yenilikler.xml\">RSS</a> · "
+               "<a href=\"mailto:destek@ayinedar.org\">destek@ayinedar.org</a></footer>")
+NAV_CATI_EN = [(CHAT, "Chat"), ("/en/#projects", "Projects"), ("/en/privacy.html", "Privacy")]
+CURRENT_CATI_EN = {"privacy.html": "/en/privacy.html"}
+FOOTER_CATI_EN = ("<footer>Âyinedâr: a volunteer, independent service, not an official service of any publisher or "
+                  "community. Published by Nur Hadimleri. Free of charge, with no ads and no visitor tracking.<br>"
+                  "<a href=\"/en/privacy.html\">Privacy</a> · <a href=\"/en/terms.html\">Terms of use</a> · "
+                  "<a href=\"/yenilikler.html\" lang=\"tr\">News (Turkish)</a> · "
+                  "<a href=\"mailto:destek@ayinedar.org\">destek@ayinedar.org</a></footer>")
+BRAND_CATI = '<a class="brand" href="{home}"><img src="/icon.svg" alt="" width="32" height="32"><span class="ad">Âyinedâr</span></a>'
+
+
+def nav_cati(current: str = "", other: str = "/en/", en: bool = False) -> str:
+    items = NAV_CATI_EN if en else NAV_CATI
+    links = "\n".join(f'  <a href="{href}"' + (' aria-current="page"' if href == current else "") + f">{name}</a>"
+                      for href, name in items if href not in NAV_HIDDEN)
+    lang, label, toggle = (("tr", "Türkçe", "Switch between light and dark mode") if en
+                           else ("en", "English", "Açık ve koyu görünüm arasında geç"))
+    return f"""<nav>
+  {BRAND_CATI.format(home="/en/" if en else "/")}
+{links}
+  <a href="{other}" lang="{lang}">{label}</a>
+  <button class="theme-toggle" type="button" data-theme-toggle aria-label="{toggle}" title="{toggle}"></button>
 </nav>"""
 
 
@@ -349,33 +405,40 @@ def nav_html(current: str = "", en: str = "/en/") -> str:
 </nav>"""
 
 
+HEAD_CATI = """<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" href="/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#1d4d3c">
+<link rel="stylesheet" href="/style.css?v={v}">
+<link rel="stylesheet" href="/ayinedar.css?v={v}">"""
+
+
 def page(title: str, description: str, path: str, body: str, kind: str = "website", current: str = "",
          extra_head: str = "", robots: str = "", feed: Kind | None = None) -> str:
+    """Çatının sayfası (yazılar, dizinler, önizleme). Önizlemede kanonik adres yok."""
     feed = feed or KINDS["yenilikler"]
     robots_tag = f'\n<meta name="robots" content="{robots}">' if robots else ""
+    canonical = "" if robots else f'\n<link rel="canonical" href="{CATI_BASE}{path}">'
     return f"""<!doctype html>
 <html lang="tr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
-{og_block(title, description, path, kind=kind)}
-<meta name="description" content="{html.escape(description)}">{robots_tag}
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">
-<link rel="apple-touch-icon" href="/icon.png">
-<link rel="stylesheet" href="/style.css?v={ASSET_VERSION}">
-<link rel="alternate" type="application/rss+xml" title="Risale-i Nur MCP: {feed.title}" href="/{feed.key}.xml">{extra_head}
+{og_block(title, description, path, kind=kind, cati=True)}
+<meta name="description" content="{html.escape(description)}">{robots_tag}{canonical}
+{HEAD_CATI.format(v=ASSET_VERSION)}
+<link rel="alternate" type="application/rss+xml" title="Âyinedâr: {feed.title}" href="/{feed.key}.xml">{extra_head}
 <script>try{{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 <script src="/site.js?v={ASSET_VERSION}" defer></script>
 </head>
 <body>
 <main>
-{nav_html(current)}
+{nav_cati(current)}
 
 {body}
 
-{FOOTER}
+{FOOTER_CATI}
 </main>
 </body>
 </html>
@@ -385,7 +448,7 @@ def page(title: str, description: str, path: str, body: str, kind: str = "websit
 def _share_card(post: Post) -> str:
     if not post.share:
         return ""
-    share = f"{post.share}\n{BASE}{post.path}"
+    share = f"{post.share}\n{CATI_BASE}{post.path}"
     return f"""
 <section class="card share">
   <h2>Paylaşın</h2>
@@ -421,14 +484,14 @@ def post_page(post: Post, preview: bool = False) -> str:
     kind, banner = post.kind, _preview_banner(post) if preview else ""
     path = post.preview_path if preview else post.path
     if kind.key == "calismalar":
-        content = markdown(post.body)
+        content = cross_links(markdown(post.body))
         meta = f'<time datetime="{post.day.isoformat()}">{post.date_tr}</time>'
         if post.review and post.review != post.day:
             meta += f' · son gözden geçirme <time datetime="{post.review.isoformat()}">{date_tr(post.review)}</time>'
         meta += f" · ≈{post.minutes} dk okuma"
         last = post.review or post.day
-        cite = (f"Risale-i Nur MCP, «{post.title}», {post.date_tr}"
-                + (f" (son gözden geçirme {date_tr(last)})" if last != post.day else "") + f". {BASE}{post.path}")
+        cite = (f"Âyinedâr, «{post.title}», {post.date_tr}"
+                + (f" (son gözden geçirme {date_tr(last)})" if last != post.day else "") + f". {CATI_BASE}{post.path}")
         body = f"""{banner}<article class="post study">
 <p class="muted small"><a href="{kind.index}">{kind.title}</a> · {meta}</p>
 <h1>{inline(post.title)}</h1>
@@ -440,16 +503,16 @@ def post_page(post: Post, preview: bool = False) -> str:
   <h2>Bu yazıya atıf</h2>
   <pre>{html.escape(cite)}</pre>
   <div class="actions"><button class="button" type="button" data-copy="{html.escape(cite)}" data-done="Kopyalandı ✓">Atfı kopyala</button></div>
-  <p class="small muted">Yanlış ya da eksik gördüğünüz bir yer için: <a href="/katki.html">Hata bildirin</a>.</p>
+  <p class="small muted">Yanlış ya da eksik gördüğünüz bir yer için: <a href="mailto:destek@ayinedar.org">destek@ayinedar.org</a>.</p>
 </section>{_share_card(post)}"""
     else:
         body = f"""{banner}<article class="post">
 <p class="muted small"><a href="{kind.index}">{kind.title}</a> · <time datetime="{post.day.isoformat()}">{post.date_tr}</time></p>
 <h1>{inline(post.title)}</h1>
-{markdown(post.body)}
+{cross_links(markdown(post.body))}
 </article>
 {_share_card(post)}"""
-    return page(f"{post.title} · Risale-i Nur MCP", post.summary, path, body, kind="article",
+    return page(f"{post.title} · Âyinedâr", post.summary, path, body, kind="article",
                 current=kind.index, robots="noindex" if preview else "", feed=kind)
 
 
@@ -463,7 +526,7 @@ def index_page(kind: Kind, posts: list[Post]) -> str:
 <p class="lead">{kind.lead} <a href="/{kind.key}.xml">RSS</a> ile de takip edebilirsiniz.</p>
 
 {items}"""
-    return page(f"{kind.title} · Risale-i Nur MCP", kind.description, kind.index, body, current=kind.index, feed=kind)
+    return page(f"{kind.title} · Âyinedâr", kind.description, kind.index, body, current=kind.index, feed=kind)
 
 
 def preview_index(drafts: list[Post]) -> str:
@@ -477,7 +540,7 @@ def preview_index(drafts: list[Post]) -> str:
 <p class="lead">Yayımlanmamış Yenilikler ve Çalışmalar yazıları, sitedeki görünüşleriyle. Bu sayfayı yalnız girişli hesaplar görür.</p>
 
 {items}"""
-    return page("Önizleme · Risale-i Nur MCP", "Yayımlanmamış yazılar.", f"{PREVIEW_URL}/", body, robots="noindex")
+    return page("Önizleme · Âyinedâr", "Yayımlanmamış yazılar.", f"{PREVIEW_URL}/", body, robots="noindex")
 
 
 def rss(kind: Kind, posts: list[Post]) -> str:
@@ -485,16 +548,16 @@ def rss(kind: Kind, posts: list[Post]) -> str:
         return format_datetime(datetime(d.year, d.month, d.day, 12, tzinfo=timezone.utc))
     items = "\n".join(f"""  <item>
     <title>{html.escape(p.title)}</title>
-    <link>{BASE}{p.path}</link>
-    <guid>{BASE}{p.path}</guid>
+    <link>{CATI_BASE}{p.path}</link>
+    <guid isPermaLink="false">{BASE}{p.path}</guid>
     <pubDate>{stamp(p.day)}</pubDate>
     <description>{html.escape(p.summary)}</description>
   </item>""" for p in posts)
     return f"""<?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0">
 <channel>
-  <title>Risale-i Nur MCP: {kind.title}</title>
-  <link>{BASE}{kind.index}</link>
+  <title>Âyinedâr: {kind.title}</title>
+  <link>{CATI_BASE}{kind.index}</link>
   <description>{html.escape(kind.description)}</description>
   <language>tr</language>
 {items}
@@ -522,19 +585,53 @@ def add_og(path: Path) -> bool:
         print(f"atlandı (başlık ya da açıklama yok): {path.relative_to(ROOT)}")
         return False
     lang = re.search(r'<html lang="(\w+)"', text).group(1)
-    rel = "/" + path.relative_to(SITE).as_posix()
+    cati = path.is_relative_to(CATI)
+    rel = "/" + path.relative_to(CATI if cati else SITE).as_posix()
     rel = rel[: -len("index.html")] if rel.endswith("index.html") else rel
-    block = og_block(html.unescape(title.group(1)), html.unescape(desc.group(1)), rel, lang)
+    block = og_block(html.unescape(title.group(1)), html.unescape(desc.group(1)), rel, lang, cati=cati)
     new = _between(text, "<!-- og -->", "<!-- /og -->", block, title.group(0))
     if new != text:
         path.write_text(new, encoding="utf-8")
     return new != text
 
 
+OLD_ICONS = ('<link rel="icon" type="image/png" sizes="256x256" href="/icon.png">\n'
+             '<link rel="apple-touch-icon" href="/icon.png">')
+
+
+def cati_head(text: str, path: Path) -> str:
+    """Çatının sayfasının başı: Âyinedâr simgeleri, `ayinedar.css`, başlığın soneki, kanonik adres (noindex değilse).
+    Başka betiğin ürettiği sayfa da (isarat-usul) böyle düzelir."""
+    text = text.replace(OLD_ICONS, '<link rel="icon" href="/icon.svg" type="image/svg+xml">\n'
+                                   '<link rel="apple-touch-icon" href="/apple-touch-icon.png">\n'
+                                   '<meta name="theme-color" content="#1d4d3c">')
+    text = re.sub(r"(<title>.*?) · Risale-i Nur MCP</title>", r"\1 · Âyinedâr</title>", text, count=1)
+    if "/ayinedar.css" not in text:
+        text = re.sub(r'(<link rel="stylesheet" href="/style.css\?v=\d+">)',
+                      lambda m: m.group(1) + f'\n<link rel="stylesheet" href="/ayinedar.css?v={ASSET_VERSION}">', text,
+                      count=1)
+    rel = "/" + path.relative_to(CATI).as_posix()
+    rel = rel[: -len("index.html")] if rel.endswith("index.html") else rel
+    canonical = f'<link rel="canonical" href="{CATI_BASE}{rel}">'
+    noindex = re.search(r'<meta name="robots" content="[^"]*noindex', text)
+    text = re.sub(r'\n<link rel="canonical" href="[^"]*">', "", text)
+    if not noindex and path.name != "404.html":
+        text = re.sub(r'(<meta name="description" content="[^"]*">)', lambda m: m.group(1) + "\n" + canonical, text,
+                      count=1)
+    return text
+
+
 def frame(path: Path, current: str | None = None) -> bool:
     """Türkçe elle yazılmış sayfanın menüsünü ve alt bilgisini ortak biçimle yeniden yazar."""
     text = path.read_text(encoding="utf-8")
-    if path.parent.name == "en":
+    if path.is_relative_to(CATI):
+        en = path.parent.name == "en"
+        alt = re.search(rf'<link rel="alternate" hreflang="{"tr" if en else "en"}" href="([^"]+)">', text)
+        cur = CURRENT_CATI_EN if en else CURRENT_CATI
+        here = current if current is not None else cur.get(path.name, "")
+        nav = nav_cati(here, alt.group(1) if alt else ("/" if en else "/en/"), en=en)
+        footer = FOOTER_CATI_EN if en else FOOTER_CATI
+    elif path.parent.name == "en":
         tr = re.search(r'<link rel="alternate" hreflang="tr" href="([^"]+)">', text)
         nav, footer = nav_en(CURRENT_EN.get(path.name, ""), tr.group(1) if tr else "/"), FOOTER_EN
     else:
@@ -543,6 +640,8 @@ def frame(path: Path, current: str | None = None) -> bool:
         nav, footer = nav_html(here, en.group(1) if en else "/en/"), FOOTER
     new = re.sub(r"<nav>.*?</nav>", lambda _: nav, text, count=1, flags=re.S)
     new = re.sub(r"<footer>.*?</footer>", lambda _: footer, new, count=1, flags=re.S)
+    if path.is_relative_to(CATI):
+        new = cati_head(new, path)
     if new != text:
         path.write_text(new, encoding="utf-8")
     return new != text
@@ -567,7 +666,7 @@ def set_noindex(path: Path, on: bool) -> bool:
 
 def address_file(address: str) -> Path:
     rel = address.lstrip("/")
-    return SITE / (rel + "index.html" if rel.endswith("/") or not rel else rel)
+    return CATI / (rel + "index.html" if rel.endswith("/") or not rel else rel)
 
 
 def _about(n: int) -> str:
@@ -591,6 +690,9 @@ def numbers() -> dict[str, str]:
         c = sqlite3.connect(db)
         out |= {"tefsir_eser": str(c.execute("select count(*) from works where built = 1").fetchone()[0]),
                 "tefsir_cumle": _about(c.execute("select count(*) from sentences").fetchone()[0])}
+    if (db := dist / "klasik" / "risale.db").exists():
+        c = sqlite3.connect(db)
+        out |= {"klasik_eser": str(c.execute("select count(*) from works where built = 1").fetchone()[0])}
     if (db := dist / "hadis" / "hadis.db").exists():
         c = sqlite3.connect(db)
         out |= {"hadis_kitap": str(c.execute("select count(*) from lib_books").fetchone()[0]),
@@ -610,35 +712,53 @@ def fill_numbers(path: Path, values: dict[str, str]) -> bool:
     return new != text
 
 
-def latest_list(posts: list[Post]) -> str:
-    items = "\n".join(f'  <li><a href="{p.path}">{inline(p.title)}</a> <span class="muted small">· {p.date_tr}</span>'
+def latest_list(posts: list[Post], base: str = "") -> str:
+    items = "\n".join(f'  <li><a href="{base}{p.path}">{inline(p.title)}</a> <span class="muted small">· {p.date_tr}</span>'
                       f"<br><span class=\"small\">{inline(p.summary)}</span></li>" for p in posts[:3])
     return f'<!-- son-yenilikler -->\n<ul class="news">\n{items}\n</ul>\n<!-- /son-yenilikler -->'
 
 
-def sitemap(pages: list[Path], posts: list[Post]) -> str:
-    urls = []
+def sitemap(pages: list[Path], posts: list[Post], cati: bool) -> str:
+    root, base, urls = (CATI, CATI_BASE, []) if cati else (SITE, BASE, [])
     for page_path in pages:
-        rel = "/" + page_path.relative_to(SITE).as_posix()
+        rel = "/" + page_path.relative_to(root).as_posix()
         urls.append(rel[: -len("index.html")] if rel.endswith("index.html") else rel)
-    urls += [k.index for k in KINDS.values() if k.index not in NAV_HIDDEN] + [p.path for p in posts]
-    body = "\n".join(f"  <url><loc>{BASE}{u}</loc></url>" for u in dict.fromkeys(urls))
+    if cati:
+        urls += [k.index for k in KINDS.values() if k.index not in NAV_HIDDEN] + [p.path for p in posts]
+    body = "\n".join(f"  <url><loc>{base}{u}</loc></url>" for u in dict.fromkeys(urls))
     return (f'<?xml version="1.0" encoding="utf-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
             f"{body}\n</urlset>\n")
 
 
-def latest_strip(post: Post) -> str:
-    return (f'<!-- son-yenilik -->\n<p class="note small"><strong>Yeni:</strong> <a href="{post.path}">'
+def latest_strip(post: Post, base: str = "") -> str:
+    return (f'<!-- son-yenilik -->\n<p class="note small"><strong>Yeni:</strong> <a href="{base}{post.path}">'
             f"{inline(post.title)}</a> · {post.date_tr}</p>\n<!-- /son-yenilik -->")
 
 
-def broken_links(text: str) -> list[str]:
-    """Sayfadaki iç bağlantılardan site/'da karşılığı olmayanlar (önizleme ve girişli bölüm sayılmaz)."""
+def _target(root: Path, href: str) -> Path:
+    target = root / href.lstrip("/")
+    return target / "index.html" if href.endswith("/") else target
+
+
+def cross_links(body: str) -> str:
+    """Yazının çatıda olmayan ama risalemcp.com'da olan iç bağlantısı (eklenti sayfaları, kurulum) tam adres olur."""
+    def fix(m: re.Match) -> str:
+        href = m.group(1)
+        path = href.split("#", 1)[0].split("?", 1)[0]
+        owned = path.startswith(tuple(f"/{k}" for k in KINDS)) or path.startswith("/isarat-usul") or path == "/"
+        if not owned and path and _target(SITE, path).exists() and not _target(CATI, path).exists():
+            return f'href="{BASE}{href}"'
+        return m.group(0)
+    return re.sub(r'href="(/[^"]*)"', fix, body)
+
+
+def broken_links(text: str, root: Path = CATI) -> list[str]:
+    """Sayfadaki iç bağlantılardan sitesinde karşılığı olmayanlar (önizleme ve girişli bölüm sayılmaz)."""
     bad = []
     for href in re.findall(r'href="(/[^"#?]*)', text):
         if href.startswith((PREVIEW_URL + "/", "/taslak/", "/oku/")) or href in ("/",):
             continue
-        target = SITE / href.lstrip("/")
+        target = root / href.lstrip("/")
         if href.endswith("/"):
             target = target / "index.html"
         if not target.exists():
@@ -675,6 +795,23 @@ def share_image() -> None:
 
 # ---- ana akış -------------------------------------------------------------------------------------------------
 
+def _old_posts(say) -> None:
+    """S13.15.6: yazılar çatıya taşındı; site/'taki eski kopyaları silinir (adresleri Caddy 308 ile çatıya gönderir)."""
+    for key in KINDS:
+        for old in [SITE / f"{key}.html", SITE / f"{key}.xml", *sorted((SITE / key).glob("*.html"))]:
+            if old.exists():
+                old.unlink()
+                say(f"silindi (çatıya taşındı): {old.relative_to(ROOT)}")
+        if (SITE / key).is_dir() and not any((SITE / key).iterdir()):
+            (SITE / key).rmdir()
+
+
+def handmade_pages(root: Path) -> list[Path]:
+    """Elle yazılmış sayfalar (yazıların dizinleri hariç), kök ve en/."""
+    return [p for p in sorted(root.glob("*.html")) + sorted((root / "en").glob("*.html"))
+            if p.name not in {f"{k}.html" for k in KINDS}]
+
+
 def build(quiet: bool = False) -> dict[str, list[Post]]:
     say = (lambda *_: None) if quiet else print
     everything = {key: read_posts(kind) for key, kind in KINDS.items()}
@@ -682,6 +819,12 @@ def build(quiet: bool = False) -> dict[str, list[Post]]:
     drafts = [p for posts in everything.values() for p in posts if p.draft]
     NAV_HIDDEN.clear()
     NAV_HIDDEN.update(k.index for key, k in KINDS.items() if not published[key])
+    _old_posts(say)
+    for rel in SHARED:                                    # çatının ortak stil, betik ve yazı tipi: site/'tan
+        (CATI / rel).parent.mkdir(parents=True, exist_ok=True)
+        if not (CATI / rel).exists() or (CATI / rel).read_bytes() != (SITE / rel).read_bytes():
+            shutil.copyfile(SITE / rel, CATI / rel)
+            say(f"kopyalandı: {rel} → {CATI.relative_to(ROOT)}/")
 
     written: list[Path] = []
     for key, kind in KINDS.items():
@@ -697,9 +840,9 @@ def build(quiet: bool = False) -> dict[str, list[Post]]:
                 target = kind.out / f"{post.slug}.html"
                 target.write_text(post_page(post), encoding="utf-8")
                 written.append(target)
-        (SITE / f"{key}.html").write_text(index_page(kind, posts), encoding="utf-8")
-        (SITE / f"{key}.xml").write_text(rss(kind, posts), encoding="utf-8")
-        written.append(SITE / f"{key}.html")
+        (CATI / f"{key}.html").write_text(index_page(kind, posts), encoding="utf-8")
+        (CATI / f"{key}.xml").write_text(rss(kind, posts), encoding="utf-8")
+        written.append(CATI / f"{key}.html")
         say(f"{kind.title}: {len(posts)} yazı yayında, {sum(p.draft for p in everything[key])} taslak")
 
     # önizleme: yalnız taslaklar (her seferinde baştan)
@@ -724,7 +867,7 @@ def build(quiet: bool = False) -> dict[str, list[Post]]:
         ensure_ascii=False, indent=1), encoding="utf-8")
     say(f"önizleme: {len(drafts)} taslak, {PREVIEW.relative_to(ROOT)}/ → lab.ayinedar.org{PREVIEW_URL}/")
 
-    # `adres`li Çalışmalar kayıtları (başka betiğin sayfası): yayımlanmışsa dizine açık, taslaksa noindex
+    # `adres`li Çalışmalar kayıtları (başka betiğin sayfası, çatıda): yayımlanmışsa dizine açık, taslaksa noindex
     addressed = {address_file(p.address): p for posts in everything.values() for p in posts if p.address}
     for path, post in addressed.items():
         if not path.exists():
@@ -732,33 +875,40 @@ def build(quiet: bool = False) -> dict[str, list[Post]]:
         if set_noindex(path, post.draft):
             say(f"{'noindex kondu' if post.draft else 'noindex kalktı'}: {path.relative_to(ROOT)}")
 
-    handmade = [p for p in sorted(SITE.glob("*.html")) + sorted((SITE / "en").glob("*.html"))
-                if p.name not in {f"{k}.html" for k in KINDS}]
-    subpages = sorted(p for p in SITE.glob("*/*.html") if p.parent.name not in {"en", *KINDS})
-    changed = sum(add_og(p) for p in handmade + subpages)
-    say(f"Open Graph: {len(handmade + subpages)} sayfa, {changed} değişti")
-    currents = {path: post.kind.index for path, post in addressed.items()}
-    say(f"menü ve alt bilgi: {sum(frame(p, currents.get(p)) for p in handmade + subpages)} sayfa değişti")
     values = numbers()
-    say(f"sayılar: {sum(fill_numbers(p, values) for p in handmade)} sayfa değişti")
-    listed = [p for p in subpages if p in addressed and not addressed[p].draft]
-    (SITE / "sitemap.xml").write_text(sitemap(handmade + listed, [p for ps in published.values() for p in ps
-                                                                  if not p.address]), encoding="utf-8")
+    currents = {path: post.kind.index for path, post in addressed.items()}
+    for root, cati in ((SITE, False), (CATI, True)):
+        handmade = handmade_pages(root)
+        subpages = sorted(p for p in root.glob("*/*.html") if p.parent.name not in {"en", *KINDS})
+        changed = sum(add_og(p) for p in handmade + subpages)
+        name = root.relative_to(ROOT)
+        say(f"{name}: Open Graph {len(handmade + subpages)} sayfa, {changed} değişti; menü ve alt bilgi "
+            f"{sum(frame(p, currents.get(p)) for p in handmade + subpages)} değişti; sayılar "
+            f"{sum(fill_numbers(p, values) for p in handmade)} değişti")
+        listed = [p for p in subpages if p in addressed and not addressed[p].draft]
+        pages = [p for p in handmade + listed if p.name != "404.html"]
+        posts = [p for ps in published.values() for p in ps if not p.address] if cati else []
+        (root / "sitemap.xml").write_text(sitemap(pages, posts, cati), encoding="utf-8")
+        written += [] if cati else handmade
 
     news = published["yenilikler"]
-    index = SITE / "index.html"
-    if news:
+    for index, base in ((SITE / "index.html", CATI_BASE), (CATI / "index.html", "")):
+        if not news or not index.exists():
+            continue
         text = index.read_text(encoding="utf-8")
-        new = _between(text, "<!-- son-yenilik -->", "<!-- /son-yenilik -->", latest_strip(news[0]),
-                       '<section class="hero">')
+        new = text
+        if "<!-- son-yenilik -->" in new or '<section class="hero">' in new:
+            new = _between(new, "<!-- son-yenilik -->", "<!-- /son-yenilik -->", latest_strip(news[0], base),
+                           '<section class="hero">')
         if "<!-- son-yenilikler -->" in new:
-            new = _between(new, "<!-- son-yenilikler -->", "<!-- /son-yenilikler -->", latest_list(news), "")
+            new = _between(new, "<!-- son-yenilikler -->", "<!-- /son-yenilikler -->", latest_list(news, base), "")
         if new != text:
             index.write_text(new, encoding="utf-8")
-            say("ana sayfadaki yenilikler güncellendi")
+            say(f"{index.relative_to(ROOT)}: yenilikler güncellendi")
 
-    for path in written:
-        if bad := broken_links(path.read_text(encoding="utf-8")):
+    for path in written + handmade_pages(CATI):
+        root = CATI if path.is_relative_to(CATI) else SITE
+        if bad := broken_links(path.read_text(encoding="utf-8"), root):
             print(f"uyarı: {path.relative_to(ROOT)}: kırık iç bağlantı: {', '.join(bad)}")
     return everything
 
@@ -826,7 +976,7 @@ tarih: {today}
 ozet: {summary}
 durum: taslak
 whatsapp: |
-  Risale-i Nur MCP'de yeni bir çalışma: «{post.title}».
+  Âyinedâr'da yeni bir çalışma: «{post.title}».
   {summary}
 ---
 
@@ -963,12 +1113,12 @@ def publish_due(send: bool) -> None:
 
 
 def serve(port: int = 8090) -> None:
-    """Yerel önizleme: site/ ve önizleme klasörü tek kökte (bağlantılar sitedeki gibi çalışır)."""
+    """Yerel önizleme: çatı (site-ayinedar/) ve önizleme klasörü tek kökte (bağlantılar sitedeki gibi çalışır)."""
     import functools
     import http.server
     build()
     root = Path(tempfile.mkdtemp(prefix="site-onizle-"))
-    for item in SITE.iterdir():
+    for item in CATI.iterdir():
         (root / item.name).symlink_to(item)
     (root / "onizleme").symlink_to(PREVIEW)
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(root))

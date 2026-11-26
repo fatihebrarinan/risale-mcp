@@ -28,7 +28,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE = ROOT / "docs" / "d1" / "usul-ozeti.md"
-OUT = ROOT / "site" / "isarat-usul"            # risalemcp.com/isarat-usul/ (2026-11-14'e kadar /taslak/)
+OUT = ROOT / "site-ayinedar" / "isarat-usul"   # ayinedar.org/isarat-usul/ (S13.15.6; önce risalemcp.com/isarat-usul/, 2026-11-14.e kadar /taslak/)
 NAME = "isarat-usulu"
 TITLE = "İşârâtü'l-İ'câz'ın usulü: kendi metninden bir döküm"
 DESCRIPTION = ("İşârâtü'l-İ'câz'ın bir âyeti ele alırken ne yaptığını ve hangi sırayla yaptığını eserin kendi "
@@ -43,7 +43,7 @@ INTRO = """<div class="note">
 <p><strong>Hangi metin?</strong> Arapça asıl risaleoku.com'daki metinden, Türkçe tercüme e-Risale'deki metinden alınmıştır. Tenbih'i ve Hâşiye'yi müellif sonradan Türkçe yazmıştır; onlarda asıl Türkçedir. Tercüme asıldan üç noktada ayrılır: âyetlerin ardındaki "Yani: …" mealleri asılda yoktur; tercüme yer yer kısaltır (1.4); Bakara 17–20'nin başındaki belâgat bahsi tercümede hiç yoktur (2. bölüm). Arapça asıl 31. âyetin ortasında biter.</p>
 <p><strong>İkinci sürümde ne değişti?</strong> İlk sürüm Türkçe tercümenin taranmasına dayanıyordu. Bu sürüm için Arapça asıl baştan sona okundu (Fâtiha, Bakara 1–33). Eklenenler: usulün belâgat temeli (2), her âyette izlenen sıranın çizelgesi (4), mukaddimelerin ne zaman geldiği (5) ve taslak için kurallar (8). Sonradan usulün aslı da eklendi: Muhâkemât'ın "Unsur-u Belâğat"ı (2.7).</p>
 <p><strong>Sınırı nedir?</strong> Okuma bir yapay zekâ okumasıdır; Arapça belâgat inceliklerinde yanılmış olabilir. Sayılar bir kelime taramasından gelir, yaklaşık okunmalıdır.</p>
-<p><strong>Düzeltmeleriniz</strong> için: <a href="mailto:destek@risalemcp.com">destek@risalemcp.com</a></p>
+<p><strong>Düzeltmeleriniz</strong> için: <a href="mailto:destek@ayinedar.org">destek@ayinedar.org</a></p>
 </div>"""
 OUTRO = "<p class=\"muted small\">Bu belgedeki bütün alıntılar kaynak metinlerle (risaleoku.com, e-Risale) birebir karşılaştırılmıştır.</p>"
 PAGE_CSS = """<style>
@@ -149,7 +149,7 @@ def page(content: str) -> str:
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{html.escape(TITLE)} · Risale-i Nur MCP</title>
+<title>{html.escape(TITLE)} · Âyinedâr</title>
 <meta name="description" content="{html.escape(DESCRIPTION)}">
 <meta name="robots" content="noindex">
 <link rel="icon" href="/favicon.ico" sizes="any">
@@ -178,7 +178,7 @@ def page(content: str) -> str:
 
 
 PDF_CSS = """
-@page { size: A4; margin: 22mm 20mm 20mm; @bottom-center { content: "%s · risalemcp.com · " counter(page); font: 8pt "DejaVu Sans"; color: #666; } }
+@page { size: A4; margin: 22mm 20mm 20mm; @bottom-center { content: "%s · ayinedar.org · " counter(page); font: 8pt "DejaVu Sans"; color: #666; } }
 body { font: 10.5pt/1.6 "DejaVu Serif", "Noto Naskh Arabic", serif; color: #1a1a1a; }
 h1 { font-size: 18pt; line-height: 1.25; margin: 0 0 6pt; }
 h2 { font-size: 13.5pt; margin: 20pt 0 6pt; border-bottom: 0.5pt solid #999; padding-bottom: 2pt; break-after: avoid; }
@@ -202,7 +202,7 @@ a { color: inherit; text-decoration: none; }
 def pdf(content: str) -> None:
     doc = (f'<!doctype html><html lang="tr"><head><meta charset="utf-8"><title>{html.escape(TITLE)}</title>'
            f"<style>{PDF_CSS % stamp()}</style></head><body>"
-           f'<p class="stamp">{stamp()} · Risale-i Nur MCP · risalemcp.com/isarat-usul/</p>'
+           f'<p class="stamp">{stamp()} · Âyinedâr · ayinedar.org/isarat-usul/</p>'
            f"<h1>{html.escape(TITLE)}</h1>{INTRO}{content}{OUTRO}</body></html>")
     target = OUT / f"{NAME}.pdf"
     with tempfile.TemporaryDirectory() as tmp:
