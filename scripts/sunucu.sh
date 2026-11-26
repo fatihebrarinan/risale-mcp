@@ -8,7 +8,7 @@
 #   scripts/sunucu.sh auth usage --user '(debug)' --params [--only genel|hadis]  # o adresten gelen isteklerin kaydı
 #   (tefsir ayrı makinede: scripts/tefsir-sunucu.sh auth debug-url --new)
 #   scripts/sunucu.sh taslak add-user <e-posta> --generate [--name <ad>] | set-name <e-posta> <ad> | passwd <e-posta> | remove-user <e-posta> | users | sessions | revoke <e-posta>
-#                                                     # risalemcp.com/taslak/ hesapları (MCP hesapları değil)
+#                                                     # read. ve lab.ayinedar.org hesapları (MCP hesapları değil)
 #   scripts/sunucu.sh auth debug <ad> on|off              # hesabın ayrıntılı kaydı (OAuth kipi; askıda)
 #   scripts/sunucu.sh openai-challenge <jeton> [hadis|tefsir|klasik]  # OpenAI'nin alan adı doğrulama jetonu
 #   scripts/sunucu.sh status | restart | stop | start  # servis
@@ -26,7 +26,7 @@ case "${1:-}" in
         args=$(printf ' %q' "$@")
         "${SSH[@]}" -t "$HOST" "su - risale -c 'cd risale-mcp && .venv/bin/risale-mcp auth$args'" ;;
     taslak)
-        # S5: risalemcp.com/taslak/ hesapları (MCP hesapları değil; src/risale_mcp/site_auth.py, data/site_auth.db)
+        # S5: read. ve lab.ayinedar.org hesapları (MCP hesapları değil; src/risale_mcp/site_auth.py, data/site_auth.db)
         shift
         args=$(printf ' %q' "$@")
         "${SSH[@]}" -t "$HOST" "su - risale -c 'cd risale-mcp && .venv/bin/python -m risale_mcp.site_auth$args'" ;;

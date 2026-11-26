@@ -97,7 +97,7 @@ const kOf = c => `${DATA.unit}|${DATA.ad}|${c.id}`;
 let ACCOUNT = null;
 // S7.2: görevli sayfa (DATA.gorev): kararlar ar-ge masasının sunucusuna yazılır; kör okumada A ile B'nin hangi taslak
 // olduğu sayfada yoktur, sunucudadır ve "Okumayı bitir"den sonra gelir (MAP). Görevsiz eski sayfalar eskisi gibi.
-const API = '/taslak/api/';
+const API = '/api/';
 let SERVER = false, MAP = null, DONE = false;
 const BLIND = !!DATA.gorev && DATA.ab && !DATA.a;
 const nameOf = l => BLIND ? (MAP ? MAP[l] : null) : (l === 'A' ? DATA.a : DATA.b);
@@ -345,7 +345,7 @@ $('#reader').value = store.get('d1-okuma-okur', '') || '';
 $('#reader').onchange = () => store.set('d1-okuma-okur', reader());
 window.addEventListener('storage', ev => { if (ev.key === KEY) { marks = store.get(KEY, {}); render(); } });
 if (location.protocol.startsWith('http')) {
-  fetch('/taslak/ben', {credentials: 'same-origin', cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(j => {
+  fetch('/ben', {credentials: 'same-origin', cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(j => {
     if (!j || !j.name) return;
     ACCOUNT = j.name;
     $('#readerw').hidden = true; $('#who').hidden = false; $('#who').textContent = `Okuyucu: ${j.name}`;

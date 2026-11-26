@@ -2,11 +2,11 @@
 PLANLAR S7). Tek veri biçimi, iki görünüm: ikisi de yayın dosyasından (`d1-yayin.py`) ve aynı uygulamadan
 (`scripts/oku-app.html`) çizilir.
 
-- **Okuma platformu** (`risalemcp.com/oku/`, davetli): her birimde yalnız son taslak (yayın dosyasının son sürümü);
+- **Okuma platformu** (`read.ayinedar.org`, davetli; S13.15.5, önce `risalemcp.com/oku/`): her birimde yalnız son taslak (yayın dosyasının son sürümü);
   Bakara 1–33'te önce müellifin sözü (İşârâtü'l-İ'câz), yanında İşârât'ı görmeden yazılmış taslak; âyetin Risale'deki
   yerleri (müellifin sözüyle), müfessirler (Arapça, istek üzerine), künye, işaretler, indirme ve atıf satırı.
-  Çıktı `data/interim/oku/` (yeniden üretilir, git'e girmez); sitede `/var/www/ozel/taslak/oku/` (Caddy `/oku/`'yu
-  oraya çevirir; D5 sunucusunun kısıtlı anahtarı yalnız taslak klasörüne yazabildiği için).
+  Çıktı `data/interim/oku/` (yeniden üretilir, git'e girmez); sitede `/var/www/ozel/taslak/oku/` (Caddy
+  `read.ayinedar.org`'un kökünü oraya bağlar; D5 sunucusunun kısıtlı anahtarı yalnız taslak klasörüne yazabildiği için).
 - **Ar-ge masası:** birim sayfası eski âyet masasıdır (`scripts/d1-masa.py`; S7b, kullanıcının kararı 2026-11-21);
   bu betiğin `masa_data`'sı ona kapı, nisbet ve alarm verir. Önceki `/taslak/birim.html` emekli. Eski not:
   karşılaştırma, kapı ve eleştirmen notları (ham), nisbet hükümleri, alarmlar, eski sayfalar. Çıktı
@@ -425,7 +425,7 @@ def masa_data(unit: str, base: dict) -> dict:
 def plain(d: dict) -> str:
     """Birimin düz metni (indirme): âyet, taslağın Türkçesi, kaynakça; damgasıyla."""
     L = [f"{d['sure_adi']} {d['ayet'][0]}" + (f"–{d['ayet'][1]}" if d['ayet'][1] != d['ayet'][0] else ""),
-         "Yapay zekâ taslağıdır; tefsir değildir, müellife ya da İşârât'a mal edilmez. Risale MCP (risalemcp.com/oku/)", ""]
+         "Yapay zekâ taslağıdır; tefsir değildir, müellife ya da İşârât'a mal edilmez. Âyinedâr (read.ayinedar.org)", ""]
     for x in d["ayetler"]:
         L += [f"{x['metin']} ﴿{x['n']}﴾", f"Meal (Türkiye Diyanet Vakfı): {x['meal']}", ""]
     t = d.get("taslak")
@@ -504,9 +504,9 @@ def build(only: str | None = None) -> list[str]:
         encoding="utf-8")
     (OUT / "indir" / "bakara.txt").write_text("\n\n".join(plain(x) for x in whole), encoding="utf-8")
     app = APP.read_text(encoding="utf-8")
-    for path, conf in ((OUT / "index.html", {"__MASA__": "false", "__TITLE__": "Kur'ân Taslakları",
+    for path, conf in ((OUT / "index.html", {"__MASA__": "false", "__TITLE__": "Kur'ân Taslakları · Âyinedâr",
                                                "__FONT__": "fonts/naskh.ttf", "__USUL__": "usul.html",
-                                               "__EXTRA__": ' <a class="hbtn" href="/taslak/cikis">Çıkış</a>'}),):
+                                               "__EXTRA__": ' <a class="hbtn" href="/cikis">Çıkış</a>'}),):
         # masanın birim görünümü eski âyet masasıdır (d1-masa.py; S7b, kullanıcının kararı 2026-11-21)
         page = app
         for k, v in conf.items():
@@ -540,7 +540,7 @@ def gonder() -> None:
         print("yerelden yalnız platform gönderiliyor (masa taslak sunucusundan gider)")
     for src, dest in pairs:
         subprocess.run(["rsync", "-rtz", "--chmod=D2750,F640", *extra, "-e", ssh, src, dest], check=True)
-    print("https://risalemcp.com/oku/")
+    print("https://read.ayinedar.org/")
 
 
 def main() -> None:

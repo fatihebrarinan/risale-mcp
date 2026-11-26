@@ -35,7 +35,7 @@ from pathlib import Path
 from risale_mcp.paths import DATA_DIR, ROOT
 
 DB = DATA_DIR / "yazilar.db"
-API = "/taslak/api/yazi"
+API = "/api/yazi"
 KINDS = ("yenilikler", "calismalar")
 NAME = re.compile(r"^(yenilikler|calismalar)/([0-9a-z][0-9a-z-]{0,120})$")
 MAX_TEXT = 400_000

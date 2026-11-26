@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Girişli taslak bölümüne (risalemcp.com/taslak/) tek tek sayfa gönderir: okuma sayfaları, masa (S5).
+# Ar-ge masasına (lab.ayinedar.org, girişli; önce risalemcp.com/taslak/) tek tek sayfa gönderir: okuma sayfaları, masa (S5).
 #
 #   scripts/taslak-gonder.sh data/d1/masa/tur-21-22-D15.1.html [başka sayfa …]
 #
@@ -24,5 +24,5 @@ done
 "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 750 /var/www/ozel && install -d -o root -g caddy -m 2750 /var/www/ozel/taslak"
 rsync -az --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" "$@" "$HOST:/var/www/ozel/taslak/"
 for f in "$@"; do
-    echo "https://risalemcp.com/taslak/$(basename "$f")"
+    echo "https://lab.ayinedar.org/$(basename "$f")"
 done

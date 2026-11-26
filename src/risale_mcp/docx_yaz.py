@@ -15,7 +15,7 @@ import time
 import zipfile
 from xml.sax.saxutils import escape
 
-PLATFORM = "https://risalemcp.com/oku/"
+PLATFORM = "https://read.ayinedar.org/"
 MONTHS = ("Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık")
 
 CONTENT_TYPES = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
@@ -37,7 +37,7 @@ CORE = """<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties"
  xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/"
  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-<dc:title>Notlarım</dc:title><dc:creator>Risale MCP okuma platformu</dc:creator>
+<dc:title>Notlarım</dc:title><dc:creator>Âyinedâr okuma platformu</dc:creator>
 <dcterms:created xsi:type="dcterms:W3CDTF">{now}</dcterms:created>
 </cp:coreProperties>"""
 
@@ -108,7 +108,7 @@ def notes_docx(notes: list[dict], now: float | None = None) -> bytes:
                 "</w:hyperlink>")
 
     body = [_para(_run("Notlarım"), style="Title"),
-            _para(_run(f"Risale MCP okuma platformu · {turkish_date(now)} tarihinde indirildi · {len(notes)} not",
+            _para(_run(f"Âyinedâr okuma platformu · {turkish_date(now)} tarihinde indirildi · {len(notes)} not",
                        small=True, grey=True)),
             _para(_run("Notlarınızın bağlı olduğu metinler yapay zekâ taslağıdır; tefsir değildir. Bu dosyayı yalnız "
                        "siz indirebilirsiniz; notlarınız sitede de yalnız size görünür.", small=True, italic=True),

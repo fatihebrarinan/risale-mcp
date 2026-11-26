@@ -128,7 +128,7 @@ git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DES
 "${SSH[@]}" "$HOST" "mkdir -p /var/www/risalemcp"
 rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
 send_ayinedar
-# S5: girişli taslak bölümü (risalemcp.com/taslak/): âyet masası kapalı depodan (data/d1, `scripts/d1-masa.py`)
+# S5: ar-ge masası (lab.ayinedar.org, girişli; S13.15.5, önce risalemcp.com/taslak/): âyet masası kapalı depodan (data/d1, `scripts/d1-masa.py`)
 # /var/www/ozel/taslak/'a; site/ klasörüne girmez, yalnız Caddy okur, giriş servisi (aşağıda) kapıdır
 # Birim başına bir sayfa (<birim>.html; index.html son birim)
 if [[ -d data/d1/masa ]]; then
@@ -136,11 +136,11 @@ if [[ -d data/d1/masa ]]; then
     # -u: sunucudaki daha yeni dosya ezilmez (kuyruk D5 sayfalarını taslak sunucusundan da gönderir)
     rsync -azu --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/d1/masa/ "$HOST:/var/www/ozel/taslak/"
 fi
-# Okuma platformu (/oku/) ve masa (ayet.html, masa-veri/, pano…) burada GÖNDERİLMEZ (S10, 2026-11-23): ikisini de
+# Okuma platformu (read.ayinedar.org, diskte taslak/oku/) ve masa (ayet.html, masa-veri/, pano…) burada GÖNDERİLMEZ (S10, 2026-11-23): ikisini de
 # taslak sunucusundaki D5 kuyruğu her birimden sonra kurup gönderir; yereldeki data/interim/oku{,-masa}/ eski kalır ve
 # eskiden her deploy masanın yeni dosyalarını 21 Kasım kopyasıyla eziyordu. Elle: `scripts/oku-veri.py --gonder`
 # (önce `git -C data/d1 pull`; yerelden yalnız platformu gönderir).
-# S9: Yenilikler ve Çalışmalar taslaklarının önizlemesi (girişli /taslak/onizleme/; `scripts/site-uret.py` üretir).
+# S9: Yenilikler ve Çalışmalar taslaklarının önizlemesi (girişli lab.ayinedar.org/onizleme/; `scripts/site-uret.py` üretir).
 # --delete: yayımlanan taslağın önizlemesi kalkar
 if [[ -f data/interim/onizleme/index.html ]]; then
     "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/onizleme"

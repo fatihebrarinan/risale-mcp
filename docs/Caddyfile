@@ -79,14 +79,108 @@ klasik.risalemcp.com {
 }
 
 # S13.15: Âyinedâr, çatı ve projeler (PLANLAR.md › S13.15 (a); DNS Cloudflare'de "DNS only", alt alan adları CNAME
-# ile köke). Şimdilik hepsi depodaki site-ayinedar/'ın "hazırlanıyor" sayfası (scripts/deploy.sh gönderir); projeler
+# ile köke). Taşınmamış olanlar depodaki site-ayinedar/'ın "hazırlanıyor" sayfası (scripts/deploy.sh gönderir); projeler
 # taşındıkça kendi bloklarını alır: chat (S13.15.4), read ve lab (S13.15.5), kök (S13.15.6), connect (S13.15.7).
-ayinedar.org, read.ayinedar.org, lab.ayinedar.org, connect.ayinedar.org {
+ayinedar.org, connect.ayinedar.org {
 	encode gzip
 	header X-Robots-Tag "noindex, nofollow"
 	root * /var/www/ayinedar
 	try_files {path} /index.html
 	file_server
+}
+
+# S13.15.5: okuma platformu ve ar-ge masası (2026-11-27'ye kadar risalemcp.com/oku/ ve /taslak/). Dosyalar statik:
+# masa /var/www/ozel/taslak/, platform onun oku/ klasörü (D5 sunucusunun kısıtlı anahtarı yalnız oraya yazar).
+# Giriş servisi (src/risale_mcp/site_auth.py, docs/risale-taslak.service, 127.0.0.1:8009) her iki bölümde aynı
+# yolları verir (/giris, /cikis, /ben, /api/…; davet yalnız platformda); hangi bölüm olduğunu X-Bolum başlığı söyler
+# (üstüne yazılır: istemci değiştiremez). Çerez her alt alan adının kendisinindir. Önceden üretilmiş sayfalar
+# /taslak/api/… ve /taslak/ben'i çağırır: /taslak önekinin atılmasıyla onlar da çalışır. Âyinedâr simgeleri girişsiz.
+read.ayinedar.org {
+	encode gzip
+	header Strict-Transport-Security "max-age=31536000"
+	header X-Robots-Tag "noindex, nofollow"
+	@eski path /taslak /taslak/*
+	uri @eski strip_prefix /taslak
+	route {
+		@simge path /favicon.ico /icon-kucuk.svg /icon.svg /apple-touch-icon.png
+		handle @simge {
+			root * /var/www/ayinedar
+			file_server
+		}
+		# S10: davet bağlantısı (okuyucu parolasını koyar); girişsiz açılır, jetonu servis denetler
+		handle /davet/* {
+			header Cache-Control "no-store"
+			header Referrer-Policy "no-referrer"
+			reverse_proxy 127.0.0.1:8009 {
+				header_up X-Bolum read
+			}
+		}
+		@servis path /giris /cikis /ben /api/*
+		handle @servis {
+			header Cache-Control "no-store"
+			reverse_proxy 127.0.0.1:8009 {
+				header_up X-Bolum read
+			}
+		}
+		handle {
+			forward_auth 127.0.0.1:8009 {
+				uri /_auth
+				header_up X-Bolum read
+			}
+			header Cache-Control "private, no-cache"
+			header Referrer-Policy "same-origin"
+			root * /var/www/ozel/taslak/oku
+			file_server
+		}
+	}
+}
+
+lab.ayinedar.org {
+	encode gzip
+	header Strict-Transport-Security "max-age=31536000"
+	header X-Robots-Tag "noindex, nofollow"
+	@eski path /taslak /taslak/*
+	uri @eski strip_prefix /taslak
+	route {
+		@simge path /favicon.ico /icon-kucuk.svg /icon.svg /apple-touch-icon.png
+		handle @simge {
+			root * /var/www/ayinedar
+			file_server
+		}
+		@servis path /giris /cikis /ben /api/*
+		handle @servis {
+			header Cache-Control "no-store"
+			reverse_proxy 127.0.0.1:8009 {
+				header_up X-Bolum lab
+			}
+		}
+		# Yazı önizlemesi (/onizleme/) sitenin sayfalarıdır, stil ve resimleri kökten ister: masada olmayan dosya
+		# sitede varsa oradan, girişsiz (zaten herkese açık)
+		@site {
+			not file {
+				root /var/www/ozel/taslak
+				try_files {path} {path}/index.html
+			}
+			file {
+				root /var/www/risalemcp
+				try_files {path}
+			}
+		}
+		handle @site {
+			root * /var/www/risalemcp
+			file_server
+		}
+		handle {
+			forward_auth 127.0.0.1:8009 {
+				uri /_auth
+				header_up X-Bolum lab
+			}
+			header Cache-Control "private, no-store"
+			header Referrer-Policy "same-origin"
+			root * /var/www/ozel/taslak
+			file_server
+		}
+	}
 }
 
 # S13.15.4: sohbet (src/risale_mcp/sohbet.py, docs/risale-sohbet.service, 127.0.0.1:8010; 2026-11-27'ye kadar
@@ -118,64 +212,18 @@ risalemcp.com {
 	# İşârât'ın usul özeti 2026-11-14'e kadar /taslak/'taydı (bağlantısı paylaşıldı): yeni yerine
 	redir /taslak/isarat-usulu.html /isarat-usul/ 301
 	redir /taslak/isarat-usulu.pdf /isarat-usul/isarat-usulu.pdf 301
-	# S5: girişli taslak çalışma bölümü (âyet masası). Sayfalar /var/www/ozel/taslak/ altında statik dosyadır,
-	# site/ klasöründe değildir. Her istekte giriş servisine sorulur (src/risale_mcp/site_auth.py,
-	# docs/risale-taslak.service, 127.0.0.1:8009): oturum yoksa giriş sayfasına yönlendirir.
-	handle /taslak/giris {
-		reverse_proxy 127.0.0.1:8009
+	# S13.15.5: masa lab.ayinedar.org'a, okuma platformu read.ayinedar.org'a taşındı (2026-11-27); eski adresler aynı
+	# yola (/oku/davet/<jeton> → read.ayinedar.org/davet/<jeton>; adres çubuğundaki #… tarayıcıda kalır)
+	redir /oku https://read.ayinedar.org/ 308
+	handle_path /oku/* {
+		redir https://read.ayinedar.org{uri} 308
 	}
-	handle /taslak/cikis {
-		reverse_proxy 127.0.0.1:8009
-	}
-	# girişli kişinin adı (sayfa işaretlere okuyucu adı olarak yazar); oturum yoksa 401
-	handle /taslak/ben {
-		reverse_proxy 127.0.0.1:8009
-	}
-	# S7.2: ar-ge masasının sunucu tarafı (src/risale_mcp/masa.py; aynı servis): okumalar, kararlar, notlar. Oturumu
-	# (ya da makine jetonunu) uygulama kendisi denetler.
-	handle /taslak/api/* {
-		header Cache-Control "no-store"
-		reverse_proxy 127.0.0.1:8009
-	}
-	# S7.3: okuma platformu (davetli; aynı hesaplar, `oku` kapsamı yalnız buraya girer). Dosyalar
-	# /var/www/ozel/taslak/oku/ altında (D5 sunucusunun kısıtlı anahtarı yalnız taslak klasörüne yazar); /oku/… oraya
-	# çevrilir, giriş servisi /taslak/oku/… yolunu `oku` kapsamına da açar.
-	redir /oku /oku/ 308
-	# S10: davet bağlantısı (okuyucu parolasını koyar); girişsiz açılır, jetonu servis denetler
-	handle /oku/davet/* {
-		header Cache-Control "no-store"
-		header Referrer-Policy "no-referrer"
-		header X-Robots-Tag "noindex, nofollow"
-		reverse_proxy 127.0.0.1:8009
-	}
-	handle /oku/* {
-		rewrite * /taslak{uri}
-		forward_auth 127.0.0.1:8009 {
-			uri /_auth
-		}
-		header {
-			Cache-Control "private, no-cache"
-			X-Robots-Tag "noindex, nofollow"
-			Referrer-Policy "same-origin"
-		}
-		root * /var/www/ozel
-		file_server
-	}
-	handle /taslak* {
-		forward_auth 127.0.0.1:8009 {
-			uri /_auth
-		}
-		header {
-			Cache-Control "private, no-store"
-			X-Robots-Tag "noindex, nofollow"
-			Referrer-Policy "same-origin"
-		}
-		root * /var/www/ozel
-		file_server
+	redir /taslak https://lab.ayinedar.org/ 308
+	handle_path /taslak/* {
+		redir https://lab.ayinedar.org{uri} 308
 	}
 	handle {
 		root * /var/www/risalemcp
 		file_server
 	}
 }
-

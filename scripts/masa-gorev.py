@@ -17,7 +17,7 @@ import urllib.request
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-BASE = os.environ.get("MASA_URL", "https://risalemcp.com/taslak/api/")
+BASE = os.environ.get("MASA_URL", "https://lab.ayinedar.org/api/")
 KEEP = ROOT / "data" / "d1"
 
 
@@ -47,7 +47,7 @@ def call(path: str, body: dict | None = None) -> dict:
 def ac(path: Path) -> None:
     task = json.loads(path.read_text(encoding="utf-8"))
     r = call("gorev", task)
-    print(f"{task['id']}: {'açıldı' if r.get('acildi') else 'zaten var'} → https://risalemcp.com{task.get('sayfa', '')}")
+    print(f"{task['id']}: {'açıldı' if r.get('acildi') else 'zaten var'} → https://lab.ayinedar.org{task.get('sayfa', '')}")
 
 
 def al() -> None:

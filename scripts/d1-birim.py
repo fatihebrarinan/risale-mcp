@@ -323,13 +323,13 @@ NTFY_FILE = Path.home() / ".d5-ntfy"                 # ntfy.sh konusu (tahmin ed
 
 
 def yayimla(page: Path) -> None:
-    """Okuma sayfası siteye (`/taslak/`, girişli): sunucuda kısıtlı anahtarla; anahtar yoksa (yerel) atlanır."""
+    """Okuma sayfası siteye (masa, `lab.ayinedar.org`, girişli): sunucuda kısıtlı anahtarla; anahtar yoksa (yerel) atlanır."""
     if not SITE_KEY.exists():
         print(f"siteye gönderilmedi (anahtar yok): scripts/taslak-gonder.sh {page.relative_to(ROOT)}")
         return
     p = subprocess.run(["rsync", "-rt", "--chmod=F640", "-e", f"ssh -i {SITE_KEY} -o BatchMode=yes", str(page),
                         f"{SITE_HOST}:/"], text=True, capture_output=True)
-    print(f"https://risalemcp.com/taslak/{page.name}" if p.returncode == 0 else f"siteye gönderilemedi: {p.stderr.strip()}")
+    print(f"https://lab.ayinedar.org/{page.name}" if p.returncode == 0 else f"siteye gönderilemedi: {p.stderr.strip()}")
 
 
 def bildir(baslik: str, metin: str) -> None:
@@ -426,7 +426,7 @@ def gunluk_ozet() -> None:
     al = [u for u in done if b[u].get("alarmlar")]
     lim = json.loads(P.LIMIT_STATE.read_text(encoding="utf-8")) if P.LIMIT_STATE.exists() else {}
     bildir("D5 günlük özet", f"son 24 saatte {len(son24)} birim; toplam {len(done)}/{len(units)}; alarmlı {len(al)}; "
-                             f"haftalık kota %{(lim.get('week') or 0) * 100:.0f}. https://risalemcp.com/taslak/d5.html")
+                             f"haftalık kota %{(lim.get('week') or 0) * 100:.0f}. https://lab.ayinedar.org/d5.html")
     st["son_ozet"] = time.time()
     P.D5_STATE.parent.mkdir(parents=True, exist_ok=True)          # ilk koşuda klasör yok (2026-11-21)
     P.D5_STATE.write_text(json.dumps(st, ensure_ascii=False, indent=1), encoding="utf-8")
@@ -482,7 +482,7 @@ def kuyruk(kadar: int | None, tavan: float | None) -> None:
         al = s.get("alarmlar") or []
         bildir(f"D5: {uid} bitti" + (" ⚠" if al else ""),
                f"≈{s.get('maliyet')} $, {s.get('sure_dk')} dk" + (f"; alarm: {'; '.join(al)}" if al else "")
-               + f". https://risalemcp.com/taslak/d5-{uid}.html")
+               + f". https://lab.ayinedar.org/d5-{uid}.html")
         durum_sayfasi()
         depo(f"D5: {uid} kaydı")
 

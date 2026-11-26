@@ -4,7 +4,7 @@ bilgi, sayılar, site haritası.
 
     python3 scripts/site-uret.py                    # hepsi (taslaklar yalnız önizlemeye)
     python3 scripts/site-uret.py --resim            # bir de paylaşım resmi (site/img/paylasim.png; uvx cairosvg)
-    python3 scripts/site-uret.py onizle             # üretir ve yerelde açar: http://127.0.0.1:8090/taslak/onizleme/
+    python3 scripts/site-uret.py onizle             # üretir ve yerelde açar: http://127.0.0.1:8090/onizleme/
     python3 scripts/site-uret.py yayinla <ad>       # taslağı yayımlar (durum, tarih, dosya adı; bağlantı denetimi)
     python3 scripts/site-uret.py yayinla <ad> --gonder   # … ve scripts/deploy.sh --site (yalnız site)
     python3 scripts/site-uret.py zamanla <ad> 2026-11-24 # o gün kendiliğinden yayımlansın (`iptal` kaldırır)
@@ -12,7 +12,7 @@ bilgi, sayılar, site haritası.
     python3 scripts/site-uret.py zamanli --gonder        # günü gelenleri yayımla, commit, deploy.sh --site
                                                          # (günlük zamanlayıcı: docs/site-zamanli.timer)
 
-Sonra: scripts/deploy.sh --code (önizleme de onunla gider: risalemcp.com/taslak/onizleme/, girişli, masa hesabı)
+Sonra: scripts/deploy.sh --code (önizleme de onunla gider: lab.ayinedar.org/onizleme/, girişli, masa hesabı)
 
 - İki tür yazı (`KINDS`): **Yenilikler** `docs/yenilikler/<tarih>-<ad>.md` (eklentide ne değişti; kısa) ve
   **Çalışmalar** `docs/calismalar/<tarih>-<ad>.md` (ne denendi, ne öğrenildi; uzun, kaynaklı; S9). site/ olduğu gibi
@@ -27,7 +27,7 @@ Sonra: scripts/deploy.sh --code (önizleme de onunla gider: risalemcp.com/taslak
   metin içindeki Arapça `lang="ar"` (sitenin Naskh yazı tipi, `site/fonts/naskh.woff2`).
 - **Taslak** yazı `site/`'a yazılmaz; listeye, RSS'e, site haritasına, ana sayfa şeridine girmez. Önizlemesi
   `data/interim/onizleme/<tür>/<ad>.html`'dedir (sitedeki görünüşüyle, başında önizleme şeridi, `noindex`); deploy onu
-  girişli `/taslak/onizleme/`'ye gönderir. `yayinla`: önce önizlemedeki iç bağlantılar denetlenir (yoksa durur), sonra
+  girişli `lab.ayinedar.org/onizleme/`'ye gönderir. `yayinla`: önce önizlemedeki iç bağlantılar denetlenir (yoksa durur), sonra
   `durum: yayinda`, `tarih` bugün, dosya adı bugünün tarihiyle (adres yayından sonra değişmez); Çalışmalar yazısıysa
   Yeniliklere kısa duyuru **taslak** olarak yazılır (o da `yayinla` ile).
 - Çıktı: `site/<tür>/<ad>.html`, `site/<tür>.html` (en yeni üstte), `site/<tür>.xml` (RSS 2.0).
@@ -64,8 +64,8 @@ from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent.parent
 SITE = ROOT / "site"
-PREVIEW = ROOT / "data" / "interim" / "onizleme"     # deploy: /var/www/ozel/taslak/onizleme/ (girişli)
-PREVIEW_URL = "/taslak/onizleme"
+PREVIEW = ROOT / "data" / "interim" / "onizleme"     # deploy: /var/www/ozel/taslak/onizleme/ (lab.ayinedar.org, girişli)
+PREVIEW_URL = "/onizleme"                 # lab.ayinedar.org; sitenin dosyalarını Caddy orada da verir
 BASE = "https://risalemcp.com"
 IMAGE = "/img/paylasim.png"
 ASSET_VERSION = 12                      # style.css ve site.js sürümü (sayfalardaki ?v=N ile aynı tutulur)
@@ -636,7 +636,7 @@ def broken_links(text: str) -> list[str]:
     """Sayfadaki iç bağlantılardan site/'da karşılığı olmayanlar (önizleme ve girişli bölüm sayılmaz)."""
     bad = []
     for href in re.findall(r'href="(/[^"#?]*)', text):
-        if href.startswith(("/taslak/", "/oku/")) or href in ("/",):
+        if href.startswith((PREVIEW_URL + "/", "/taslak/", "/oku/")) or href in ("/",):
             continue
         target = SITE / href.lstrip("/")
         if href.endswith("/"):
@@ -722,7 +722,7 @@ def build(quiet: bool = False) -> dict[str, list[Post]]:
          "kaynak": _rel(p.source) if p.source else p.slug, "ad": f"{p.kind.key}/{p.slug}",
          "yayin_tarihi": p.scheduled.isoformat() if p.scheduled else None} for p in drafts],
         ensure_ascii=False, indent=1), encoding="utf-8")
-    say(f"önizleme: {len(drafts)} taslak, {PREVIEW.relative_to(ROOT)}/ → risalemcp.com{PREVIEW_URL}/")
+    say(f"önizleme: {len(drafts)} taslak, {PREVIEW.relative_to(ROOT)}/ → lab.ayinedar.org{PREVIEW_URL}/")
 
     # `adres`li Çalışmalar kayıtları (başka betiğin sayfası): yayımlanmışsa dizine açık, taslaksa noindex
     addressed = {address_file(p.address): p for posts in everything.values() for p in posts if p.address}
@@ -970,8 +970,7 @@ def serve(port: int = 8090) -> None:
     root = Path(tempfile.mkdtemp(prefix="site-onizle-"))
     for item in SITE.iterdir():
         (root / item.name).symlink_to(item)
-    (root / "taslak").mkdir()
-    (root / "taslak" / "onizleme").symlink_to(PREVIEW)
+    (root / "onizleme").symlink_to(PREVIEW)
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(root))
     print(f"önizleme: http://127.0.0.1:{port}{PREVIEW_URL}/ (durdurmak için Ctrl+C)")
     http.server.ThreadingHTTPServer(("127.0.0.1", port), handler).serve_forever()

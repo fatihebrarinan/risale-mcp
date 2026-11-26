@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>__TITLE__</title>
+<link rel="icon" href="/favicon.ico" sizes="32x32"><link rel="icon" href="/icon-kucuk.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <!-- S7.3 okuma platformu ve ar-ge masasının birim görünümü: tek uygulama (scripts/oku-veri.py kurar). MASA kipinde
      bütün taslaklar, yan yana, kapı, eleştirmen, nisbet ve notların hayatı da görünür. -->
 <style>
@@ -124,12 +125,12 @@ mark.lg { background: var(--src-soft); color: inherit; border-radius: 2px; }
 </style></head><body>
 <header><button id="menu" aria-label="Kur'ân paneli" title="Kur'ân panelini aç/kapa">☰</button><span class="t" id="ttl"></span><span class="aistamp" title="Bu sayfadaki taslak, tercüme ve izahlar yapay zekânındır; tefsir değildir">yapay zekâ taslağı · tefsir değildir</span>
 <button id="genis" title="Metni ekranın tamamına yay" hidden>↔ geniş</button>
-<a class="hbtn" id="masaBtn" href="/taslak/" hidden>Ar-ge masası</a><a class="hbtn" id="notlarimBtn" href="#/~notlarim" hidden>Notlarım</a><a class="hbtn" id="usulBtn" href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
+<a class="hbtn" id="masaBtn" href="https://lab.ayinedar.org/" hidden>Ar-ge masası</a><a class="hbtn" id="notlarimBtn" href="#/~notlarim" hidden>Notlarım</a><a class="hbtn" id="usulBtn" href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
 <div class="wrap"><aside id="panel"></aside><main id="main"></main><aside id="side"><p class="small muted">Bir atfın numarasına tıklayınca kaynağın metni burada açılır.</p></aside></div>
 <script>
 const MASA = __MASA__;
-const DATA = MASA ? 'birim/' : 'veri/', TDATA = MASA ? 'oku/veri/' : 'veri/', API = '/taslak/api/';
-const PLAT = 'https://risalemcp.com/oku/';
+const DATA = MASA ? 'birim/' : 'veri/', TDATA = MASA ? 'oku/veri/' : 'veri/', API = '/api/';
+const PLAT = 'https://read.ayinedar.org/';
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -489,7 +490,7 @@ async function afterNoteChange() {
 }
 function citeLine(pid) {
   const r = rng(U.ayet), v = U.taslak.surum;
-  return `Risale MCP yapay zekâ taslağı, ${U.sure_adi} ${U.sure}:${r}, sürüm ${v}, paragraf ${pid} (${PLAT}#/${U.birim}/${pid}). Tefsir değildir.`;
+  return `Âyinedâr yapay zekâ taslağı, ${U.sure_adi} ${U.sure}:${r}, sürüm ${v}, paragraf ${pid} (${PLAT}#/${U.birim}/${pid}). Tefsir değildir.`;
 }
 document.addEventListener('click', async e => {
   const a = e.target.closest('[data-act]');
@@ -863,8 +864,8 @@ document.addEventListener('copy', e => {
   if (!text.trim()) return;
   const blk = el.closest('.blk'), place = `${U.sure_adi} ${U.sure}:${rng(U.ayet)}`;
   const line = blk && U.taslak
-    ? `— Risale MCP okuma platformu, ${place}, taslak sürüm ${U.taslak.surum}, ${PLAT}#/${U.birim}/${blk.id}. Yapay zekâ taslağıdır; tefsir değildir.`
-    : `— Risale MCP okuma platformu, ${place}, ${PLAT}#/${U.birim}. Bu sayfadaki taslaklar yapay zekânındır; tefsir değildir.`;
+    ? `— Âyinedâr okuma platformu, ${place}, taslak sürüm ${U.taslak.surum}, ${PLAT}#/${U.birim}/${blk.id}. Yapay zekâ taslağıdır; tefsir değildir.`
+    : `— Âyinedâr okuma platformu, ${place}, ${PLAT}#/${U.birim}. Bu sayfadaki taslaklar yapay zekânındır; tefsir değildir.`;
   e.clipboardData.setData('text/plain', text.replace(/\s+$/, '') + '\n\n' + line);
   e.clipboardData.setData('text/html', esc(text).replace(/\n/g, '<br>') + '<br><br><i>' + esc(line) + '</i>');
   e.preventDefault();
@@ -1049,7 +1050,7 @@ addEventListener('hashchange', route);
 (async () => {
   try { VIEW = Object.assign(VIEW, JSON.parse(store.get('oku-view') || '{}')); } catch (e) {}
   try { INDEX = await getJSON(DATA + 'index.json'); } catch (e) { $('main').textContent = 'Dizin okunamadı.'; return; }
-  try { ME = await getJSON('/taslak/ben'); $('ben').textContent = ME.name || ''; $('masaBtn').hidden = ME.scope !== 'masa'; } catch (e) {}
+  try { ME = await getJSON('/ben'); $('ben').textContent = ME.name || ''; $('masaBtn').hidden = ME.scope !== 'masa'; } catch (e) {}
   $('notlarimBtn').hidden = MASA;
   route();
 })();

@@ -855,7 +855,7 @@ def okuma_tek(unit: str, ns: list[int], tur: str, yerler: list[dict], gorev: boo
         # S7.2: ar-ge masasının görevi; kararlar sunucuya yazılır, kör okumada taraflar sayfada değil sunucuda
         gid = f"tur-{unit}-{tur}"
         task = {"id": gid, "tur": "ab" if len(labs) == 2 else "tek", "birim": unit,
-                "baslik": f"{M.title(unit)}: {tur}" + (" (kör A/B)" if len(labs) == 2 else ""), "sayfa": f"/taslak/{page}",
+                "baslik": f"{M.title(unit)}: {tur}" + (" (kör A/B)" if len(labs) == 2 else ""), "sayfa": f"/{page}",
                 "veri": {"yerler": [{"ad": c["ad"], "baslik": c["baslik"]} for c in cards], "dakika": data["dakika"],
                          "kelime": words},
                 "gizli": {**{lab: f"taslak-{n}" for lab, n in labs.items()}, "about": page_data["about"]}, "kaynak": tur}

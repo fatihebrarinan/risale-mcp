@@ -1,4 +1,4 @@
-"""S5: risalemcp.com/taslak/ girişi (site_auth.py)."""
+"""S5, S13.15.5: lab.ayinedar.org ve read.ayinedar.org girişi (site_auth.py)."""
 
 import time
 
@@ -19,8 +19,15 @@ def store(tmp_path):
 @pytest.fixture
 def client(store, tmp_path):
     from risale_mcp.masa import MasaStore
-    return TestClient(build_app(store, MasaStore(tmp_path / "masa.db")), base_url="https://risalemcp.com",
-                      follow_redirects=False)
+    return TestClient(build_app(store, MasaStore(tmp_path / "masa.db")), base_url="https://lab.ayinedar.org",
+                      follow_redirects=False, headers={"X-Bolum": "lab"})
+
+
+@pytest.fixture
+def read(store, tmp_path):
+    from risale_mcp.masa import MasaStore
+    return TestClient(build_app(store, MasaStore(tmp_path / "masa.db")), base_url="https://read.ayinedar.org",
+                      follow_redirects=False, headers={"X-Bolum": "read"})
 
 
 def test_db_private(store):
@@ -69,90 +76,99 @@ def test_names(store, tmp_path):
 
 
 def test_safe_next():
-    assert safe_next("/taslak/") == "/taslak/"
-    assert safe_next("/taslak/index.html?x=1") == "/taslak/index.html?x=1"
-    for bad in ("https://kotu.example/", "//kotu.example/", "/gizlilik.html", "/taslak/giris", None, "/taslak\\..\\x"):
-        assert safe_next(bad) == "/taslak/"
+    assert safe_next("/") == "/"
+    assert safe_next("/index.html?x=1") == "/index.html?x=1"
+    for bad in ("https://kotu.example/", "//kotu.example/", "/giris", "/giris?next=/", None, "/\\..\\x", "x"):
+        assert safe_next(bad) == "/"
 
 
 def test_gate_flow(client):
-    r = client.get("/_auth", headers={"X-Forwarded-Uri": "/taslak/"})
-    assert r.status_code == 302 and r.headers["location"] == "/taslak/giris?next=/taslak/"
-    r = client.post("/taslak/giris?next=/taslak/", data={"email": "okur@example.org", "password": "yanlis"})
+    r = client.get("/_auth", headers={"X-Forwarded-Uri": "/ayet.html"})
+    assert r.status_code == 302 and r.headers["location"] == "/giris?next=/ayet.html"
+    r = client.post("/giris?next=/", data={"email": "okur@example.org", "password": "yanlis"})
     assert r.status_code == 401 and "yanlış" in r.text and COOKIE not in r.cookies
-    r = client.post("/taslak/giris?next=https://kotu.example/",
+    r = client.post("/giris?next=https://kotu.example/",
                     data={"email": "okur@example.org", "password": "dogru-parola-123"})
-    assert r.status_code == 303 and r.headers["location"] == "/taslak/"
+    assert r.status_code == 303 and r.headers["location"] == "/"
     cookie = next(c for c in r.headers.get_list("set-cookie") if "Max-Age=0" not in c and 'Max-Age="0"' not in c
                   and "max-age=0" not in c.lower())
     assert "HttpOnly" in cookie and "Secure" in cookie and "Path=/;" in cookie and "samesite=lax" in cookie.lower()
+    assert "domain" not in cookie.lower()                    # alan adına bağlı: öbür alt alan adlarına gitmez
     token = r.cookies[COOKIE]
-    # Caddy, tarayıcının /taslak/… isteğindeki çerezi olduğu gibi /_auth'a iletir
+    # Caddy, tarayıcının isteğindeki çerezi olduğu gibi /_auth'a iletir
     assert client.get("/_auth", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 200
-    r = client.get("/taslak/ben", headers={"Cookie": f"{COOKIE}={token}"})
+    r = client.get("/ben", headers={"Cookie": f"{COOKIE}={token}"})
     assert r.json() == {"email": "okur@example.org", "name": "okur@example.org", "scope": "masa", "welcomed": False,
                         "place": None}
     client.cookies.clear()
-    assert client.get("/taslak/ben").status_code == 401
-    assert client.get("/taslak/cikis", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 303
+    assert client.get("/ben").status_code == 401
+    r = client.get("/cikis", headers={"Cookie": f"{COOKIE}={token}"})
+    assert r.status_code == 303 and r.headers["location"] == "/giris?cikis=1"
     assert client.get("/_auth", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 302
 
 
-def test_scopes_and_shared_cookie(store, client):
+def test_login_page_names_ayinedar(client):
+    r = client.get("/giris")
+    assert r.status_code == 200 and "Âyinedâr" in r.text and "/favicon.ico" in r.text
+
+
+def test_scopes(store, client, read):
     store.add_user("okuyucu@example.org", "okuyucu-parola-1", scope="oku")
-    r = client.post("/taslak/giris?next=/taslak/", data={"email": "okuyucu@example.org", "password": "okuyucu-parola-1"})
-    assert r.status_code == 303 and r.headers["location"] == "/oku/"          # masaya değil platforma
-    tok = client.cookies.get(COOKIE)
-    assert client.get("/_auth", headers={"x-forwarded-uri": "/oku/2/30"}, cookies={COOKIE: tok}).status_code == 200
-    assert client.get("/_auth", headers={"x-forwarded-uri": "/taslak/"}, cookies={COOKIE: tok}).headers["location"] == "/oku/"
-    assert client.get("/taslak/api/okumalar", cookies={COOKIE: tok}).status_code == 401
-    assert client.get("/taslak/ben", cookies={COOKIE: tok}).json()["scope"] == "oku"
+    r = client.post("/giris?next=/", data={"email": "okuyucu@example.org", "password": "okuyucu-parola-1"})
+    assert r.status_code == 403 and "read.ayinedar.org" in r.text and COOKIE not in r.cookies   # masada oturum açılmaz
+    r = read.post("/giris?next=/", data={"email": "okuyucu@example.org", "password": "okuyucu-parola-1"})
+    assert r.status_code == 303 and r.headers["location"] == "/"
+    tok = read.cookies.get(COOKIE)
+    assert read.get("/_auth", headers={"x-forwarded-uri": "/"}, cookies={COOKIE: tok}).status_code == 200
+    r = client.get("/_auth", headers={"x-forwarded-uri": "/"}, cookies={COOKIE: tok})       # çerez taşınsa bile
+    assert r.status_code == 302 and r.headers["location"] == "https://read.ayinedar.org/"
+    assert client.get("/giris", cookies={COOKIE: tok}).status_code == 403
+    assert read.get("/api/okumalar", cookies={COOKIE: tok}).status_code == 401
+    assert read.get("/ben", cookies={COOKIE: tok}).json()["scope"] == "oku"
 
 
-def test_masa_scope_reaches_both(store, client):
-    r = client.post("/taslak/giris", data={"email": "okur@example.org", "password": "dogru-parola-123"})
-    assert r.headers["location"] == "/taslak/"
-    tok = client.cookies.get(COOKIE)
-    for uri in ("/taslak/", "/oku/"):
-        assert client.get("/_auth", headers={"x-forwarded-uri": uri}, cookies={COOKIE: tok}).status_code == 200
-    assert safe_next("/oku/x") == "/oku/" + "x" and safe_next("//evil") == "/taslak/"
+def test_masa_scope_reaches_both(store, client, read):
+    tok = store.open_session("okur@example.org")
+    for c in (client, read):
+        assert c.get("/_auth", headers={"x-forwarded-uri": "/"}, cookies={COOKIE: tok}).status_code == 200
+    assert read.get("/giris?next=/30", cookies={COOKIE: tok}).headers["location"] == "/30"
 
 
-def test_everyone_sees_only_own_notes(store, client):
+def test_missing_area_header_is_lab(store, tmp_path):
+    from risale_mcp.masa import MasaStore
+    bare = TestClient(build_app(store, MasaStore(tmp_path / "m.db")), base_url="https://x", follow_redirects=False)
+    store.add_user("okuyucu@example.org", "okuyucu-parola-1", scope="oku")
+    tok = store.open_session("okuyucu@example.org")
+    assert bare.get("/_auth", cookies={COOKIE: tok}).status_code == 302
+
+
+def test_everyone_sees_only_own_notes(store, client, read):
     """S10 (g1): kişisel defter: yönetici (masa) de yalnız kendi notunu görür; defter notunun durumu yoktur."""
     store.add_user("okuyucu@example.org", "okuyucu-parola-1", scope="oku")
-    client.post("/taslak/giris", data={"email": "okur@example.org", "password": "dogru-parola-123"})
-    masa_tok = client.cookies.get(COOKIE)
-    client.cookies.clear()
-    client.post("/taslak/giris", data={"email": "okuyucu@example.org", "password": "okuyucu-parola-1"})
-    oku_tok = client.cookies.get(COOKIE)
-    client.cookies.clear()
+    masa_tok = store.open_session("okur@example.org")
+    oku_tok = store.open_session("okuyucu@example.org")
     for tok, text in ((masa_tok, "masadan"), (oku_tok, "okuyucudan")):
-        client.cookies.set(COOKIE, tok)
-        assert client.post("/taslak/api/notlar/30", json={"birim": "30", "metin": text}).status_code == 200
-        client.cookies.clear()
-    client.cookies.set(COOKIE, oku_tok)
-    mine = client.get("/taslak/api/notlar/30").json()["notlar"]
+        read.cookies.set(COOKIE, tok)
+        assert read.post("/api/notlar/30", json={"birim": "30", "metin": text}).status_code == 200
+        read.cookies.clear()
+    read.cookies.set(COOKIE, oku_tok)
+    mine = read.get("/api/notlar/30").json()["notlar"]
     assert [n["metin"] for n in mine] == ["okuyucudan"]
     nid = mine[0]["id"]
-    assert client.put(f"/taslak/api/not/{nid}/durum", json={"durum": "kapandi"}).status_code == 404
-    assert client.put(f"/taslak/api/not/{nid}/durum", json={"durum": "geri_cekildi"}).status_code == 404
-    client.cookies.clear()
+    assert read.put(f"/api/not/{nid}/durum", json={"durum": "kapandi"}).status_code == 404
+    assert read.put(f"/api/not/{nid}/durum", json={"durum": "geri_cekildi"}).status_code == 404
     client.cookies.set(COOKIE, masa_tok)
-    assert [n["metin"] for n in client.get("/taslak/api/notlar/30").json()["notlar"]] == ["masadan"]
-    assert client.get("/taslak/api/notlar/30?arge=1").json()["notlar"] == []      # defter notları ar-ge değildir
-    assert client.put(f"/taslak/api/not/{nid}", json={"metin": "x"}).status_code == 404      # başkasınınki
-    assert client.delete(f"/taslak/api/not/{nid}").status_code == 404
-    client.cookies.clear()
-    client.cookies.set(COOKIE, oku_tok)
-    assert client.get("/taslak/api/notlar/30?arge=1").status_code == 401           # ar-ge kaydı masanındır
+    assert [n["metin"] for n in client.get("/api/notlar/30").json()["notlar"]] == ["masadan"]
+    assert client.get("/api/notlar/30?arge=1").json()["notlar"] == []      # defter notları ar-ge değildir
+    assert client.put(f"/api/not/{nid}", json={"metin": "x"}).status_code == 404      # başkasınınki
+    assert client.delete(f"/api/not/{nid}").status_code == 404
+    assert read.get("/api/notlar/30?arge=1").status_code == 401           # ar-ge kaydı masanındır
 
 
-def test_platform_path_behind_rewrite():
+def test_allowed():
     from risale_mcp.site_auth import allowed
-    assert allowed("oku", "/taslak/oku/veri/30.json") and allowed("oku", "/oku/")
-    assert not allowed("oku", "/taslak/") and not allowed("oku", "/taslak/birim/30.json")
-    assert allowed("masa", "/taslak/birim/30.json")
+    assert allowed("oku", "read") and allowed("masa", "read") and allowed("masa", "lab")
+    assert not allowed("oku", "lab")
 
 
 def test_default_scope_is_oku(tmp_path):
@@ -161,35 +177,35 @@ def test_default_scope_is_oku(tmp_path):
     assert s.scope("yeni@example.org") == "oku"
 
 
-def test_invite_flow(store, client):
+def test_invite_flow(store, read):
     """S10 (b): tek kullanımlık bağlantı, 7 gün; okuyucu parolasını koyar, girmiş olur; yenisi eskisini bozar."""
     old = store.invite("davetli@example.org")
     token = store.invite("Davetli@Example.org ")
     assert store.invite_email(old) is None and store.invite_email(token) == "davetli@example.org"
     assert [d["email"] for d in store.invites()] == ["davetli@example.org"]
-    r = client.get(f"/oku/davet/{token}")
+    r = read.get(f"/davet/{token}")
     assert r.status_code == 200 and "davetli@example.org" in r.text and r.headers["referrer-policy"] == "no-referrer"
-    assert client.get(f"/oku/davet/{old}").status_code == 410
-    r = client.post(f"/oku/davet/{token}", data={"password": "kisa", "password2": "kisa"})
+    assert read.get(f"/davet/{old}").status_code == 410
+    r = read.post(f"/davet/{token}", data={"password": "kisa", "password2": "kisa"})
     assert r.status_code == 400 and "en az" in r.text
-    r = client.post(f"/oku/davet/{token}", data={"password": "uzun-parola-1", "password2": "uzun-parola-2"})
+    r = read.post(f"/davet/{token}", data={"password": "uzun-parola-1", "password2": "uzun-parola-2"})
     assert r.status_code == 400 and "aynı değil" in r.text
-    r = client.post(f"/oku/davet/{token}", data={"password": "uzun-parola-1", "password2": "uzun-parola-1"})
-    assert r.status_code == 303 and r.headers["location"] == "/oku/"
+    r = read.post(f"/davet/{token}", data={"password": "uzun-parola-1", "password2": "uzun-parola-1"})
+    assert r.status_code == 303 and r.headers["location"] == "/"
     tok = r.cookies[COOKIE]
     assert store.check(tok) == "davetli@example.org" and store.scope("davetli@example.org") == "oku"
-    assert client.get(f"/oku/davet/{token}").status_code == 410                      # tek kullanımlık
+    assert read.get(f"/davet/{token}").status_code == 410                      # tek kullanımlık
     assert store.login("davetli@example.org", "uzun-parola-1")[0]
     # süresi dolan bağlantı
     late = store.invite("baska@example.org", now=time.time() - site_auth.INVITE_DAYS * 86400 - 1)
     assert store.invite_email(late) is None
 
 
-def test_invite_resets_password_and_keeps_scope(store, client):
+def test_invite_resets_password_and_keeps_scope(store, read):
     tok = store.open_session("okur@example.org")
     link = store.invite("okur@example.org", scope="oku")           # hesap var: kapsam değişmez
-    r = client.post(f"/oku/davet/{link}", data={"password": "yepyeni-parola", "password2": "yepyeni-parola"})
-    assert r.status_code == 303 and r.headers["location"] == "/taslak/"
+    r = read.post(f"/davet/{link}", data={"password": "yepyeni-parola", "password2": "yepyeni-parola"})
+    assert r.status_code == 303 and r.headers["location"] == "/"
     assert store.scope("okur@example.org") == "masa" and store.check(tok) is None     # eski oturumlar kapandı
     assert store.login("okur@example.org", "yepyeni-parola")[0]
 
@@ -200,19 +216,19 @@ def test_invite_masa_scope(tmp_path):
     assert s.scope("m@example.org") == "masa" and s.display_name("m@example.org") == "M"
 
 
-def test_welcome_and_place(store, client):
+def test_welcome_and_place(store, read):
     tok = store.open_session("okur@example.org")
-    client.cookies.set(COOKIE, tok)
-    assert client.get("/taslak/ben").json()["welcomed"] is False
-    assert client.post("/taslak/api/karsilandi").json() == {"ok": True}
-    assert client.get("/taslak/ben").json()["welcomed"] is True
-    assert client.get("/taslak/api/yer").json() == {"place": None}
-    client.put("/taslak/api/yer", json={"birim": "40-46", "paragraf": "p-abc"})
-    place = client.get("/taslak/ben").json()["place"]
+    read.cookies.set(COOKIE, tok)
+    assert read.get("/ben").json()["welcomed"] is False
+    assert read.post("/api/karsilandi").json() == {"ok": True}
+    assert read.get("/ben").json()["welcomed"] is True
+    assert read.get("/api/yer").json() == {"place": None}
+    read.put("/api/yer", json={"birim": "40-46", "paragraf": "p-abc"})
+    place = read.get("/ben").json()["place"]
     assert (place["birim"], place["paragraf"]) == ("40-46", "p-abc")
-    client.cookies.clear()
-    assert client.put("/taslak/api/yer", json={"birim": "1"}).status_code == 401
-    assert client.post("/taslak/api/karsilandi").status_code == 401
+    read.cookies.clear()
+    assert read.put("/api/yer", json={"birim": "1"}).status_code == 401
+    assert read.post("/api/karsilandi").status_code == 401
 
 
 def test_remove_user_drops_invites(store):
@@ -221,27 +237,26 @@ def test_remove_user_drops_invites(store):
     assert store.invites() == []
 
 
-def test_gate_returns_to_public_platform_path(client):
-    r = client.get("/_auth", headers={"X-Forwarded-Uri": "/taslak/oku/"})
-    assert r.headers["location"] == "/taslak/giris?next=/oku/"
+def test_invite_link_points_to_read():
+    assert site_auth.READ + site_auth.INVITE == "https://read.ayinedar.org/davet/"
 
 
-def test_open_invite(store, client):
+def test_open_invite(store, read):
     """Açık davet: okuyucu e-postasını kendisi yazar; yalnız yeni hesap açar; not hesaba geçer."""
     token = store.invite(None, label="Ahmet Hoca")
     assert store.invite_email(token) == "" and store.invites()[0]["label"] == "Ahmet Hoca"
-    r = client.get(f"/oku/davet/{token}")
+    r = read.get(f"/davet/{token}")
     assert r.status_code == 200 and "Hesabınızı açın" in r.text and " readonly " not in r.text
     pw = {"password": "uzun-parola-1", "password2": "uzun-parola-1"}
-    r = client.post(f"/oku/davet/{token}", data={"email": "okur@example.org"} | pw)     # var olan hesap: ele geçirilemez
+    r = read.post(f"/davet/{token}", data={"email": "okur@example.org"} | pw)     # var olan hesap: ele geçirilemez
     assert r.status_code == 400 and "zaten var" in r.text and store.login("okur@example.org", "dogru-parola-123")[0]
-    r = client.post(f"/oku/davet/{token}", data={"email": "adres-degil"} | pw)
+    r = read.post(f"/davet/{token}", data={"email": "adres-degil"} | pw)
     assert r.status_code == 400 and "Geçerli" in r.text and "adres-degil" in r.text        # yazdığı kalır
-    r = client.post(f"/oku/davet/{token}", data={"email": " Yeni@Example.org "} | pw)
-    assert r.status_code == 303 and r.headers["location"] == "/oku/"
+    r = read.post(f"/davet/{token}", data={"email": " Yeni@Example.org "} | pw)
+    assert r.status_code == 303 and r.headers["location"] == "/"
     assert store.check(r.cookies[COOKIE]) == "yeni@example.org" and store.scope("yeni@example.org") == "oku"
     assert {u["email"]: u["label"] for u in store.users()}["yeni@example.org"] == "Ahmet Hoca"
-    assert client.get(f"/oku/davet/{token}").status_code == 410                         # tek kullanımlık
+    assert read.get(f"/davet/{token}").status_code == 410                         # tek kullanımlık
     other = store.invite(None)
     with pytest.raises(ValueError):
         store.accept(other, "uzun-parola-1", email="yeni@example.org")                 # ikinci kez aynı adres

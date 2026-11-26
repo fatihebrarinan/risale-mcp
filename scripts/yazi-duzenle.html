@@ -2,7 +2,7 @@
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow"><title>Yazı düzenle</title>
 <!-- S11: site yazılarının taslaklarını web'de düzenlemek. site-uret.py bu dosyayı önizleme klasörüne
-     (/taslak/onizleme/duzenle.html) koyar; veri ve görünüş masa servisinden (src/risale_mcp/yazilar.py). -->
+     (lab.ayinedar.org/onizleme/duzenle.html) koyar; veri ve görünüş masa servisinden (src/risale_mcp/yazilar.py). -->
 <style>
 :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --soft: #f3f1ec;
   --accent: #1f5c3f; --bad: #a3271f; --warn: #fdf0dc; --src: #1f4f7a; }
@@ -49,9 +49,9 @@ iframe { flex: 1; width: 100%; border: 0; background: #fff; }
   header .t { flex-basis: calc(100% - 40px); }
 }
 </style></head><body>
-<header><a href="/taslak/#okumalar" title="Ar-ge masasına dön">←</a><span class="t" id="ttl">Yazı düzenle</span>
+<header><a href="/#okumalar" title="Ar-ge masasına dön">←</a><span class="t" id="ttl">Yazı düzenle</span>
 <select id="gecmis" title="Kaydedilmiş sürümler" hidden></select>
-<a class="hide-sm" id="onizBag" href="/taslak/onizleme/">önizleme</a>
+<a class="hide-sm" id="onizBag" href="/onizleme/">önizleme</a>
 <span id="durum"></span><button class="save" id="kaydet" disabled title="Ctrl+S">Kaydet</button></header>
 <div id="mesajlar"></div>
 <nav class="tabs"><a href="#" data-p="metin" class="on">Metin</a><a href="#" data-p="gor">Görünüş</a></nav>
@@ -61,7 +61,7 @@ iframe { flex: 1; width: 100%; border: 0; background: #fff; }
   <div class="pane" id="gorPane"><div id="hata" hidden></div><iframe id="gor" title="Sitedeki görünüşü"></iframe></div>
 </div>
 <script>
-const API = '/taslak/api/yazi';
+const API = '/api/yazi';
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
@@ -151,7 +151,7 @@ for (const a of document.querySelectorAll('.tabs a')) a.addEventListener('click'
 async function pick() {
   $('panes').hidden = true; document.querySelector('.tabs').hidden = true;
   let L = [];
-  try { L = await api('/taslak/onizleme/liste.json'); } catch (e) {}
+  try { L = await api('/onizleme/liste.json'); } catch (e) {}
   const box = document.createElement('div'); box.className = 'empty';
   box.innerHTML = '<h2>Düzenlenecek yazı</h2>' + (L.length ? '<ul>' + L.map(y => `<li><a href="#${esc(y.ad)}">${esc(y.baslik)}</a> <span style="color:var(--muted)">(${esc(y.tur)})</span></li>`).join('') + '</ul>' : '<p>Taslak yazı yok.</p>');
   document.body.appendChild(box);
@@ -164,7 +164,7 @@ async function load() {
   try { S = await api(API + '?ad=' + encodeURIComponent(AD)); }
   catch (e) { msg('Yazı açılamadı: ' + esc(e.message)); return; }
   $('ttl').textContent = (S.metin.match(/^baslik:\s*(.*)$/m) || [, AD])[1];
-  $('onizBag').href = '/taslak/onizleme/' + AD + '.html';
+  $('onizBag').href = '/onizleme/' + AD + '.html';
   ta.value = SAVED = S.metin;
   ta.disabled = !S.taslak;
   if (!S.taslak) msg('Bu yazı yayımlanmış; yalnız taslaklar burada düzenlenir.');

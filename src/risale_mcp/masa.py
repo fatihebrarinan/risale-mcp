@@ -14,8 +14,8 @@ Giriş servisinin (`site_auth.py`) aynı uygulamasında çalışır: hesap ve ot
   verir, Word dosyası olarak da (`docx_yaz.py`). S10'dan önce yazılmış notlar **ar-ge kaydıdır** (`kapsam = 'arge'`):
   yukarıdaki silinmez kuralı onlarındır, masa `?arge=1` ile görür. (İleride "geliştirme için gönder": defter notu ar-ge
   notu olur; "Fikirler".)
-- **Makine erişimi jetonla.** Taslak sunucusu görev açar (`POST /taslak/api/gorev`) ve sonuçları alır
-  (`GET /taslak/api/disa`); jetonun yalnız SHA-256 özeti saklanır (`masa token --new`).
+- **Makine erişimi jetonla.** Taslak sunucusu görev açar (`POST lab.ayinedar.org/api/gorev`) ve sonuçları alır
+  (`GET /api/disa`); jetonun yalnız SHA-256 özeti saklanır (`masa token --new`).
 
     uv run python -m risale_mcp.masa token --new        # sunucuda: makine jetonu (bir kez gösterilir)
     uv run python -m risale_mcp.masa gorevler           # görevler ve durumları
@@ -34,7 +34,7 @@ from pathlib import Path
 from risale_mcp.paths import DATA_DIR
 
 DB = DATA_DIR / "masa.db"
-API = "/taslak/api/"
+API = "/api/"
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS okuyucular (
@@ -49,7 +49,7 @@ CREATE TABLE IF NOT EXISTS okumalar (
     birim       TEXT,
     baslik      TEXT NOT NULL,
     aciklama    TEXT,
-    sayfa       TEXT,                      -- /taslak/ altındaki okuma sayfası
+    sayfa       TEXT,                      -- masadaki okuma sayfası (önce /taslak/ önekiyle; Caddy ikisini de açar)
     atanan      TEXT,                      -- e-posta; NULL: herkes
     durum       TEXT NOT NULL DEFAULT 'bekliyor',   -- bekliyor | suruyor | bitti
     olusturuldu REAL NOT NULL,

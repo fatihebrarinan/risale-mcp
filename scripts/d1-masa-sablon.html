@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Âyet Masası</title>
+<title>Âyet Masası · Âyinedâr</title>
 <style>
 @font-face { font-family: "Naskh"; src: url("oku/fonts/naskh.ttf") format("truetype"); font-display: swap; }
 :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #ffffff; --soft: #f3f1ec;
@@ -225,7 +225,7 @@ mark.fq { background: var(--hl); color: var(--hl-fg); }
   <label title="Kur'ân metninin hattı: Türk hattı (risaleoku) ya da Medine Mushafı (Tanzil). Aynı kıraat, imlâ farkı.">Hat <span class="seg" id="hat"><button data-v="turk">Türk</button><button data-v="medine">Medine</button></span></label>
   <span class="spacer"></span>
   <span class="msg" id="msg"></span>
-  <a class="btn nav" href="./">Masanın girişi</a><a class="btn nav" href="/oku/">Okuma platformu</a><a class="btn nav" href="/taslak/cikis">Çıkış</a>
+  <a class="btn nav" href="./">Masanın girişi</a><a class="btn nav" href="https://read.ayinedar.org/">Okuma platformu</a><a class="btn nav" href="/cikis">Çıkış</a>
 </header>
 <div id="wrap"><aside id="kpanel"></aside><div id="mainc">
 <section id="ayah"></section>
@@ -322,7 +322,7 @@ function draftAbout(dk) { return st.blind ? '' : (DATA.drafts[dk] || {}).about |
 
 function persist() { store.set('d1-masa', {loc: st.loc, lang: st.lang, hat: st.hat, blind: st.blind, onlySample: st.onlySample}); }
 function say(t) { $('#msg').textContent = t; if (t) setTimeout(() => { if ($('#msg').textContent === t) $('#msg').textContent = ''; }, 6000); }
-let ACCOUNT = null;                              // sitede girişli hesabın adı (/taslak/ben); dosyadan açılınca yok
+let ACCOUNT = null;                              // sitede girişli hesabın adı (/ben); dosyadan açılınca yok
 function reader() { return ACCOUNT || ''; }
 function needReader() { return true; }             // işaretleme kalktı (S7c.1)
 function locName(l) { return CHIP[l] ? `<span class="arw" dir="rtl">${esc(chipText(CHIP[l]))}</span>` : esc(LOC[l] || l); }
@@ -1055,7 +1055,7 @@ let NOTES = null;
 function notlarPane() {
   if (NOTES === null) {
     NOTES = [];
-    fetch('/taslak/api/notlar/' + encodeURIComponent(U) + '?arge=1', {credentials: 'same-origin', cache: 'no-store'})
+    fetch('/api/notlar/' + encodeURIComponent(U) + '?arge=1', {credentials: 'same-origin', cache: 'no-store'})
       .then(r => r.ok ? r.json() : {notlar: []}).then(j => { NOTES = j.notlar || []; renderPanes(); }).catch(() => {});
     return '<p class="empty">Notlar yükleniyor…</p>';
   }
@@ -1355,8 +1355,8 @@ document.addEventListener('change', ev => {
 
 document.querySelectorAll('#lang button').forEach(b => b.onclick = () => { st.lang = b.dataset.v; render(); });
 document.querySelectorAll('#hat button').forEach(b => b.onclick = () => { st.hat = b.dataset.v; render(); });
-if (location.pathname.startsWith('/taslak/')) {
-  fetch('/taslak/ben', {credentials: 'same-origin', cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(j => {
+if (location.protocol.startsWith('http')) {                 // sitede (dosyadan açılınca hesap yok)
+  fetch('/ben', {credentials: 'same-origin', cache: 'no-store'}).then(r => r.ok ? r.json() : null).then(j => {
     if (j && j.name) ACCOUNT = j.name;
   }).catch(() => {});
 }

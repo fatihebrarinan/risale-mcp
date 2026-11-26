@@ -1,4 +1,4 @@
-"""S5: sitenin girişli bölümü (`risalemcp.com/taslak/`) için kimlik doğrulama.
+"""S5: davetli bölümlerin girişi: ar-ge masası (`lab.ayinedar.org`) ve okuma platformu (`read.ayinedar.org`).
 
 Kullanıcının kararı (2026-11-14): âyet masası taslakları taşır, yayımlanmaz; yalnız davet edilen kişiler girer.
 Hesaplar MCP sunucusunun hesapları değildir (`auth.py`), yalnız siteye giriş içindir: ayrı veritabanı
@@ -17,14 +17,15 @@ varsa reddeder (başkasının hesabı ele geçirilmesin); parola yenileme adresl
 yalnız giriş adıdır, site e-posta göndermez; kapı bağlantının kendisidir. Davete yöneticinin notu konabilir (`--not`):
 hesap açılınca hesabın `label`ı olur, `users` gösterir, okuyucu görmez (gizlilik politikası söyler).
 
-Düzen: sayfalar statik dosyadır (`/var/www/ozel/taslak/`); Caddy her istekte bu servise sorar (`forward_auth`,
-`GET /_auth`). Oturum çerezi geçerliyse 200, değilse giriş sayfasına yönlendirme. Giriş ve çıkış sayfaları da bu
-servistedir (`/taslak/giris`, `/taslak/cikis`). İşaretler sunucuda tutulmaz: tarayıcıda kalır, dışa aktarılır.
-`/taslak/ben` girişli kişinin adını verir (`name`, yoksa e-posta): sayfa işaretlere okuyucu adı olarak onu yazar.
-
-S7.3 (2026-11-21): okuma platformu `/oku/` aynı hesaplarla açılır; çerez bu yüzden bütün sitenin yolundadır (`/`;
-yalnız HttpOnly oturum jetonu). Hesabın kapsamı (`scope`): `masa` hem ar-ge masasına (`/taslak/`) hem platforma,
-`oku` yalnız platforma girer (davetli okuyucular; `add-user --oku`). Önceki hesaplar `masa`dır.
+**Düzen (S13.15.5, 2026-11-27; önce `risalemcp.com/taslak/` ve `/oku/`):** iki alt alan adı, tek servis, aynı yollar:
+`/giris`, `/cikis`, `/ben` (girişli kişinin adı, kapsamı, karşılama, kaldığı yer), `/api/…` (masa, defter, yazılar,
+`yer`, `karsilandi`), `/davet/<jeton>` (yalnız platformda). Sayfalar statik dosyadır (masa `/var/www/ozel/taslak/`,
+platform onun `oku/` klasörü); Caddy her istekte bu servise sorar (`forward_auth`, `GET /_auth`): oturum geçerliyse
+200, değilse giriş sayfasına yönlendirme. Hangi bölümde olunduğunu Caddy `X-Bolum` başlığıyla söyler (`lab` | `read`,
+her istekte üstüne yazılır; başlık yoksa `lab`, dar olanı). Masaya yalnız `masa` kapsamı girer; `oku` kapsamı yalnız
+platforma (masada giriş reddedilir, platformun adresi gösterilir). Çerez alan adına bağlıdır (Domain yok; kullanıcının
+kararı, 2026-11-27): masa hesabı iki bölüme ayrı ayrı girer, çerez öbür alt alan adlarına (chat., kök) gitmez.
+İşaretler sunucuda tutulmaz: tarayıcıda kalır, dışa aktarılır.
 
 Saklananlar (gizlilik politikası söyler): e-posta, parola özeti, yanlış deneme sayısı, son giriş zamanı, karşılamanın
 görüldüğü zaman, kaldığı yer; oturumun ve davet bağlantısının yalnız özeti, zamanları. IP ve gezinti kaydı tutulmaz.
@@ -56,14 +57,16 @@ from risale_mcp.auth import LOCK_SECONDS, MAX_FAILURES, check_password, hash_pas
 from risale_mcp.paths import DATA_DIR
 
 DB = DATA_DIR / "site_auth.db"
-PREFIX = "/taslak/"
-OKU = "/oku/"
+LAB = "https://lab.ayinedar.org"                 # ar-ge masası (S13.15.5; önce risalemcp.com/taslak/)
+READ = "https://read.ayinedar.org"               # okuma platformu (önce risalemcp.com/oku/)
+CATI = "https://ayinedar.org"
+PRIVACY = "https://risalemcp.com/gizlilik.html"   # S13.15.6'da çatıya taşınır
+LOGIN_PATH, LOGOUT_PATH, ME_PATH, API = "/giris", "/cikis", "/ben", "/api/"
 COOKIE = "taslak_oturum"
-COOKIE_PATH = "/"                                # /taslak/ ve /oku/ aynı oturumla (S7.3)
+COOKIE_PATH = "/"
 SCOPES = ("masa", "oku")
 SESSION_DAYS = 30
-SITE = "https://risalemcp.com"
-INVITE = "/oku/davet/"
+INVITE = "/davet/"
 INVITE_DAYS = 7
 MIN_PASSWORD = 10
 EMAIL = re.compile(r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
@@ -341,7 +344,8 @@ class Store:
 
 SHELL = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
-<meta name="referrer" content="no-referrer"><title>{title} · Davetli bölüm</title><style>
+<meta name="referrer" content="no-referrer"><title>{title} · Âyinedâr</title>
+<link rel="icon" href="/favicon.ico" sizes="32x32"><link rel="icon" href="/icon-kucuk.svg" type="image/svg+xml"><style>
 :root {{ --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --card: #fff; --accent: #1f5c3f; --bad: #a3271f; }}
 @media (prefers-color-scheme: dark) {{ :root {{ --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f;
   --card: #1f1e1b; --accent: #7cc49d; --bad: #f08a80; }} }}
@@ -357,7 +361,7 @@ button {{ width: 100%; padding: 8px; font: inherit; border: 0; border-radius: 6p
 a {{ color: inherit; }} input[readonly] {{ color: var(--muted); }}
 </style></head><body><main>
 {body}
-<p><a href="/">risalemcp.com</a> · <a href="/gizlilik.html">Gizlilik</a></p>
+<p><a href="{cati}">Âyinedâr</a> · <a href="{privacy}">Gizlilik</a></p>
 </main></body></html>"""
 
 LOGIN = """<h1>Davetli bölüm</h1>
@@ -395,22 +399,23 @@ adınızdır: size e-posta gönderilmez.</p>
 
 INVITE_GONE = """<h1>Bağlantı geçersiz</h1>
 <p>Bu davet bağlantısının süresi dolmuş ya da daha önce kullanılmış. Site yöneticisinden yeni bir bağlantı isteyin.
-Hesabınız varsa <a href="/taslak/giris">giriş sayfasından</a> girebilirsiniz.</p>"""
+Hesabınız varsa <a href="/giris">giriş sayfasından</a> girebilirsiniz.</p>"""
+
+READ_ONLY = """<h1>Bu hesap okuma platformuna açık</h1>
+<p>Ar-ge masası yalnız masa hesaplarına açıktır. Okuma platformuna <a href="{read}/">{host}</a> adresinden girebilirsiniz.</p>"""
 
 
-def safe_next(target: str | None, default: str = PREFIX) -> str:
-    """Girişten sonra gidilecek yer yalnız girişli bölümlerin (/taslak/, /oku/) içi olabilir (açık yönlendirme
-    olmasın)."""
-    if target and target.startswith((PREFIX, OKU)) and not target.startswith("//") and "\\" not in target \
-            and not target.startswith(PREFIX + "giris"):
+def safe_next(target: str | None, default: str = "/") -> str:
+    """Girişten sonra gidilecek yer yalnız aynı bölümün içi olabilir (açık yönlendirme olmasın)."""
+    if target and target.startswith("/") and not target.startswith("//") and "\\" not in target \
+            and not target.startswith(LOGIN_PATH):
         return target
     return default
 
 
-def allowed(scope: str, uri: str) -> bool:
-    """`oku` kapsamı ar-ge masasına (/taslak/) giremez, platforma girer: /oku/… Caddy'de /taslak/oku/…'ya çevrilir
-    (dosyalar orada). API'yi uygulama kendisi denetler."""
-    return scope == "masa" or uri.startswith(("/oku", PREFIX + "oku/")) or not uri.startswith(PREFIX.rstrip("/"))
+def allowed(scope: str, area: str) -> bool:
+    """Masaya (`lab`) yalnız `masa` kapsamı, platforma (`read`) her hesap girer. API'yi uygulama kendisi denetler."""
+    return scope == "masa" or area == "read"
 
 
 def build_app(store: Store, masa_store=None, yazi_store=None):
@@ -420,16 +425,22 @@ def build_app(store: Store, masa_store=None, yazi_store=None):
     from starlette.routing import Route
 
     def shell(title: str, body: str, status: int = 200) -> HTMLResponse:
-        return HTMLResponse(SHELL.format(title=title, body=body), status_code=status,
+        return HTMLResponse(SHELL.format(title=title, body=body, cati=CATI, privacy=PRIVACY), status_code=status,
                             headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})
 
+    def area(request: Request) -> str:
+        """Caddy'nin söylediği bölüm; başlık yoksa dar olan (masa)."""
+        return "read" if request.headers.get("x-bolum") == "read" else "lab"
+
     def page(next_url: str, message: str = "", email: str = "", status: int = 200) -> HTMLResponse:
-        action = f"{PREFIX}giris?next={quote(next_url, safe='/')}"
+        action = f"{LOGIN_PATH}?next={quote(next_url, safe='/')}"
         return shell("Giriş", LOGIN.format(message=message, action=html.escape(action, quote=True),
                                            email=html.escape(email, quote=True)), status)
 
+    def read_only() -> HTMLResponse:
+        return shell("Okuma platformu", READ_ONLY.format(read=READ, host=READ.split("//", 1)[1]), 403)
+
     def set_session(response, email: str, request: Request) -> None:
-        response.delete_cookie(COOKIE, path=PREFIX)                 # 2026-11-21'den önceki çerez (/taslak/ yolunda)
         response.set_cookie(COOKIE, store.open_session(email), max_age=SESSION_DAYS * 86400, path=COOKIE_PATH,
                             httponly=True, secure=secure(request), samesite="lax")
 
@@ -437,22 +448,22 @@ def build_app(store: Store, masa_store=None, yazi_store=None):
         return request.headers.get("x-forwarded-proto", request.url.scheme) == "https"
 
     async def check(request: Request):
-        uri = request.headers.get("x-forwarded-uri", PREFIX)
+        uri = request.headers.get("x-forwarded-uri", "/")
         email = store.check(request.cookies.get(COOKIE))
         if email:
-            if allowed(store.scope(email), uri):
+            if allowed(store.scope(email), area(request)):
                 return PlainTextResponse("ok", headers={"Cache-Control": "no-store"})
-            return RedirectResponse(OKU, status_code=302)        # yalnız okuyucu: masaya değil platforma
-        if uri.startswith(PREFIX + "oku/"):                     # Caddy'nin iç yolu: okuyucu /oku/… adresine dönsün
-            uri = OKU + uri[len(PREFIX + "oku/"):]
-        return RedirectResponse(f"{PREFIX}giris?next={quote(safe_next(uri), safe='/')}", status_code=302)
+            return RedirectResponse(READ + "/", status_code=302)   # yalnız okuyucu: masaya değil platforma
+        return RedirectResponse(f"{LOGIN_PATH}?next={quote(safe_next(uri), safe='/')}", status_code=302)
 
     async def login(request: Request):
-        next_url = safe_next(request.query_params.get("next"), default="")
+        next_url = safe_next(request.query_params.get("next"))
         if request.method == "GET":
             email = store.check(request.cookies.get(COOKIE))
             if email:
-                return RedirectResponse(next_url or (PREFIX if store.scope(email) == "masa" else OKU), status_code=302)
+                if not allowed(store.scope(email), area(request)):
+                    return read_only()
+                return RedirectResponse(next_url, status_code=302)
             msg = '<p class="ok">Oturum kapatıldı.</p>' if request.query_params.get("cikis") else ""
             return page(next_url, msg)
         form = await request.form()
@@ -460,9 +471,8 @@ def build_app(store: Store, masa_store=None, yazi_store=None):
         ok, error = store.login(email, password)
         if not ok:
             return page(next_url, f'<p class="err">{html.escape(error)}</p>', email, status=401)
-        scope = store.scope(email)
-        if not next_url or not allowed(scope, next_url):
-            next_url = PREFIX if scope == "masa" else OKU
+        if not allowed(store.scope(email), area(request)):
+            return read_only()                                     # oturum açılmaz: bu bölümde işi yok
         response = RedirectResponse(next_url, status_code=303)
         set_session(response, email, request)
         return response
@@ -491,8 +501,7 @@ def build_app(store: Store, masa_store=None, yazi_store=None):
             email = store.accept(token, password, email=None if email else typed)
         except ValueError as e:
             return form(f'<p class="err">{html.escape(str(e))}</p>', 400)
-        scope = store.scope(email)
-        response = RedirectResponse(PREFIX if scope == "masa" else OKU, status_code=303)
+        response = RedirectResponse("/", status_code=303)       # davet platformdadır; masa hesabı masaya ayrıca girer
         set_session(response, email, request)
         return response
 
@@ -526,18 +535,17 @@ def build_app(store: Store, masa_store=None, yazi_store=None):
 
     async def logout(request: Request):
         store.close_session(request.cookies.get(COOKIE))
-        response = RedirectResponse(f"{PREFIX}giris?cikis=1", status_code=303)
-        response.delete_cookie(COOKIE, path=PREFIX)
+        response = RedirectResponse(f"{LOGIN_PATH}?cikis=1", status_code=303)
         response.delete_cookie(COOKIE, path=COOKIE_PATH)
         return response
 
     from risale_mcp import masa                     # S7.2: ar-ge masası (okumalar, kararlar, notlar)
     from risale_mcp import yazilar                  # S11: site yazılarının taslaklarını web'de düzenlemek
-    return Starlette(routes=[Route("/_auth", check), Route(f"{PREFIX}giris", login, methods=["GET", "POST"]),
-                             Route(f"{PREFIX}cikis", logout, methods=["GET", "POST"]), Route(f"{PREFIX}ben", me),
+    return Starlette(routes=[Route("/_auth", check), Route(LOGIN_PATH, login, methods=["GET", "POST"]),
+                             Route(LOGOUT_PATH, logout, methods=["GET", "POST"]), Route(ME_PATH, me),
                              Route(INVITE + "{token}", invite, methods=["GET", "POST"]),
-                             Route(f"{PREFIX}api/karsilandi", welcomed, methods=["POST"]),
-                             Route(f"{PREFIX}api/yer", place, methods=["GET", "PUT"]),
+                             Route(f"{API}karsilandi", welcomed, methods=["POST"]),
+                             Route(f"{API}yer", place, methods=["GET", "PUT"]),
                              *masa.routes(store, masa_store or masa.MasaStore()),
                              *yazilar.routes(store, yazi_store or yazilar.YaziStore())])
 
@@ -562,7 +570,7 @@ def _password(generate: bool) -> str:
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="risalemcp.com/taslak/ girişi")
+    parser = argparse.ArgumentParser(description="lab.ayinedar.org ve read.ayinedar.org girişi")
     sub = parser.add_subparsers(dest="command", required=True)
     p = sub.add_parser("serve")
     p.add_argument("--port", type=int, default=8009)
@@ -570,7 +578,7 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("email", nargs="?")
     p.add_argument("--acik", action="store_true", help="adressiz: e-postayı okuyucu yazar, yalnız yeni hesap açar")
     p.add_argument("--not", dest="label", help="hesabı tanımak için notunuz (ör. kimin için); okuyucu görmez")
-    p.add_argument("--masa", action="store_true", help="yeni hesap ar-ge masasına da girer (varsayılan: yalnız /oku/)")
+    p.add_argument("--masa", action="store_true", help="yeni hesap ar-ge masasına da girer (varsayılan: yalnız platform)")
     p.add_argument("--name", help="masada işaretlerde görünecek ad (yoksa e-posta)")
     sub.add_parser("davetler", help="kullanılmamış, süresi dolmamış davetler")
     for name in ("add-user", "passwd"):
@@ -579,7 +587,7 @@ def main(argv: list[str] | None = None) -> None:
         p.add_argument("--generate", action="store_true", help="parolayı üret ve göster")
         if name == "add-user":
             p.add_argument("--name", help="işaretlerde görünecek okuyucu adı (yoksa e-posta)")
-            p.add_argument("--masa", action="store_true", help="ar-ge masasına da girer (varsayılan: yalnız /oku/)")
+            p.add_argument("--masa", action="store_true", help="ar-ge masasına da girer (varsayılan: yalnız platform)")
             p.add_argument("--oku", action="store_true", help=argparse.SUPPRESS)    # S10'dan önceki adı; artık varsayılan
     p = sub.add_parser("set-scope")
     p.add_argument("email")
@@ -606,21 +614,21 @@ def main(argv: list[str] | None = None) -> None:
         token = store.invite(None, "masa" if args.masa else None, args.name, label=args.label)
         print(f"açık davet ({args.label or 'notsuz'}; yeni hesap, {'masa' if args.masa else 'oku'}, "
               f"{INVITE_DAYS} gün geçerli, tek kullanımlık; e-postayı okuyucu yazar):")
-        print(f"{SITE}{INVITE}{token}")
+        print(f"{READ}{INVITE}{token}")
     elif args.command == "davet":
         existed = store.exists(args.email)
         token = store.invite(args.email, "masa" if args.masa else None, args.name, label=args.label)
         if existed and args.masa:
             print("not: hesap zaten var, kapsamı değişmedi (set-scope ile değişir)")
         print(f"{'parola yenileme' if existed else 'yeni hesap'} ({norm_email(args.email)}, {INVITE_DAYS} gün geçerli, tek kullanımlık):")
-        print(f"{SITE}{INVITE}{token}")
+        print(f"{READ}{INVITE}{token}")
     elif args.command == "davetler":
         for d in store.invites():
             print(f"{d['email'] or '(açık davet)'}  {'yeni hesap, ' + d['scope'] if d['scope'] else 'parola yenileme'}"
                   f"{'  not: ' + d['label'] if d['label'] else ''}  verildi {_when(d['created'])}  biter {_when(d['expires'])}")
     elif args.command == "add-user":
         store.add_user(args.email, _password(args.generate), args.name, "masa" if args.masa else "oku")
-        print(f"hesap açıldı: {norm_email(args.email)} ({'/taslak/ ve /oku/' if args.masa else 'yalnız /oku/'})")
+        print(f"hesap açıldı: {norm_email(args.email)} ({'masa ve platform' if args.masa else 'yalnız platform'})")
     elif args.command == "set-scope":
         store.set_scope(args.email, args.scope)
         print(f"kapsam: {args.scope}")

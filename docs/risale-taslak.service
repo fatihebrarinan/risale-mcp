@@ -1,5 +1,5 @@
 [Unit]
-Description=risalemcp.com/taslak/ girişi (S5; Caddy forward_auth, uygulama 127.0.0.1:8009; hesaplar data/site_auth.db)
+Description=read. ve lab.ayinedar.org girişi (S5, S13.15.5; Caddy forward_auth, uygulama 127.0.0.1:8009; hesaplar data/site_auth.db)
 After=network-online.target
 Wants=network-online.target
 

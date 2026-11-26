@@ -1,12 +1,12 @@
 """Ar-ge masasının giriş sayfası (S7.2; kullanıcının onayı, 2026-11-21: "Pano · Okumalar · Birimler", D5.1'den önce).
 
-`/taslak/` açılınca gelen sayfadır. İki parça:
+`lab.ayinedar.org` açılınca gelen sayfadır (S13.15.5; önce `risalemcp.com/taslak/`). İki parça:
 - `masa/index.html`: değişmeyen kabuk (üç sekme, telefona göre). Sekmeler adreste durur (`#pano`, `#okumalar`,
   `#birimler`).
 - `masa/pano.json`: sayfanın verisi (D5'in ilerlemesi, kota, alarmlar; birimler ve sayfaları). Taslak deposundan
   (`data/d1`) üretilir; D5 kuyruğu her birimden sonra sunucudan yeniler (`d1-birim.durum_sayfasi`), yerelde bu betik.
-- Okumalar sekmesi canlıdır: masa servisinden (`/taslak/api/okumalar`, girişli kişinin görevleri) gelir; başında
-  yayımlanmamış Yenilikler ve Çalışmalar yazıları (`/taslak/onizleme/liste.json`, `site-uret.py` yazar, deploy gönderir).
+- Okumalar sekmesi canlıdır: masa servisinden (`/api/okumalar`, girişli kişinin görevleri) gelir; başında
+  yayımlanmamış Yenilikler ve Çalışmalar yazıları (`/onizleme/liste.json`, `site-uret.py` yazar, deploy gönderir).
 
 Eski "âyet masası"nın son birim kopyası (`d1-masa.py`'nin `index.html`'i) artık yazılmaz; birimlerin masa sayfaları
 (`<birim>.html`) Birimler sekmesinden açılır.
@@ -144,7 +144,7 @@ def veri() -> dict:
 
 SHELL = r"""<!doctype html>
 <html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex, nofollow"><title>Ar-ge Masası</title><style>__CSS__
+<meta name="robots" content="noindex, nofollow"><title>Ar-ge Masası · Âyinedâr</title><style>__CSS__
 nav.tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin: 8px 0 14px; overflow-x: auto; }
 nav.tabs a { padding: 8px 12px; color: var(--muted); text-decoration: none; border-bottom: 2px solid transparent;
              white-space: nowrap; }
@@ -171,13 +171,13 @@ header.top { display: flex; justify-content: space-between; align-items: baselin
 header.top a { font-size: .85rem; color: var(--muted); }
 </style></head><body><main>
 <header class="top"><h1>Ar-ge Masası</h1><span class="small muted"><span id="ben"></span> · <a href="cikis">çıkış</a></span></header>
-<nav class="big"><a href="ayet.html">Âyet masası</a><a href="/oku/">Okuma platformu</a><a href="deneyler.html">Deneyler defteri</a><a href="d5.html">D5 durumu</a></nav>
+<nav class="big"><a href="ayet.html">Âyet masası</a><a href="https://read.ayinedar.org/">Okuma platformu</a><a href="deneyler.html">Deneyler defteri</a><a href="d5.html">D5 durumu</a></nav>
 <p class="small muted">Yapay zekâ taslaklarının iç çalışma masası. Buradaki hiçbir taslak tefsir değildir.</p>
 <nav class="tabs"><a href="#pano" data-t="pano">Pano</a><a href="#okumalar" data-t="okumalar">Okumalar<span id="nok"></span></a><a href="#birimler" data-t="birimler">Birimler</a></nav>
 <section id="pano"></section><section id="okumalar" hidden></section><section id="birimler" hidden></section>
 <p class="small muted" id="alt"></p>
 </main><script>
-const API = '/taslak/api/';
+const API = '/api/';
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
 const pct = x => x == null ? '—' : '%' + Math.round(x * 100);
@@ -226,7 +226,7 @@ function okuma(o) {
     + `<div class="small muted">${o.birim ? 'Bakara ' + esc(o.birim) + ' · ' : ''}${o.karar}/${o.yer} yer${o.dakika ? ' · ≈' + o.dakika + ' dk' : ''}`
     + ` · ${when(o.olusturuldu)}${o.bitti ? ' · bitti ' + when(o.bitti) : ''}</div></div>`;
 }
-// yayımlanmamış Yenilikler ve Çalışmalar yazıları (site-uret.py → /taslak/onizleme/liste.json): okunup yayımlanır
+// yayımlanmamış Yenilikler ve Çalışmalar yazıları (site-uret.py → /onizleme/liste.json): okunup yayımlanır
 function yazi(y) {
   return `<div class="row"><div class="t"><a href="${esc(y.duzenle || y.sayfa)}"><b>${esc(y.baslik)}</b></a>`
     + `<span class="small st-bekliyor">${esc(y.tur)}${y.yayin_tarihi ? ' · ' + esc(y.yayin_tarihi) + ' günü kendiliğinden yayımlanır' : ''}</span></div>`
@@ -273,7 +273,7 @@ async function load() {
   } catch (e) {}
   let yazilar = [];
   try {
-    const r = await fetch('/taslak/onizleme/liste.json', {cache: 'no-store'});
+    const r = await fetch('/onizleme/liste.json', {cache: 'no-store'});
     if (r.ok) yazilar = await r.json();
   } catch (e) {}
   okumalar(oks, yazilar);

@@ -24,7 +24,7 @@ def test_draft_meta(tmp_path):
     p = tmp_path / "2026-01-01-x.md"
     p.write_text("---\nbaslik: X\ntarih: 2026-01-01\nozet: Ö\ndurum: taslak\n---\n\nGövde.\n", encoding="utf-8")
     post = S.read_post(p, S.KINDS["calismalar"])
-    assert post.draft and post.preview_path == "/taslak/onizleme/calismalar/2026-01-01-x.html"
+    assert post.draft and post.preview_path == "/onizleme/calismalar/2026-01-01-x.html"
     assert "noindex" in S.post_page(post, preview=True)
     assert "noindex" not in S.post_page(post)
 
