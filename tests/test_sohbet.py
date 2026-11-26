@@ -611,3 +611,8 @@ def test_s13_11_block_quote_mid_line_gets_its_own_line(checker):
     lines = checked.markdown.split("\n")
     assert lines[0] == "Şöyle söyler:" and lines[2].startswith('> "Eski') and lines[4] == '> "Sözler Mecmuası’nda neşredilmiştir." [2]'
     assert sohbet._split_blocks("a > b ve c") == "a > b ve c"          # karşılaştırma dokunulmaz
+
+
+def test_s13_11_lone_sentence_number_is_a_leak():
+    checked = sohbet.check(NS(refresh=lambda: None, nodes={}), "Bir cümlesi (c013 sonrası karşılaştırma) yok.")
+    assert checked.markdown == "Bir cümlesi (sonrası karşılaştırma) yok." and checked.counts["leaks"] == 1

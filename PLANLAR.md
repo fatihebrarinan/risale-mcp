@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`, tur 1 bitti (Haiku ve Sonnet), dört sunucu hatası düzeltildi (yayında değil), talimat kararları bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yapıldı; tur 2'nin talimat kararları (a)–(d) bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -380,6 +380,34 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     (2) dar arama: `search` az sonuçta `kelime*`'nin sayısını versin, Latin harfle yazılmış Arapça için Arapça aramayı
     önersin; (3) Lemeât ≠ Lem'alar (S13.10 (3)); (4) takvim: `written` ve metindeki yıl için "hicrî/rûmî belirtilmemişse
     hesap yapma"; (5) Haiku'nun okuma hataları (2)–(5) model yönlendirme konuşmasına örnek.
+    **Kullanıcının kararları (2026-11-26):** sunucu düzeltmeleri gönderilir; (1) dil satırı denenir (alıntıları
+    çevirmeye kalkarsa geri alınır); (2) arama değişiklikleri uygun, beklenen farkla deploy; (3)–(4) satırlar uygun.
+    **Yapıldı:** sohbet talimatına (`SHAPE`) üç satır: cevabın tamamı son sorunun dilinde, alıntı çevrilmez; takvimi
+    belirtilmemiş yıl olduğu gibi verilir, çevrilmez ve başka tarihle hesapla karşılaştırılmaz; Lemeât (Otuz İkinci
+    Mektub, Otuz İkinci Lem'a) ile Lem'alar ayrı eserdir. MCP talimatı değişmedi. `search` (`Library.search`, bütün
+    profiller): 10'dan az sonuçta `word_starts` (`kelime*` ile kaç cümle; "tezekkür" 2, 4), sıfır sonuçta ve sorguda
+    Arapça harf yoksa `hint` (Latin harfle yazılmış Arapça bir şey bulmaz, Arapçasını ya da anlamsal aramayı dene);
+    `tests/test_search_hints.py`. Düz yazıda tek başına "c013" de kimlik sızıntısı sayılır, silinir.
+    **Tur 1'in tekrarı** (yeni talimat ve aramayla, Haiku): bütün cevaplar Türkçe; âyet sonları sorusunda `hint`
+    üzerine `لعلكم تتفكرون` ve `لعلكم تذكرون` arandı; "tezekkür" için sayı iddiası yok ama `word_starts` görülüp
+    `tezekkür*` yine aranmadı; Lemeât konuşmasında karışıklık yok.
+    **Tur 2** (`tur-02.txt`: 7 konuşma, 16 soru; isim (S13.10 gerilemesi), İşârât'ın iki dili, Nûr 24:35, Onuncu Söz
+    zinciri, İkinci Söz'ün temsili, İngilizce soru, takvim; Haiku, ≈0,06 $). İyi: isim konuşmasında Lemeât
+    karışmadı, Fihrist'in "Risale-i Nur'un bir nev'i çekirdeği ve fidanlığı hükmündeki … Mesnevî-i Nûriye" cümlesi
+    bulundu, talebe sözü (Halil İbrahim) ayrıldı; temsil konuşmasında yanlış öncül ("bahçe") düzeltildi; Onuncu Söz
+    zinciri dört soruda bağlamı taşıdı; İngilizce soruya İngilizce, Türkçe takibine Türkçe cevap, alıntılar
+    çevrilmedi; Vakıf meali `get_ayah`'tan doğru. **Hatalar:** (1) **yersiz geri alma:** takvim 2'de 1. cevabın doğru
+    sözünü ("Mukaddime ve Nokta'nın aslı Türkçe", `list_works` notu) "baktığım kayıtlarda yoktu, dikkate almayın"
+    diye geri aldı (2. turda `list_works`'ü `osmanlica` süzgeciyle çağırmıştı); (2) **numara:** `lemalar/26`
+    "Yirmi Beşinci Lem'a" dendi; (3) **düz yazıda numara:** "Dokuzuncu Hakikat'in 52. cümlesindeki", "(c013 sonrası
+    …)" (ikincisi artık sunucuda düşer); (4) **İngilizce kelime:** "Arabic metin" (üç kez, Türkçe cevapta); (5)
+    alıntısız numara "Türkçe karşılığı: [4] ve [5]."; (6) "Diyanet meâline göre" (Vakıf'ın meali; Başkanlık mealiyle
+    karışır); (7) takvim 2'de "fark yok" (kayıtta tercümenin tarihi yok); (8) İngilizce cevapta kendi tercümesini
+    tırnakla işaretledi ("the purpose of the universe", doğrulanamadı); (9) "Haşirle en doğrudan ilgili Dokuzuncu
+    Hakikat'tir" dayanaksız. **Karar bekleyen (talimat):** (a) önceki cevabı yalnız şimdi okunan bir sonuç
+    çelişiyorsa geri al, yeniden görülmeyen kayıt kanıt değildir (`EARLIER`); (b) Türkçe cevapta İngilizce kelime yok
+    ("Arapça", "Türkiye Diyanet Vakfı meali"); (c) bölüm adları ve numaraları araçların `ref`'inden; (d) kendi
+    tercümen tırnaklı alıntı değildir, işaretlenmez.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

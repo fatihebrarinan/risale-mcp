@@ -54,6 +54,10 @@ class NodeHit:
 
 
 _ARABIC = re.compile(r"[\u0600-\u06FF]")
+
+
+def has_arabic(text: str) -> bool:
+    return bool(_ARABIC.search(text))
 # Arapça kelimenin başına bitişen bağlaç ve harf-i cerler (و ف ب ل ك ve birleşimleri) ve harf-i tarif: dizinde
 # "والكتاب" tek kelimedir; "الكتاب" ya da "كتاب" arayan onu da bulmalı (MVP M4). Sorgu tarafında açılır, dizin değişmez.
 _PROCLITICS = ("", "و", "ف", "ب", "ل", "ك", "وب", "ول", "فب", "فل", "وك", "فك")

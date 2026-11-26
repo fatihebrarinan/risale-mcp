@@ -35,6 +35,7 @@ from risale_mcp.semantic import SemanticIndex, SemanticUnavailable
 MAX_RANGE = 100          # get_passage'ın bir seferde döndürdüğü en çok cümle
 MAX_CITED = 8            # tek atıfla verilebilecek en çok ardışık cümle (aynı bölümde)
 MAX_RESULTS = 50
+FEW_HITS = 10          # S13.11: bundan az sonuçta kelime başı aramasının sayısı da verilir
 PREVIEW_CHARS = 400      # arama sonucunda gösterilen en uzun cümle metni
 ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen Arapça türleri
 # Eski adla anılan, metni başka yerde duran bölümler: bölüm kimliği -> {name, elsewhere, rule?, evidence}
@@ -805,6 +806,26 @@ class Library:
         if expanded:
             result["expanded"] = ("No exact word matched, so each unquoted word was searched as a word start "
                                   "(Turkish suffixes: Beyzavi -> Beyzâvî'nin). Check that the hits are the word meant.")
+        elif 0 < result["total"] < FEW_HITS:
+            # S13.11: "tezekkür" 2 cümle, "tezekkür*" 4 ("tezekkürde"); model ekli biçimleri aramadan "iki yerde geçer"
+            # diyordu. Az sonuçta kelime başı aramasının sayısı verilir.
+            try:
+                wider = sum(fts.count_by_work(self.conn, query, group=group, collection=collection,
+                                              prefix_all=True).values()) if not work else \
+                    fts.count_by_work(self.conn, query, group=group, collection=collection,
+                                      prefix_all=True).get(work, 0)
+            except fts.QueryError:
+                wider = 0
+            if wider > result["total"]:
+                result["word_starts"] = {
+                    "total": wider,
+                    "note": f"Only exact words were matched. Searched as word starts (word*), {wider} sentences "
+                            "match, including suffixed forms (tezekkür* finds tezekkürde). Search again with * before "
+                            "saying how often a word occurs."}
+        if not result["total"] and not fts.has_arabic(query):
+            result["hint"] = ("No sentence matched. The works write Arabic (Qur'an, hadith, Arabic phrases) in Arabic "
+                              "letters: a phrase written in Latin letters (lealleküm tetefekkerûn) matches nothing. "
+                              "Search its Arabic words (لعلكم تتفكرون), or use semantic_search.")
         return result
 
     def semantic_search(self, query: str, work: str | None = None, group: str | None = None,

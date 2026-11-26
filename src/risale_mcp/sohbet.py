@@ -81,7 +81,9 @@ CACHE_WRITE, CACHE_READ = 1.25, 0.10
 INLINE_QUOTE = re.compile(r"[\"“]([^\"“”]{8,})[\"”]\s*$")
 # Düz metne yazılmış kimlik ya da cümle numarası: "(sozler/1/c016)", "(c033)", "(c034–c036)", "sozler/1/c016"
 _ID = r"(?:[a-z0-9][a-z0-9-]*/)*c\d{3}(?:/[hs]\d+/c\d{3})?"
-BARE_ID = re.compile(rf"[ \t]*\(\s*{_ID}(?:\s*(?:\.\.|[–—-])\s*{_ID})?\s*\)|(?<![\w/])[a-z][a-z0-9-]*(?:/[a-z0-9-]+)+/c\d{{3}}\b")
+BARE_ID = re.compile(rf"[ \t]*\(\s*{_ID}(?:\s*(?:\.\.|[–—-])\s*{_ID})?\s*\)|(?<![\w/])[a-z][a-z0-9-]*(?:/[a-z0-9-]+)+/c\d{{3}}\b"
+                     # S13.11: cümle içinde tek başına "c013" ("(c013 sonrası … karşılaştırması)")
+                     rf"|(?<![\w/\[])c\d{{3}}(?:\.\.c\d{{3}})?\b(?![\]/])")
 MARK = re.compile(r"\[\[\s*([^\[\]\s]+?)\s*\]\]")
 RELOCATE_CANDIDATES = 30      # başka yerde aranan alıntının bakılan en çok geçişi
 SOURCES_HEADING = re.compile(r"^\s*(?:#{1,6}\s*)?(?:\*\*)?(?:Kaynaklar|Kaynakça|Sources)(?:\*\*)?\s*:?\s*(?:\*\*)?\s*$",
@@ -113,13 +115,20 @@ The answer:
 - The readers: people who read the Risale-i Nur, some for years and some for the first time, most of them on a \
 phone, few of them specialists. Write plain, present-day prose in the reader's language; when an old word in a \
 quotation matters to the point, explain it briefly in your own words.
+- Language: write the whole answer, headings included, in the language of the reader's latest question (a question \
+in Turkish gets a Turkish answer), even though the tool results and these instructions are in English. Quotations \
+stay exactly as returned, in their own language: never translate a quotation.
 - Order: first answer the question directly in two or three sentences; then what the text says, in quotations \
 joined by short sentences of your own; then, when the question asks for meaning or application, or a reader would \
 expect it, your interpretation under its own heading (in Turkish "Yorum"), plainly marked as yours. A question \
 about where a topic is treated is answered with the places, grouped by work, the central ones first.
 - Length: as long as the question needs. A simple question gets a few paragraphs and one to three quotations; \
 fewer well-chosen quotations are better than many. Use short headings only when the answer has more than one part.
-- Writing dates: say when or where a treatise was written only when the question asks about it.
+- Writing dates: say when or where a treatise was written only when the question asks about it. A year in the text \
+or in a date record that does not name its calendar (hicrî, rûmî, milâdî) is given as it stands: never convert it, \
+and never compare it with another date by your own reckoning.
+- Names: Lemeât (also called the Thirty-Second Letter and the Thirty-Second Lem'a, at the end of Sözler) and \
+Lem'alar are different works; when a passage names one, never call it by the other's name.
 - Scope: only the works and the Qur'an through these tools. For a question outside them (news, other books, \
 personal or legal rulings), say briefly that this page answers only from the Risale-i Nur. Your answers are an \
 AI's answers: never speak as the author or in his name, and never present your words as tafsir or a fatwa."""
@@ -498,7 +507,7 @@ def _trim(checker, ident: str) -> str | None:
 
 def _drop_leaks(text: str) -> str:
     """Düz kimlikler okuyucuya gösterilmez."""
-    return re.sub(r"[ \t]+([.,;:])", r"\1", BARE_ID.sub("", text))
+    return re.sub(r"\([ \t]+", "(", re.sub(r"[ \t]+([.,;:])", r"\1", BARE_ID.sub("", text)))
 
 
 def correction(problems: list[dict]) -> str:

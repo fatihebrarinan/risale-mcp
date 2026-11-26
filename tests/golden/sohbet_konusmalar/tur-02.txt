@@ -1,0 +1,40 @@
+# S13.11 hata ayıklama turu 2 (2026-11-26). Tur 1'in düzeltmeleri (dil, takvim, Lemeât) ve yeni türler:
+# Arapça eser ve tercüme, âyet, uzun takip zinciri, temsil, İngilizce soru.
+# Çalıştırma: uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-02.txt
+
+## isim
+# S13.10'un gerilemesi: Lemeât/Lem'alar, talebenin istihracı, "yorum olduğu belirtilir" okuması, fidanlık Mesnevî
+Peki, risale-i nur'la ilgili bir yapay zeka platformuna isim arıyorum. Risale-i Nur'dan güzel, nurlu bir isim bulur musun? Mesela fidanlık gibi
+Daha genel islami bağlamda da yeri olması lazım. Ona göre ara
+
+## isarat
+# aslı Arapça eser, tercüme katmanı (Abdülmecid Nursî), iki dil
+İşârâtü'l-İ'câz Fâtiha'daki "iyyâke na'büdü" için ne der?
+Bu Türkçe metin kimin tercümesi? Arapça aslında da aynı şey mi söyleniyor?
+
+## ayet
+# âyet katmanı: nâşirin meali, Vakıf meali, ilişki türleri
+"Allah göklerin ve yerin nurudur" âyeti Risale'de nasıl açıklanır?
+Bu âyetin meali nedir?
+
+## zincir
+# uzun takip: bağlam, önceki okumalar, sayılar
+Onuncu Söz'de haşre dair kaç hakikat var?
+Dokuzuncu Hakikat ne anlatır?
+Oradaki temsili kısaca özetler misin?
+Bu hakikatin dayandığı âyet hangisi?
+
+## temsil
+# temsilin düz okunması (tur 1'de "makine")
+İkinci Söz'deki iki adam temsilini anlatır mısın?
+Bu temsildeki bahçe ve yolculuk neyi temsil ediyor?
+
+## ingilizce
+# dil: İngilizce soru, Türkçe alıntılar çevrilmeden kalmalı
+What does Bediüzzaman say about the purpose of human life?
+Bu konuda Türkçe bir alıntı daha verir misin?
+
+## takvim
+# takvim ve telif bilgisi
+Mesnevî-i Nuriye ne zaman yazıldı?
+Arapçası ile Türkçesi arasında kaç yıl var?
