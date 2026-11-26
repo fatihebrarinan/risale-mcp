@@ -69,7 +69,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   eski `risalemcp.com/sohbet/*` 308 ile aynı yola). Kullanıcı telefonda ve masaüstünde girdi, kod e-postası geldi;
   deneme kullanıcılarına yeni adresi kendisi gönderiyor. Ayrıntı `KAYIT.md` › S13.15.4. Ondan önce S13.15.1–S13.15.3
   (alan adları, DNS ve Caddy, logo) ve S13.17 (öbür kütüphaneler ve âyet çalışması kipi sohbette, yayında), S13.16,
-  B11, B10 bitti. **Önde S13.15.5** (okuma platformu `read.` ve masa `lab.`; davetlerden önce). Açık kalan küçük iş:
+  B11, B10 bitti. **S13.15.5 da bitti (2026-11-27):** okuma platformu `read.ayinedar.org`, masa `lab.ayinedar.org`;
+  eski adresler 308 ile; taslak sunucusunun kodu kuyrukta sıradaki birimin başında geçer. **Önde S13.15.6** (çatı
+  sitesi `ayinedar.org`). Yeni davet bağlantıları `read.ayinedar.org/davet/…` verir. Açık kalan küçük iş:
   girişsiz tanıtım (`sohbet_hesap.HERO`) yalnız Risale'yi anar, Hakkında bütün kütüphaneleri; tanıtımdan önce bakılır
   (S13.15.6 ile). DMARC ≈2026-12-10'da `p=quarantine`. S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
@@ -79,7 +81,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   değişikliği `scripts/deploy.sh --sohbet` ile gider (≈10 sn; kayıt alınmaz, sohbet dışı kod değiştiyse durur; 2026-11-26). Telefon
   uygulaması "Sonra"da (S13.15'ten sonra, koşullu).
 - **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
-  `https://risalemcp.com/taslak/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
+  `https://lab.ayinedar.org/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
 - **Tarihli hatırlatmalar:** (0) **Sohbetin denemesi başladı (2026-11-25), bitişi ≈2026-12-02:** 5 kişi, bir
   hafta. Başlangıç kaydı `data/interim/sohbet/deneme-baslangic-20261125.md` (o gün 3 kişi, 8 soru, 0,056 $, soru başı
   0,007 $, doğrulanamayan 0, 👍 2). Bitince yine `usage` ve `geri-bildirim --days 7` (sunucuda
@@ -89,7 +91,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı (aynı aboneliği kullanır). (3) **Kuyruk durunca
   (Aralık):** tek tefsir kurulumu ("Sıradaki" 6: B3, E6) ve D16.
 - **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; dizin metinleri başvurular sonuçlanınca
-  (`docs/e5-dizin-metni-taslagi.md`); S10'un karşılama sayfası (`/oku/#/~hosgeldin`) ve kopyalama damgası, sonra ilk
+  (`docs/e5-dizin-metni-taslagi.md`); S10'un karşılama sayfası (`read.ayinedar.org/#/~hosgeldin`) ve kopyalama damgası, sonra ilk
   davetler (`scripts/sunucu.sh taslak davet <e-posta>`); lügatın eşleme örnekleri (`data/interim/lugat/olcum.md`);
   "Sıradaki" 2 (Risale'si az birimler); E8.6 için Arapça okuyan bir denetçi.
 - Bir birimin durumu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push. Uzun işler
@@ -192,8 +194,11 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     simgeler ve ad yazısı, PWA, Hakkında (`/hakkinda`, Diyanet bildirgesinin 7. maddesi), güvenlik başlıkları, 404,
     paylaşım kartı, tanıtıma kadar `noindex`. Yapılmayan: `__Host-` çerez öneki (gerekçe `KAYIT.md`), mağaza uygulaması
     ("Sonra"). DMARC bir iki hafta sorunsuz gönderimden sonra `p=quarantine`. Ayrıntı `KAYIT.md` › S13.15.4.
-  - **S13.15.5 Okuma platformu ve masanın taşınması:** `read.`, `lab.`; davetlerden önce (davet bağlantıları adres
-    taşır); çerez yolu, `site_auth.py`, sunucunun kısıtlı gönderme anahtarının hedefi, `d5.html`, ntfy bağlantıları.
+  - **S13.15.5 Okuma platformu ve masanın taşınması** (bitti, 2026-11-27): platform `read.ayinedar.org`, masa
+    `lab.ayinedar.org` (disk düzeni aynı); giriş servisi iki bölümde aynı kısa yollar, bölüm `X-Bolum` başlığından,
+    masaya yalnız `masa` kapsamı; çerez alan adına bağlı (kullanıcının kararı: masa hesabı iki yere ayrı girer); eski
+    sayfaların `/taslak/` öneki atılır, `risalemcp.com/oku/*` ve `/taslak/*` 308 ile aynı yola (açık davetler çalışır);
+    ad ve simge Âyinedâr. Ayrıntı `KAYIT.md` › S13.15.5.
   - **S13.15.6 Çatı sitesi:** `ayinedar.org`; ana sayfa önce sohbete çağırır, öbür projeler ikinci sırada; yenilikler,
     çalışmalar, belgeler, gizlilik buraya (`scripts/site-uret.py`).
   - **S13.15.7 Eklentilerin tanıtımı:** `connect.ayinedar.org`; en son, dizin kararlarından sonra; risalemcp.com'dan yönlendirme (favicon ve

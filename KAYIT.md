@@ -382,6 +382,36 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S13.15.5. Okuma platformu ve masanın taşınması** (bitti ve yayında, 2026-11-27; kullanıcının kararları: çerez alan
+adına bağlı, masa hesabı iki yere ayrı girer; ad ve simge şimdi).
+
+- **Adresler:** okuma platformu `read.ayinedar.org` (diskte `/var/www/ozel/taslak/oku/`), ar-ge masası
+  `lab.ayinedar.org` (`/var/www/ozel/taslak/`). Disk düzeni değişmedi: D5 sunucusunun kısıtlı gönderme anahtarı
+  (`rrsync -wo /var/www/ozel/taslak`), setgid ve `deploy.sh`'in hedefleri aynı kaldı.
+- **Giriş servisi** (`site_auth.py`): iki bölümde aynı kısa yollar (`/giris`, `/cikis`, `/ben`, `/api/…`; davet
+  `read.ayinedar.org/davet/<jeton>`); bölümü Caddy'nin `X-Bolum` başlığı söyler (üstüne yazılır; yoksa `lab`, dar olan).
+  Masaya yalnız `masa` kapsamı girer: `oku` hesabı masada giriş yapamaz (403, platformun adresi), başka yerden taşınan
+  çerezle masaya gelirse platforma yönlenir. Çerez `Domain`sız: chat. ve köke gitmez. Giriş sayfaları Âyinedâr adı ve
+  simgesiyle, alt satır çatıya ve gizlilik politikasına. `masa.py` ve `yazilar.py`'nin API'si `/api/`.
+- **Caddy:** `read.` ve `lab.` blokları (HSTS, `noindex`); Âyinedâr simgeleri girişsiz; masada olmayan ama sitede olan
+  dosya (yazı önizlemesinin stil ve resimleri) `/var/www/risalemcp`'den, girişsiz (zaten herkese açık). **Eski
+  sayfalar:** önceden üretilmiş D5, tur ve fark sayfaları `/taslak/api/…` ve `/taslak/ben`'i çağırır; iki alan adında
+  da `/taslak` öneki atılır, yeniden üretmek gerekmedi. `risalemcp.com/oku/*` ve `/taslak/*` 308 ile aynı yola
+  (`/oku/davet/<jeton>` → `read.ayinedar.org/davet/<jeton>`: 23 Kasım'da verilen üç açık davet çalışır);
+  `isarat-usulu` yönlendirmeleri önde kaldı.
+- **Şablonlar ve betikler:** platform (`oku-app.html`: API, `/ben`, masa düğmesi, kopyalama damgası "Âyinedâr …
+  (read.ayinedar.org)", başlık "Kur'ân Taslakları · Âyinedâr", simge), masa (`d1-masa-sablon.html`: hesap adı artık
+  `location.pathname` yerine sitede açılınca alınır), masanın girişi, tur ve fark şablonları, yazı düzenleyici, önizleme
+  (`site-uret.py` `PREVIEW_URL = "/onizleme"`), D5 iletileri ve ntfy bağlantıları (`lab.ayinedar.org/d5.html`),
+  `masa-gorev.py` (makine istemcisi: POST 308'i izlemez, adresi değişti), `taslak-gonder.sh`, Word damgası
+  (`docx_yaz.py`), gizlilik sayfaları (iki dilde; tarih 27 Kasım 2026).
+- **Yayın:** `deploy.sh --code` (araç çıktısında fark yok, `yayin-20261127-011658`), Caddy yeniden yüklendi;
+  `taslak-sunucu.sh gonder` (kuyruk sürüyor: kod sıradaki birimin başında geçer; o zamana kadar sunucunun ürettiği
+  sayfalar eski yolları kullanır, önek atıldığı için çalışır; yalnız masada hesabın adı görünmez). **Deneme:** curl
+  ile kapılar ve yönlendirmeler; geçici `oku` hesabıyla platforma giriş (303, çerez `read.ayinedar.org`'un), `/ben`,
+  eski API yolu, masada giriş reddi (403), taşınan çerezle masa → platform, çıkış; hesap silindi. Açık oturumlar
+  (eski alan adının çerezi) bir kez yeniden giriş ister.
+
 **S13.15.4. Sohbetin `chat.ayinedar.org`'a taşınması** (bitti ve yayında, 2026-11-26 – 2026-11-27; alt adımlar
 kullanıcının onayıyla, taşınma deneme bitmeden: "site neredeyse kimseyle paylaşılmadı").
 
