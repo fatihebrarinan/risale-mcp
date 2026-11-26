@@ -81,7 +81,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kaldırıldı; mail-tester 10/10 (SPF, DKIM, DMARC geçer), ama Proton bağlantısızı da spam klasörüne koydu (yeni alan
   adının itibarı; yönlendirmeyle geldi); DMARC bir iki hafta sonra `p=quarantine`; (2) çatı bağlantısı `SOHBET_CATI`, simgeler, ad yazısı (Literata alt kümesi, `scripts/literata-alt.py`) ve
   (3) PWA (manifesto, `sw.js` yalnız çevrimdışı sayfası, Ayarlar › Görünüm'de ana ekrana ekleme) bitti; adresler ve ad
-  5. adımda birlikte değişir; sırada (4) Hakkında sayfası). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
+  5. adımda birlikte değişir; (4) Hakkında sayfası (`/hakkinda`, `sohbet_assets/hakkinda.html`; Diyanet bildirgesinin 7.
+  maddesi kullanıcının verdiği metinden) yazıldı, kullanıcının okuması bekleniyor; Proton A'yı da (risalemcp.com) spam'e
+  koydu: gönderici taşınmayla `noreply@ayinedar.org` olur; sırada (5) yayın). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,

@@ -170,7 +170,9 @@ def test_policy_pages_are_public(tmp_path):
                      base_url="https://testserver")
     for path in DOCS:
         r = web.get(f"/sohbet/{path}")
-        assert r.status_code == 200 and "{{" not in r.text and "risalemcp.com/sohbet/" in r.text, path
+        assert r.status_code == 200 and "{{" not in r.text, path
+        if path != "hakkinda":
+            assert "risalemcp.com/sohbet/" in r.text, path
     assert 'href="/sohbet/en/privacy"' in web.get("/sohbet/gizlilik").text
     assert "Anthropic" in web.get("/sohbet/en/privacy").text
     login = web.get("/sohbet/giris").text

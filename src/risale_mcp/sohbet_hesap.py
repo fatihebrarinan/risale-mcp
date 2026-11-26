@@ -436,7 +436,7 @@ SHELL = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
 {hero}<main><div class="kart">
 {body}
 </div>
-<p class="alt-not"><a href="{home}/">{home_host}</a> · <a href="{p}gizlilik">Gizlilik</a> · <a href="{p}sartlar">Kullanım şartları</a></p>
+<p class="alt-not"><a href="{home}/">{home_host}</a> · <a href="{p}hakkinda">Hakkında</a> · <a href="{p}gizlilik">Gizlilik</a> · <a href="{p}sartlar">Kullanım şartları</a></p>
 </main></div></body></html>"""
 
 _STAR = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E"
@@ -507,6 +507,7 @@ input[readonly] { color: var(--muted); } .small { font-size: .82rem; }
 .ornek .kaynak { margin: 10px 0 0; font-size: .8rem; color: #b7c2b6; }
 .ornek .etiket { float: right; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: #9fb09f; }
 .uyari-not { font-size: .8rem; color: #a9b6a8; margin: 22px 0 0; }
+.uyari-not a { color: var(--gold); }
 @media (max-width: 899.98px) {
   .sayfa { flex-direction: column; }
   .tanitim { flex: none; padding: 36px 22px 30px; }
@@ -550,7 +551,8 @@ yerleri bulur.</span></div></li>
 <blockquote>Karanlıklı ye'simi, nurlu bir ricâya çevirdi.<sup>[1]</sup></blockquote>
 <p class="kaynak">[1] Lem'alar › Yirmialtıncı Lem'a › Üçüncü Ricâ · Kaynak: e-Risale</p>
 </div>
-<p class="uyari-not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Ücretsizdir.</p>
+<p class="uyari-not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Ücretsizdir.
+<a href="{p}hakkinda">Nasıl çalışır, sınırları neler?</a></p>
 </aside>
 """
 
@@ -564,6 +566,7 @@ DOCS = {   # yol: (dosya, dil, başlık, öbür dildeki yol)
     "sartlar": ("sartlar.html", "tr", "Kullanım şartları", "en/terms"),
     "en/privacy": ("en-privacy.html", "en", "Privacy", "gizlilik"),
     "en/terms": ("en-terms.html", "en", "Terms of use", "sartlar"),
+    "hakkinda": ("hakkinda.html", "tr", "Hakkında", None),    # S13.15.4 (4); İngilizcesi S13.20 ile
 }
 DOC_SHELL = """<!doctype html><html lang="{lang}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer">
@@ -576,12 +579,13 @@ main {{ max-width: 720px; margin: 0 auto; padding: 24px 18px 48px; }}
 nav {{ display: flex; justify-content: space-between; gap: 12px; font-size: .9rem; margin-bottom: 18px; }}
 h1 {{ font-size: 1.5rem; margin: 0 0 4px; }} h2 {{ font-size: 1.08rem; margin: 1.6em 0 .3em; }}
 .lead {{ color: var(--muted); margin-top: 0; }} a {{ color: var(--accent); }} li {{ margin: .3em 0; }}
+blockquote {{ margin: 1em 0; padding: 2px 0 2px 16px; border-left: 3px solid var(--accent); color: var(--fg); }}
 footer {{ margin-top: 40px; border-top: 1px solid var(--line); padding-top: 12px; font-size: .85rem; color: var(--muted); }}
 footer a {{ color: inherit; }}
 </style></head><body><main>
-<nav><a href="{p}">{back}</a><a href="{p}{other}" hreflang="{other_lang}">{other_label}</a></nav>
+<nav><a href="{p}">{back}</a>{other_link}</nav>
 {body}
-<footer>{name} · <a href="{p}">{chat}</a> · <a href="{p}{privacy}">{privacy_label}</a> · <a href="{p}{terms}">{terms_label}</a> ·
+<footer>{name} · <a href="{p}">{chat}</a> · <a href="{p}hakkinda">{about}</a> · <a href="{p}{privacy}">{privacy_label}</a> · <a href="{p}{terms}">{terms_label}</a> ·
 <a href="mailto:{support}">{support}</a></footer>
 </main></body></html>"""
 
@@ -648,8 +652,10 @@ def doc_page(path: str, config: "Config") -> str:
     tr = lang == "tr"
     return DOC_SHELL.format(lang=lang, title=html.escape(title), name=html.escape(config.name), p=html.escape(config.prefix),
                             support=html.escape(config.support), head=head_links(config.prefix),
-                            body=body, back="← Sohbete dön" if tr else "← Back to the chat", other=other,
-                            other_lang="en" if tr else "tr", other_label="English" if tr else "Türkçe",
+                            body=body, back="← Sohbete dön" if tr else "← Back to the chat",
+                            other_link=(f'<a href="{html.escape(config.prefix)}{other}" hreflang="{"en" if tr else "tr"}">'
+                                        f'{"English" if tr else "Türkçe"}</a>' if other else ""),
+                            about="Hakkında" if tr else "About (Turkish)",
                             chat="Sohbet" if tr else "Chat", privacy="gizlilik" if tr else "en/privacy",
                             terms="sartlar" if tr else "en/terms", privacy_label="Gizlilik" if tr else "Privacy",
                             terms_label="Kullanım şartları" if tr else "Terms of use")
@@ -721,7 +727,7 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
     limiter = limiter or IpLimiter()
     esc = lambda s: html.escape(str(s), quote=True)
 
-    hero = HERO.format(name=esc(config.name), **{f"i_{k}": v for k, v in _ICONS.items()})
+    hero = HERO.format(name=esc(config.name), p=p, **{f"i_{k}": v for k, v in _ICONS.items()})
 
     def shell(title: str, body: str, status: int = 200, intro: bool = False) -> HTMLResponse:
         return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, p=p, head=head_links(p),
