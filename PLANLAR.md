@@ -65,8 +65,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
 `KAYIT.md` › "Sıradaki'nin notları"):
-- **Son adım (2026-11-26):** kullanıcı S13.15'in adını düşünürken S13.16, B11 ve B10 bitti ve yayında (ayrıntı
-  `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
+- **Son adım (2026-11-26):** S13.15'in adı beklenirken S13.17 başladı (kullanıcının kararı; deneme bitene kadar
+  yalnız yerelde): S13.17.1 erişim ölçümü bitti, öneri kullanıcıda (Risale süreç içi, öbürleri MCP istemcisiyle).
+  Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
   İlk adım ad: aday listesi, alan adı ve marka denetimi. S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın
   çevreyle sürüyor.
@@ -129,6 +130,13 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   (süreç içi kopya ya da uzak çağrı, ölçerek), alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması
   kipi. Maliyet uyarısı: soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır. Hassas alanlarda (hadis,
   fıkıh) serbest yorum alanı daraltılır, cevap ağırlıkla alıntı ve künye (S13.14'ün kararı).
+  Kullanıcının kararları (2026-11-26): S13.15'in adı beklenirken başlar, deneme haftasında yalnız yerelde; bütün
+  eklentiler bir gün tek makinede durursa o makine 8 GB olmalı (4 GB eser eklendikçe az kalır); altyapı bitince
+  önceki gibi çeşitli sorularla deneme turları (`sohbet dene`, `tests/golden/sohbet_konusmalar/`).
+  **S13.17.1 erişim ölçümü (2026-11-26):** `data/interim/sohbet/erisim-olcumu-20261126.md`. Süreç içi tefsir ≈1,26 GB
+  (anlamsal dizin 1,1 GB, ≈650 MB'ı Python yapıları), hepsi ≈2,3 GB ve MCP servisleriyle iki kez; makineler arası MCP
+  çağrısı ≈90 ms ekler (ortanca 139 ms), hadis 127.0.0.1'den 16 ms. Öneri: Risale süreç içi, öbürleri MCP istemcisiyle,
+  sınırsız ve girdisiz kayıtlı iç anahtarla (açık kipin ortak sınırını yemesin).
 - S13.18 **Öbür kipler** (eski S13 (4) ve S13.12'nin 3.–4. aşaması): ders (Word), beni sına, müzakere, kavram ve terim,
   karşılaştırma; kip kaydı tek kaynak (`kipler.py`; MCP hazır komutları ve eklentinin skill'leri ondan); sonra
   yönlendirici (önce öneri, sonra otomatik kip).
