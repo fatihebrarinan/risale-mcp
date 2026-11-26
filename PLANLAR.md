@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi aslı Türkçe diye işaretlendi; tur 4 sırada. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4 bitti, alıntısız iki nokta düzeltildi (yayında değil), "kesin sözü kesin aktar, müellifi notlama" kararı bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -438,6 +438,24 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     kaydı yok: Hubâb'ınki Arapça aslındır); `telif.json` Mesnevî-i Nuriye notu: "tarih Arapça aslının (el-Mesnevî
     el-Arabî), Türkçe tercümenin tarihi değildir". `build mesnevi-i-nuriye` genel ve kişisel veritabanlarını kurdu
     (hadis profilinin kurulumu süre sınırında kesildi, değişiklik onu ilgilendirmiyor, eski `hadis.db` yerinde).
+    Yayında (`facc731`, `yayin-20261126-120412`, kod ve veri, beklenmeyen fark yok).
+    **Tur 4** (`tur-04.txt`: 7 konuşma, 13 soru; itiraz, fetva, Mevlânâ taraması, mânâ-yı harfî, Risale-i Nur'a işaret
+    eden âyetler, Yirmi Üçüncü ve Otuzuncu Söz'ün karşılaştırması, "Dünya âhiretin tarlasıdır"; Haiku ≈0,07 $). İyi:
+    okuyucunun yanlış itirazına ("Yirmi Dokuzuncu Söz") boyun eğmedi, Zülfikâr'ın "Onuncu Söz Haşir Risalesi" kaydı ve
+    iki Söz'ün alt başlığıyla cevap verdi; fetva sorusunda hüküm yok, Risale'nin ilgili yerine döndü; Mevlânâ taraması
+    geniş ve doğru (Mevlevî benzetmesi ayrı, Câmî ve Mevlâna Hâlid ayrıldı); mânâ-yı harfî Lem'alar 16, Sözler 12 ve
+    30'dan, âyine temsiliyle; işaret konuşmasında talebe istihracları (Küçük Hüsrev, Hâfız Ali, Nur'un İlk Kapısı'ndaki
+    mektup) müellife mal edilmedi; "tarla" hadisini "mezraa" ile buldu, kaynak bulunamadı dedi, hüküm yok. **Hatalar:**
+    (1) alıntısız iki nokta ("… belirtilir: [2]", karşılaştırma cevabında altı kez); **düzeltildi** (sunucu:
+    ardından blok ya da liste gelmeyen satırın sonundaki iki nokta noktaya döner, `_dangling_colons`, testli; yayında
+    değil); (2) **kesin sözü çekince okumak ve müellifi notlamak:** Birinci Şuâ c037 "kanâat-ı kat'iyye verdiğinden
+    çekinmeyerek kanâatimi …", model "yazar da bu esnekliği kendisi belirtiyor"; Yorum'da "yazarın dindar bir yorumu",
+    "Kur'ân'ı sayı ve harf hesabıyla yeni olaylara bağlamanın tipik bir örneği" (S13.10 (D) ile aynı örüntü); (3)
+    sorulmadan telif tarihi ("1936'da Eskişehir Hapsi'nde"); (4) Mesnevî-i Nuriye › Mukaddime › İkinci Nokta c001'in
+    öznesi Said ("Mevlâna … gibi akıl ve kalb ittifakıyla gittiği için … Eski Said Yeni Said'e inkılâb etmiş"), model
+    Mevlânâ'yı özne yaptı; (5) karşılaştırma cevabında hiç alıntı yok, yalnız özet ve işaret. **Karar bekleyen
+    (talimat):** müellif bir sözü kesin söylüyorsa ("kanâat-ı kat'iyye", "çekinmeyerek deriz") kesin diye aktar; Yorum
+    açıklar, müellifin iddiasını notlamaz ("tipik örnek", "dindar bir yorum" gibi hüküm yok).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

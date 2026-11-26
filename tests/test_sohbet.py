@@ -616,3 +616,11 @@ def test_s13_11_block_quote_mid_line_gets_its_own_line(checker):
 def test_s13_11_lone_sentence_number_is_a_leak():
     checked = sohbet.check(NS(refresh=lambda: None, nodes={}), "Bir cümlesi (c013 sonrası karşılaştırma) yok.")
     assert checked.markdown == "Bir cümlesi (sonrası karşılaştırma) yok." and checked.counts["leaks"] == 1
+
+
+def test_s13_11_colon_without_quote_becomes_full_stop():
+    assert sohbet._dangling_colons("Sonra iki yön belirtilir: [[a/c002]]\n\nBu yönler…") == \
+        "Sonra iki yön belirtilir. [[a/c002]]\n\nBu yönler…"
+    kept = "Şöyle der: [[a/c002]]\n\n> \"…\""                          # ardından blok gelirse dokunulmaz
+    assert sohbet._dangling_colons(kept) == kept
+    assert sohbet._dangling_colons("Üç yer: [[a/c002]]\n- bir") == "Üç yer: [[a/c002]]\n- bir"

@@ -380,7 +380,23 @@ def _split_blocks(text: str) -> str:
             parts = MIDLINE_BLOCK.split(line)
             line = parts[0].rstrip() + "\n\n" + "\n\n".join("> " + p.strip() for p in parts[1:])
         out.append(line)
-    return "\n".join(out)
+    return _dangling_colons("\n".join(out))
+
+
+# S13.11: Haiku "… şöyle belirtilir: [[…]]" yazıp alıntıyı vermiyordu (tur 4'te bir cevapta altı kez); ardından alıntı
+# bloğu ya da liste gelmeyen satırın sonundaki iki nokta noktaya döner.
+DANGLING_COLON = re.compile(r":(\s*(?:\[\[[^\[\]]+\]\]\s*)+)$")
+
+
+def _dangling_colons(text: str) -> str:
+    lines = text.split("\n")
+    for i, line in enumerate(lines):
+        if line.lstrip().startswith(">") or not DANGLING_COLON.search(line):
+            continue
+        following = next((l.strip() for l in lines[i + 1:] if l.strip()), "")
+        if not following.startswith((">", "-", "*", "•")) and not re.match(r"\d+[.)]\s", following):
+            lines[i] = DANGLING_COLON.sub(lambda m: "." + m.group(1), line)
+    return "\n".join(lines)
 
 
 def source_name(checker, ident: str) -> str | None:
