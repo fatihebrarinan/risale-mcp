@@ -323,6 +323,10 @@ class Library:
         """Bölümün ya da içinde bulunduğu en yakın üst bölümün telif bilgisi; üst bölümdense `section` onu gösterir."""
         own = node["id"]
         while node["written"] is None and node["parent_id"]:
+            # S13.11: aslı Türkçe bölüm (Mesnevî-i Nuriye › Mukaddime) tercümenin kaydını miras almaz ("Arapça …
+            # Metnimiz tercümedir" diyordu, model `original_text` ile çelişkiye düşüp doğru sözünü geri aldı)
+            if node["extra"] and json.loads(node["extra"]).get("original"):
+                return None
             node = self._node(node["parent_id"])
         if node["written"] is None:
             return None

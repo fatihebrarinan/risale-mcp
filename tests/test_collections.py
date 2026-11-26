@@ -95,6 +95,13 @@ def test_original_sections_of_a_translation_are_not_called_translations(related_
     assert "translation" not in passage and passage["original_text"]
     assert related_db.read_section("sozler/10")["translation"] is True
     assert related_db.passage("sozler/10/c001")["translation"] is True
+    # S13.11: tercümenin telif kaydını miras almaz ("Arapça … Metnimiz tercümedir"); kardeşi alır
+    conn = sqlite3.connect(related_db.path)
+    with conn:
+        conn.execute("""UPDATE nodes SET written = '{"date": "1921", "language": "Arapça"}' WHERE id = 'sozler/10'""")
+    conn.close()
+    assert "written" not in related_db.read_section("sozler/10/hakikat-01")
+    assert related_db.read_section("sozler/10")["written"]["date"] == "1921"
 
 
 def test_original_sections_exist_and_belong_to_translations():

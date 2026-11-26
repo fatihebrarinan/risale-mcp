@@ -1,0 +1,38 @@
+# S13.11 hata ayıklama turu 3 (2026-11-26). Tur 2'nin kuralları (a) geri alma, (b) İngilizce kelime ve Vakıf'ın adı,
+# (c) numara ve ad, (d) kendi tercümesi; yeni türler: hadis künyesinin sahibi, hâşiye ve şerh, uzun tarama, Osmanlıca.
+# Çalıştırma: uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-03.txt
+
+## kunye
+# künye nâşirin, hüküm verilmez
+"Ben gizli bir hazine idim" hadisi Risale'de geçiyor mu? Kaynağını Risale mi veriyor?
+Bu hadis sahih mi?
+
+## serh
+# hâşiye ve şerh katmanları: müellifin, mütercimin, Abdülmecid Nursî'nin
+İşârâtü'l-İ'câz'daki hâşiyeleri kim yazmış?
+Kızıl İcaz'da başkasının şerhi var mı? Bir örnek gösterir misin?
+
+## tarama
+# uzun tarama, merkez yerler
+Risale-i Nur'da şefkat hangi eserlerde, nasıl anlatılır?
+Bunlardan en merkezî olanı hangisi, neden?
+
+## osmanlica
+# Osmanlıca nüsha: ayrı kimlikler, eşlenmez
+Sözler'in Osmanlıca nüshasında Birinci Söz'ün ilk cümlesi nasıl yazılmış?
+Latin harfli metinle aynı mı?
+
+## geriAlma
+# (a): doğru sözünü yeniden göremeyince geri almamalı
+Mesnevî-i Nuriye'nin hangi bölümlerinin aslı Türkçe?
+Arapça Mesnevî ile Türkçesi aynı yıl mı yazıldı?
+
+## english
+# (d): kendi tercümesini tırnaklayıp işaretlememeli
+How does the Risale-i Nur explain the parable of the two soldiers?
+Give me one more passage from the same treatise.
+
+## numara
+# (b), (c): bölüm adı ve numarası ref'ten, Vakıf'ın tam adı
+Yirmi Altıncı Lem'a'da yaşlılara ne tavsiye edilir?
+Bu Lem'a'da geçen bir âyetin mealini verir misin?

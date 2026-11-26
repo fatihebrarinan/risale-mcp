@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 2'nin talimat kararları (a)–(d) bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi (`original_sections`) kararı bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -408,6 +408,31 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     çelişiyorsa geri al, yeniden görülmeyen kayıt kanıt değildir (`EARLIER`); (b) Türkçe cevapta İngilizce kelime yok
     ("Arapça", "Türkiye Diyanet Vakfı meali"); (c) bölüm adları ve numaraları araçların `ref`'inden; (d) kendi
     tercümen tırnaklı alıntı değildir, işaretlenmez.
+    **(a)–(d) yapıldı** (kullanıcının onayı, 2026-11-26; yalnız sohbet talimatı): (a) `EARLIER`: önceki söz kendi
+    başına geri alınmaz; yalnız okuyucu sorarsa, şimdi okunan bir sonuç kendi sözüyle tersini söylerse ya da çağrılarda
+    hiç dayanağı yoksa (tur 3'te ilk biçimi ("yalnız şimdi okunan sonuç çelişirse") iki konuşmada çiğnendi, bu
+    biçimle aynı iki konuşmada geri alma yok); (b) `SHAPE` dil satırı: Türkçe cevapta İngilizce kelime yok, `get_ayah`'ın
+    meali her zaman "Türkiye Diyanet Vakfı meali", "Diyanet meali" değil; (c) bölüm adı ve numarası araçların `ref`'inden
+    (`lemalar/26` Yirmialtıncı Lem'a), düz yazıda cümle numarası yok (`NO_REFERENCES`); (d) kendi tercümesi ya da
+    özeti tırnaklı, işaretli alıntı değildir (`QUOTE_EXACTLY`). **Veri:** aslı Türkçe bölüm (`original`) üst bölümün
+    telif kaydını miras almaz (`Library._written`): Mesnevî-i Nuriye › Mukaddime eserin "Arapça … Metnimiz
+    tercümedir" kaydını alıyordu, model `original_text` ile çelişkiye düşüp doğru sözünü geri aldı; artık `written`
+    yok (S13.9'un açığı: tarihi kaynaktan bulunmadan yazılmaz).
+    **Tur 3** (`tur-03.txt`: 7 konuşma, 14 soru; künye, hâşiye ve şerh, şefkat taraması, Osmanlıca, geri alma,
+    İngilizce temsil, Yirmi Altıncı Lem'a; Haiku ≈0,06 $). İyi: "Ben gizli bir hazine idim"in künyesi nâşirin diye
+    ayrıldı, hüküm yok; Kızıl İcaz'da Said Nursî'nin hâşiyesi ile Abdülmecid Nursî'nin şerhi ayrı, ikisinin tercümesi
+    "Yapay zekâ tercümesi" damgalı; şefkat taraması geniş ve merkez yerleri ayırdı; Osmanlıca nüsha doğru; Yirmi
+    Altıncı Lem'a doğru adıyla, Vakıf meali `get_ayah`'tan; İngilizce cevapta alıntılar çevrilmedi. **Hatalar:** (1)
+    geri alma iki kez (yukarıda, düzeltildi); (2) "tek hâşiye" (İşârât'ta 15 hâşiye paragrafı; "hâşiye" kelimesiyle
+    aradı, yalnız başlık geldi; hâşiyeleri listeleyen araç yok); hâşiyenin içeriği yanlış özetlendi; (3) künye
+    konuşmasında hadis "Muhyiddin-i Arabî'nin sözü olarak geçiyor" (metin: Muhyiddin'in o hadisin beyânı); İşârât'ın
+    Türkçesinden "Bediüzzaman şöyle yazıyor" (tercüme katmanı anılmadı); (4) Kızıl İcaz'ın Arapça İzâh'ından Türkçe
+    söz tırnakla işaretlendi (d), doğrulanamadı (yeniden soruşta yok); (5) "Diyanet meali (Türkiye Diyanet Vakfı)",
+    nâşirin meali alıntı bloğunda ve işaretli; (6) "Osmanlıca metin, Latin metnin yazılmış hâlidir" (ters). **Bekleyen
+    (karar):** Hubâb › "Meclis-i Meb'ûsân'a Hitâben Yazdığım Bir Hutbenin Sûretidir" metinde "Bu kısım müellifin kendi
+    Türkçesidir" diyor, `original_sections`'ta yok (eklemek veri kurulumu ve veri gönderimi ister); Mesnevî-i Nuriye'nin
+    `written`'ı Arapça aslın tarihidir, model onu tercümenin tarihi diye okudu ("Türkçe Mesnevî-i Nuriye 1921–1923'te
+    yazılmış").
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
