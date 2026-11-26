@@ -252,3 +252,38 @@ def test_foreign_reads_count_as_read():
     got = sohbet.foreign_read_ids(calls)
     assert {"tefsir:ibnkesir/2/255", "tefsir:ibnkesir/2/255/c001", "hadis:bukhari/1"} <= got
     assert "tefsir:kessaf/2/7/c001" not in got              # arama okuma değildir
+
+
+def test_translation_inside_the_block_is_taken_out():
+    """Haiku tercümeyi alıntı bloğuna koyuyordu: alıntı tutmuyor, tercüme "⚠ bulunamadı" alıyordu (tur 7)."""
+    tefsir = FakeClient(TEXTS)
+    text = ('> هذه آية الكرسي\n> Yapay zekâ tercümesi: "Bu, Kürsî âyetidir ve şanı büyüktür." '
+            '[[tefsir:ibnkesir/2/255/c001]]')
+    checked = _check(text, {"tefsir": tefsir})
+    sent = [c[1]["sources"] for c in tefsir.calls if c[0] == "cite"][0]
+    assert sent == [{"id": "ibnkesir/2/255/c001", "quote": "هذه آية الكرسي"}]
+    assert "> Yapay" not in checked.markdown and "\nYapay zekâ tercümesi:" in checked.markdown
+    assert "⚠" not in checked.markdown and not checked.counts["unverified"]
+
+
+def test_quoted_rendering_next_to_foreign_marks_is_not_searched_in_the_risale(monkeypatch):
+    monkeypatch.setattr(sohbet, "_place_unmarked", lambda checker, quote, read: "")     # Risale'de yok
+    text = ('Taberî halifeyi "yeryüzünde birbirinin yerine geçen nesil" diye anlar. Şöyle der:\n\n'
+            '> هذه آية الكرسي [[tefsir:ibnkesir/2/255/c001]]\n\n'
+            'Risale ise "hiç kimsenin söylemediği bir söz burada" der. Bakınız [[a/c001]].')
+    checked = _check(text, {"tefsir": FakeClient(TEXTS)})
+    first, _, second = checked.markdown.split("\n\n")[:3]
+    assert "⚠" not in first and "⚠" in second
+    assert checked.counts["unmarked_foreign"] == 1 and checked.counts["unmarked_missing"] == 1
+
+
+def test_translation_label_variants(monkeypatch):
+    monkeypatch.setattr(sohbet, "_place_unmarked", lambda checker, quote, read: "")
+    tefsir = FakeClient(TEXTS)
+    text = ('> هذه آية الكرسي\n> Yapay zekâ tercümesi (AI translation): "This is the Throne Verse, it is great." '
+            '[[tefsir:ibnkesir/2/255/c001]]\n\nRisale der ki (Yapay zekâ tercümesi: "bu satır modelin kendi '
+            'tercümesidir") ve geçer.')
+    checked = _check(text, {"tefsir": tefsir})
+    assert "⚠" not in checked.markdown and "> Yapay" not in checked.markdown
+    assert [c[1]["sources"] for c in tefsir.calls if c[0] == "cite"][0] == [
+        {"id": "ibnkesir/2/255/c001", "quote": "هذه آية الكرسي"}]

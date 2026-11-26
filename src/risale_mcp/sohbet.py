@@ -285,7 +285,8 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), for
     S13.17: öbür kütüphanenin işareti (`[[tefsir:…]]`) o kütüphanenin `cite`'ıyla denetlenir (`foreign(kütüphane,
     öğeler) -> kayıtlar`, `Kutuphaneler.verify`); tutmayan alıntı "doğrulanamadı" olur (taşınmaz), bilinmeyen kimlik
     silinir. `foreign` yoksa öneki olan işaret silinir. Risale'nin `risale:` öneki atılır."""
-    text, unmarked = unmarked_quotes(checker, _marks_before_translation(_split_blocks(strip_own_sources(text))), read)
+    text = _marks_before_translation(_translations_out_of_blocks(_split_blocks(strip_own_sources(text))))
+    text, unmarked = unmarked_quotes(checker, text, read)
     leaks = list(dict.fromkeys(m.group().strip() for m in BARE_ID.finditer(MARK.sub(" ", text))))
     problems = [{"id": leak, "problem": "An id or sentence number written in the prose: the reader must not see ids. "
                  "Put an id only inside [[ ]] right after the words it supports, or drop it."} for leak in leaks]
@@ -664,8 +665,52 @@ UNMARKED_WORDS = 4
 UNMARKED_QUOTE = re.compile(r"([\"“«])([^\"“”«»\n\[\]]{3,}?)([\"”»])(?![ \t]*\[\[)")
 UNMARKED_NOTE = " (⚠ eserlerde bu sözlerle bulunamadı)"
 # S13.17: modelin kendi tercümesinin satırı ("Yapay zekâ tercümesi: …"): alıntı değildir, denetlenmez
-TRANSLATION_LINE = re.compile(r"^\s*(?:[*_]{1,2})?(?:Yapay zek[âa] tercümesi|AI translation|Translation \(AI\))"
-                              r"(?:[*_]{1,2})?\s*:", re.I)
+TRANSLATION_LABEL = r"(?:Yapay zek[âa] tercümesi|AI translation|Translation \(AI\))(?:\s*\([^()\n]{0,40}\))?"
+TRANSLATION_LINE = re.compile(rf"^\s*(?:[*_]{{1,2}})?{TRANSLATION_LABEL}(?:[*_]{{1,2}})?\s*:", re.I)
+# satır içinde: "(Yapay zekâ tercümesi: "…")": etiketin hemen ardındaki tırnaklı söz
+TRANSLATION_BEFORE = re.compile(rf"{TRANSLATION_LABEL}(?:[*_]{{1,2}})?\s*:\s*(?:[*_]{{1,2}})?\s*$", re.I)
+
+
+BLOCK_TRANSLATION = re.compile(rf"^\s*>\s?(?=\s*(?:[*_]{{1,2}})?{TRANSLATION_LABEL}(?:[*_]{{1,2}})?\s*:)", re.I)
+
+
+def _translations_out_of_blocks(text: str) -> str:
+    """S13.17: model tercümesini alıntı bloğunun içine yazınca ("> Yapay zekâ tercümesi: …") tercüme alıntıya karışıyor,
+    alıntı tutmuyordu; tercüme (ve bloğun ardından gelen satırları) bloğun dışına, kendi paragrafına alınır."""
+    lines, out, moving = text.split("\n"), [], False
+    for line in lines:
+        if BLOCK_TRANSLATION.match(line):
+            out += ["", BLOCK_TRANSLATION.sub("", line, 1)]
+            moving = True
+        elif moving and line.lstrip().startswith(">"):
+            out.append(re.sub(r"^\s*>\s?", "", line, 1))
+        else:
+            moving = False
+            out.append(line)
+    return "\n".join(out)
+
+
+def _foreign_paragraphs(lines: list[str]) -> set[int]:
+    """S13.17: işaretlerinin hepsi öbür kütüphanelerin olan paragrafların satırları (ardından gelen alıntı bloğunun
+    işaretleri de paragrafa sayılır: "Râzî şöyle tanımlar:" + blok). Öbür kütüphaneler Arapçadır; bu paragraflarda
+    tırnak içindeki Türkçe ya da İngilizce söz modelin tercümesidir, Risale'de aranmaz."""
+    groups, current = [], []
+    for i, line in enumerate(lines):
+        if line.strip():
+            current.append(i)
+        elif current:
+            groups.append(current)
+            current = []
+    if current:
+        groups.append(current)
+    zone = set()
+    for n, group in enumerate(groups):
+        found = [m for i in group for m in MARK.findall(lines[i])]
+        if n + 1 < len(groups) and lines[groups[n + 1][0]].lstrip().startswith(">"):
+            found += [m for i in groups[n + 1] for m in MARK.findall(lines[i])]
+        if found and all(_foreign(m) for m in found):
+            zone.update(group)
+    return zone
 
 
 def _marks_before_translation(text: str) -> str:
@@ -758,12 +803,17 @@ def _place_unmarked(checker, quote: str, read) -> str | tuple[str, str] | None:
 
 def unmarked_quotes(checker, text: str, read=frozenset()) -> tuple[str, dict]:
     """İşaretsiz tırnaklı sözlere işaret ya da uyarı ekler; (yeni metin, sayılar)."""
-    counts = {"unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0}
+    counts = {"unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0, "unmarked_foreign": 0}
     lines = text.split("\n")
+    foreign_zone = _foreign_paragraphs(lines)
 
-    def place(quote: str) -> tuple[str, str | None] | None:
-        """(eklenecek işaret ya da uyarı, sözün yerine geçecek metin sözleri ya da None)."""
+    def place(quote: str, foreign: bool = False) -> tuple[str, str | None] | None:
+        """(eklenecek işaret ya da uyarı, sözün yerine geçecek metin sözleri ya da None). `foreign`: öbür kütüphanenin
+        paragrafında Risale'de bulunmayan söz uyarı almaz (S13.17: Arapça kaynağın sözlerinin modelce tercümesidir)."""
         where = _place_unmarked(checker, quote, read)
+        if where == "" and foreign:
+            counts["unmarked_foreign"] += 1
+            return None
         if isinstance(where, tuple):
             counts["unmarked_near"] += 1
             return f" [[{where[0]}]]", where[1]
@@ -803,7 +853,11 @@ def unmarked_quotes(checker, text: str, read=frozenset()) -> tuple[str, dict]:
         for m in UNMARKED_QUOTE.finditer(line):
             # işaret aynı cümlede biraz sonra geliyorsa ("… sözü geçer [[…]].") söz işaretlidir
             tail = re.split(r"[\"“«]|[.!?](?:\s|$)", line[m.end():], maxsplit=1)[0]
-            placed = None if MARK.search(tail) else place(m.group(2))
+            if TRANSLATION_BEFORE.search(line[:m.start()]):          # S13.17: satır içi tercüme
+                out.append(line[last:m.end()])
+                last = m.end()
+                continue
+            placed = None if MARK.search(tail) else place(m.group(2), i in foreign_zone)
             if placed and placed[1]:            # yakın karşılık: metnin sözleri
                 out.append(line[last:m.start(2)] + placed[1] + m.group(3))
             else:

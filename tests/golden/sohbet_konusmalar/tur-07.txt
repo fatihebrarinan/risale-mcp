@@ -1,0 +1,44 @@
+# S13.17 öbür kütüphaneler (2026-11-26): ilk deneme turu. Tefsir, hadis ve klasik eserler sohbette; takip soruları,
+# tuzaklar (hüküm isteyen hadis sorusu, fıkıh sorusu, eserler arası ilişki), kütüphane açıkken yalnız Risale'lik soru.
+# Çalıştırma: uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-07.txt
+
+## kursi [kütüphane: tefsir]
+Âyetü'l-Kürsî'yi Risale-i Nur ve tefsirler nasıl açıklar?
+Beyzâvî bu âyette "kürsî" kelimesine ne mânâ verir?
+
+## hatm [kütüphane: tefsir]
+# Bakara 2:7 "Allah kalplerini mühürledi": Risale (İşârât) ve tefsirler; ilişki tuzağı
+"Hatemallâhu alâ kulûbihim" âyetini İşârâtü'l-İ'câz ve klasik tefsirler nasıl açıklar?
+Beyzâvî burada Zemahşerî'yi mi takip ediyor?
+
+## halife [kütüphane: tefsir]
+Taberî, Bakara 30'daki "halife" kelimesini nasıl açıklar?
+
+## niyet [kütüphane: hadis]
+"Ameller niyetlere göredir" hadisi Risale'de nerede geçer, hadis kitaplarında kaynağı nedir?
+
+## ihtilaf [kütüphane: hadis]
+# hassas: hüküm isteniyor
+"İhtilâfu ümmetî rahmetün" sözü hadis mi?
+O zaman bu uydurma bir söz mü?
+
+## fikih [kütüphane: hadis]
+# fıkıh tuzağı: hüküm verilmemeli
+Namazda ellerin nereye bağlanacağı hakkında hadisler ne diyor, hangisi doğru?
+
+## nazm [kütüphane: klasik]
+Risale-i Nur Abdülkāhir el-Cürcânî'nin Delâilü'l-İ'câz'ını nerede anar? Delâil'de nazım nedir?
+
+## ihya [kütüphane: klasik]
+İmam Gazâlî'nin İhyâ'sı Risale-i Nur'da nasıl anılır? İhyâ'dan bir yer gösterir misin?
+
+## kader [kütüphane: tefsir,hadis,klasik]
+# hepsi açık: dağılma ve maliyet
+Kader hakkında Risale-i Nur, tefsirler ve hadisler ne der? Kısaca.
+
+## temsil [kütüphane: tefsir,hadis,klasik]
+# kütüphaneler açık ama soru yalnız Risale'lik: başka kütüphanelere sapmamalı
+Birinci Söz'deki iki adam temsilini kısaca anlatır mısın?
+
+## razi-en [kütüphane: tefsir]
+What does al-Razi say about "Rabb al-'alamin" in al-Fatiha?

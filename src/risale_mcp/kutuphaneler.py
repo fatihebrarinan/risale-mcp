@@ -384,7 +384,9 @@ def instructions(chosen: tuple[str, ...], unavailable: tuple[str, ...] = ()) -> 
         "[[klasik:tarifat/2/c001]]. The Risale-i Nur's ids stay without a name. Quote the Arabic exactly as returned, "
         "in a block quote, with no vowel marks added; after it, on its own line, give your own translation into the "
         "reader's language, labelled where it begins (in Turkish \"Yapay zekâ tercümesi:\"), never inside the "
-        "quotation and never with a mark. Keep the Risale-i Nur first and apart: what each library says has its own "
+        "quotation and never with a mark. Your rendering of these works' words inside your own sentences is never in "
+        "quotation marks: write it as plain prose (\"Taberî halifeyi, yeryüzünde birbirinin yerine geçen nesil diye "
+        "anlar\"). Keep the Risale-i Nur first and apart: what each library says has its own "
         "quotations and marks; never present a classical work's words as the Risale's, or the Risale's as a "
         "tafsir. Read in these libraries only what the question needs: their results are long.")
     if unavailable:

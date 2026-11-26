@@ -85,7 +85,8 @@ def test_check_numbers_and_problems():
     assert [p["id"] for p in checked.problems] == ["z/c003"]
     assert checked.sources[2]["unverified"] and "unverified" not in checked.sources[0]
     assert checked.counts == {"fixed": 0, "repaired": 0, "unverified": 1, "dropped": 0, "leaks": 0, "paragraphs": 1,
-                              "unmarked": 0, "unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0}
+                              "unmarked": 0, "unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0,
+                              "unmarked_foreign": 0}
     assert checked.raw == text
 
 

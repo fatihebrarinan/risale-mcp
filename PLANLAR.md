@@ -66,7 +66,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
 `KAYIT.md` › "Sıradaki'nin notları"):
 - **Son adım (2026-11-26):** S13.15'in adı beklenirken S13.17 başladı (kullanıcının kararı; deneme bitene kadar
-  yalnız yerelde): S13.17.1 erişim ölçümü bitti, öneri kullanıcıda (Risale süreç içi, öbürleri MCP istemcisiyle).
+  yalnız yerelde): S13.17.1 erişim ölçümü (öneri onaylandı), S13.17.2 altyapı ve tur 7 bitti, yerelde; yayın denemeden
+  sonra. B12 plana girdi.
   Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
   İlk adım ad: aday listesi, alan adı ve marka denetimi. S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın
@@ -140,6 +141,17 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   sınırsız ve girdisiz kayıtlı iç anahtarla (açık kipin ortak sınırını yemesin).
   **Kullanıcının kararları (2026-11-26):** öneri onaylandı; hangi kütüphanelerin açık olduğunu okuyucu seçer, ama
   altyapı dördünün her soruda açık olmasına da uygun kurulur (seçim bir ayar; varsayılan yalnız Risale).
+  **S13.17.2 altyapı (2026-11-26, yerelde; deneme bitene kadar yayına gitmez):** MCP sunucularına iç erişim adresi
+  (`auth internal-key`: sınırsız, girdisiz kayıt, `(iç:sohbet)`); `kutuphaneler.py` (MCP istemcisi ya da süreç içi,
+  önekli araçlar, `cite`/`get_ayah` gitmez, sonuç 40 bin karakterde kesilir); işaret `[[tefsir:…]]`, denetim o
+  kütüphanenin `cite`'ı, Kaynaklar tek liste, metin paneli öbür kütüphanenin metnini de açar; sayfada "Kütüphaneler:"
+  seçicisi (Risale hep açık, seçim tarayıcıda, turda `libraries`); tercüme satırı alıntıya karışmaz, öbür kütüphanenin
+  paragrafındaki tırnaklı tercüme Risale'de aranmaz. **Tur 7** (`tests/golden/sohbet_konusmalar/tur-07.txt`, 11
+  konuşma, 14 cevap, 0,11 $, cevap başı ≈0,008 $): tuzaklarda doğru (hadiste hüküm yok, fıkıhta "hangisi doğru"ya karar
+  yok, Beyzâvî–Zemahşerî ilişkisi "kayıtlı değil, yorum"), kütüphaneler açıkken yalnız Risale'lik soru sapmadı; ⚠
+  uyarıları 20'den fazladan 3–5'e indi. **Kalan:** (a) yayın: iç anahtarlar ve `SOHBET_*_URL` (deneme bitince,
+  ≈2026-12-02), (b) âyet çalışması kipi, (c) daha çok deneme turu, (d) kalan ⚠'lerin metni öbür kütüphane açıkken
+  "eserlerde" yerine daha doğru söylenebilir (kullanıcının kararı).
 - B12 **Anlamsal dizini sıkıştırmak** (S13.17.1'in yan bulgusu, kullanıcının kararıyla plana girdi, 2026-11-26):
   `semantic.SemanticIndex` her cümle için kimlik demeti, `VectorStore` anahtar listesi ve sözlüğü tutuyor; tefsirde
   552 bin cümlede vektörler 269 MB, bu yapılar ≈650 MB (servis 1,3 GB). Kimlikler ve eserler numpy dizileri (ya da
