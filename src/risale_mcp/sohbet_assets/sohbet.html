@@ -6,6 +6,8 @@
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
 <title>Sohbet · {{NAME}}</title>
+<link rel="manifest" href="{{P}}manifest.webmanifest">
+<meta name="theme-color" content="#1d4d3c">
 <link rel="icon" href="{{P}}static/favicon.ico" sizes="any">
 <link rel="icon" href="{{P}}static/icon-kucuk.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="{{P}}static/apple-touch-icon.png">
@@ -157,6 +159,11 @@
       <p class="small yalniz-genis">Paneller: aradaki çizgiyi sürükleyerek genişliklerini ayarlarsınız.
         <button type="button" id="genislik-sifirla" class="ghost">Panel genişliklerini sıfırla</button></p>
       <p class="small">Görünüm ayarları bu cihazda saklanır.</p>
+      <fieldset id="uygulama">
+        <legend>Ana ekrana ekleyin</legend>
+        <p class="small" id="uygulama-yazi">Sohbeti telefonunuzun ana ekranına ekleyip bir uygulama gibi açabilirsiniz.</p>
+        <button type="button" id="uygulama-ekle" class="ghost" hidden>Ana ekrana ekle</button>
+      </fieldset>
     </section>
 
     <section id="ayar-belgeler" role="tabpanel" aria-labelledby="sekme-belgeler" class="sekme-icerik" hidden>

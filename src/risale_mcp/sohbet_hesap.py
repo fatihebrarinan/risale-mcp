@@ -584,10 +584,51 @@ footer a {{ color: inherit; }}
 </main></body></html>"""
 
 
+# S13.15.4 (3): PWA. Ana ekrana eklenen uygulama; servis çalışanı yalnız sayfa açılışlarına karışır, bağlantı yoksa
+# "çevrimdışısınız" sayfasını gösterir. Soru, cevap, metin ve API önbelleğe alınmaz (eski bir cevap güncel görünmesin).
+THEME = "#1d4d3c"
+SW_VERSION = "1"
+
+
+def manifest(config: "Config") -> dict:
+    p = config.prefix
+    icon = lambda name, size, purpose="any": {"src": f"{p}static/{name}", "sizes": f"{size}x{size}",
+                                              "type": "image/png", "purpose": purpose}
+    return {"name": f"{config.name} · Sohbet", "short_name": config.name, "id": p, "start_url": p, "scope": p,
+            "display": "standalone", "lang": "tr", "dir": "ltr", "background_color": "#fbfaf7", "theme_color": THEME,
+            "description": "Sorularınızı Bediüzzaman Said Nursî'nin eserlerinden, kaynağıyla cevaplayan yapay zekâ.",
+            "icons": [icon("icon-192.png", 192), icon("icon-512.png", 512),
+                      icon("icon-maskable-512.png", 512, "maskable")]}
+
+
+def service_worker(config: "Config") -> str:
+    offline = json.dumps(f"{config.prefix}cevrimdisi")
+    return f"""// S13.15.4: yalnız sayfa açılışı; bağlantı yoksa çevrimdışı sayfası. Başka hiçbir şey önbelleğe alınmaz.
+const CACHE = "sohbet-cevrimdisi-{SW_VERSION}", OFFLINE = {offline};
+self.addEventListener("install", e => {{
+  e.waitUntil(caches.open(CACHE).then(c => c.add(OFFLINE)).then(() => self.skipWaiting()));
+}});
+self.addEventListener("activate", e => {{
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    .then(() => self.clients.claim()));
+}});
+self.addEventListener("fetch", e => {{
+  if (e.request.mode !== "navigate") return;
+  e.respondWith(fetch(e.request).catch(() => caches.match(OFFLINE)));
+}});
+"""
+
+
+OFFLINE = """<h1>Bağlantı yok</h1>
+<p>İnternete bağlanamadık. Bağlantınız gelince <a href="{p}">yeniden deneyin</a>.</p>
+<p>Konuşmalarınız kaybolmaz: hesabınızda saklananlar bağlantı gelince yeniden görünür.</p>"""
+
+
 def head_links(p: str) -> str:
     """S13.15.4: simgeler ve ad yazısının yazı tipi (sohbet sayfası da aynısını `sohbet.html`'de taşır)."""
     p = html.escape(p)
-    return (f'<link rel="icon" href="{p}static/favicon.ico" sizes="any">'
+    return (f'<link rel="manifest" href="{p}manifest.webmanifest"><meta name="theme-color" content="{THEME}">'
+            f'<link rel="icon" href="{p}static/favicon.ico" sizes="any">'
             f'<link rel="icon" href="{p}static/icon-kucuk.svg" type="image/svg+xml">'
             f'<link rel="apple-touch-icon" href="{p}static/apple-touch-icon.png">'
             f'<style>@font-face {{ font-family: "Ayinedar Ad"; src: url("{p}static/literata-ad.woff2") format("woff2"); '
@@ -671,7 +712,7 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
     """`home_page(request, email)`: girişli kullanıcının ana sayfası (S12.3: sohbet); yoksa yer tutucu sayfa."""
     from starlette.applications import Starlette
     from starlette.requests import Request
-    from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse
+    from starlette.responses import HTMLResponse, JSONResponse, RedirectResponse, Response
     from starlette.routing import Route
 
     p = config.prefix
@@ -796,6 +837,17 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
         response.delete_cookie(COOKIE, path=p)
         return response
 
+    async def web_manifest(request: Request):
+        return JSONResponse(manifest(config), media_type="application/manifest+json",
+                            headers={"Cache-Control": "public, max-age=3600"})
+
+    async def worker(request: Request):
+        return Response(service_worker(config), media_type="text/javascript",
+                        headers={"Cache-Control": "no-cache", "Service-Worker-Allowed": p})
+
+    async def offline(request: Request):
+        return shell("Bağlantı yok", OFFLINE.format(p=p))
+
     async def document(request: Request):
         return HTMLResponse(doc_page(request.url.path[len(p):].rstrip("/"), config),
                             headers={"Cache-Control": "public, max-age=3600", "Referrer-Policy": "no-referrer"})
@@ -810,7 +862,8 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
         Route(p, home), Route(f"{p}giris", login, methods=["GET", "POST"]),
         Route(f"{p}kayit", register, methods=["GET", "POST"]), Route(f"{p}kayit/kod", redeem, methods=["POST"]),
         Route(f"{p}cikis", logout, methods=["POST"]), Route(f"{p}hesap", delete, methods=["GET", "POST"]),
-        Route(f"{p}api/ben", me), *[Route(f"{p}{path}", document) for path in DOCS], *extra_routes])
+        Route(f"{p}api/ben", me), Route(f"{p}manifest.webmanifest", web_manifest), Route(f"{p}sw.js", worker),
+        Route(f"{p}cevrimdisi", offline), *[Route(f"{p}{path}", document) for path in DOCS], *extra_routes])
 
 
 # ---------------------------------------------------------------- komut satırı

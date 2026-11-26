@@ -1171,4 +1171,27 @@ async function start() {
   renderAll();
 }
 
+// S13.15.4 (3): PWA. Servis çalışanı yalnız bağlantı yokken "çevrimdışısınız" sayfasını gösterir (önbellek yok).
+// Ayarlar › Görünüm'de ana ekrana ekleme: Android/Chrome'da tarayıcının ekleme penceresi, iPhone'da Safari'nin yolu.
+if ("serviceWorker" in navigator) navigator.serviceWorker.register(`${P}sw.js`, { scope: P }).catch(() => {});
+{
+  const box = $("uygulama"), note = $("uygulama-yazi"), btn = $("uygulama-ekle");
+  const standalone = matchMedia("(display-mode: standalone)").matches || navigator.standalone === true;
+  const ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+  let prompt = null;
+  if (standalone) box.hidden = true;
+  else if (ios) note.textContent = "Sohbeti ana ekranınıza ekleyip bir uygulama gibi açabilirsiniz: Safari'de alttaki "
+    + "Paylaş düğmesine (kare ve yukarı ok), sonra \u201cAna Ekrana Ekle\u201dye dokunun.";
+  else note.textContent = "Sohbeti ana ekranınıza ya da bilgisayarınıza uygulama olarak ekleyebilirsiniz: tarayıcının "
+    + "menüsünden \u201cAna ekrana ekle\u201d ya da \u201cUygulamayı yükle\u201dyi seçin.";
+  addEventListener("beforeinstallprompt", e => { e.preventDefault(); prompt = e; btn.hidden = false; });
+  addEventListener("appinstalled", () => { box.hidden = true; });
+  btn.addEventListener("click", async () => {
+    if (!prompt) return;
+    prompt.prompt();
+    await prompt.userChoice.catch(() => null);
+    prompt = null; btn.hidden = true;
+  });
+}
+
 start();

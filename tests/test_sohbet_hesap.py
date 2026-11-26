@@ -200,3 +200,20 @@ def test_support_address_and_reply_to(tmp_path, monkeypatch):
     body = json.loads(sent[0].data)
     assert body["from"] == {"email": "noreply@yeni.example", "name": "Yeni Ad"}
     assert body["additional_headers"] == [{"key": "Reply-To", "value": "destek@yeni.example"}]
+
+
+def test_pwa_files_are_public(store, mailer, monkeypatch):
+    """S13.15.4 (3): manifesto, servis çalışanı ve çevrimdışı sayfası girişsiz açılır, ön eke uyar; servis çalışanı
+    yalnız sayfa açılışlarına karışır (cevap önbelleğe alınmaz)."""
+    monkeypatch.setenv("SOHBET_PREFIX", "/")
+    monkeypatch.setenv("SOHBET_NAME", "Yeni Ad")
+    c = TestClient(build_app(store, mailer, Config.from_env()), base_url="https://yeni.example")
+    m = c.get("/manifest.webmanifest")
+    assert m.status_code == 200 and m.headers["content-type"].startswith("application/manifest+json")
+    data = m.json()
+    assert data["start_url"] == data["scope"] == "/" and data["short_name"] == "Yeni Ad"
+    assert {i["purpose"] for i in data["icons"]} == {"any", "maskable"}
+    sw = c.get("/sw.js")
+    assert sw.status_code == 200 and '"/cevrimdisi"' in sw.text and 'mode !== "navigate"' in sw.text
+    assert c.get("/cevrimdisi").status_code == 200
+    assert 'rel="manifest" href="/manifest.webmanifest"' in c.get("/kayit").text
