@@ -382,6 +382,52 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S13.16, B11, B10. Küçük açıklar** (2026-11-26; kullanıcı S13.15'in adını düşünürken; kararları aynı gün: "a
+onaylıyorum, c onaylıyorum, d uygun, B11 biçim ve kapsam önerilerin uygun, B10 ek çıksın, deploy'ları sen yap").
+
+- S13.16 **Sohbetin küçük açıkları.** (a) **Dil:** sohbet talimatına "dili belli olmayan soru (yalnız ad ya da terim,
+  "Mevlânâ", "haşir") sayfanın diliyle, Türkçe cevaplanır" (MCP talimatı değişmedi). (b) **Lügat sesteşleri:**
+  "sâika" (سائقه, sevk eden) "saîka/sâıka" (صاعقه, yıldırım) maddesine de bağlanıyordu. İlk deneme şapkanın yeriydi
+  ("sâika" ↔ "saîka"): lügat şapkayı tutarsız yazdığı için ("ilahî" ↔ "İlâhiye") iki test düştü, bırakıldı. Asıl
+  ayırıcı ünlüden sonraki ı/i: lügat ayınlı kelimeyi ı ile yazar ("sâıka", "vaız"), hemzeliyi i ile ("sâika", "vaiz").
+  Kural (`lugat._gaps_agree`): maddenin yazılışları o yerde yalnız öbür harfi taşıyorsa metinle eşlenmez; "î" iki
+  yana da sayılmaz. Etki: Türkçe metinde ünlü+ı/i taşıyan 1.685 kelime biçiminden 28'i (124 geçiş): sâika ve ekli
+  biçimleri yalnız "saik", vâiz yalnız "vaiz" (vaız değil), "ictimaıye" yalnız "içtimaî", bir "menbai" yalnız
+  "menba"; `lugat olc` ölçümü değişmedi. (c) **Parçalı alıntı** (`sohbet._repair`): "…" ile birleşen alıntının bir
+  parçası işaretin cümlelerinde yoksa, öbürleri varsa, parça o cümlelerdeki en yakın karşılığıyla (harf düzeyinde
+  benzerlik ≥0,7, metnin kendi sözleri) değişir, karşılığı yoksa "…" olur; parça cevapta aynen bulunamazsa onarılmaz,
+  "doğrulanamadı" kalır. Gerçek örnek (S13.10 (C)): "tefekküre teşvik ettiği" → "tefekkür mesleğine teşvik ettiği".
+  (d) **İşaretsiz tırnaklı söz** (`sohbet.unmarked_quotes`): dört kelime ve üstü, ardında (aynı cümlede) işaret
+  olmayan tırnak ya da işaretsiz alıntı bloğu eserlerde aranır: bulunursa işaret alır (okunan yer önce); okunan bir
+  cümlede çok yakın karşılığı varsa (≥0,8) metnin sözleriyle değişir ve işaret alır; bulunmazsa ardına "(⚠ eserlerde bu
+  sözlerle bulunamadı)", söz silinmez. Nâşirin ve Vakıf'ın meali, bölüm başlığı ve bulunamayan Arapça dokunulmaz.
+  S13.10'un örneği "Bazen bir saat tefekkür, bir sene ibadet hükmündedir" uyarı alır. Hızlı ölçüm (`olc --hizli`,
+  `20261126-163959`): 8 soru, ortalama 28 sn, soru başı ≈0,007 $; (c) hiç gerekmedi, (d) 4 sözü kaynağına bağladı,
+  2'sine uyarı koydu: biri modelin kendi yorumunu tırnağa koyması (doğru uyarı), öbürü "Ben filân reisin adıyla
+  gezerim" (metin "ismiyle"): bunun üzerine yakın karşılık kuralı eklendi.
+- B11 **Kaynakçada kaynak adı.** `cite`'ın kaynakça satırı kaynağın adıyla biter: "[1] Sözler › … › “…” (e-Risale)";
+  ad eserin izin kaydından (`works.permission` → `permissions.SOURCE_LABELS`; yerel profilde risale.online ve
+  rasaelalnour.com da), sonuçta `source_name`. Dört eklenti: Risale, tefsir ve klasik aynı `CitationChecker`'la (tefsir
+  ve klasikte "(OpenITI)"), hadis `cite_reports`'ta kitabın kaynak kaydından (`permissions.book_source_label`, hepsi
+  OpenITI). Talimat değişmedi ("which the bibliography does" artık doğru), eklenti (plugin) yeniden üretilmedi. Atıf
+  denetimi (`citations.check`) eki sorunsuz okur.
+- B10 **Arapça Mesnevî'nin muhakkik eki.** `risaleoku_app.ENDS_AT`'a Mesnevî: ek "img alt" satırıyla başlar, oradan
+  sonrası alınmaz, kökte not (`ENDS_NOTE`). `el-mesnevi-el-arabi/nur/tetimme` c064–c128 silindi (65 cümle, kayma yok,
+  `--accept-id-changes`; 63 cümle kaldı, vektörleri yeniden çıkarıldı). İşârât'ın Arapçasındaki resim satırı
+  (`isaratul-icaz-arabi/sure-i-bakara/23-24-ayetlerin-tefsiri-nubuvvet-hakkinda/mesele-07/c018`) **yerinde kaldı:**
+  atılınca bölümün 197 cümlesi kayıyordu ve D1 taslakları (`data/d1/bolme/`, `provalar/47-48/`) c019–c045'e atıf
+  veriyor. Öbür risaleoku eserlerinde "img alt" yalnız henüz katalogda olmayan Arapça Tarihçe'de var (20; E8'de
+  bakılır). Kurulum notu: `build` 25 dakikalık `timeout`'a takıldı (hadis profili yarıda; `hadis.db` etkilenmedi);
+  kalan adımlar elle (`local_only`, `embeddings build`).
+- **Yayında (2026-11-26):** Risale ve hadis `DEPLOY_EXPECT="cite list_works read_section risale://works"
+  HADIS_EXPECT="cite" scripts/deploy.sh --hadis` (genel sürüm `2026-11-26`, `yayin-20261126-171957`: 10 çağrıda
+  beklenen fark; hadis 3 çağrıda; sohbet de yeniden başladı). Tefsir ve klasik `TEFSIR_EXPECT="cite get_outline
+  get_passage read_section"` (`tefsir-yayin-20261126-172609`, `klasik-yayin-20261126-172934`): ilk deneme yalnız
+  `cite` ile durdu, çünkü iki sunucu S13.12 ve S13.14'ten beri gönderilmemişti; ortak kütüphanenin `profile`,
+  `coverage`, `of_section` alanları ("sonraki gönderimde gider", S13.14) bu gönderimle gitti. Farkların hepsi yeni
+  alan ya da "(OpenITI)" ekidir, metin değişmedi. Canlıda denendi: `cite` "(e-Risale)", "(risaleoku.com)",
+  "(OpenITI)"; `lookup_word` "sâika" yalnız "sevk eden".
+
 **S13.1–S13.14. Sohbetin ilk geliştirme adımları** (bitti ve yayında, 2026-11-25 – 2026-11-26; S13.14 kullanıcının kararıyla durduruldu). S13'ün ana kaydı ve alt adımları, "Sıradaki"den değiştirilmeden (2026-11-26, kullanıcının kararı: S13 genel ad olarak sıradan kalktı, açık maddeleri S13.15–S13.21 diye sıraya girdi):
 
 - S13 **Sohbet sayfasının asıl geliştirmesi** (kullanıcının kararı, 2026-11-25): S12'nin deneme ayından sonra, onun

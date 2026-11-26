@@ -65,8 +65,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
 `KAYIT.md` › "Sıradaki'nin notları"):
-- **Son adım (2026-11-26):** S13 düzenlendi (kullanıcının kararı): genel S13 sıradan kalktı; biten S13.1–S13.14
-  `KAYIT.md`'ye taşındı ("Biten"de tek satır), açık maddeler S13.15–S13.21 diye sırada. **Önde S13.15:** sohbetin
+- **Son adım (2026-11-26):** kullanıcı S13.15'in adını düşünürken S13.16, B11 ve B10 bitti ve yayında (ayrıntı
+  `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
   İlk adım ad: aday listesi, alan adı ve marka denetimi. S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın
   çevreyle sürüyor.
@@ -81,15 +81,15 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 - **Tarihli hatırlatmalar:** (0) **Sohbetin denemesi başladı (2026-11-25), bitişi ≈2026-12-02:** 5 kişi, bir
   hafta. Başlangıç kaydı `data/interim/sohbet/deneme-baslangic-20261125.md` (o gün 3 kişi, 8 soru, 0,056 $, soru başı
   0,007 $, doğrulanamayan 0, 👍 2). Bitince yine `usage` ve `geri-bildirim --days 7` (sunucuda
-  `.venv/bin/python -m risale_mcp.sohbet …`), sonra S13.16–S13.21'in sırası gözden geçirilir; öbür eklentiler (S13.17) o hafta
+  `.venv/bin/python -m risale_mcp.sohbet …`), sonra S13.17–S13.21'in sırası gözden geçirilir; öbür eklentiler (S13.17) o hafta
   yalnız yerelde hazırlanır. (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
   **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`):
   Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı (aynı aboneliği kullanır). (3) **Kuyruk durunca
-  (Aralık):** tek tefsir kurulumu ("Sıradaki" 7: B3, E6) ve D16.
+  (Aralık):** tek tefsir kurulumu ("Sıradaki" 6: B3, E6) ve D16.
 - **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; dizin metinleri başvurular sonuçlanınca
   (`docs/e5-dizin-metni-taslagi.md`); S10'un karşılama sayfası (`/oku/#/~hosgeldin`) ve kopyalama damgası, sonra ilk
   davetler (`scripts/sunucu.sh taslak davet <e-posta>`); lügatın eşleme örnekleri (`data/interim/lugat/olcum.md`);
-  "Sıradaki" 3 (Risale'si az birimler); E8.6 için Arapça okuyan bir denetçi.
+  "Sıradaki" 2 (Risale'si az birimler); E8.6 için Arapça okuyan bir denetçi.
 - Bir birimin durumu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push. Uzun işler
   `scripts/d1-arka.sh baslat <ad> …` ile.
 
@@ -99,20 +99,17 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
 | 1 | S13.15 | Sohbetin kendi adı, logosu ve sitesi: tanıtımdan önce (kullanıcının kararı, 2026-11-26) | S12.8 |
-| 2 | S13.16 | Sohbetin küçük açıkları (dil, lügat sesteşleri, parçalı alıntı, işaretsiz tırnak) | |
-| 3 | B11 | Kaynakçada kaynak adı (e-Risale, risaleoku.com…): izinlerin şartı; MCP bağdaştırıcılarında | |
-| 4 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
-| 5 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 6 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 7 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 8 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 9 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 10 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
-| 11 | S13.17 | Öbür kütüphaneler (hadis, tefsir, klasik) sohbette | S13 (11) |
-| 12 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
-| 13 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
-| 14 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
-| 15 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
+| 2 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 3 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 4 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 5 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 6 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 7 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 8 | S13.17 | Öbür kütüphaneler (hadis, tefsir, klasik) sohbette | S13 (11) |
+| 9 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
+| 10 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
+| 11 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
+| 12 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
 
 - S13.15 **Sohbetin kendi adı, logosu ve sitesi** (kullanıcının kararı, 2026-11-26; eski S13 (12) ve S12.8): kullanıcı
   platformu yakın çevresi dışında kimseye tanıtmadı; insanlar onu kendi adıyla, logosuyla, sitesiyle tanısın, bu
@@ -128,12 +125,6 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   göndericisi (Scaleway alan doğrulaması, SPF/DKIM), eski adresten yönlendirme, oturumlar bir kez yeniden giriş; (5)
   **tanıtımdan önce**: PWA (ana ekrana eklenen uygulama; eski S13 (8)), ilk izlenim (karşılama, örnekler) yeni adla gözden
   geçirme. Yapılmayan: mağaza uygulaması ("Sonra").
-- S13.16 **Sohbetin küçük açıkları** (önceki alt adımlardan kalan, karar bekleyen; 2026-11-26): (a) tek kelimelik ya
-  da dili belli olmayan soruya İngilizce cevap ("Mevlânâ", S13.13): talimat önerisi "dili belli olmayan soru (yalnız
-  ad ya da terim) Türkçe cevaplanır"; (b) lügatta Latin yazılışı aynı sesteş maddeler ayrılmıyor ("sâika" = yıldırım
-  değil, sevk eden; S13.9 (E)); (c) "…" ile birleşen alıntıda tek parça tutmuyorsa yanlış sözler cevapta tırnakta
-  kalıyor (S13.10 (C), çözüm adayı (2): sunucu o parçayı metindeki karşılığıyla düzeltir ya da atar); (d) işaretsiz
-  tırnaklı söz denetimi (S13.10 çözüm adayı (4)).
 - S13.17 **Öbür kütüphaneler sohbette** (eski S13 (11) ve S13.12'nin 2. aşaması): hadis, tefsir, klasik; erişim kararı
   (süreç içi kopya ya da uzak çağrı, ölçerek), alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması
   kipi. Maliyet uyarısı: soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır. Hassas alanlarda (hadis,
@@ -148,10 +139,6 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 - S13.20 **İngilizce ve Arapça arayüz** (eski S13 (10)).
 - S13.21 **Tanıtımdan sonra: gerçek kullanımdan öğrenmek** (eski S13 (3)): 👎 alan ve doğrulanamayan alıntılı cevaplar,
   onayla gelenlerden altın soru ve okuma seti (`okuma_olc`) adayı; `sohbet usage` ve `geri-bildirim` düzenli.
-- B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
-  "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
-  adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
-  (`works.site`). Araç çıktısı değişir: deploy'da `DEPLOY_EXPECT="cite"`; talimat cümlesi de buna göre.
 - E6 **Elmalılı'nın Hak Dini Kur'an Dili, asıl metni:** sadeleştirilmemiş, aslına sadık metin (kullanıcının kararı,
   2026-11-12: Diyanet'in baskısı yok). Müellif 1942'de vefat etti, metnin hakkı 2013'te düştü; ama harf çevirisi ve
   dizgisi baskının yayıncısınındır: kaynak seçilirken bakılır. Bir arkadaşın gönderdiği PDF'ler biçimi bozuk, son çare.
@@ -175,11 +162,6 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   (c) yalnız Türkçe aktarılan hadisler (HA7, 101 aday cümle, Adım 4): künye varsa künyenin bölgesinde aranır. (b) yeni
   kitaplar "Sonra"da. Ön çalışma ve karar listesi: `docs/e7-on-calisma.md` (2026-11-25). **E7'nin ilk adımı:**
   raporun sonundaki beş kararı kullanıcıya sormak; kullanıcı onları E7'nin başında verecek (2026-11-25).
-- B10 **Arapça Mesnevî'nin muhakkik eki** (E5 ön çalışmasının yan bulgusu, 2026-11-24): `el-mesnevi-el-arabi/nur/tetimme`'nin
-  64–128. cümleleri risaleoku baskısının ekidir (resim etiketleri `img alt=…`, yazma nüshaların resim altları, Ziriklî'nin
-  el-A'lâm'ından "نبذة عن بعض الأعلام" biyografi sözlüğü); araçlarda müellifin metni gibi dönüyor. `isaratul-icaz-arabi`'de
-  de bir `img alt` satırı var. Düzeltme ayrıştırıcıda (`books/risaleoku_app.py` ya da şablon): ek atılır ya da `notes`'a
-  geçer; öbür risaleoku eserlerinde aynı ek var mı bakılır. Kimlik değişikliği (`--accept-id-changes`), sonra deploy.
 - B9 **Türk hattının iki kaynağı** (S7'nin açığı, 2026-11-21): Diyanet baskısının Türk hattıyla risaleoku'nun Türk hattı
   arasındaki küçük işaret farkları (ör. durak işaretleri) bakılmadı; kaynak risaleoku. Kısa karşılaştırma, rapor.
 - E8 **Külliyatın Arapça tercümesi** (kullanıcının kararları, 2026-11-23; izin `docs/izinler.md`, geçmişi `KAYIT.md`; Sözler'e e-posta şimdilik
@@ -425,6 +407,11 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- S13.16, B11, B10 Küçük açıklar (2026-11-26, yayında; kullanıcının kararları aynı gün): sohbette dili belli olmayan
+  soru Türkçe, lügatta ünlüden sonraki ı/i ("sâika" sevk eden, "sâıka" yıldırım), "…" ile birleşen alıntının tutmayan
+  parçası metindeki karşılığıyla değişir ya da atılır, işaretsiz tırnaklı söz aranır (bulunursa kaynak, bulunmazsa
+  uyarı); dört eklentide kaynakça satırı kaynak adıyla biter (e-Risale, risaleoku.com, OpenITI); Arapça Mesnevî'nin
+  sonundaki muhakkik eki çıktı (65 cümle). Ayrıntı `KAYIT.md` › "Kimlikli işler" › S13.16, B11, B10.
 - S13.1–S13.14 Sohbetin ilk geliştirme adımları (2026-11-25 – 2026-11-26, yayında): sol panel ve sunucuda konuşma
   geçmişi, sekmeli ayarlar, karşılama ve durum satırları, konuşmanın tek kaynakçası ve parçalı kaynaklar, Arapça yazı
   tipi; kullanıcının konuşmalarından ve hata ayıklama turlarından (`sohbet dene`, tur 1–6) gelen düzeltmeler; kipler
