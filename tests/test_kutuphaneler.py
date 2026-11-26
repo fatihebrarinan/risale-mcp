@@ -287,3 +287,10 @@ def test_translation_label_variants(monkeypatch):
     assert "⚠" not in checked.markdown and "> Yapay" not in checked.markdown
     assert [c[1]["sources"] for c in tefsir.calls if c[0] == "cite"][0] == [
         {"id": "ibnkesir/2/255/c001", "quote": "هذه آية الكرسي"}]
+
+
+def test_warning_text_when_libraries_are_open(monkeypatch):
+    monkeypatch.setattr(sohbet, "_place_unmarked", lambda checker, quote, read: "")
+    text = 'Risale ise "hiç kimsenin söylemediği bir söz burada" der. Bakınız [[a/c001]].'
+    assert sohbet.UNMARKED_NOTE_LIBRARIES in _check(text, {"tefsir": FakeClient(TEXTS)}).markdown
+    assert sohbet.UNMARKED_NOTE in sohbet.check(FakeChecker(), text).markdown      # yalnız Risale: eski metin

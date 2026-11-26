@@ -286,7 +286,8 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), for
     öğeler) -> kayıtlar`, `Kutuphaneler.verify`); tutmayan alıntı "doğrulanamadı" olur (taşınmaz), bilinmeyen kimlik
     silinir. `foreign` yoksa öneki olan işaret silinir. Risale'nin `risale:` öneki atılır."""
     text = _marks_before_translation(_translations_out_of_blocks(_split_blocks(strip_own_sources(text))))
-    text, unmarked = unmarked_quotes(checker, text, read)
+    text, unmarked = unmarked_quotes(checker, text, read,
+                                     UNMARKED_NOTE_LIBRARIES if foreign is not None else UNMARKED_NOTE)
     leaks = list(dict.fromkeys(m.group().strip() for m in BARE_ID.finditer(MARK.sub(" ", text))))
     problems = [{"id": leak, "problem": "An id or sentence number written in the prose: the reader must not see ids. "
                  "Put an id only inside [[ ]] right after the words it supports, or drop it."} for leak in leaks]
@@ -664,6 +665,9 @@ def _repair(checker, ident: str, quote: str, segment: str) -> tuple[str, list[tu
 UNMARKED_WORDS = 4
 UNMARKED_QUOTE = re.compile(r"([\"“«])([^\"“”«»\n\[\]]{3,}?)([\"”»])(?![ \t]*\[\[)")
 UNMARKED_NOTE = " (⚠ eserlerde bu sözlerle bulunamadı)"
+# S13.17 (kullanıcının kararı, 2026-11-26): öbür kütüphaneler açıkken tırnaklı söz çoğu zaman Arapça kaynağın modelce
+# tercümesidir; "eserlerde" yanıltıyordu
+UNMARKED_NOTE_LIBRARIES = " (⚠ Risale'de bu sözlerle bulunamadı; tercüme ya da özet olabilir)"
 # S13.17: modelin kendi tercümesinin satırı ("Yapay zekâ tercümesi: …"): alıntı değildir, denetlenmez
 TRANSLATION_LABEL = r"(?:Yapay zek[âa] tercümesi|AI translation|Translation \(AI\))(?:\s*\([^()\n]{0,40}\))?"
 TRANSLATION_LINE = re.compile(rf"^\s*(?:[*_]{{1,2}})?{TRANSLATION_LABEL}(?:[*_]{{1,2}})?\s*:", re.I)
@@ -801,7 +805,7 @@ def _place_unmarked(checker, quote: str, read) -> str | tuple[str, str] | None:
     return None if ARABIC.search(quote) else ""
 
 
-def unmarked_quotes(checker, text: str, read=frozenset()) -> tuple[str, dict]:
+def unmarked_quotes(checker, text: str, read=frozenset(), note: str = UNMARKED_NOTE) -> tuple[str, dict]:
     """İşaretsiz tırnaklı sözlere işaret ya da uyarı ekler; (yeni metin, sayılar)."""
     counts = {"unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0, "unmarked_foreign": 0}
     lines = text.split("\n")
@@ -822,7 +826,7 @@ def unmarked_quotes(checker, text: str, read=frozenset()) -> tuple[str, dict]:
             return f" [[{where}]]", None
         if where == "":
             counts["unmarked_missing"] += 1
-            return UNMARKED_NOTE, None
+            return note, None
         return None
 
     i = 0
@@ -838,7 +842,7 @@ def unmarked_quotes(checker, text: str, read=frozenset()) -> tuple[str, dict]:
                     if words:                       # yakın karşılık: söz tek satırda aynen duruyorsa değişir
                         at = next((k for k in range(i, j + 1) if quote in lines[k]), None)
                         if at is None:
-                            add = UNMARKED_NOTE
+                            add = note
                             counts["unmarked_near"] -= 1
                             counts["unmarked_missing"] += 1
                         else:
@@ -1212,7 +1216,8 @@ class Chat:
                 return
             tally.model_text = text
             yield "status", {"text": CHECKING}
-            checked = await asyncio.to_thread(check, self.checker, text, read_ids(tally.calls), foreign)
+            checked = await asyncio.to_thread(check, self.checker, text, read_ids(tally.calls),
+                                              foreign if chosen else None)
             if (self.settings.model_fix and checked.problems and not corrected and tally.rounds < MAX_ROUNDS):
                 corrected = True
                 messages.append({"role": "user", "content": correction(checked.problems)})

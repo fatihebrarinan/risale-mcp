@@ -151,7 +151,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   yok, Beyzâvî–Zemahşerî ilişkisi "kayıtlı değil, yorum"), kütüphaneler açıkken yalnız Risale'lik soru sapmadı; ⚠
   uyarıları 20'den fazladan 3–5'e indi. **Kalan:** (a) yayın: iç anahtarlar ve `SOHBET_*_URL` (deneme bitince,
   ≈2026-12-02), (b) âyet çalışması kipi, (c) daha çok deneme turu, (d) kalan ⚠'lerin metni öbür kütüphane açıkken
-  "eserlerde" yerine daha doğru söylenebilir (kullanıcının kararı).
+  "eserlerde" yerine "Risale'de bu sözlerle bulunamadı; tercüme ya da özet olabilir" (kullanıcının kararı, yapıldı).
 - B12 **Anlamsal dizini sıkıştırmak** (S13.17.1'in yan bulgusu, kullanıcının kararıyla plana girdi, 2026-11-26):
   `semantic.SemanticIndex` her cümle için kimlik demeti, `VectorStore` anahtar listesi ve sözlüğü tutuyor; tefsirde
   552 bin cümlede vektörler 269 MB, bu yapılar ≈650 MB (servis 1,3 GB). Kimlikler ve eserler numpy dizileri (ya da
