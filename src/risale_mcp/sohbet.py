@@ -1037,6 +1037,8 @@ def status_line(library, name: str, args: dict) -> str:
                 return f"Lügatte bakılıyor: {_short(', '.join(map(str, args.get('words') or [])))}"
             case "list_works":
                 return "Eserlerin listesine bakılıyor"
+            case "verse_file":
+                return f"{_sura(args)} âyetinin Risale'deki ve tefsirlerdeki yerleri toplanıyor"
             case "survey":
                 return f"“{_short(args.get('topic'))}” konusunun eserlerdeki yerleri toplanıyor"
     except Exception:

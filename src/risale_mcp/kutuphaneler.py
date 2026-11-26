@@ -83,7 +83,7 @@ KUTUPHANELER = {
     "tefsir": Kutuphane("tefsir", "Tefsir", "Tafsir Library", "tefsir", "tefsir.risalemcp.com",
                         "Klasik tefsirler (Taberî, Râzî, Beyzâvî, Âlûsî…), Arapça aslından", TEFSIR_RULES,
                         {"find_ayah": "Tefsirlerde {ayah} âyetinin birimleri aranıyor",
-                         "read_section": "Tefsirde {section} okunuyor", "get_passage": "Tefsirde okunuyor",
+                         "read_section": "{section} okunuyor", "get_passage": "{id} okunuyor",
                          "search": "Tefsirlerde “{query}” aranıyor",
                          "semantic_search": "Tefsirlerde “{query}” anlamına yakın yerler aranıyor"}),
     "hadis": Kutuphane("hadis", "Hadis", "Hadith Library", "hadis", "hadis.risalemcp.com",
@@ -95,7 +95,7 @@ KUTUPHANELER = {
                         "read_chapter": "Hadis kitabında bir bâb okunuyor"}),
     "klasik": Kutuphane("klasik", "Klasik eserler", "Classical Islamic Library", "klasik", "klasik.risalemcp.com",
                         "Risale'nin havale ettiği klasikler (Delâil, Müfredât, İhyâ, Şerhu'l-Mevâkıf…)", KLASIK_RULES,
-                        {"read_section": "Klasik eserde {section} okunuyor", "get_passage": "Klasik eserde okunuyor",
+                        {"read_section": "{section} okunuyor", "get_passage": "{id} okunuyor",
                          "search": "Klasik eserlerde “{query}” aranıyor",
                          "semantic_search": "Klasik eserlerde “{query}” anlamına yakın yerler aranıyor",
                          "list_works": "Klasik eserlerin listesine bakılıyor"}),
@@ -400,12 +400,28 @@ def instructions(chosen: tuple[str, ...], unavailable: tuple[str, ...] = ()) -> 
     return "\n".join(lines)
 
 
+def _work_label(kutuphane: str, ident: str) -> str:
+    """Okuyucuya kimlik değil eserin adı: "razi/36/82" -> "Râzî'nin Mefâtîhu'l-Gayb'ı" yerine "Mefâtîhu'l-Gayb"."""
+    slug = str(ident or "").split("/")[0]
+    try:
+        from risale_mcp.catalog.klasik import KLASIK_WORKS
+        from risale_mcp.catalog.tefsir import TEFSIR_WORKS
+        work = next((w for w in (*TEFSIR_WORKS, *KLASIK_WORKS) if w.slug == slug), None)
+    except Exception:
+        work = None
+    return work.title if work else str(ident or "")
+
+
 def status_line(kutuphane: str, name: str, args: dict) -> str:
     k = KUTUPHANELER[kutuphane]
     pattern = k.reading.get(name)
     if pattern:
         values = {key: " ".join(str(args.get(key) or "").split())[:60] for key in ("query", "section", "id",
                                                                                      "citation")}
+        if kutuphane != "hadis":
+            for key in ("section", "id"):
+                if values[key]:
+                    values[key] = _work_label(kutuphane, values[key])
         values["ayah"] = f"{args.get('sura', '')} {args.get('ayah', '')}".strip()
         try:
             return pattern.format(**values)

@@ -47,8 +47,9 @@ read_first with tefsir_read_section (max_words about 1200; at most four units; g
 needs it). Never choose a tafsir by its fame: follow read_first unless the reader names a work.
 3. Answer in this order, with short headings: the verse and its translation (name it as the Türkiye Diyanet Vakfı \
 translation); in the Risale-i Nur (name each tie by its kind; a Risale passage is never called a tafsir of the \
-verse; if there is no tie, say so plainly and give where it is quoted); in the tafsirs (each work apart, in the \
-order of its author's death, its Arabic quoted exactly with your labelled translation); then your interpretation \
+verse; if there is no tie, say so plainly and give where it is quoted); in the tafsirs (each work apart, strictly in \
+the order verse_file lists them, which is the order of their authors' death, never by the order you read them; its \
+Arabic quoted exactly with your labelled translation); then your interpretation \
 under its own heading, where any relation between the works is yours. Do not list the units or places you did not \
 read: the page adds them. Follow verse_file's note about the Hadith Library."""
 
