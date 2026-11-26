@@ -87,7 +87,7 @@ if [[ $SOHBET_ONLY == 1 ]]; then
         | "${SSH[@]}" "$HOST" "cat > $DEST/.env.new && chmod 600 $DEST/.env.new && chown risale:risale $DEST/.env.new && mv $DEST/.env.new $DEST/.env"
     # Servis açılırken birkaç saniye 502 verir: cevap verene kadar beklenir (en çok 30 sn)
     "${SSH[@]}" "$HOST" "systemctl restart risale-sohbet; for i in \$(seq 30); do \
-        curl -sf -o /dev/null http://127.0.0.1:8010/sohbet/giris && { echo \"sohbet: açık (\$i sn)\"; exit 0; }; sleep 1; done; \
+        curl -sf -o /dev/null http://127.0.0.1:8010/giris && { echo \"sohbet: açık (\$i sn)\"; exit 0; }; sleep 1; done; \
         echo 'sohbet: 30 sn içinde açılmadı'; journalctl -u risale-sohbet -n 20 --no-pager; exit 1"
     exit 0
 fi

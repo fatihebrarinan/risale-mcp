@@ -560,7 +560,7 @@ yerleri bulur.</span></div></li>
 # S12.6: sohbet sayfasının kendi gizlilik politikası ve kullanım şartları (kullanıcının kararı, 2026-11-25: sitenin
 # ana sayfaları eklentilerin dizin başvurularında gösterildi, onlara dokunulmaz; sohbet kendi alan adına taşınınca
 # sayfaları da onunla gider). Metinler `sohbet_assets/`'te; tarih yayında değişir.
-POLICY_DATE = ("25 Kasım 2026", "25 November 2026")
+POLICY_DATE = ("27 Kasım 2026", "27 November 2026")
 DOCS = {   # yol: (dosya, dil, başlık, öbür dildeki yol)
     "gizlilik": ("gizlilik.html", "tr", "Gizlilik", "en/privacy"),
     "sartlar": ("sartlar.html", "tr", "Kullanım şartları", "en/terms"),
@@ -630,10 +630,21 @@ OFFLINE = """<h1>Bağlantı yok</h1>
 <p>Konuşmalarınız kaybolmaz: hesabınızda saklananlar bağlantı gelince yeniden görünür.</p>"""
 
 
-def head_links(p: str) -> str:
-    """S13.15.4: simgeler ve ad yazısının yazı tipi (sohbet sayfası da aynısını `sohbet.html`'de taşır)."""
-    p = html.escape(p)
-    return (f'<link rel="manifest" href="{p}manifest.webmanifest"><meta name="theme-color" content="{THEME}">'
+DESCRIPTION = "İslâmî kaynaklar üzerine sorduğunuz soruyu, kaynakların kendi sözleriyle ve yerleriyle cevaplayan bir yapay zekâ."
+
+
+def head_links(config: "Config") -> str:
+    """S13.15.4: simgeler, ad yazısının yazı tipi ve paylaşım kartı (sohbet sayfası simgeleri `sohbet.html`'de taşır).
+    Paylaşım kartı (Open Graph) bağlantı WhatsApp gibi yerlerde paylaşılınca görünür; resim tam adresle verilir."""
+    p, title = html.escape(config.prefix), html.escape(f"{config.name} · Sohbet")
+    card = html.escape(f"{config.site}{config.prefix}static/paylasim.jpg")
+    return (f'<meta name="description" content="{html.escape(DESCRIPTION)}">'
+            f'<meta property="og:type" content="website"><meta property="og:locale" content="tr_TR">'
+            f'<meta property="og:site_name" content="{html.escape(config.name)}"><meta property="og:title" content="{title}">'
+            f'<meta property="og:description" content="{html.escape(DESCRIPTION)}">'
+            f'<meta property="og:image" content="{card}"><meta property="og:image:width" content="1200">'
+            f'<meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">'
+            f'<link rel="manifest" href="{p}manifest.webmanifest"><meta name="theme-color" content="{THEME}">'
             f'<link rel="icon" href="{p}static/favicon.ico" sizes="any">'
             f'<link rel="icon" href="{p}static/icon-kucuk.svg" type="image/svg+xml">'
             f'<link rel="apple-touch-icon" href="{p}static/apple-touch-icon.png">'
@@ -651,7 +662,7 @@ def doc_page(path: str, config: "Config") -> str:
             .replace("{{SUPPORT}}", html.escape(config.support)))
     tr = lang == "tr"
     return DOC_SHELL.format(lang=lang, title=html.escape(title), name=html.escape(config.name), p=html.escape(config.prefix),
-                            support=html.escape(config.support), head=head_links(config.prefix),
+                            support=html.escape(config.support), head=head_links(config),
                             body=body, back="← Sohbete dön" if tr else "← Back to the chat",
                             other_link=(f'<a href="{html.escape(config.prefix)}{other}" hreflang="{"en" if tr else "tr"}">'
                                         f'{"English" if tr else "Türkçe"}</a>' if other else ""),
@@ -730,7 +741,7 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
     hero = HERO.format(name=esc(config.name), p=p, **{f"i_{k}": v for k, v in _ICONS.items()})
 
     def shell(title: str, body: str, status: int = 200, intro: bool = False) -> HTMLResponse:
-        return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, p=p, head=head_links(p),
+        return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, p=p, head=head_links(config),
                                          home=esc(config.home), home_host=esc(config.home.split("://", 1)[-1]),
                                          style=SHELL_STYLE, hero=hero if intro else "",
                                          kind="tanitimli" if intro else "yalin-sayfa"),
@@ -866,12 +877,51 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
             return JSONResponse({"error": "oturum yok"}, status_code=401, headers={"Cache-Control": "no-store"})
         return JSONResponse({"email": email}, headers={"Cache-Control": "no-store"})
 
-    return Starlette(routes=[
+    async def not_found(request: Request, exc):
+        if request.url.path.startswith(f"{p}api/"):
+            return JSONResponse({"error": "yok"}, status_code=404)
+        return shell("Sayfa bulunamadı", f'<h1>Sayfa bulunamadı</h1><p>Aradığınız sayfa yok ya da taşındı.</p>'
+                                          f'<p><a href="{p}">Sohbete dönün</a></p>', 404)
+
+    return SecurityHeaders(Starlette(exception_handlers={404: not_found}, routes=[
         Route(p, home), Route(f"{p}giris", login, methods=["GET", "POST"]),
         Route(f"{p}kayit", register, methods=["GET", "POST"]), Route(f"{p}kayit/kod", redeem, methods=["POST"]),
         Route(f"{p}cikis", logout, methods=["POST"]), Route(f"{p}hesap", delete, methods=["GET", "POST"]),
         Route(f"{p}api/ben", me), Route(f"{p}manifest.webmanifest", web_manifest), Route(f"{p}sw.js", worker),
-        Route(f"{p}cevrimdisi", offline), *[Route(f"{p}{path}", document) for path in DOCS], *extra_routes])
+        Route(f"{p}cevrimdisi", offline), *[Route(f"{p}{path}", document) for path in DOCS], *extra_routes]))
+
+
+# S13.15.4 (5): güvenlik başlıkları, her yanıtta. Betik yalnız kendi sunucumuzdan (satır içi betik yok); hesap sayfaları
+# satır içi stil kullandığı için stile izin var; başka sitenin çerçevesine girmez. Saf ASGI: cevap akışını (SSE) tamponlamaz.
+# HSTS Caddy'dedir (yalnız HTTPS'te anlamlı; docs/Caddyfile).
+SECURITY = {
+    "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
+                               "img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; "
+                               "worker-src 'self'; frame-ancestors 'none'; form-action 'self'; base-uri 'none'; "
+                               "object-src 'none'",
+    "x-content-type-options": "nosniff",
+    "x-frame-options": "DENY",
+    "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=()",
+}
+
+
+class SecurityHeaders:
+    def __init__(self, app):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope["type"] != "http":
+            return await self.app(scope, receive, send)
+
+        async def sending(message):
+            if message["type"] == "http.response.start":
+                have = {k.lower() for k, _ in message.get("headers", [])}
+                message.setdefault("headers", [])
+                message["headers"] = list(message["headers"]) + [
+                    (k.encode(), v.encode()) for k, v in SECURITY.items() if k.encode() not in have]
+            await send(message)
+
+        await self.app(scope, receive, sending)
 
 
 # ---------------------------------------------------------------- komut satırı

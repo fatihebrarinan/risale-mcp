@@ -226,3 +226,16 @@ def test_code_message_has_no_link():
     for existing in (False, True):
         subject, text = sh.code_message(Config(), "123456", existing)
         assert "123456" in subject and "123456" in text and "http" not in text and "www." not in text
+
+
+def test_security_headers_404_and_card(client):
+    """S13.15.4 (5): her yanıtta güvenlik başlıkları; bilinmeyen sayfa adla 404, API'de JSON; paylaşım kartı tam adresle."""
+    r = client.get("/sohbet/kayit")
+    csp = r.headers["content-security-policy"]
+    assert "script-src 'self'" in csp and "frame-ancestors 'none'" in csp and "unsafe-eval" not in csp
+    assert r.headers["x-content-type-options"] == "nosniff" and r.headers["x-frame-options"] == "DENY"
+    assert 'property="og:image" content="https://risalemcp.com/sohbet/static/paylasim.jpg"' in r.text
+    missing = client.get("/sohbet/olmayan-sayfa")
+    assert missing.status_code == 404 and "Sayfa bulunamadı" in missing.text and "content-security-policy" in missing.headers
+    api = client.get("/sohbet/api/olmayan")
+    assert api.status_code == 404 and api.json() == {"error": "yok"}

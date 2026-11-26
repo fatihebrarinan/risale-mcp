@@ -83,7 +83,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   (3) PWA (manifesto, `sw.js` yalnız çevrimdışı sayfası, Ayarlar › Görünüm'de ana ekrana ekleme) bitti; adresler ve ad
   5. adımda birlikte değişir; (4) Hakkında sayfası (`/hakkinda`, `sohbet_assets/hakkinda.html`; Diyanet bildirgesinin 7.
   maddesi kullanıcının verdiği metinden) yazıldı, kullanıcının okuması bekleniyor; Proton A'yı da (risalemcp.com) spam'e
-  koydu: gönderici taşınmayla `noreply@ayinedar.org` olur; sırada (5) yayın). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
+  koydu: gönderici taşınmayla `noreply@ayinedar.org` olur; (5) hazır: Caddy `chat.ayinedar.org`, eski adres 308,
+  servis biriminde ayarlar, güvenlik başlıkları uygulamada (CSP; HSTS Caddy'de), 404, paylaşım kartı, `noindex`; arayüz
+  denemesi yeni düzende 86/86; `__Host-` çerez öneki yapılmadı (çerez adı 56 yerde, kazancı yalnız kendi alt alan
+  adlarımıza karşı); 3 hesap, geçmiş saklamayı kapatan yok; yayın kullanıcının onayını bekliyor). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,

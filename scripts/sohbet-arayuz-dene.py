@@ -81,6 +81,7 @@ async def run(url: str) -> None:
         page = await ctx.new_page()
         errors: list[str] = []
         page.on("pageerror", lambda e: errors.append(f"pageerror {e}"))
+        page.on("console", lambda m: m.type == "error" and errors.append(f"console {m.text}"))   # CSP ihlalleri dahil
         page.on("response", lambda r: r.status >= 400 and errors.append(f"{r.status} {r.url}"))
         visible = lambda sel: page.locator(sel).first.is_visible()
 

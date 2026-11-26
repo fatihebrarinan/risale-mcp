@@ -1,5 +1,5 @@
 [Unit]
-Description=Risale-i Nur sohbet sayfası (S12: hesaplar ve sohbet servisi; Caddy arkasında: risalemcp.com/sohbet/)
+Description=Âyinedâr sohbet sayfası (S12: hesaplar ve sohbet servisi; Caddy arkasında: chat.ayinedar.org)
 After=network-online.target
 Wants=network-online.target
 
@@ -7,6 +7,13 @@ Wants=network-online.target
 User=risale
 WorkingDirectory=/home/risale/risale-mcp
 # .env: ANTHROPIC_API_KEY, SCW_SECRET_KEY, SCW_PROJECT_ID, VOYAGE_API_KEY, SOHBET_SINIRSIZ (env.py okur); bağımlılık `uv sync --extra sohbet`
+# S13.15.4: adres ve ad (sohbet_hesap.Config; koddaki varsayılan yerel geliştirmenin /sohbet/ düzenidir)
+Environment=SOHBET_PREFIX=/
+Environment=SOHBET_SITE=https://chat.ayinedar.org
+Environment="SOHBET_NAME=Âyinedâr"
+Environment=SOHBET_FROM=noreply@ayinedar.org
+Environment=SOHBET_DESTEK=destek@ayinedar.org
+Environment=SOHBET_CATI=https://ayinedar.org
 ExecStart=/home/risale/risale-mcp/.venv/bin/python -m risale_mcp.sohbet serve --port 8010
 Restart=on-failure
 RestartSec=5

@@ -81,12 +81,24 @@ klasik.risalemcp.com {
 # S13.15: Âyinedâr, çatı ve projeler (PLANLAR.md › S13.15 (a); DNS Cloudflare'de "DNS only", alt alan adları CNAME
 # ile köke). Şimdilik hepsi depodaki site-ayinedar/'ın "hazırlanıyor" sayfası (scripts/deploy.sh gönderir); projeler
 # taşındıkça kendi bloklarını alır: chat (S13.15.4), read ve lab (S13.15.5), kök (S13.15.6), connect (S13.15.7).
-ayinedar.org, chat.ayinedar.org, read.ayinedar.org, lab.ayinedar.org, connect.ayinedar.org {
+ayinedar.org, read.ayinedar.org, lab.ayinedar.org, connect.ayinedar.org {
 	encode gzip
 	header X-Robots-Tag "noindex, nofollow"
 	root * /var/www/ayinedar
 	try_files {path} /index.html
 	file_server
+}
+
+# S13.15.4: sohbet (src/risale_mcp/sohbet.py, docs/risale-sohbet.service, 127.0.0.1:8010; 2026-11-27'ye kadar
+# risalemcp.com/sohbet/). Hesap sayfaları, sohbet, API; oturumu uygulama kendisi denetler. Güvenlik başlıkları
+# (CSP …) uygulamadadır, HSTS burada. Cevap akışı (Server-Sent Events) sıkıştırılmaz ve tamponlanmaz
+# (flush_interval -1); uzun cevaplar için okuma zaman aşımı yok (varsayılan). Tanıtıma kadar arama motorlarına kapalı.
+chat.ayinedar.org {
+	header Strict-Transport-Security "max-age=31536000"
+	header X-Robots-Tag "noindex, nofollow"
+	reverse_proxy 127.0.0.1:8010 {
+		flush_interval -1
+	}
 }
 
 # www ve .com asıl adrese yönlenir (S13.15 (b): asıl adres .org)
@@ -96,18 +108,12 @@ www.ayinedar.org, ayinedar.com, www.ayinedar.com {
 
 # Tanıtım sitesi, belgeler ve gizlilik politikası: depodaki site/ klasörü (scripts/deploy.sh gönderir).
 risalemcp.com {
-	# S12: sohbet sayfasının cevap akışı (Server-Sent Events) sıkıştırılmaz: sıkıştırma akışı parça parça göndermez
-	@sikistir not path /sohbet/*
-	encode @sikistir gzip
-	# S12: sohbet sayfası (src/risale_mcp/sohbet.py, docs/risale-sohbet.service, 127.0.0.1:8010): hesap sayfaları,
-	# sohbet, API. Oturumu uygulama kendisi denetler (çerez yalnız /sohbet/ yolunda; davetli bölümün hesapları değil).
-	# Akış tamponlanmaz (flush_interval -1); uzun cevaplar için okuma zaman aşımı yok (varsayılan).
-	redir /sohbet /sohbet/ 308
-	handle /sohbet/* {
-		header X-Robots-Tag "noindex, nofollow"
-		reverse_proxy 127.0.0.1:8010 {
-			flush_interval -1
-		}
+	encode gzip
+	# S13.15.4: sohbet chat.ayinedar.org'a taşındı (2026-11-27); eski adresler aynı yola yönlenir
+	# (/sohbet/gizlilik → chat.ayinedar.org/gizlilik). 308: istek yöntemi korunur.
+	redir /sohbet https://chat.ayinedar.org/ 308
+	handle_path /sohbet/* {
+		redir https://chat.ayinedar.org{uri} 308
 	}
 	# İşârât'ın usul özeti 2026-11-14'e kadar /taslak/'taydı (bağlantısı paylaşıldı): yeni yerine
 	redir /taslak/isarat-usulu.html /isarat-usul/ 301

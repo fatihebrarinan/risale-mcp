@@ -574,8 +574,14 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   `check`, `zip` (claude.ai'ye elle yükleme), `dene [P1 …]` (Claude Code'da soru seti, hangi skill yüklendi; rapor
   `data/interim/claude-plugin/`). claude.ai'de eklentiden yalnız skill'ler ve bağdaştırıcılar çalışır. Yazar adı "Nur Hadimleri" ("Risale MCP" dizinde başka bir ada benziyor); skill açıklamaları çift tırnaklı (betik denetler). Dizine gönderildi (2026-11-23, 1.0.1, auto-publish); yeni sürüm yeniden taranır.
 - **Sohbet sayfası (S12, 2026-11-25'te bitti; deneme 5 kişi ve bir hafta, S13.1'den sonra; ayrıntı `KAYIT.md` › S12):**
-  `risalemcp.com/sohbet` (geçici; ileride kendi adı ve
-  alan adı, S12.8: yol, site, ad ve gönderen `SOHBET_*` ayarlarından), Claude API ile, yalnız Risale, model Haiku 5.5
+  **`chat.ayinedar.org`** (S13.15.4, 2026-11-27; adı Âyinedâr; önceki `risalemcp.com/sohbet/*` 308 ile aynı yola
+  yönlenir). Yol, site, ad, gönderen, destek adresi ve çatı `SOHBET_PREFIX`, `SOHBET_SITE`, `SOHBET_NAME`,
+  `SOHBET_FROM`, `SOHBET_DESTEK`, `SOHBET_CATI` ayarlarından: yayında servis biriminde (`docs/risale-sohbet.service`),
+  koddaki varsayılan yerel geliştirmenin `/sohbet/` düzenidir. E-posta `noreply@ayinedar.org` (Scaleway'de doğrulandı;
+  Reply-To destek, `destek@ayinedar.org` Cloudflare yönlendirmesiyle); kod e-postasında bağlantı yok (Proton'un süzgeci
+  yeni alan adına bağlantıyı reddetti). PWA (manifesto, yalnız çevrimdışı sayfası olan `sw.js`), güvenlik başlıkları
+  uygulamada (`sohbet_hesap.SECURITY`, saf ASGI; HSTS Caddy'de), paylaşım kartı `scripts/paylasim-ayinedar.py`, ad
+  yazısı Literata alt kümesi (`scripts/literata-alt.py`), Hakkında `/hakkinda`. Claude API ile, yalnız Risale, model Haiku 5.5
   medium (`SOHBET_MODEL`, `SOHBET_EFFORT`; S12.1 ölçümü: `golden run … --model`, yan yana okuma `scripts/s12-karsilastir.py`). Hesaplar `sohbet_hesap.py`:
   davetli bölümden ayrı (`data/sohbet.db`, çerez `sohbet_oturum`), e-posta doğrulama koduyla kayıt ve parola yenileme
   tek akış, sınırlar modülün başında; e-posta Scaleway Transactional Email (AB; `.env` `SCW_SECRET_KEY`,
@@ -599,8 +605,8 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   (`sohbet geri-bildirim`); kota ve bütçe `sohbet.Limits` (kişi günde 10 soru, servis günde 5 $, ayda 100 $, 2 $'da
   ntfy, konu sunucuda `data/sohbet-ntfy`). Arayüz denemesi `uv run --no-project --with playwright python
   scripts/sohbet-arayuz-dene.py` (başsız Brave). Yayında: `deploy.sh` servisi `risale-sohbet` (:8010) kurar, Caddy
-  `/sohbet/*`'ı tamponsuz ve sıkıştırmasız geçirir, `.env`'den sohbet anahtarlarını da yazar. Kendi gizlilik ve şartlar sayfaları servisin içinde, girişsiz
-  (`/sohbet/gizlilik`, `/sohbet/sartlar`, `/sohbet/en/privacy`, `/sohbet/en/terms`; `sohbet_assets/`,
+  `chat.ayinedar.org`'u tamponsuz ve sıkıştırmasız geçirir (tanıtıma kadar `noindex`), `.env`'den sohbet anahtarlarını da yazar. Kendi gizlilik ve şartlar sayfaları servisin içinde, girişsiz
+  (`/gizlilik`, `/sartlar`, `/en/privacy`, `/en/terms`, `/hakkinda`; `sohbet_assets/`,
   `sohbet_hesap.DOCS`, tarih `POLICY_DATE`): sitenin ana politikasına sohbetin verisi girmez (eklentilerinkidir);
   saklanan değişirse bu sayfalar da değişir.
 - **Altın sorular üç sunucuda:** `golden run … --servers risale,hadis,tefsir`, elle deneme `golden sandbox
