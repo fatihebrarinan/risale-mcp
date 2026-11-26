@@ -1,0 +1,171 @@
+{
+ "about": "S13.14: Türkçe yanlış okuma seti. Sohbetin S13.7–S13.13'te elle bulunmuş okuma hatalarından kuruldu; her maddede cevabın son turunda bulunması gereken olgular (facts), bilinen yanlış iddialar (wrong), kanıt cümleleri (evidence: veritabanında var olmalı, tests/test_okuma_olc.py denetler) ve okunması beklenen yerler (must_read: read_section ya da get_passage ile o bölüm ya da içi). Hakem cevabı yalnız olgu ve yanlış iddia listesine göre değerlendirir; olgu ifadeleri kanıt cümlelerinin söylediğinden fazlasını söylemez. Yeni madde: bulunduğu konuşma ve tarihiyle (source).",
+ "items": [
+  {
+   "id": "sua9-soz29",
+   "source": "S13.13, haşir konuşması 2. tur (2026-11-26)",
+   "questions": ["Dokuzuncu Şuâ ile Yirmi Dokuzuncu Söz haşri nasıl farklı ele alır?"],
+   "must_read": ["sualar/9", "sozler/29/maksad-02"],
+   "facts": [
+    {"id": "f1", "text": "Dokuzuncu Şuâ, Onuncu Söz ile Yirmi Dokuzuncu Söz'ü bir âyetin (Rûm 30:50, \"فَانْظُرْ اِلٰٓى اٰثَارِ رَحْمَتِ اللّٰهِ\") iki hücceti ve tefsiri diye anar; kendisinin ise başta zikredilen öbür âyetlerin tefsiri olduğunu söyler.", "evidence": ["sualar/9/c007", "sualar/9/c009"]},
+    {"id": "f2", "text": "Dokuzuncu Şuâ kendini bir Mukaddime ve Dokuz Âlî Makam'dan ibaret diye tanıtır; elde yalnız Mukaddime vardır, dokuz makam yazılmamıştır (müellif talebelerin tamamlamasını ister).", "evidence": ["sualar/9/c010", "kastamonu-lahikasi/106-164-mektuplar/125/c022", "barla-lahikasi/kastamonu-ve-emirdagi-hayatinda-iken/285/c013"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Dokuzuncu Şuâ kendini Onuncu Söz ile Yirmi Dokuzuncu Söz'ün arasına yerleştirir (ya da iki Söz'le birlikte okunmak üzere aralarında durur)."},
+    {"id": "w2", "text": "Dokuzuncu Şuâ'nın dokuz makamı yazılmıştır ya da içerikleri anlatılır."}
+   ]
+  },
+  {
+   "id": "nokta-soz29",
+   "source": "S13.13, haşir konuşması 3. tur (2026-11-26)",
+   "questions": ["Nokta Risalesi'ndeki haşir bahsiyle Yirmi Dokuzuncu Söz'ün haşir bahsi arasında nasıl bir ilişki var?"],
+   "must_read": ["nokta/kisim-02/hasir", "sozler/29/maksad-02"],
+   "facts": [
+    {"id": "f1", "text": "Yirmi Dokuzuncu Söz bu bahsi Eski Said'in Nokta Risalesi'ndeki beyanı tarzında anlatacağını kendisi söyler.", "evidence": ["sozler/29/maksad-02/esas-02/c009"]},
+    {"id": "f2", "text": "İki metin aynı esaslarla ilerler: haşrin muktazîsi vardır, Fâil muktedirdir, mahal (dünya) kabildir; ayrıca rûhun bekâsı ele alınır.", "evidence": ["nokta/kisim-02/hasir/c005", "sozler/29/maksad-02/mukaddime/c015", "sozler/29/maksad-02/esas-01/c001", "nokta/kisim-02/hasir/makam-04/c001"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Nokta, Yirmi Dokuzuncu Söz'ün bir özetidir ya da Söz'den sonra/ondan türetilmiştir."},
+    {"id": "w2", "text": "Altı temsil (ya da kudretin temsilleri) yalnız Nokta'da vardır, Söz'de yoktur veya daha kısadır."},
+    {"id": "w3", "text": "Tekvîr ve İnfitâr sûrelerinin âyetleri yalnız Nokta'da geçer, Söz'de geçmez."},
+    {"id": "w4", "text": "Yirmi Dokuzuncu Söz'de on birinci bir medâr vardır."}
+   ]
+  },
+  {
+   "id": "hiss-saika",
+   "source": "S13.9 (B)(1), hiss-i kable'l-vukû' konuşması (2026-11-26)",
+   "questions": ["Hiss-i kable'l-vukû' nedir? Sâika ve şâika ile ilişkisi var mı?"],
+   "must_read": ["mektubat/28/mesele-01/besincisi"],
+   "facts": [
+    {"id": "f1", "text": "Müellif hiss-i kable'l-vukû'u, sâmia ve bâsıra gibi \"sâika\" ve \"şâika\" adıyla iki his olarak bulduğunu söyler; yani sâika ve şâika bu hissin adlarıdır.", "evidence": ["mektubat/28/mesele-01/besincisi/c004"]},
+    {"id": "f2", "text": "Hiss-i kable'l-vukû' herkeste az ya da çok vardır, hayvanlarda da vardır; rüya-yı sâdıka onun fazla inkişafıdır.", "evidence": ["mektubat/28/mesele-01/besincisi/c001", "mektubat/28/mesele-01/besincisi/c002", "mektubat/28/mesele-01/besincisi/c003"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Sâika ve şâika hiss-i kable'l-vukû'dan ayrı hislerdir ya da metin onları tanımlamaz."}
+   ]
+  },
+  {
+   "id": "altinci-his",
+   "source": "S13.9 (E), \"Altıncı ve yedinci his\" konuşması (2026-11-26)",
+   "questions": ["Risale-i Nur'da altıncı ve yedinci his diye bir şey geçiyor mu?"],
+   "must_read": [],
+   "facts": [
+    {"id": "f1", "text": "Evet: Nokta'da \"hiss-i sâdise-i sâdıka\" olan sâika ve \"hiss-i sâbia-i bârika\" olan şâika anılır (altıncı ve yedinci his).", "evidence": ["nokta/kisim-01/burhan-04/nukte-02/c003", "nokta/kisim-01/burhan-04/nukte-02/c004"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Risale-i Nur'da altıncı ve yedinci his diye numaralanmış bir duyu geçmez."},
+    {"id": "w2", "text": "Buradaki sâika \"yıldırım\" demektir."},
+    {"id": "w3", "text": "Altıncı his geçer ama yedinci his (hiss-i sâbia) metinde geçmez."}
+   ]
+  },
+  {
+   "id": "sevk-yalan-soylemez",
+   "source": "S13.9 (B)(2) (2026-11-26)",
+   "questions": ["Nokta Risalesi'ne göre sâika ve şâika denen hisler yanılır mı, ne kadar güvenilirdir?"],
+   "must_read": ["nokta/kisim-01/burhan-04/nukte-02"],
+   "facts": [
+    {"id": "f1", "text": "Nokta bu hisler için \"O şevk ve sevk yalan söylemez\" der.", "evidence": ["nokta/kisim-01/burhan-04/nukte-02/c005"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Metne göre bu hisler kesin bir şey bildirmez, yalnız belirsiz bir sezidir (metnin kesin sözü çekinceye çevrilir)."}
+   ]
+  },
+  {
+   "id": "lemeat-fidanlik",
+   "source": "S13.10 (A) (2026-11-26)",
+   "questions": ["Emirdağ Lâhikası'ndaki bir mektupta Risale-i Nur'un \"fidanlık nümûnesi\" diye anılan eser hangisidir?"],
+   "must_read": [],
+   "facts": [
+    {"id": "f1", "text": "O eser Lemeât'tır (\"bu Lemeât, Risale-i Nur'un bir müjdecisi ve fihristesi ve bir fidanlık nümûnesidir\").", "evidence": ["emirdag-lahikasi/emirdag-lahikasi-2/263/c008"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Bu söz Lem'alar için (Lem'alar kitabı ya da bir Lem'a için) söylenmiştir; Lemeât ile Lem'alar aynı eserdir."}
+   ]
+  },
+  {
+   "id": "tezekkur-sayi",
+   "source": "S13.10 (B), S13.11 tur 1 (2026-11-26)",
+   "questions": ["Risale-i Nur'da \"tezekkür\" kelimesi kaç yerde geçiyor?"],
+   "must_read": [],
+   "facts": [
+    {"id": "f1", "text": "Kelime ekli biçimleriyle (tezekkürde, tezekkürdür…) birlikte dört cümlede geçer; yalnız tam kelimeyle iki.", "evidence": ["mesnevi-i-nuriye/sule/kisim-02/c046", "asar-i-bediiyye/divan-i-harb-i-orfi/sual-11/c211", "sikke-i-tasdik-i-gaybi/risale-i-nurdan-parlak-fikralar-ve-2/hulusi-beyin-bir-fikrasidir/c011", "talikat/c073"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "\"Tezekkür\" Risale-i Nur'da yalnız iki yerde geçer (ekli biçimler sayılmadan kesin sayı diye verilir)."}
+   ]
+  },
+  {
+   "id": "sirac-cekinmeyerek",
+   "source": "S13.10 (D), S13.11 tur 5 (1) (2026-11-26)",
+   "questions": ["Risale-i Nur'a \"Sirâcü'n-Nur\" adının bir âyetten mülhem olduğu söylenir; bu söz kimindir ve ne kadar kesin söylenir?"],
+   "must_read": ["barla-lahikasi/kastamonu-ve-emirdagi-hayatinda-iken/281"],
+   "facts": [
+    {"id": "f1", "text": "Metin bunu çekinmeden, kesin söyler: \"bu âyetin bu fıkrasından mülhemdir denilebilir ve çekinmeyerek deriz.\"", "evidence": ["barla-lahikasi/kastamonu-ve-emirdagi-hayatinda-iken/281/c021"]},
+    {"id": "f2", "text": "\"Sirâcü'n-Nur\" adını Risale-i Nur'a İmam Ali'nin (ra) kerâmet-i gaybiyesi verir.", "evidence": ["barla-lahikasi/kastamonu-ve-emirdagi-hayatinda-iken/281/c021"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Metin bunu bir yorum ya da ihtimal olarak, çekinceyle sunar; kesin bir hüküm olarak değil."}
+   ]
+  },
+  {
+   "id": "lemeat-tenbih",
+   "source": "S13.11 tur 1 (2) (2026-11-26)",
+   "questions": ["Lemeât'ın başındaki Tenbih'i kim yazmıştır?"],
+   "must_read": ["lemeat/tenbih"],
+   "facts": [
+    {"id": "f1", "text": "Tenbih'i Risale-i Nur şâkirdleri yazmıştır; imzası \"Risale-i Nur şâkirdlerinden Sungur, Mehmed Feyzi, Husrev\"dir; müellife \"Üstadımız\" diye anarlar.", "evidence": ["lemeat/tenbih/c012", "lemeat/tenbih/c004"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Tenbih'i müellif (Bediüzzaman) kendisi yazmıştır."}
+   ]
+  },
+  {
+   "id": "soz22-makine",
+   "source": "S13.11 tur 1 (3) (2026-11-26)",
+   "questions": ["Yirmi İkinci Söz'ün Dördüncü Bürhan'ındaki \"makine\" neyi anlatır? O dönemin makineleri üzerine mi yazılmış?"],
+   "must_read": ["sozler/22/makam-01/burhan-04"],
+   "facts": [
+    {"id": "f1", "text": "Makine bir temsildir; hâşiyede açıklandığı gibi meyvedâr ağaçlara işarettir.", "evidence": ["sozler/22/makam-01/burhan-04/c007", "sozler/22/makam-01/burhan-04/c007/h1/c001"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Bürhan o dönemin mekanik makineleri (sanayi makineleri) üzerine yazılmıştır."}
+   ]
+  },
+  {
+   "id": "mesnevi-mukaddime-ozne",
+   "source": "S13.11 tur 4 (4) (2026-11-26)",
+   "questions": ["Mesnevî-i Nuriye'nin Mukaddimesi Mevlânâ'dan nasıl bahseder?"],
+   "must_read": ["mesnevi-i-nuriye/mukaddime/nokta-02"],
+   "facts": [
+    {"id": "f1", "text": "Cümlenin öznesi müelliftir: Mevlânâ, İmam-ı Rabbânî ve İmam-ı Gazâlî gibi akıl ve kalb ittifakıyla gittiği için Eski Said Yeni Said'e inkılâb etmiştir; Mevlânâ örnek olarak anılır.", "evidence": ["mesnevi-i-nuriye/mukaddime/nokta-02/c001"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Mevlânâ'nın kendisi (Eski Said gibi) bir inkılâb geçirmiştir ya da cümlenin öznesi Mevlânâ'dır."}
+   ]
+  },
+  {
+   "id": "birinci-sua-kesin",
+   "source": "S13.11 tur 4 (2) (2026-11-26)",
+   "questions": ["Birinci Şuâ'da müellif bir âyetin Risale-i Nur'a ve elektriğe işaret ettiği kanaatini nasıl ifade eder: kesin mi, ihtimal mi?"],
+   "must_read": ["sualar/1/sual-02/ayet-01/cumle-05"],
+   "facts": [
+    {"id": "f1", "text": "Müellif bunun kendisine \"kanâat-ı kat'iyye\" verdiğini ve \"çekinmeyerek\" yazdığını söyler; kesin bir kanaattir.", "evidence": ["sualar/1/sual-02/ayet-01/cumle-05/c037"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Müellif bunu esnek, çekinceli bir ihtimal ya da kişisel bir yorum olarak sunar."}
+   ]
+  },
+  {
+   "id": "sua13-talebe",
+   "source": "S13.7 (5), tevekkül konuşması (2026-11-26)",
+   "questions": ["On Üçüncü Şuâ'daki \"Talebe-i ulûmun hattâ uykusu dahi ibadet sayılır\" bahsi kimlere yazılmıştır?"],
+   "must_read": ["sualar/13/talebe-i-ulumun-hatta-uykusu-dahi"],
+   "facts": [
+    {"id": "f1", "text": "Müellifin hapisteki kardeşlerine (\"Kardeşlerim!\") yazılmıştır: o \"azâb yerlerde\" Risale-i Nur'u okuyup müzakere edenlerin talebe-i ulûmun şerefini kazanacağı söylenir.", "evidence": ["sualar/13/talebe-i-ulumun-hatta-uykusu-dahi/c001", "sualar/13/talebe-i-ulumun-hatta-uykusu-dahi/c002", "sualar/13/talebe-i-ulumun-hatta-uykusu-dahi/c004"]}
+   ],
+   "wrong": [
+    {"id": "w1", "text": "Bahis medrese öğrencilerine ya da genel olarak öğrencilere yöneliktir."}
+   ]
+  }
+ ]
+}

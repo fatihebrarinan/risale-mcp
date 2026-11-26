@@ -168,7 +168,10 @@ def test_loop_with_tool_and_correction(library):
     assert ("status", {"text": sohbet.CHECKING}) in events and ("status", {"text": sohbet.THINKING_FIRST}) in events
     done = events[-1][1]
     assert done["corrected"] is True and done["problems"] == 0
-    assert done["markdown"] == f'Metinde:\n\n> "{TEXT_32}" [1]'
+    answer, _, scope = done["markdown"].partition("\n\n:::ek ")
+    assert answer == f'Metinde:\n\n> "{TEXT_32}" [1]'
+    assert scope.startswith("Bu cevabın dayandığı okumalar: 1 yer kısmen okundu")       # S13.14: tek cümle okundu
+    assert done["raw"].rstrip().endswith("[[" + C32 + "]]") or ":::ek" not in done["raw"]   # not geçmişe girmez
     assert done["sources"][0]["cite_as"].startswith("Sözler › Onuncu Söz")
     assert f"[[{C32}]]" in done["raw"] and "uydurma" not in done["raw"]
     # araç tanımları sunucudan, `cite` yok; talimat ve araçlar önbellekte
@@ -701,3 +704,37 @@ def test_s13_13_survey_counts_and_keeps_the_full_list_from_the_model(library):
     block = NS(id="t1", name="survey", input={"topic": "haşir", "terms": ["haşir*", "haşr*"]})
     out = asyncio.run(chat._call_tool(block))
     assert sohbet.PAGE_ONLY in out and "places" not in _json.loads(out["content"])
+
+
+def test_s13_14_scope_note():
+    import json as _json
+    page1 = {"section": "nokta/kisim-02/hasir", "ref": "Nokta › İkinci Kısım › Haşir",
+             "coverage": {"sentences": "1–65", "of": 350},
+             "points_to": [{"sentence": "nokta/kisim-02/hasir/c003",
+                            "to": [{"id": "isaratul-icaz", "ref": "İşaratü'l-İ'caz"}]}]}
+    whole = {"section": "sozler/29/maksad-02/esas-02", "ref": "Sözler › Yirmidokuzuncu Söz › İkinci Maksad › İkinci Esâs",
+             "points_to": [{"sentence": "sozler/29/maksad-02/esas-02/c009", "to": [{"id": "nokta", "ref": "Nokta"}]}]}
+    passage = {"section": "sualar/9/mukaddime", "section_ref": "Şualar › Dokuzuncu Şuâ › Mukaddime",
+               "of_section": {"sentences": 1, "of": 1}, "sentences": [{"id": "sualar/9/mukaddime/c001"}]}
+    calls = [("search", {"query": "haşir"}, '{"results": [{"id": "sozler/10/c002"}]}', False),
+             ("read_section", {"section": "nokta/kisim-02/hasir"}, _json.dumps(page1), False),
+             ("read_section", {"section": "sozler/29/maksad-02/esas-02"}, _json.dumps(whole), False),
+             ("get_passage", {"id": "sualar/9/mukaddime/c001"}, _json.dumps(passage), False)]
+    sources = [{"id": "sozler/10/c002", "cite_as": "Sözler › Onuncu Söz › “Geçen…”"},
+               {"id": "nokta/kisim-02/hasir/c005", "cite_as": "Nokta › İkinci Kısım › Haşir › “İşte…”"},
+               {"id": "sualar/9/mukaddime/c001", "cite_as": "Şualar › Dokuzuncu Şuâ › Mukaddime › “Haşir…”"}]
+    note = sohbet.scope_note(calls, sources)
+    lines = note.splitlines()
+    assert lines[0] == (":::ek Bu cevabın dayandığı okumalar: 1 yer kısmen okundu, 1 gönderme okunmadı, "
+                        "1 yer okunmadan") and lines[-1] == ":::"
+    assert "Nokta › İkinci Kısım › Haşir (65/350 cümle)" in note
+    assert "İşaratü'l-İ'caz (gönderen: nokta/kisim-02/hasir)" in note            # kütüphanesiz: kimlik
+    assert "Nokta (gönderen" not in note                                        # okunan Nokta'nın içi: izlendi
+    assert "Okunmadan, yalnız arama sonucundan dayanılanlar:** Sözler › Onuncu Söz" in note
+    assert "Okunanlar:** Sözler › Yirmidokuzuncu Söz › İkinci Maksad › İkinci Esâs" in note
+    # önceki turda okunan gönderme hedefi okunmamış sayılmaz; okuma yoksa not yok
+    earlier = [{"q": "x", "a": "", "r": ["read_section(section=isaratul-icaz/sure-i-bakara/4, max_words=900)"]}]
+    assert "gönderme okunmadı" not in sohbet.scope_note(calls, sources, earlier)
+    assert sohbet.scope_note(calls[:1], sources) == ""
+    # gönderme yalnız cevabın dayandığı bölümden: Nokta'ya dayanılmadıysa İşârât göndermesi gösterilmez
+    assert "gönderme okunmadı" not in sohbet.scope_note(calls, [s for s in sources if not s["id"].startswith("nokta")])

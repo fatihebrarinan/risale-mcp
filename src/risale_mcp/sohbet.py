@@ -808,6 +808,8 @@ class Chat:
                 yield "restart", {"text": "Alıntılar eserlerle denetleniyor; düzeltiliyor…"}
                 continue
             markdown, raw = checked.markdown, checked.raw
+            if scope := scope_note(tally.calls, checked.sources, history, self.library):
+                markdown += "\n\n" + scope                       # S13.14: yalnız sayfada, geçmişe girmez
             if "other_places" in kip.post:
                 earlier = earlier_places(history)
                 if others := other_places(tally.calls, checked.sources, earlier):
@@ -939,6 +941,109 @@ def all_places(places: list | None) -> str:
     title = ALL_PLACES_TITLE.format(sentences=sum(p["sentences"] for p in places), places=len(places))
     lines = [f"- {p['ref']}{_also(p)} · {p['sentences']} cümle" for p in places]
     return f":::ek {title}\n" + "\n".join(lines) + "\n:::"
+
+
+SCOPE_TITLE = "Bu cevabın dayandığı okumalar"
+SCOPE_ITEMS = 8             # kapsam notunun her satırında en çok yer
+
+
+def _within(place: str, places) -> bool:
+    """`place` okunan yerlerden birinin kendisi, içi ya da (cümle okunduysa) cümlesinin bölümü mü."""
+    return any(place == p or place.startswith(p + "/") or p.startswith(place + "/") for p in places)
+
+
+def scope_note(calls: list, sources: list[dict], history: list[dict] | None = None, library=None) -> str:
+    """S13.14: cevabın altında, kapalı ek: neye dayandığı ve neyi okumadan söylediği (araştırma: güvenin kaynağı
+    şeffaflık; Harvey'in "kapsam notu"). Mekaniktir, araçların sonuçlarından kurulur:
+    - **kısmen okunan bölümler:** `read_section` sayfalarının kapsadığı cümleler bölümün tamamı değilse;
+    - **metnin gönderdiği, okunmayan yerler:** cevabın dayandığı bölümlerdeki (Kaynaklar'ın cümlelerinin bölümü)
+      `points_to` hedeflerinden bu konuşmada okunmayanlar; okunan her sayfanın bütün göndermeleri değil (haşir
+      denemesinde 11'e çıkıyordu, çoğu soruyla ilgisiz). Bir göndermenin birden çok hedefi ("Nokta Risalesi": Nokta
+      ve Mesnevî'deki Nokta) tek satırdır, biri okunduysa izlenmiş sayılır;
+    - **okunmadan dayanılan yerler:** kaynağı okuma araçlarıyla okunmamış (yalnız arama sonucundan) alıntılar;
+    - **okunanlar:** okunan bölümler.
+    Okuma çağrısı olmayan cevapta (ör. yalnız selamlaşma) not yoktur."""
+    pages: dict[str, dict] = {}                 # bölüm -> {ref, total, covered: set}
+    passages: dict[str, dict] = {}
+    pointers_seen: list[tuple[list[dict], str]] = []    # (hedefler, gönderen cümle)
+    read_places: set[str] = set()
+    for name, args, result, error in calls:
+        if error or name not in ("read_section", "get_passage"):
+            continue
+        try:
+            data = json.loads(result)
+        except (TypeError, ValueError):
+            continue
+        section = data.get("section")
+        if not section:
+            continue
+        read_places.add(section)
+        if name == "read_section":
+            entry = pages.setdefault(section, {"ref": data.get("ref"), "total": None, "covered": set(), "whole": False})
+            coverage = data.get("coverage")
+            if coverage is None:
+                entry["whole"] = True
+            else:
+                a, _, b = str(coverage.get("sentences", "")).partition("–")
+                if a.isdigit() and b.isdigit():
+                    entry["covered"].update(range(int(a), int(b) + 1))
+                    entry["total"] = coverage.get("of")
+        else:
+            part = data.get("of_section")
+            entry = passages.setdefault(section, {"ref": data.get("section_ref"), "count": 0, "of": None})
+            entry["count"] += part["sentences"] if part else 0
+            entry["of"] = part["of"] if part else None
+        for point in data.get("points_to") or []:
+            if point.get("to"):
+                pointers_seen.append((point["to"], point.get("sentence", "")))
+    if not pages and not passages:
+        return ""
+    earlier = earlier_places(history or [])
+    whole = {s for s, e in pages.items() if e["whole"] or (e["total"] and len(e["covered"]) >= e["total"])}
+    partial = [(e["ref"], len(e["covered"]), e["total"]) for s, e in pages.items() if s not in whole and e["total"]]
+    partial += [(e["ref"], e["count"], e["of"]) for s, e in passages.items()
+                if e["of"] and e["count"] < e["of"] and not _within(s, whole) and not _within(s, pages)]
+    relied = {_SENTENCE_PART.sub("", str(src.get("id") or "").split("..")[0]) for src in sources}
+    pending, seen = [], set()
+    for targets, sentence in pointers_seen:
+        source = _SENTENCE_PART.sub("", sentence) if sentence else ""
+        ids = tuple(t["id"] for t in targets)
+        if source not in relied or ids in seen or any(_within(t, read_places | earlier) for t in ids):
+            continue
+        seen.add(ids)
+        pending.append((" / ".join(t.get("ref") or t["id"] for t in targets), _place_ref(library, source)))
+    ids = read_ids(calls)
+    unread = []
+    for src in sources:
+        first = str(src.get("id") or "").split("..")[0]
+        if first and first not in ids and not _within(first.rsplit("/", 1)[0], earlier | read_places):
+            ref = str(src.get("cite_as") or first).split(" › “")[0]
+            if ref not in unread:
+                unread.append(ref)
+    lines = []
+    if partial:
+        lines.append("- **Kısmen okunanlar:** " + "; ".join(f"{ref} ({n}/{of} cümle)" for ref, n, of in partial[:SCOPE_ITEMS]))
+    if pending:
+        lines.append("- **Metnin gönderdiği, bu konuşmada okunmayan yerler:** "
+                     + "; ".join(f"{ref}" + (f" (gönderen: {src})" if src else "") for ref, src in pending[:SCOPE_ITEMS]))
+    if unread:
+        lines.append("- **Okunmadan, yalnız arama sonucundan dayanılanlar:** " + "; ".join(unread[:SCOPE_ITEMS]))
+    full = [pages[s]["ref"] for s in pages if s in whole]
+    if full:
+        lines.append("- **Okunanlar:** " + "; ".join(full[:SCOPE_ITEMS]) + (" …" if len(full) > SCOPE_ITEMS else ""))
+    flags = [f"{len(partial)} yer kısmen okundu" if partial else "", f"{len(pending)} gönderme okunmadı" if pending else "",
+             f"{len(unread)} yer okunmadan" if unread else ""]
+    summary = ", ".join(f for f in flags if f) or "dayanılan yerler okundu"
+    return f":::ek {SCOPE_TITLE}: {summary}\n" + "\n".join(lines) + "\n:::"
+
+
+def _place_ref(library, node_id: str) -> str:
+    if not node_id or library is None:
+        return node_id
+    try:
+        return library._node(node_id)["ref"]
+    except Exception:
+        return node_id
 
 
 MAX_READS = 30              # bir cevabın kaydedilen en çok araç çağrısı

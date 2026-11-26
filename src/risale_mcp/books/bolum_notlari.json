@@ -1,0 +1,17 @@
+{
+ "about": "S13.14: bölümlerin kendi metninden anlaşılmayan, okuyucuyu yanıltabilecek olguları (bildirilen ama yazılmamış kısımlar gibi). Bölüm künyesi (`Library.profile`, get_outline ve read_section'ın ilk sayfası) o bölümde, üstünde ya da altında okunduğunda verir. Bölümün kendi metninde duran bilgi buraya girmez (onu okuma verir; ölçüm setinin cevabını hazır vermek de olur). Elle, sohbet ederken büyür; her kayıt kanıtını (cümle kimlikleri) taşır, tests/test_bolum_notlari.py hepsini sınar. `note` modele gider (İngilizce), `not` insan içindir.",
+ "notes": [
+  {
+   "id": "sualar/9",
+   "kind": "unwritten",
+   "note": "The author describes this Şuâ as one Introduction (Mukaddime) and Nine High Stations (Dokuz Âlî Makam); only the Introduction was written. The nine stations were never written: he asks his students to complete them (Kastamonu and Barla letters). Do not describe the nine stations as text.",
+   "not": "Dokuzuncu Şuâ kendini bir Mukaddime ve Dokuz Âlî Makam diye tanıtır; yalnız Mukaddime yazılmış, dokuz makamı talebelerin tamamlaması istenmiş (haşir konuşması, 2026-11-26).",
+   "evidence": [
+    "sualar/9/c010",
+    "kastamonu-lahikasi/106-164-mektuplar/125/c006",
+    "kastamonu-lahikasi/106-164-mektuplar/125/c022",
+    "barla-lahikasi/kastamonu-ve-emirdagi-hayatinda-iken/285/c013"
+   ]
+  }
+ ]
+}

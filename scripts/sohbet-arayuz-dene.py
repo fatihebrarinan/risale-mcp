@@ -1,4 +1,4 @@
-"""S12.11, S13.1, S13.5, S13.6, S13.7, S13.13: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
+"""S12.11, S13.1, S13.5, S13.6, S13.7, S13.13, S13.14: sohbet sayfasını başsız tarayıcıda baştan sona dener (geniş, orta ve telefon genişliği).
 
 Yerel sunucu açık olmalı (`SOHBET_GUNLUK_SORU=100 uv run --extra sohbet python -m risale_mcp.sohbet serve --dev`: deneme hesabının
 günlük hakkı her koşuda bir azalır). Deneme hesabına
@@ -361,8 +361,10 @@ async def run(url: str) -> None:
         await page.fill("#soru", "Mevlânâ")
         await page.click("#gonder")
         await page.wait_for_selector(".tur .cevap details.ek", timeout=240000)
+        summaries = " | ".join(await page.locator(".tur .cevap details.ek summary").all_inner_texts())
         check("tarama cevabında öbür yerler ve bütün yerler eki", "Konunun geçtiği öbür yerler" in await page.inner_text(".tur .cevap")
-              and "Kelimelerin geçtiği bütün yerler" in await page.inner_text(".tur .cevap details.ek summary"))
+              and "Kelimelerin geçtiği bütün yerler" in summaries)
+        check("cevabın altında kapsam notu (S13.14)", "Bu cevabın dayandığı okumalar" in summaries)
         check("tarama cevabından sonra kip serbest", "Serbest soru" in await page.inner_text("#kipler .kip.secili"))
         await page.screenshot(path=OUT / "17-tarama.png")
         await page.hover("#gecmis li.secili")

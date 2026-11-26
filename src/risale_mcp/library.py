@@ -26,6 +26,7 @@ from risale_mcp.db import connect
 from risale_mcp.hadis import ATTRIBUTION, CAUTION_BOOKS, SUPPORT_ORDER, TITLES
 from risale_mcp.hadis_kitaplar import BY_ID
 from risale_mcp import lugat
+from risale_mcp import pointers
 from risale_mcp.quran import skeleton
 from risale_mcp.embeddings import EmbeddingError
 from risale_mcp.normalize import search_words
@@ -43,6 +44,14 @@ ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen 
 OLD_NAMES = json.loads((Path(__file__).parent / "books" / "old_names.json").read_text(encoding="utf-8"))["sections"]
 # S13.12: risalelerin metinde anıldıkları adlar ("İhlâs Risalesi" -> lemalar/20, lemalar/21), kanıtlarıyla
 RISALE_NAMES = json.loads((Path(__file__).parent / "books" / "risale_adlari.json").read_text(encoding="utf-8"))["names"]
+# S13.14: bölümlerin kendi metninden anlaşılmayan olguları (yazılmamış kısımlar); künyede verilir
+SECTION_NOTES = json.loads((Path(__file__).parent / "books" / "bolum_notlari.json").read_text(encoding="utf-8"))["notes"]
+POINTS_TO_NOTE = ("The text sends the reader to these places for its point (points_to, from the sentence that does): read "
+                  "them before saying what the text holds there or that it does not treat it.")
+PARTIAL_PAGE_NOTE = ("This page is only part of the section: read on with next_cursor before saying what the whole section "
+                     "says or does not say.")
+PARTIAL_PASSAGE_NOTE = ("These are only some of the section's sentences: read the section before saying what it says as a "
+                        "whole or what it does not say.")
 
 
 HADITH_NOTE = ("hadith_support is evidence, not a verdict: found = the Arabic occurs word for word in a report and is long "
@@ -365,6 +374,11 @@ class Library:
         out = {"hasiye": hasiye, "verses_quoted": verses}
         if signatures:
             out["signatures"] = signatures
+        here = root["id"]
+        if notes := [{"section": n["id"], "kind": n["kind"], "note": n["note"], "evidence": n["evidence"]}
+                     for n in SECTION_NOTES
+                     if n["id"] == here or here.startswith(n["id"] + "/") or n["id"].startswith(here + "/")]:
+            out["notes"] = notes              # S13.14: bildirilen ama yazılmamış kısımlar gibi
         return out
 
     def named(self, query: str) -> list[dict]:
@@ -505,7 +519,45 @@ class Library:
             result["written"] = written
         if cursor is None:
             result["profile"] = self.profile(root)
+        if (cursor is not None or next_cursor is not None) and (coverage := self._coverage(root, page)):
+            result["coverage"] = coverage
+        read = [s for p in page for s in texts[p["id"]].get("sentences", [])]
+        if points := self._points_to(root, read):
+            result["points_to"] = points
+            result["points_to_note"] = POINTS_TO_NOTE
         return result | _elsewhere(root["id"]) | self._work_status(root["work"], root["id"])
+
+    def _coverage(self, root: sqlite3.Row, page: list[sqlite3.Row]) -> dict | None:
+        """S13.14: sayfanın bölümün hangi cümleleri olduğu ("41–120 / 412"). Model uzun bölümün ilk sayfasından
+        bütün bölüm hakkında hüküm veriyordu (Dokuzuncu Şuâ'nın İkinci Noktası, 100 cümlenin 26'sı)."""
+        span = (root["work"], root["ord"], root["last_ord"])
+        total = self.conn.execute("SELECT count(*) FROM sentences s JOIN nodes n ON n.id = s.node_id"
+                                  " WHERE n.work = ? AND n.ord BETWEEN ? AND ?", span).fetchone()[0]
+        ids = [p["id"] for p in page]
+        if not total or not ids:
+            return None
+        first, count = self.conn.execute(f"SELECT min(seq), count(*) FROM sentences WHERE paragraph_id IN "
+                                         f"({_placeholders(ids)})", ids).fetchone()
+        if not count:
+            return None
+        before = self.conn.execute("SELECT count(*) FROM sentences s JOIN nodes n ON n.id = s.node_id"
+                                   " WHERE n.work = ? AND n.ord BETWEEN ? AND ? AND s.seq < ?", (*span, first)).fetchone()[0]
+        out = {"sentences": f"{before + 1}–{before + count}", "of": total}
+        if before + count < total:
+            out["note"] = PARTIAL_PAGE_NOTE
+        return out
+
+    def _points_to(self, root: sqlite3.Row, sentences: list[dict]) -> list[dict]:
+        """S13.14: okunan cümlelerdeki göndermeler (`pointers.py`); yalnız Türkçe külliyat ve ilgili eserlerde."""
+        if not sentences or not self._pointer_work(root["work"]):
+            return []
+        exists = lambda ident: self.conn.execute("SELECT 1 FROM nodes WHERE id = ?", (ident,)).fetchone() is not None
+        ref = lambda ident: self._node(ident)["ref"]
+        return pointers.find(sentences, root["id"], exists, ref)
+
+    def _pointer_work(self, work: str) -> bool:
+        row = self.conn.execute("SELECT collection, language FROM works WHERE slug = ?", (work,)).fetchone()
+        return bool(row) and row["language"] == "tr" and row["collection"] in (Collection.KULLIYAT, Collection.ILGILI)
 
     def _paragraph_texts(self, paragraphs: list[sqlite3.Row]) -> dict[str, dict]:
         """Paragraf -> {id, kind, sentences, arabic?, hasiye_of?, canonical?}."""
@@ -641,6 +693,14 @@ class Library:
                 notes.append(f"Cite at most {MAX_CITED} consecutive sentences at once; quote the key part.")
             else:
                 result["cite_as"] = cite(node["ref"], opening(rows[0]["incipit"], rows[0]["text"]), len(rows))
+        if not hasiye_only:
+            total = self.conn.execute("SELECT count(*) FROM sentences WHERE node_id = ? AND hasiye = 0",
+                                      (node["id"],)).fetchone()[0]
+            if len(rows) < total:                    # S13.14: bölümün ne kadarı okundu
+                result["of_section"] = {"sentences": len(rows), "of": total, "note": PARTIAL_PASSAGE_NOTE}
+        if points := self._points_to(node, [{"id": r["id"], "text": r["text"]} for r in shown]):
+            result["points_to"] = points
+            result["points_to_note"] = POINTS_TO_NOTE
         if notes:
             result["note"] = " ".join(notes)
         return result

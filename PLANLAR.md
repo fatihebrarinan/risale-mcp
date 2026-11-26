@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 ve durum değerlendirmesi bitti, Haiku sürer; **S13.12** kipler: belge, ad dizini, bölüm künyesi ve konu taraması kipi yapıldı ve yayında; sırada aşama 2 (ikinci kütüphane) ya da tarama kipinin denemesi. **S13.13** (2026-11-26) haşir konuşması: tarama kipinin ilk gerçek kullanımı; sayım, bütün yerler eki, Tarihçe kopyaları, kipin serbeste dönmesi yapıldı (ş=s kalır); okuma hataları ve tek kelimelik soruda İngilizce cevap (talimat önerisi) karar bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 ve durum değerlendirmesi bitti, Haiku sürer; **S13.12** kipler: belge, ad dizini, bölüm künyesi ve konu taraması kipi yapıldı ve yayında; sırada aşama 2 (ikinci kütüphane) ya da tarama kipinin denemesi. **S13.13** (2026-11-26) haşir konuşması: tarama kipinin ilk gerçek kullanımı; sayım, bütün yerler eki, Tarihçe kopyaları, kipin serbeste dönmesi yapıldı (ş=s kalır); okuma hataları ve tek kelimelik soruda İngilizce cevap (talimat önerisi) karar bekliyor. **S13.14** (2026-11-26) okuma hataları: araştırma, katmanlı plan; (1) Türkçe ölçüm seti (`okuma_olc`), (2) araçlarda göndermeler, okunan pay ve bölüm notları, (3) sohbette kapsam notu yapıldı, yayında değil (`--code`, `DEPLOY_EXPECT="get_passage read_section"`); sırada (4) karşılaştırma kipi. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -576,6 +576,45 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     tek kelimelik tarama sorusuna ("Mevlânâ") İngilizce cevap: dil kuralı "son sorunun dili" diyor, ad tek başına dil
     belirtmez; tarama kipi tek kelimeli konuyu teşvik ediyor. Talimat önerisi (karar bekliyor): dili belli olmayan soru
     (yalnız ad ya da terim) Türkçe cevaplanır.
+  - S13.14 **Okuma hataları: araştırma ve katmanlı plan** (kullanıcının sorusu, 2026-11-26: "okuma hataları
+    yapısal ve sistemsel olarak çözülebilir mi?"; dinî metinde en küçük hata ciddidir). **Araştırma** (rapor
+    `reports/Okuma hatalarını azaltma yöntemleri.md`, notları `research_notes/`, ikisi de git dışı): sıfırlanmaz,
+    daraltılır. Satıcı araçları (Citations API, Check Grounding, Azure, AWS) uydurma alıntıyı hedefliyor, bizde o
+    mekanik olarak çözülü; "doğru alıntı, yanlış okuma" için ölçülmüş azalma yayımlayan yok. Hukukta (Stanford: ticari
+    araçlarda %17–33, Westlaw'ın hatalarının %61'i doğru getirilen metnin yanlış yorumu; Princeton: en zor tür içerik
+    çarpıtma) ve İslâmî ürünlerde (IslamicEval, Ansari: "dayanak gerekli ama yeterli değil") aynı sonuç. Hatalarımız iki
+    sınıf: sunucunun verisiyle kanıtlanabilenler (uydurma yapı, okunmayan yer hakkında hüküm, izlenmeyen gönderme,
+    ilk sayfadan genelleme) kurala bağlanır; anlam hataları (ters okuma, çerçeve, temsil/hüküm, söyleyen) yalnız
+    daralır; orada güvenin kaynağı şeffaflık (kapsam notu). Şablon sarmalama (Cursor tarzı) bir taşıyıcıdır: sunucunun
+    hesapladığı olguyu ve sabit usulü taşıdığında yararlı, yeni yasak eklemek değil ("doğru ol" istemleri tıpta ters
+    tepti). Model yükseltmek açık çare değil (Vectara'da Haiku 4.5 %9,8, Opus 5.5 %9,9). **Sıra** (kullanıcının onayı,
+    2026-11-26; ilk taslaktan değişti: sohbete eklenen denetim eklentilere ulaşmaz, araç sonucu ikisine de ulaşır;
+    ağır hatalar okunan metinde): (1) Türkçe ölçüm seti; (2) araç katmanında olgular; (3) sohbette kapsam notu; (4)
+    karşılaştırma kipi (okuma planını sunucu kurar); (5) doğrulayıcı denemesi (yalnız ilişki ve karşılaştırma
+    iddiaları, ölçümle); (6) cevap metnine kesin kurallar (ölçüm sık gösterirse). Fıkıh ve hadis gelince ehil insan
+    denetimi; Diyanet'in 24 Kasım 2026 bildirgesi (7. madde: "araştırma aracı … fetva makamı olarak görülmemelidir")
+    sayfanın dipnotu için dış dayanak.
+    **(1)–(3) yapıldı (2026-11-26):** (1) `tests/golden/okuma_seti.json`: S13.7–S13.13'te elle bulunan hatalardan
+    13 madde (olgular kanıt cümleleriyle, bilinen yanlış iddialar, okunması beklenen yerler); `okuma_olc.py`
+    (`uv run --extra sohbet python -m risale_mcp.okuma_olc run | hakem <klasör> | karsilastir <a> <b>`): sohbetin
+    koduyla sorar, son cevabı Sonnet hakeme verir (olgu: stated/partly/absent/contradicted; yanlış: present/absent;
+    gerekçe Türkçe), okumayı mekanik sayar; koşu ≈0,07 $ sohbet + ≈0,10 $ hakem. (2) `pointers.py`: okunan
+    cümlelerdeki göndermeler (gönderme fiili ve çözülen hedef birlikte: sıra sayılı Söz/Mektub/Lem'a/Şuâ ve
+    Hâtime'si, eski adlar, risale adları, eser adları; tek kelimelik ad büyük harfle; külliyatta 748 cümle, örneklem
+    temiz) `read_section` ve `get_passage`'ta `points_to`; `read_section`'da kısmi sayfaya `coverage`
+    ("1–65 / 350" ve "next_cursor ile sürdür" notu), `get_passage`'ta `of_section`; bölüm künyesine
+    `books/bolum_notlari.json` (bölümün kendi metninden anlaşılmayan olgular, kanıtlı; ilki Dokuzuncu Şuâ'nın
+    yazılmamış dokuz makamı; metinde duran bilgi girmez, setin cevabını hazır vermesin diye). (3) sohbette her cevabın
+    altında kapalı ek "Bu cevabın dayandığı okumalar": kısmen okunanlar (n/m cümle), cevabın dayandığı bölümlerden
+    çıkıp bu konuşmada okunmayan göndermeler, okunmadan yalnız arama sonucundan dayanılanlar, okunanlar (yalnız
+    sayfada, geçmişe girmez). **Ölçüm** (aynı set ve hakem; tek koşu gürültülü): önce 13,5/17 olgu, 2 ve 3 yanlış;
+    sonra 14,5, 15 ve 14/17 olgu, 2, 2 ve 3 yanlış; okuma 12/12. Kazanç küçük ve gürültü içinde; en belirgini
+    Dokuzuncu Şuâ maddesi (0,5 ve 1 → 1, 2 ve 1; dokuz makam bilgisi künyeden geliyor, bağımsız kanıt değil). Set
+    büyük ölçüde doymuş: yeni maddeler (ve karşılaştırma kipi) gerekir. Maliyet ≈%10 arttı (daha çok okuma).
+    Kapsam notu ilk koşuda gerçek bir durumu gösterdi: Sirâcü'n-Nur cevabında "okunmadan, yalnız arama sonucundan:
+    İkinci Şuâ". Testler 781, arayüz denemesi 86 denetim. Araç çıktısı: `get_passage`, `read_section` değişir
+    (`tool_snapshot` 21 çağrıda beklenen fark); deploy `--code`, `DEPLOY_EXPECT="get_passage read_section"`; tefsir ve
+    klasik sunucularına sonraki gönderimde gider (`coverage`, `of_section`; gönderme yalnız Türkçe külliyatta).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
