@@ -35,11 +35,14 @@ from risale_mcp.semantic import SemanticIndex, SemanticUnavailable
 MAX_RANGE = 100          # get_passage'ın bir seferde döndürdüğü en çok cümle
 MAX_CITED = 8            # tek atıfla verilebilecek en çok ardışık cümle (aynı bölümde)
 MAX_RESULTS = 50
+MAX_SIGNATURES = 5     # S13.12: bölüm künyesinde en çok imza
 FEW_HITS = 10          # S13.11: bundan az sonuçta kelime başı aramasının sayısı da verilir
 PREVIEW_CHARS = 400      # arama sonucunda gösterilen en uzun cümle metni
 ANNOTATED_ARABIC = ("ayet", "hadis")   # okurken meali ve kaynağı gösterilen Arapça türleri
 # Eski adla anılan, metni başka yerde duran bölümler: bölüm kimliği -> {name, elsewhere, rule?, evidence}
 OLD_NAMES = json.loads((Path(__file__).parent / "books" / "old_names.json").read_text(encoding="utf-8"))["sections"]
+# S13.12: risalelerin metinde anıldıkları adlar ("İhlâs Risalesi" -> lemalar/20, lemalar/21), kanıtlarıyla
+RISALE_NAMES = json.loads((Path(__file__).parent / "books" / "risale_adlari.json").read_text(encoding="utf-8"))["names"]
 
 
 HADITH_NOTE = ("hadith_support is evidence, not a verdict: found = the Arabic occurs word for word in a report and is long "
@@ -340,6 +343,50 @@ class Library:
             params.append(max_depth)
         return self.conn.execute(sql + " ORDER BY ord", params).fetchall()
 
+    def profile(self, root: sqlite3.Row) -> dict:
+        """S13.12, bölüm künyesi: alt ağaçtaki hâşiye ve âyet sayısı, imzalar (mektubun kimin olduğu: imza
+        paragrafının sözleri, kitap sırasıyla, en çok `MAX_SIGNATURES`). Model "tek hâşiye" diyordu (15 vardı);
+        Lâhikalarda talebe mektubunu müellifinki sanıyordu."""
+        span = (root["work"], root["ord"], root["last_ord"])
+        inside = "JOIN nodes n ON n.id = p.node_id WHERE n.work = ? AND n.ord BETWEEN ? AND ?"
+        hasiye = self.conn.execute(f"SELECT count(*) FROM paragraphs p {inside} AND p.kind = 'hasiye'", span).fetchone()[0]
+        verses = self.conn.execute(
+            "SELECT count(*) FROM arabic a JOIN paragraphs p ON p.id = a.paragraph_id "
+            f"{inside} AND a.kind = 'ayet'", span).fetchone()[0]
+        signatures = []
+        for row in self.conn.execute(
+                f"SELECT p.id, p.node_id, p.text FROM paragraphs p {inside} AND p.kind = 'signature' ORDER BY p.ord",
+                span):
+            text = row["text"] or " ".join(r[0] for r in self.conn.execute(
+                "SELECT text FROM sentences WHERE paragraph_id = ? ORDER BY seq", (row["id"],)))
+            text = " ".join(text.split())
+            if text and len(signatures) < MAX_SIGNATURES:
+                signatures.append({"signed": text, "section": row["node_id"]})
+        out = {"hasiye": hasiye, "verses_quoted": verses}
+        if signatures:
+            out["signatures"] = signatures
+        return out
+
+    def named(self, query: str) -> list[dict]:
+        """S13.12: sorguda adıyla anılan risaleler ve metinlerinin yeri (`books/risale_adlari.json`)."""
+        words = search_words(query)
+        out = []
+        for entry in RISALE_NAMES:
+            for alias in (entry["name"], *entry.get("aliases", ())):
+                key = search_words(alias)
+                if key and any(words[i:i + len(key)] == key for i in range(len(words) - len(key) + 1)):
+                    places = []
+                    for ident in entry["ids"]:
+                        try:
+                            places.append({"id": ident, "ref": self._node(ident)["ref"]})
+                        except LibraryError:
+                            continue
+                    if places:
+                        out.append({"name": entry["name"], "sections": places,
+                                    **({"note": entry["note"]} if entry.get("note") else {})})
+                    break
+        return out
+
     def outline(self, node_id: str, depth: int = 2) -> dict:
         """Düğüm ve `depth` kat alt bölümü; her düğümde alt ağacının ana metin cümle sayısı.
         Derinlik sınırında gizlenen alt bölümlerin sayısı `subsections`'dadır."""
@@ -371,7 +418,8 @@ class Library:
         for node_id_, record in records.items():
             if "children" not in record and child_count[node_id_]:
                 record["subsections"] = child_count[node_id_]
-        return {"work": root["work"], "ref": root["ref"], **records[root["id"]], **_elsewhere(root["id"])}
+        return {"work": root["work"], "ref": root["ref"], **records[root["id"]], "profile": self.profile(root),
+                **_elsewhere(root["id"])}
 
     # ------------------------------------------------------------ okuma
 
@@ -455,6 +503,8 @@ class Library:
         result = {"section": root["id"], "ref": root["ref"], "items": items, "next_cursor": next_cursor}
         if written := self._written(root):
             result["written"] = written
+        if cursor is None:
+            result["profile"] = self.profile(root)
         return result | _elsewhere(root["id"]) | self._work_status(root["work"], root["id"])
 
     def _paragraph_texts(self, paragraphs: list[sqlite3.Row]) -> dict[str, dict]:
@@ -807,6 +857,8 @@ class Library:
         }
         if sections:
             result["matching_sections"] = [{"id": s.node_id, "ref": s.ref} for s in sections]
+        if named := self.named(query):
+            result["named_sections"] = named
         if expanded:
             result["expanded"] = ("No exact word matched, so each unquoted word was searched as a word start "
                                   "(Turkish suffixes: Beyzavi -> Beyzâvî'nin). Check that the hits are the word meant.")
@@ -873,6 +925,8 @@ class Library:
         }
         if refs:
             result["sections"] = [{"id": s.node_id, "ref": refs[s.node_id], "matches": s.matches} for s in sections]
+        if named := self.named(query):
+            result["named_sections"] = named
         if unindexed := self._semantic_index().unindexed:
             result["unindexed_sentences"] = unindexed
         return result

@@ -691,7 +691,9 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         depth: Annotated[int, Field(description="How many levels of subsections to include.", ge=0, le=6)] = 2,
     ) -> str:
         """Show the heading tree of a work or section: ids, titles, subtitles, when each treatise was written (written) and the number of sentences under
-        each section. Sections cut off by the depth limit show their number of subsections."""
+        each section. Sections cut off by the depth limit show their number of subsections. profile counts, for the
+        whole section, its hâşiyes and quoted verses and gives the signatures in it (signed: who signs a letter;
+        a student's signature means a student's letter, not the author's)."""
         with _tool_errors():
             return _json(library.outline(section, depth))
 
@@ -705,7 +707,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         """Read a section and its subsections in book order: when it was written (written; with section when that
         is the enclosing treatise), headings (ref; linked_verses: verses the section links to; written), paragraphs as sentences (id, text), the author's hâşiyes (hasiye_of: their sentence;
         commentary_by: someone else's commentary), the publisher's translations of quoted verses and hadiths, and
-        gaps where the source lacks text. Long sections come in pages: pass next_cursor back to continue."""
+        gaps where the source lacks text. Long sections come in pages: pass next_cursor back to continue. The first
+        page also carries profile (as in get_outline: hâşiye and verse counts, signatures)."""
         with _tool_errors():
             return _json(library.read_section(section, cursor, max_words))
 
@@ -734,7 +737,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         """Search the works sentence by sentence by the text's own words, best matches first: the total, matches
         per work, matching section titles, and sentences (id, cite_as, text). An unquoted Arabic word also matches its
         forms with attached و ف ب ل ك and the article (الكتاب: والكتاب, بالكتاب, كتاب). If no word matches exactly, each
-        unquoted word is retried once as a word start (Turkish suffixes) and the result carries expanded. Read a
+        unquoted word is retried once as a word start (Turkish suffixes) and the result carries expanded. A query
+        naming a treatise ("İhlâs Risalesi") also returns named_sections: where that treatise's text is. Read a
         result in context before relying on it."""
         with _tool_errors():
             return _json(library.search(query, work, group, limit, offset, include_related))
@@ -773,7 +777,8 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
     ) -> str:
         """Find passages by meaning: the sentences closest to the query (id, cite_as, text, similarity) and the
         sections where the topic concentrates. For concepts and questions; the text often uses other, older words.
-        For exact words, phrases or terms use search. Read a result in context before relying on it."""
+        For exact words, phrases or terms use search. A query naming a treatise also returns named_sections. Read a
+        result in context before relying on it."""
         with _tool_errors():
             limited = open_access or (anonymous and get_access_token() is None)
             if limited and not is_debug_request() \
