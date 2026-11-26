@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 bitti (iki küçük sunucu düzeltmesi yayında değil); durum değerlendirmesi sırada (kullanıcının kararı). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 ve durum değerlendirmesi bitti, Haiku sürer; **S13.12** kipler ve kapsam tasarımda (kod yok), başlangıç kararı bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -472,6 +472,31 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     cümle numarası silinir; iki noktanın ardındaki satır "**…**" ise liste sayılmaz; testli; yayında değil); (4)
     kader Yorum'unda tırnaklı ve işaretli ama metinde olmayan sözler (doğrulanamadı); (5) sorulmadan telif tarihi
     (teselli). Ardından durum değerlendirmesi (kullanıcının kararı).
+    **Durum değerlendirmesi (kullanıcının kararları, 2026-11-26):** Haiku sürer (Sonnet 13 kat pahalı ve dar
+    aramayı o da düzeltmedi); kalan hatalar talimatla değil sunucuyla çözülür: kipler (S13.12). Tur 5'in iki sunucu
+    düzeltmesi yayında (`ee58394`, `--sohbet`).
+  - S13.12 **Kipler ve kapsam** (kullanıcıyla konuşuldu, 2026-11-26; tasarım aşamasında, kod yok). **Fikir:** kapsamı
+    (bütün yerleri bulmak) sunucu yapar, model sınırlı bir "dosya" üzerinde okur ve yazar; eksik tarama, kimin sözü ve
+    sayım hataları modelden alınır. **İki eksen:** kip (ne yapılıyor) ve kapsam (hangi kütüphaneler: Risale, Kur'ân ve
+    tefsir, hadis, klasik; ileride ilgili kaynaklar, tercümeler, başka alanlar). **Kavramlar:** birim (her kütüphanenin
+    atıf birimi, sahibi, katmanı, dili, kaynağı aynı biçimde), dosya (adaylar ve neden geldikleri), bağ yürüyüşü (ortak
+    adresler ve bağ tabloları üzerinden, modelsiz; ortak âyet ilişki değildir), kip kaydı (tarif: aramalar, sıra, çıktı
+    biçimi, denetimler, sona eklenen mekanik listeler), yönlendirici (ileride otomatik kip). **Kataloğ:** konu taraması,
+    âyet çalışması, hadis kontrolü, kavram ve terim, karşılaştırma, ders, beni sına, müzakere, serbest soru (varsayılan,
+    bugünkü akış). **Kullanıcının kararları:** (1) kip şimdilik yalnız açık seçimle; altyapı otomatik seçime (yönlendirici)
+    göre kurulur; (2) konu taramasının sonunda mekanik aday listesi ("Konunun geçtiği öbür yerler", "aday" etiketiyle)
+    uygun; (3) ad dizini ve kavram listesi sohbet ederken ortaya çıkar, ayrı onay turu yok; (4) kip kaydı tek kaynak:
+    sohbet talimatının kip parçaları, MCP hazır komutları ve eklentinin skill'leri ondan üretilir; (5) çok kütüphaneye
+    erişim (süreç içi kopya ya da uzak çağrı) ölçerek, ikinci kütüphane aşamasında kararlaştırılır. **Yalınlık ilkesi**
+    (kullanıcının sorusu, 2026-11-26: "fazla karmaşıklaştırıyor muyuz?"): kipler ve dosya yalnız seçilen kipte çalışır;
+    serbest soru bugünkü yoldur, yeni kütüphane eklemek onun kapsamını değiştirmez (varsayılan kapsam Risale kalır);
+    basit soruya yalnız küçük, ortak araçlar (ad dizini, bölümün imzası, bölüm künyesi) ve gerekirse tek satırlık
+    talimat değişikliği dokunur. Her aşama tek başına işe yarar, sonrakini beklemez. **Aşamalar:** (0) tasarım belgesi
+    `docs/kipler-plani.md` (kısa); (1) ortak çekirdek yalnız Risale ile: ad dizini, bölümün imzası, `section_profile`,
+    birim ve dosya yapısı, kip kaydı, Risale taramasının kapsam ölçümü (modelsiz), sohbette konu taraması kipi; (2) ikinci
+    kütüphane: erişim kararı, alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması kipi; (3) ders
+    (Word), sına, müzakere, kavram, karşılaştırma; (4) yönlendirici (önce öneri, sonra otomatik). Sıra ve başlangıç
+    kullanıcının kararını bekliyor.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
