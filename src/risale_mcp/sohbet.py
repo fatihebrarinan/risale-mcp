@@ -411,6 +411,18 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), for
     return Checked(markdown, sources, problems, raw, counts)
 
 
+def used_libraries(history: list[dict] | None) -> tuple[str, ...]:
+    """S13.17: konuşmanın önceki cevaplarında işareti geçen öbür kütüphaneler."""
+    from risale_mcp.kutuphaneler import split_id
+    found = []
+    for turn in history or []:
+        for ident in MARK.findall(str(turn.get("a") or "")):
+            where, _ = split_id(ident)
+            if where and where not in found:
+                found.append(where)
+    return tuple(found)
+
+
 def _risale_id(ident: str) -> str:
     return ident[len("risale:"):] if ident.startswith("risale:") else ident
 
@@ -790,6 +802,10 @@ def _near_read(checker, quote: str, read) -> tuple[str, str] | None:
 def _place_unmarked(checker, quote: str, read) -> str | tuple[str, str] | None:
     """İşaretsiz sözün yeri: kimlik, (kimlik, metnin sözleri: yakın karşılık), uyarı ("") ya da dokunulmaz (None)."""
     from risale_mcp.citations import _block_parts, _key
+    # S13.17: kapanış tırnağından sonraki künye ("…indirdik." (Türkiye Diyanet Vakfı meali, Kadr Sûresi, 97:1)) sözden
+    # sayılmaz: meal ancak künyesiz karşılaştırılınca bulunur
+    if m := re.match(r'^(.*?)["”»]\s*\([^()]*\)\s*$', quote, re.S):
+        quote = m.group(1)
     parts = _block_parts(quote)
     if not parts or len(" ".join(parts).split()) < UNMARKED_WORDS:
         return None
@@ -1209,7 +1225,9 @@ class Chat:
         from risale_mcp import kipler
         kip = kipler.get(mode)
         tally = tally if tally is not None else Tally()
-        chosen = self.chosen(tuple(libraries or ()) + kip.libraries)      # kipin açtıkları da (âyet: tefsir)
+        # kipin açtıkları da (âyet: tefsir); konuşmada işareti geçen kütüphane de açık kalır (âyet çalışmasından sonra
+        # takip sorusu tefsiri okuyabilsin)
+        chosen = self.chosen(tuple(libraries or ()) + kip.libraries + used_libraries(history))
         messages = self.messages(history, question, kip.id)
         tools, missing = await self.tools(kip.id, chosen)
         system = self.system_for(chosen, missing)

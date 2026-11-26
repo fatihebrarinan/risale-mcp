@@ -1040,7 +1040,16 @@ async function ask(question) {
       current = data;
       status.textContent = data.text; status.hidden = false;
     }
-    else if (event === "delta") {
+    else if (event === "done" && Array.isArray(data.libraries)) {
+      // S13.17: kipin ya da konuşmanın açtığı kütüphane seçicide de açık görünsün (âyet çalışması tefsiri açar)
+      const added = data.libraries.filter((id) => KUTUPHANELER.some((k) => k.id === id) && !state.libraries.includes(id));
+      if (added.length) {
+        state.libraries = [...state.libraries, ...added];
+        try { localStorage.setItem(LIB_KEY, JSON.stringify(state.libraries)); } catch { /* yalnız bu sayfada */ }
+        renderLibraries();
+      }
+    }
+    if (event === "delta") {
       draft += data.text;
       status.hidden = true;
       if (!frame) frame = requestAnimationFrame(paint);

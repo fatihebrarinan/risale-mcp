@@ -131,6 +131,7 @@ class InProcess:
     def __init__(self, kutuphane: Kutuphane) -> None:
         self.kutuphane = kutuphane
         self._server = None
+        self._lock = asyncio.Lock()      # aynı anda iki çağrı veritabanı bağlantısını paylaşmasın (deneme turları)
 
     def _open(self):
         if self._server is None:
@@ -154,11 +155,12 @@ class InProcess:
 
     async def call(self, name: str, args: dict) -> tuple[str, bool]:
         from mcp.server.mcpserver.exceptions import ToolError
-        server = await asyncio.to_thread(self._open)
-        try:
-            result = await server.call_tool(name, args)
-        except ToolError as e:
-            return str(e), True
+        async with self._lock:
+            server = await asyncio.to_thread(self._open)
+            try:
+                result = await server.call_tool(name, args)
+            except ToolError as e:
+                return str(e), True
         return "".join(getattr(c, "text", "") for c in result.content), bool(getattr(result, "is_error", False))
 
 
@@ -224,22 +226,25 @@ class Remote:
         await self._post({"jsonrpc": "2.0", "method": "notifications/initialized"})
 
     async def _rpc(self, method: str, params: dict) -> dict:
-        async with self._lock:
-            for attempt in range(2):
+        """Kilit yalnız oturum açılırken: açık oturumda çağrılar aynı anda gider (okuyucular birbirini beklemesin)."""
+        for attempt in range(2):
+            async with self._lock:
                 if self.session is None and self.version is None:
                     await self._initialize()
                 self._next += 1
-                ident = self._next
-                response = await self._post({"jsonrpc": "2.0", "id": ident, "method": method, "params": params})
-                if response.status_code in (400, 404) and attempt == 0:      # oturum düştü: bir kez yeniden
-                    self.session = self.version = None
-                    continue
-                if response.status_code != 200:
-                    raise Unavailable(f"{self.kutuphane.id}: HTTP {response.status_code}")
-                message = self._message(response, ident)
-                if "error" in message:
-                    raise Unavailable(f"{self.kutuphane.id}: {message['error'].get('message')}")
-                return message.get("result") or {}
+                ident, session = self._next, self.session
+            response = await self._post({"jsonrpc": "2.0", "id": ident, "method": method, "params": params})
+            if response.status_code in (400, 404) and attempt == 0:      # oturum düştü: bir kez yeniden
+                async with self._lock:
+                    if self.session == session:          # başka bir çağrı yenilemediyse
+                        self.session = self.version = None
+                continue
+            if response.status_code != 200:
+                raise Unavailable(f"{self.kutuphane.id}: HTTP {response.status_code}")
+            message = self._message(response, ident)
+            if "error" in message:
+                raise Unavailable(f"{self.kutuphane.id}: {message['error'].get('message')}")
+            return message.get("result") or {}
         raise Unavailable(f"{self.kutuphane.id}: session")
 
     async def list_tools(self) -> list[dict]:

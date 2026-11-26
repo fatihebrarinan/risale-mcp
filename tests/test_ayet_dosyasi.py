@@ -52,3 +52,14 @@ def test_verse_file_ranks_by_words_per_verse():
     nesefi = next(w for w in works if w["work"] == "nesefi")                     # 2:252-257: altı âyete bölünür
     assert nesefi["share"] == round(nesefi["words"] / 6)
     assert "closed" in out["hadis"] and page["tefsir"] and page["risale"]
+
+
+@needs_dbs
+def test_vakif_translation_with_its_attribution_is_not_flagged():
+    """Tur 8: model meali künyesiyle bloğa koydu; künye sözden sayılınca "⚠" alıyordu."""
+    from risale_mcp import sohbet
+    from risale_mcp.citations import CitationChecker
+    from risale_mcp.library import Library
+    checker = CitationChecker(Library(GENEL.db, GENEL.vectors))
+    text = '> "Biz onu (Kur\'an\'ı) Kadir gecesinde indirdik." (Türkiye Diyanet Vakfı meali, Kadr Sûresi, 97:1)'
+    assert "⚠" not in sohbet.check(checker, text).markdown

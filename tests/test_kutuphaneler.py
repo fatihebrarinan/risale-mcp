@@ -294,3 +294,10 @@ def test_warning_text_when_libraries_are_open(monkeypatch):
     text = 'Risale ise "hiç kimsenin söylemediği bir söz burada" der. Bakınız [[a/c001]].'
     assert sohbet.UNMARKED_NOTE_LIBRARIES in _check(text, {"tefsir": FakeClient(TEXTS)}).markdown
     assert sohbet.UNMARKED_NOTE in sohbet.check(FakeChecker(), text).markdown      # yalnız Risale: eski metin
+
+
+def test_libraries_used_earlier_stay_open():
+    history = [{"q": "Bakara 255", "a": 'Râzî: > "…" [[tefsir:razi/2/255/c004]] ve [[sozler/10/c001]]'},
+               {"q": "devam", "a": "[[hadis:bukhari/1]] [[tefsir:alusi/2/255/c001]]"}]
+    assert sohbet.used_libraries(history) == ("tefsir", "hadis")
+    assert sohbet.used_libraries([]) == ()
