@@ -245,7 +245,7 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 .kip.secili { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 /* S13.17: öbür kütüphaneler (açılıp kapanır; Risale-i Nur hep açık) */
 .kutuphaneler { align-items: center; }
-.kutuphaneler .baslik { font-size: .78rem; color: var(--muted); margin-right: 2px; }
+.kutuphaneler .kutuphane-baslik { font-size: .78rem; font-weight: 600; color: var(--muted); margin-right: 2px; }
 .kip.kutuphane[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent);
   font-weight: 600; }
 .kip.kutuphane.sabit { cursor: default; opacity: .8; }

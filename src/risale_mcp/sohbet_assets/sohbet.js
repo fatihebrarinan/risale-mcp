@@ -45,7 +45,7 @@ function renderLibraries() {
   box.innerHTML = "";
   box.hidden = !KUTUPHANELER.length;
   if (box.hidden) return;
-  box.append(el("span", "baslik", "Kütüphaneler:"));
+  box.append(el("span", "kutuphane-baslik", "Kütüphaneler:"));
   const fixed = el("button", "kip kutuphane sabit", "Risale-i Nur");
   fixed.type = "button";
   fixed.setAttribute("aria-pressed", "true");
