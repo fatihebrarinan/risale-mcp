@@ -1,0 +1,28 @@
+# S13.17 (3) âyet çalışması kipi (2026-11-26): ilk tur. Kip tefsiri kendiliğinden açar; hadis yalnız okuyucu açarsa.
+# Çalıştırma: uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-08.txt
+
+## kursi [kip: ayet]
+Bakara 255
+Râzî bu âyette "kayyûm" ismini nasıl açıklar?
+
+## hamd [kip: ayet]
+Fâtiha 2
+
+## nur [kip: ayet]
+# adıyla: Nûr âyeti
+Nûr âyeti
+
+## yasin [kip: ayet]
+Yâsîn 82
+
+## borc [kip: ayet]
+# Risale'de bağı az olan âyet: "bağ yok" demeli, uydurmamalı
+Bakara 282
+
+## kadir [kip: ayet]
+# hadisin önemli olduğu âyet, hadis kapalı: "Hadis kütüphanesini açın" demeli
+Kadir Sûresi 1
+
+## kadir-hadis [kip: ayet] [kütüphane: hadis]
+# aynı âyet, hadis açık
+Kadir Sûresi 1

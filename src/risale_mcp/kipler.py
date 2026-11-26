@@ -19,6 +19,7 @@ class Kip:
     tools: tuple[str, ...] = ()    # bu kipte açılan ek araçlar (sohbetin kendi araçları)
     post: tuple[str, ...] = ()     # cevaptan sonra sunucunun eklediği listeler
     scope: tuple[str, ...] = field(default=("risale",))   # varsayılan kapsam (ileride: kuran, tefsir, hadis, klasik)
+    libraries: tuple[str, ...] = ()   # S13.17: kipin kendiliğinden açtığı öbür kütüphaneler (okuyucunun seçimine eklenir)
 
 
 SURVEY_INSTRUCTIONS = """\
@@ -34,10 +35,29 @@ places you read. Do not write a list of further places yourself: the page adds t
 end, as candidates, and every place with the words and their count. If the reader asks how many, give the page's \
 count (sentences and places with the words); the number of candidates is not a count."""
 
+VERSE_INSTRUCTIONS = """\
+Mode chosen by the reader: verse study (one verse of the Qur'an, in the Risale-i Nur and in the classical tafsirs).
+1. Call verse_file once with the verse (sura number or name, verse number). If the reader named the verse by its \
+words or its common name and you are not sure which it is, find it first (search, get_ayah). verse_file returns the \
+verse with the Türkiye Diyanet Vakfı translation; the places in the Risale-i Nur tied to it (kind of tie, strong \
+first) and the sections that quote it; and the tafsir units that treat it, in the order of their authors' death, \
+with how much each devotes to this verse (share) and read_first: the units that treat it most extensively.
+2. Read the Risale's strong ties first (read_section or get_passage at their evidence), then the tafsir units in \
+read_first with tefsir_read_section (max_words about 1200; at most four units; go further only if the question \
+needs it). Never choose a tafsir by its fame: follow read_first unless the reader names a work.
+3. Answer in this order, with short headings: the verse and its translation (name it as the Türkiye Diyanet Vakfı \
+translation); in the Risale-i Nur (name each tie by its kind; a Risale passage is never called a tafsir of the \
+verse; if there is no tie, say so plainly and give where it is quoted); in the tafsirs (each work apart, in the \
+order of its author's death, its Arabic quoted exactly with your labelled translation); then your interpretation \
+under its own heading, where any relation between the works is yours. Do not list the units or places you did not \
+read: the page adds them. Follow verse_file's note about the Hadith Library."""
+
 KIPLER: dict[str, Kip] = {k.id: k for k in (
     Kip("serbest", "Serbest soru", "Risale-i Nur'a dair bir soru yazın"),
     Kip("tarama", "Konu taraması", "Bir konu yazın; eserlerde geçtiği yerleri toplayalım",
         instructions=SURVEY_INSTRUCTIONS, tools=("survey",), post=("other_places",)),
+    Kip("ayet", "Âyet çalışması", "Bir âyet yazın (Bakara 255, Âyetü'l-Kürsî); Risale'de ve tefsirlerde birlikte bakalım",
+        instructions=VERSE_INSTRUCTIONS, tools=("verse_file",), post=("verse_places",), libraries=("tefsir",)),
 )}
 DEFAULT = "serbest"
 
@@ -71,4 +91,19 @@ SURVEY_TOOL = {
         "required": ["topic"],
     },
 }
-LOCAL_TOOLS = {"survey": SURVEY_TOOL}
+VERSE_TOOL = {
+    "name": "verse_file",
+    "description": ("Gather a verse study's file: the verse with the Türkiye Diyanet Vakfı translation, the places in "
+                    "the Risale-i Nur tied to it (kind, strength, evidence sentence) and the sections quoting it, and "
+                    "the tafsir units treating it in the order of their authors' death, each with its share of this "
+                    "verse; read_first lists the most extensive. Call it once at the start of a verse study."),
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "sura": {"type": "string", "description": "Sura number (1–114) or name, e.g. '2' or 'Bakara'."},
+            "ayah": {"type": "integer", "minimum": 1, "description": "Verse number."},
+        },
+        "required": ["sura", "ayah"],
+    },
+}
+LOCAL_TOOLS = {"survey": SURVEY_TOOL, "verse_file": VERSE_TOOL}

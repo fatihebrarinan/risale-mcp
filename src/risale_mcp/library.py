@@ -432,6 +432,12 @@ class Library:
         for node_id_, record in records.items():
             if "children" not in record and child_count[node_id_]:
                 record["subsections"] = child_count[node_id_]
+        # S13.17: bölümün (alt ağacıyla) ana metninin kelime sayısı, yalnız kökte: cümle sayısı noktalaması seyrek
+        # baskılarda (Râzî) kapsamı göstermiyordu; âyet çalışması tefsir birimlerini bununla sıralar
+        records[root["id"]]["words"] = self.conn.execute(
+            "SELECT sum(length(trim(s.text)) - length(replace(trim(s.text), ' ', '')) + 1) FROM sentences s"
+            " JOIN nodes n ON n.id = s.node_id WHERE n.work = ? AND n.ord BETWEEN ? AND ? AND s.hasiye = 0",
+            (root["work"], root["ord"], root["last_ord"])).fetchone()[0] or 0
         return {"work": root["work"], "ref": root["ref"], **records[root["id"]], "profile": self.profile(root),
                 **_elsewhere(root["id"])}
 

@@ -1144,7 +1144,7 @@ class Chat:
         from risale_mcp import kipler
         args = block.input if isinstance(block.input, dict) else {}
         if block.name in kipler.LOCAL_TOOLS:        # S13.12: sohbetin kendi araçları (kipin)
-            return await self._call_local(block, args)
+            return await self._call_local(block, args, chosen)
         if owner := self.libraries.owner(block.name, chosen):      # S13.17: öbür kütüphane
             try:
                 text, error = await self.libraries.call(owner[0], owner[1], args)
@@ -1167,7 +1167,7 @@ class Chat:
             return {"type": "tool_result", "tool_use_id": block.id, "is_error": True,
                     "content": f"The tool {block.name} failed; try another way."}
 
-    async def _call_local(self, block, args: dict) -> dict:
+    async def _call_local(self, block, args: dict, chosen: tuple[str, ...] = ()) -> dict:
         from risale_mcp import dosya
         try:
             if block.name == "survey":
@@ -1178,6 +1178,20 @@ class Chat:
                 result = await asyncio.to_thread(dosya.survey, self.library, topic, terms)
                 places = result.pop("places", [])        # S13.13: bütün yerler sayfaya; modele sayımı gider
                 return {"type": "tool_result", "tool_use_id": block.id, PAGE_ONLY: places,
+                        "content": json.dumps(result, ensure_ascii=False, separators=(",", ":"))}
+            if block.name == "verse_file":           # S13.17: âyet çalışması
+                from risale_mcp import ayet_dosyasi
+                try:
+                    ayah = int(args.get("ayah"))
+                except (TypeError, ValueError):
+                    raise ValueError("Give the verse number (ayah).") from None
+                try:
+                    result = await ayet_dosyasi.verse_file(self.library, self.libraries, str(args.get("sura") or ""),
+                                                           ayah, "hadis" in chosen)
+                except LookupError as e:
+                    raise ValueError(str(e)) from None
+                page = result.pop("_page", None)
+                return {"type": "tool_result", "tool_use_id": block.id, PAGE_ONLY: page,
                         "content": json.dumps(result, ensure_ascii=False, separators=(",", ":"))}
             raise ValueError(f"Unknown tool {block.name}.")
         except ValueError as e:
@@ -1195,7 +1209,7 @@ class Chat:
         from risale_mcp import kipler
         kip = kipler.get(mode)
         tally = tally if tally is not None else Tally()
-        chosen = self.chosen(libraries)
+        chosen = self.chosen(tuple(libraries or ()) + kip.libraries)      # kipin açtıkları da (âyet: tefsir)
         messages = self.messages(history, question, kip.id)
         tools, missing = await self.tools(kip.id, chosen)
         system = self.system_for(chosen, missing)
@@ -1232,6 +1246,13 @@ class Chat:
                     markdown, raw = markdown + "\n\n" + others, raw + "\n\n" + others
                 if every := all_places(tally.survey_places):    # yalnız sayfada: geçmişe (modele) girmez
                     markdown += "\n\n" + every
+            if "verse_places" in kip.post:                      # S13.17: âyet çalışmasında okunmayan yerler
+                from risale_mcp import ayet_dosyasi
+                done_reads = read_ids(tally.calls) | foreign_read_ids(tally.calls) | {
+                    _SENTENCE_PART.sub("", str((a or {}).get("section") or (a or {}).get("id") or "").split("..")[0])
+                    for n, a, _, e in tally.calls if not e and n in ("read_section", "get_passage")}
+                if rest := ayet_dosyasi.verse_places(tally.survey_places, checked.sources, done_reads):
+                    markdown += "\n\n" + rest
             yield "done", {"markdown": markdown, "raw": raw, "sources": checked.sources, "mode": kip.id,
                            "libraries": list(chosen),
                            "problems": checked.counts["unverified"], "corrected": corrected, "checks": checked.counts,
