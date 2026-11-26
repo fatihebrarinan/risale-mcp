@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 ve durum değerlendirmesi bitti, Haiku sürer; **S13.12** kipler ve kapsam tasarımda (kod yok), başlangıç kararı bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 ve durum değerlendirmesi bitti, Haiku sürer; **S13.12** kipler: belge, ad dizini, bölüm künyesi ve konu taraması kipi yapıldı (yayında değil, gönderim onayı bekliyor). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -497,6 +497,26 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     kütüphane: erişim kararı, alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması kipi; (3) ders
     (Word), sına, müzakere, kavram, karşılaştırma; (4) yönlendirici (önce öneri, sonra otomatik). Sıra ve başlangıç
     kullanıcının kararını bekliyor.
+    **Kullanıcının kararı (2026-11-26):** kısa belge, üç küçük araç ve konu taraması kipi yapılsın. **Yapıldı:** (0)
+    `docs/kipler-plani.md`. (1a) Risale adları dizini `books/risale_adlari.json` (29 ad, her biri kanıtıyla: adı o yere
+    bağlayan cümle ya da başlığı adı veren düğüm; `tests/test_risale_adlari.py` hepsini sınar); `search` ve
+    `semantic_search` sorguda ad geçerse `named_sections` verir. (1b) Bölüm künyesi `Library.profile`: hâşiye ve âyet
+    sayısı, imzalar (`signed`, en çok 5); `get_outline` kökünde, `read_section`'ın ilk sayfasında `profile` (ayrı araç
+    açılmadı: yalınlık). (1c) Konu taraması: kip kaydı `kipler.py` (serbest, tarama); dosya `dosya.py` (ad dizini,
+    başlık araması, kelime başı araması, anlamsal aramanın 300 cümlesi; risale düzeyi: eserin birinci katı, Lâhikalar,
+    Tarihçe ve Sikke'de mektup; Fihrist özetleri ve Hizbler aday olmaz; aday başına `why`, `focus`, `closest`,
+    `signed`); sohbette `survey` aracı yalnız tarama kipinde, kipin talimatı sayfa notu olarak (sistem talimatı önbellekte
+    kalır), cevaptan sonra anılmayan adaylar "Konunun geçtiği öbür yerler (adaylar; okunmadı, sırası hüküm değildir)"
+    (en çok 15); arayüzde soru kutusunun üstünde kip seçimi, "Konu taraması" örnek kartı kipi seçer, tur `turns.mode`;
+    `sohbet dene` `## ad [kip: tarama]`. **Kapsam ölçümü** (modelsiz, 50 soruluk anlamsal set): dosyanın ilk 5 adayı
+    40/50, ilk 10'u 44, ilk 25'i 49; anlamsal aramanın 5 bölümü 32/50. **Tur 6** (`tur-06.txt`, tarama kipiyle 6 konuşma
+    ve kipsiz bir karşılaştırma; Haiku ≈0,08 $): ihlâs Lem'alar 20–21 merkezde, öbür yerler listesi Lâhikaların ihlâs
+    mektuplarını getirdi; hâşiye sorusunda model künyeden "yaklaşık 15 hâşiye" deyip bulduklarını imzalarıyla ayırdı
+    (talebeler, Mütercim Abdülmecîd, M. Sungur), bulamadıklarını söyledi (tur 3'te "tek hâşiye"); kipsiz ihlâs sorusu da
+    ad dizini sayesinde "İhlâs Risalesi = Lem'alar 20–21" dedi. Kalan: şefkatte Onuncu Lem'a (Şefkat Tokatları) okunmadı
+    (listede var); düz yazıda "44. cümlenin hâşiyesi" (parantezsiz cümle numarası sunucuda düşmüyor). Testler 771, hızlı
+    ölçüm 60/60, arayüz denemesi 79/79. Yayında değil: MCP araç çıktısı da değişir (`get_outline`, `read_section`
+    `profile`; `search`, `semantic_search` `named_sections`; araç açıklamaları).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

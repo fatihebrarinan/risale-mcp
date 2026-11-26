@@ -27,7 +27,27 @@ const els = { list: $("konusma"), empty: $("bos"), form: $("soru-formu"), input:
 const SIDE_EMPTY = els.sideList.innerHTML;
 const docked = { left: window.matchMedia("(min-width: 960px)"), right: window.matchMedia("(min-width: 1200px)") };
 
-const state = { keep: true, questions: null, remaining: null, conversations: [] };
+const state = { keep: true, questions: null, remaining: null, conversations: [], mode: "serbest" };
+// S13.12: kipler (sunucunun kip kaydından; okuyucu açıkça seçer)
+const KIPLER = (() => { try { return JSON.parse($("kipler").dataset.kipler); } catch { return []; } })();
+const kipTitle = (id) => (KIPLER.find((k) => k.id === id) || {}).title || "";
+
+function renderModes() {
+  const box = $("kipler");
+  box.innerHTML = "";
+  box.hidden = KIPLER.length < 2;
+  for (const k of KIPLER) {
+    const b = el("button", "kip" + (k.id === state.mode ? " secili" : ""), esc(k.title));
+    b.type = "button";
+    b.setAttribute("role", "radio");
+    b.setAttribute("aria-checked", String(k.id === state.mode));
+    b.title = k.hint;
+    b.addEventListener("click", () => { state.mode = k.id; renderModes(); els.input.focus(); });
+    box.append(b);
+  }
+  const k = KIPLER.find((x) => x.id === state.mode);
+  els.input.placeholder = k && k.id !== "serbest" ? k.hint + "…" : "Sorunuzu yazın…";
+}
 let cur = { id: null, title: "", turns: [] };    // açık konuşma; turda q, markdown, sources, corrected, feedback, n, a
 let busy = false;
 
@@ -424,6 +444,8 @@ function renderExamples() {
     b.type = "button";
     const q = pick(questions);
     b.dataset.q = q;
+    // S13.12: kipin adını taşıyan kart o kipi seçer ("Konu taraması"); öbürleri serbest soru
+    b.dataset.mode = (KIPLER.find((k) => k.title === label) || { id: "serbest" }).id;
     b.append(el("span", "ornek-tur", esc(label)), el("span", "", esc(q)));
     return b;
   }));
@@ -451,7 +473,10 @@ function stepSummary(steps) {
 
 function renderTurn(turn) {
   const box = el("section", "tur");
-  box.append(el("div", "soru-balon", esc(turn.q)));
+  const asked = el("div", "soru-balon", esc(turn.q));
+  if (turn.mode && turn.mode !== "serbest" && kipTitle(turn.mode))
+    asked.prepend(el("span", "kip-etiket", esc(kipTitle(turn.mode))));
+  box.append(asked);
   if (turn.markdown && turn.steps && turn.steps.length) box.append(stepSummary(turn.steps));
   const answer = el("div", "cevap");
   box.append(answer);
@@ -934,7 +959,7 @@ async function ask(question) {
   setBusy(true);
   els.empty.hidden = true;
   const owner = cur;                     // cevap bu konuşmaya yazılır
-  const turn = { q: question.trim() };
+  const turn = { q: question.trim(), mode: state.mode };
   const box = renderTurn(turn);
   els.list.append(box);
   const answer = box.querySelector(".cevap");
@@ -953,6 +978,7 @@ async function ask(question) {
   // saklanan konuşmanın geçmişini sunucu okur; geçici konuşmada tarayıcı gönderir
   const body = owner.id ? { question: turn.q, conversation: owner.id }
     : state.keep ? { question: turn.q } : { question: turn.q, history: owner.turns.map((t) => ({ q: t.q, a: t.a, r: t.r })) };
+  body.mode = turn.mode;
   let finished = false;
 
   const handle = (event, data) => {
@@ -1057,7 +1083,7 @@ function grow() { els.input.style.height = "auto"; els.input.style.height = els.
 els.input.addEventListener("input", grow);
 $("ornekler").addEventListener("click", (ev) => {
   const b = ev.target.closest(".ornek");
-  if (b) ask(b.dataset.q);
+  if (b) { state.mode = b.dataset.mode || "serbest"; renderModes(); ask(b.dataset.q); }
 });
 $("baska-ornek").addEventListener("click", renderExamples);
 els.fresh.addEventListener("click", newConversation);
@@ -1067,6 +1093,7 @@ els.fresh.addEventListener("click", newConversation);
 async function start() {
   layout();
   renderExamples();
+  renderModes();
   try {
     const s = await api("durum");
     Object.assign(state, { keep: s.keep, questions: s.questions, remaining: s.remaining });

@@ -5,8 +5,9 @@ canlı sohbete gitmez, denemenin sayılarına karışmaz. `sor`dan farkı: bir k
 sorulur (takip soruları sayfadaki gibi: geçmişe modelin düzeltilmiş ham cevabı ve sayfa notu girer) ve her turun
 bütün araç çağrıları sonuçlarıyla birlikte yazılır, yani modelin gördüğü her şey.
 
-Soru dosyası düz metindir: `## ad` bir konuşma açar, altındaki her dolu satır bir sorudur, `#` ile başlayan öbür
-satırlar açıklamadır (sorulmaz). Konuşmalar aynı anda sorulur (`--paralel`).
+Soru dosyası düz metindir: `## ad` bir konuşma açar (`## ad [kip: tarama]`: konuşmanın kipi, S13.12; yoksa serbest
+soru), altındaki her dolu satır bir sorudur, `#` ile başlayan öbür satırlar açıklamadır (sorulmaz). Konuşmalar aynı
+anda sorulur (`--paralel`).
 
     uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-01.txt [ad …]
     SOHBET_MODEL=claude-sonnet-5-5 uv run --extra sohbet python -m risale_mcp.sohbet dene …   # model karşılaştırması
@@ -34,7 +35,9 @@ def load(path: Path) -> list[dict]:
     for line in path.read_text(encoding="utf-8").splitlines():
         line = line.strip()
         if line.startswith("## "):
-            out.append({"ad": line[3:].strip(), "sorular": []})
+            head = line[3:].strip()
+            m = re.match(r"^(\S+)\s*\[kip:\s*([\w-]+)\]$", head)
+            out.append({"ad": m.group(1) if m else head, "kip": m.group(2) if m else None, "sorular": []})
         elif not line or line.startswith("#"):
             continue
         elif not out:
@@ -53,7 +56,7 @@ async def converse(chat, conversation: dict) -> dict:
     for question in conversation["sorular"]:
         tally, start, done, error = Tally(), time.time(), None, None
         try:
-            async for event, data in chat.ask(history, question, tally):
+            async for event, data in chat.ask(history, question, tally, conversation.get("kip")):
                 if event == "done":
                     done = data
                 elif event == "error":
@@ -72,7 +75,7 @@ async def converse(chat, conversation: dict) -> dict:
         if done is None:
             break
         history.append({"q": question, "a": done["raw"], "r": done["reads"]})
-    return {"ad": conversation["ad"], "turns": turns}
+    return {"ad": conversation["ad"], "kip": conversation.get("kip"), "turns": turns}
 
 
 def summary(results: list[dict], model: str, source: Path) -> str:
@@ -80,7 +83,7 @@ def summary(results: list[dict], model: str, source: Path) -> str:
     total = sum(t["usage"]["cost"] for r in results for t in r["turns"])
     lines += [f"Toplam ≈{total:.3f} $, {sum(len(r['turns']) for r in results)} cevap.", ""]
     for r in results:
-        lines += [f"## {r['ad']}", ""]
+        lines += [f"## {r['ad']}" + (f" [kip: {r['kip']}]" if r.get("kip") else ""), ""]
         for i, t in enumerate(r["turns"], 1):
             u = t["usage"]
             lines += [f"### {i}. {t['question']}", "",

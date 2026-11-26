@@ -1,0 +1,27 @@
+# S13.12 konu taraması kipi (2026-11-26): eksik tarama hatalarının kiple yeniden sorulması.
+# Çalıştırma: uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-06.txt
+
+## ihlas [kip: tarama]
+# tur 5: "İhlâs Risalesi ayrı bir risale", "en kısası Emirdağ mektubu"
+Risale-i Nur'da ihlas hangi risalelerde işlenir?
+Bunlardan en kısası hangisi, ondan bir parça okur musun?
+
+## sefkat [kip: tarama]
+Risale-i Nur'da şefkat hangi eserlerde, nasıl anlatılır?
+
+## sabir [kip: tarama]
+Sabır Risale-i Nur'da hangi yerlerde anlatılır?
+
+## tezekkur [kip: tarama]
+Tezekkür ve tefekkür Risale'de nerelerde geçer?
+
+## hasiye [kip: tarama]
+# tur 3: "tek hâşiye"
+İşârâtü'l-İ'câz'daki hâşiyeler nerelerde, kimin?
+
+## mevlana [kip: tarama]
+Risale-i Nur'da Mevlânâ nerelerde anılır?
+
+## serbest-ihlas
+# karşılaştırma: aynı soru kipsiz (bugünkü akış, ama yeni araçlarla)
+Risale-i Nur'da ihlas hangi risalelerde işlenir?

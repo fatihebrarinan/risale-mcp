@@ -631,3 +631,33 @@ def test_s13_11_colon_before_heading_and_sentence_numbers():
         "Tekrar ettiğini belirtiyor. [[a/c005]]\n\n**Yorum**"
     checked = sohbet.check(NS(refresh=lambda: None, nodes={}), "1. **Şu'le, İkinci Kısım** (46. cümle), şöyle geçer.")
     assert checked.markdown == "1. **Şu'le, İkinci Kısım**, şöyle geçer."
+
+
+def test_s13_12_survey_mode_note_tools_and_other_places(library):
+    import json as _json
+    chat = sohbet.Chat(library, client=None)
+    plain = chat.messages([], "ihlas")[-1]["content"]
+    survey = chat.messages([], "ihlas", "tarama")[-1]["content"]
+    assert plain == "ihlas" and survey.startswith("[Page note") and "survey" in survey and survey.endswith("ihlas")
+    tools = asyncio.run(chat.tools("tarama"))
+    assert tools[-1]["name"] == "survey" and "survey" not in [t["name"] for t in asyncio.run(chat.tools())]
+    dossier = {"candidates": [{"id": "lemalar/20", "ref": "Lem'alar › Yirminci Lem'a"},
+                              {"id": "lemalar/21", "ref": "Lem'alar › Yirmibirinci Lem'a"}],
+               "others": [{"id": "sualar/13", "ref": "Şualar › Onüçüncü Şuâ"}]}
+    calls = [("survey", {"topic": "ihlas"}, _json.dumps(dossier), False)]
+    listed = sohbet.other_places(calls, [{"id": "lemalar/20/sebeb-02/c007"}])
+    assert listed.startswith("**Konunun geçtiği öbür yerler**")
+    assert "Yirmibirinci" in listed and "Onüçüncü" in listed and "Yirminci Lem'a" not in listed
+    assert sohbet.other_places([], []) == ""
+
+
+@needs_db
+def test_s13_12_survey_tool_runs_locally(library):
+    import json as _json
+    chat = sohbet.Chat(library, client=None)
+    block = NS(id="t1", name="survey", input={"topic": "ihlas", "terms": ["ihlâs*", "ihlas*"]})
+    result = asyncio.run(chat._call_tool(block))
+    assert not result.get("is_error")
+    ids = [c["id"] for c in _json.loads(result["content"])["candidates"]]
+    assert set(ids[:2]) == {"lemalar/20", "lemalar/21"}          # sıra anlamsal aramaya göre değişebilir
+    assert asyncio.run(chat._call_tool(NS(id="t2", name="survey", input={})))["is_error"]

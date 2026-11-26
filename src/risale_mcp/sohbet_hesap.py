@@ -169,7 +169,8 @@ ADDED_COLUMNS = {"usage": {c: "INTEGER" for c in ("fixed", "dropped", "leaks", "
                  # S13.1: konuşmaları hesapta sakla (varsayılan açık; kapalıyken konuşma yalnız tarayıcıda)
                  "users": {"keep_history": "INTEGER NOT NULL DEFAULT 1"},
                  # S13.3: cevabın adımları ("… okunuyor"), JSON; S13.4 (c): çağrılan araçlar (sonraki soruda modele), JSON
-                 "turns": {"steps": "TEXT", "reads": "TEXT"}}
+                 "turns": {"steps": "TEXT", "reads": "TEXT",
+                           "mode": "TEXT"}}          # S13.12: turun kipi (serbest, tarama…)
 
 
 def norm_email(email: str) -> str:

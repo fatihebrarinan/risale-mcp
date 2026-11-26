@@ -644,6 +644,8 @@ def status_line(library, name: str, args: dict) -> str:
                 return f"Lügatte bakılıyor: {_short(', '.join(map(str, args.get('words') or [])))}"
             case "list_works":
                 return "Eserlerin listesine bakılıyor"
+            case "survey":
+                return f"“{_short(args.get('topic'))}” konusunun eserlerdeki yerleri toplanıyor"
     except Exception:
         pass
     return "Eserlere bakılıyor"
@@ -696,13 +698,16 @@ class Chat:
         self.system = instructions(config.name, lugat=LUGAT_INSTRUCTIONS in self.server.instructions)
         self._tools: list[dict] | None = None
 
-    async def tools(self) -> list[dict]:
+    async def tools(self, mode: str | None = None) -> list[dict]:
+        """MCP araçları; seçilen kipin sohbete özgü araçları sona eklenir (S13.12: önbellek önek tutar)."""
+        from risale_mcp import kipler
         if self._tools is None:
             self._tools = [{"name": t.name, "description": t.description or "", "input_schema": t.input_schema}
                            for t in await self.server.list_tools() if t.name not in EXCLUDED_TOOLS]
-        return self._tools
+        extra = [kipler.LOCAL_TOOLS[name] for name in kipler.get(mode).tools]
+        return self._tools + extra if extra else self._tools
 
-    def messages(self, history: list[dict], question: str) -> list[dict]:
+    def messages(self, history: list[dict], question: str, mode: str | None = None) -> list[dict]:
         question = (question or "").strip()
         if not question:
             raise Refusal("Soru boş.")
@@ -723,6 +728,9 @@ class Chat:
         if notes:     # S13.4 (c): model önceki cevaplarının neye dayandığını görsün (sayfa notu, sorunun önünde)
             question = ("[Page note, not the reader's words: the tools you called for your earlier answers.\n"
                         + "\n".join(notes) + "]\n\n" + question)
+        from risale_mcp import kipler
+        if instructions := kipler.get(mode).instructions:    # S13.12: kipin talimatı, sistem talimatı önbellekte kalsın
+            question = f"[Page note, not the reader's words. {instructions}]\n\n" + question
         return out + [{"role": "user", "content": question}]
 
     def _params(self, tools: list[dict], messages: list[dict]) -> dict:
@@ -733,7 +741,10 @@ class Chat:
 
     async def _call_tool(self, block) -> dict:
         from mcp.server.mcpserver.exceptions import ToolError
+        from risale_mcp import kipler
         args = block.input if isinstance(block.input, dict) else {}
+        if block.name in kipler.LOCAL_TOOLS:        # S13.12: sohbetin kendi araçları (kipin)
+            return await self._call_local(block, args)
         try:
             result = await self.server.call_tool(block.name, args)
             text = "".join(getattr(c, "text", "") for c in result.content)
@@ -747,11 +758,35 @@ class Chat:
             return {"type": "tool_result", "tool_use_id": block.id, "is_error": True,
                     "content": f"The tool {block.name} failed; try another way."}
 
-    async def ask(self, history: list[dict], question: str, tally: Tally | None = None) -> AsyncIterator[tuple[str, dict]]:
-        """(olay, veri) üretir; sonuncusu `done` ya da `error`. `tally` kullanım satırı için doldurulur."""
+    async def _call_local(self, block, args: dict) -> dict:
+        from risale_mcp import dosya
+        try:
+            if block.name == "survey":
+                topic = str(args.get("topic") or "").strip()
+                if not topic:
+                    raise ValueError("Give the topic.")
+                terms = [str(t) for t in (args.get("terms") or []) if str(t).strip()][:12]
+                result = await asyncio.to_thread(dosya.survey, self.library, topic, terms)
+                return {"type": "tool_result", "tool_use_id": block.id,
+                        "content": json.dumps(result, ensure_ascii=False, separators=(",", ":"))}
+            raise ValueError(f"Unknown tool {block.name}.")
+        except ValueError as e:
+            return {"type": "tool_result", "tool_use_id": block.id, "content": str(e), "is_error": True}
+        except Exception:
+            import logging
+            logging.exception("sohbet: yerel araç hatası %s", block.name)
+            return {"type": "tool_result", "tool_use_id": block.id, "is_error": True,
+                    "content": f"The tool {block.name} failed; try another way."}
+
+    async def ask(self, history: list[dict], question: str, tally: Tally | None = None,
+                  mode: str | None = None) -> AsyncIterator[tuple[str, dict]]:
+        """(olay, veri) üretir; sonuncusu `done` ya da `error`. `tally` kullanım satırı için doldurulur. `mode`: kip
+        (S13.12, `kipler.py`); yoksa serbest soru."""
+        from risale_mcp import kipler
+        kip = kipler.get(mode)
         tally = tally if tally is not None else Tally()
-        messages = self.messages(history, question)
-        tools = await self.tools()
+        messages = self.messages(history, question, kip.id)
+        tools = await self.tools(kip.id)
         corrected = False
         while True:
             text = None
@@ -770,7 +805,10 @@ class Chat:
                 messages.append({"role": "user", "content": correction(checked.problems)})
                 yield "restart", {"text": "Alıntılar eserlerle denetleniyor; düzeltiliyor…"}
                 continue
-            yield "done", {"markdown": checked.markdown, "raw": checked.raw, "sources": checked.sources,
+            markdown, raw = checked.markdown, checked.raw
+            if "other_places" in kip.post and (others := other_places(tally.calls, checked.sources)):
+                markdown, raw = markdown + "\n\n" + others, raw + "\n\n" + others
+            yield "done", {"markdown": markdown, "raw": raw, "sources": checked.sources, "mode": kip.id,
                            "problems": checked.counts["unverified"], "corrected": corrected, "checks": checked.counts,
                            "steps": tally.steps, "reads": reads(tally.calls),
                            "usage": {"cost": round(tally.cost, 5), "tools": tally.tools, "rounds": tally.rounds}}
@@ -825,6 +863,32 @@ class Chat:
                 results.append(result := await self._call_tool(block))
                 tally.calls.append((block.name, block.input or {}, result["content"], bool(result.get("is_error"))))
             messages.append({"role": "user", "content": results})
+
+
+OTHER_PLACES = 15           # konu taramasının sonundaki aday listesinde en çok yer
+OTHER_PLACES_TITLE = "**Konunun geçtiği öbür yerler** (sayfanın aramasından adaylar; okunmadı, sırası hüküm değildir)"
+
+
+def other_places(calls: list, sources: list[dict]) -> str:
+    """S13.12: konu taramasının dosyasında olup cevapta anılmayan adaylar, mekanik liste (kullanıcının kararı,
+    2026-11-26). Cevabın bir kaynağı adayın içindeyse (ya da aday kaynağın içindeyse) aday anılmış sayılır."""
+    dossier = None
+    for name, _, result, error in calls:
+        if name == "survey" and not error:
+            try:
+                dossier = json.loads(result)
+            except ValueError:
+                pass
+    if not dossier:
+        return ""
+    cited = {s["id"].split("..")[0] for s in sources if s.get("id")}
+
+    def mentioned(unit: str) -> bool:
+        return any(c == unit or c.startswith(unit + "/") or unit.startswith(c + "/") for c in cited)
+    rows = [c for c in [*dossier.get("candidates", []), *dossier.get("others", [])] if not mentioned(c["id"])]
+    if not rows:
+        return ""
+    return OTHER_PLACES_TITLE + "\n\n" + "\n".join(f"- {c['ref']}" for c in rows[:OTHER_PLACES])
 
 
 MAX_READS = 30              # bir cevabın kaydedilen en çok araç çağrısı
@@ -1014,11 +1078,12 @@ class Conversations:
     def turns(self, email: str, ident: str) -> list[dict] | None:
         if not self.owned(email, ident):
             return None
-        rows = self.store._run("SELECT n, question, raw, markdown, sources, corrected, feedback, steps, reads FROM "
+        rows = self.store._run("SELECT n, question, raw, markdown, sources, corrected, feedback, steps, reads, mode FROM "
                                "turns WHERE conversation = ? ORDER BY n", (ident,))
         return [{"n": r["n"], "q": r["question"], "a": r["raw"], "markdown": r["markdown"],
                  "sources": json.loads(r["sources"]), "corrected": bool(r["corrected"]), "feedback": r["feedback"],
-                 "steps": json.loads(r["steps"] or "[]"), "r": None if r["reads"] is None else json.loads(r["reads"])}
+                 "steps": json.loads(r["steps"] or "[]"), "r": None if r["reads"] is None else json.loads(r["reads"]),
+                 "mode": r["mode"] or "serbest"}
                 for r in rows]
 
     def get(self, email: str, ident: str) -> dict | None:
@@ -1042,11 +1107,11 @@ class Conversations:
                 n = c.execute("SELECT COALESCE(MAX(n) + 1, 0) FROM turns WHERE conversation = ?", (ident,)).fetchone()[0]
                 c.execute("UPDATE conversations SET updated = ? WHERE id = ? AND email = ?", (now, ident, email))
             c.execute("INSERT INTO turns (conversation, n, ts, question, raw, markdown, sources, corrected, steps, "
-                      "reads) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                      "reads, mode) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
                       (ident, n, now, question.strip(), done["raw"], done["markdown"],
                        json.dumps(done["sources"], ensure_ascii=False), int(bool(done.get("corrected"))),
                        json.dumps(done.get("steps") or [], ensure_ascii=False),
-                       json.dumps(done.get("reads") or [], ensure_ascii=False)))
+                       json.dumps(done.get("reads") or [], ensure_ascii=False), done.get("mode") or "serbest"))
         return ident, n
 
     def rename(self, email: str, ident: str, title: str) -> bool:
@@ -1152,7 +1217,13 @@ def page(config: Config, email: str) -> str:
     return ((ASSETS / "sohbet.html").read_text(encoding="utf-8")
             .replace("{{P}}", _html.escape(config.prefix)).replace("{{NAME}}", _html.escape(config.name))
             .replace("{{EMAIL}}", _html.escape(email)).replace("{{INITIAL}}", _html.escape(email[:1].upper()))
-            .replace("{{V}}", version))
+            .replace("{{V}}", version)
+            .replace("{{KIPLER}}", _html.escape(json.dumps(_kipler_public(), ensure_ascii=False))))
+
+
+def _kipler_public() -> list[dict]:
+    from risale_mcp import kipler
+    return kipler.public()
 
 
 def _asset_version() -> str:
@@ -1226,6 +1297,8 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
         try:
             body = await request.json()
             question = str(body.get("question", ""))
+            from risale_mcp import kipler
+            mode = kipler.get(str(body.get("mode") or "")).id      # S13.12: bilinmeyen kip serbest soru sayılır
             conversation = body.get("conversation")
             if conversation is not None:
                 conversation = str(conversation)[:64]
@@ -1247,7 +1320,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             busy.add(email)
             tally, start, outcome, done = Tally(), time.time(), "cancelled", None
             try:
-                async for event, data in chat.ask(history, question, tally):
+                async for event, data in chat.ask(history, question, tally, mode):
                     if event == "done":
                         outcome, done = "done", data
                         left = remaining(email)
