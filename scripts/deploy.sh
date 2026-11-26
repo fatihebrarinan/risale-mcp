@@ -68,7 +68,7 @@ if [[ $SOHBET_ONLY == 1 ]]; then
     [[ -n "$changed" || $env_same == 0 ]] || { echo "sunucudakiyle aynı: gönderilecek bir şey yok"; exit 0; }
     # Çalışan kodu etkileyen ama sohbetin olmayan dosya: tam yol (--code), araç çıktısı kaydıyla
     other=$(grep -E '^(src/|pyproject\.toml$|uv\.lock$|docs/.*\.service$|docs/Caddyfile$)' <<<"$changed" \
-        | grep -vE '^src/risale_mcp/(sohbet\.py|sohbet_hesap\.py|sohbet_dene\.py|dosya\.py|kipler\.py|sohbet_assets/)' || true)
+        | grep -vE '^src/risale_mcp/(sohbet\.py|sohbet_hesap\.py|sohbet_dene\.py|dosya\.py|kipler\.py|kutuphaneler\.py|ayet_dosyasi\.py|sohbet_assets/)' || true)
     if [[ -n "$other" ]]; then
         echo "sohbetin dışında çalışan kod değişmiş; --code ile gönderin (araç çıktısı kaydıyla):"
         sed 's/^/  /' <<<"$other"
