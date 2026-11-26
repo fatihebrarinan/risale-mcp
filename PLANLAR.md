@@ -65,31 +65,13 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
 `KAYIT.md` › "Sıradaki'nin notları"):
-- **Son adım (2026-11-26):** S13.15'in adı beklenirken S13.17 başladı (kullanıcının kararı; deneme bitene kadar
-  yalnız yerelde): S13.17.1 erişim ölçümü (öneri onaylandı), S13.17.2 altyapı ve tur 7, S13.17.3 âyet çalışması kipi
-  ve tur 8 bitti; kullanıcının kararıyla deneme haftası beklenmeden **yayında** (kütüphaneler okuyucu açmadıkça
-  kapalı). Kullanıcı canlıda deneyecek. B12 plana girdi.
-  Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
-  kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
-  **Ad Âyinedâr** (2026-11-26 akşam; Tahkik'ten döndü), çatı `ayinedar.org`, projeler işlevli, İngilizce alt alan adlarında
-  (`chat.`, `read.`, `lab.`, `connect.`); adımlar S13.15.1–S13.15.7; S13.15.1 (alan adları
-  alındı, marka başvurusu yapılmaz) S13.15.2 (DNS, Caddy, "hazırlanıyor" sayfası yayında) ve S13.15.3 (logo: kemerli aynada
-  kırmızı kapaklı kitap) bitti, **önde S13.15.4** (sohbetin `chat.ayinedar.org`'a taşınması; yedi alt adım, deneme bitmeden;
-  2026-11-27: (1) DNS kayıtları girildi, Scaleway `ayinedar.org`'u doğruladı; `destek@ayinedar.org`'a deneme
-  e-postası geri döndü: Proton'un süzgeci (rspamd) yeni alan adına giden bağlantıyı reddediyor (aynı ileti bağlantısız
-  geçti; ayrı denemelerde yeni gönderici ve yeni yönlendirme tek başına geçti), doğrulama e-postasından bağlantı
-  kaldırıldı; mail-tester 10/10 (SPF, DKIM, DMARC geçer), ama Proton bağlantısızı da spam klasörüne koydu (yeni alan
-  adının itibarı; yönlendirmeyle geldi); DMARC bir iki hafta sonra `p=quarantine`; (2) çatı bağlantısı `SOHBET_CATI`, simgeler, ad yazısı (Literata alt kümesi, `scripts/literata-alt.py`) ve
-  (3) PWA (manifesto, `sw.js` yalnız çevrimdışı sayfası, Ayarlar › Görünüm'de ana ekrana ekleme) bitti; adresler ve ad
-  5. adımda birlikte değişir; (4) Hakkında sayfası (`/hakkinda`, `sohbet_assets/hakkinda.html`; Diyanet bildirgesinin 7.
-  maddesi kullanıcının verdiği metinden) yazıldı, kullanıcının okuması bekleniyor; Proton A'yı da (risalemcp.com) spam'e
-  koydu: gönderici taşınmayla `noreply@ayinedar.org` olur; (5) hazır: Caddy `chat.ayinedar.org`, eski adres 308,
-  servis biriminde ayarlar, güvenlik başlıkları uygulamada (CSP; HSTS Caddy'de), 404, paylaşım kartı, `noindex`; arayüz
-  denemesi yeni düzende 86/86; `__Host-` çerez öneki yapılmadı (çerez adı 56 yerde, kazancı yalnız kendi alt alan
-  adlarımıza karşı); 3 hesap, geçmiş saklamayı kapatan yok; **yayında (2026-11-27 00.36, `deploy.sh --code`, araç
-  çıktısında fark yok)**: eski adres 308 ile aynı yola, başlıklar, manifesto, kart, 404 canlıda denetlendi; kayıt
-  sayfası HEAD isteğine 400 döner (eskiden de; tarayıcı ve önizleme GET kullanır); sırada kullanıcının canlı kod
-  denemesi, (6) ilk izlenim, (7) deneme kullanıcılarına haber). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
+- **Son adım (2026-11-27):** S13.15.4 bitti: sohbet **`chat.ayinedar.org`**'da, adı Âyinedâr (yayın 2026-11-27 00.36;
+  eski `risalemcp.com/sohbet/*` 308 ile aynı yola). Kullanıcı telefonda ve masaüstünde girdi, kod e-postası geldi;
+  deneme kullanıcılarına yeni adresi kendisi gönderiyor. Ayrıntı `KAYIT.md` › S13.15.4. Ondan önce S13.15.1–S13.15.3
+  (alan adları, DNS ve Caddy, logo) ve S13.17 (öbür kütüphaneler ve âyet çalışması kipi sohbette, yayında), S13.16,
+  B11, B10 bitti. **Önde S13.15.5** (okuma platformu `read.` ve masa `lab.`; davetlerden önce). Açık kalan küçük iş:
+  girişsiz tanıtım (`sohbet_hesap.HERO`) yalnız Risale'yi anar, Hakkında bütün kütüphaneleri; tanıtımdan önce bakılır
+  (S13.15.6 ile). DMARC ≈2026-12-10'da `p=quarantine`. S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -205,26 +187,11 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     Apple); `scripts/ikon-ayinedar.sh` `favicon.ico`, `icon.png`, `icon-192.png`, `icon-512.png`,
     `icon-maskable-512.png`, `apple-touch-icon.png` üretir. Yazı: Literata 500 ("Âyinedâr"; OFL); sayfalara
     girerken kendi sunucumuzdan verilir (dışarıya istek yok). Eklentilerin simgeleri değişmedi (`scripts/ikon.sh`).
-  - **S13.15.4 Sohbetin taşınması:** `chat.ayinedar.org`; Caddy, `SOHBET_NAME`/`SOHBET_SITE`/`SOHBET_PREFIX`/
-    `SOHBET_FROM`, Scaleway gönderici alan doğrulaması (SPF/DKIM), eski adresten yönlendirme, oturumlar bir kez yeniden
-    giriş; tanıtım sayfası (nedir, nasıl çalışır, neye güvenebilirsiniz ve sınırları: "araştırma aracıdır, fetva makamı
-    değildir", Diyanet'in 24 Kasım 2026 bildirgesi), kayıt ve giriş, gizlilik ve şartlar yeni adla; tanıtımdan önce PWA
-    (eski S13 (8)) ve ilk izlenimin (karşılama, örnekler) yeni adla gözden geçirilmesi. Yapılmayan: mağaza uygulaması
-    ("Sonra").
-    **Alt adımlar** (kullanıcı onayladı, 2026-11-26; taşınma deneme bitmeden, şimdi: site neredeyse kimseyle
-    paylaşılmadı): (1) **E-posta:** `ayinedar.org`'da Scaleway gönderici alanı (DKIM, SPF, DMARC), gönderen
-    `noreply@ayinedar.org` ("Âyinedâr"), doğrulama e-postasının metni yeni adla; `destek@ayinedar.org` Cloudflare
-    yönlendirmesiyle (SPF tek kayıtta). (2) **Ad ve adres kodda:** sitenin sayfalarına kökten bağlantılar tam adres
-    (S13.15.6'ya kadar risalemcp.com), alt satırdaki site bağlantısı çatıya, gizlilik ve şartlarda ad, adres ve
-    `POLICY_DATE`, logo ve "Âyinedâr · Sohbet" yazısı (Literata alt kümesi, kendi sunucumuzdan). (3) **PWA:**
-    manifesto, simgeler, yalnız "çevrimdışısınız" sayfası (cevap önbelleğe alınmaz), iPhone için ana ekrana ekleme
-    ipucu. (4) **Tanıtım:** açılıştaki tanıtım kısa kalır, ayrı "Hakkında" sayfası (`/hakkinda`: nedir, nasıl
-    çalışır, neye güvenilir, sınırları, Diyanet'in bildirgesi). (5) **Yayın:** Caddy `chat.ayinedar.org` → 8010,
-    `risalemcp.com/sohbet/*` 308 ile yeni adrese, güvenlik başlıkları (HSTS, CSP, `frame-ancestors 'none'`), çerez
-    `__Host-` önekli, tanıtıma kadar `noindex`, paylaşım kartı (Open Graph), adla 404; gönderim `--code` ile, kayıtla;
-    tarayıcıda saklanan konuşmalar taşınmaz (`keep_history = 0` sayısına bakılır). (6) **İlk izlenim:** telefon ve
-    masaüstünde gözden geçirme, `sohbet-arayuz-dene.py` yeni adrese. (7) **Haber:** deneme kullanıcılarına yeni adres
-    ve bir kez yeniden giriş (kullanıcı gönderir).
+  - **S13.15.4 Sohbetin taşınması** (bitti, 2026-11-27): sohbet `chat.ayinedar.org`'da, adı Âyinedâr; eski adres 308
+    ile aynı yola; e-posta `noreply@ayinedar.org` (Reply-To ve `destek@ayinedar.org`), kod e-postasında bağlantı yok;
+    simgeler ve ad yazısı, PWA, Hakkında (`/hakkinda`, Diyanet bildirgesinin 7. maddesi), güvenlik başlıkları, 404,
+    paylaşım kartı, tanıtıma kadar `noindex`. Yapılmayan: `__Host-` çerez öneki (gerekçe `KAYIT.md`), mağaza uygulaması
+    ("Sonra"). DMARC bir iki hafta sorunsuz gönderimden sonra `p=quarantine`. Ayrıntı `KAYIT.md` › S13.15.4.
   - **S13.15.5 Okuma platformu ve masanın taşınması:** `read.`, `lab.`; davetlerden önce (davet bağlantıları adres
     taşır); çerez yolu, `site_auth.py`, sunucunun kısıtlı gönderme anahtarının hedefi, `d5.html`, ntfy bağlantıları.
   - **S13.15.6 Çatı sitesi:** `ayinedar.org`; ana sayfa önce sohbete çağırır, öbür projeler ikinci sırada; yenilikler,

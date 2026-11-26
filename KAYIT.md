@@ -382,6 +382,46 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S13.15.4. Sohbetin `chat.ayinedar.org`'a taşınması** (bitti ve yayında, 2026-11-26 – 2026-11-27; alt adımlar
+kullanıcının onayıyla, taşınma deneme bitmeden: "site neredeyse kimseyle paylaşılmadı").
+
+- **(1) E-posta.** Scaleway'de `ayinedar.org` gönderici alanı (API ile açıldı, alan kimliği `57070baa…`); kullanıcı
+  Cloudflare'de Email Routing'i açtı (`destek@ayinedar.org` → kendi adresi), SPF'i tek kayıtta birleştirdi
+  (`include:_spf.mx.cloudflare.net include:_spf.tem.scaleway.com ~all`), DKIM ve DMARC (`p=none`) ekledi; Scaleway'in
+  önerdiği "blackhole" MX eklenmedi (MX'ler yönlendirmenin). Kayıtlar `data/interim/ayinedar-eposta-kayitlari.txt`.
+  Kodda destek adresi `SOHBET_DESTEK` (sayfaların iletişim satırı) ve e-postaya Reply-To. **Proton denemeleri:**
+  `noreply@ayinedar.org` → `destek@ayinedar.org` reddedildi (`554 5.7.1 rejected by rspamd filter`, Cloudflare
+  `521 5.3.0`); ayrıştırma: eski gönderici → yeni yönlendirme ve yeni gönderici → eski yönlendirme geçti, gerçek kod
+  e-postası bağlantıyla reddedildi, bağlantısız geçti: **yeni alan adına bağlantı süzgece takılıyor**; kod
+  e-postasından bağlantı kaldırıldı (okuyucu kodu açık sayfaya yazar; bağlantısız kod e-postası oltalamaya da kapalı).
+  mail-tester.com 10/10 (SPF, DKIM, DMARC geçer). Yönlendirmeyle gelen üç ileti (eski göndericininki de) Proton'da
+  spam'e düştü: sebep yönlendirme; doğrudan gönderilen kod kullanıcıya ulaştı.
+- **(2) Ad ve adres.** Çatı bağlantısı `SOHBET_CATI`; politika sayfalarındaki kökten bağlantılar risalemcp.com'a tam
+  adres; adın geçtiği cümleler `{{NAME}}`; simgeler (`favicon.ico`, `icon-kucuk.svg`, `apple-touch-icon.png`; kopyalarını
+  `scripts/ikon-ayinedar.sh` yazar); ad yazısı Literata 500, optik boy 24, yalnız Türkçe Latin harfleri (10 KB,
+  `scripts/literata-alt.py`; kaynak google/fonts, OFL; telif ve lisans satırları dosyada).
+- **(3) PWA.** `manifest.webmanifest`, `sw.js` (yalnız sayfa açılışı; bağlantı yoksa `/cevrimdisi`; cevap, metin ve
+  API önbelleğe alınmaz), simgeler (192, 512, maskable), Ayarlar › Görünüm'de "Ana ekrana ekleyin" (Android/Chrome'da
+  tarayıcının penceresi, iPhone'da Safari'nin yolu).
+- **(4) Hakkında.** `/hakkinda` (`sohbet_assets/hakkinda.html`, girişsiz): ilk taslak ayrıntılı ve Risale'ye
+  odaklıydı; kullanıcının isteğiyle kısa, genel ve bütün kütüphaneleri kapsayan metin: nedir, neye dayanır, sınırları,
+  "Bir araştırma aracı" (23–24 Kasım 2026 İstanbul toplantısının sonuç bildirgesinin 7. maddesi, kullanıcının verdiği
+  metinden aynen), kimin. Bağlantıları: hesap ve belge sayfalarının altı, girişsiz tanıtım, Ayarlar › Belgeler.
+- **(5) Yayın** (2026-11-27 00.36, `scripts/deploy.sh --code`; araç çıktısında fark yok, `yayin-20261127-003609`).
+  Caddy: `chat.ayinedar.org` → 127.0.0.1:8010 (HSTS, `noindex`, tamponsuz), `risalemcp.com/sohbet/*` `handle_path` ile
+  308 aynı yola (sorgu dizgisi dahil). Ayarlar servis biriminde (`SOHBET_PREFIX=/` …); koddaki varsayılan yerel
+  geliştirmenin `/sohbet/` düzeni kalır (testler ve arayüz denemesi değişmedi). Güvenlik başlıkları uygulamada
+  (`sohbet_hesap.SECURITY`, saf ASGI ara katmanı: SSE'yi tamponlamaz): CSP `script-src 'self'` (satır içi betik yok),
+  stil `'unsafe-inline'` (hesap sayfalarının `<style>`'ı), `frame-ancestors 'none'`. Adla 404 (API'de JSON). Paylaşım
+  kartı (Open Graph; `site-ayinedar/paylasim-sohbet.html` → `paylasim.jpg`, 47 KB, `scripts/paylasim-ayinedar.py`).
+  `POLICY_DATE` 27 Kasım 2026. Gönderimden önce Caddyfile sunucuda ayrıca doğrulandı (betik geçersiz dosyada sessizce
+  eskide kalır). Arayüz denemesi yeni düzende 86/86 (betik artık konsol hatalarını da topluyor: CSP ihlalleri). 3
+  hesap, geçmiş saklamayı kapatan yok (kaybolan konuşma yok), açık oturumlar bir kez yeniden giriş. **Yapılmayan:**
+  `__Host-` çerez öneki (çerez adı 56 yerde; kazancı yalnız kendi alt alan adlarımızın çerezi gölgelemesine karşı,
+  çerez zaten alan adına bağlı, HttpOnly, Secure). Bilinen: kayıt sayfası HEAD isteğine 400 döner (eskiden de).
+- **(6), (7)** kullanıcının denemesiyle: telefonda ve masaüstünde giriş, kod e-postası geldi; deneme kullanıcılarına
+  yeni adresi kendisi gönderiyor.
+
 **S13.16, B11, B10. Küçük açıklar** (2026-11-26; kullanıcı S13.15'in adını düşünürken; kararları aynı gün: "a
 onaylıyorum, c onaylıyorum, d uygun, B11 biçim ve kapsam önerilerin uygun, B10 ek çıksın, deploy'ları sen yap").
 
