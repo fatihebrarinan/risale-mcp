@@ -78,6 +78,22 @@ klasik.risalemcp.com {
 	reverse_proxy 100.98.98.62:8003
 }
 
+# S13.15: Âyinedâr, çatı ve projeler (PLANLAR.md › S13.15 (a); DNS Cloudflare'de "DNS only", alt alan adları CNAME
+# ile köke). Şimdilik hepsi depodaki site-ayinedar/'ın "hazırlanıyor" sayfası (scripts/deploy.sh gönderir); projeler
+# taşındıkça kendi bloklarını alır: chat (S13.15.4), read ve lab (S13.15.5), kök (S13.15.6), connect (S13.15.7).
+ayinedar.org, chat.ayinedar.org, read.ayinedar.org, lab.ayinedar.org, connect.ayinedar.org {
+	encode gzip
+	header X-Robots-Tag "noindex, nofollow"
+	root * /var/www/ayinedar
+	try_files {path} /index.html
+	file_server
+}
+
+# www ve .com asıl adrese yönlenir (S13.15 (b): asıl adres .org)
+www.ayinedar.org, ayinedar.com, www.ayinedar.com {
+	redir https://ayinedar.org{uri} 301
+}
+
 # Tanıtım sitesi, belgeler ve gizlilik politikası: depodaki site/ klasörü (scripts/deploy.sh gönderir).
 risalemcp.com {
 	# S12: sohbet sayfasının cevap akışı (Server-Sent Events) sıkıştırılmaz: sıkıştırma akışı parça parça göndermez

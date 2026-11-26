@@ -36,6 +36,11 @@ cd "$(dirname "$0")/.."
 send_posts() {
     rsync -az --delete --chown=risale:risale -e "${SSH[*]}" docs/yenilikler docs/calismalar "$HOST:$DEST/docs/"
 }
+# S13.15.2: ayinedar.org ve alt alan adlarının sayfaları (Caddy /var/www/ayinedar'dan sunar, bkz. docs/Caddyfile)
+send_ayinedar() {
+    "${SSH[@]}" "$HOST" "mkdir -p /var/www/ayinedar"
+    rsync -az --delete -e "${SSH[*]}" site-ayinedar/ "$HOST:/var/www/ayinedar/"
+}
 CODE_ONLY=0; HADIS=0; SITE_ONLY=0; SOHBET_ONLY=0
 # Sunucuya giden .env satırları; S13.17: sohbetin öbür kütüphanelerinin iç erişim adresleri
 ENV_KEYS='^(VOYAGE_API_KEY|ANTHROPIC_API_KEY|SCW_SECRET_KEY|SCW_PROJECT_ID|SOHBET_SINIRSIZ|SOHBET_HADIS_URL|SOHBET_TEFSIR_URL|SOHBET_KLASIK_URL)='
@@ -50,6 +55,7 @@ done
 if [[ $SITE_ONLY == 1 ]]; then
     "${SSH[@]}" "$HOST" "mkdir -p /var/www/risalemcp"
     rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
+    send_ayinedar
     if [[ -f data/interim/onizleme/index.html ]]; then
         "${SSH[@]}" "$HOST" "install -d -o root -g caddy -m 2750 /var/www/ozel/taslak/onizleme"
         rsync -az --delete --chown=root:caddy --chmod=D2750,F640 -e "${SSH[*]}" data/interim/onizleme/ "$HOST:/var/www/ozel/taslak/onizleme/"
@@ -121,6 +127,7 @@ git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DES
 # Tanıtım sitesi (risalemcp.com; Caddy /var/www/risalemcp'den sunar, bkz. docs/Caddyfile)
 "${SSH[@]}" "$HOST" "mkdir -p /var/www/risalemcp"
 rsync -az --delete -e "${SSH[*]}" site/ "$HOST:/var/www/risalemcp/"
+send_ayinedar
 # S5: girişli taslak bölümü (risalemcp.com/taslak/): âyet masası kapalı depodan (data/d1, `scripts/d1-masa.py`)
 # /var/www/ozel/taslak/'a; site/ klasörüne girmez, yalnız Caddy okur, giriş servisi (aşağıda) kapıdır
 # Birim başına bir sayfa (<birim>.html; index.html son birim)

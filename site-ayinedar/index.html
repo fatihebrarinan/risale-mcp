@@ -1,0 +1,36 @@
+<!doctype html>
+<!-- S13.15.2: ayinedar.org ve alt alan adlarının geçici sayfası (docs/Caddyfile; scripts/deploy.sh gönderir).
+     Projeler taşındıkça (S13.15.4–S13.15.7) kendi adreslerinde kendi sayfalarını alır. Dışarıya istek yok. -->
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Âyinedâr</title>
+<style>
+  :root { --bg: #141917; --fg: #e8ece9; --muted: #a3ada7; --accent: #7cc59d; color-scheme: dark light; }
+  @media (prefers-color-scheme: light) {
+    :root { --bg: #fbfaf7; --fg: #1f2a24; --muted: #5b6660; --accent: #1f5c3f; }
+  }
+  html, body { height: 100%; margin: 0; }
+  body {
+    display: flex; align-items: center; justify-content: center; text-align: center;
+    background: var(--bg); color: var(--fg); padding: 2rem; box-sizing: border-box;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", sans-serif; line-height: 1.6;
+  }
+  h1 { font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-size: clamp(2.4rem, 8vw, 4rem);
+       margin: 0 0 .6rem; letter-spacing: .02em; }
+  .line { width: 3rem; height: 2px; background: var(--accent); margin: 0 auto 1.4rem; border: 0; }
+  p { margin: .2rem 0; }
+  .en { color: var(--muted); font-size: .95rem; }
+</style>
+</head>
+<body>
+<main>
+  <h1>Âyinedâr</h1>
+  <hr class="line">
+  <p>Hazırlanıyor.</p>
+  <p class="en" lang="en">In preparation.</p>
+</main>
+</body>
+</html>
