@@ -382,6 +382,512 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S13.1–S13.14. Sohbetin ilk geliştirme adımları** (bitti ve yayında, 2026-11-25 – 2026-11-26; S13.14 kullanıcının kararıyla durduruldu). S13'ün ana kaydı ve alt adımları, "Sıradaki"den değiştirilmeden (2026-11-26, kullanıcının kararı: S13 genel ad olarak sıradan kalktı, açık maddeleri S13.15–S13.21 diye sıraya girdi):
+
+- S13 **Sohbet sayfasının asıl geliştirmesi** (kullanıcının kararı, 2026-11-25): S12'nin deneme ayından sonra, onun
+  ölçüleri ve geri bildirimiyle. İlk turda yapılmayan her şey burada: (1) ön arama (soru gelince anlamsal ve kelime
+  araması birlikte, aday bölümler baştan; risk: modelin kendi aramasını daraltır), (2) model yönlendirme (Haiku okur,
+  Sonnet yazar ya da soruya göre), (3) gerçek kullanımdan öğrenmek (👎 alan ve doğrulanamayan alıntılı cevaplar,
+  onayla gelenlerden altın soru adayı), (4) kipler (ders hazırla, beni sına, müzakere, konu taraması), (5) lügat
+  (alıntıda kelimeye dokununca; okuma platformunun `lugatWords`'ü), (6) okuma platformuyla bağ ("bu bölüm hakkında
+  sor"), (7) âyet görünümü (Türk hattı, Medine seçilebilir; meal ayrı ve etiketli), (8) PWA (ana ekrana eklenebilen
+  uygulama; mağaza gerekmez), (9) alıntıyı kişisel deftere kaydetmek, cevabı kalıcı bağlantıyla paylaşmak, "devamını
+  oku" ve "aynı konunun geçtiği öbür yerler", kısa ya da ayrıntılı cevap, (10) İngilizce ve Arapça arayüz, (11) öbür
+  eklentiler (hadis, tefsir, klasik), (12) ad ve alan adı (eski S12.8): `risalemcp.com/sohbet` geçicidir, ileride
+  vurucu bir ad ve kendi alan adı (ör. "ustad.com" gibi); hesaplar alana bağlı değil (taşınınca bir kez yeniden
+  giriş), e-posta gönderen ve SPF/DKIM yeni alana göre; ad, sayfanın müellif adına konuştuğu izlenimini vermemeli
+  (sayfada açık "yapay zekâ cevabıdır" ibaresi). Sıra denemenin sonucuna göre yazılır.
+  **Deneme kısaldı** (kullanıcının kararı, 2026-11-25): ay yerine 5 kişi, bir hafta; başlamadan ve bitince `sohbet usage`
+  kaydı (S13'ün değişiklikleri onunla karşılaştırılır). Maliyet uyarısı: model yönlendirme (Sonnet) ve öbür eklentiler
+  soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır.
+  - S13.1 **Sol panel ve konuşma geçmişi** (kullanıcının kararı, 2026-11-25: denemeden önce, deneyenler iyi bir
+    arayüzle karşılaşsın). Büyük sohbet uygulamalarının düzeni: solda açılıp kapanan panel (geçmiş konuşmalar, "Yeni
+    konuşma" düğmesi, en altta profil ve ayarlar), sağda açılıp kapanan Kaynaklar paneli; telefonda ikisi de çekmece.
+    **Geçmiş sunucuda** (yol (b); kullanıcının kararı: büyük şirketler de öyle, paylaşım bağlantısı da bunu ister):
+    gizlilik ve şartlar sayfaları değişir, konuşma tek tek ve hepsi birden silinir, hesap silinince hepsi gider.
+    Konuşma başlığı ilk sorudan kısaltılır (modele yazdırılmaz). Ayarlar bugün az şey taşır (çıkış, hesabı silme,
+    gizlilik ve şartlar), S13'ün seçeneklerine (dil, hat, cevap boyu) yer kalır. **Çatı yok** (kullanıcının kararı):
+    sade JS, `sohbet.js` modüllere bölünür; asıl altyapı veri biçimidir: konuşma kimliği, turun taşıdıkları (soru,
+    cevap, Kaynaklar, düzeltmeler), API; paylaşım bağlantısına (S13 (9)) uygun kurulur. Tanıtım sitesi statik kalır.
+    **Kararlar (kullanıcı, 2026-11-25):** (1) saklama varsayılan açık, ayarlarda kapatılabilir (geçici konuşma: yalnız
+    tarayıcıda, bugünkü gibi); (2) konuşma kullanıcı silene kadar durur, hesap silinince hepsi gider; (3) ekip
+    konuşmaları okumaz, yalnız 👎/👍 ile gönderilenleri (gizlilik sayfası bunu söyler); (4) gizlilik ve şartlar metnini
+    Claude hazırlar ve yayımlar, kullanıcının ayrıca görmesi gerekmez; (5) giriş kutusunun altındaki gizlilik ve şartlar
+    bağlantıları ayarlara taşınır, altta yalnız "Tefsir ve fetva değildir, müellife mal edilmez." ve günün kalan hakkı
+    ("8/10" gibi).
+    **Bitti ve yayında (2026-11-25, `6ce4a22`, `yayin-20261125-200319`).** Sunucu: `conversations`, `turns`, `users.keep_history`;
+    `sohbet.Conversations`; yollar `api/durum`, `api/ayarlar`, `api/konusmalar`, `api/konusma`, `api/konusma/ad`,
+    `api/konusma/sil`; saklanan konuşmanın geçmişi sunucudan (tarayıcınınki yok sayılır), konuşma ilk cevap bitince
+    açılır, başkasının kimliği 404; oy saklanan tura da yazılır. Sayfa: sol panel (Bugün, Dün, Son 7 gün… gruplar; ad
+    değiştirme ve silme satırın üstünde, silme iki adımlı), sağda Kaynaklar (1200 pikselden geniş ekranda yerinde,
+    daha darda çekmece; 960'tan darda sol panel de çekmece), panel tercihi tarayıcıda, ayarlar `<dialog>`. `sohbet.js`
+    tek dosya kaldı (bölmek önbellek sürümlemesini değiştirirdi; büyüyünce). Gizlilik sayfaları (tr, en) güncel.
+    `olc --hizli` çalıştırılmadı: cevap yolu değişmedi (geçmiş aynı metin, yalnız yeri sunucu).
+  - S13.2 **Panel genişliği ve sekmeli ayarlar** (kullanıcının isteği, 2026-11-25; S13.1'i telefonda denedi, uygun
+    buldu): (1) sol ve sağ panelin genişliği aradaki çizgiyi sürükleyerek ayarlanır (geniş ekranda; tercih tarayıcıda,
+    klavyeyle de, çift tıklayınca eski genişlik); (2) ayarlar sekmelere ayrılır: Hesap, Konuşmalar, Görünüm (tema: sistem,
+    açık, koyu; cevapların yazı boyutu), Belgeler; ileride öbür eklentiler gelince "Eklentiler" sekmesi (açıp kapama).
+    **Bitti ve yayında (2026-11-25, `7098841`, `yayin-20261125-202918`).** Sürükleme çizgileri yalnız panel yerinde ve açıkken (sol 200–440,
+    Kaynaklar 280–720 piksel; sohbet en az 420 piksel kalır); odaklanınca ok tuşları (Shift ile büyük adım), Home/End,
+    Enter ya da çift tıklama eski genişlik; Görünüm'de "Panel genişliklerini sıfırla" (telefonda gizli). Tema
+    `html[data-tema]`, yazı boyutu `html[data-boyut]` (dört boy; cevap, soru ve metin paneli). Sekmeler ok tuşlarıyla
+    gezilir, telefonda üstte. Arayüz denemesi 55 denetim, hepsi geçti.
+  - S13.3 **Karşılama, yeni konuşma sayfası, durum satırları** (kullanıcının isteği, 2026-11-25): (1) girişsiz
+    `/sohbet/` hesap oluşturma sayfasını açar (tanıtımlı, süslü: platformu tanıtan başlık, arka planda desen), altta
+    "Zaten hesabınız var mı? Giriş yapın"; (2) yeni konuşma sayfası daha şık, örnek sorular küçük ve sayfanın farklı
+    yeteneklerini gösterir; (3) cevap beklenirken "Düşünüyor" yerine ne yapıldığı ("Yirmi Dokuzuncu Söz okunuyor",
+    "Kaynaklar hazırlanıyor"). Ad (S13 (12)) konuşuluyor: kullanıcının adayı "Fidanlık".
+    **Bitti ve yayında (2026-11-25, `2511de5`, `yayin-20261125-212720`).** (1) Girişsiz `/sohbet/` → `kayit`; kayıt ve giriş sayfaları tanıtımlı
+    (`sohbet_hesap.HERO`, `SHELL_STYLE`): solda yeşil zemin, yavaş kayan sekiz köşeli yıldız deseni (satır içi SVG),
+    başlık, üç özellik, veritabanıyla doğrulanmış bir örnek alıntı (Lem'alar › Yirmialtıncı Lem'a › Üçüncü Ricâ); telefonda
+    kısa tanıtım üstte, form ilk ekranda. (2) Yeni konuşma: ortada başlık, sekiz yetenekten (konu taraması, bugünün
+    diliyle, bir bölümü anlamak, temsiller, âyetler, kelimeler, hadisler, meseleler) rastgele altı küçük kart, türüyle;
+    "Başka örnekler". (3) Durum: "Sözler › Yirmidokuzuncu Söz okunuyor" gibi satırlar (`status_line`), araç adımları
+    beklerken dizilir; model beklenirken "Soru inceleniyor…" / "Okunanlar değerlendiriliyor…", sonda "Alıntılar
+    eserlerle denetleniyor, Kaynaklar hazırlanıyor…"; adımlar cevabın üstünde açılır özet ("5 adımda hazırlandı · 3 yer
+    okundu"), saklanan turda da (`turns.steps`). Gizlilik sayfaları buna göre.
+  - S13.4 **Denemenin ilk bulguları** (2026-11-25; kayıtlar ve kullanıcının paylaştığı iki 👍 cevaptan; öbür
+    kişilerin konuşmaları okunmadı). Öbür eklentiler (S13 (11)) şimdilik bekler (kullanıcının kararı).
+    (a) **Geri bildirim kolaylaştı (kullanıcının isteği; yapıldı):** emoji yerine çizgi simge (seçilince yeşil), oy
+    tıklanınca gider, not yazmayı bırakınca (1,5 sn) ya da kutudan çıkınca, onay kutusu değişince gider; Gönder ve
+    Vazgeç yok. Sunucu ilk kayıtta numara (`id`) döndürür, sonrakiler aynı satırı günceller (oy değişebilir; kutu
+    kalkınca soru ve cevap silinir). Sayfa yenilenince oy görünür, değiştirilemez. Gizlilik sayfaları buna göre.
+    (b) **Sınırsız hesap (kullanıcının isteği; yapıldı):** `.env` `SOHBET_SINIRSIZ` (virgülle adresler; koda
+    yazılmaz, deploy gönderir): günlük soru sınırı yok, hak satırı görünmez, bütçe tavanları geçerli. Kullanıcı
+    çok soracak, sonra konuşmalara birlikte bakılıp hata ayıklanacak. (a) ve (b) yayında (`a765aa5`,
+    `yayin-20261125-220248`, araç çıktısında fark yok).
+    **Bekleyen düzeltmeler** (henüz yapılmadı; sırası denemenin sonucuyla): (c) **Geçmişte araç sonucu yok:** ikinci
+    soruda model "önceki cevabımda … doğrulamadan verdim, okumadan kullandım" dedi; geçmişe yalnız cevap metni
+    giriyor (`Chat.messages`), model ilk turun okumalarını görmeyince kendi atıflarını doğrulanmamış sanıyor (atıflar
+    sunucuda denetlenmişti). **İkinci örnek düzeltti (2026-11-25, 11. Söz konuşması):** orada ilk cevap Şems
+    Sûresi için "Türkiye Diyanet Vakfı meali, metinde verilen çeviriyle aynıdır" dedi ama `get_ayah` hiç
+    çağrılmamıştı (yalnız `get_outline` ve `read_section`); ikinci cevaptaki "kontrol etmedim" düzeltmesi yerindeydi.
+    **Üçüncü örnek (aynı konuşma, 4. cevap):** "Fatiha 1:5'i yayıncının çevirisi olarak sundum… kontrol etmedim,
+    doğrulanmamış sayın" dedi; oysa 3. cevap `read_section sozler/11` ile c103 ve c109'u okumuştu, araç sonucunda âyet
+    (`Fâtiha Sûresi, 1:5`, `exact`) ve nâşirin meali vardı: haksız itiraf, okuyucuyu doğru bilgiden şüpheye düşürüyor.
+    Üç örnekte ikisi haksız, biri yerinde: model geçmişte araç kaydını görmeden ikisini ayıramıyor.
+    Yani sunucu yalnız işaretli alıntıları denetler, işaretsiz söz denetlenmez: "önceki cevaplar denetlendi" demek
+    yanlış olur. Çözüm: geçmişe her cevabın altına o turda çağrılan araçların kısa listesi ("okunanlar:
+    read_section sozler/11, get_ayah 91:1–10"), talimata "önceki cevaptaki işaretli alıntılar denetlendi; bir sözün
+    dayanağını o listeden bil". (h) **Okunmadan söz:** ilk cevaptaki Vakıf meali iddiası, aracını çağırmadan
+    verilmiş bir bilgi; talimata "bir meali, âyeti ya da başka bir metni ancak bu cevapta araçla okuduysan anlat"
+    (Haiku'da ölçülür). Aynı cevapta "Verse göre" (İngilizce sızıntı, (f) ile birlikte).
+    **(c) ve (h) yapıldı (2026-11-25, kullanıcının isteği: "şimdi düzelt"):** her turun çağırdığı araçlar `turns.reads`'e
+    (geçici konuşmada tarayıcı `r` ile geri gönderir), sonraki soruda son sorunun önüne sayfa notu ("Answer 1:
+    read_section(section=sozler/11, …)"; eski turlar "not recorded"); talimatta yeni kural (`EARLIER`): önceki söz o
+    çağrılarla örtülüyorsa "denetlenmedi" denmez, dayanağı yoksa yeni cevabın başında tek cümleyle düzeltilir; meal,
+    âyet ya da metin ancak araçla okunduysa anlatılır, Vakıf meali yalnız `get_ayah`'tan. MCP talimatı değişmedi.
+    Ölçüm: kullanıcının 11. Söz konuşmasının benzeri, beş soru (≈0,027 $): haksız itiraf yok; 4. cevaptaki tek
+    düzeltme yerinde (metni yeniden okuyup "c109'da istiğfar geçmiyor"); Şems karşılaştırmasından önce `get_ayah`
+    çağrıldı. `olc --hizli` 57/57 atıf doğrulandı (`20261125-233814-…`). (i) **Yeni bulgu:** meal sorusunda model
+    nâşirin mealini `>` blokta işaretle alıntıladı; meal cümlenin metni olmadığı için "doğrulanamadı" çıktı (2).
+    Çözüm adayı: işaretli cümlenin Arapça parçasının meali alıntıyla tutuyorsa "nâşirin meali" diye göster.
+    (c), (h) yayında (`8928685`, `yayin-20261125-234137`). (d) **Yan yana aynı işaret:** "[23] [23]";
+    `check` art arda gelen aynı işareti teke indirsin. (e) **Telif tarihi gereksiz yere metinde:** "kaynak
+    1936–1943, Kastamonu'dur (kastamonur.com)", "Hayrat listesi 1933–34 der" (`written` alanından); talimat: tarih
+    yalnız soruyla ilgiliyse. (f) **Yabancı harf:** "göktə" (Azerice ə); şimdilik yalnız not, tekrarlarsa cevapta
+    Türkçe dışı Latin harf denetimi. (g) **İzlenecek sayı:** işaretsiz paragraf oranı öbür deneyenlerde yüksek (4/9,
+    6/8, 9/12; kullanıcıda 2/15, 3/9); yorum paragrafları da sayılır, hafta sonunda bakılır.
+  - S13.5 **Konuşmanın tek kaynakçası** (kullanıcının fikri, 2026-11-25): her cevabın ayrı kaynakçası vardı; aynı
+    kaynak bir cevapta [3], öbüründe [7] oluyordu. Numaralar konuşma boyunca verilir: kaynak ilk geçtiği yerde
+    numarasını alır, sonra hep onunla anılır, yeniler kaldığı yerden sürer. Aynı kaynak: aynı cümle ya da aynı aralık
+    (iç içe aralıklar ayrı; doğrulanamayan ayrı). Sağ panel tek liste (her kaynak bir kez, hangi sorularda geçtiği
+    yanında); dar ekranda cevabın altında yalnız o cevabın kaynakları, konuşmadaki numaralarıyla. **Yalnız sayfada**
+    (kullanıcı onayladı): sunucu her cevabı kendi kaynakçasıyla denetler ve saklar; veri, denetim ve ölçüm değişmez,
+    tek cevabın paylaşımı (S13 (9)) kendi kaynakçasıyla kalır. "Soruyu ve bu cevabı da gönder" metni sayfadaki
+    numaralarla gider (not "[7] yanlış" derse aynı kaynağa denk gelsin). **Yapıldı (2026-11-25):** `sohbet.js`
+    `numberSources` (numara kaynağın nesnesine değil `WeakMap`'e; yerel kayda girmez), sağ panelde kaynak adıyla aynı
+    satırda "1. ve 2. soruda"; arayüz denemesine hazır iki turlu konuşmayla 7 denetim (API çağrısı yok), 74 denetim geçti.
+    Yayında (`acd790a`, `yayin-20261125-231927`, araç çıktısında fark yok).
+    **Hata (2026-11-25, kullanıcı buldu; düzeltildi):** kaynağa tıklayınca "Bu adreste metin bulunamadı": metin uç
+    noktası önce atıf dizinine (`checker.nodes`) bakıyordu, dizin ilk alıntı denetiminde kuruluyor; servis yeniden
+    başlayıp soru sorulmadan eski konuşmanın kaynağı açılınca hata yutuluyordu (S12'den beri; gece dört deploy
+    görünür kıldı). `sohbet.source_text` önce dizini kurar; test yeni servisle sınar (`8481d83`, `yayin-20261125-235352`).
+  - S13.6 **Kaynakların toparlanması** (kullanıcının fikri ve onayı, 2026-11-26): 11. Söz'ü işleyen bir konuşmada 40'tan
+    çok kaynak birikti; çoğu aynı bölümün yan yana ya da iç içe cümleleri (dokuz emir tek tek alıntılanmış). Kural:
+    **kaynak, bir bölümün kesintisiz bir parçasıdır**: aynı bölümde örtüşen ya da bitişik cümleler tek kaynakta
+    birleşir, en çok 8 cümle (projenin aralık sınırı), fazlası yeni kaynak. Numara parçanın ilk geçtiği yerde verilir.
+    Metindeki [n] tıklanınca parça açılır, o atfın dayandığı cümleler koyu, parçanın öbür cümleleri açık vurgulu. Sağ
+    panel bölüm başlıklarıyla gruplu: yol bir kez, altında "[3] “Şu kasrın meliki…” · 3 cümle". Hâşiye cümleleri,
+    bölüm atıfları ve doğrulanamayan alıntılar birleşmez. Yalnız sayfada (S13.5 gibi): sunucunun cümle düzeyindeki
+    kaydı ve denetimi değişmez. Kullanıcının konuşmasında ilk dört cevapta ≈36 kaynak 17'ye iner (elle hesap).
+    **Yapıldı (2026-11-26):** `sohbet.js` `numberSources` parçaları kurar (`pieceOf`), `openText(parça, atıf)` parçanın
+    aralığını ister, atfın cümleleri dolgulu, öbürleri altı çizili (`mark.acik`); liste `kaynak-grup` başlıklarıyla,
+    kaynak adı tekse listenin altında bir kez. "Soruyu ve bu cevabı da gönder" metni parçalarla. Arayüz denemesi:
+    hazır konuşma bitişik, iç içe ve 8'i aşan durumları sınar; 77 denetim geçti. Yayında (`da166fb`, `yayin-20261126-000506`). Kullanıcının 11. Söz konuşması 44 kaynaktan 21'e indi, vurguyu beğendi.
+  - S13.7 **Tevekkül konuşmasının bulguları** (2026-11-26; kullanıcının konuşması, üç cevap; kullanıcı hepsini
+    onayladı). Bütün işaretli alıntılar doğru, "Diğer yerler" arama sonuçlarıyla tutuyor (iki arama yeniden
+    çalıştırıldı). Bulgular: (1) **Kaynakçada Âyet ve Hadis satırları gereksiz** (kullanıcının fikri): sayfada kaynağa
+    tıklayınca metin açılıyor, âyetin ve hadisin adresi orada; üstelik alıntısız atıfta cümlenin bütün parçaları
+    giriyor (cevapta geçmeyen bir hadis satırı). Ama metin paneli "(doğrulanmadı)" notunu ve meali olmayan parçanın
+    adresini göstermiyor. Çözüm: satırlar listeden kalkar, metin panelinde her âyet ve hadisin altında "Âyet: …" /
+    "Hadis: … (doğrulanmadı)" satırı (meal varsa yanında), meali olmasa da. Yalnız sayfada; sunucunun verisi ve
+    ölçüm metni (`answer_text`) değişmez. (2) **Haksız düzeltme:** 2. cevap "Talâk 65:3'ün mealini okumadan yazdım,
+    dikkate almayın" dedi; meal okunan cümleden gelmişti. Kökü 1. cevapta: okunmamış Vakıf meali anılmış ("Vakıf'ın
+    değil, yayıncının çevirisidir"). Talimat: nâşirin meali yalnız nâşirinki diye anılır, `get_ayah` çağrılmadıysa
+    Vakıf hiç anılmaz. (3) **"O bölümü okumadım":** 1. cevapta okunan Lem'alar › İkinci Lem'a › Beşinci Nükte için;
+    sayfa notu yalnız çağrıları ("get_passage(id=…)") veriyor. Çözüm: notta okunan yerlerin Türkçe başlıkları da
+    (adımlardaki gibi). (4) **Telif tarihi yine metinde** ((e)'nin ikinci örneği, "kaynak sitesinde 1943–1944"):
+    talimat: tarih yalnız soru telif zamanını ya da yerini soruyorsa. (5) **Okuma kalitesi** (talimatla çözülmez,
+    not): 3. cevap Onüçüncü Şuâ'nın bu bölümünü "öğrencilere yönelik" sundu, oysa Denizli hapsindeki arkadaşlara
+    yazılmış (c002: Risale okuyan hapishanede "talebe-i ulûmun şerefini" kazanır); 1. cevap "terettüb-ü netice"yi
+    "sonuç doğduktan sonra" diye açıkladı. Hafta sonunda model yönlendirme konuşulurken örnek olur.
+    **Yapıldı (2026-11-26):** (1) `sohbet.arabic_refs`: metin uç noktası her cümleye `refs` ({line, meal}) koyar
+    (`Library.embedded`'ın satırı, notuyla); `sohbet.js` listede satır göstermez, metin panelinde gösterir. (3)
+    `read_place`: sayfa notunda okuma çağrısının ardına "= read: <başlık>" (not kurulurken bulunur, eski turlarda da).
+    (2) Ölçümde kökün başka olduğu çıktı: tek sorulu cevapta da (A1) "Vakıf çevirisi değil, yayıncının çevirisi"
+    yazılıyor (25 Kasım ölçümlerinde de var; ortak talimatın "name the translation (Türkiye Diyanet Vakfı)" cümlesi);
+    sohbete ayrı kural `VERSES` (6. kural): nâşirin meali alıntı bloğunun dışında, kendi satırında, okuyucunun
+    dilinde ("nâşirin meali") anılır; Vakıf yalnız `get_ayah` okunduysa anılır. Aynı kural İngilizce "publisher's
+    translation" sızıntısını ve mealin alıntı bloğuna girip "doğrulanamadı" çıkmasını ((i)'nin bir biçimi) da
+    azaltır. (4) `SHAPE`: telif tarihi yalnız soru onu soruyorsa. MCP talimatı değişmedi. Ölçüm: tevekkül
+    konuşmasının üç sorusu altı kez art arda (≈0,08 $): haksız "okumadım" ya da düzeltme yok (birindeki düzeltme
+    yerindeydi: o cevap Lem'alar'ı yalnız aramadan aktarmıştı), telif tarihi yok; `olc --hizli` dört kez, sonuncusu
+    79/80 (tek ✗ raporun ayrıştırmasından: başlığında virgül olan bölüm; sayfa doğruladı), Vakıf ve İngilizce
+    sızıntı yok. Arayüz denemesi 79 denetim (hadisli hazır tur: listede satır yok, metinde notuyla var). Yayında (`80e28a3`, `deploy.sh --sohbet`).
+  - S13.8 **Arapçada kaybolan harf** (kullanıcı buldu, 2026-11-26): "حَسْبُنَا اللّٰهُ وَنِعْمَ الْوَك۪يلُ"de kef
+    görünmüyordu. Sebep: sohbetin Arapça yazı tipi yoktu; sistem yazı tipleri Risale'nin kesre işaretini (U+06EA ۪)
+    taşımıyor, işaretli harf boş kalıyor (Linux'ta Brave ile yeniden üretildi; system-ui'de kutu). **Yapıldı:**
+    sitenin Noto Naskh'ı (`naskh.woff2`, 63 KB) sohbetin kendi dosyalarında (`static/naskh.woff2`, ileride ayrı alan
+    adında da çalışsın), `@font-face` yalnız Arapça harf aralıklarında (`unicode-range`), `size-adjust: 125%` (Latin
+    harflerin yanında küçük kalıyordu); bütün yazı tipi dizilerinin başında. Test yazı tipinin sunulduğunu sınar,
+    arayüz denemesi 79 denetim.
+  - S13.9 **Hiss-i kable'l-vukû' konuşmasının bulguları** (2026-11-26; kullanıcının konuşması `jLArMwtzIwbJ9Kl_`, üç
+    cevap; okunan bütün yerler veritabanıyla karşılaştırıldı). Bütün işaretli alıntılar doğru, düzeltme yok; hatalar
+    okumada, veride ve kuralda. (A) **Nokta "tercüme" diye sunuldu** ("Bu cümle bir Türkçe çeviri metinden alındı",
+    "Türkçe çeviri metinde şöyle denir"): Mesnevî-i Nuriye eser düzeyinde `translation=True`, Nokta ise aslı Türkçe;
+    bölüm düzeyinde işaret yoktu. (B) **Okuma hataları** (Haiku; talimatla kısmen): (1) sâika ve şâika'yı
+    hiss-i kable'l-vukû'dan ayrı hisler saydı, "metin tanımlamıyor" dedi; oysa Mektubat 28 › Beşincisi c004 onları
+    hiss-i kable'l-vukû'un iki adı diye veriyor (2. turda okunmuştu), Nokta c003–c004 "hiss-i sâdise-i sâdıka olan
+    sâika", "hiss-i sâbia-i bârika olan şâika" diyor; (2) "gayb hakkında kesin bilgi değil, bir tür sezi" dedi, okunan
+    Nokta c005–c006 "O şevk ve sevk yalan söylemez. Yanlış gidemez."; (3) Mektubat c015'in "şu nev'i hassâsiyet"ini
+    (gelen adamı sezmek) yağmur hassasiyetiyle birleştirdi; (4) Lem'alar 16 c029'un teşbihini ("Nasıl …") yağmurun
+    hükmü gibi sundu; (5) "Allah'ın 'sevk-i kaderî' dediği" (terim müellifin); (6) 1. cevabın Yorum'unda dayanaksız
+    "hayatı boyunca önemli bir kavram olmuştur"; Nokta'nın "İkincisi"ne "İkinci mesele" dedi. (C) **Satır içi
+    alıntı:** 2. ve 3. cevapta tam cümleler düz yazıda tırnakla; ortak kural (`server.QUOTE_EXACTLY`) yalnız tek terime
+    izin veriyordu, sayfanın denetleyicisi (`INLINE_QUOTE`) ise bunları denetleyip kabul ediyordu. (D) **Kapsam:**
+    "başka hassalar var mı?" sorusunda arama dardı ("beş duyudan başka hassa", "hassâsiyet"); Lem'alar 16'nın
+    "Letâif-i Aşere" bölümü (`lemalar/16/letaif-i-asere-ve-mana-yi-ismi`) ve "latîfe-i Rabbâniye" (10 cümle) gelmedi,
+    aynı Lem'a'nın başka bölümü okunduğu hâlde. (E) **Yan konuşma** (`XpZEvaWwAxaBcDgW`, "Altıncı ve yedinci his"):
+    "altıncı ve yedinci his diye numaralanmış duyu geçmiyor" dedi, Nokta tam bunu diyor; lügat notu "sâika =
+    yıldırım" (o صاعقه; buradaki sevk eden سائقه): lügat Latin yazılışı aynı sesteş maddeleri ayırmıyor.
+    **Yapıldı (2026-11-26):** (A) `Work.original_sections` (Mesnevî-i Nuriye: `mukaddime`, `nokta`; ikisi de Arapça
+    baskıda "aslı Türkçe" diye işaretli), `build_db` düğümün `extra`sına `original` yazar (eserde olmayan kimlik
+    kurulumu durdurur), `Library._work_status` o bölümde ve altında `translation` yerine `original_text` verir
+    (`read_section`, `get_passage`, `search`, `semantic_search`); katalog notu da söyler. MCP talimatı değişmedi;
+    sabit çağrı setinde yalnız `list_works` değişir (notu; deploy'da `DEPLOY_EXPECT="list_works"`, kod ve veri gider:
+    `--sohbet` yetmez).
+    (C) kullanıcının kararı: sohbette satır içi kısa alıntı serbest; sohbetin kendi kuralı `sohbet.QUOTE_EXACTLY`
+    (bir ibare ya da kısa tek cümle, işareti kapanış tırnağının hemen ardında; işaretsizse yine tek terim), MCP'ninki
+    aynı kaldı; test satır içi alıntının da asıl yerine taşındığını sınar. Yayında (`70a35bb`, `yayin-20261126-013044`,
+    beklenmeyen fark yok; sunucuda Nokta `original_text` veriyor). **Açık:** (B) ve (D) hafta sonunda model
+    yönlendirme konuşulurken örnek; Mukaddime'nin kendi telif kaydı yok, eserin kaydını ("Arapça … Metnimiz
+    tercümedir") miras alıyor: tarihi kaynaktan bulunmadan yazılmaz; (E)'nin lügat sesteşleri ayrı iş.
+  - S13.10 **Tefekkür-tezekkür ve isim önerisi konuşmasının bulguları** (2026-11-26; kullanıcının konuşması
+    `0Yp0TRsZt60ZTxf-`, üç cevap: fark, Risale'den platform adı, "genel İslâmî bağlamda" ad; okunan bütün yerler ve
+    modelin aramaları genel veritabanında yeniden çalıştırıldı). Bir alıntı dışında işaretli alıntıların sözleri doğru;
+    lügat, Ahzâb 33:46 ve nâşirin meali, Hulûsi Bey'in sözünün müellife mal edilmemesi, Ta'likat'ın tercüme diye
+    anılması doğru. (A) **Lemeât = Lem'alar sanıldı** (2. cevap, iki kez): Emirdağ Lâhikası 263 c008 "bu Lemeât, …
+    bir fidanlık nümûnesidir"; model "Lem'alar için şöyle denir", Yorum'da "Lem'alar'ın bir numune olduğu". (B) **Dar
+    arama, yanlış sayı** (1. cevap): "tezekkür iki yerde geçer"; model tam kelimeyi aradı (`tezekkür`, 2 sonuç),
+    `tezekkür*` 4 verir: Mesnevî-i Nuriye › Şule › İkinci Kısım c046 "nisyan ve tezekkürde müteâkistirler" (müellifin
+    kullanımı, modelin "hatırlama" okumasını destekler), Divan-ı Harb-i Örfî c211 "derdest-i tezekkürdür" (müzakere
+    anlamı, istisna). Kur'ân'daki karşılıkları aranmadı: Sözler 22 › Birinci Makam `يَتَذَكَّرُونَ` ile
+    `يَتَفَكَّرُونَ` âyetleriyle açılır; Nokta › Üçüncü Bürhan › Birincisi c009 "Kur'ân, kâinâtta tefekküre emir
+    verdiği gibi … اَفَلَا يَتَذَكَّرُونَ". (C) **Parçalı alıntının yanlış parçası ekranda kaldı** (1. cevap, [1]):
+    Lem'alar 29 › İfâde-i Merâm c001'de "tefekküre teşvik ettiği", metin "tefekkür mesleğine teşvik ettiği"; cümle
+    doğru, "…" ile birleşen parçalardan biri tutmuyor, sunucu taşıyacak yer bulamadı, "⚠ doğrulanamadı" gösterdi ama
+    yanlış sözler cevapta tırnakta duruyor. Aynı paragrafta işaretsiz tırnak "Bazen bir saat tefekkür, bir sene
+    ibadet hükmündedir" metnin sözü değil, denetime girmedi. (D) **Tersine okuma** (3. cevap, [2]): "bunun bir yorum
+    olduğu açıkça belirtilir"; Barla Lâhikası 281 c021 "… bu âyetin bu fıkrasından mülhemdir denilebilir ve
+    çekinmeyerek deriz" (iddia, çekince değil); adı İmam Ali'nin verdiği ve tevafukun cifrî olduğu ("lafzan ve ma'nen
+    ve cifren") söylenmedi; bölüm bir talebenin (Ahmet Nazif Çelebi'nin) istihracı, "metinde" dendi. (E) **Küçükler:**
+    kullanıcının "fidanlık" örneğine en uygun yer gelmedi: Mesnevî-i Nuriye › Mukaddime › Dördüncü Nokta c003–c004
+    "Demek o fidanlık Mesnevî … Bahçesi olan Risale-i Nur" (müellifin sözü; "fidan OR fidanlık OR bahçe OR çiçek"
+    aramasında kısa cümleler önüne geçti); "Nur bahçesi" Hâfız Zühtü'nün mektubundan, "Risale'nin kendi benzetmesi"
+    dendi; Kastamonu 119 c009 "Hizmet-i Kur'ân, inşâallâh muhâfaza edecektir" "Risale'nin çalışmasını tarif eder"
+    diye sunuldu (yazmaktan korkana "seni korur" diyor); "Sirâcü'n-Nur"un zaten bir mecmuanın adı olduğu söylenmedi;
+    Mektubat 29 › İkinci Telvih c001 okunmadan, arama sonucundan alıntılandı (sözleri doğru). **Örüntü:** S13.9'un (B)
+    okuma ve (D) kapsam hataları yine (Haiku). **Çözüm adayları (karar yok):** (1) `search` az sonuçta `kelime*`'nin
+    sayısını bildirsin (ya da talimat); (2) "…" ile birleşen alıntıda tek parça tutmuyorsa, cümle belli olduğu için
+    sunucu o parçayı metindeki karşılığıyla düzeltsin ya da atsın; (3) Lemeât ≠ Lem'alar için talimatta ya da
+    `list_works` notunda bir satır; (4) işaretsiz tırnaklı söz denetimi.
+  - S13.11 **Hata ayıklama turları** (kullanıcının kararı, 2026-11-26): kullanıcının konuşmalarını incelemek yerine
+    konuşmaları Claude Code da kurar, sorar ve inceler. Yerelde, sohbetin kendi koduyla (canlı sohbete gitmez,
+    denemenin sayılarına karışmaz): `uv run --extra sohbet python -m risale_mcp.sohbet dene <dosya> [ad …]`
+    (`sohbet_dene.py`; soru dosyası `## ad` ve satır başına soru, takip soruları aynı geçmişle; döküm
+    `data/interim/sohbet/dene/<zaman>-<model>-<dosya>/`: her turun araç girdisi ve sonucu, modelin ham cevabı,
+    okuyucunun gördüğü cevap, Kaynaklar). Soru dosyaları `tests/golden/sohbet_konusmalar/tur-NN.txt` (gerileme seti).
+    Kullanıcının kararları: bariz sunucu hataları doğrudan düzeltilir, talimat değişikliği ona getirilir; bir kez
+    Sonnet'le karşılaştırılır; tur sayısı sonra.
+    **Tur 1** (`tur-01.txt`: 6 konuşma, 14 soru; tefekkür, Lemeât, kimin sözü, sabır, tuzak, hadis). Haiku 0,064 $
+    (cevap başı ≈0,005 $, ≈21 sn), Sonnet 0,82 $ (≈0,06 $, ≈17 sn; ≈13 kat). İyi: tuzak sorularında ikisi de
+    uydurmadı ("yapay zekâ" yok dedi), hadiste ikisi de hüküm vermedi, Haiku'nun kimin-sözü konuşması doğru (Ahmed
+    Nazif Çelebi'nin mektubu, M. Sungur'un notu), sabır taraması iyi. **Haiku'nun hataları:** (1) **dil:** "Lemeât
+    nedir…" sorusuna İngilizce cevap; (2) **kimin sözü:** Lemeât'ın Tenbih'i talebelerin (imza Sungur, Mehmed Feyzi,
+    Husrev; c004 "Üstadımızın…"), "the author says" dedi (Sonnet doğru); (3) **temsil düz okundu:** Sözler 22 › Birinci
+    Makam › Üçüncü ve Dördüncü Bürhan'daki "makine" temsildir (c007'nin hâşiyesi: meyveli ağaç), "o dönemin mekanik
+    makineleri üzerine yazılmış" dedi (Sonnet hâşiyeyi okudu, doğru); (4) **nâşirin künyesi müellife:** "Risale …
+    kaynak olarak Keşfü'l-Hafâ ve Feyzü'l-Kadîr'i gösteriyor" (Sonnet "nâşirin gösterdiği"); (5) **veri notu metne:**
+    Otuz Birinci Lem'a'nın `written` notunu ("Şualar tek tek tarihlidir") "bu Lem'a belirtir" diye sundu; (6)
+    **kaçan kaynak:** ümitsizlikte Âsâr-ı Bediiyye › Devâü'l-Ye's'i okudu ama anmadı; (7) "söylenir: [3]" diye
+    alıntısız iki nokta. **İkisinin ortak hataları:** (8) **dar arama** (S13.10 (B) yine): "tezekkür iki yerde"
+    (`tezekkür*` 4); âyet sonlarını Latin harfle aradılar ("tetefekkerûn", 0 sonuç), Arapçayı (`يتذكرون`) aramadılar,
+    anlamsal aramayla kurtardılar; (9) **takvim:** Lemeât hâşiyesi "(Bin üç yüz otuz yedi eder.)", Haiku hicrî sayıp
+    "1921 ile uyuşmuyor", Sonnet hicrî sayıp "uyuşur" dedi (hicrî 1337 = 1918–19, rûmî 1337 = 1921; metin takvimi
+    söylemiyor). Sonnet'in kendine özgü: Lemeât konuşmasında kendini düzeltirken karıştırdı ("Otuz İkinci Mektub
+    okuduğum metinlerde geçmiyor", talimat veriyor; "Otuz Birinci Mektub Mektubat'ın içinde de anılır").
+    **Sunucu hataları, düzeltildi** (testli, `tests/test_sohbet.py` `s13_11`): (a) iki cümleye yayılan alıntı ilk
+    cümleye işaretlenince taşınamıyordu (dizin cümle başına; ilk cümlenin kelimeleriyle aranır, aralığa taşınır); (b)
+    taşınan işaret yanındakiyle aynı yere düşünce "[2] [2]", aralıktakiyle "[1] [2]" kalıyordu (yanındaki işaretin
+    aralığında kalan işaret düşer); (c) modelin "nâşirin meali" diye tırnakla verip işaretlediği meal "doğrulanamadı"
+    görünüyordu (işaretin cümlelerindeki Arapçanın mealiyse kabul, alıntı sayılmaz); (d) satır ortasına yazılan
+    alıntı bloğu ("söyler: > "…" [1] > "…" [2]") okuyucuya ">" olarak görünüyordu (her blok kendi satırına). Yayında
+    değil. **Karar bekleyen (talimat ve araç):** (1) cevabın dili (sohbetin talimatı; gerekirse sunucu dil denetimi);
+    (2) dar arama: `search` az sonuçta `kelime*`'nin sayısını versin, Latin harfle yazılmış Arapça için Arapça aramayı
+    önersin; (3) Lemeât ≠ Lem'alar (S13.10 (3)); (4) takvim: `written` ve metindeki yıl için "hicrî/rûmî belirtilmemişse
+    hesap yapma"; (5) Haiku'nun okuma hataları (2)–(5) model yönlendirme konuşmasına örnek.
+    **Kullanıcının kararları (2026-11-26):** sunucu düzeltmeleri gönderilir; (1) dil satırı denenir (alıntıları
+    çevirmeye kalkarsa geri alınır); (2) arama değişiklikleri uygun, beklenen farkla deploy; (3)–(4) satırlar uygun.
+    **Yapıldı:** sohbet talimatına (`SHAPE`) üç satır: cevabın tamamı son sorunun dilinde, alıntı çevrilmez; takvimi
+    belirtilmemiş yıl olduğu gibi verilir, çevrilmez ve başka tarihle hesapla karşılaştırılmaz; Lemeât (Otuz İkinci
+    Mektub, Otuz İkinci Lem'a) ile Lem'alar ayrı eserdir. MCP talimatı değişmedi. `search` (`Library.search`, bütün
+    profiller): 10'dan az sonuçta `word_starts` (`kelime*` ile kaç cümle; "tezekkür" 2, 4), sıfır sonuçta ve sorguda
+    Arapça harf yoksa `hint` (Latin harfle yazılmış Arapça bir şey bulmaz, Arapçasını ya da anlamsal aramayı dene);
+    `tests/test_search_hints.py`. Düz yazıda tek başına "c013" de kimlik sızıntısı sayılır, silinir. Yayında (`0b608d2`, `yayin-20261126-111734`, `--code`, `DEPLOY_EXPECT="search"`: 1 farklı çağrı, beklenmeyen yok; 29 soruluk ölçüm 196/196 atıf). Tefsir ve klasik sunucularına sonraki gönderimde gider (`search` farkı beklenir).
+    **Tur 1'in tekrarı** (yeni talimat ve aramayla, Haiku): bütün cevaplar Türkçe; âyet sonları sorusunda `hint`
+    üzerine `لعلكم تتفكرون` ve `لعلكم تذكرون` arandı; "tezekkür" için sayı iddiası yok ama `word_starts` görülüp
+    `tezekkür*` yine aranmadı; Lemeât konuşmasında karışıklık yok.
+    **Tur 2** (`tur-02.txt`: 7 konuşma, 16 soru; isim (S13.10 gerilemesi), İşârât'ın iki dili, Nûr 24:35, Onuncu Söz
+    zinciri, İkinci Söz'ün temsili, İngilizce soru, takvim; Haiku, ≈0,06 $). İyi: isim konuşmasında Lemeât
+    karışmadı, Fihrist'in "Risale-i Nur'un bir nev'i çekirdeği ve fidanlığı hükmündeki … Mesnevî-i Nûriye" cümlesi
+    bulundu, talebe sözü (Halil İbrahim) ayrıldı; temsil konuşmasında yanlış öncül ("bahçe") düzeltildi; Onuncu Söz
+    zinciri dört soruda bağlamı taşıdı; İngilizce soruya İngilizce, Türkçe takibine Türkçe cevap, alıntılar
+    çevrilmedi; Vakıf meali `get_ayah`'tan doğru. **Hatalar:** (1) **yersiz geri alma:** takvim 2'de 1. cevabın doğru
+    sözünü ("Mukaddime ve Nokta'nın aslı Türkçe", `list_works` notu) "baktığım kayıtlarda yoktu, dikkate almayın"
+    diye geri aldı (2. turda `list_works`'ü `osmanlica` süzgeciyle çağırmıştı); (2) **numara:** `lemalar/26`
+    "Yirmi Beşinci Lem'a" dendi; (3) **düz yazıda numara:** "Dokuzuncu Hakikat'in 52. cümlesindeki", "(c013 sonrası
+    …)" (ikincisi artık sunucuda düşer); (4) **İngilizce kelime:** "Arabic metin" (üç kez, Türkçe cevapta); (5)
+    alıntısız numara "Türkçe karşılığı: [4] ve [5]."; (6) "Diyanet meâline göre" (Vakıf'ın meali; Başkanlık mealiyle
+    karışır); (7) takvim 2'de "fark yok" (kayıtta tercümenin tarihi yok); (8) İngilizce cevapta kendi tercümesini
+    tırnakla işaretledi ("the purpose of the universe", doğrulanamadı); (9) "Haşirle en doğrudan ilgili Dokuzuncu
+    Hakikat'tir" dayanaksız. **Karar bekleyen (talimat):** (a) önceki cevabı yalnız şimdi okunan bir sonuç
+    çelişiyorsa geri al, yeniden görülmeyen kayıt kanıt değildir (`EARLIER`); (b) Türkçe cevapta İngilizce kelime yok
+    ("Arapça", "Türkiye Diyanet Vakfı meali"); (c) bölüm adları ve numaraları araçların `ref`'inden; (d) kendi
+    tercümen tırnaklı alıntı değildir, işaretlenmez.
+    **(a)–(d) yapıldı** (kullanıcının onayı, 2026-11-26; yalnız sohbet talimatı): (a) `EARLIER`: önceki söz kendi
+    başına geri alınmaz; yalnız okuyucu sorarsa, şimdi okunan bir sonuç kendi sözüyle tersini söylerse ya da çağrılarda
+    hiç dayanağı yoksa (tur 3'te ilk biçimi ("yalnız şimdi okunan sonuç çelişirse") iki konuşmada çiğnendi, bu
+    biçimle aynı iki konuşmada geri alma yok); (b) `SHAPE` dil satırı: Türkçe cevapta İngilizce kelime yok, `get_ayah`'ın
+    meali her zaman "Türkiye Diyanet Vakfı meali", "Diyanet meali" değil; (c) bölüm adı ve numarası araçların `ref`'inden
+    (`lemalar/26` Yirmialtıncı Lem'a), düz yazıda cümle numarası yok (`NO_REFERENCES`); (d) kendi tercümesi ya da
+    özeti tırnaklı, işaretli alıntı değildir (`QUOTE_EXACTLY`). **Veri:** aslı Türkçe bölüm (`original`) üst bölümün
+    telif kaydını miras almaz (`Library._written`): Mesnevî-i Nuriye › Mukaddime eserin "Arapça … Metnimiz
+    tercümedir" kaydını alıyordu, model `original_text` ile çelişkiye düşüp doğru sözünü geri aldı; artık `written`
+    yok (S13.9'un açığı: tarihi kaynaktan bulunmadan yazılmaz).
+    **Tur 3** (`tur-03.txt`: 7 konuşma, 14 soru; künye, hâşiye ve şerh, şefkat taraması, Osmanlıca, geri alma,
+    İngilizce temsil, Yirmi Altıncı Lem'a; Haiku ≈0,06 $). İyi: "Ben gizli bir hazine idim"in künyesi nâşirin diye
+    ayrıldı, hüküm yok; Kızıl İcaz'da Said Nursî'nin hâşiyesi ile Abdülmecid Nursî'nin şerhi ayrı, ikisinin tercümesi
+    "Yapay zekâ tercümesi" damgalı; şefkat taraması geniş ve merkez yerleri ayırdı; Osmanlıca nüsha doğru; Yirmi
+    Altıncı Lem'a doğru adıyla, Vakıf meali `get_ayah`'tan; İngilizce cevapta alıntılar çevrilmedi. **Hatalar:** (1)
+    geri alma iki kez (yukarıda, düzeltildi); (2) "tek hâşiye" (İşârât'ta 15 hâşiye paragrafı; "hâşiye" kelimesiyle
+    aradı, yalnız başlık geldi; hâşiyeleri listeleyen araç yok); hâşiyenin içeriği yanlış özetlendi; (3) künye
+    konuşmasında hadis "Muhyiddin-i Arabî'nin sözü olarak geçiyor" (metin: Muhyiddin'in o hadisin beyânı); İşârât'ın
+    Türkçesinden "Bediüzzaman şöyle yazıyor" (tercüme katmanı anılmadı); (4) Kızıl İcaz'ın Arapça İzâh'ından Türkçe
+    söz tırnakla işaretlendi (d), doğrulanamadı (yeniden soruşta yok); (5) "Diyanet meali (Türkiye Diyanet Vakfı)",
+    nâşirin meali alıntı bloğunda ve işaretli; (6) "Osmanlıca metin, Latin metnin yazılmış hâlidir" (ters). **Bekleyen
+    (karar):** Hubâb › "Meclis-i Meb'ûsân'a Hitâben Yazdığım Bir Hutbenin Sûretidir" metinde "Bu kısım müellifin kendi
+    Türkçesidir" diyor, `original_sections`'ta yok (eklemek veri kurulumu ve veri gönderimi ister); Mesnevî-i Nuriye'nin
+    `written`'ı Arapça aslın tarihidir, model onu tercümenin tarihi diye okudu ("Türkçe Mesnevî-i Nuriye 1921–1923'te
+    yazılmış").
+    **Kullanıcının kararları (2026-11-26):** gönder; hutbe eklensin; tarih notu eklensin. **Yapıldı:**
+    `original_sections`'a `mesnevi-i-nuriye/hubab/meclis-i-mebusana-hitaben-yazdigim-bir` (artık `original_text`, telif
+    kaydı yok: Hubâb'ınki Arapça aslındır); `telif.json` Mesnevî-i Nuriye notu: "tarih Arapça aslının (el-Mesnevî
+    el-Arabî), Türkçe tercümenin tarihi değildir". `build mesnevi-i-nuriye` genel ve kişisel veritabanlarını kurdu
+    (hadis profilinin kurulumu süre sınırında kesildi, değişiklik onu ilgilendirmiyor, eski `hadis.db` yerinde).
+    Yayında (`facc731`, `yayin-20261126-120412`, kod ve veri, beklenmeyen fark yok).
+    **Tur 4** (`tur-04.txt`: 7 konuşma, 13 soru; itiraz, fetva, Mevlânâ taraması, mânâ-yı harfî, Risale-i Nur'a işaret
+    eden âyetler, Yirmi Üçüncü ve Otuzuncu Söz'ün karşılaştırması, "Dünya âhiretin tarlasıdır"; Haiku ≈0,07 $). İyi:
+    okuyucunun yanlış itirazına ("Yirmi Dokuzuncu Söz") boyun eğmedi, Zülfikâr'ın "Onuncu Söz Haşir Risalesi" kaydı ve
+    iki Söz'ün alt başlığıyla cevap verdi; fetva sorusunda hüküm yok, Risale'nin ilgili yerine döndü; Mevlânâ taraması
+    geniş ve doğru (Mevlevî benzetmesi ayrı, Câmî ve Mevlâna Hâlid ayrıldı); mânâ-yı harfî Lem'alar 16, Sözler 12 ve
+    30'dan, âyine temsiliyle; işaret konuşmasında talebe istihracları (Küçük Hüsrev, Hâfız Ali, Nur'un İlk Kapısı'ndaki
+    mektup) müellife mal edilmedi; "tarla" hadisini "mezraa" ile buldu, kaynak bulunamadı dedi, hüküm yok. **Hatalar:**
+    (1) alıntısız iki nokta ("… belirtilir: [2]", karşılaştırma cevabında altı kez); **düzeltildi** (sunucu:
+    ardından blok ya da liste gelmeyen satırın sonundaki iki nokta noktaya döner, `_dangling_colons`, testli; yayında
+    değil); (2) **kesin sözü çekince okumak ve müellifi notlamak:** Birinci Şuâ c037 "kanâat-ı kat'iyye verdiğinden
+    çekinmeyerek kanâatimi …", model "yazar da bu esnekliği kendisi belirtiyor"; Yorum'da "yazarın dindar bir yorumu",
+    "Kur'ân'ı sayı ve harf hesabıyla yeni olaylara bağlamanın tipik bir örneği" (S13.10 (D) ile aynı örüntü); (3)
+    sorulmadan telif tarihi ("1936'da Eskişehir Hapsi'nde"); (4) Mesnevî-i Nuriye › Mukaddime › İkinci Nokta c001'in
+    öznesi Said ("Mevlâna … gibi akıl ve kalb ittifakıyla gittiği için … Eski Said Yeni Said'e inkılâb etmiş"), model
+    Mevlânâ'yı özne yaptı; (5) karşılaştırma cevabında hiç alıntı yok, yalnız özet ve işaret. **Karar bekleyen
+    (talimat):** müellif bir sözü kesin söylüyorsa ("kanâat-ı kat'iyye", "çekinmeyerek deriz") kesin diye aktar; Yorum
+    açıklar, müellifin iddiasını notlamaz ("tipik örnek", "dindar bir yorum" gibi hüküm yok).
+    **Kullanıcının kararları (2026-11-26):** gönder; satır eklensin. **Yapıldı:** `SHAPE`'e "The author's firmness"
+    satırı (kesin söz kesin aktarılır; yorum müellifin iddiasını notlamaz); hızlı ölçüm 73/74 (doğrulanamayan,
+    Muhakemat'tan sözleri değiştirilmiş bir alıntı, kuralla ilgisiz).
+    Yayında (`1b54a50`, `--sohbet`).
+    **Tur 5** (`tur-05.txt`: 8 konuşma, 10 soru; yarısı gerileme, yarısı doğal soru; Haiku ≈0,04 $). **Tutanlar:**
+    kesin söz (Birinci Şuâ: "kesin bir kanaatte", "kanâat-ı kat'iyye" alıntılandı); Sirâcü'n-Nur (İkinci Şuâ'dan İmam
+    Ali'nin Kaside-i Celcelûtiye'si, Ahmet Nazif Çelebi'nin istihracı ayrı, "çekinmeyerek deriz" alıntılandı, Vakıf
+    meali tam adıyla); özne (Mukaddime'de Said); tezekkür (`tezekkür*` arandı, 4 yer doğru); kader (Yirmi Altıncı
+    Söz, sadeleştirmede temsil doğru); teselli (On Dördüncü Şuâ'nın iki mektubu); ene. **Kalanlar:** (1) Sirâcü'n-Nur
+    Yorum'unda "metin bunu bir yorum olarak sunuyor, kesin bir hüküm olarak değil" ("çekinmeyerek deriz"e karşın;
+    kesin söz kuralı gövdede tuttu, yorumda tutmadı); (2) ihlâs: Emirdağ'daki "İhlâs Risalesi"ni Lem'alar 20–21'den
+    "ayrı bir risale" sandı, "en kısası" sorusuna ihlâsı işlemeyen o mektubu verdi; (3) düz yazıda cümle numarası
+    ("(46. cümle)" dört kez) ve "**Yorum**" başlığından önce alıntısız iki nokta; **düzeltildi** (sunucu: parantezli
+    cümle numarası silinir; iki noktanın ardındaki satır "**…**" ise liste sayılmaz; testli; yayında değil); (4)
+    kader Yorum'unda tırnaklı ve işaretli ama metinde olmayan sözler (doğrulanamadı); (5) sorulmadan telif tarihi
+    (teselli). Ardından durum değerlendirmesi (kullanıcının kararı).
+    **Durum değerlendirmesi (kullanıcının kararları, 2026-11-26):** Haiku sürer (Sonnet 13 kat pahalı ve dar
+    aramayı o da düzeltmedi); kalan hatalar talimatla değil sunucuyla çözülür: kipler (S13.12). Tur 5'in iki sunucu
+    düzeltmesi yayında (`ee58394`, `--sohbet`).
+  - S13.12 **Kipler ve kapsam** (kullanıcıyla konuşuldu, 2026-11-26; tasarım aşamasında, kod yok). **Fikir:** kapsamı
+    (bütün yerleri bulmak) sunucu yapar, model sınırlı bir "dosya" üzerinde okur ve yazar; eksik tarama, kimin sözü ve
+    sayım hataları modelden alınır. **İki eksen:** kip (ne yapılıyor) ve kapsam (hangi kütüphaneler: Risale, Kur'ân ve
+    tefsir, hadis, klasik; ileride ilgili kaynaklar, tercümeler, başka alanlar). **Kavramlar:** birim (her kütüphanenin
+    atıf birimi, sahibi, katmanı, dili, kaynağı aynı biçimde), dosya (adaylar ve neden geldikleri), bağ yürüyüşü (ortak
+    adresler ve bağ tabloları üzerinden, modelsiz; ortak âyet ilişki değildir), kip kaydı (tarif: aramalar, sıra, çıktı
+    biçimi, denetimler, sona eklenen mekanik listeler), yönlendirici (ileride otomatik kip). **Kataloğ:** konu taraması,
+    âyet çalışması, hadis kontrolü, kavram ve terim, karşılaştırma, ders, beni sına, müzakere, serbest soru (varsayılan,
+    bugünkü akış). **Kullanıcının kararları:** (1) kip şimdilik yalnız açık seçimle; altyapı otomatik seçime (yönlendirici)
+    göre kurulur; (2) konu taramasının sonunda mekanik aday listesi ("Konunun geçtiği öbür yerler", "aday" etiketiyle)
+    uygun; (3) ad dizini ve kavram listesi sohbet ederken ortaya çıkar, ayrı onay turu yok; (4) kip kaydı tek kaynak:
+    sohbet talimatının kip parçaları, MCP hazır komutları ve eklentinin skill'leri ondan üretilir; (5) çok kütüphaneye
+    erişim (süreç içi kopya ya da uzak çağrı) ölçerek, ikinci kütüphane aşamasında kararlaştırılır. **Yalınlık ilkesi**
+    (kullanıcının sorusu, 2026-11-26: "fazla karmaşıklaştırıyor muyuz?"): kipler ve dosya yalnız seçilen kipte çalışır;
+    serbest soru bugünkü yoldur, yeni kütüphane eklemek onun kapsamını değiştirmez (varsayılan kapsam Risale kalır);
+    basit soruya yalnız küçük, ortak araçlar (ad dizini, bölümün imzası, bölüm künyesi) ve gerekirse tek satırlık
+    talimat değişikliği dokunur. Her aşama tek başına işe yarar, sonrakini beklemez. **Aşamalar:** (0) tasarım belgesi
+    `docs/kipler-plani.md` (kısa); (1) ortak çekirdek yalnız Risale ile: ad dizini, bölümün imzası, `section_profile`,
+    birim ve dosya yapısı, kip kaydı, Risale taramasının kapsam ölçümü (modelsiz), sohbette konu taraması kipi; (2) ikinci
+    kütüphane: erişim kararı, alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması kipi; (3) ders
+    (Word), sına, müzakere, kavram, karşılaştırma; (4) yönlendirici (önce öneri, sonra otomatik). Sıra ve başlangıç
+    kullanıcının kararını bekliyor.
+    **Kullanıcının kararı (2026-11-26):** kısa belge, üç küçük araç ve konu taraması kipi yapılsın. **Yapıldı:** (0)
+    `docs/kipler-plani.md`. (1a) Risale adları dizini `books/risale_adlari.json` (29 ad, her biri kanıtıyla: adı o yere
+    bağlayan cümle ya da başlığı adı veren düğüm; `tests/test_risale_adlari.py` hepsini sınar); `search` ve
+    `semantic_search` sorguda ad geçerse `named_sections` verir. (1b) Bölüm künyesi `Library.profile`: hâşiye ve âyet
+    sayısı, imzalar (`signed`, en çok 5); `get_outline` kökünde, `read_section`'ın ilk sayfasında `profile` (ayrı araç
+    açılmadı: yalınlık). (1c) Konu taraması: kip kaydı `kipler.py` (serbest, tarama); dosya `dosya.py` (ad dizini,
+    başlık araması, kelime başı araması, anlamsal aramanın 300 cümlesi; risale düzeyi: eserin birinci katı, Lâhikalar,
+    Tarihçe ve Sikke'de mektup; Fihrist özetleri ve Hizbler aday olmaz; aday başına `why`, `focus`, `closest`,
+    `signed`); sohbette `survey` aracı yalnız tarama kipinde, kipin talimatı sayfa notu olarak (sistem talimatı önbellekte
+    kalır), cevaptan sonra anılmayan adaylar "Konunun geçtiği öbür yerler (adaylar; okunmadı, sırası hüküm değildir)"
+    (en çok 15); arayüzde soru kutusunun üstünde kip seçimi, "Konu taraması" örnek kartı kipi seçer, tur `turns.mode`;
+    `sohbet dene` `## ad [kip: tarama]`. **Kapsam ölçümü** (modelsiz, 50 soruluk anlamsal set): dosyanın ilk 5 adayı
+    40/50, ilk 10'u 44, ilk 25'i 49; anlamsal aramanın 5 bölümü 32/50. **Tur 6** (`tur-06.txt`, tarama kipiyle 6 konuşma
+    ve kipsiz bir karşılaştırma; Haiku ≈0,08 $): ihlâs Lem'alar 20–21 merkezde, öbür yerler listesi Lâhikaların ihlâs
+    mektuplarını getirdi; hâşiye sorusunda model künyeden "yaklaşık 15 hâşiye" deyip bulduklarını imzalarıyla ayırdı
+    (talebeler, Mütercim Abdülmecîd, M. Sungur), bulamadıklarını söyledi (tur 3'te "tek hâşiye"); kipsiz ihlâs sorusu da
+    ad dizini sayesinde "İhlâs Risalesi = Lem'alar 20–21" dedi. Kalan: şefkatte Onuncu Lem'a (Şefkat Tokatları) okunmadı
+    (listede var); düz yazıda "44. cümlenin hâşiyesi" (parantezsiz cümle numarası sunucuda düşmüyor). Testler 771, hızlı
+    ölçüm 60/60, arayüz denemesi 79/79. **Yayında** (kullanıcı gönderdi, 2026-11-26: `--code`,
+    `DEPLOY_EXPECT="get_outline read_section search semantic_search"`, 24 çağrıda beklenen fark, beklenmeyen yok,
+    `yayin-20261126-133746`). Tefsir ve klasik sunucularına sonraki gönderimde gider (`profile`, `named_sections`
+    farkı beklenir).
+  - S13.13 **Haşir konuşmasının bulguları: tarama kipinin ilk gerçek kullanımı** (2026-11-26; kullanıcının konuşması
+    `cKtFoJwL-6hnvx7G`, üç tur: "haşrin irili ufaklı geçtiği her yeri bul ve say" (tarama), Dokuzuncu Şuâ ile 29. Söz'ün
+    farkı (tarama kipi açık kalmış), Nokta'nın haşir kısmıyla karşılaştırma (serbest); kayıt sunucudan kullanıcının
+    izniyle okundu, okunan yerler ve tarama genel veritabanında yeniden kuruldu). **İşleyen:** kip mekanik olarak doğru
+    çalıştı (`survey` bir kez, `*`'lı terimlerle; altı aday okundu, eserlere göre gruplu, model kendi listesini yazmadı,
+    sayfa adayları ekledi; S13.10 (B)'nin dar araması kalktı); bütün alıntılar doğru (`corrected` 0, doğrulanamayan
+    yok), Vakıf ve telif tarihi yok, satır içi kısa alıntı işaretli; sınırlar dürüst ("tam bir döküm değil",
+    "Okuyamadıklarım"). **Sunucu ve tasarım açıkları:** (1) **Sayı:** okuyucu "say" dedi, cevap "647 aday yer" dedi:
+    `total_places` kelime, başlık ve anlam adaylarının toplamıdır, sayım değildir. Gerçek sayı: "haşir/haşr" 589
+    cümlede, 133 risalede. (2) **ş = s yanlış eşleşmesi:** `haşr*` "hasr", "hasr-ı", "hasret", "hasretmek",
+    `haşir*` "hâsir", "hasır" da tutuyor: 737 cümlenin 148'i (%20). Lügattaki harf biçimi (`Form`) kuralı gibi bir
+    süzgeç ister. (3) **"Öbür yerler" 15'le sınırlı:** "her yer" isteğinde Yirminci Mektub (Onuncu Kelime; 29. Söz
+    c010 haşir için oraya gönderir), Mektubat 28, Lem'alar 30 listede yok; Meyve ile Tarihçe'deki kopyası iki ayrı aday.
+    (4) **Kip açık kalıyor:** 2. tur bir karşılaştırma sorusuydu, kip "tarama" kaldı: ikinci `survey`, cevaba
+    gereksiz bir aday listesi; listede 1. turda okunup alıntılanan yerler (Nokta, Muhakemat, Kastamonu 69) "okunmadı"
+    diye duruyor. **Okuma hataları** (Haiku; S13.9 (B), S13.10 (D) örüntüsü): (5) merkez seçiminde İşârât › Bakara 4 ›
+    Delâil-i Haşr (3. aday, başlığı eşleşiyor) yerine 11 cümlelik Kastamonu 69 okundu; okunan Nokta'nın Medhal'i
+    (c003, "İşârâtü'l-İ'câz'da yazmıştım") gönderme olduğu hâlde İşârât'a gidilmedi. (6) **Şuâ'nın kendi çerçevesi
+    tersine okundu:** "Şuâ kendisini Onuncu Söz ile 29. Söz'ün arasına yerleştirir" (`sualar/9/c007`); metin ise
+    Muhâkemât'ın vaad ettiği iki âyetten birincisinin (Rûm 30:50) tefsiri Onuncu ve 29. Söz'dür, bu Şuâ ikincisinindir
+    diyor (c003–c010; Muhâkemât `makale-03/maksad-03/maksad-02` aynı sözü alıntılar). Şuâ'nın yalnız Mukaddime'si
+    yazılmış, "Dokuz Âlî Makam" yazılmamıştır (Kastamonu 125 c006, c022; Barla 285 c013); 1. turda okunan Kastamonu 69
+    c006 birinci makamın yerine Otuzuncu Lem'a'nın Dördüncü Remzi'ni koyar; Şuâ'nın alt başlığı "Onuncu Sözün Mühim
+    Bir Zeyli". Hiçbiri söylenmedi; Kastamonu 125 2. turun aday listesindeydi. İkinci Nokta'nın 100 cümlesinden 26'sı
+    okundu (`next_cursor` sürmedi, cevapta söylenmedi); onun bütün iman rükünlerinin şehâdeti olduğu (c001, c044,
+    c083) "peygamberlik ve Kur'ân" diye daraltıldı. (7) **29. Söz–Nokta ilişkisi kaçtı ve tersine yorumlandı:** 2. turda
+    okunan ve [7] diye alıntılanan 29. Söz c009 "Eski Said'in Nokta Risalesi'ndeki beyânâtı tarzında bahsedeceğiz"
+    der; 3. turun Yorum'u "Nokta'nın dört temeli Söz'ün dizisinin bir özeti gibi" dedi. Söz'ün İkinci Maksad'ı Nokta'nın
+    dört makamına esas esas karşılık gelir (Birinci Esas ↔ Dördüncü Makam, rûhun bekâsı; Üçüncü Esas'ta altı temsîl;
+    Dördüncü Esas'ta Tekvîr ve İnfitâr). (8) **Okumadan hüküm:** yalnız İkinci Esas okunduğu hâlde "altı temsîl ve
+    Tekvîr–İnfitâr Nokta'ya özgü, Söz'deki karşılığı daha kısa" dendi (yanlış); "Söz'ün on birinci medarı" (yok;
+    Onuncu Medâr). **Çözüm adayları (karar yok):** (1)–(2) `survey` sayımı ayrı versin (kelimenin geçtiği cümle ve
+    risale sayısı, harf biçimi süzgecinden sonra), "aday" toplamı sayı diye sunulmasın; (3) "her yer" isteğinde bütün
+    kelime adayları açılır bir ek liste; Tarihçe'deki kopyalar asıllarıyla birleşsin; (4) tarama cevabından sonra kip
+    serbeste dönsün ya da `survey` aynı konuda ikinci kez çalışmasın; "okunmadı" konuşmanın önceki okumalarını
+    saysın; (5)–(8) talimatla kısmen: karşılaştırmada iki tarafın da karşılaştırılan bütün kısımları okunur, okunmayan
+    kısım hakkında "özgü/yok/daha kısa" denmez; bölümün kendi hakkında söylediği (amaç, yer, hangi esere bağlandığı)
+    önce okunur (karşılaştırma kipi, S13.12 aşama 3).
+    **Kullanıcının kararı (2026-11-26):** (1), (3), (4) yapılsın; (2) kalsın (okuyucu İngilizce klavyeyle ş yerine s
+    yazabilir; model sonuçlardan bağlama göre doğru seçtikçe). **Yapıldı:** (1) `dosya` `count` verir (kelimelerin
+    geçtiği cümle ve yer, kopyalar bir kez), `total_places` yerine `candidates_total`; notta ve kipin talimatında "okuyucu
+    sayı sorarsa sayfanın sayımı, aday toplamı sayı değildir". (3) `places`: kelimelerin geçtiği bütün yerler, sayılarıyla;
+    modele gitmez (`sohbet.PAGE_ONLY`), cevabın sonuna kapalı ek olarak (`:::ek` → `<details class="ek">`, yalnız sayfada;
+    geçmişe girmez). Kopyalar: Tarihçe'deki adayın kelime cümlelerinin %60'ı (ilk 8 kelimeyle; metin özeti, cümle farklı
+    bölündüğünde tutmuyordu) Tarihçe dışında daha büyük bir adayda varsa asla katılır, "(Tarihçe-i Hayat'ta da)".
+    Yalnız Tarihçe: genel kural Dokuzuncu Şuâ'yı Onuncu Söz'e (lâhikası), On Dokuzuncu Söz'ü Ondokuzuncu Mektub'a
+    katıyordu. (4) Sayfa tarama cevabından sonra kipi serbeste döndürür (`sohbet dene` de: kip yalnız ilk soruda);
+    "öbür yerler" bu cevapta ya da önceki turlarda okunan ve alıntılanan yerleri saymaz (`earlier_places`).
+    `deploy.sh --sohbet` `dosya.py`, `kipler.py`, `sohbet_dene.py`'yi de sohbetin sayar. **Sınama:** testler (iki yeni),
+    arayüz denemesi (kapalı ek, gerçek API ile tarama sorusu ve kipin dönüşü; hepsi geçti), haşir konuşması yeniden
+    (`tur-06.txt` › `hasir`, Haiku ≈0,026 $): 1. cevap "194 yerde, 710 cümlede" dedi, sonda bütün yerler, Meyve
+    Tarihçe'yle tek satır; 2. tur serbest kipte, `survey` ve liste yok; model Şuâ'yı Onuncu Söz'ün zeyli ve Rûm
+    âyetlerinin tefsiri diye andı (önceki koşuda yoktu), dokuz makamın yazılmadığını yine bilmedi ("okumadım"); 3. turda
+    okuma hataları sürüyor ("Söz'deki gibi altı soruyla ilerlemez", menba'a "mâden"). **Yeni bulgu:** arayüz denemesinde
+    tek kelimelik tarama sorusuna ("Mevlânâ") İngilizce cevap: dil kuralı "son sorunun dili" diyor, ad tek başına dil
+    belirtmez; tarama kipi tek kelimeli konuyu teşvik ediyor. Talimat önerisi (karar bekliyor): dili belli olmayan soru
+    (yalnız ad ya da terim) Türkçe cevaplanır.
+  - S13.14 **Okuma hataları: araştırma ve katmanlı plan** (kullanıcının sorusu, 2026-11-26: "okuma hataları
+    yapısal ve sistemsel olarak çözülebilir mi?"; dinî metinde en küçük hata ciddidir). **Araştırma** (rapor
+    `reports/Okuma hatalarını azaltma yöntemleri.md`, notları `research_notes/`, ikisi de git dışı): sıfırlanmaz,
+    daraltılır. Satıcı araçları (Citations API, Check Grounding, Azure, AWS) uydurma alıntıyı hedefliyor, bizde o
+    mekanik olarak çözülü; "doğru alıntı, yanlış okuma" için ölçülmüş azalma yayımlayan yok. Hukukta (Stanford: ticari
+    araçlarda %17–33, Westlaw'ın hatalarının %61'i doğru getirilen metnin yanlış yorumu; Princeton: en zor tür içerik
+    çarpıtma) ve İslâmî ürünlerde (IslamicEval, Ansari: "dayanak gerekli ama yeterli değil") aynı sonuç. Hatalarımız iki
+    sınıf: sunucunun verisiyle kanıtlanabilenler (uydurma yapı, okunmayan yer hakkında hüküm, izlenmeyen gönderme,
+    ilk sayfadan genelleme) kurala bağlanır; anlam hataları (ters okuma, çerçeve, temsil/hüküm, söyleyen) yalnız
+    daralır; orada güvenin kaynağı şeffaflık (kapsam notu). Şablon sarmalama (Cursor tarzı) bir taşıyıcıdır: sunucunun
+    hesapladığı olguyu ve sabit usulü taşıdığında yararlı, yeni yasak eklemek değil ("doğru ol" istemleri tıpta ters
+    tepti). Model yükseltmek açık çare değil (Vectara'da Haiku 4.5 %9,8, Opus 5.5 %9,9). **Sıra** (kullanıcının onayı,
+    2026-11-26; ilk taslaktan değişti: sohbete eklenen denetim eklentilere ulaşmaz, araç sonucu ikisine de ulaşır;
+    ağır hatalar okunan metinde): (1) Türkçe ölçüm seti; (2) araç katmanında olgular; (3) sohbette kapsam notu; (4)
+    karşılaştırma kipi (okuma planını sunucu kurar); (5) doğrulayıcı denemesi (yalnız ilişki ve karşılaştırma
+    iddiaları, ölçümle); (6) cevap metnine kesin kurallar (ölçüm sık gösterirse). Fıkıh ve hadis gelince ehil insan
+    denetimi; Diyanet'in 24 Kasım 2026 bildirgesi (7. madde: "araştırma aracı … fetva makamı olarak görülmemelidir")
+    sayfanın dipnotu için dış dayanak.
+    **(1)–(3) yapıldı (2026-11-26):** (1) `tests/golden/okuma_seti.json`: S13.7–S13.13'te elle bulunan hatalardan
+    13 madde (olgular kanıt cümleleriyle, bilinen yanlış iddialar, okunması beklenen yerler); `okuma_olc.py`
+    (`uv run --extra sohbet python -m risale_mcp.okuma_olc run | hakem <klasör> | karsilastir <a> <b>`): sohbetin
+    koduyla sorar, son cevabı Sonnet hakeme verir (olgu: stated/partly/absent/contradicted; yanlış: present/absent;
+    gerekçe Türkçe), okumayı mekanik sayar; koşu ≈0,07 $ sohbet + ≈0,10 $ hakem. (2) `pointers.py`: okunan
+    cümlelerdeki göndermeler (gönderme fiili ve çözülen hedef birlikte: sıra sayılı Söz/Mektub/Lem'a/Şuâ ve
+    Hâtime'si, eski adlar, risale adları, eser adları; tek kelimelik ad büyük harfle; külliyatta 748 cümle, örneklem
+    temiz) `read_section` ve `get_passage`'ta `points_to`; `read_section`'da kısmi sayfaya `coverage`
+    ("1–65 / 350" ve "next_cursor ile sürdür" notu), `get_passage`'ta `of_section`; bölüm künyesine
+    `books/bolum_notlari.json` (bölümün kendi metninden anlaşılmayan olgular, kanıtlı; ilki Dokuzuncu Şuâ'nın
+    yazılmamış dokuz makamı; metinde duran bilgi girmez, setin cevabını hazır vermesin diye). (3) sohbette her cevabın
+    altında kapalı ek "Bu cevabın dayandığı okumalar": kısmen okunanlar (n/m cümle), cevabın dayandığı bölümlerden
+    çıkıp bu konuşmada okunmayan göndermeler, okunmadan yalnız arama sonucundan dayanılanlar, okunanlar (yalnız
+    sayfada, geçmişe girmez). **Ölçüm** (aynı set ve hakem; tek koşu gürültülü): önce 13,5/17 olgu, 2 ve 3 yanlış;
+    sonra 14,5, 15 ve 14/17 olgu, 2, 2 ve 3 yanlış; okuma 12/12. Kazanç küçük ve gürültü içinde; en belirgini
+    Dokuzuncu Şuâ maddesi (0,5 ve 1 → 1, 2 ve 1; dokuz makam bilgisi künyeden geliyor, bağımsız kanıt değil). Set
+    büyük ölçüde doymuş: yeni maddeler (ve karşılaştırma kipi) gerekir. Maliyet ≈%10 arttı (daha çok okuma).
+    Kapsam notu ilk koşuda gerçek bir durumu gösterdi: Sirâcü'n-Nur cevabında "okunmadan, yalnız arama sonucundan:
+    İkinci Şuâ". Testler 781, arayüz denemesi 86 denetim. Araç çıktısı: `get_passage`, `read_section` değişir
+    (`tool_snapshot` 21 çağrıda beklenen fark); deploy `--code`, `DEPLOY_EXPECT="get_passage read_section"`; tefsir ve
+    klasik sunucularına sonraki gönderimde gider (`coverage`, `of_section`; gönderme yalnız Türkçe külliyatta).
+    **Kullanıcının kararı (2026-11-26): durduruldu.** İlk üç adımın kazancı gürültü içinde kaldı; Haiku'nun okuma
+    sınırı kabul edilir, zorlanmaz. Yapılanlar yayında kalır (`yayin-20261126-152749`, `--code`, 21 çağrıda beklenen
+    fark): kapsam notu şeffaflık içindir, göndermeler ve okunan pay eklentilerdeki güçlü modellere de gider, ölçüm seti
+    model ya da talimat değişince geriye gidişi görmek için durur. (4)–(6) dondu. Hassas alanlar (hadis, fıkıh)
+    sohbete eklenince orada serbest yorum alanı daraltılır (cevap ağırlıkla alıntı ve künye); karar o gün.
+
 **S12. Sohbet sayfası** (bitti ve yayında, 2026-11-25; deneme ayı 2026-11-25 – 2026-12-25, sonrası S13). "Sıradaki"deki kayıt (kararlar dahil):
 
 - S12 **Sohbet sayfası** (kullanıcının kararları, 2026-11-25; fikrin geçmişi "Fikirler" › "Kendi yapay zekâ modeli ve
