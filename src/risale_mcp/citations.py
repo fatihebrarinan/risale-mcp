@@ -268,6 +268,8 @@ class CitationChecker:
 
     def _index(self, conn: sqlite3.Connection) -> None:
         ranks = {w: GROUP_RANK.get(g, len(GROUP_RANK)) for w, g in conn.execute("SELECT slug, group_name FROM works")}
+        from risale_mcp.catalog.permissions import source_label
+        self.labels = {w: source_label(p) for w, p in conn.execute("SELECT slug, permission FROM works")}
         self.nodes: dict[str, _Node] = {}
         self.by_key: dict[str, list[_Node]] = {}
         self.by_heading: dict[tuple[str, int], list[_Node]] = {}
@@ -604,9 +606,13 @@ class CitationChecker:
         (cevap başka bağdaştırıcının kaynaklarını da veriyorsa numara tek listede sürer)."""
         self.refresh()
         out = [{"n": n, **self._source(item.get("id", ""), item.get("quote"))} for n, item in enumerate(items, first)]
+        for o in out:                  # B11: izinlerin şartı, kaynak gösterilir ("e-Risale", "risaleoku.com", "OpenITI")
+            if "cite_as" in o and (label := self.labels.get(o["id"].split("/")[0])):
+                o["source_name"] = label
         return {"problems": sum("problem" in o for o in out),
                 "sources": out,
-                "bibliography": "\n".join(f"[{o['n']}] {o['cite_as']}" + "".join(f"\n  - {e['line']}" for e in o.get("embedded", ()))
+                "bibliography": "\n".join(f"[{o['n']}] {o['cite_as']}" + (f" ({o['source_name']})" if o.get("source_name") else "")
+                                          + "".join(f"\n  - {e['line']}" for e in o.get("embedded", ()))
                                           for o in out if "cite_as" in o),
                 "note": CITE_NOTE}
 

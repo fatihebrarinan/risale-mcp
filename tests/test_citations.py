@@ -302,3 +302,13 @@ def test_braces_in_the_opening_words_become_the_verse_marks():
     from risale_mcp.library import opening
     assert opening("القول في تأويل قوله تعالى: {وإن", "القول في تأويل قوله تعالى: {وإن من أهل} الآية") == \
         "القول في تأويل قوله تعالى: ﴿وإن…"
+
+
+def test_bibliography_names_the_source(real_checker):
+    # B11: e-Risale ve risaleoku izni kaynak gösterilmesi şartlı; kaynakça satırı kaynağın adıyla biter
+    result = real_checker.sources([{"id": "sozler/10/on-iki-hakikat/hakikat-09/c032"},
+                                   {"id": "el-mesnevi-el-arabi/nur/c001"}])
+    lines = result["bibliography"].splitlines()
+    assert lines[0].endswith("” (e-Risale)") and lines[1].endswith(" (risaleoku.com)")
+    assert result["sources"][0]["source_name"] == "e-Risale"
+    assert real_checker.check("> \"Teşkilce, sûretçe birbirinden ayrı, hiç şaşırtmaz.\" [1]\n\n" + lines[0])[0].status == "ok"

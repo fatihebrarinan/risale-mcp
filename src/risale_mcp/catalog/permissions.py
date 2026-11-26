@@ -59,6 +59,7 @@ PERMISSIONS: dict[str, Permission] = {p.key: p for p in (
 SOURCE_LABELS = {
     "erisale": "e-Risale", "risaleoku": "risaleoku.com", "kesif": "Keşif Yolculukları Risale-i Nur Eğitim Programı",
     "nurpedia": "nurpedia.org", "openiti": "OpenITI", "kastamonur": "kastamonur.com",
+    "risale-online": "risale.online", "rasaelalnour": "rasaelalnour.com",     # yalnız yerel (`private`) eserler
 }
 
 SITE_PERMISSION = {
@@ -67,3 +68,16 @@ SITE_PERMISSION = {
     Site.RASAELALNOUR: "rasaelalnour", Site.YENIASYA: "yeniasya", Site.NURPEDIA: "nurpedia",
     Site.OPENITI: "openiti",
 }
+
+
+def source_label(permission: str | None) -> str | None:
+    """Kaynakça satırının sonundaki kaynak adı (B11): "e-Risale", "risaleoku.com", "OpenITI"."""
+    return SOURCE_LABELS.get(permission) if permission else None
+
+
+def book_source_label(source: dict) -> str | None:
+    """Hadis kitabının kaynak kaydından (`lib_books.source`) kaynak adı: "site" ya da adı OpenITI olan kayıt."""
+    if site := source.get("site"):
+        return source_label(SITE_PERMISSION.get(Site(site)) if site in set(Site) else site)
+    return "OpenITI" if str(source.get("name", "")).startswith("OpenITI") else None
+

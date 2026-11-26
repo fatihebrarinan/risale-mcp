@@ -138,3 +138,9 @@ def test_notes_remind_the_label_the_chain_and_unquoted_sources(lib):
     assert "Yapay zekâ tercümesi" in lib.report("muslim/2937")["note"]
     note = lib.cite_reports([{"id": "muslim/2937"}, {"id": "tirmidhi/2244", "quote": "بباب لد"}])["note"]
     assert "Sent without a quotation: muslim/2937." in note
+
+
+def test_cite_names_the_source(lib):
+    # B11: hadis kitapları OpenITI'den (CC BY-NC-SA 4.0: kaynak gösterilir)
+    out = lib.cite_reports([{"id": "musned/14870"}, {"id": "bukhari/1"}])
+    assert all(line.endswith(" (OpenITI)") for line in out["bibliography"].splitlines())

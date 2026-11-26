@@ -12,6 +12,7 @@ from pathlib import Path
 import numpy as np
 
 from risale_mcp import search as fts
+from risale_mcp.catalog.permissions import book_source_label
 from risale_mcp.hadis_kunye import parse as parse_citation
 from risale_mcp.library import Library, LibraryError
 from risale_mcp.normalize import search_words
@@ -288,7 +289,9 @@ class HadisLibrary(Library):
                 out.append(record)
                 continue
             record["cite_as"] = _cite(row)
-            lines.append(f"[{n}] {record['cite_as']}")
+            if label := book_source_label(json.loads(row["source"] or "{}")):    # B11: kaynak gösterilir
+                record["source_name"] = label
+            lines.append(f"[{n}] {record['cite_as']}" + (f" ({label})" if label else ""))
             if quote and (parts := _quote_parts(quote)) and not all(p in _quote_key(row["text"]) for p in parts):
                 layers = [layer for layer in json.loads(row["layers"] or "[]")
                           if all(p in _quote_key(layer.get("text") or "") for p in parts)]
