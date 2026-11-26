@@ -70,7 +70,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   sonra. B12 plana girdi.
   Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
-  İlk adım ad: aday listesi, alan adı ve marka denetimi. S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın
+  **Ad Tahkik** (2026-11-26), alan adı tahkik.org, sohbet sohbet.tahkik.org; sıradaki logo, site taşınması
+  kullanıcının kararında (ayrıntı S13.15'in altında). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın
   çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
@@ -132,8 +133,14 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   (kullanıcı: "Claude", "Gemini" de mantıkla bakınca mantıksız). Alan adı: Tahkik .org .ai .net .io .co boş; Hemdem
   .org .ai .io boş; Kubbe yalnız .ai. TÜRKPATENT 9/41/42 (kullanıcı baktı): Tahkik'te kayıt yok, Hemdem'de çok kayıt.
   tahkik.com'da tescilsiz, çalışan bir Türk hukuk yazılımı ("Tahkik Hukuk Bürosu"; 2022'den beri). Öbür adaylardan
-  Müzakere sohbetin bir kipine, Fidanlık bir bölüme, "ilim asistanı" alt başlığa ayrılabilir. Kullanıcının fikri:
-  .org tanıtım, eklentiler, yenilikler; .ai sohbet; eklentilerin de yeni markaya girip girmeyeceği bekliyor.
+  Müzakere sohbetin bir kipine, Fidanlık bir bölüme, "ilim asistanı" alt başlığa ayrılabilir.
+  **Karar (kullanıcı, 2026-11-26): ad Tahkik.** Alan adı tahkik.org (kullanıcı alıyor); .ai alınmadı (iki yıllık 160 $).
+  Sohbet tahkik.org'un altında: sohbet.tahkik.org (kullanıcının "sohbet/tahkik.org"u alt alan adı diye okundu; teyit
+  bekliyor; tahkik.org/sohbet oraya yönlenir). Açık: (a) risalemcp.com sitesinin (tanıtım, kurulum, yenilikler,
+  çalışmalar, belgeler) tahkik.org'a taşınması ve eklentilerin Tahkik markasına girmesi (kullanıcı düşünüyor);
+  (b) TÜRKPATENT'e "Tahkik" başvurusu (öneri: 9 ve 42, istenirse 41; tahkik.com'daki tescilsiz kullanım yüzünden erken
+  başvuru); (c) eklentilerin MCP adresleri (mcp., hadis., tefsir., klasik.risalemcp.com) her durumda yerinde kalır:
+  kullanıcıların ayarlarında, dizin başvurularında ve eklenti deposunda kayıtlı. Sıradaki: logo (2).
 - S13.17 **Öbür kütüphaneler sohbette** (eski S13 (11) ve S13.12'nin 2. aşaması): hadis, tefsir, klasik; erişim kararı
   (süreç içi kopya ya da uzak çağrı, ölçerek), alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması
   kipi. Maliyet uyarısı: soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır. Hassas alanlarda (hadis,
