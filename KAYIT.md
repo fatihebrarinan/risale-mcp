@@ -61,6 +61,46 @@ S7) plana yazılıp bekler, önde tek iş D15; D5.0 alt adımlara bölündü (D5
 - Bir birimin durumu ve sıradaki komutu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push.
   Uzun işler `scripts/d1-arka.sh baslat <ad> …` ile (terminal kapansa da sürer, uyku engellenir).
 
+**"Şimdi" bloğunun 2026-11-26 – 2026-11-27 notları ve 2026-11-22'nin sıra gerekçesi** (2026-11-27'de
+sadeleştirildi, kullanıcının isteği: "Şimdi" yalnız şu anki işi taşır; değiştirilmeden):
+
+**Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
+`KAYIT.md` › "Sıradaki'nin notları"):
+- **Son adım (2026-11-27):** S13.15.4 bitti: sohbet **`chat.ayinedar.org`**'da, adı Âyinedâr (yayın 2026-11-27 00.36;
+  eski `risalemcp.com/sohbet/*` 308 ile aynı yola). Kullanıcı telefonda ve masaüstünde girdi, kod e-postası geldi;
+  deneme kullanıcılarına yeni adresi kendisi gönderiyor. Ayrıntı `KAYIT.md` › S13.15.4. Ondan önce S13.15.1–S13.15.3
+  (alan adları, DNS ve Caddy, logo) ve S13.17 (öbür kütüphaneler ve âyet çalışması kipi sohbette, yayında), S13.16,
+  B11, B10 bitti. **S13.15.5 da bitti (2026-11-27):** okuma platformu `read.ayinedar.org`, masa `lab.ayinedar.org`;
+  eski adresler 308 ile; taslak sunucusunun kodu kuyrukta sıradaki birimin başında geçer. **Önde S13.15.6** (çatı
+  sitesi `ayinedar.org`). Yeni davet bağlantıları `read.ayinedar.org/davet/…` verir. Açık kalan küçük iş:
+  girişsiz tanıtım (`sohbet_hesap.HERO`) yalnız Risale'yi anar, Hakkında bütün kütüphaneleri; tanıtımdan önce bakılır
+  (S13.15.6 ile). DMARC ≈2026-12-10'da `p=quarantine`. S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
+  Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
+  (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
+  `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
+  kullanım `… sohbet usage`, geri bildirim `… sohbet geri-bildirim` (sunucuda `.venv/bin/python -m …`). Yalnız sohbetin
+  değişikliği `scripts/deploy.sh --sohbet` ile gider (≈10 sn; kayıt alınmaz, sohbet dışı kod değiştiyse durur; 2026-11-26). Telefon
+  uygulaması "Sonra"da (S13.15'ten sonra, koşullu).
+- **Kendi kendine sürenler:** D5 kuyruğu sunucuda Bakara'nın sonuna kadar (`scripts/taslak-sunucu.sh durum`,
+  `https://lab.ayinedar.org/d5.html`). Dizin başvuruları (S4.1, S4.3, S4.7) ve Elmalılı izni (E6.1) "Bekleyen"de.
+- **Tarihli hatırlatmalar:** (0) **Sohbetin denemesi başladı (2026-11-25), bitişi ≈2026-12-02:** 5 kişi, bir
+  hafta. Başlangıç kaydı `data/interim/sohbet/deneme-baslangic-20261125.md` (o gün 3 kişi, 8 soru, 0,056 $, soru başı
+  0,007 $, doğrulanamayan 0, 👍 2). Bitince yine `usage` ve `geri-bildirim --days 7` (sunucuda
+  `.venv/bin/python -m risale_mcp.sohbet …`), sonra S13.17–S13.21'in sırası gözden geçirilir; öbür eklentiler (S13.17) o hafta
+  yalnız yerelde hazırlanır. (1) **≈2026-11-30:** Anthropic'ten Risale için cevap yoksa S4.3'ün yedek yolu. (2)
+  **2026-12-13:** kullanıcı mesaj gönderecek; taslaklar bitmemişse kuyruk durdurulur (`scripts/taslak-sunucu.sh dur`):
+  Max 2026-12-14'te biter, Pro'ya geçmeden önce kuyruk durmalı (aynı aboneliği kullanır). (3) **Kuyruk durunca
+  (Aralık):** tek tefsir kurulumu ("Sıradaki" 6: B3, E6) ve D16.
+- **Kullanıcıdan beklenen:** "Bekleyen"deki cevaplar gelince haber vermek; dizin metinleri başvurular sonuçlanınca
+  (`docs/e5-dizin-metni-taslagi.md`); S10'un karşılama sayfası (`read.ayinedar.org/#/~hosgeldin`) ve kopyalama damgası, sonra ilk
+  davetler (`scripts/sunucu.sh taslak davet <e-posta>`); lügatın eşleme örnekleri (`data/interim/lugat/olcum.md`);
+  "Sıradaki" 2 (Risale'si az birimler); E8.6 için Arapça okuyan bir denetçi.
+- Bir birimin durumu: `uv run python scripts/d1-durum.py [birim]`. `data/d1` her adımda commit ve push. Uzun işler
+  `scripts/d1-arka.sh baslat <ad> …` ile.
+
+Sıra (kullanıcının kararı, 2026-11-22): dış adımlar önce (cevapları haftalar sürer); davetin ön şartları (S10, A4) Max
+bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisine Aralık'ta tek dokunuş.
+
 ## Aşamalar ve kimlikli işler
 
 2026-11-09'a kadar CLAUDE.md'deki aşama ve adım listesi, değiştirilmeden taşındı. Dondurulan işlerin maddeleri
@@ -381,6 +421,147 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
   sunulmaz.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
+
+**S13.15. Ad, logo ve site düzeni: Âyinedâr — ana kayıt** (2026-11-26 – 2026-11-27; "Sıradaki"den değiştirilmeden
+taşındı, 2026-11-27, kullanıcının kararı: "Sıradaki" kısalsın; S13.15.7 aynı gün S13.22 oldu):
+
+- S13.15 **Ad, logo ve site düzeni: Âyinedâr** (kullanıcının kararı, 2026-11-26; eski S13 (12) ve S12.8; önce
+  "sohbetin kendi adı, logosu ve sitesi"ydi, 2026-11-26 akşam bütün projelerin düzenine genişledi): kullanıcı platformu
+  yakın çevresi dışında kimseye tanıtmadı; insanlar onu kendi adıyla, logosuyla, sitesiyle tanısın, bu hâliyle
+  (`risalemcp.com/sohbet`) tanıtılmaz. Gerçek geri bildirim tanıtımdan sonra gelir; 5 kişilik deneme yakın çevreyle
+  sürer. Adın ölçütleri: müellif adına konuşuyor izlenimi vermez; "Risale-i Nur" adını tek başına almaz; kısa, Türkçe
+  söylenişi kolay; alan adı alınabilir; başka bir hizmetle karışmaz; hadis, tefsir eklenince de uyar; ölçü adın kendisidir, sözlük
+  tanımı değil (kullanıcı: "Claude", "Gemini" de mantıkla bakınca mantıksız).
+  **Adın geçmişi (2026-11-26):** adaylar Fidanlık (S13.3), Tahkik, Hemdem, Kubbe; sonra Âyinedâr, Bezm, Hüdhüd. Önce
+  Tahkik seçildi (tahkik.org; TÜRKPATENT 9/41/42'de kayıt yok); tahkik.com'da tescilsiz bir Türk hukuk yazılımı
+  (2022'den beri), tahkik.app'te aynı alanda yapay zekâlı bir doğrulama aracı ("Tahkîk — Akademik Araştırma ve
+  Doğrulama Çalışma Alanı", alan adı 2026-08-08) çıktı; Âyinedâr yedek kaldı. Hemdem düştü (hemdem.app tanışma
+  uygulaması, TÜRKPATENT'te çok kayıt).
+  **Karar (kullanıcı, 2026-11-26 akşam): ad Âyinedâr.** Gerekçe: işi anlatıyor (ayna kendi ışığını vermez, gösterdiğini
+  kaynağa borçludur: "yapay zekânın ürettiği hiçbir şey tefsir diye anılmaz" ilkesinin adı gibi), bütün uzantılar boş,
+  web aramasında marka ya da uygulama çıkmadı. Eserlerde 82 cümlede geçer (Sözler › Otuz Üçüncü Söz › Otuz Birinci
+  Pencere'de iki bölüm başlığı "… Âyinedârlık İse"); çoğunlukla varlıkların Esmâ-i Hüsnâ'ya âyinedârlığı için,
+  Hanımlar Rehberi'nin "Nurcuların Kasidesi"nde Risale-i Nur'un kendisi için ("Kur'ân'ın bir âyinedarlığını"). Bu yüzden
+  **tanıtımın ölçüsü** "eserlerin ne dediğini yansıtır"dır, "Kur'ân'ın âyinedârı" denmez (Risale'ye verilen vasıf
+  yapay zekâya verilmez). Yazım: metinde ve logoda "Âyinedâr", alan adında `ayinedar`.
+  **Düzenin kararları (kullanıcı onayladı, 2026-11-26):**
+  (a) Alt alan adları **işlevli, İngilizce ve kalıcı** (kullanıcının kararı, 2026-11-26: uluslararası hedef için;
+  önce Türkçe önerilmişti); proje adları üstüne giyen addır, adrese girmez (ad bir günde iki kez değişti; "kimlikler
+  değişmez" ilkesi). Tek kelime, kısaltma yok, Türk okuyucunun da bildiği kelimeler. **Harita (kullanıcı onayladı,
+  2026-11-26):** `ayinedar.org` çatı (projeler, yenilikler, çalışmalar, belgeler, gizlilik; ana sayfa önce sohbete
+  çağırır), `chat.ayinedar.org` sohbet, `read.ayinedar.org` okuma platformu (davetli), `lab.ayinedar.org` ar-ge masası
+  (bugünkü `/taslak/`; deneysel olduğunu söyler), `connect.ayinedar.org` eklentilerin tanıtımı ve kurulumu (Claude
+  "connector", ChatGPT "app" der; ikisini kapsar; risalemcp.com'un sayfaları oraya yönlenir, S13.15.7). `www.` ve
+  `ayinedar.com` köke yönlenir. **Adresin dili sabit, sayfanın dili yolda:** Türkçe varsayılan, `/en/`, ileride `/ar/`
+  (S13.20). Ayrılmış: `mcp.` (ileride ayinedar altına girecek bir MCP sunucusu için; bugünkü MCP adresleri
+  risalemcp.com'da kalır, (e)). "ai." kullanılmaz (ehil okuyucuya yapay zekâ öne çıkmasın). Eski eklenti adreslerinin
+  Türkçe olması (`hadis.`, `tefsir.`, `klasik.risalemcp.com`) ayrı alan adında olduğu için düzeni bozmaz. Kazancı: her
+  alt alan ayrı servis, gerekirse ayrı makine; çerezler kendiliğinden ayrılır.
+  (b) **Asıl adres .org**, .com ona 301 ile yönlenir (izinlerin çoğu "kazanç olmadığı sürece" şartlı; e-posta
+  göndericisi tek alanda: `noreply@ayinedar.org`). tahkik.org alınmamıştı.
+  (c) **İç ad ile dışa açık ad ayrı:** okuyucu tek ad ve işlev görür ("Âyinedâr · Sohbet", "Âyinedâr · Okuma"); iç
+  proje adları aramızda ve planda serbest. Proje adının kuralı: (1) eser ya da bölüm adıyla çakışmaz (araçlar onları
+  adresler), (2) müellife ya da eserine verilmiş bir vasıf değildir, (3) yapay zekânın ürününe hüküm yüklemez. Bu
+  yüzden "Miftah" düştü (Barla Lâhikası'nda Üstad için "Hazine-i Kur'ân'ın bir miftahıdır" başlığı; klasik kütüphanede
+  Sekkâkî'nin Miftâhu'l-Ulûm'u); taslaklar için alçakgönüllü bir ad aranır (öneri "Müsvedde"; karar yok).
+  (d) **Model adları:** "Habbe / Kubbe" düştü ("habbeyi kubbe yapmak" abartmak demek, Emirdağ Lâhikası'nda bu anlamda
+  başlık; Habbe Mesnevî-i Nuriye'nin bir risalesi, `mesnevi-i-nuriye/habbe`). İkinci model gelirse seçicide işlevsel
+  etiket ("Hızlı", "Derinlemesine"), ayrıntıda çalışan model açıkça; ad modelin kimliğini saklamaz. Maliyet, kota ve
+  ölçüm birlikte tartılır ("Fikirler" › Sohbette model kademeleri).
+  (e) **Dokunulmayanlar:** eklentilerin MCP adresleri (mcp., hadis., tefsir., klasik.risalemcp.com: kullanıcıların
+  ayarlarında, dizin başvurularında, eklenti deposunda, OpenAI alan doğrulamasında kayıtlı); risalemcp.com kökünün
+  favicon'u (Claude eklenti simgesini oradan alır; kök yönlense de favicon sunulur); dizin başvurularında adı geçen
+  gizlilik ve kurulum sayfaları, başvurular sonuçlanana kadar. Geçişi ucuz tutmak için ad yalnız ayarlarda
+  (`SOHBET_NAME` …) ve metinlerde durur; logonun simgesi addan bağımsız çizilir.
+  Adımlar (sıra bu; kullanıcının onayı, 2026-11-26):
+  - **S13.15.1 Ad ve alan adları** (bitti, 2026-11-26): kullanıcı `ayinedar.org` ve `ayinedar.com`'u aldı (ad
+    sunucuları Cloudflare'de; kayıtlar S13.15.2'de, DNS only). **Marka başvurusu yapılmaz** (kullanıcının kararı,
+    2026-11-26): "Biz bir marka değiliz, ticari değiliz; insanlara İslâmî kaynaklara ücretsiz erişim sağlamaya
+    çalışıyoruz." TÜRKPATENT'ten bir şey alınmaz; ileride adla ilgili zor duruma düşülürse kullanıcı o zaman başvurur.
+    Bu yüzden metinlerde "marka" denmez; ad bir hizmetin adıdır.
+  - **S13.15.2 Alt alan haritası** (bitti, 2026-11-26): harita (a). DNS (kullanıcı açtı): iki kökte A
+    `95.217.21.105`, alt alan adları CNAME ile köke (sunucu değişirse iki kayıt değişir; CAX11 yükseltilirse IP aynı
+    kalır), ayinedar.com'da `v=spf1 -all` ve DMARC `p=reject` (e-posta göndermez); ayinedar.org'un e-posta kayıtları
+    S13.15.4'te. Caddy (`docs/Caddyfile`): kök ve dört alt alan adı `site-ayinedar/`'ın "hazırlanıyor" sayfası
+    (`noindex`), `www.` ve .com 301 ile `ayinedar.org{uri}`'ye; sertifikalar alındı. `deploy.sh` sayfayı tam
+    gönderimde ve `--site`'ta `/var/www/ayinedar`'a gönderir. Bu sefer yalnız sayfa ve Caddyfile gönderildi
+    (kullanıcının kararı: kod gitmedi, servis yeniden başlamadı); önceki Caddyfile sunucuda
+    `/etc/caddy/Caddyfile.onceki-20261126`.
+  - **S13.15.3 Logo** (bitti, 2026-11-26): kullanıcının seçimi **kemerli aynada açık, kırmızı kapaklı kitap**
+    ("eserlerin ne dediğini yansıtır"). Taslaklar claude.ai'de: Tahkik'in altı fikri
+    (`claude.ai/artifact/VCzNVxxTiu2fcRPwUEfzrj`), ayna üzerine dört çeşit (kemerli, oval, aynada kitap, güneş ve
+    aksi; `claude.ai/artifact/7wdoa4VY7eYXiWqVhy35jG`, dosyaları `data/interim/ayinedar-logo/`); kullanıcı 3'ü seçti,
+    kemerli aynaya aldırdı, kapağı kırmızı ve aynanın içini kitabın etrafında boşluk kalacak kadar geniş istedi.
+    Renkler: zemin `#1d4d3c` (eklentilerin yeşili), cam `#2b6a53`, çerçeve ve taban `#e8c766`, kapak `#b8322a`/
+    `#9e2a23`, sayfalar `#f6efdc`/`#e6dbbd`. Dosyalar `site-ayinedar/`: `icon.svg` (asıl), `icon-kucuk.svg` (16 ve 32
+    piksel: kalın çerçeve, parıltısız, kitap iki düz parça), `icon-maskable.svg` (köşesiz, güvenli alanda; PWA ve
+    Apple); `scripts/ikon-ayinedar.sh` `favicon.ico`, `icon.png`, `icon-192.png`, `icon-512.png`,
+    `icon-maskable-512.png`, `apple-touch-icon.png` üretir. Yazı: Literata 500 ("Âyinedâr"; OFL); sayfalara
+    girerken kendi sunucumuzdan verilir (dışarıya istek yok). Eklentilerin simgeleri değişmedi (`scripts/ikon.sh`).
+  - **S13.15.4 Sohbetin taşınması** (bitti, 2026-11-27): sohbet `chat.ayinedar.org`'da, adı Âyinedâr; eski adres 308
+    ile aynı yola; e-posta `noreply@ayinedar.org` (Reply-To ve `destek@ayinedar.org`), kod e-postasında bağlantı yok;
+    simgeler ve ad yazısı, PWA, Hakkında (`/hakkinda`, Diyanet bildirgesinin 7. maddesi), güvenlik başlıkları, 404,
+    paylaşım kartı, tanıtıma kadar `noindex`. Yapılmayan: `__Host-` çerez öneki (gerekçe `KAYIT.md`), mağaza uygulaması
+    ("Sonra"). DMARC bir iki hafta sorunsuz gönderimden sonra `p=quarantine`. Ayrıntı `KAYIT.md` › S13.15.4.
+  - **S13.15.5 Okuma platformu ve masanın taşınması** (bitti, 2026-11-27): platform `read.ayinedar.org`, masa
+    `lab.ayinedar.org` (disk düzeni aynı); giriş servisi iki bölümde aynı kısa yollar, bölüm `X-Bolum` başlığından,
+    masaya yalnız `masa` kapsamı; çerez alan adına bağlı (kullanıcının kararı: masa hesabı iki yere ayrı girer); eski
+    sayfaların `/taslak/` öneki atılır, `risalemcp.com/oku/*` ve `/taslak/*` 308 ile aynı yola (açık davetler çalışır);
+    ad ve simge Âyinedâr. Ayrıntı `KAYIT.md` › S13.15.5.
+  - **S13.15.6 Çatı sitesi:** `ayinedar.org`; ana sayfa önce sohbete çağırır, öbür projeler ikinci sırada; yenilikler,
+    çalışmalar, belgeler, gizlilik buraya (`scripts/site-uret.py`).
+  - **S13.15.7 Eklentilerin tanıtımı:** `connect.ayinedar.org`; en son, dizin kararlarından sonra; risalemcp.com'dan yönlendirme (favicon ve
+    MCP adresleri yerinde).
+
+**S13.17. Öbür kütüphaneler sohbette** (bitti ve yayında, 2026-11-26; kapandı 2026-11-27, kullanıcının kararı:
+"S13.17 bitti, onu kapat"; "Kalan" (c) daha çok deneme turu ayrı adım olarak açılmadı). "Sıradaki"den değiştirilmeden:
+
+- S13.17 **Öbür kütüphaneler sohbette** (eski S13 (11) ve S13.12'nin 2. aşaması): hadis, tefsir, klasik; erişim kararı
+  (süreç içi kopya ya da uzak çağrı, ölçerek), alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması
+  kipi. Maliyet uyarısı: soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır. Hassas alanlarda (hadis,
+  fıkıh) serbest yorum alanı daraltılır, cevap ağırlıkla alıntı ve künye (S13.14'ün kararı).
+  Kullanıcının kararları (2026-11-26): S13.15'in adı beklenirken başlar, deneme haftasında yalnız yerelde; bütün
+  eklentiler bir gün tek makinede durursa o makine 8 GB olmalı (4 GB eser eklendikçe az kalır); altyapı bitince
+  önceki gibi çeşitli sorularla deneme turları (`sohbet dene`, `tests/golden/sohbet_konusmalar/`).
+  **S13.17.1 erişim ölçümü (2026-11-26):** `data/interim/sohbet/erisim-olcumu-20261126.md`. Süreç içi tefsir ≈1,26 GB
+  (anlamsal dizin 1,1 GB, ≈650 MB'ı Python yapıları), hepsi ≈2,3 GB ve MCP servisleriyle iki kez; makineler arası MCP
+  çağrısı ≈90 ms ekler (ortanca 139 ms), hadis 127.0.0.1'den 16 ms. Öneri: Risale süreç içi, öbürleri MCP istemcisiyle,
+  sınırsız ve girdisiz kayıtlı iç anahtarla (açık kipin ortak sınırını yemesin).
+  **Kullanıcının kararları (2026-11-26):** öneri onaylandı; hangi kütüphanelerin açık olduğunu okuyucu seçer, ama
+  altyapı dördünün her soruda açık olmasına da uygun kurulur (seçim bir ayar; varsayılan yalnız Risale).
+  **S13.17.2 altyapı (2026-11-26, yerelde; deneme bitene kadar yayına gitmez):** MCP sunucularına iç erişim adresi
+  (`auth internal-key`: sınırsız, girdisiz kayıt, `(iç:sohbet)`); `kutuphaneler.py` (MCP istemcisi ya da süreç içi,
+  önekli araçlar, `cite`/`get_ayah` gitmez, sonuç 40 bin karakterde kesilir); işaret `[[tefsir:…]]`, denetim o
+  kütüphanenin `cite`'ı, Kaynaklar tek liste, metin paneli öbür kütüphanenin metnini de açar; sayfada "Kütüphaneler:"
+  seçicisi (Risale hep açık, seçim tarayıcıda, turda `libraries`); tercüme satırı alıntıya karışmaz, öbür kütüphanenin
+  paragrafındaki tırnaklı tercüme Risale'de aranmaz. **Tur 7** (`tests/golden/sohbet_konusmalar/tur-07.txt`, 11
+  konuşma, 14 cevap, 0,11 $, cevap başı ≈0,008 $): tuzaklarda doğru (hadiste hüküm yok, fıkıhta "hangisi doğru"ya karar
+  yok, Beyzâvî–Zemahşerî ilişkisi "kayıtlı değil, yorum"), kütüphaneler açıkken yalnız Risale'lik soru sapmadı; ⚠
+  uyarıları 20'den fazladan 3–5'e indi. **Kalan:** (a) yayın: iç anahtarlar ve `SOHBET_*_URL` (deneme bitince,
+  ≈2026-12-02; kullanıcının kararıyla öne alındı, aşağıda), (b) âyet çalışması kipi (yapıldı, aşağıda), (c) daha çok
+  deneme turu, (d) kalan ⚠'lerin metni öbür kütüphane açıkken
+  "eserlerde" yerine "Risale'de bu sözlerle bulunamadı; tercüme ya da özet olabilir" (kullanıcının kararı, yapıldı).
+  **Yayında (2026-11-26, kullanıcının kararı: deneme haftası beklenmez, kütüphaneler okuyucu açmadıkça kapalı):** üç
+  MCP sunucusuna iç anahtar (`internal-key --new sohbet`), adresler git dışı `.env.sunucu`'da (`deploy.sh` gönderir),
+  tefsir ve klasik `tefsir-sunucu.sh gonder --kod` ile (yalnız kod). Canlıda sunucunun içinden üç kütüphane uzak
+  çağrıyla açılıyor; kader sorusu (üç kütüphane) 35 sn, 0,009 $.
+  **S13.17.3 âyet çalışması kipi (2026-11-26, yayında):** kullanıcının kararları: sabit tefsir yok, âyeti en kapsamlı
+  işleyenler önce (birimin bu âyete düşen kelime payı; `get_outline` kökte `words` verir: cümle sayısı Râzî'de
+  yanıltıyordu); hadis yalnız okuyucu açarsa, kapalıyken ve hadis önemliyse model "Hadis kütüphanesini açın" der. Kip
+  tefsiri kendiliğinden açar; `verse_file` (`ayet_dosyasi.py`) dosyayı sunucuda kurar (âyet ve Vakıf meali, Risale'nin
+  bağları güçlüler önce ve alıntı yerleri, tefsir birimleri vefat sırasıyla ve `read_first`); cevaptan sonra kapalı ek
+  "Âyetin okunmayan öbür yerleri". Konuşmada işareti geçen kütüphane takip sorularında açık kalır. **Tur 8** (7
+  konuşma, 8 cevap, 0,06 $; cevap başı ≈0,008 $): sıra doğru (âyet, Risale, tefsirler, yorum), bağı olmayan âyette
+  (Bakara 282) "bağ yok" dedi, hadis notu yerinde; canlıda Yâsîn 82 32 sn. Gözlenen: Haiku bir cevapta tefsirleri
+  okuduğu sırayla dizdi (talimat sıkılaştırıldı), Râzî'nin Fâtiha birimleri küçük görünüyor (B3, kayan birimler).
+
+**Risale'si az birimlere göz atmak (eski D5.2)** (bitti, 2026-11-27): kullanıcı baktı, dersler ve nazımlar
+uygundu; kuyruk sürüyor. "Sıradaki"deki kaydı:
+
+- **Risale'si az birimlere göz atmak** (eski D5.2; isteğe bağlı, bir kez, kullanıcının işi): bir kıssa birimi
+  (İsrâiloğulları, 40–74; yazıldı) ve bir ahkâm birimi (178–283; Aralık'a doğru). Sebep: sınanan birimlerin hepsi
+  Risale'ce zengindi; Bakara 34–283'te âyetlerin ≈%78'inde Risale'den doğrudan alıntı yok. Okuma değil, göz atmak
+  yetebilir (2026-11-21).
 
 **S13.15.5. Okuma platformu ve masanın taşınması** (bitti ve yayında, 2026-11-27; kullanıcının kararları: çerez alan
 adına bağlı, masa hesabı iki yere ayrı girer; ad ve simge şimdi).
