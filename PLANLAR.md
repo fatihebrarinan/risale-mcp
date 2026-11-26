@@ -57,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E8, S13, A4, D16, B11 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E8, S13, A4, D16, B12 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -107,10 +107,11 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 | 6 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
 | 7 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
 | 8 | S13.17 | Öbür kütüphaneler (hadis, tefsir, klasik) sohbette | S13 (11) |
-| 9 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
-| 10 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
-| 11 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
-| 12 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
+| 9 | B12 | Anlamsal dizinin bellekteki Python yapılarını sıkıştırmak (tefsir 1,26 GB → ≈0,5 GB) | |
+| 10 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
+| 11 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
+| 12 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
+| 13 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
 
 - S13.15 **Sohbetin kendi adı, logosu ve sitesi** (kullanıcının kararı, 2026-11-26; eski S13 (12) ve S12.8): kullanıcı
   platformu yakın çevresi dışında kimseye tanıtmadı; insanlar onu kendi adıyla, logosuyla, sitesiyle tanısın, bu
@@ -137,6 +138,14 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   (anlamsal dizin 1,1 GB, ≈650 MB'ı Python yapıları), hepsi ≈2,3 GB ve MCP servisleriyle iki kez; makineler arası MCP
   çağrısı ≈90 ms ekler (ortanca 139 ms), hadis 127.0.0.1'den 16 ms. Öneri: Risale süreç içi, öbürleri MCP istemcisiyle,
   sınırsız ve girdisiz kayıtlı iç anahtarla (açık kipin ortak sınırını yemesin).
+  **Kullanıcının kararları (2026-11-26):** öneri onaylandı; hangi kütüphanelerin açık olduğunu okuyucu seçer, ama
+  altyapı dördünün her soruda açık olmasına da uygun kurulur (seçim bir ayar; varsayılan yalnız Risale).
+- B12 **Anlamsal dizini sıkıştırmak** (S13.17.1'in yan bulgusu, kullanıcının kararıyla plana girdi, 2026-11-26):
+  `semantic.SemanticIndex` her cümle için kimlik demeti, `VectorStore` anahtar listesi ve sözlüğü tutuyor; tefsirde
+  552 bin cümlede vektörler 269 MB, bu yapılar ≈650 MB (servis 1,3 GB). Kimlikler ve eserler numpy dizileri (ya da
+  veritabanının `seq`'i) olur, anahtar sözlüğü eşlemeden sonra atılır, kurulurken metinler bellekte tutulmaz. Sonuç ve
+  sıra değişmez (`search_eval` ve `tool_snapshot` aynı kalmalı). Bütün profillerde (genel ≈230 MB kazanır); MCP
+  servisleri, sohbet ve D5'in kendi kopyaları da hafifler.
 - S13.18 **Öbür kipler** (eski S13 (4) ve S13.12'nin 3.–4. aşaması): ders (Word), beni sına, müzakere, kavram ve terim,
   karşılaştırma; kip kaydı tek kaynak (`kipler.py`; MCP hazır komutları ve eklentinin skill'leri ondan); sonra
   yönlendirici (önce öneri, sonra otomatik kip).
