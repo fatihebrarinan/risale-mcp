@@ -401,7 +401,12 @@ MAX_ALONE = 3
 _AUTHOR_NOTE = re.compile(r"\s*(?:[(（]\s*المؤلف\s*[)）]|[-–ـ]\s*المؤلف\s*[-–ـ]?)\s*\.?\s*$")
 
 
-ENDS_AT = {"isaratul-icaz-arabi": "باسمه سبحانه", "kizil-icaz-arabi": "اعتذار"}
+ENDS_AT = {"isaratul-icaz-arabi": "باسمه سبحانه", "kizil-icaz-arabi": "اعتذار",
+           # B10 (2026-11-26): baskının eki resim satırıyla başlar; müellifin metni değildir, araçlarda öyle dönüyordu
+           "el-mesnevi-el-arabi": "img alt"}
+ENDS_NOTE = {"el-mesnevi-el-arabi": "Baskının sondaki eki esere dahil edilmedi: yazma nüshaların ve ilk baskının "
+                                    "resimleri, resim altları ve el-A'lâm'dan (Ziriklî) alınmış «نبذة عن بعض الأعلام» "
+                                    "biyografileri (muhakkikin eki, müellifin metni değil)."}
 
 
 def _ancestors(node_id: str) -> list[str]:
@@ -508,8 +513,11 @@ def parse_with_outline(work: Work, root: Path, classify=_classify_author, verses
     if stop := ENDS_AT.get(work.slug):                  # sondaki eklemeler (talebelerin sözü, takriz…) alınmaz
         head = match_words(stop)
         last = max(starts)
-        blocks = blocks[:next((i for i in range(last, len(blocks))
-                               if match_words(blocks[i].text.text)[:len(head)] == head), len(blocks))]
+        cut = next((i for i in range(last, len(blocks)) if match_words(blocks[i].text.text)[:len(head)] == head),
+                   len(blocks))
+        if cut < len(blocks) and (note := ENDS_NOTE.get(work.slug)):
+            book.notes.append({"node_id": book.root.id, "after": None, "text": note})
+        blocks = blocks[:cut]
     kept = {p for row in template["outline"] if row["id"] not in lost for p in _ancestors(row["id"])}
     nodes = {book.root.id: book.root}
     node, begun = book.root, False

@@ -37,7 +37,7 @@
 | 22 | Hakikat Çekirdekleri | `erisale/mektubat` | ✅ indirildi | ✅ 3 düğüm, 145 paragraf, 293 cümle | Standart baskıda Mektubat'ın sonunda. |
 | 23 | Şuaat-ı Marifetü'n-Nebi | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 28 düğüm, 254 paragraf, 545 cümle |  |
 | 24 | Nokta | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 65 düğüm, 241 paragraf, 750 cümle |  |
-| 25 | el-Mesnevî el-Arabî en-Nurî | `risaleoku_app/ar_mesnevi` | ✅ indirildi | ✅ 123 düğüm, 2425 paragraf, 6096 cümle | Arapça asıl; İhsan Kasım es-Sâlihî tahkiki. Türkçesi Mesnevî-i Nuriye. |
+| 25 | el-Mesnevî el-Arabî en-Nurî | `risaleoku_app/ar_mesnevi` | ✅ indirildi | ✅ 123 düğüm, 2414 paragraf, 6031 cümle | Arapça asıl; İhsan Kasım es-Sâlihî tahkiki. Türkçesi Mesnevî-i Nuriye. |
 | 26 | el-Mesnevî el-Arabî en-Nurî (harekeli) | `rasaelalnour/mesnevi` | ✅ indirildi | ✅ 130 düğüm, 2014 paragraf, 7020 cümle | Abdülkadir Badıllı'nın "el-Kâmil" baskısı (harekeli); yalnızca kullanıcıda, genel sunucuya çıkmaz. |
 | 27 | Mesnevî-i Nuriye | `erisale/mesnevi-i-nuriye` | ✅ indirildi | ✅ 212 düğüm, 1990 paragraf, 5448 cümle | el-Mesnevî el-Arabî'nin Türkçesi; Mukaddime, Nokta ve Hubâb'daki Meclis-i Meb'ûsân hutbesi aslı Türkçedir. |
 | 28 | Nur'un İlk Kapısı | `erisale/ilk-donem-eserleri` | ✅ indirildi | ✅ 92 düğüm, 696 paragraf, 2236 cümle |  |
