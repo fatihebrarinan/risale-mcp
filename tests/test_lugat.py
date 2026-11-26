@@ -131,3 +131,20 @@ def test_platform_tokenizer_matches_python(tmp_path):
     path.write_text(script, encoding="utf-8")
     got = json.loads(subprocess.run(["node", str(path)], capture_output=True, text=True, check=True).stdout)
     assert got == [search_words(s) for s in SAMPLES]
+
+
+def test_vowel_then_i_or_dotless_i_tells_homographs_apart():
+    # S13.16 (b): sâika (سائقه, sevk eden) yıldırım (saîka, sâıka: صاعقه) değildir; vâiz (vaaz eden) vaız değildir.
+    # Maddeler gerçek lügattaki yazılışlarıyla.
+    lex = Lexicon([
+        {"id": 1, "word": "saîka", "meaning": "Yıldırım.", "variants": ["saıka", "sâıka"]},
+        {"id": 2, "word": "saik", "meaning": "Sevkeden.", "variants": ["sâik", "sâika", "saika"]},
+        {"id": 3, "word": "vaız", "meaning": "Öğüt."},
+        {"id": 4, "word": "vaiz", "meaning": "Vaaz eden."},
+        {"id": 5, "word": "hikmet-i ilahî", "meaning": "Allah'ın hikmeti.", "variants": ["hikmet-i ilâhiye"]},
+    ])
+    assert words(lex, "sâika") == ["saik"]
+    assert words(lex, "sâikasıyla") == ["saik"]
+    assert "saîka" in words(lex, "sâıka") and "saik" not in words(lex, "sâıka")
+    assert words(lex, "vâiz") == ["vaiz"]
+    assert words(lex, "hikmet-i İlâhiye") == ["hikmet-i ilahî"]       # şapkanın yeri ayırmaz

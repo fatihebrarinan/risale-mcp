@@ -48,6 +48,7 @@ from typing import AsyncIterator
 
 from risale_mcp import sohbet_hesap
 from risale_mcp.library import MAX_CITED as MAX_RANGE   # bir işaretin en çok cümlesi
+from risale_mcp.normalize import search_words
 from risale_mcp.sohbet_hesap import COOKIE, Config, Store
 
 ASSETS = Path(__file__).parent / "sohbet_assets"
@@ -119,7 +120,8 @@ quotation matters to the point, explain it briefly in your own words.
 in Turkish gets a Turkish answer), even though the tool results and these instructions are in English. Quotations \
 stay exactly as returned, in their own language: never translate a quotation. In a Turkish answer write no \
 English words (Arapça, not Arabic); the translation get_ayah gives is the "Türkiye Diyanet Vakfı meali", always in \
-full, never "Diyanet meali".
+full, never "Diyanet meali". A question whose language is unclear (only a name or a term, such as "Mevlânâ" or \
+"haşir") is answered in the page's language, Turkish.
 - Order: first answer the question directly in two or three sentences; then what the text says, in quotations \
 joined by short sentences of your own; then, when the question asks for meaning or application, or a reader would \
 expect it, your interpretation under its own heading (in Turkish "Yorum"), plainly marked as yours. A question \
@@ -213,7 +215,7 @@ class Checked:
     sources: list[dict]                # n, id, cite_as, embedded; doğrulanamayanda problem, unverified
     problems: list[dict] = field(default_factory=list)   # denetimden ilk geçişte düşen her işaret ve düz kimlik
     raw: str = ""                      # modelin cevabı, işaretler düzeltilmiş (sonraki soruda geçmiş olarak gider)
-    counts: dict = field(default_factory=dict)          # fixed, unverified, dropped, leaks, paragraphs, unmarked
+    counts: dict = field(default_factory=dict)          # fixed, repaired, unverified, dropped, leaks, paragraphs, unmarked, unmarked_found, unmarked_missing
 
 
 def strip_own_sources(text: str) -> str:
@@ -273,16 +275,19 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
       en kısa aralığa) taşınır; birden çok yerde geçiyorsa modelin okuduğu (`read`: okuma araçlarının döndürdüğü
       cümle kimlikleri), sonra işaretin bölümündeki, sonra eserindeki yer seçilir;
     - alıntısız işaretin aralığı uzunsa ya da bölümü aşıyorsa geçerli kısmına kısalır; kimliği yoksa işaret silinir;
+    - "…" ile birleşen alıntının bir parçası tutmuyorsa o parça metindeki karşılığıyla değişir ya da atılır (S13.16);
     - eserlerde hiç bulunmayan alıntı ayrı numara alır, kaynağı "doğrulanamadı" işaretiyle (`unverified`) görünür;
+    - işaretsiz tırnaklı söz (dört kelime ve üstü) aranır: bulunursa işaret alır, bulunmazsa uyarı (S13.16);
     - düz metne yazılmış kimlik ("(c033)") silinir.
 
     Aynı kimlik aynı numarayı alır; birden çok alıntısı "…" ile birleşip birlikte denetlenir."""
-    text = _split_blocks(strip_own_sources(text))
+    text, unmarked = unmarked_quotes(checker, _split_blocks(strip_own_sources(text)), read)
     leaks = list(dict.fromkeys(m.group().strip() for m in BARE_ID.finditer(MARK.sub(" ", text))))
     problems = [{"id": leak, "problem": "An id or sentence number written in the prose: the reader must not see ids. "
                  "Put an id only inside [[ ]] right after the words it supports, or drop it."} for leak in leaks]
-    counts = {"fixed": 0, "unverified": 0, "dropped": 0, "leaks": len(leaks)}
+    counts = {"fixed": 0, "repaired": 0, "unverified": 0, "dropped": 0, "leaks": len(leaks), **unmarked}
     found = marks(text)
+    edits: dict[int, list[tuple[str, str]]] = {}     # S13.16 (c): onarılan alıntının cevaptaki sözleri
     checker.refresh()
     nodes = getattr(checker, "nodes", {})
     sections: set[str] = set()         # bölüm atfı: alıntısız ya da alıntısı bölümün başlığı olan bölüm kimliği
@@ -301,9 +306,14 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
             continue
         problems.append({"id": ident, "quote": quote, "problem": record["problem"]})
         fixed = _relocate(checker, ident, quote, read) if quote else _trim(checker, ident)
+        segment = text[resolved[-1][3][1] if resolved else 0:span[0]]
         if fixed:
             counts["fixed"] += 1
             resolved.append((fixed, quote, True, span))
+        elif quote and (repaired := _repair(checker, ident, quote, segment)):
+            counts["repaired"] += 1
+            edits[len(resolved)] = repaired[1]
+            resolved.append((ident, repaired[0], True, span))
         elif quote:
             counts["unverified"] += 1
             resolved.append((ident, quote, False, span))
@@ -349,7 +359,7 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
     sources.sort(key=lambda source: source["n"])
     raw_out, out, last = [], [], 0          # düz kimlikler işaretlerin arasındaki metinden silinir
     for i, (ident, _, ok, (start, end)) in enumerate(resolved):
-        raw_out.append(_drop_leaks(text[last:start]))
+        raw_out.append(_drop_leaks(_apply_edits(text[last:start], edits[i]) if i in edits else text[last:start]))
         out.append(raw_out[-1])
         if ident is not None:
             raw_out.append(f"[[{ident}]]")
@@ -506,6 +516,167 @@ def _relocate(checker, ident: str, quote: str, read) -> str | None:
             if _passes(checker, candidate, quote):
                 return candidate
     return None
+
+
+REPAIR_RATIO = 0.7            # S13.16 (c): tutmayan parçanın metindeki karşılığı için en az harf benzerliği
+_EDGE_PUNCT = " \t\n,;:.!?\"“”«»()'’"
+
+
+def _span_text(checker, ident: str) -> str | None:
+    """İşaretin cümlelerinin metni (aralıkta art arda)."""
+    if (span := _seqs(checker, ident)) is None or not _passes(checker, ident, None):
+        return None
+    rows = checker.refresh().execute("SELECT text FROM sentences WHERE seq BETWEEN ? AND ? ORDER BY seq", span)
+    return " ".join(r[0] for r in rows)
+
+
+def _counterpart(part: str, text: str) -> str | None:
+    """Parçanın metindeki en yakın karşılığı, metnin kendi sözleriyle; yeterince yakın değilse None. Karşılaştırma
+    arama biçiminde (şapka, çengel, büyük harf yok sayılır), harf düzeyinde: "tefekküre teşvik ettiği" →
+    "tefekkür mesleğine teşvik ettiği"."""
+    from difflib import SequenceMatcher
+    want = search_words(part)
+    if not want:
+        return None
+    stream: list[tuple[str, int]] = []          # (kelime, metindeki sözün sırası)
+    tokens = list(re.finditer(r"\S+", text))
+    for i, token in enumerate(tokens):
+        stream.extend((w, i) for w in search_words(token.group()))
+    target = " ".join(want)
+    best, where = 0.0, None
+    for size in range(max(1, len(want) - 3), len(want) + 4):
+        for start in range(0, max(0, len(stream) - size) + 1):
+            window = stream[start:start + size]
+            if not window:
+                continue
+            matcher = SequenceMatcher(None, target, " ".join(w for w, _ in window), autojunk=False)
+            if matcher.real_quick_ratio() <= best or matcher.quick_ratio() <= best:
+                continue
+            if (ratio := matcher.ratio()) > best:
+                best, where = ratio, (window[0][1], window[-1][1])
+    if best < REPAIR_RATIO or where is None:
+        return None
+    return text[tokens[where[0]].start():tokens[where[1]].end()].strip(_EDGE_PUNCT) or None
+
+
+def _repair(checker, ident: str, quote: str, segment: str) -> tuple[str, list[tuple[str, str]]] | None:
+    """S13.16 (c), kullanıcının kararı (2026-11-26): "…" ile birleşen alıntının bir parçası işaretin cümlelerinde
+    yoksa ve öbür parçalar varsa, cümle bellidir: tutmayan parça metindeki karşılığıyla değişir, karşılığı yoksa "…"
+    olur. Parça cevapta (`segment`: önceki işaretten bu işarete kadarki metin) olduğu gibi bulunamazsa onarılmaz.
+    (yeni alıntı, [(eski söz, yeni söz)]) ya da None."""
+    from risale_mcp.citations import _key
+    pieces = [p.strip().strip('"“”«» ') for p in re.split(r"…|\.\.\.", quote)]
+    pieces = [p for p in pieces if _key(p)]
+    if len(pieces) < 2 or (text := _span_text(checker, ident)) is None:
+        return None
+    covered = _key(text)
+    good = [_key(p) in covered for p in pieces]
+    if all(good) or not any(good):
+        return None
+    edits, kept = [], []
+    for piece, ok in zip(pieces, good):
+        if ok:
+            kept.append(piece)
+            continue
+        if piece not in segment:
+            return None
+        new = _counterpart(piece, text)
+        edits.append((piece, new or "…"))
+        if new:
+            kept.append(new)
+    new_quote = " … ".join(kept)
+    return (new_quote, edits) if _passes(checker, ident, new_quote) else None
+
+
+# S13.16 (d), kullanıcının kararı (2026-11-26): işaretsiz tırnaklı söz. Dört ve daha çok kelimelik, ardında işaret
+# olmayan tırnak (düz yazıda) ya da işaretsiz alıntı bloğu eserlerde aranır: bulunursa işareti eklenir (kaynağı
+# Kaynaklar'a girer), bulunmazsa sözün ardına uyarı konur; söz silinmez (hadis, atasözü, başkasının sözü olabilir).
+# Nâşirin ve Vakıf'ın meali, başlık adı ve bulunamayan Arapça dokunulmadan kalır.
+UNMARKED_WORDS = 4
+UNMARKED_QUOTE = re.compile(r"([\"“«])([^\"“”«»\n\[\]]{3,}?)([\"”»])(?![ \t]*\[\[)")
+UNMARKED_NOTE = " (⚠ eserlerde bu sözlerle bulunamadı)"
+ARABIC = re.compile(r"[؀-ۿ]")
+_TRANSLATIONS: dict[int, list[str]] = {}
+
+
+def _translations(checker) -> list[str]:
+    """Nâşirin mealleri ve Vakıf meali, karşılaştırma biçiminde (veritabanı başına bir kez)."""
+    from risale_mcp.citations import _key
+    conn = checker.refresh()
+    if id(conn) not in _TRANSLATIONS:
+        _TRANSLATIONS.clear()
+        rows = [r[0] for r in conn.execute("SELECT DISTINCT meal FROM arabic WHERE meal IS NOT NULL")]
+        try:
+            rows += [r[0] for r in conn.execute("SELECT text FROM quran_translations")]
+        except Exception:
+            pass
+        _TRANSLATIONS[id(conn)] = [_key(r) for r in rows if r]
+    return _TRANSLATIONS[id(conn)]
+
+
+def _place_unmarked(checker, quote: str, read) -> str | None:
+    """İşaretsiz sözün yeri: kimlik, uyarı ("") ya da dokunulmaz (None)."""
+    from risale_mcp.citations import _block_parts, _key
+    parts = _block_parts(quote)
+    if not parts or len(" ".join(parts).split()) < UNMARKED_WORDS:
+        return None
+    meals = _translations(checker)
+    if all(any(p in m for m in meals) for p in parts):
+        return None
+    if _key(quote) in getattr(checker, "by_key", {}):     # bölüm başlığı
+        return None
+    if found := _relocate(checker, "", quote, read):
+        return found
+    return None if ARABIC.search(quote) else ""
+
+
+def unmarked_quotes(checker, text: str, read=frozenset()) -> tuple[str, dict]:
+    """İşaretsiz tırnaklı sözlere işaret ya da uyarı ekler; (yeni metin, sayılar)."""
+    counts = {"unmarked_found": 0, "unmarked_missing": 0}
+    lines = text.split("\n")
+
+    def place(quote: str) -> str | None:
+        where = _place_unmarked(checker, quote, read)
+        if where:
+            counts["unmarked_found"] += 1
+            return f" [[{where}]]"
+        if where == "":
+            counts["unmarked_missing"] += 1
+            return UNMARKED_NOTE
+        return None
+
+    i = 0
+    while i < len(lines):
+        if lines[i].lstrip().startswith(">"):           # alıntı bloğu: hiç işareti yoksa bütünü bir söz
+            j = i
+            while j + 1 < len(lines) and lines[j + 1].lstrip().startswith(">"):
+                j += 1
+            after = lines[j + 1] if j + 1 < len(lines) else ""
+            if not any(MARK.search(line) for line in lines[i:j + 1]) and not MARK.search(after):
+                if (quote := _quote_text("\n".join(lines[i:j + 1]))) and (add := place(quote)):
+                    lines[j] = lines[j].rstrip() + add
+            i = j + 1
+            continue
+        line, out, last = lines[i], [], 0
+        for m in UNMARKED_QUOTE.finditer(line):
+            out.append(line[last:m.end()])
+            last = m.end()
+            # işaret aynı cümlede biraz sonra geliyorsa ("… sözü geçer [[…]].") söz işaretlidir
+            tail = re.split(r"[\"“«]|[.!?](?:\s|$)", line[m.end():], maxsplit=1)[0]
+            if not MARK.search(tail) and (add := place(m.group(2))):
+                out.append(add)
+        lines[i] = "".join(out) + line[last:]
+        i += 1
+    return "\n".join(lines), counts
+
+
+def _apply_edits(segment: str, edits: list[tuple[str, str]]) -> str:
+    for old, new in edits:
+        at = segment.rfind(old)
+        if at >= 0:
+            segment = segment[:at] + new + segment[at + len(old):]
+    segment = re.sub(r"(?:…|\.\.\.)(?:\s*(?:…|\.\.\.))+", "…", segment)     # atılan parçanın iki yanındaki "…"
+    return re.sub(r"([\"“«])\s*…\s*([\"”»])", r"\1…\2", segment)
 
 
 def _trim(checker, ident: str) -> str | None:

@@ -84,7 +84,8 @@ def test_check_numbers_and_problems():
     assert [s["n"] for s in checked.sources] == [1, 2, 3]
     assert [p["id"] for p in checked.problems] == ["z/c003"]
     assert checked.sources[2]["unverified"] and "unverified" not in checked.sources[0]
-    assert checked.counts == {"fixed": 0, "unverified": 1, "dropped": 0, "leaks": 0, "paragraphs": 1, "unmarked": 0}
+    assert checked.counts == {"fixed": 0, "repaired": 0, "unverified": 1, "dropped": 0, "leaks": 0, "paragraphs": 1,
+                              "unmarked": 0, "unmarked_found": 0, "unmarked_missing": 0}
     assert checked.raw == text
 
 
@@ -738,3 +739,58 @@ def test_s13_14_scope_note():
     assert sohbet.scope_note(calls[:1], sources) == ""
     # gönderme yalnız cevabın dayandığı bölümden: Nokta'ya dayanılmadıysa İşârât göndermesi gösterilmez
     assert "gönderme okunmadı" not in sohbet.scope_note(calls, [s for s in sources if not s["id"].startswith("nokta")])
+
+
+# ------------------------------------------------------------ S13.16: küçük açıklar
+
+IFADE = "lemalar/29/ifade-i-meram/c001"
+
+
+def test_s13_16_unclear_language_is_turkish():
+    assert "whose language is unclear" in sohbet.instructions("Risale MCP")
+
+
+@needs_db
+def test_s13_16_wrong_piece_of_joined_quote_is_replaced_by_the_text(checker):
+    checked = sohbet.check(checker, f'> "Kur\'ân-ı Mu\'cizü\'l-Beyânın … gibi âyetlerle emrettiği tefekküre teşvik '
+                                    f'ettiği …" [[{IFADE}]]')
+    assert checked.counts["repaired"] == 1 and checked.counts["unverified"] == 0
+    assert "tefekkür mesleğine teşvik ettiği" in checked.markdown and "tefekküre teşvik" not in checked.markdown
+    assert "problem" not in checked.sources[0]
+
+
+@needs_db
+def test_s13_16_piece_without_counterpart_is_dropped(checker):
+    checked = sohbet.check(checker, f'> "On üç seneden beri kalbim … uçan kuşlar gibi gökte gezen fikirler …" [[{IFADE}]]')
+    assert checked.counts["repaired"] == 1 and "kuşlar" not in checked.markdown
+    assert '"On üç seneden beri kalbim …" [1]' in checked.markdown
+
+
+@needs_db
+def test_s13_16_quote_with_no_true_piece_stays_unverified(checker):
+    checked = sohbet.check(checker, f'> "Tamamen uydurma sözler burada … başka sözler de" [[{IFADE}]]')
+    assert checked.counts["repaired"] == 0 and checked.counts["unverified"] == 1
+
+
+@needs_db
+def test_s13_16_unmarked_quote_gets_its_source_or_a_warning(checker):
+    text = ('Hadiste "Bazen bir saat tefekkür, bir sene ibadet hükmündedir" denir. Metin "bir saat tefekkür bir sene '
+            'ibâdet hükmünde olduğunu" der; "tefekkür" önemlidir.\n\n'
+            f'Başka yerde "{SINEK[:60]}" denir [[{SINEK_A}]].\n\n'
+            f'> "{TEXT_32}"\n\n> "Bu söz hiçbir eserde bulunmayan uydurma bir sözdür."')
+    checked = sohbet.check(checker, text)
+    assert checked.counts["unmarked_found"] == 2 and checked.counts["unmarked_missing"] == 2
+    assert 'hükmündedir" (⚠ eserlerde bu sözlerle bulunamadı)' in checked.markdown
+    assert 'olduğunu" [1]' in checked.markdown and checked.sources[0]["id"] == IFADE
+    assert f'"{TEXT_32}" [' in checked.markdown
+    assert checked.markdown.count("[2]") == 1          # işareti aynı cümlede sonra gelen söz ikinci kez işaretlenmez
+    assert '"tefekkür" önemlidir' in checked.markdown
+
+
+@needs_db
+def test_s13_16_unmarked_translation_and_arabic_are_left_alone(checker):
+    meal = checker.refresh().execute("SELECT text FROM quran_translations WHERE sura = 2 AND ayah = 255").fetchone()[0]
+    words = " ".join(meal.split()[:8]).strip('".,;:')
+    checked = sohbet.check(checker, f'Vakıf meali: "{words}" der. Âyet "لَعَلَّكُمْ تَتَفَكَّرُونَ يَا قَوْمِ" diye geçer.')
+    assert checked.counts["unmarked_found"] == 0 and checked.counts["unmarked_missing"] == 0
+    assert "⚠" not in checked.markdown

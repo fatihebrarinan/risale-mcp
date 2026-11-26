@@ -21,6 +21,8 @@ Eşleme (`Lexicon.lookup`), kelime ya da tamlama, metinde yazıldığı gibi:
    "hakikatlerini" → "hakikat"). Atılan kısım yalnız bilinen eklerden oluşmalı (`SUFFIX`), kök en az 3 harf.
    Kökün sonu yumuşamış olabilir (b/p, d/t, g/k: "kalbi" → "kalp") ve iki ünsüzle bitiyorsa düşen ünlü geri konur
    ("ilmi" → "ilim", "aklı" → "akıl").
+3. Metnin harf biçimi (`Form`) adayları süzer: ş ç ğ ö ü, kesmenin yeri ve ünlüden sonraki ı/i ("sâika" sevk eden,
+   "sâıka" yıldırım; S13.16) tutmalı.
 Bulunan her şey aday olarak döner (`how`: `exact`, `variant`, `stem`); hüküm vermez.
 """
 
@@ -70,22 +72,29 @@ def key(text: str) -> str:
 # Anahtar ş/s, ç/c, ğ/g, ö/o, ü/u ve ı/i farkını, kesmeyi yok sayar: "esrar" ile "eşrar", "şu" ile "şu'", "bir" ile
 # "bi'r" aynı anahtara iner. Harflerin metindeki biçimi (`Form`: ş, ç, ğ, ö, ü korunur, ı = i; kesmelerin yeri ayrı)
 # adayları ayırır: metinle harfi ya da kesmesi tutmayan madde eşlenmez.
-_KEEP_MARKS = {"\u0327", "\u0306", "\u0308"}       # çengel (ş, ç), ğ'nin işareti, ö ve ü'nün noktaları
+_KEEP_MARKS = {"\u0327", "\u0306", "\u0308", "\u0302"}   # çengel (ş, ç), ğ'nin işareti, ö ve ü'nün noktaları, şapka
 _APOS = "'’‘ʼ`"
+# Ünlüden sonraki ı ile i (S13.16 (b)): "sâika" (سائقه, sevk eden; hemze) ile "sâıka", "saîka" (صاعقه, yıldırım;
+# ayın) Latin harfle aynı anahtara iner. Maddenin yazılışlarında o yerde yalnız ı varsa metindeki i (ya da tersi)
+# onunla eşlenmez; "î" iki yana da sayılmaz. Anahtarda ve öbür yerlerde ı = i kalır. Şapkanın yeri ayırıcı değildir:
+# lügat şapkaları tutarsız yazar ("ilahî", "İlâhiye").
+_HATS = {"â": "a", "î": "i", "û": "u", "ê": "e", "ô": "o"}
 
 
 @dataclass(frozen=True)
 class Form:
     letters: str                 # anahtarla aynı uzunlukta
     apos: frozenset[int]         # kesmelerin yeri (ardından gelen harfin sırası)
+    gap_i: frozenset[int] = frozenset()  # ünlüden sonra gelen i ("sâika")
+    gap_ı: frozenset[int] = frozenset()  # ünlüden sonra gelen ı ("sâıka")
 
 
 def form(text: str) -> Form | None:
     """Metnin ya da maddenin harf biçimi; anahtarla harf harf hizalanamazsa None."""
     s = unicodedata.normalize("NFD", tr_lower(text))
     s = "".join(ch for ch in s if not unicodedata.category(ch).startswith("M") or ch in _KEEP_MARKS)
-    s = unicodedata.normalize("NFC", s).replace("ı", "i").replace("ـ", "")
-    letters, apos = [], set()
+    s = unicodedata.normalize("NFC", s).replace("ـ", "")
+    letters, apos, gap_i, gap_ı = [], set(), set(), set()
     for word in re.findall(rf"[\w{_APOS}]+", s):
         if letters:
             letters.append(" ")
@@ -94,11 +103,26 @@ def form(text: str) -> Form | None:
             if ch in _APOS:
                 apos.add(n)
             else:
+                if ch in _HATS:
+                    ch = _HATS[ch]
+                elif ch in "iı":
+                    if letters and letters[-1] in "aeiou":
+                        (gap_i if ch == "i" else gap_ı).add(n)
+                    ch = "i"
                 letters.append(ch)
                 n += 1
     out = "".join(letters)
     out = " ".join(w for w in out.split(" ") if w)
-    return Form(out, frozenset(apos)) if len(out) == len(key(text)) else None
+    return (Form(out, frozenset(apos), frozenset(gap_i), frozenset(gap_ı))
+            if len(out) == len(key(text)) else None)
+
+
+def _gaps_agree(forms: list[Form], text: Form, upto: int) -> bool:
+    """Ünlüden sonraki ı/i (ilk `upto` harfte): maddenin yazılışları o yerde yalnız öbür harfi taşıyorsa çatışır."""
+    has_i = set().union(*(f.gap_i for f in forms))
+    has_ı = set().union(*(f.gap_ı for f in forms))
+    return not any(p < upto and ((p in text.gap_i and p in has_ı - has_i) or (p in text.gap_ı and p in has_i - has_ı))
+                   for p in text.gap_i | text.gap_ı)
 
 
 # ------------------------------------------------------------------ ham veriden
@@ -259,9 +283,10 @@ class Lexicon:
             else:
                 soft = m.form != m.stem or (t[n - 1] in "cbdgğ" and t[n:n + 1] in _LITE_VOWELS)
                 want, free = t[:n], (n - 1 if soft else None)
-        for f in self.forms[m.entry["id"]]:
-            if len(f.letters) != len(want):
-                continue
+        forms = [f for f in self.forms[m.entry["id"]] if len(f.letters) == len(want)]
+        if not _gaps_agree(forms, text, len(want)):
+            return False
+        for f in forms:
             if all(a == b or i == free for i, (a, b) in enumerate(zip(f.letters, want))) \
                     and all(p in text.apos or p > len(want) for p in f.apos):
                 return True
@@ -334,12 +359,14 @@ def _token_forms(token: str) -> list[tuple[str, Form | None]]:
 def _join(forms: list[Form | None]) -> Form | None:
     if any(f is None for f in forms):
         return None
-    letters, apos, n = [], set(), 0
+    letters, apos, gap_i, gap_ı, n = [], set(), set(), set(), 0
     for f in forms:
         apos |= {p + n for p in f.apos}
+        gap_i |= {p + n for p in f.gap_i}
+        gap_ı |= {p + n for p in f.gap_ı}
         letters.append(f.letters)
         n += len(f.letters) + 1
-    return Form(" ".join(letters), frozenset(apos))
+    return Form(" ".join(letters), frozenset(apos), frozenset(gap_i), frozenset(gap_ı))
 
 
 def record(m: Match) -> dict:
