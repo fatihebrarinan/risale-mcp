@@ -70,6 +70,7 @@ class Config:
     name: str = "Risale MCP"
     sender: str = "noreply@risalemcp.com"
     support: str = "destek@risalemcp.com"     # S13.15.4: sayfaların iletişim adresi ve e-postanın Reply-To'su
+    home: str = "https://risalemcp.com"       # S13.15.4: çatı site (sayfa altındaki bağlantı)
     daily_codes: int = 200
 
     @classmethod
@@ -81,6 +82,7 @@ class Config:
                    name=os.environ.get("SOHBET_NAME", d.name),
                    sender=os.environ.get("SOHBET_FROM", d.sender),
                    support=os.environ.get("SOHBET_DESTEK", d.support),
+                   home=os.environ.get("SOHBET_CATI", d.home).rstrip("/"),
                    daily_codes=int(os.environ.get("SOHBET_GUNLUK_KOD", d.daily_codes)))
 
 
@@ -427,12 +429,12 @@ def mailer_from_env(config: Config, dev: bool):
 # yıldız deseni; telefonda üstte), öbürleri (kod, hesabı silme) yalnız formdur. Desen satır içi SVG'dir: dışarıya istek yok.
 SHELL = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex">
-<meta name="referrer" content="no-referrer"><title>{title} · {name}</title><style>{style}</style></head>
+<meta name="referrer" content="no-referrer"><title>{title} · {name}</title>{head}<style>{style}</style></head>
 <body class="{kind}"><div class="sayfa">
 {hero}<main><div class="kart">
 {body}
 </div>
-<p class="alt-not"><a href="/">{site_host}</a> · <a href="{p}gizlilik">Gizlilik</a> · <a href="{p}sartlar">Kullanım şartları</a></p>
+<p class="alt-not"><a href="{home}/">{home_host}</a> · <a href="{p}gizlilik">Gizlilik</a> · <a href="{p}sartlar">Kullanım şartları</a></p>
 </main></div></body></html>"""
 
 _STAR = ("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E"
@@ -482,6 +484,8 @@ input[readonly] { color: var(--muted); } .small { font-size: .82rem; }
 .tanitim > * { position: relative; z-index: 1; max-width: 560px; }
 .ust-yazi { font-size: .8rem; letter-spacing: .12em; text-transform: uppercase; color: var(--gold); margin: 0 0 18px;
   font-weight: 600; }
+.ust-yazi .ad { font-family: "Ayinedar Ad", var(--serif); font-weight: 500; font-size: 1.35rem; letter-spacing: .01em;
+  text-transform: none; vertical-align: -1px; }
 .tanitim h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.9rem, 3.2vw, 2.7rem); line-height: 1.18;
   margin: 0 0 16px; color: #fbf8ef; }
 .tanitim .giris-yazi { color: #d7dfd6; font-size: 1.05rem; line-height: 1.65; margin: 0 0 28px; }
@@ -527,7 +531,7 @@ _ICONS = {
 }
 
 HERO = """<aside class="tanitim" aria-label="Tanıtım">
-<p class="ust-yazi">{name} · Sohbet</p>
+<p class="ust-yazi"><span class="ad">{name}</span> · Sohbet</p>
 <h2>Risale-i Nur'a sorun,<br>cevabı kaynağıyla okuyun.</h2>
 <p class="giris-yazi">Sorularınızı Bediüzzaman Said Nursî'nin eserlerinden cevaplayan bir yapay zekâ. Dayandığı her söz
 eserlerden alıntıdır; alıntılar eserlerin metniyle denetlenir, yeri ve kaynağıyla gösterilir.</p>
@@ -561,7 +565,7 @@ DOCS = {   # yol: (dosya, dil, başlık, öbür dildeki yol)
 }
 DOC_SHELL = """<!doctype html><html lang="{lang}"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer">
-<title>{title} · {name}</title><style>
+<title>{title} · {name}</title>{head}<style>
 :root {{ --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #dcd8cf; --accent: #1f5c3f; }}
 @media (prefers-color-scheme: dark) {{ :root {{ --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f;
   --accent: #7cc49d; }} }}
@@ -580,6 +584,16 @@ footer a {{ color: inherit; }}
 </main></body></html>"""
 
 
+def head_links(p: str) -> str:
+    """S13.15.4: simgeler ve ad yazısının yazı tipi (sohbet sayfası da aynısını `sohbet.html`'de taşır)."""
+    p = html.escape(p)
+    return (f'<link rel="icon" href="{p}static/favicon.ico" sizes="any">'
+            f'<link rel="icon" href="{p}static/icon-kucuk.svg" type="image/svg+xml">'
+            f'<link rel="apple-touch-icon" href="{p}static/apple-touch-icon.png">'
+            f'<style>@font-face {{ font-family: "Ayinedar Ad"; src: url("{p}static/literata-ad.woff2") format("woff2"); '
+            f'font-display: swap; }}</style>')
+
+
 def doc_page(path: str, config: "Config") -> str:
     """Sohbet sayfasının gizlilik politikası ya da kullanım şartları (girişsiz)."""
     file, lang, title, other = DOCS[path]
@@ -590,7 +604,7 @@ def doc_page(path: str, config: "Config") -> str:
             .replace("{{SUPPORT}}", html.escape(config.support)))
     tr = lang == "tr"
     return DOC_SHELL.format(lang=lang, title=html.escape(title), name=html.escape(config.name), p=html.escape(config.prefix),
-                            support=html.escape(config.support),
+                            support=html.escape(config.support), head=head_links(config.prefix),
                             body=body, back="← Sohbete dön" if tr else "← Back to the chat", other=other,
                             other_lang="en" if tr else "tr", other_label="English" if tr else "Türkçe",
                             chat="Sohbet" if tr else "Chat", privacy="gizlilik" if tr else "en/privacy",
@@ -662,13 +676,13 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
 
     p = config.prefix
     limiter = limiter or IpLimiter()
-    host = config.site.split("://", 1)[-1]
     esc = lambda s: html.escape(str(s), quote=True)
 
     hero = HERO.format(name=esc(config.name), **{f"i_{k}": v for k, v in _ICONS.items()})
 
     def shell(title: str, body: str, status: int = 200, intro: bool = False) -> HTMLResponse:
-        return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, site_host=esc(host), p=p,
+        return HTMLResponse(SHELL.format(title=esc(title), name=esc(config.name), body=body, p=p, head=head_links(p),
+                                         home=esc(config.home), home_host=esc(config.home.split("://", 1)[-1]),
                                          style=SHELL_STYLE, hero=hero if intro else "",
                                          kind="tanitimli" if intro else "yalin-sayfa"),
                             status_code=status, headers={"Cache-Control": "no-store", "Referrer-Policy": "no-referrer"})

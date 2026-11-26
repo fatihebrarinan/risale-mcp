@@ -4,7 +4,7 @@
 #   icon.png         256×256 (icon.svg)
 #   icon-192.png, icon-512.png                 PWA (icon.svg)
 #   icon-maskable-512.png, apple-touch-icon.png (180)   PWA "maskable" ve Apple (icon-maskable.svg; köşesiz)
-# Eklentilerin simgeleri ayrıdır (scripts/ikon.sh). Sonra: scripts/deploy.sh --site
+# Eklentilerin simgeleri ayrıdır (scripts/ikon.sh). Sonra: scripts/deploy.sh --site ve --sohbet
 #
 #   scripts/ikon-ayinedar.sh
 set -euo pipefail
@@ -31,4 +31,6 @@ svg icon.svg icon-192.png 192
 svg icon.svg icon-512.png 512
 svg icon-maskable.svg icon-maskable-512.png 512
 svg icon-maskable.svg apple-touch-icon.png 180
+# S13.15.4: sohbetin kendi kopyaları (servis kendi dosyalarından verir; deploy.sh --sohbet gönderir)
+cp favicon.ico icon-kucuk.svg apple-touch-icon.png ../src/risale_mcp/sohbet_assets/
 file favicon.ico icon.png icon-192.png icon-512.png icon-maskable-512.png apple-touch-icon.png

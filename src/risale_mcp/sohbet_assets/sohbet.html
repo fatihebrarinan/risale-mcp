@@ -6,6 +6,9 @@
 <meta name="robots" content="noindex">
 <meta name="referrer" content="no-referrer">
 <title>Sohbet · {{NAME}}</title>
+<link rel="icon" href="{{P}}static/favicon.ico" sizes="any">
+<link rel="icon" href="{{P}}static/icon-kucuk.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{P}}static/apple-touch-icon.png">
 <link rel="stylesheet" href="{{P}}static/sohbet.css?v={{V}}">
 </head>
 <body data-prefix="{{P}}">
@@ -14,7 +17,7 @@
   <!-- S13.1: solda konuşmalar (masaüstünde açılıp kapanır, telefonda soldan çekmece) -->
   <aside id="sol" class="sol" aria-label="Konuşmalar">
     <div class="sol-ust">
-      <div class="marka"><strong>{{NAME}}</strong> <span>Sohbet</span></div>
+      <div class="marka"><img src="{{P}}static/icon-kucuk.svg" alt="" width="22" height="22"><strong>{{NAME}}</strong> <span>Sohbet</span></div>
       <button type="button" id="sol-kapat" class="ikon" aria-label="Konuşmalar panelini kapat" title="Paneli kapat">
         <svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3.5" width="15" height="13" rx="2"/><path d="M7.5 3.5v13"/></svg>
       </button>

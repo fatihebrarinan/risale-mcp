@@ -1915,7 +1915,9 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
 
     async def asset(request: Request):
         name = request.path_params["name"]
-        media = {"sohbet.js": "text/javascript", "sohbet.css": "text/css", "naskh.woff2": "font/woff2"}.get(name)
+        media = {"sohbet.js": "text/javascript", "sohbet.css": "text/css", "naskh.woff2": "font/woff2",
+                 "literata-ad.woff2": "font/woff2", "favicon.ico": "image/x-icon", "icon-kucuk.svg": "image/svg+xml",
+                 "apple-touch-icon.png": "image/png"}.get(name)
         if not media:
             return JSONResponse({"error": "yok"}, status_code=404)
         return FileResponse(ASSETS / name, media_type=media, headers={"Cache-Control": "public, max-age=31536000"})

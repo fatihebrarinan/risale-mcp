@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+<!-- 16 ve 32 piksel için sadeleştirilmiş: çerçeve kalın, parıltı yok, kitap iki düz parça, çizim biraz büyük -->
+<rect width="256" height="256" rx="56" fill="#1d4d3c"/>
+<g transform="translate(128 128) scale(1.2) translate(-128 -127)">
+<path d="M70 206 V122 C70 84 98 58 128 42 C158 58 186 84 186 122 V206 Z" fill="#2b6a53" stroke="#e8c766" stroke-width="20" stroke-linejoin="round"/>
+<rect x="54" y="200" width="148" height="20" rx="10" fill="#e8c766"/>
+<path d="M92 132 C105 131 117 134 128 141 C139 134 151 131 164 132 L164 180 C151 179 139 181 128 188 C117 181 105 179 92 180 Z" fill="#c0392b"/>
+<path d="M99 126 C108 125 118 128 128 135 C138 128 148 125 157 126 L157 170 C148 169 138 171 128 178 C118 171 108 169 99 170 Z" fill="#f6efdc"/>
+</g>
+</svg>
