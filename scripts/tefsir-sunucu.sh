@@ -13,6 +13,9 @@
 #   scripts/tefsir-sunucu.sh auth usage --user '(debug)' --params   # o adresten gelen isteklerin kaydı
 #   scripts/tefsir-sunucu.sh status | restart | logs
 #   PROFIL=klasik scripts/tefsir-sunucu.sh gonder | auth … | status   # klasik eserler sunucusu (E2.4, 8003, /klasik)
+#   scripts/tefsir-sunucu.sh gonder --kod   # yalnız kod ve servis (veritabanı ve vektörler gitmez; araç çıktısı kaydı
+#                                           # yine alınır): evden 1,3 GB göndermemek için (S13.17, 2026-11-26)
+#   scripts/tefsir-sunucu.sh auth internal-key --new sohbet   # sohbetin iç erişim adresi (S13.17; sınırsız, girdisiz)
 #
 # Sonra ana makinede docs/Caddyfile'a /tefsir bloğu (adresle) eklenir ve scripts/deploy.sh --code çalışır.
 # Kullanım kaydı (auth.db) bu makinede ayrı tutulur.
@@ -43,7 +46,7 @@ gonder)
     # H0/H1: profilin sürüm etiketi ve kendi çağrı setiyle son `<profil>-yayin-*` kaydına karşı araç çıktısı
     SNAPSHOTS=data/interim/tool_snapshot
     STAMP=$(date +%Y%m%d-%H%M%S)
-    uv run python -m risale_mcp.manifest release --profile "$P"
+    [[ "${2:-}" == "--kod" ]] || uv run python -m risale_mcp.manifest release --profile "$P"
     PREV=$(ls -d "$SNAPSHOTS"/"$P"-yayin-* 2>/dev/null | sort | tail -1 | xargs -r basename || true)
     uv run python -m risale_mcp.tool_snapshot record "$P-aday-$STAMP" --profile "$P"
     if [[ -n "$PREV" ]]; then
@@ -52,10 +55,14 @@ gonder)
             || { echo "$P araç çıktısında beklenmeyen fark: gönderilmedi"; exit 1; }
     fi
     git ls-files -z | rsync -az --from0 --files-from=- -e "${SSH[*]}" ./ "$HOST:$DEST/"
-    "${SSH[@]}" "$HOST" "mkdir -p $DEST/data/dist/$P/vectors"
-    rsync -az --info=progress2 -e "${SSH[*]}" "data/dist/$P/risale.db" "$HOST:$DEST/data/dist/$P/risale.db"
-    rsync -az --delete -e "${SSH[*]}" "data/dist/$P/vectors/" "$HOST:$DEST/data/dist/$P/vectors/"
-    rsync -az -e "${SSH[*]}" data/library/kuran/quran.json "$HOST:$DEST/data/library/kuran/"
+    if [[ "${2:-}" != "--kod" ]]; then
+        "${SSH[@]}" "$HOST" "mkdir -p $DEST/data/dist/$P/vectors"
+        rsync -az --info=progress2 -e "${SSH[*]}" "data/dist/$P/risale.db" "$HOST:$DEST/data/dist/$P/risale.db"
+        rsync -az --delete -e "${SSH[*]}" "data/dist/$P/vectors/" "$HOST:$DEST/data/dist/$P/vectors/"
+        rsync -az -e "${SSH[*]}" data/library/kuran/quran.json "$HOST:$DEST/data/library/kuran/"
+    else
+        echo "yalnız kod: veritabanı ve vektörler gönderilmedi"
+    fi
     grep '^VOYAGE_API_KEY=' .env | "${SSH[@]}" "$HOST" "cat > $DEST/.env && chmod 600 $DEST/.env"
     rsync -az -e "${SSH[*]}" "docs/$SERVICE.server.service" "$HOST:/etc/systemd/system/$SERVICE.service"
     "${SSH[@]}" "$HOST" "chown -R risale:risale $DEST && su - risale -c 'cd $DEST && ~/.local/bin/uv sync --no-dev --frozen -q' \

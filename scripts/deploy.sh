@@ -20,7 +20,9 @@
 #
 # Ayrıştırma ve veritabanı kurulumu bu bilgisayarda yapılır; ham veri sunucuya gitmez. Sunucudaki `data/auth.db`
 # (hesaplar, oturumlar, kullanım kaydı) asıl kopyadır, bu betik onu ezmez; sohbetin `data/sohbet.db`'si de öyle.
-# `.env`'den yalnızca VOYAGE_API_KEY ve sohbetin anahtarları (ANTHROPIC_API_KEY, SCW_SECRET_KEY, SCW_PROJECT_ID) ve sınırsız hesapları (SOHBET_SINIRSIZ) gider.
+# `.env`'den yalnızca VOYAGE_API_KEY ve sohbetin anahtarları (ANTHROPIC_API_KEY, SCW_SECRET_KEY, SCW_PROJECT_ID), sınırsız
+# hesapları (SOHBET_SINIRSIZ) ve öbür kütüphanelerin iç erişim adresleri (SOHBET_HADIS_URL, SOHBET_TEFSIR_URL,
+# SOHBET_KLASIK_URL; S13.17) gider.
 # Sunucu: Hetzner CAX11 (Helsinki, Ubuntu 24.04), kullanıcı `risale`, servis `risale-mcp` (bkz. CLAUDE.md).
 set -euo pipefail
 
@@ -35,6 +37,8 @@ send_posts() {
     rsync -az --delete --chown=risale:risale -e "${SSH[*]}" docs/yenilikler docs/calismalar "$HOST:$DEST/docs/"
 }
 CODE_ONLY=0; HADIS=0; SITE_ONLY=0; SOHBET_ONLY=0
+# Sunucuya giden .env satırları; S13.17: sohbetin öbür kütüphanelerinin iç erişim adresleri
+ENV_KEYS='^(VOYAGE_API_KEY|ANTHROPIC_API_KEY|SCW_SECRET_KEY|SCW_PROJECT_ID|SOHBET_SINIRSIZ|SOHBET_HADIS_URL|SOHBET_TEFSIR_URL|SOHBET_KLASIK_URL)='
 for arg in "$@"; do
     case "$arg" in --code) CODE_ONLY=1 ;; --hadis) HADIS=1 ;; --site) SITE_ONLY=1 ;; --sohbet) SOHBET_ONLY=1 ;;
         *) echo "bilinmeyen seçenek: $arg"; exit 2 ;; esac
@@ -56,7 +60,9 @@ if [[ $SOHBET_ONLY == 1 ]]; then
     # Sunucudakinden içeriği farklı izlenen dosyalar (rsync'in sağlama karşılaştırması; ≈3 sn)
     changed=$(git ls-files -z | rsync -az --from0 --files-from=- --dry-run --checksum --itemize-changes \
         -e "${SSH[*]}" ./ "$HOST:$DEST/" | awk '$1 ~ /^<f/ {print $2}')
-    [[ -n "$changed" ]] || { echo "sunucudakiyle aynı: gönderilecek bir şey yok"; exit 0; }
+    # .env'in sunucuya giden satırları değiştiyse (S13.17: kütüphane adresleri) dosya değişmese de gönderilir
+    env_same=$([[ "$(grep -E "$ENV_KEYS" .env | sha1sum)" == "$("${SSH[@]}" "$HOST" "sha1sum < $DEST/.env")" ]] && echo 1 || echo 0)
+    [[ -n "$changed" || $env_same == 0 ]] || { echo "sunucudakiyle aynı: gönderilecek bir şey yok"; exit 0; }
     # Çalışan kodu etkileyen ama sohbetin olmayan dosya: tam yol (--code), araç çıktısı kaydıyla
     other=$(grep -E '^(src/|pyproject\.toml$|uv\.lock$|docs/.*\.service$|docs/Caddyfile$)' <<<"$changed" \
         | grep -vE '^src/risale_mcp/(sohbet\.py|sohbet_hesap\.py|sohbet_dene\.py|dosya\.py|kipler\.py|sohbet_assets/)' || true)
@@ -65,9 +71,10 @@ if [[ $SOHBET_ONLY == 1 ]]; then
         sed 's/^/  /' <<<"$other"
         exit 1
     fi
-    echo "gönderiliyor:"; sed 's/^/  /' <<<"$changed"
-    tr '\n' '\0' <<<"$changed" | rsync -az --from0 --files-from=- --chown=risale:risale -e "${SSH[*]}" ./ "$HOST:$DEST/"
-    grep -E '^(VOYAGE_API_KEY|ANTHROPIC_API_KEY|SCW_SECRET_KEY|SCW_PROJECT_ID|SOHBET_SINIRSIZ)=' .env \
+    [[ $env_same == 1 ]] || echo "anahtarlar değişmiş: .env gönderiliyor"
+    [[ -z "$changed" ]] || { echo "gönderiliyor:"; sed 's/^/  /' <<<"$changed"; }
+    [[ -z "$changed" ]] || tr '\n' '\0' <<<"$changed" | rsync -az --from0 --files-from=- --chown=risale:risale -e "${SSH[*]}" ./ "$HOST:$DEST/"
+    grep -E "$ENV_KEYS" .env \
         | "${SSH[@]}" "$HOST" "cat > $DEST/.env.new && chmod 600 $DEST/.env.new && chown risale:risale $DEST/.env.new && mv $DEST/.env.new $DEST/.env"
     # Servis açılırken birkaç saniye 502 verir: cevap verene kadar beklenir (en çok 30 sn)
     "${SSH[@]}" "$HOST" "systemctl restart risale-sohbet; for i in \$(seq 30); do \
@@ -157,7 +164,7 @@ if [[ $CODE_ONLY == 0 ]]; then
     rsync -az --delete -e "${SSH[*]}" data/dist/genel/vectors/ "$HOST:$DEST/data/dist/genel/vectors/"
 fi
 # Anahtarlar (`--code`'da da: S12'nin sohbeti yeni anahtar ister); başka satır gitmez
-grep -E '^(VOYAGE_API_KEY|ANTHROPIC_API_KEY|SCW_SECRET_KEY|SCW_PROJECT_ID|SOHBET_SINIRSIZ)=' .env \
+grep -E "$ENV_KEYS" .env \
     | "${SSH[@]}" "$HOST" "cat > $DEST/.env.new && chmod 600 $DEST/.env.new && mv $DEST/.env.new $DEST/.env"
 
 if [[ $HADIS == 1 ]]; then
