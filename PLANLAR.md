@@ -66,8 +66,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 **Şimdi** (her adımda güncellenir; kullanıcının kararı, 2026-11-19: oturum devri için; önde tek iş; eski notlar
 `KAYIT.md` › "Sıradaki'nin notları"):
 - **Son adım (2026-11-26):** S13.15'in adı beklenirken S13.17 başladı (kullanıcının kararı; deneme bitene kadar
-  yalnız yerelde): S13.17.1 erişim ölçümü (öneri onaylandı), S13.17.2 altyapı ve tur 7 bitti, yerelde; yayın denemeden
-  sonra. B12 plana girdi.
+  yalnız yerelde): S13.17.1 erişim ölçümü (öneri onaylandı), S13.17.2 altyapı ve tur 7, S13.17.3 âyet çalışması kipi
+  ve tur 8 bitti; kullanıcının kararıyla deneme haftası beklenmeden **yayında** (kütüphaneler okuyucu açmadıkça
+  kapalı). Kullanıcı canlıda deneyecek. B12 plana girdi.
   Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
   **Ad Tahkik** (2026-11-26), alan adı tahkik.org, sohbet sohbet.tahkik.org; sıradaki logo, site taşınması
@@ -166,8 +167,22 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   konuşma, 14 cevap, 0,11 $, cevap başı ≈0,008 $): tuzaklarda doğru (hadiste hüküm yok, fıkıhta "hangisi doğru"ya karar
   yok, Beyzâvî–Zemahşerî ilişkisi "kayıtlı değil, yorum"), kütüphaneler açıkken yalnız Risale'lik soru sapmadı; ⚠
   uyarıları 20'den fazladan 3–5'e indi. **Kalan:** (a) yayın: iç anahtarlar ve `SOHBET_*_URL` (deneme bitince,
-  ≈2026-12-02), (b) âyet çalışması kipi, (c) daha çok deneme turu, (d) kalan ⚠'lerin metni öbür kütüphane açıkken
+  ≈2026-12-02; kullanıcının kararıyla öne alındı, aşağıda), (b) âyet çalışması kipi (yapıldı, aşağıda), (c) daha çok
+  deneme turu, (d) kalan ⚠'lerin metni öbür kütüphane açıkken
   "eserlerde" yerine "Risale'de bu sözlerle bulunamadı; tercüme ya da özet olabilir" (kullanıcının kararı, yapıldı).
+  **Yayında (2026-11-26, kullanıcının kararı: deneme haftası beklenmez, kütüphaneler okuyucu açmadıkça kapalı):** üç
+  MCP sunucusuna iç anahtar (`internal-key --new sohbet`), adresler git dışı `.env.sunucu`'da (`deploy.sh` gönderir),
+  tefsir ve klasik `tefsir-sunucu.sh gonder --kod` ile (yalnız kod). Canlıda sunucunun içinden üç kütüphane uzak
+  çağrıyla açılıyor; kader sorusu (üç kütüphane) 35 sn, 0,009 $.
+  **S13.17.3 âyet çalışması kipi (2026-11-26, yayında):** kullanıcının kararları: sabit tefsir yok, âyeti en kapsamlı
+  işleyenler önce (birimin bu âyete düşen kelime payı; `get_outline` kökte `words` verir: cümle sayısı Râzî'de
+  yanıltıyordu); hadis yalnız okuyucu açarsa, kapalıyken ve hadis önemliyse model "Hadis kütüphanesini açın" der. Kip
+  tefsiri kendiliğinden açar; `verse_file` (`ayet_dosyasi.py`) dosyayı sunucuda kurar (âyet ve Vakıf meali, Risale'nin
+  bağları güçlüler önce ve alıntı yerleri, tefsir birimleri vefat sırasıyla ve `read_first`); cevaptan sonra kapalı ek
+  "Âyetin okunmayan öbür yerleri". Konuşmada işareti geçen kütüphane takip sorularında açık kalır. **Tur 8** (7
+  konuşma, 8 cevap, 0,06 $; cevap başı ≈0,008 $): sıra doğru (âyet, Risale, tefsirler, yorum), bağı olmayan âyette
+  (Bakara 282) "bağ yok" dedi, hadis notu yerinde; canlıda Yâsîn 82 32 sn. Gözlenen: Haiku bir cevapta tefsirleri
+  okuduğu sırayla dizdi (talimat sıkılaştırıldı), Râzî'nin Fâtiha birimleri küçük görünüyor (B3, kayan birimler).
 - B12 **Anlamsal dizini sıkıştırmak** (S13.17.1'in yan bulgusu, kullanıcının kararıyla plana girdi, 2026-11-26):
   `semantic.SemanticIndex` her cümle için kimlik demeti, `VectorStore` anahtar listesi ve sözlüğü tutuyor; tefsirde
   552 bin cümlede vektörler 269 MB, bu yapılar ≈650 MB (servis 1,3 GB). Kimlikler ve eserler numpy dizileri (ya da
