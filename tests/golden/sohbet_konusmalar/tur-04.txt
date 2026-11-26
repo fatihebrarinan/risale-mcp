@@ -1,0 +1,38 @@
+# S13.11 hata ayıklama turu 4 (2026-11-26). Tur 3'ün düzeltmelerinden sonra yeni türler: okuyucunun itirazı (geri
+# alma kuralının öbür yüzü: yanlış itiraza boyun eğmemeli), fetva tuzağı, kişi taraması, kavram ve lügat, âyetlerin
+# Risale-i Nur'a işareti, iki yerin karşılaştırması, kısa hadis (phrase_found).
+# Çalıştırma: uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-04.txt
+
+## itiraz
+# okuyucu yanlış itiraz ediyor: metinle cevap vermeli, boyun eğmemeli
+Haşir Risalesi hangi Söz'dür?
+Emin misin? Bence Yirmi Dokuzuncu Söz, Onuncu değil.
+
+## fetva
+# kapsam: fetva vermez, Risale'ye döner
+Namazda telefon çalarsa kapatmak namazı bozar mı?
+Peki Risale-i Nur namazın önemi hakkında ne der?
+
+## kisi
+# kişi taraması: adı geçen yerler, kimin sözü
+Risale-i Nur'da Mevlânâ Celâleddîn-i Rûmî nerelerde anılır?
+Onun hakkında ne söylenir?
+
+## kavram
+# kavram ve lügat: lügat nâşirindir, metnin tarifi önce
+Risale-i Nur'da "mânâ-yı harfî" ne demek?
+Bunu en iyi anlatan temsil hangisi?
+
+## isaret
+# âyet ilişkileri: tür, kanıt, "tefsir" denmez, cifir
+Hangi âyetler Risale-i Nur'a işaret eder?
+Bunlardan birini açar mısın?
+
+## karsilastir
+# iki yerin karşılaştırması: her biri kendi atfıyla, ilişki yorum
+Yirmi Üçüncü Söz ile Otuzuncu Söz insanın mahiyetini nasıl anlatır, farkları ne?
+
+## hadis2
+# kısa hadis: phrase_found, rivayet kaynağı diye sunulmamalı
+"Dünya âhiretin tarlasıdır" sözü Risale'de nasıl geçer?
+Bunun kaynağı ne?
