@@ -71,8 +71,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   kapalı). Kullanıcı canlıda deneyecek. B12 plana girdi.
   Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
-  **Ad Âyinedâr** (2026-11-26 akşam; Tahkik'ten döndü), çatı `ayinedar.org`, projeler işlevli alt alan adlarında
-  (`sohbet.`, `oku.`, `masa.`, `eklenti.`); adımlar S13.15.1–S13.15.7; S13.15.1 bitti (alan
+  **Ad Âyinedâr** (2026-11-26 akşam; Tahkik'ten döndü), çatı `ayinedar.org`, projeler işlevli, İngilizce alt alan adlarında
+  (`chat.`, `read.`, `lab.`, `connect.`); adımlar S13.15.1–S13.15.7; S13.15.1 bitti (alan
   adları alındı, marka başvurusu yapılmaz), **önde S13.15.2** (alt alan haritası; logo yarıda, S13.15.3'te sürer). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
@@ -136,12 +136,18 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   **tanıtımın ölçüsü** "eserlerin ne dediğini yansıtır"dır, "Kur'ân'ın âyinedârı" denmez (Risale'ye verilen vasıf
   yapay zekâya verilmez). Yazım: metinde ve logoda "Âyinedâr", alan adında `ayinedar`.
   **Düzenin kararları (kullanıcı onayladı, 2026-11-26):**
-  (a) Alt alan adları **işlevli, Türkçe ve kalıcı**; proje adları üstüne giyen addır, adrese girmez (ad bir günde
-  iki kez değişti; "kimlikler değişmez" ilkesi). Harita: `ayinedar.org` çatı (projeler, yenilikler, çalışmalar,
-  belgeler, gizlilik; ana sayfa önce sohbete çağırır), `sohbet.ayinedar.org`, `oku.ayinedar.org` (okuma platformu,
-  davetli), `masa.ayinedar.org` (ar-ge masası, bugünkü `/taslak/`), `eklenti.ayinedar.org` (eklentilerin tanıtımı ve
-  kurulumu; ya da risalemcp.com kalır). Kazancı: her alt alan ayrı servis, gerekirse ayrı makine; çerezler kendiliğinden
-  ayrılır. "ai." kullanılmaz (ehil okuyucuya yapay zekâ öne çıkmasın).
+  (a) Alt alan adları **işlevli, İngilizce ve kalıcı** (kullanıcının kararı, 2026-11-26: uluslararası hedef için;
+  önce Türkçe önerilmişti); proje adları üstüne giyen addır, adrese girmez (ad bir günde iki kez değişti; "kimlikler
+  değişmez" ilkesi). Tek kelime, kısaltma yok, Türk okuyucunun da bildiği kelimeler. **Harita (kullanıcı onayladı,
+  2026-11-26):** `ayinedar.org` çatı (projeler, yenilikler, çalışmalar, belgeler, gizlilik; ana sayfa önce sohbete
+  çağırır), `chat.ayinedar.org` sohbet, `read.ayinedar.org` okuma platformu (davetli), `lab.ayinedar.org` ar-ge masası
+  (bugünkü `/taslak/`; deneysel olduğunu söyler), `connect.ayinedar.org` eklentilerin tanıtımı ve kurulumu (Claude
+  "connector", ChatGPT "app" der; ikisini kapsar; risalemcp.com'un sayfaları oraya yönlenir, S13.15.7). `www.` ve
+  `ayinedar.com` köke yönlenir. **Adresin dili sabit, sayfanın dili yolda:** Türkçe varsayılan, `/en/`, ileride `/ar/`
+  (S13.20). Ayrılmış: `mcp.` (ileride ayinedar altına girecek bir MCP sunucusu için; bugünkü MCP adresleri
+  risalemcp.com'da kalır, (e)). "ai." kullanılmaz (ehil okuyucuya yapay zekâ öne çıkmasın). Eski eklenti adreslerinin
+  Türkçe olması (`hadis.`, `tefsir.`, `klasik.risalemcp.com`) ayrı alan adında olduğu için düzeni bozmaz. Kazancı: her
+  alt alan ayrı servis, gerekirse ayrı makine; çerezler kendiliğinden ayrılır.
   (b) **Asıl adres .org**, .com ona 301 ile yönlenir (izinlerin çoğu "kazanç olmadığı sürece" şartlı; e-posta
   göndericisi tek alanda: `noreply@ayinedar.org`). tahkik.org alınmamıştı.
   (c) **İç ad ile dışa açık ad ayrı:** okuyucu tek ad ve işlev görür ("Âyinedâr · Sohbet", "Âyinedâr · Okuma"); iç
@@ -164,21 +170,21 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     2026-11-26): "Biz bir marka değiliz, ticari değiliz; insanlara İslâmî kaynaklara ücretsiz erişim sağlamaya
     çalışıyoruz." TÜRKPATENT'ten bir şey alınmaz; ileride adla ilgili zor duruma düşülürse kullanıcı o zaman başvurur.
     Bu yüzden metinlerde "marka" denmez; ad bir hizmetin adıdır.
-  - **S13.15.2 Alt alan haritası:** (a)'nın haritası kesinleşir (eklenti tanıtımı `eklenti.` mi risalemcp.com mu),
-    DNS kayıtları, Caddy blokları ve sertifikalar; boş "yakında" sayfalarıyla.
+  - **S13.15.2 Alt alan haritası:** harita kesinleşti ((a), 2026-11-26); kalan DNS kayıtları, Caddy blokları ve
+    sertifikalar, boş "yakında" sayfalarıyla.
   - **S13.15.3 Logo** (yarıda kaldı, 2026-11-26): SVG, `scripts/ikon.sh` hattı, favicon ve PWA simgeleri; simge addan
     bağımsız.
-  - **S13.15.4 Sohbetin taşınması:** `sohbet.ayinedar.org`; Caddy, `SOHBET_NAME`/`SOHBET_SITE`/`SOHBET_PREFIX`/
+  - **S13.15.4 Sohbetin taşınması:** `chat.ayinedar.org`; Caddy, `SOHBET_NAME`/`SOHBET_SITE`/`SOHBET_PREFIX`/
     `SOHBET_FROM`, Scaleway gönderici alan doğrulaması (SPF/DKIM), eski adresten yönlendirme, oturumlar bir kez yeniden
     giriş; tanıtım sayfası (nedir, nasıl çalışır, neye güvenebilirsiniz ve sınırları: "araştırma aracıdır, fetva makamı
     değildir", Diyanet'in 24 Kasım 2026 bildirgesi), kayıt ve giriş, gizlilik ve şartlar yeni adla; tanıtımdan önce PWA
     (eski S13 (8)) ve ilk izlenimin (karşılama, örnekler) yeni adla gözden geçirilmesi. Yapılmayan: mağaza uygulaması
     ("Sonra").
-  - **S13.15.5 Okuma platformu ve masanın taşınması:** `oku.`, `masa.`; davetlerden önce (davet bağlantıları adres
+  - **S13.15.5 Okuma platformu ve masanın taşınması:** `read.`, `lab.`; davetlerden önce (davet bağlantıları adres
     taşır); çerez yolu, `site_auth.py`, sunucunun kısıtlı gönderme anahtarının hedefi, `d5.html`, ntfy bağlantıları.
   - **S13.15.6 Çatı sitesi:** `ayinedar.org`; ana sayfa önce sohbete çağırır, öbür projeler ikinci sırada; yenilikler,
     çalışmalar, belgeler, gizlilik buraya (`scripts/site-uret.py`).
-  - **S13.15.7 Eklentilerin tanıtımı:** en son, dizin kararlarından sonra; risalemcp.com'dan yönlendirme (favicon ve
+  - **S13.15.7 Eklentilerin tanıtımı:** `connect.ayinedar.org`; en son, dizin kararlarından sonra; risalemcp.com'dan yönlendirme (favicon ve
     MCP adresleri yerinde).
 - S13.17 **Öbür kütüphaneler sohbette** (eski S13 (11) ve S13.12'nin 2. aşaması): hadis, tefsir, klasik; erişim kararı
   (süreç içi kopya ya da uzak çağrı, ölçerek), alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması
