@@ -141,6 +141,9 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   (b) TÜRKPATENT'e "Tahkik" başvurusu (öneri: 9 ve 42, istenirse 41; tahkik.com'daki tescilsiz kullanım yüzünden erken
   başvuru); (c) eklentilerin MCP adresleri (mcp., hadis., tefsir., klasik.risalemcp.com) her durumda yerinde kalır:
   kullanıcıların ayarlarında, dizin başvurularında ve eklenti deposunda kayıtlı. Sıradaki: logo (2).
+  **Yeni bulgu (2026-11-26):** tahkik.app'te "Tahkîk — Akademik Araştırma ve Doğrulama Çalışma Alanı" (Türkçe, yapay
+  zekâlı, davetli; "atıf doğrulama", "kanıt temelli"; alan adı 2026-08-08). Vaadi bizimkine çok yakın: ad yeniden
+  tartılıyor, logo bekliyor.
 - S13.17 **Öbür kütüphaneler sohbette** (eski S13 (11) ve S13.12'nin 2. aşaması): hadis, tefsir, klasik; erişim kararı
   (süreç içi kopya ya da uzak çağrı, ölçerek), alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması
   kipi. Maliyet uyarısı: soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır. Hassas alanlarda (hadis,
