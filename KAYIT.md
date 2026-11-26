@@ -422,6 +422,63 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**S13.15.6. Çatı sitesi `ayinedar.org`** (bitti ve yayında, 2026-11-27 gecesi, kullanıcının izniyle kesintisiz;
+yayın `yayin-20261127-020105`, araç çıktısında fark yok). Kullanıcının kararları (2026-11-27): yazılar **hemen taşınır**
+("sayfayı taşıma derdini tekrar taşımayalım"); çatı ve **sohbet arama motorlarına açılır**, üstte görünmeye yarayan ne
+varsa yapılır; başlık ve tanım bütün kütüphaneleri kapsar, "yapay zekâ" başlıkta da geçer; kısa `/en/`; ar-ge masası
+altta tek satır; alt bilgide bağımsızlık cümlesi, "Nur Hadimleri", `destek@ayinedar.org`; ana sayfada sohbetten
+kısaltılmamış örnek cevap; sohbetin tavanları aynı; gece yayına alınır (denetimler temizse).
+- **Çatı** (`site-ayinedar/`): ana sayfa (logo, "Risale-i Nur'a, tefsirlere, hadis kitaplarına ve klasik eserlere
+  sorun; cevabı kaynağıyla okuyun", "Sohbete başlayın", aynanın cümlesi, beş sayı, Nasıl çalışır, örnek cevap,
+  Projeler: Sohbet, Eklentiler, Okuma platformu (davetli), masa tek satır, Neye güvenebilirsiniz, son yenilikler,
+  kaynaklar), Belgeler (Âyinedâr nedir, hizmetler ve adresleri, ilkeler, kaynaklar ve izinler, politikalar, iletişim),
+  gizlilik (çerez, sayaç, erişim günlüğü yok; hizmetlerin kendi politikalarına tablo), kullanım şartları, `en/`
+  (ana sayfa, gizlilik, şartlar), 404, `robots.txt`, `sitemap.xml`; görünüş `ayinedar.css` (Literata ad yazısı, logonun
+  altını), paylaşım kartı `img/paylasim.png` (`scripts/paylasim-ayinedar.py cati`).
+- **Örnek cevap:** "Hastalığa nasıl sabredilir? Risale-i Nur'dan kısaca anlatır mısın?" sohbete yerelden soruldu (Haiku
+  5.5, 26 sn, 0,008 $; denetimde düzeltilen ya da doğrulanamayan yok), kısaltılmadan ve düzeltilmeden konuldu. Dokuz
+  alıntının dokuzu da Yirmi Beşinci Lem'a'nın atıf verilen cümlelerinde (biri şapkada ayrılıyor: model "hàlis"i
+  "hâlis" yazdı; sohbetin denetimi şapkayı yok sayar). Model alıntıları blok değil satır içinde verdi; sohbetin
+  gerçek davranışı olduğu için öyle bırakıldı.
+- **`site-uret.py` iki site kurar:** yazılar, dizinleri, RSS (`guid` eski risalemcp.com adresi) ve önizleme çatının
+  iskeletiyle; `style.css`, `site.js` ve Naskh `site/`'tan kopyalanır; yazıdaki eklenti sayfası bağlantısı risalemcp.com'a
+  tam adres olur (`cross_links`); çatının sayfalarında simgeler, `ayinedar.css`, kanonik adres ve başlık soneki
+  `cati_head` ile; iki site haritası; risalemcp.com'un menüsündeki Yenilikler ve Çalışmalar ile ana sayfa şeridi çatıya
+  tam adresle, alt bilgisinde "Âyinedâr'ın eklentileri". İşârât'ın usul özeti (`isarat-usul/`) çatıya taşındı
+  (`scripts/d1-okur.py` oraya yazar). Atıf satırı "Âyinedâr, «…»".
+- **Sohbet:** girişsiz açılış kökte, yönlendirmesiz (önce `/kayit`'e 302); tanıtımlı sayfalar (açılış, kayıt, giriş)
+  dizine açık, kanonik kök, başlık "Âyinedâr · Sohbet: Risale-i Nur, Tefsir, Hadis ve Klasik Eserler için Yapay Zekâ",
+  JSON-LD (WebApplication); kod, hesap ve çevrimdışı sayfaları `noindex`; `robots.txt`, `sitemap.xml`; belge
+  sayfalarına kanonik; tanıtım (`HERO`) öbür kütüphaneleri anar ("Bütün külliyat, isterseniz daha fazlası"); gizlilik
+  ve şartlar (iki dil) çatının politikalarına da gönderir. Test `test_search_engines`.
+- **Caddy:** `ayinedar.org` dizine açık, HSTS, 404 sayfası (Caddy 2.6'da `handle_errors` durum kodu almıyor:
+  `expression` eşleyicisi); `connect.` S13.22'ye kadar risalemcp.com'a 302; risalemcp.com'da `/yenilikler*`,
+  `/calismalar*`, `/isarat-usul*` çatıya 308, eski `/taslak/isarat-usulu.*` doğrudan çatıya; lab'ın önizlemesi stili
+  çatıdan alır; sohbetten `X-Robots-Tag` kalktı. Yapılandırma önce sunucuda `caddy validate` ile denendi.
+- **Denetim:** yerelde iki tarayıcı turu (açık, koyu, telefon; konsol hatası ve kırık istek yok), 824 test, canlıda
+  durum kodları ve yönlendirmeler, iki başlık (`X-Robots-Tag` yok), sohbetin canlı açılışı.
+- **Kalan:** Search Console ve Bing doğrulaması kullanıcıda (Cloudflare TXT). Yenilikler'e çatı için bir duyuru
+  yazılmadı (istenmedi).
+
+**S13.15. Ad, logo ve site düzeni: Âyinedâr — kapanış kaydı** (2026-11-27): S13.15.6 ile bitti. "Sıradaki"deki son hâli:
+
+- S13.15 **Ad, logo ve site düzeni: Âyinedâr** (kullanıcının kararı, 2026-11-26; eski S13 (12) ve S12.8): platform
+  tanıtılmadan önce kendi adı, logosu ve sitesiyle tanınsın. Ad Âyinedâr. Adın geçmişi ve gerekçesi, düzenin kararları
+  (a)–(e) `KAYIT.md` › S13.15'te; kalıcı olanlar (alt alan haritası, tanıtımın ölçüsü, proje adının kuralı) CLAUDE.md'de.
+  - S13.15.1–S13.15.5 bitti (2026-11-26 – 2026-11-27): alan adları (marka başvurusu yapılmaz), alt alan haritası ve
+    Caddy, logo, sohbet `chat.`, okuma platformu `read.` ve masa `lab.`. Ayrıntı `KAYIT.md` › S13.15.x.
+  - **S13.15.6 Çatı sitesi `ayinedar.org`** (kullanıcının kararları, 2026-11-27): ana sayfa önce sohbete çağırır, öbür
+    projeler ikinci sırada (okuma platformu davetli; eklentiler bugün risalemcp.com'da; ar-ge masası altta tek satır,
+    "deneysel, girişli"). Yenilikler ve Çalışmalar **hemen taşınır** (risalemcp.com'daki adresleri 308 ile; taşıma
+    ikinci kez yapılmasın), çatının belgeleri, gizlilik ve şartları; kısa `/en/` (ana sayfa, gizlilik, şartlar).
+    Çatı ve **sohbet arama motorlarına açılır** (canonical, hreflang, site haritası, JSON-LD, Open Graph; analitik ve
+    dışarıya istek yok); okuma platformu ve masa `noindex` kalır. Başlık ve tanım bütün kütüphaneleri kapsar,
+    "yapay zekâ" başlıkta da geçer. Alt bilgide bağımsızlık cümlesi, "Nur Hadimleri", `destek@ayinedar.org`. Ana
+    sayfada sohbetten kısaltılmamış, düzeltilmemiş bir örnek cevap. Sohbetin tavanları aynı kalır; girişsiz tanıtımı
+    (`sohbet_hesap.HERO`) öbür kütüphaneleri de anar. risalemcp.com'da eklentilerin sayfaları kalır, menüdeki
+    Yenilikler ve Çalışmalar çatıya gider, alt bilgiye çatı bağlantısı. Denetimler (bağlantılar, araç çıktısı
+    karşılaştırması, tarayıcı denemesi) temizse gece yayına alınır. Sonra kullanıcı Search Console ve Bing doğrulaması.
+
 **S13.15. Ad, logo ve site düzeni: Âyinedâr — ana kayıt** (2026-11-26 – 2026-11-27; "Sıradaki"den değiştirilmeden
 taşındı, 2026-11-27, kullanıcının kararı: "Sıradaki" kısalsın; S13.15.7 aynı gün S13.22 oldu):
 

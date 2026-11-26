@@ -65,9 +65,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; yalnız şu an yapılan iş, kullanıcıdan beklenen ve tarihli hatırlatmalar, kısa
 tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.md` › "Sıradaki'nin notları"):
-- **Önde: S13.15.6 çatı sitesi `ayinedar.org`** (2026-11-27 gecesi; kararlar aşağıda S13.15'te). Bitince S13.15
-  kapanır; göçün kalanı S13.22.
-- **Kullanıcıdan beklenen:** S13.15.6'dan sonra Search Console ve Bing doğrulaması (Cloudflare'de TXT); "Bekleyen"deki
+- **Son adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
+  çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
+  Ayrıntı `KAYIT.md` › S13.15.6. **Önde:** sıradaki iş kullanıcının seçimi (S13.22 dizin kararlarını bekliyor; tabloda
+  ardından S13.18).
+- **Kullanıcıdan beklenen:** çatının ana sayfasına ve örnek cevabına bakmak; Search Console ve Bing doğrulaması (Cloudflare'de TXT kaydı; sonra iki site haritası birlikte gönderilir: `ayinedar.org/sitemap.xml`, `chat.ayinedar.org/sitemap.xml`); "Bekleyen"deki
   cevaplar gelince haber; dizin metinleri başvurular sonuçlanınca (`docs/e5-dizin-metni-taslagi.md`); okuma
   platformunun karşılaması (`read.ayinedar.org/#/~hosgeldin`) ve ilk davetler (`scripts/sunucu.sh taslak davet
   <e-posta>`); lügatın eşleme örnekleri (`data/interim/lugat/olcum.md`); E8.6 için Arapça okuyan bir denetçi.
@@ -86,35 +88,18 @@ zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S13.15 | Ad, logo ve site düzeni (Âyinedâr): kalan S13.15.6 çatı sitesi | S12.8 |
-| 2 | S13.22 | Göçün tamamlanması: eklentilerin tanıtımı `connect.ayinedar.org`'a, risalemcp.com'un kalan sayfaları (dizin kararlarından sonra) | S13.15.7 |
-| 3 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
-| 4 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
-| 5 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
-| 6 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
-| 7 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 8 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 9 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 10 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 11 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
-| 12 | B12 | Anlamsal dizinin bellekteki Python yapılarını sıkıştırmak (tefsir 1,26 GB → ≈0,5 GB) | |
+| 1 | S13.22 | Göçün tamamlanması: eklentilerin tanıtımı `connect.ayinedar.org`'a, risalemcp.com'un kalan sayfaları (dizin kararlarından sonra) | S13.15.7 |
+| 2 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
+| 3 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
+| 4 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
+| 5 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
+| 6 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 7 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 8 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 9 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 10 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 11 | B12 | Anlamsal dizinin bellekteki Python yapılarını sıkıştırmak (tefsir 1,26 GB → ≈0,5 GB) | |
 
-- S13.15 **Ad, logo ve site düzeni: Âyinedâr** (kullanıcının kararı, 2026-11-26; eski S13 (12) ve S12.8): platform
-  tanıtılmadan önce kendi adı, logosu ve sitesiyle tanınsın. Ad Âyinedâr. Adın geçmişi ve gerekçesi, düzenin kararları
-  (a)–(e) `KAYIT.md` › S13.15'te; kalıcı olanlar (alt alan haritası, tanıtımın ölçüsü, proje adının kuralı) CLAUDE.md'de.
-  - S13.15.1–S13.15.5 bitti (2026-11-26 – 2026-11-27): alan adları (marka başvurusu yapılmaz), alt alan haritası ve
-    Caddy, logo, sohbet `chat.`, okuma platformu `read.` ve masa `lab.`. Ayrıntı `KAYIT.md` › S13.15.x.
-  - **S13.15.6 Çatı sitesi `ayinedar.org`** (kullanıcının kararları, 2026-11-27): ana sayfa önce sohbete çağırır, öbür
-    projeler ikinci sırada (okuma platformu davetli; eklentiler bugün risalemcp.com'da; ar-ge masası altta tek satır,
-    "deneysel, girişli"). Yenilikler ve Çalışmalar **hemen taşınır** (risalemcp.com'daki adresleri 308 ile; taşıma
-    ikinci kez yapılmasın), çatının belgeleri, gizlilik ve şartları; kısa `/en/` (ana sayfa, gizlilik, şartlar).
-    Çatı ve **sohbet arama motorlarına açılır** (canonical, hreflang, site haritası, JSON-LD, Open Graph; analitik ve
-    dışarıya istek yok); okuma platformu ve masa `noindex` kalır. Başlık ve tanım bütün kütüphaneleri kapsar,
-    "yapay zekâ" başlıkta da geçer. Alt bilgide bağımsızlık cümlesi, "Nur Hadimleri", `destek@ayinedar.org`. Ana
-    sayfada sohbetten kısaltılmamış, düzeltilmemiş bir örnek cevap. Sohbetin tavanları aynı kalır; girişsiz tanıtımı
-    (`sohbet_hesap.HERO`) öbür kütüphaneleri de anar. risalemcp.com'da eklentilerin sayfaları kalır, menüdeki
-    Yenilikler ve Çalışmalar çatıya gider, alt bilgiye çatı bağlantısı. Denetimler (bağlantılar, araç çıktısı
-    karşılaştırması, tarayıcı denemesi) temizse gece yayına alınır. Sonra kullanıcı Search Console ve Bing doğrulaması.
 - S13.22 **Göçün tamamlanması** (eski S13.15.7; kullanıcının kararı, 2026-11-27: S13.15'ten ayrı adım): eklentilerin
   tanıtımı ve kurulumu `connect.ayinedar.org`'a; risalemcp.com'un kalan sayfaları (eklenti sayfaları, kurulum,
   belgeler, hata bildirin, gizlilik ve şartlar, İngilizceleri) oraya 308 ile. Dizin başvuruları sonuçlandıktan sonra:
@@ -406,6 +391,10 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- S13.15 Ad, logo ve site düzeni: Âyinedâr (2026-11-26 – 2026-11-27, yayında): ad ve alan adları (`ayinedar.org`,
+  marka başvurusu yok), işlevli alt alan adları, logo (kemerli aynada kırmızı kapaklı kitap), sohbet `chat.`, okuma
+  platformu `read.`, masa `lab.`, çatı sitesi `ayinedar.org` (S13.15.6: sohbete çağıran ana sayfa, Yenilikler ve
+  Çalışmalar çatıda, çatı ve sohbet arama motorlarına açık). Eklentilerin göçü S13.22. Ayrıntı `KAYIT.md` › S13.15.x.
 - S13.17 Öbür kütüphaneler sohbette (2026-11-26, yayında; kapandı 2026-11-27, kullanıcının kararı): okuyucu tefsir,
   hadis ve klasik eserleri açar (varsayılan yalnız Risale), araçlar önekli, MCP sunucularına iç anahtarla uzak çağrı,
   alan adlı işaret ve o kütüphanenin `cite`'ıyla denetim, tek Kaynaklar; âyet çalışması kipi (S13.17.3); tur 7 ve 8.
