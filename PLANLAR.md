@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`, tur 1 bitti (Haiku ve Sonnet), dört sunucu hatası düzeltildi (yayında değil), talimat kararları bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -345,6 +345,41 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     sayısını bildirsin (ya da talimat); (2) "…" ile birleşen alıntıda tek parça tutmuyorsa, cümle belli olduğu için
     sunucu o parçayı metindeki karşılığıyla düzeltsin ya da atsın; (3) Lemeât ≠ Lem'alar için talimatta ya da
     `list_works` notunda bir satır; (4) işaretsiz tırnaklı söz denetimi.
+  - S13.11 **Hata ayıklama turları** (kullanıcının kararı, 2026-11-26): kullanıcının konuşmalarını incelemek yerine
+    konuşmaları Claude Code da kurar, sorar ve inceler. Yerelde, sohbetin kendi koduyla (canlı sohbete gitmez,
+    denemenin sayılarına karışmaz): `uv run --extra sohbet python -m risale_mcp.sohbet dene <dosya> [ad …]`
+    (`sohbet_dene.py`; soru dosyası `## ad` ve satır başına soru, takip soruları aynı geçmişle; döküm
+    `data/interim/sohbet/dene/<zaman>-<model>-<dosya>/`: her turun araç girdisi ve sonucu, modelin ham cevabı,
+    okuyucunun gördüğü cevap, Kaynaklar). Soru dosyaları `tests/golden/sohbet_konusmalar/tur-NN.txt` (gerileme seti).
+    Kullanıcının kararları: bariz sunucu hataları doğrudan düzeltilir, talimat değişikliği ona getirilir; bir kez
+    Sonnet'le karşılaştırılır; tur sayısı sonra.
+    **Tur 1** (`tur-01.txt`: 6 konuşma, 14 soru; tefekkür, Lemeât, kimin sözü, sabır, tuzak, hadis). Haiku 0,064 $
+    (cevap başı ≈0,005 $, ≈21 sn), Sonnet 0,82 $ (≈0,06 $, ≈17 sn; ≈13 kat). İyi: tuzak sorularında ikisi de
+    uydurmadı ("yapay zekâ" yok dedi), hadiste ikisi de hüküm vermedi, Haiku'nun kimin-sözü konuşması doğru (Ahmed
+    Nazif Çelebi'nin mektubu, M. Sungur'un notu), sabır taraması iyi. **Haiku'nun hataları:** (1) **dil:** "Lemeât
+    nedir…" sorusuna İngilizce cevap; (2) **kimin sözü:** Lemeât'ın Tenbih'i talebelerin (imza Sungur, Mehmed Feyzi,
+    Husrev; c004 "Üstadımızın…"), "the author says" dedi (Sonnet doğru); (3) **temsil düz okundu:** Sözler 22 › Birinci
+    Makam › Üçüncü ve Dördüncü Bürhan'daki "makine" temsildir (c007'nin hâşiyesi: meyveli ağaç), "o dönemin mekanik
+    makineleri üzerine yazılmış" dedi (Sonnet hâşiyeyi okudu, doğru); (4) **nâşirin künyesi müellife:** "Risale …
+    kaynak olarak Keşfü'l-Hafâ ve Feyzü'l-Kadîr'i gösteriyor" (Sonnet "nâşirin gösterdiği"); (5) **veri notu metne:**
+    Otuz Birinci Lem'a'nın `written` notunu ("Şualar tek tek tarihlidir") "bu Lem'a belirtir" diye sundu; (6)
+    **kaçan kaynak:** ümitsizlikte Âsâr-ı Bediiyye › Devâü'l-Ye's'i okudu ama anmadı; (7) "söylenir: [3]" diye
+    alıntısız iki nokta. **İkisinin ortak hataları:** (8) **dar arama** (S13.10 (B) yine): "tezekkür iki yerde"
+    (`tezekkür*` 4); âyet sonlarını Latin harfle aradılar ("tetefekkerûn", 0 sonuç), Arapçayı (`يتذكرون`) aramadılar,
+    anlamsal aramayla kurtardılar; (9) **takvim:** Lemeât hâşiyesi "(Bin üç yüz otuz yedi eder.)", Haiku hicrî sayıp
+    "1921 ile uyuşmuyor", Sonnet hicrî sayıp "uyuşur" dedi (hicrî 1337 = 1918–19, rûmî 1337 = 1921; metin takvimi
+    söylemiyor). Sonnet'in kendine özgü: Lemeât konuşmasında kendini düzeltirken karıştırdı ("Otuz İkinci Mektub
+    okuduğum metinlerde geçmiyor", talimat veriyor; "Otuz Birinci Mektub Mektubat'ın içinde de anılır").
+    **Sunucu hataları, düzeltildi** (testli, `tests/test_sohbet.py` `s13_11`): (a) iki cümleye yayılan alıntı ilk
+    cümleye işaretlenince taşınamıyordu (dizin cümle başına; ilk cümlenin kelimeleriyle aranır, aralığa taşınır); (b)
+    taşınan işaret yanındakiyle aynı yere düşünce "[2] [2]", aralıktakiyle "[1] [2]" kalıyordu (yanındaki işaretin
+    aralığında kalan işaret düşer); (c) modelin "nâşirin meali" diye tırnakla verip işaretlediği meal "doğrulanamadı"
+    görünüyordu (işaretin cümlelerindeki Arapçanın mealiyse kabul, alıntı sayılmaz); (d) satır ortasına yazılan
+    alıntı bloğu ("söyler: > "…" [1] > "…" [2]") okuyucuya ">" olarak görünüyordu (her blok kendi satırına). Yayında
+    değil. **Karar bekleyen (talimat ve araç):** (1) cevabın dili (sohbetin talimatı; gerekirse sunucu dil denetimi);
+    (2) dar arama: `search` az sonuçta `kelime*`'nin sayısını versin, Latin harfle yazılmış Arapça için Arapça aramayı
+    önersin; (3) Lemeât ≠ Lem'alar (S13.10 (3)); (4) takvim: `written` ve metindeki yıl için "hicrî/rûmî belirtilmemişse
+    hesap yapma"; (5) Haiku'nun okuma hataları (2)–(5) model yönlendirme konuşmasına örnek.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

@@ -32,6 +32,7 @@ Kullanıcının kararları (2026-11-25, `PLANLAR.md` S12): yalnız Risale, model
 
     uv run --extra sohbet python -m risale_mcp.sohbet serve [--port 8010] [--dev]
     uv run --extra sohbet python -m risale_mcp.sohbet sor "soru"      # terminalden tek soru (geliştirme)
+    uv run --extra sohbet python -m risale_mcp.sohbet dene <sorular.txt> [ad …]   # hata ayıklama turu (S13.11)
     uv run --extra sohbet python -m risale_mcp.sohbet usage [--days 7]
 """
 
@@ -255,7 +256,7 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
     - düz metne yazılmış kimlik ("(c033)") silinir.
 
     Aynı kimlik aynı numarayı alır; birden çok alıntısı "…" ile birleşip birlikte denetlenir."""
-    text = strip_own_sources(text)
+    text = _split_blocks(strip_own_sources(text))
     leaks = list(dict.fromkeys(m.group().strip() for m in BARE_ID.finditer(MARK.sub(" ", text))))
     problems = [{"id": leak, "problem": "An id or sentence number written in the prose: the reader must not see ids. "
                  "Put an id only inside [[ ]] right after the words it supports, or drop it."} for leak in leaks]
@@ -274,6 +275,9 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
         if not record.get("problem"):
             resolved.append((ident, quote, True, span))
             continue
+        if quote and _meal_quote(checker, ident, quote):     # S13.11: nâşirin meali, metin değil; doğru aktarılmış
+            resolved.append((ident, None, True, span))
+            continue
         problems.append({"id": ident, "quote": quote, "problem": record["problem"]})
         fixed = _relocate(checker, ident, quote, read) if quote else _trim(checker, ident)
         if fixed:
@@ -285,6 +289,12 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
         else:
             counts["dropped"] += 1
             resolved.append((None, None, True, span))
+    # S13.11: hemen yanındaki işaretin aralığında kalan işaret düşer (taşınan "[[c018..c019]] [[c019]]" → tek numara)
+    for i in range(1, len(resolved)):
+        (prev, _, prev_ok, (_, prev_end)), (ident, _, ok, (start, _)) = resolved[i - 1], resolved[i]
+        if (prev and ident and prev_ok and ok and not text[prev_end:start].strip()
+                and _covers(checker, prev, ident)):
+            resolved[i] = (None, None, True, resolved[i][3])
     # numaralar: doğrulanan işaretler kimliğe göre birleşir, doğrulanamayan her alıntı ayrı numara alır
     keys: dict[tuple, int] = {}
     quotes: dict[tuple, list[str]] = {}
@@ -326,10 +336,34 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset()) -> 
         last = end
     raw_out.append(_drop_leaks(text[last:]))
     out.append(raw_out[-1])
-    raw = _tidy("".join(raw_out))
+    raw = _dedupe(_tidy("".join(raw_out)), MARK_REPEAT)
     counts.update(_paragraphs(raw))
-    markdown = re.sub(r"[ \t]+(\[\d+\])", r" \1", _tidy("".join(out)))
+    markdown = _dedupe(re.sub(r"[ \t]+(\[\d+\])", r" \1", _tidy("".join(out))), NUMBER_REPEAT)
     return Checked(markdown, sources, problems, raw, counts)
+
+
+# S13.11: taşınan işaret yanındakiyle aynı yere düşünce "[2] [2]" kalıyordu (Haiku, kimin-sözü konuşması)
+MARK_REPEAT = re.compile(r"(\[\[\s*([^\[\]\s]+?)\s*\]\])(?:[ \t]*\[\[\s*\2\s*\]\])+")
+NUMBER_REPEAT = re.compile(r"(\[(\d+)\])(?:[ \t]*\[\2\])+")
+
+
+def _dedupe(text: str, pattern: re.Pattern) -> str:
+    return pattern.sub(r"\1", text)
+
+
+# S13.11: model alıntı bloğunu satırın ortasına yazınca ("… söyler: > "…" [[…]] > "…" [[…]]") Markdown onu blok
+# saymıyor, okuyucu ">" görüyordu; her blok kendi satırına alınır. Yalnız tırnakla açılan ">" (karşılaştırma değil).
+MIDLINE_BLOCK = re.compile(r"(?<=\S)[ \t]+>[ \t]*(?=[\"“])")
+
+
+def _split_blocks(text: str) -> str:
+    out = []
+    for line in text.split("\n"):
+        if not line.lstrip().startswith(">") and MIDLINE_BLOCK.search(line):
+            parts = MIDLINE_BLOCK.split(line)
+            line = parts[0].rstrip() + "\n\n" + "\n\n".join("> " + p.strip() for p in parts[1:])
+        out.append(line)
+    return "\n".join(out)
 
 
 def source_name(checker, ident: str) -> str | None:
@@ -349,7 +383,8 @@ def _heading_quote(node, quote: str) -> bool:
 
 def _tidy(text: str) -> str:
     """Silinen işaretin bıraktığı boşluk."""
-    return re.sub(r"(?<=\S)[ \t]+([.,;:!?])", r"\1", re.sub(r"(?<=\S)[ \t]{2,}(?=\S)", " ", text))
+    text = re.sub(r"(?<=\S)[ \t]+([.,;:!?])", r"\1", re.sub(r"(?<=\S)[ \t]{2,}(?=\S)", " ", text))
+    return re.sub(r"[ \t]+$", "", text, flags=re.M)
 
 
 def _paragraphs(text: str) -> dict:
@@ -378,6 +413,38 @@ def _passes(checker, ident: str, quote: str | None) -> bool:
     return not checker.sources([{"id": ident, **({"quote": quote} if quote else {})}])["sources"][0].get("problem")
 
 
+def _seqs(checker, ident: str) -> tuple[int, int] | None:
+    from risale_mcp.citations import _full_id
+    first_id, _, last_id = ident.partition("..")
+    try:
+        first = checker.library._sentence(first_id.strip())
+        last = checker.library._sentence(_full_id(first["id"], last_id.strip())) if last_id else first
+    except Exception:
+        return None
+    return first["seq"], last["seq"]
+
+
+def _covers(checker, outer: str, inner: str) -> bool:
+    if outer == inner:
+        return True
+    a, b = _seqs(checker, outer), _seqs(checker, inner)
+    return bool(a and b) and a[0] <= b[0] and b[1] <= a[1]
+
+
+def _meal_quote(checker, ident: str, quote: str) -> bool:
+    """Alıntı işaretin cümlelerindeki Arapçanın nâşir mealinden mi (S13.11). Model meali "nâşirin meali" diye tırnakla
+    verip işaretliyor; metinde olmadığı için "doğrulanamadı" görünüyordu. Kabul edilir, ama alıntı olarak kaynakçaya
+    girmez (işaret alıntısız kalır)."""
+    from risale_mcp.citations import _block_parts
+    if (span := _seqs(checker, ident)) is None:
+        return False
+    meals = [r[0] for r in checker.refresh().execute(
+        "SELECT a.meal FROM arabic a JOIN sentences s ON s.id = a.sentence_id WHERE s.seq BETWEEN ? AND ? "
+        "AND a.meal IS NOT NULL", span)]
+    parts = _block_parts(quote)
+    return bool(parts and meals) and all(any(p in " ".join(_block_parts(m)) for m in meals) for p in parts)
+
+
 def _relocate(checker, ident: str, quote: str, read) -> str | None:
     """Alıntının eserlerde bulunduğu en kısa aralık; yoksa None."""
     from risale_mcp.citations import _block_parts
@@ -385,6 +452,10 @@ def _relocate(checker, ident: str, quote: str, read) -> str | None:
     if not parts:
         return None
     rows = [row for _, row in checker._quote_sentences(parts[0], None, RELOCATE_CANDIDATES)]
+    if not rows:     # S13.11: iki cümleye yayılan alıntının ilk kelimeleri tek cümlede aranır (dizin cümle başınadır)
+        head = re.split(r"(?<=[.!?…])\s+", parts[0].strip().strip('"“”«» '), maxsplit=1)[0]
+        if head != parts[0] and len(head.split()) >= 3:
+            rows = [row for _, row in checker._quote_sentences(head, None, RELOCATE_CANDIDATES)]
     first_id = ident.split("..")[0].strip()
     node = first_id if first_id in getattr(checker, "nodes", {}) else first_id.rpartition("/")[0]
     work = first_id.split("/")[0]
@@ -1357,6 +1428,11 @@ def main(argv: list[str] | None = None) -> None:
                                     "düşünme düzeyi SOHBET_MODEL, SOHBET_EFFORT")
     p.add_argument("ids", nargs="*")
     p.add_argument("--hizli", action="store_true", help=f"hızlı set (S12.13): {' '.join(QUICK)}")
+    p = sub.add_parser("dene", help="hata ayıklama turu (S13.11): soru dosyasındaki konuşmaları yerelde sorar, "
+                                     "araç çağrılarıyla döker (sohbet_dene.py)")
+    p.add_argument("file", type=Path)
+    p.add_argument("names", nargs="*", help="yalnız bu konuşmalar")
+    p.add_argument("--paralel", type=int, default=4)
     p = sub.add_parser("usage")
     p.add_argument("--days", type=float, default=7)
     p = sub.add_parser("geri-bildirim", help="geri bildirimleri oku (S12.12)")
@@ -1396,6 +1472,10 @@ def main(argv: list[str] | None = None) -> None:
             print(f"\n{tally.rounds} tur, {tally.tools} araç, girdi {tally.input} (önbellek yazma {tally.cache_write}, "
                   f"okuma {tally.cache_read}), çıktı {tally.output}, ≈{tally.cost:.4f} $, {time.time() - start:.1f} sn")
         asyncio.run(run())
+    elif args.command == "dene":
+        from risale_mcp import sohbet_dene
+        asyncio.run(sohbet_dene.run(Chat(_library(), _client(), config, settings), args.file, args.names,
+                                    args.paralel))
     elif args.command == "olc":
         asyncio.run(measure(Chat(_library(), _client(), config, settings), QUICK if args.hizli else args.ids))
     elif args.command == "geri-bildirim":

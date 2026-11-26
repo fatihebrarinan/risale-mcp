@@ -1,0 +1,34 @@
+# S13.11 hata ayıklama turu 1 (2026-11-26). Her konuşma bir hata türünü yoklar; sorular kullanıcının üslubuna yakın.
+# Çalıştırma: uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-01.txt
+
+## tefekkur
+# S13.10'un gerilemesi: dar arama (tezekkür*), Kur'ân karşılıkları
+“Tefekkür” ile “tezekkür” arasında fark var mı?
+Kur'an'daki "lealleküm tetefekkerûn" ve "lealleküm tezekkerûn" gibi âyet sonları hakkında Risale bir şey söylüyor mu?
+
+## lemeat
+# ad karışıklığı: Lemeât / Lem'alar, eski adlar
+Lemeât nedir, ne zaman ve nerede yazılmış?
+Lem'alar ile Lemeât aynı eser mi? Farkı ne?
+Otuz Birinci Mektub diye bir şey okudum, o hangi kitapta?
+
+## kimin-sozu
+# kimin sözü: Lâhikalardaki talebe mektupları, istihraclar
+Lâhikalarda Risale-i Nur'un kerametleri ve ikramları hakkında neler anlatılır?
+Bunları Üstad mı söylüyor, yoksa talebeleri mi?
+
+## sabir
+# tarama ve günümüz Türkçesi (ye's)
+Sabır Risale-i Nur'da hangi yerlerde anlatılır?
+Sabrın çeşitleri var mı?
+Ümitsizliğe düşen birine Risale ne der?
+
+## tuzak
+# metinde olmayan: uydurmamalı
+Bediüzzaman yapay zekâ hakkında ne demiş?
+Peki ahir zamanda insanların makinelerle konuşacağını haber vermiş mi?
+
+## hadis
+# hadis katmanı: dayanak, hüküm vermeme
+"Ümmetimin ihtilafı rahmettir" hadisi Risale'de geçiyor mu, sahih mi?
+Risale bu sözü hangi anlamda kullanıyor?

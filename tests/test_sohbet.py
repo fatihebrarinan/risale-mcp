@@ -572,3 +572,42 @@ def test_inline_quote_is_checked_like_a_block(checker):
     checked = sohbet.check(checker, f'Müellif şöyle der: "{TEXT_32}" [[{C31}]] ve devam eder.')
     assert checked.counts["fixed"] == 1 and checked.sources[0]["id"] == C32
     assert checked.markdown == f'Müellif şöyle der: "{TEXT_32}" [1] ve devam eder.'
+
+
+@needs_db
+def test_s13_11_quote_over_two_sentences_moves_to_their_range(checker):
+    # Sonnet, Lemeât: iki cümlelik alıntı ilk cümleye işaretlendi; dizin cümle başına olduğu için taşınamıyordu.
+    # Yanındaki, aralıkta kalan işaret de düşer (tek numara).
+    quote = "Şu eserimde üstadım; Kur'ân'dır. Kitabım; hayattır."
+    checked = sohbet.check(checker, f'"{quote}" [[lemeat/ifade-i-meram/c018]] [[lemeat/ifade-i-meram/c019]]\n')
+    assert [s["id"] for s in checked.sources] == ["lemeat/ifade-i-meram/c018..c019"]
+    assert checked.markdown == f'"{quote}" [1]\n' and checked.counts["unverified"] == 0
+
+
+@needs_db
+def test_s13_11_moved_mark_next_to_same_mark_is_one_number(checker):
+    quote = "Bu benim değil; Risale‑i Nur’un kerâmetidir."
+    base = "emirdag-lahikasi/emirdag-lahikasi-1/32"
+    checked = sohbet.check(checker, f'"{quote}" [[{base}/c006..c007]] [[{base}/c008]]')
+    assert checked.markdown == f'"{quote}" [1]' and checked.raw == f'"{quote}" [[{base}/c008]]'
+
+
+@needs_db
+def test_s13_11_publisher_meal_is_not_unverified(checker):
+    # Sonnet, ümitsizlik: hadisin nâşir mealini tırnakla verip işaretledi; "doğrulanamadı" görünüyordu.
+    ident = "hutbe-i-samiye/arabi-hutbe-i-samiye-eserinin-tercumesi/kelime-02/c010"
+    checked = sohbet.check(checker, f'"Bir şey bütünüyle elde edilmezse, tamâmen de terk edilmez." [[{ident}]]')
+    assert checked.counts["unverified"] == 0 and not checked.problems
+    assert checked.sources[0]["id"] == ident and "problem" not in checked.sources[0]
+    # meale benzemeyen uydurma söz yine doğrulanamaz
+    assert sohbet.check(checker, f'"Bu söz ne metinde ne mealde geçer, uydurmadır." [[{ident}]]').counts["unverified"] == 1
+
+
+@needs_db
+def test_s13_11_block_quote_mid_line_gets_its_own_line(checker):
+    text = ('Şöyle söyler: > "Eski Said’in en son te\'lifi ve yirmi gün Ramazan’da te\'lif edilen, kendi kendine manzûm '
+            'gelen “Lemeât” risalesidir." [[lemalar/32/c001]] > "Sözler Mecmuası’nda neşredilmiştir." [[lemalar/32/c002]]')
+    checked = sohbet.check(checker, text)
+    lines = checked.markdown.split("\n")
+    assert lines[0] == "Şöyle söyler:" and lines[2].startswith('> "Eski') and lines[4] == '> "Sözler Mecmuası’nda neşredilmiştir." [2]'
+    assert sohbet._split_blocks("a > b ve c") == "a > b ve c"          # karşılaştırma dokunulmaz

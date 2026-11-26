@@ -583,7 +583,7 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   Risale talimatından türetilir; model `[[kimlik]]` yazar, Kaynaklar'ı sunucu kurar, alıntıyı denetler ve tutmayanı kendisi düzeltir (S12.9: başka yerde bulunan alıntıya taşır, bulunmayanı "doğrulanamadı" diye gösterir; model turu `SOHBET_MODEL_FIX`). Komutlar
   `uv run --extra sohbet python -m risale_mcp.sohbet serve [--dev] | sor "<soru>" | olc [soru…] | usage`; `olc`
   altın soruları API'den sorar, raporu `golden.report` kurar (gerçek maliyet); `olc --hizli` 8 soruluk hızlı set
-  (her değişiklikte), 29 soru model ya da talimat değişince ve deploy'dan önce. Sohbetin talimatı kendisinindir,
+  (her değişiklikte), 29 soru model ya da talimat değişince ve deploy'dan önce. Hata ayıklama turu (S13.11) `… sohbet dene tests/golden/sohbet_konusmalar/tur-NN.txt [ad …]`: çok turlu konuşmaları yerelde sorar, her turun araç girdisi ve sonucuyla `data/interim/sohbet/dene/`'ye döker (model `SOHBET_MODEL` ile). Sohbetin talimatı kendisinindir,
   kaynağa bağlılığın kuralları `server.py`'deki ortak bloklardan gelir (MCP talimatı bayt bayt aynı kalmalı).
   Sayfa (S13.1): solda konuşmalar (geçmiş, "Yeni konuşma", altta ayarlar penceresi: çıkış, saklama, hepsini sil,
   gizlilik ve şartlar, hesabı sil), sağda Kaynaklar (kaynak adı `catalog/permissions.SOURCE_LABELS`); ikisi de açılıp
