@@ -128,6 +128,12 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   göndericisi (Scaleway alan doğrulaması, SPF/DKIM), eski adresten yönlendirme, oturumlar bir kez yeniden giriş; (5)
   **tanıtımdan önce**: PWA (ana ekrana eklenen uygulama; eski S13 (8)), ilk izlenim (karşılama, örnekler) yeni adla gözden
   geçirme. Yapılmayan: mağaza uygulaması ("Sonra").
+  **Ad, ara durum (2026-11-26):** kullanıcının adayları: Tahkik, Hemdem, Kubbe. Ölçü markadır, sözlük tanımı değil
+  (kullanıcı: "Claude", "Gemini" de mantıkla bakınca mantıksız). Alan adı: Tahkik .org .ai .net .io .co boş; Hemdem
+  .org .ai .io boş; Kubbe yalnız .ai. TÜRKPATENT 9/41/42 (kullanıcı baktı): Tahkik'te kayıt yok, Hemdem'de çok kayıt.
+  tahkik.com'da tescilsiz, çalışan bir Türk hukuk yazılımı ("Tahkik Hukuk Bürosu"; 2022'den beri). Öbür adaylardan
+  Müzakere sohbetin bir kipine, Fidanlık bir bölüme, "ilim asistanı" alt başlığa ayrılabilir. Kullanıcının fikri:
+  .org tanıtım, eklentiler, yenilikler; .ai sohbet; eklentilerin de yeni markaya girip girmeyeceği bekliyor.
 - S13.17 **Öbür kütüphaneler sohbette** (eski S13 (11) ve S13.12'nin 2. aşaması): hadis, tefsir, klasik; erişim kararı
   (süreç içi kopya ya da uzak çağrı, ölçerek), alan adlı işaret (`[[tefsir:…]]`) ve çok alanlı denetim, âyet çalışması
   kipi. Maliyet uyarısı: soru başını birkaç katına çıkarabilir, tavanlar buna göre tartılır. Hassas alanlarda (hadis,
