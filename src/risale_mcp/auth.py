@@ -4,7 +4,9 @@ Askıda (kullanıcının kararı, 2026-10-29): OpenAI'ın eklenti portalı sunuc
 ısrar etti. Genel sunucu açık kipte çalışır (`risale-mcp … --open`): OAuth uç noktaları, giriş sayfası ve `sign_in`
 yoktur; herkes hesapsız ve sınırlıdır (`OpenGate`: dakika sınırı; anlamsal aramanın günlük sınırı araçta). Kullanım
 kaydı sürer (kullanıcısız). Hata ayıklama için gizli adres `/mcp/<anahtar>` (`auth debug-url --new`): o adrese gelen
-istekler `DEBUG_USER` adıyla, girdileriyle `DEBUG_DAYS` gün kaydedilir ve sınırlara takılmaz. Aşağıdaki OAuth kodu ve
+istekler `DEBUG_USER` adıyla, girdileriyle `DEBUG_DAYS` gün kaydedilir ve sınırlara takılmaz. İç erişim için de gizli
+adres vardır (S13.17, `auth internal-key --new sohbet`): sohbet sayfası hadis, tefsir ve klasik sunucularını oradan
+çağırır; istekler `(iç:<ad>)` adıyla, girdisiz kaydedilir (hesapsızlarınki gibi) ve ortak sınırlara takılmaz. Aşağıdaki OAuth kodu ve
 testleri yerinde durur; ortak derlemler gibi erişimi kısıtlı bir sunucu gerekirse yeniden açılır.
 
 Sunucu internete açıldığında (claude.ai özel bağlayıcısı, uzaktaki Claude Code) yalnızca hesabı olan kişiler
@@ -58,6 +60,7 @@ import hashlib
 import hmac
 import html
 import json
+import re
 import secrets
 import sqlite3
 import sys
@@ -107,6 +110,7 @@ DEBUG_URLS = {"genel": "https://mcp.risalemcp.com/mcp", "hadis": "https://hadis.
               "tefsir": "https://tefsir.risalemcp.com/mcp", "klasik": "https://klasik.risalemcp.com/mcp"}
 DEBUG_USER = "(debug)"                 # açık kipte hata ayıklama adresinden gelen isteklerin kayıttaki kullanıcısı
 DEBUG_HEADER = b"x-risale-debug"       # OpenGate'in hata ayıklama isteğine eklediği başlık (dışarıdan geleni siler)
+INTERNAL_HEADER = b"x-risale-internal" # OpenGate'in iç erişim isteğine eklediği başlık, değeri anahtarın adı
 
 SCHEMA = """
 CREATE TABLE IF NOT EXISTS users (
@@ -163,6 +167,13 @@ CREATE TABLE IF NOT EXISTS debug_keys (
     hash      TEXT PRIMARY KEY,
     created   REAL NOT NULL,
     server    TEXT NOT NULL DEFAULT 'genel'
+);
+-- iç erişim adresi (S13.17): sınırsız, girdisiz kayıt; ad başına ve sunucu başına bir anahtar
+CREATE TABLE IF NOT EXISTS internal_keys (
+    hash      TEXT PRIMARY KEY,
+    name      TEXT NOT NULL,
+    created   REAL NOT NULL,
+    server    TEXT NOT NULL
 );
 """
 
@@ -296,6 +307,29 @@ class AuthStore:
     def is_debug_key(self, key: str) -> bool:
         return bool(key) and bool(self._run("SELECT 1 FROM debug_keys WHERE hash = ? AND server = ?",
                                             (_digest(key), self.server)))
+
+    # ------------------------------------------------------------ iç erişim adresi (S13.17)
+
+    def new_internal_key(self, name: str) -> str:
+        """Bu sunucuya `name` adlı iç erişim anahtarı; aynı adın eskisi geçersiz olur."""
+        if not re.fullmatch(r"[a-z][a-z0-9-]{0,30}", name):
+            raise ValueError("Ad küçük harf, rakam ve tireden oluşmalı (ör. sohbet).")
+        key = secrets.token_urlsafe(32)
+        self._run("DELETE FROM internal_keys WHERE server = ? AND name = ?", (self.server, name))
+        self._run("INSERT INTO internal_keys (hash, name, created, server) VALUES (?, ?, ?, ?)",
+                  (_digest(key), name, time.time(), self.server))
+        return key
+
+    def revoke_internal_key(self, name: str) -> bool:
+        return bool(self._run("DELETE FROM internal_keys WHERE server = ? AND name = ? RETURNING 1", (self.server, name)))
+
+    def internal_key_name(self, key: str) -> str | None:
+        rows = self._run("SELECT name FROM internal_keys WHERE hash = ? AND server = ?", (_digest(key), self.server)) \
+            if key else []
+        return rows[0]["name"] if rows else None
+
+    def internal_keys(self) -> list[sqlite3.Row]:
+        return self._run("SELECT name, created FROM internal_keys WHERE server = ? ORDER BY name", (self.server,))
 
     def login(self, name: str, password: str, now: float | None = None) -> tuple[bool, str | None]:
         """(başarılı mı, hata iletisi). Yanlış denemeler sayılır, sınırı aşan hesap kilitlenir."""
@@ -539,11 +573,23 @@ def login_endpoint(provider: Provider) -> Callable[[Request], Awaitable[Response
 # ---------------------------------------------------------------- kullanım kaydı (MCP ara katmanı)
 
 _DEBUG_REQUEST: contextvars.ContextVar[bool] = contextvars.ContextVar("risale_debug_request", default=False)
+_INTERNAL_REQUEST: contextvars.ContextVar[str | None] = contextvars.ContextVar("risale_internal_request", default=None)
 
 
 def is_debug_request() -> bool:
-    """İstek açık kipin hata ayıklama adresinden mi geldi (araçlar sınırı bunda uygulamaz)."""
+    """İstek açık kipin hata ayıklama adresinden mi geldi."""
     return _DEBUG_REQUEST.get()
+
+
+def is_unlimited_request() -> bool:
+    """İstek hata ayıklama ya da iç erişim adresinden mi geldi (araçlar ortak sınırı bunlarda uygulamaz)."""
+    return _DEBUG_REQUEST.get() or _INTERNAL_REQUEST.get() is not None
+
+
+def _internal_header(ctx) -> str | None:
+    request = getattr(ctx, "request", None)
+    headers = getattr(request, "headers", None)
+    return (headers.get(INTERNAL_HEADER.decode()) or None) if headers else None
 
 
 def _debug_header(ctx) -> bool:
@@ -558,7 +604,9 @@ def usage_middleware(store: AuthStore):
     (`AuthStore.log`)."""
     async def middleware(ctx, call_next):
         debug = _debug_header(ctx)
+        internal = None if debug else _internal_header(ctx)
         _DEBUG_REQUEST.set(debug)
+        _INTERNAL_REQUEST.set(internal)
         if ctx.request_id is None:                      # bildirim
             return await call_next(ctx)
         start = time.perf_counter()
@@ -575,7 +623,7 @@ def usage_middleware(store: AuthStore):
             params = ctx.params if isinstance(ctx.params, dict) else None
             name = params.get("name") or params.get("uri") if params else None
             if ctx.method not in ("ping",):
-                user = DEBUG_USER if debug else token.subject if token else None
+                user = DEBUG_USER if debug else f"(iç:{internal})" if internal else token.subject if token else None
                 store.log(user, token.client_id if token else None, ctx.method,
                           name, int((time.perf_counter() - start) * 1000), error,
                           _detail(params, result, message, client_name(ctx)))
@@ -657,7 +705,8 @@ class OpenGate:
     """Açık kip (OAuth askıda; kullanıcının kararı, 2026-10-29): bütün uygulamanın önündeki kapı. `/mcp`'ye gelen
     istekler dakikada toplam `per_minute` ile sınırlıdır (429). Gizli hata ayıklama adresi `/mcp/<anahtar>`
     `/mcp`'ye çevrilir, isteğe `DEBUG_HEADER` eklenir (kayıtta parametreleriyle, sınırsız); dışarıdan gelen aynı
-    başlık her istekte silinir. Yanlış anahtar 404 alır."""
+    başlık her istekte silinir. Yanlış anahtar 404 alır. İç erişim adresi de `/mcp/<anahtar>`'dır (anahtarlar ayrı
+    tabloda): isteğe `INTERNAL_HEADER` eklenir (sınırsız, girdisiz kayıt)."""
 
     def __init__(self, app, store: AuthStore, per_minute: int = ANON_PER_MINUTE) -> None:
         self.app, self.store, self.per_minute = app, store, per_minute
@@ -666,12 +715,17 @@ class OpenGate:
     async def __call__(self, scope, receive, send) -> None:
         if scope.get("type") != "http":
             return await self.app(scope, receive, send)
-        headers = [(k, v) for k, v in scope.get("headers", []) if k != DEBUG_HEADER]
+        headers = [(k, v) for k, v in scope.get("headers", []) if k not in (DEBUG_HEADER, INTERNAL_HEADER)]
         path = scope.get("path", "")
         if path.startswith("/mcp/"):
-            if not self.store.is_debug_key(path[len("/mcp/"):].strip("/")):
+            key = path[len("/mcp/"):].strip("/")
+            if self.store.is_debug_key(key):
+                added = (DEBUG_HEADER, b"1")
+            elif name := self.store.internal_key_name(key):
+                added = (INTERNAL_HEADER, name.encode())
+            else:
                 return await AnonymousGate._reply(send, 404, {"error": "not_found"}, [])
-            scope = {**scope, "path": "/mcp", "raw_path": b"/mcp", "headers": [*headers, (DEBUG_HEADER, b"1")]}
+            scope = {**scope, "path": "/mcp", "raw_path": b"/mcp", "headers": [*headers, added]}
             return await self.app(scope, receive, send)
         scope = {**scope, "headers": headers}
         if path == "/mcp":
@@ -777,6 +831,12 @@ def main(argv: list[str] | None = None) -> None:
     group.add_argument("--new", action="store_true")
     group.add_argument("--revoke", action="store_true")
     p.add_argument("--base", help="adresin anahtardan önceki kısmı (varsayılan sunucunun alt alan adı, …/mcp)")
+    p = sub.add_parser("internal-key", help="iç erişim adresi (S13.17; sohbet sayfası): yeni anahtar, kapatma, liste")
+    group = p.add_mutually_exclusive_group(required=True)
+    group.add_argument("--new", metavar="AD")
+    group.add_argument("--revoke", metavar="AD")
+    group.add_argument("--list", action="store_true")
+    p.add_argument("--base", help="adresin anahtardan önceki kısmı (varsayılan sunucunun alt alan adı, …/mcp)")
     p = sub.add_parser("debug", help="hesabın ayrıntılı kaydını aç ya da kapat")
     p.add_argument("user")
     p.add_argument("state", choices=["on", "off"])
@@ -819,6 +879,16 @@ def main(argv: list[str] | None = None) -> None:
             else:
                 print(f"{(args.base or DEBUG_URLS[args.server]).rstrip('/')}/{store.new_debug_key()}\n"
                       f"(eski adres geçersiz; bu adrese gelen istekler girdileriyle {DEBUG_DAYS} gün saklanır)")
+        elif args.command == "internal-key":
+            if args.list:
+                for row in store.internal_keys():
+                    print(f"{row['name']:12} {_when(row['created'])}")
+            elif args.revoke:
+                print(f"{args.server}: {args.revoke} " + ("kapatıldı." if store.revoke_internal_key(args.revoke)
+                                                          else "diye bir anahtar yok."))
+            else:
+                print(f"{(args.base or DEBUG_URLS[args.server]).rstrip('/')}/{store.new_internal_key(args.new)}\n"
+                      f"(aynı adın eski adresi geçersiz; bu adrese gelen istekler sınırsız, girdisiz kaydedilir)")
         elif args.command == "debug":
             store.set_debug(args.user, args.state == "on")
             print(f"{args.user}: ayrıntılı kayıt " + ("açık; parametreler {} gün saklanır.".format(DEBUG_DAYS)

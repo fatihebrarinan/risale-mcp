@@ -43,7 +43,7 @@ from risale_mcp.auth import (
     ANON_SEMANTIC_PER_DAY,
     AnonymousGate,
     OpenGate,
-    is_debug_request,
+    is_unlimited_request,
     AuthStore,
     Provider,
     login_endpoint,
@@ -781,7 +781,7 @@ def create_server(library: Library, public_url: str | None = None, store: AuthSt
         result in context before relying on it."""
         with _tool_errors():
             limited = open_access or (anonymous and get_access_token() is None)
-            if limited and not is_debug_request() \
+            if limited and not is_unlimited_request() \
                     and store.anonymous_calls("semantic_search", start_of_day()) >= anonymous_semantic:
                 raise ToolError("The shared daily limit of semantic searches on this server is reached. Use search "
                                 "with the text's own words instead; semantic_search works again tomorrow."

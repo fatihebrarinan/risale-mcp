@@ -426,6 +426,38 @@ def test_debug_keys_are_per_server(store):
     assert store.is_debug_key(genel_key) and not hadis.is_debug_key(hadis_key)
 
 
+def test_internal_address_is_unlimited_and_logs_no_parameters(opened, store):
+    """S13.17: sohbetin iç erişim adresi ortak sınıra takılmaz, girdileri kaydedilmez."""
+    key = store.new_internal_key("sohbet")
+    session = open_path_session(opened, f"/mcp/{key}")
+    for _ in range(3):                                     # hesapsızların sınırı dolsa da
+        open_call(opened, session, "semantic_search", {"query": "kıyamet"})
+    assert "daily limit" not in open_call(opened, session, "semantic_search", {"query": "kıyamet"}).text
+    logged = [r for r in store.usage() if r["name"] == "semantic_search"]
+    assert logged and all(r["user"] == "(iç:sohbet)" and r["params"] is None for r in logged)
+    assert store.anonymous_calls("semantic_search", 0) == 0          # hesapsızların sayımına girmez
+    assert [r["name"] for r in store.internal_keys()] == ["sohbet"]
+    newer = store.new_internal_key("sohbet")                         # aynı adın eskisi geçersiz
+    assert store.internal_key_name(key) is None and store.internal_key_name(newer) == "sohbet"
+    assert store.revoke_internal_key("sohbet") and not store.internal_key_name(newer)
+    assert opened.post(f"/mcp/{newer}", headers=MCP_HEADERS, json={"jsonrpc": "2.0", "id": 1, "method": "ping"}).status_code == 404
+
+
+def test_internal_keys_are_per_server_and_named(store):
+    hadis = AuthStore(store.path, server="hadis")
+    key = hadis.new_internal_key("sohbet")
+    assert hadis.internal_key_name(key) == "sohbet" and store.internal_key_name(key) is None
+    with pytest.raises(ValueError):
+        store.new_internal_key("Sohbet Sayfası")
+
+
+def test_internal_header_from_outside_is_ignored(opened, store):
+    session = open_path_session(opened, extra={"X-Risale-Internal": "sohbet"})
+    open_call(opened, session, "search", {"query": "kiyamet"})
+    logged = [r for r in store.usage() if r["name"] == "search"]
+    assert logged[0]["user"] is None
+
+
 def test_debug_header_from_outside_is_ignored(opened, store):
     session = open_path_session(opened, extra={"X-Risale-Debug": "1"})
     open_call(opened, session, "search", {"query": "kiyamet"})
