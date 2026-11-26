@@ -530,7 +530,7 @@ def _span_text(checker, ident: str) -> str | None:
     return " ".join(r[0] for r in rows)
 
 
-def _counterpart(part: str, text: str) -> str | None:
+def _counterpart(part: str, text: str, least: float = REPAIR_RATIO) -> str | None:
     """Parçanın metindeki en yakın karşılığı, metnin kendi sözleriyle; yeterince yakın değilse None. Karşılaştırma
     arama biçiminde (şapka, çengel, büyük harf yok sayılır), harf düzeyinde: "tefekküre teşvik ettiği" →
     "tefekkür mesleğine teşvik ettiği"."""
@@ -554,7 +554,7 @@ def _counterpart(part: str, text: str) -> str | None:
                 continue
             if (ratio := matcher.ratio()) > best:
                 best, where = ratio, (window[0][1], window[-1][1])
-    if best < REPAIR_RATIO or where is None:
+    if best < least or where is None:
         return None
     return text[tokens[where[0]].start():tokens[where[1]].end()].strip(_EDGE_PUNCT) or None
 
@@ -614,8 +614,33 @@ def _translations(checker) -> list[str]:
     return _TRANSLATIONS[id(conn)]
 
 
-def _place_unmarked(checker, quote: str, read) -> str | None:
-    """İşaretsiz sözün yeri: kimlik, uyarı ("") ya da dokunulmaz (None)."""
+NEAR_RATIO = 0.8              # işaretsiz sözün okunan bir cümledeki karşılığı için en az harf benzerliği
+
+
+def _near_read(checker, quote: str, read) -> tuple[str, str] | None:
+    """İşaretsiz söz eserlerde aynen yoksa okunan cümlelerde çok yakın karşılığı: (kimlik, metnin sözleri). Model
+    sözü bir kelimesi farklı aktarmış olabilir ("adıyla gezerim", metinde "ismiyle gezerim")."""
+    if not read or re.search(r"…|\.\.\.", quote):
+        return None
+    want = set(search_words(quote))
+    if not want:
+        return None
+    best = None
+    ids = list(read)
+    conn = checker.refresh()
+    for start in range(0, len(ids), 500):
+        chunk = ids[start:start + 500]
+        for ident, text in conn.execute(f"SELECT id, text FROM sentences WHERE id IN ({','.join('?' * len(chunk))}) "
+                                        "ORDER BY seq", chunk):
+            if len(want & set(search_words(text))) < 0.6 * len(want):
+                continue
+            if (words := _counterpart(quote, text, NEAR_RATIO)) and _passes(checker, ident, words):
+                best = best or (ident, words)
+    return best
+
+
+def _place_unmarked(checker, quote: str, read) -> str | tuple[str, str] | None:
+    """İşaretsiz sözün yeri: kimlik, (kimlik, metnin sözleri: yakın karşılık), uyarı ("") ya da dokunulmaz (None)."""
     from risale_mcp.citations import _block_parts, _key
     parts = _block_parts(quote)
     if not parts or len(" ".join(parts).split()) < UNMARKED_WORDS:
@@ -627,22 +652,28 @@ def _place_unmarked(checker, quote: str, read) -> str | None:
         return None
     if found := _relocate(checker, "", quote, read):
         return found
+    if near := _near_read(checker, quote, read):
+        return near
     return None if ARABIC.search(quote) else ""
 
 
 def unmarked_quotes(checker, text: str, read=frozenset()) -> tuple[str, dict]:
     """İşaretsiz tırnaklı sözlere işaret ya da uyarı ekler; (yeni metin, sayılar)."""
-    counts = {"unmarked_found": 0, "unmarked_missing": 0}
+    counts = {"unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0}
     lines = text.split("\n")
 
-    def place(quote: str) -> str | None:
+    def place(quote: str) -> tuple[str, str | None] | None:
+        """(eklenecek işaret ya da uyarı, sözün yerine geçecek metin sözleri ya da None)."""
         where = _place_unmarked(checker, quote, read)
+        if isinstance(where, tuple):
+            counts["unmarked_near"] += 1
+            return f" [[{where[0]}]]", where[1]
         if where:
             counts["unmarked_found"] += 1
-            return f" [[{where}]]"
+            return f" [[{where}]]", None
         if where == "":
             counts["unmarked_missing"] += 1
-            return UNMARKED_NOTE
+            return UNMARKED_NOTE, None
         return None
 
     i = 0
@@ -653,18 +684,31 @@ def unmarked_quotes(checker, text: str, read=frozenset()) -> tuple[str, dict]:
                 j += 1
             after = lines[j + 1] if j + 1 < len(lines) else ""
             if not any(MARK.search(line) for line in lines[i:j + 1]) and not MARK.search(after):
-                if (quote := _quote_text("\n".join(lines[i:j + 1]))) and (add := place(quote)):
+                if (quote := _quote_text("\n".join(lines[i:j + 1]))) and (placed := place(quote)):
+                    add, words = placed
+                    if words:                       # yakın karşılık: söz tek satırda aynen duruyorsa değişir
+                        at = next((k for k in range(i, j + 1) if quote in lines[k]), None)
+                        if at is None:
+                            add = UNMARKED_NOTE
+                            counts["unmarked_near"] -= 1
+                            counts["unmarked_missing"] += 1
+                        else:
+                            lines[at] = lines[at].replace(quote, words, 1)
                     lines[j] = lines[j].rstrip() + add
             i = j + 1
             continue
         line, out, last = lines[i], [], 0
         for m in UNMARKED_QUOTE.finditer(line):
-            out.append(line[last:m.end()])
-            last = m.end()
             # işaret aynı cümlede biraz sonra geliyorsa ("… sözü geçer [[…]].") söz işaretlidir
             tail = re.split(r"[\"“«]|[.!?](?:\s|$)", line[m.end():], maxsplit=1)[0]
-            if not MARK.search(tail) and (add := place(m.group(2))):
-                out.append(add)
+            placed = None if MARK.search(tail) else place(m.group(2))
+            if placed and placed[1]:            # yakın karşılık: metnin sözleri
+                out.append(line[last:m.start(2)] + placed[1] + m.group(3))
+            else:
+                out.append(line[last:m.end()])
+            last = m.end()
+            if placed:
+                out.append(placed[0])
         lines[i] = "".join(out) + line[last:]
         i += 1
     return "\n".join(lines), counts

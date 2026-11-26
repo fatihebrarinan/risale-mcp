@@ -85,7 +85,7 @@ def test_check_numbers_and_problems():
     assert [p["id"] for p in checked.problems] == ["z/c003"]
     assert checked.sources[2]["unverified"] and "unverified" not in checked.sources[0]
     assert checked.counts == {"fixed": 0, "repaired": 0, "unverified": 1, "dropped": 0, "leaks": 0, "paragraphs": 1,
-                              "unmarked": 0, "unmarked_found": 0, "unmarked_missing": 0}
+                              "unmarked": 0, "unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0}
     assert checked.raw == text
 
 
@@ -794,3 +794,15 @@ def test_s13_16_unmarked_translation_and_arabic_are_left_alone(checker):
     checked = sohbet.check(checker, f'Vakıf meali: "{words}" der. Âyet "لَعَلَّكُمْ تَتَفَكَّرُونَ يَا قَوْمِ" diye geçer.')
     assert checked.counts["unmarked_found"] == 0 and checked.counts["unmarked_missing"] == 0
     assert "⚠" not in checked.markdown
+
+
+@needs_db
+def test_s13_16_unmarked_near_quote_of_a_read_sentence_takes_the_texts_words(checker):
+    # golden K2 (2026-11-26): model "Ben filân reisin adıyla gezerim" yazdı, metin "ismiyle"
+    text = 'Haydutla karşılaşınca "Ben filân reisin adıyla gezerim" der.'
+    checked = sohbet.check(checker, text, read={"sozler/1/c026"})
+    assert checked.counts["unmarked_near"] == 1 and checked.counts["unmarked_missing"] == 0
+    assert '"Ben, filân reisin ismiyle gezerim" [1] der.' in checked.markdown
+    assert checked.sources[0]["id"] == "sozler/1/c026"
+    # okunmamışsa uyarı kalır
+    assert sohbet.check(checker, text).counts["unmarked_missing"] == 1
