@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 ve durum değerlendirmesi bitti, Haiku sürer; **S13.12** kipler: belge, ad dizini, bölüm künyesi ve konu taraması kipi yapıldı ve yayında; sırada aşama 2 (ikinci kütüphane) ya da tarama kipinin denemesi. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 ve durum değerlendirmesi bitti, Haiku sürer; **S13.12** kipler: belge, ad dizini, bölüm künyesi ve konu taraması kipi yapıldı ve yayında; sırada aşama 2 (ikinci kütüphane) ya da tarama kipinin denemesi. **S13.13** (2026-11-26) haşir konuşması: tarama kipinin ilk gerçek kullanımı; kip çalıştı, alıntılar doğru; sayım, ş=s eşleşmesi, kipin açık kalması ve okuma hataları yazıldı, çözüm kararı bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -519,6 +519,44 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     `DEPLOY_EXPECT="get_outline read_section search semantic_search"`, 24 çağrıda beklenen fark, beklenmeyen yok,
     `yayin-20261126-133746`). Tefsir ve klasik sunucularına sonraki gönderimde gider (`profile`, `named_sections`
     farkı beklenir).
+  - S13.13 **Haşir konuşmasının bulguları: tarama kipinin ilk gerçek kullanımı** (2026-11-26; kullanıcının konuşması
+    `cKtFoJwL-6hnvx7G`, üç tur: "haşrin irili ufaklı geçtiği her yeri bul ve say" (tarama), Dokuzuncu Şuâ ile 29. Söz'ün
+    farkı (tarama kipi açık kalmış), Nokta'nın haşir kısmıyla karşılaştırma (serbest); kayıt sunucudan kullanıcının
+    izniyle okundu, okunan yerler ve tarama genel veritabanında yeniden kuruldu). **İşleyen:** kip mekanik olarak doğru
+    çalıştı (`survey` bir kez, `*`'lı terimlerle; altı aday okundu, eserlere göre gruplu, model kendi listesini yazmadı,
+    sayfa adayları ekledi; S13.10 (B)'nin dar araması kalktı); bütün alıntılar doğru (`corrected` 0, doğrulanamayan
+    yok), Vakıf ve telif tarihi yok, satır içi kısa alıntı işaretli; sınırlar dürüst ("tam bir döküm değil",
+    "Okuyamadıklarım"). **Sunucu ve tasarım açıkları:** (1) **Sayı:** okuyucu "say" dedi, cevap "647 aday yer" dedi:
+    `total_places` kelime, başlık ve anlam adaylarının toplamıdır, sayım değildir. Gerçek sayı: "haşir/haşr" 589
+    cümlede, 133 risalede. (2) **ş = s yanlış eşleşmesi:** `haşr*` "hasr", "hasr-ı", "hasret", "hasretmek",
+    `haşir*` "hâsir", "hasır" da tutuyor: 737 cümlenin 148'i (%20). Lügattaki harf biçimi (`Form`) kuralı gibi bir
+    süzgeç ister. (3) **"Öbür yerler" 15'le sınırlı:** "her yer" isteğinde Yirminci Mektub (Onuncu Kelime; 29. Söz
+    c010 haşir için oraya gönderir), Mektubat 28, Lem'alar 30 listede yok; Meyve ile Tarihçe'deki kopyası iki ayrı aday.
+    (4) **Kip açık kalıyor:** 2. tur bir karşılaştırma sorusuydu, kip "tarama" kaldı: ikinci `survey`, cevaba
+    gereksiz bir aday listesi; listede 1. turda okunup alıntılanan yerler (Nokta, Muhakemat, Kastamonu 69) "okunmadı"
+    diye duruyor. **Okuma hataları** (Haiku; S13.9 (B), S13.10 (D) örüntüsü): (5) merkez seçiminde İşârât › Bakara 4 ›
+    Delâil-i Haşr (3. aday, başlığı eşleşiyor) yerine 11 cümlelik Kastamonu 69 okundu; okunan Nokta'nın Medhal'i
+    (c003, "İşârâtü'l-İ'câz'da yazmıştım") gönderme olduğu hâlde İşârât'a gidilmedi. (6) **Şuâ'nın kendi çerçevesi
+    tersine okundu:** "Şuâ kendisini Onuncu Söz ile 29. Söz'ün arasına yerleştirir" (`sualar/9/c007`); metin ise
+    Muhâkemât'ın vaad ettiği iki âyetten birincisinin (Rûm 30:50) tefsiri Onuncu ve 29. Söz'dür, bu Şuâ ikincisinindir
+    diyor (c003–c010; Muhâkemât `makale-03/maksad-03/maksad-02` aynı sözü alıntılar). Şuâ'nın yalnız Mukaddime'si
+    yazılmış, "Dokuz Âlî Makam" yazılmamıştır (Kastamonu 125 c006, c022; Barla 285 c013); 1. turda okunan Kastamonu 69
+    c006 birinci makamın yerine Otuzuncu Lem'a'nın Dördüncü Remzi'ni koyar; Şuâ'nın alt başlığı "Onuncu Sözün Mühim
+    Bir Zeyli". Hiçbiri söylenmedi; Kastamonu 125 2. turun aday listesindeydi. İkinci Nokta'nın 100 cümlesinden 26'sı
+    okundu (`next_cursor` sürmedi, cevapta söylenmedi); onun bütün iman rükünlerinin şehâdeti olduğu (c001, c044,
+    c083) "peygamberlik ve Kur'ân" diye daraltıldı. (7) **29. Söz–Nokta ilişkisi kaçtı ve tersine yorumlandı:** 2. turda
+    okunan ve [7] diye alıntılanan 29. Söz c009 "Eski Said'in Nokta Risalesi'ndeki beyânâtı tarzında bahsedeceğiz"
+    der; 3. turun Yorum'u "Nokta'nın dört temeli Söz'ün dizisinin bir özeti gibi" dedi. Söz'ün İkinci Maksad'ı Nokta'nın
+    dört makamına esas esas karşılık gelir (Birinci Esas ↔ Dördüncü Makam, rûhun bekâsı; Üçüncü Esas'ta altı temsîl;
+    Dördüncü Esas'ta Tekvîr ve İnfitâr). (8) **Okumadan hüküm:** yalnız İkinci Esas okunduğu hâlde "altı temsîl ve
+    Tekvîr–İnfitâr Nokta'ya özgü, Söz'deki karşılığı daha kısa" dendi (yanlış); "Söz'ün on birinci medarı" (yok;
+    Onuncu Medâr). **Çözüm adayları (karar yok):** (1)–(2) `survey` sayımı ayrı versin (kelimenin geçtiği cümle ve
+    risale sayısı, harf biçimi süzgecinden sonra), "aday" toplamı sayı diye sunulmasın; (3) "her yer" isteğinde bütün
+    kelime adayları açılır bir ek liste; Tarihçe'deki kopyalar asıllarıyla birleşsin; (4) tarama cevabından sonra kip
+    serbeste dönsün ya da `survey` aynı konuda ikinci kez çalışmasın; "okunmadı" konuşmanın önceki okumalarını
+    saysın; (5)–(8) talimatla kısmen: karşılaştırmada iki tarafın da karşılaştırılan bütün kısımları okunur, okunmayan
+    kısım hakkında "özgü/yok/daha kısa" denmez; bölümün kendi hakkında söylediği (amaç, yer, hangi esere bağlandığı)
+    önce okunur (karşılaştırma kipi, S13.12 aşama 3).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
