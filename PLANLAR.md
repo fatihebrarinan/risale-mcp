@@ -72,8 +72,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
   **Ad Âyinedâr** (2026-11-26 akşam; Tahkik'ten döndü), çatı `ayinedar.org`, projeler işlevli, İngilizce alt alan adlarında
-  (`chat.`, `read.`, `lab.`, `connect.`); adımlar S13.15.1–S13.15.7; S13.15.1 bitti (alan
-  adları alındı, marka başvurusu yapılmaz), **önde S13.15.2** (alt alan haritası; logo yarıda, S13.15.3'te sürer). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
+  (`chat.`, `read.`, `lab.`, `connect.`); adımlar S13.15.1–S13.15.7; S13.15.1 (alan adları
+  alındı, marka başvurusu yapılmaz) ve S13.15.2 (DNS, Caddy, "hazırlanıyor" sayfası yayında) bitti, **önde S13.15.3**
+  (logo; yarıda kalmıştı). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -170,8 +171,14 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     2026-11-26): "Biz bir marka değiliz, ticari değiliz; insanlara İslâmî kaynaklara ücretsiz erişim sağlamaya
     çalışıyoruz." TÜRKPATENT'ten bir şey alınmaz; ileride adla ilgili zor duruma düşülürse kullanıcı o zaman başvurur.
     Bu yüzden metinlerde "marka" denmez; ad bir hizmetin adıdır.
-  - **S13.15.2 Alt alan haritası:** harita kesinleşti ((a), 2026-11-26); kalan DNS kayıtları, Caddy blokları ve
-    sertifikalar, boş "yakında" sayfalarıyla.
+  - **S13.15.2 Alt alan haritası** (bitti, 2026-11-26): harita (a). DNS (kullanıcı açtı): iki kökte A
+    `95.217.21.105`, alt alan adları CNAME ile köke (sunucu değişirse iki kayıt değişir; CAX11 yükseltilirse IP aynı
+    kalır), ayinedar.com'da `v=spf1 -all` ve DMARC `p=reject` (e-posta göndermez); ayinedar.org'un e-posta kayıtları
+    S13.15.4'te. Caddy (`docs/Caddyfile`): kök ve dört alt alan adı `site-ayinedar/`'ın "hazırlanıyor" sayfası
+    (`noindex`), `www.` ve .com 301 ile `ayinedar.org{uri}`'ye; sertifikalar alındı. `deploy.sh` sayfayı tam
+    gönderimde ve `--site`'ta `/var/www/ayinedar`'a gönderir. Bu sefer yalnız sayfa ve Caddyfile gönderildi
+    (kullanıcının kararı: kod gitmedi, servis yeniden başlamadı); önceki Caddyfile sunucuda
+    `/etc/caddy/Caddyfile.onceki-20261126`.
   - **S13.15.3 Logo** (yarıda kaldı, 2026-11-26): SVG, `scripts/ikon.sh` hattı, favicon ve PWA simgeleri; simge addan
     bağımsız.
   - **S13.15.4 Sohbetin taşınması:** `chat.ayinedar.org`; Caddy, `SOHBET_NAME`/`SOHBET_SITE`/`SOHBET_PREFIX`/
