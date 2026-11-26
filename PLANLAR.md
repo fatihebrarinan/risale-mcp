@@ -72,8 +72,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   Ondan önce S13.16, B11 ve B10 bitti ve yayında (ayrıntı `KAYIT.md`). Öncesinde S13 düzenlendi: biten S13.1–S13.14 `KAYIT.md`'de, açık maddeler S13.15–S13.21. **Önde S13.15:** sohbetin
   kendi adı, logosu ve sitesi; kullanıcı platformu bu hâliyle tanıtmak istemiyor, insanlar onu kendi adıyla tanısın.
   **Ad Âyinedâr** (2026-11-26 akşam; Tahkik'ten döndü), çatı `ayinedar.org`, projeler işlevli alt alan adlarında
-  (`sohbet.`, `oku.`, `masa.`, `eklenti.`); adımlar S13.15.1–S13.15.7, **önde S13.15.1** (alan adları ve marka;
-  logo yarıda, S13.15.3'te sürer). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
+  (`sohbet.`, `oku.`, `masa.`, `eklenti.`); adımlar S13.15.1–S13.15.7; S13.15.1 bitti (alan
+  adları alındı, marka başvurusu yapılmaz), **önde S13.15.2** (alt alan haritası; logo yarıda, S13.15.3'te sürer). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -121,7 +121,7 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   yakın çevresi dışında kimseye tanıtmadı; insanlar onu kendi adıyla, logosuyla, sitesiyle tanısın, bu hâliyle
   (`risalemcp.com/sohbet`) tanıtılmaz. Gerçek geri bildirim tanıtımdan sonra gelir; 5 kişilik deneme yakın çevreyle
   sürer. Adın ölçütleri: müellif adına konuşuyor izlenimi vermez; "Risale-i Nur" adını tek başına almaz; kısa, Türkçe
-  söylenişi kolay; alan adı alınabilir; marka çakışması yok; hadis, tefsir eklenince de uyar; ölçü markadır, sözlük
+  söylenişi kolay; alan adı alınabilir; başka bir hizmetle karışmaz; hadis, tefsir eklenince de uyar; ölçü adın kendisidir, sözlük
   tanımı değil (kullanıcı: "Claude", "Gemini" de mantıkla bakınca mantıksız).
   **Adın geçmişi (2026-11-26):** adaylar Fidanlık (S13.3), Tahkik, Hemdem, Kubbe; sonra Âyinedâr, Bezm, Hüdhüd. Önce
   Tahkik seçildi (tahkik.org; TÜRKPATENT 9/41/42'de kayıt yok); tahkik.com'da tescilsiz bir Türk hukuk yazılımı
@@ -136,14 +136,14 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   **tanıtımın ölçüsü** "eserlerin ne dediğini yansıtır"dır, "Kur'ân'ın âyinedârı" denmez (Risale'ye verilen vasıf
   yapay zekâya verilmez). Yazım: metinde ve logoda "Âyinedâr", alan adında `ayinedar`.
   **Düzenin kararları (kullanıcı onayladı, 2026-11-26):**
-  (a) Alt alan adları **işlevli, Türkçe ve kalıcı**; proje adları üstüne giyen markadır, adrese girmez (ad bir günde
+  (a) Alt alan adları **işlevli, Türkçe ve kalıcı**; proje adları üstüne giyen addır, adrese girmez (ad bir günde
   iki kez değişti; "kimlikler değişmez" ilkesi). Harita: `ayinedar.org` çatı (projeler, yenilikler, çalışmalar,
   belgeler, gizlilik; ana sayfa önce sohbete çağırır), `sohbet.ayinedar.org`, `oku.ayinedar.org` (okuma platformu,
   davetli), `masa.ayinedar.org` (ar-ge masası, bugünkü `/taslak/`), `eklenti.ayinedar.org` (eklentilerin tanıtımı ve
   kurulumu; ya da risalemcp.com kalır). Kazancı: her alt alan ayrı servis, gerekirse ayrı makine; çerezler kendiliğinden
   ayrılır. "ai." kullanılmaz (ehil okuyucuya yapay zekâ öne çıkmasın).
   (b) **Asıl adres .org**, .com ona 301 ile yönlenir (izinlerin çoğu "kazanç olmadığı sürece" şartlı; e-posta
-  göndericisi tek alanda: `noreply@ayinedar.org`). tahkik.org alındıysa ve yayımlanmadıysa yenilenmez.
+  göndericisi tek alanda: `noreply@ayinedar.org`). tahkik.org alınmamıştı.
   (c) **İç ad ile dışa açık ad ayrı:** okuyucu tek ad ve işlev görür ("Âyinedâr · Sohbet", "Âyinedâr · Okuma"); iç
   proje adları aramızda ve planda serbest. Proje adının kuralı: (1) eser ya da bölüm adıyla çakışmaz (araçlar onları
   adresler), (2) müellife ya da eserine verilmiş bir vasıf değildir, (3) yapay zekânın ürününe hüküm yüklemez. Bu
@@ -159,8 +159,11 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
   gizlilik ve kurulum sayfaları, başvurular sonuçlanana kadar. Geçişi ucuz tutmak için ad yalnız ayarlarda
   (`SOHBET_NAME` …) ve metinlerde durur; logonun simgesi addan bağımsız çizilir.
   Adımlar (sıra bu; kullanıcının onayı, 2026-11-26):
-  - **S13.15.1 Ad, alan adları ve marka** (önde): kullanıcı `ayinedar.org` ve `ayinedar.com`'u alır, Cloudflare'de
-    (DNS only, proxy kapalı); TÜRKPATENT'e "Âyinedâr" başvurusu (9, 42, istenirse 41), alan adlarıyla aynı günlerde.
+  - **S13.15.1 Ad ve alan adları** (bitti, 2026-11-26): kullanıcı `ayinedar.org` ve `ayinedar.com`'u aldı (ad
+    sunucuları Cloudflare'de; kayıtlar S13.15.2'de, DNS only). **Marka başvurusu yapılmaz** (kullanıcının kararı,
+    2026-11-26): "Biz bir marka değiliz, ticari değiliz; insanlara İslâmî kaynaklara ücretsiz erişim sağlamaya
+    çalışıyoruz." TÜRKPATENT'ten bir şey alınmaz; ileride adla ilgili zor duruma düşülürse kullanıcı o zaman başvurur.
+    Bu yüzden metinlerde "marka" denmez; ad bir hizmetin adıdır.
   - **S13.15.2 Alt alan haritası:** (a)'nın haritası kesinleşir (eklenti tanıtımı `eklenti.` mi risalemcp.com mu),
     DNS kayıtları, Caddy blokları ve sertifikalar; boş "yakında" sayfalarıyla.
   - **S13.15.3 Logo** (yarıda kaldı, 2026-11-26): SVG, `scripts/ikon.sh` hattı, favicon ve PWA simgeleri; simge addan
