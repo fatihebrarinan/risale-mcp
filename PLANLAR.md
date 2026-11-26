@@ -106,16 +106,17 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S13.1 | Sohbet: sol panel ve sunucuda konuşma geçmişi, sağda Kaynaklar, altta ayarlar (5 kişilik denemeden önce) | |
-| 2 | B11 | Kaynakçada kaynak adı (e-Risale, risaleoku.com…): izinlerin şartı; MCP bağdaştırıcılarında | |
-| 3 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
-| 4 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
-| 5 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 6 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 7 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 8 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 9 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
-| 10 | S13 | Sohbet sayfasının asıl geliştirmesi: S12'nin 5 kişilik denemesinden sonra | |
+| 1 | S13.15 | Sohbetin kendi adı, logosu ve sitesi: tanıtımdan önce (kullanıcının kararı, 2026-11-26) | S12.8 |
+| 2 | S13.1 | Sohbet: sol panel ve sunucuda konuşma geçmişi, sağda Kaynaklar, altta ayarlar (5 kişilik denemeden önce) | |
+| 3 | B11 | Kaynakçada kaynak adı (e-Risale, risaleoku.com…): izinlerin şartı; MCP bağdaştırıcılarında | |
+| 4 | B10 | Arapça Mesnevî'nin sonundaki muhakkik eki (müellifin metni gibi duruyor) | |
+| 5 | — | Risale'si az birimlere göz atmak (kullanıcının işi; kıssa birimleri yazıldı) | D5.2 |
+| 6 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 7 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 8 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 9 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 10 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 11 | S13 | Sohbet sayfasının asıl geliştirmesi: S12'nin 5 kişilik denemesinden sonra | |
 
 - S13 **Sohbet sayfasının asıl geliştirmesi** (kullanıcının kararı, 2026-11-25): S12'nin deneme ayından sonra, onun
   ölçüleri ve geri bildirimiyle. İlk turda yapılmayan her şey burada: (1) ön arama (soru gelince anlamsal ve kelime
@@ -620,6 +621,19 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     fark): kapsam notu şeffaflık içindir, göndermeler ve okunan pay eklentilerdeki güçlü modellere de gider, ölçüm seti
     model ya da talimat değişince geriye gidişi görmek için durur. (4)–(6) dondu. Hassas alanlar (hadis, fıkıh)
     sohbete eklenince orada serbest yorum alanı daraltılır (cevap ağırlıkla alıntı ve künye); karar o gün.
+- S13.15 **Sohbetin kendi adı, logosu ve sitesi** (kullanıcının kararı, 2026-11-26; S13 (12), eski S12.8): kullanıcı
+  platformu yakın çevresi dışında kimseye tanıtmadı; insanlar onu kendi adıyla, logosuyla, sitesiyle tanısın, bu
+  hâliyle (`risalemcp.com/sohbet`) tanıtılmaz. Gerçek geri bildirim tanıtımdan sonra gelir; 5 kişilik deneme yakın
+  çevreyle sürer. Adımlar: (1) **ad**: ölçütler (müellif adına konuşuyor izlenimi vermez; "Risale-i Nur" adını tek
+  başına almaz; kısa, Türkçe söylenişi kolay; alan adı alınabilir; marka çakışması yok; ileride hadis, tefsir eklenince
+  de uyar), aday listesi, alan adı ve marka denetimi, kullanıcının seçimi; (2) **logo** (SVG; `scripts/ikon.sh` hattı,
+  favicon ve PWA simgeleri); (3) **site**: tanıtım sayfası (nedir, nasıl çalışır, neye güvenebilirsiniz ve sınırları:
+  "araştırma aracıdır, fetva makamı değildir", Diyanet'in 24 Kasım 2026 bildirgesi), kayıt ve giriş, gizlilik ve
+  şartlar yeni adla; risalemcp.com eklentilerin sitesi kalır, iki yönlü bağlantı; (4) **taşınma**: alan adı
+  (Cloudflare DNS only), Caddy ve sertifika, `SOHBET_NAME`/`SOHBET_SITE`/`SOHBET_PREFIX`/`SOHBET_FROM`, e-posta
+  göndericisi (Scaleway alan doğrulaması, SPF/DKIM), eski adresten yönlendirme, oturumlar bir kez yeniden giriş; (5)
+  **tanıtımdan önce**: PWA (ana ekrana eklenen uygulama; S13 (8)), ilk izlenim (karşılama, örnekler) yeni adla gözden
+  geçirme. Yapılmayan: mağaza uygulaması ("Sonra").
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
