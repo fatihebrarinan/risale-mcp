@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -316,6 +316,35 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     beklenmeyen fark yok; sunucuda Nokta `original_text` veriyor). **Açık:** (B) ve (D) hafta sonunda model
     yönlendirme konuşulurken örnek; Mukaddime'nin kendi telif kaydı yok, eserin kaydını ("Arapça … Metnimiz
     tercümedir") miras alıyor: tarihi kaynaktan bulunmadan yazılmaz; (E)'nin lügat sesteşleri ayrı iş.
+  - S13.10 **Tefekkür-tezekkür ve isim önerisi konuşmasının bulguları** (2026-11-26; kullanıcının konuşması
+    `0Yp0TRsZt60ZTxf-`, üç cevap: fark, Risale'den platform adı, "genel İslâmî bağlamda" ad; okunan bütün yerler ve
+    modelin aramaları genel veritabanında yeniden çalıştırıldı). Bir alıntı dışında işaretli alıntıların sözleri doğru;
+    lügat, Ahzâb 33:46 ve nâşirin meali, Hulûsi Bey'in sözünün müellife mal edilmemesi, Ta'likat'ın tercüme diye
+    anılması doğru. (A) **Lemeât = Lem'alar sanıldı** (2. cevap, iki kez): Emirdağ Lâhikası 263 c008 "bu Lemeât, …
+    bir fidanlık nümûnesidir"; model "Lem'alar için şöyle denir", Yorum'da "Lem'alar'ın bir numune olduğu". (B) **Dar
+    arama, yanlış sayı** (1. cevap): "tezekkür iki yerde geçer"; model tam kelimeyi aradı (`tezekkür`, 2 sonuç),
+    `tezekkür*` 4 verir: Mesnevî-i Nuriye › Şule › İkinci Kısım c046 "nisyan ve tezekkürde müteâkistirler" (müellifin
+    kullanımı, modelin "hatırlama" okumasını destekler), Divan-ı Harb-i Örfî c211 "derdest-i tezekkürdür" (müzakere
+    anlamı, istisna). Kur'ân'daki karşılıkları aranmadı: Sözler 22 › Birinci Makam `يَتَذَكَّرُونَ` ile
+    `يَتَفَكَّرُونَ` âyetleriyle açılır; Nokta › Üçüncü Bürhan › Birincisi c009 "Kur'ân, kâinâtta tefekküre emir
+    verdiği gibi … اَفَلَا يَتَذَكَّرُونَ". (C) **Parçalı alıntının yanlış parçası ekranda kaldı** (1. cevap, [1]):
+    Lem'alar 29 › İfâde-i Merâm c001'de "tefekküre teşvik ettiği", metin "tefekkür mesleğine teşvik ettiği"; cümle
+    doğru, "…" ile birleşen parçalardan biri tutmuyor, sunucu taşıyacak yer bulamadı, "⚠ doğrulanamadı" gösterdi ama
+    yanlış sözler cevapta tırnakta duruyor. Aynı paragrafta işaretsiz tırnak "Bazen bir saat tefekkür, bir sene
+    ibadet hükmündedir" metnin sözü değil, denetime girmedi. (D) **Tersine okuma** (3. cevap, [2]): "bunun bir yorum
+    olduğu açıkça belirtilir"; Barla Lâhikası 281 c021 "… bu âyetin bu fıkrasından mülhemdir denilebilir ve
+    çekinmeyerek deriz" (iddia, çekince değil); adı İmam Ali'nin verdiği ve tevafukun cifrî olduğu ("lafzan ve ma'nen
+    ve cifren") söylenmedi; bölüm bir talebenin (Ahmet Nazif Çelebi'nin) istihracı, "metinde" dendi. (E) **Küçükler:**
+    kullanıcının "fidanlık" örneğine en uygun yer gelmedi: Mesnevî-i Nuriye › Mukaddime › Dördüncü Nokta c003–c004
+    "Demek o fidanlık Mesnevî … Bahçesi olan Risale-i Nur" (müellifin sözü; "fidan OR fidanlık OR bahçe OR çiçek"
+    aramasında kısa cümleler önüne geçti); "Nur bahçesi" Hâfız Zühtü'nün mektubundan, "Risale'nin kendi benzetmesi"
+    dendi; Kastamonu 119 c009 "Hizmet-i Kur'ân, inşâallâh muhâfaza edecektir" "Risale'nin çalışmasını tarif eder"
+    diye sunuldu (yazmaktan korkana "seni korur" diyor); "Sirâcü'n-Nur"un zaten bir mecmuanın adı olduğu söylenmedi;
+    Mektubat 29 › İkinci Telvih c001 okunmadan, arama sonucundan alıntılandı (sözleri doğru). **Örüntü:** S13.9'un (B)
+    okuma ve (D) kapsam hataları yine (Haiku). **Çözüm adayları (karar yok):** (1) `search` az sonuçta `kelime*`'nin
+    sayısını bildirsin (ya da talimat); (2) "…" ile birleşen alıntıda tek parça tutmuyorsa, cümle belli olduğu için
+    sunucu o parçayı metindeki karşılığıyla düzeltsin ya da atsın; (3) Lemeât ≠ Lem'alar için talimatta ya da
+    `list_works` notunda bir satır; (4) işaretsiz tırnaklı söz denetimi.
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı
