@@ -77,7 +77,7 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   `yayin-20261125-202918`); **S13.3** karşılama, yeni konuşma sayfası, durum satırları: yayında, `yayin-20261125-212720`).
   **S13.4** (2026-11-25): geri bildirim tıklayınca gider, kullanıcının hesabı sınırsız (yayında); bekleyen düzeltmeler
   (c), (h) yapıldı (geçmişe okunanlar, okumadan söz yok); (d)–(g), (i) orada. **S13.5** konuşmanın tek kaynakçası, **S13.6**
-  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 sırada, ondan sonra durum değerlendirmesi (kullanıcının kararı). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
+  kaynakların parçalara toplanması (yayında). **S13.7** (2026-11-26) tevekkül konuşmasının bulguları: âyet ve hadis satırları metin panelinde, sayfa notunda okunan yerin başlığı, Vakıf ve telif tarihi kuralları. **S13.9** (2026-11-26) hiss-i kable'l-vukû' konuşması: Nokta artık "tercüme" denmiyor, sohbette satır içi kısa alıntı serbest; okuma hataları not edildi. **S13.10** (2026-11-26) tefekkür-tezekkür ve isim önerisi konuşması: bulgular yazıldı (Lemeât/Lem'alar, `kelime*`siz dar arama, parçalı alıntının yanlış parçası, tersine okuma), çözüm kararı bekliyor. **S13.11** (2026-11-26) hata ayıklama turları: `sohbet dene`; tur 1 (Haiku ve Sonnet) ve tur 2 bitti; sunucu düzeltmeleri, dil, takvim ve Lemeât satırları, `search`'ün ipuçları yayında; tur 3 bitti, (a)–(d) ve Mukaddime'nin telif kaydı düzeltmesi yapıldı; Hubâb'ın hutbesi ve tarih notu yayında; tur 4'ün düzeltmesi ve "kesin sözü kesin aktar" satırı yayında; tur 5 bitti (iki küçük sunucu düzeltmesi yayında değil); durum değerlendirmesi sırada (kullanıcının kararı). Kullanıcı şimdi çok soruyor; sonra konuşmalarına birlikte bakılıp hata ayıklanacak. Sonra B11 ve öbürleri.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`
   (kod `data/interim/sohbet/eposta.log`'a; deneme hesabı `deneme@example.com`), arayüz denemesi
   `uv run --no-project --with playwright python scripts/sohbet-arayuz-dene.py`, ölçüm `… sohbet olc [--hizli]`,
@@ -459,6 +459,19 @@ bitmeden (2026-12-14); mekanik işler (E5, E7) Pro'da da yürür; tefsir verisin
     **Kullanıcının kararları (2026-11-26):** gönder; satır eklensin. **Yapıldı:** `SHAPE`'e "The author's firmness"
     satırı (kesin söz kesin aktarılır; yorum müellifin iddiasını notlamaz); hızlı ölçüm 73/74 (doğrulanamayan,
     Muhakemat'tan sözleri değiştirilmiş bir alıntı, kuralla ilgisiz).
+    Yayında (`1b54a50`, `--sohbet`).
+    **Tur 5** (`tur-05.txt`: 8 konuşma, 10 soru; yarısı gerileme, yarısı doğal soru; Haiku ≈0,04 $). **Tutanlar:**
+    kesin söz (Birinci Şuâ: "kesin bir kanaatte", "kanâat-ı kat'iyye" alıntılandı); Sirâcü'n-Nur (İkinci Şuâ'dan İmam
+    Ali'nin Kaside-i Celcelûtiye'si, Ahmet Nazif Çelebi'nin istihracı ayrı, "çekinmeyerek deriz" alıntılandı, Vakıf
+    meali tam adıyla); özne (Mukaddime'de Said); tezekkür (`tezekkür*` arandı, 4 yer doğru); kader (Yirmi Altıncı
+    Söz, sadeleştirmede temsil doğru); teselli (On Dördüncü Şuâ'nın iki mektubu); ene. **Kalanlar:** (1) Sirâcü'n-Nur
+    Yorum'unda "metin bunu bir yorum olarak sunuyor, kesin bir hüküm olarak değil" ("çekinmeyerek deriz"e karşın;
+    kesin söz kuralı gövdede tuttu, yorumda tutmadı); (2) ihlâs: Emirdağ'daki "İhlâs Risalesi"ni Lem'alar 20–21'den
+    "ayrı bir risale" sandı, "en kısası" sorusuna ihlâsı işlemeyen o mektubu verdi; (3) düz yazıda cümle numarası
+    ("(46. cümle)" dört kez) ve "**Yorum**" başlığından önce alıntısız iki nokta; **düzeltildi** (sunucu: parantezli
+    cümle numarası silinir; iki noktanın ardındaki satır "**…**" ise liste sayılmaz; testli; yayında değil); (4)
+    kader Yorum'unda tırnaklı ve işaretli ama metinde olmayan sözler (doğrulanamadı); (5) sorulmadan telif tarihi
+    (teselli). Ardından durum değerlendirmesi (kullanıcının kararı).
 - B11 **Kaynakçada kaynak adı** (S12'nin kritiğinden, kullanıcı onayladı, 2026-11-25): e-Risale ve risaleoku izni
   "kaynak gösterilmesi" şartlı; bağdaştırıcıların kaynakçası (`cite_as`, `bibliography`) yalnız yolu verir, kaynağın
   adını vermez (talimat "the bibliography does" diyor). Kaynakça satırına ya da listenin sonuna kaynak adı

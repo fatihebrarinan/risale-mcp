@@ -1,0 +1,37 @@
+# S13.11 hata ayıklama turu 5 (2026-11-26), durum değerlendirmesinden önce. Yarısı bilinen hataların gerilemesi
+# (kesin söz, özne, eksik tarama, tezekkür sayısı, Sirâcü'n-Nur), yarısı kullanıcının üslubuna yakın doğal sorular.
+# Çalıştırma: uv run --extra sohbet python -m risale_mcp.sohbet dene tests/golden/sohbet_konusmalar/tur-05.txt
+
+## kesin
+# tur 4 (2): "kanâat-ı kat'iyye … çekinmeyerek" kesin diye aktarılmalı, yorum notlamamalı
+Birinci Şuâ'da Âyetü'n-Nur'un Risale-i Nur'a işaret ettiği konusunda Bediüzzaman ne kadar emin?
+
+## sirac
+# S13.10 (D): "mülhemdir denilebilir ve çekinmeyerek deriz"; İmam Ali; talebenin istihracı
+Sirâcü'n-Nur ismi Risale-i Nur'a nereden verilmiş?
+
+## ozne
+# tur 4 (4): cümlenin öznesi Said
+Mesnevî-i Nuriye'nin Mukaddime'sinde Eski Said'in Yeni Said'e dönüşmesi nasıl anlatılır?
+
+## tezekkur
+# S13.10 (B): word_starts görülünce tezekkür* aranmalı
+Risale'de "tezekkür" kelimesi kaç yerde geçiyor?
+
+## ihlas
+# eksik tarama: Yirminci ve Yirmi Birinci Lem'a, Lâhikalar
+Risale-i Nur'da ihlas hangi risalelerde işlenir?
+Bunlardan en kısası hangisi, ondan bir parça okur musun?
+
+## kader
+# doğal soru, sadeleştirme isteği
+selam, kader konusunu merak ediyorum. cüz-i ihtiyari ile kader nasıl bağdaşır?
+Biraz daha sade anlatır mısın, lise öğrencisine anlatır gibi?
+
+## teselli
+# doğal soru: mektuptan parça, kimin sözü
+Bediüzzaman'ın hapisteyken talebelerine yazdığı teselli verici bir mektuptan parça paylaşır mısın?
+
+## ene
+# çok kısa soru
+ene nedir

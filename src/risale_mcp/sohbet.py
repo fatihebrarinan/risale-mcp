@@ -398,7 +398,7 @@ def _dangling_colons(text: str) -> str:
         if line.lstrip().startswith(">") or not DANGLING_COLON.search(line):
             continue
         following = next((l.strip() for l in lines[i + 1:] if l.strip()), "")
-        if not following.startswith((">", "-", "*", "•")) and not re.match(r"\d+[.)]\s", following):
+        if not re.match(r">|[-*•+]\s|\d+[.)]\s", following):          # "**Yorum**" liste değildir
             lines[i] = DANGLING_COLON.sub(lambda m: "." + m.group(1), line)
     return "\n".join(lines)
 
@@ -533,9 +533,14 @@ def _trim(checker, ident: str) -> str | None:
     return candidate if _passes(checker, candidate, None) else None
 
 
+# S13.11: düz yazıya yazılmış cümle numarası ("(46. cümle)"): okuyucu numarayı görmez, kaynak işaretten gelir
+SENTENCE_NUMBER = re.compile(r"[ \t]*\(\s*\d+\.\s*cümle(?:si)?\s*\)")
+
+
 def _drop_leaks(text: str) -> str:
-    """Düz kimlikler okuyucuya gösterilmez."""
-    return re.sub(r"\([ \t]+", "(", re.sub(r"[ \t]+([.,;:])", r"\1", BARE_ID.sub("", text)))
+    """Düz kimlikler ve cümle numaraları okuyucuya gösterilmez."""
+    text = SENTENCE_NUMBER.sub("", BARE_ID.sub("", text))
+    return re.sub(r"\([ \t]+", "(", re.sub(r"[ \t]+([.,;:])", r"\1", text))
 
 
 def correction(problems: list[dict]) -> str:

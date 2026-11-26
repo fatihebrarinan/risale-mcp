@@ -624,3 +624,10 @@ def test_s13_11_colon_without_quote_becomes_full_stop():
     kept = "Şöyle der: [[a/c002]]\n\n> \"…\""                          # ardından blok gelirse dokunulmaz
     assert sohbet._dangling_colons(kept) == kept
     assert sohbet._dangling_colons("Üç yer: [[a/c002]]\n- bir") == "Üç yer: [[a/c002]]\n- bir"
+
+
+def test_s13_11_colon_before_heading_and_sentence_numbers():
+    assert sohbet._dangling_colons("Tekrar ettiğini belirtiyor: [[a/c005]]\n\n**Yorum**") == \
+        "Tekrar ettiğini belirtiyor. [[a/c005]]\n\n**Yorum**"
+    checked = sohbet.check(NS(refresh=lambda: None, nodes={}), "1. **Şu'le, İkinci Kısım** (46. cümle), şöyle geçer.")
+    assert checked.markdown == "1. **Şu'le, İkinci Kısım**, şöyle geçer."
