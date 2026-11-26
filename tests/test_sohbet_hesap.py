@@ -217,3 +217,10 @@ def test_pwa_files_are_public(store, mailer, monkeypatch):
     assert sw.status_code == 200 and '"/cevrimdisi"' in sw.text and 'mode !== "navigate"' in sw.text
     assert c.get("/cevrimdisi").status_code == 200
     assert 'rel="manifest" href="/manifest.webmanifest"' in c.get("/kayit").text
+
+
+def test_code_message_has_no_link():
+    """S13.15.4: doğrulama e-postasında bağlantı yok (yeni alan adına bağlantı Proton'un süzgecine takıldı)."""
+    for existing in (False, True):
+        subject, text = sh.code_message(Config(), "123456", existing)
+        assert "123456" in subject and "123456" in text and "http" not in text and "www." not in text

@@ -76,8 +76,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
   alındı, marka başvurusu yapılmaz) S13.15.2 (DNS, Caddy, "hazırlanıyor" sayfası yayında) ve S13.15.3 (logo: kemerli aynada
   kırmızı kapaklı kitap) bitti, **önde S13.15.4** (sohbetin `chat.ayinedar.org`'a taşınması; yedi alt adım, deneme bitmeden;
   2026-11-27: (1) DNS kayıtları girildi, Scaleway `ayinedar.org`'u doğruladı; `destek@ayinedar.org`'a deneme
-  e-postası Cloudflare yönlendirmesinde geri döndü (`521 5.3.0 Upstream error`), kullanıcı Email Routing kaydına
-  bakacak; (2) çatı bağlantısı `SOHBET_CATI`, simgeler, ad yazısı (Literata alt kümesi, `scripts/literata-alt.py`) ve
+  e-postası geri döndü: Proton'un süzgeci (rspamd) yeni alan adına giden bağlantıyı reddediyor (aynı ileti bağlantısız
+  geçti; ayrı denemelerde yeni gönderici ve yeni yönlendirme tek başına geçti), doğrulama e-postasından bağlantı
+  kaldırıldı; (2) çatı bağlantısı `SOHBET_CATI`, simgeler, ad yazısı (Literata alt kümesi, `scripts/literata-alt.py`) ve
   (3) PWA (manifesto, `sw.js` yalnız çevrimdışı sayfası, Ayarlar › Görünüm'de ana ekrana ekleme) bitti; adresler ve ad
   5. adımda birlikte değişir; sırada (4) Hakkında sayfası). S12 (sohbet) yayında, Haiku 5.5 medium; 5 kişilik deneme yakın çevreyle sürüyor.
   Yerel deneme: `uv run --extra sohbet python -m risale_mcp.sohbet serve --dev` → `http://127.0.0.1:8010/sohbet/`

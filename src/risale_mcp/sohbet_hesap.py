@@ -372,9 +372,11 @@ def code_message(config: Config, code: str, existing: bool) -> tuple[str, str]:
     else:
         purpose = f"{config.name} sohbet sayfasında hesap açmak için"
     subject = f"{config.name} doğrulama kodunuz: {code}"
+    # S13.15.4: bağlantı yok. Okuyucu kodu açık sayfaya yazar; yeni alan adına bağlantı Proton'un süzgecine takıldı
+    # (2026-11-27: aynı ileti bağlantıyla reddedildi, bağlantısız geçti), bağlantısız kod e-postası oltalamaya da kapalı.
     text = (f"Merhaba,\n\n{purpose} doğrulama kodunuz:\n\n    {code}\n\n"
             f"Kod {CODE_MINUTES} dakika geçerlidir. Bu isteği siz yapmadıysanız bu e-postayı yok sayın; "
-            f"hesabınızda bir şey değişmez.\n\n{config.site}{config.prefix}\n")
+            f"hesabınızda bir şey değişmez.\n\n{config.name}\n")
     return subject, text
 
 
