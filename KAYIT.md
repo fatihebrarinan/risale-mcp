@@ -448,6 +448,21 @@ satırlar, Yenilikler ve Çalışmalar'ın giriş cümlesi, `<link rel="alternat
 `calismalar.xml` üretilmeye devam eder; "6.236 âyet" sayısı dört ana sayfadan (çatı ve risalemcp.com, tr ve en) kalktı,
 sayı şeridi çatıda dört, risalemcp.com'da üç sütun; `ASSET_VERSION` 13.
 
+**S13.23.4. Temalar, ayna figürü, dinamik karşılama** (2026-11-27; kullanıcının fikri ve kararları aynı gün).
+Kullanıcı başlığın üstünde "ayna, aynanın içinde kütüphane, logodan ayrıntılı" istedi; üç seçenek gösterildi (A raflar,
+kandil, rahle üstünde logonun kırmızı kapaklı kitabı; B iki yanı raflı koridor, sonda kemerli pencereden ışık; C A'nın
+çizgi hâli), kullanıcı Claude'un değişen karşılamasından ilhamla dördüncüyü (D, B'nin çizgi hâli) ve hepsinin rastgele
+gösterilmesini istedi. Çizimler `scripts/ayna-figur.py` (sabit tohum; `--onizleme` dört temada önizleme) →
+`sohbet_assets/ayna-{a,b,c,d}.svg`; A ve B kendi renkleriyle, C ve D CSS maskesiyle temanın vurgu renginde; adreste sürüm
+(`?v=`, sayfanın sürüm özetine girer). Karşılama sözleri (kullanıcı onayladı, noktalı virgüller virgül oldu): "Ne
+sormak istersiniz?", "Bugün hangi meseleye bakalım?", "Aklınızdaki soru nedir?", "Kütüphane açık, ne arıyorsunuz?",
+"Hangi bahsi okumak istersiniz?", "Bir âyet, bir hadis, bir mesele…", "Merak ettiğiniz bir mesele mi var?", "Hangi
+risaleden başlayalım?"; sabah 5–11 "Hayırlı sabahlar, bugün neyi okuyalım?", Cuma "Hayırlı Cumalar, ne sormak
+istersiniz?" havuza katılır. Ölçü: söz yapay zekâya vasıf yüklemez, eserlerden söz aktarmaz. Figür ve söz her yeni
+konuşmada (ve açılışta) seçilir, bir öncekinin aynısı gelmez, sayfa açıkken değişmez. Temalar: Sepya (kâğıt) ve Zümrüt
+(simgenin yeşili ve altını) eklendi. Telefonda Ayarlar sekmeleri iki satıra sarılır (yana kayınca sağdakiler
+görünmüyordu). Deneme: dört temada ve telefonda başsız tarayıcı, sayfa hatası yok.
+
 **S13.23.3. Kip menüsü, kütüphaneler Ayarlar'da** (2026-11-27). Soru kutusunun üstünde tek satır: solda kip açılır
 menüsü ("Kip · Serbest soru", yukarı açılan liste, her kipin altında açıklaması; klavyeyle ok, Home/End, Enter, Escape;
 serbest dışındaki kipte düğme vurgulu), sağda açık kütüphanelerin işareti ("Risale-i Nur + Tefsir"; dokununca Ayarlar ›

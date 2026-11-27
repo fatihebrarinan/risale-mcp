@@ -715,8 +715,37 @@ function setHash(id) {
   if (location.hash !== want) history.replaceState(null, "", want || location.pathname + location.search);
 }
 
+// S13.23.4 (kullanıcının fikri ve kararları, 2026-11-27): yeni konuşma sayfasında ayna figürü (A, B renkli; C, D
+// çizgi, rengini temadan alır) ve karşılama sözü her yeni konuşmada rastgele; sayfa açıkken kendiliğinden değişmez.
+// Sözler yapay zekâya vasıf yüklemez, eserlerden söz aktarmaz; zamana bağlı olanlar o saatte ve günde havuza katılır.
+const FIGURES = ["a", "b", "c", "d"];
+const GREETINGS = ["Ne sormak istersiniz?", "Bugün hangi meseleye bakalım?", "Aklınızdaki soru nedir?",
+  "Kütüphane açık, ne arıyorsunuz?", "Hangi bahsi okumak istersiniz?", "Bir âyet, bir hadis, bir mesele…",
+  "Merak ettiğiniz bir mesele mi var?", "Hangi risaleden başlayalım?"];
+function greetings(now = new Date()) {
+  const pool = [...GREETINGS];
+  const h = now.getHours();
+  if (h >= 5 && h < 11) pool.push("Hayırlı sabahlar, bugün neyi okuyalım?");
+  if (now.getDay() === 5) pool.push("Hayırlı Cumalar, ne sormak istersiniz?");
+  return pool;
+}
+const welcomeLast = { figure: null, text: null };
+const pickOther = (list, last) => {
+  const choices = list.length > 1 ? list.filter((x) => x !== last) : list;
+  return choices[Math.floor(Math.random() * choices.length)];
+};
+function renderWelcome() {
+  const figure = pickOther(FIGURES, welcomeLast.figure), text = pickOther(greetings(), welcomeLast.text);
+  Object.assign(welcomeLast, { figure, text });
+  const box = $("ayna");
+  box.className = `ayna ayna-${figure}`;
+  box.style.setProperty("--ayna", `url("${P}static/ayna-${figure}.svg?v=${document.body.dataset.v}")`);
+  $("karsilama").textContent = text;
+}
+
 function newConversation() {
   if (busy) return;
+  renderWelcome();
   cur = { id: null, title: "", turns: [] };
   if (!state.keep) saveLocal();                          // geçici konuşmada "Yeni" eskisini siler
   setHash(null);
@@ -1267,6 +1296,7 @@ els.fresh.addEventListener("click", newConversation);
 
 async function start() {
   layout();
+  renderWelcome();
   renderExamples();
   renderModes();
   renderLibraries();

@@ -605,7 +605,8 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   S13.3: girişsiz açılış hesap oluşturma (tanıtımlı, `sohbet_hesap.HERO`); yeni konuşmada yeteneklerden örnek kartlar;
   beklerken adımlar (`status_line`, `turns.steps`). 👍/👎 geri bildirim
   (`sohbet geri-bildirim`); kota ve bütçe `sohbet.Limits` (kişi günde 10 soru, servis günde 5 $, ayda 100 $, 2 $'da
-  ntfy, konu sunucuda `data/sohbet-ntfy`). Cevap sayfadan bağımsız sürer (B13, `sohbet.Job`): tarayıcı kapansa da biter ve konuşmaya
+  ntfy, konu sunucuda `data/sohbet-ntfy`). Yeni konuşma sayfasında ayna figürü (dördünden biri; `scripts/ayna-figur.py` üretir) ve karşılama sözü
+  rastgele (S13.23.4); temalar Sistem, Açık, Koyu, Sepya, Zümrüt. Cevap sayfadan bağımsız sürer (B13, `sohbet.Job`): tarayıcı kapansa da biter ve konuşmaya
   yazılır, sayfa `api/sor/devam` ile yeniden bağlanır, servis kapanırken süren cevaplar beklenir; hak yalnız biten
   cevaptan düşer. Arayüz denemesi `uv run --no-project --with playwright python
   scripts/sohbet-arayuz-dene.py` (başsız Brave). Yayında: `deploy.sh` servisi `risale-sohbet` (:8010) kurar, Caddy

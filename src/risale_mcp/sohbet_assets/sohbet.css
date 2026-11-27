@@ -21,6 +21,13 @@
 :root[data-tema="koyu"] { --bg: #161614; --fg: #e8e6e1; --muted: #9c9a94; --line: #34332f; --card: #1f1e1b;
   --soft: #2a2925; --panel: #1b1a18; --accent: #7cc49d; --accent-soft: #22352a; --bad: #f08a80; --mark: #4a3f1c;
   color-scheme: dark; }
+/* S13.23.4: sepya (kâğıt) ve zümrüt (simgenin yeşili ve altını) */
+:root[data-tema="sepya"] { --bg: #f4ecd8; --fg: #3b2f20; --muted: #7a6a52; --line: #dccfb0; --card: #fbf5e6;
+  --soft: #ece1c7; --panel: #efe5cd; --accent: #7a4b2a; --accent-soft: #ead9b8; --bad: #a3271f; --mark: #f6dd8f;
+  color-scheme: light; }
+:root[data-tema="zumrut"] { --bg: #10291f; --fg: #efe8d4; --muted: #a9b8a8; --line: #24493a; --card: #163528;
+  --soft: #1d3f30; --panel: #133024; --accent: #e8c766; --accent-soft: #2a4634; --bad: #f08a80; --mark: #5a4a1a;
+  color-scheme: dark; }
 :root[data-boyut="kucuk"] { --cevap: .96rem; }
 :root[data-boyut="buyuk"] { --cevap: 1.18rem; }
 :root[data-boyut="cok-buyuk"] { --cevap: 1.32rem; }
@@ -141,7 +148,11 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 /* yeni konuşma (S13.3): ortada sade başlık, altında küçük örnek kartlar; her kart bir yeteneği gösterir */
 .bos { min-height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;
   text-align: center; padding: 3vh 0 4vh; }
-.bos .yildiz { width: 40px; height: 40px; stroke: var(--accent); stroke-width: 1.4; opacity: .85; margin-bottom: 14px; }
+/* S13.23.4: ayna figürü; A ve B kendi renkleriyle, C ve D (çizgi) maskeyle temanın vurgu renginde */
+.ayna { width: clamp(96px, 16vh, 150px); aspect-ratio: 240 / 310; margin-bottom: 12px; background: var(--ayna) center / contain no-repeat;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .18)); }
+.ayna-c, .ayna-d { background: var(--accent); -webkit-mask: var(--ayna) center / contain no-repeat;
+  mask: var(--ayna) center / contain no-repeat; filter: none; opacity: .9; }
 .bos h2 { font-family: var(--serif); font-weight: 600; font-size: clamp(1.5rem, 3vw, 1.9rem); margin: 0 0 6px; }
 .bos-alt { color: var(--muted); margin: 0 0 26px; font-size: .95rem; max-width: 520px; }
 .ornekler { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; width: 100%; max-width: 680px;
@@ -162,6 +173,7 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
   .ornekler { grid-template-columns: 1fr; }
   .ornek:nth-child(n+5) { display: none; }
   .bos { justify-content: flex-start; padding-top: 4vh; }
+  .ayna { width: clamp(76px, 12vh, 110px); margin-bottom: 8px; }
 }
 
 /* cevap beklenirken adımlar (S13.3) ve cevabın altında özetleri */
@@ -352,7 +364,8 @@ legend { padding: 0; margin: 0 0 6px; font-size: .8rem; font-weight: 600; color:
 @media (max-width: 959.98px) { .yalniz-genis { display: none; } }   /* orada paneller çekmece */
 @media (max-width: 559.98px) {
   .dlg-govde { flex-direction: column; min-height: 0; }
-  .sekmeler { flex-direction: row; width: auto; border-right: 0; border-bottom: 1px solid var(--line); overflow-x: auto;
-    padding: 6px; }
+  /* S13.23.4: dar ekranda sekmeler sığmayınca alt satıra geçer (yana kaydırınca sağdakiler görünmüyordu) */
+  .sekmeler { flex-direction: row; flex-wrap: wrap; width: auto; border-right: 0; border-bottom: 1px solid var(--line);
+    padding: 6px; gap: 4px; }
   .sekmeler [role="tab"] { white-space: nowrap; padding: 6px 10px; }
 }
