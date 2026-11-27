@@ -67,10 +67,11 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.md` › "Sıradaki'nin notları"):
 - **Son adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
-  Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13 ve S13.23.1 yayında;
-  S13.23.2 (sitede küçük düzeltmeler) yerelde bitti, **site gönderimi (`scripts/deploy.sh --site`) kullanıcının
-  onayını bekliyor**; sırada S13.23.3 (kip menüsü, eklentiler Ayarlar'da). ≈2026-12-04 e-posta teslim süreleri ve spam
-  yeniden bakılır (`sohbet_hesap eposta-sure`, Postmaster Tools). S13.22 dizin kararlarını bekliyor.
+  Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1 ve S13.23.2 yayında;
+  S13.23.3 (kip menüsü, kütüphaneler Ayarlar'da) yerelde bitti, **yayın (`scripts/deploy.sh --sohbet`) kullanıcının
+  onayını bekliyor**; sırada S13.23.4 (temalar ve figür: önce seçenekler kullanıcıya gösterilir). ≈2026-12-04 e-posta
+  teslim süreleri ve spam yeniden bakılır (`sohbet_hesap eposta-sure`, Postmaster Tools). S13.22 dizin kararlarını
+  bekliyor.
 - **Arama motorları (2026-11-27):** kullanıcı siteye baktı (sorun yok), Search Console (alan adı mülkü `ayinedar.org`) ve Bing'e kaydoldu; iki site haritası ikisine de gönderildi. Google çatınınkini okudu (18 sayfa), sohbetinkine ilk anda "Getirilemedi" dedi (harita sorunsuz geliyor; birkaç gün içinde düzelmezse yeniden gönderilir).
 - **Yenilikler duyurusu yayında (2026-11-27):** kullanıcı web düzenleyicide düzeltti, `ayinedar.org/yenilikler/2026-11-27-ayinedar.html`.
 - **Kullanıcıdan beklenen:** "Bekleyen"deki
@@ -118,7 +119,7 @@ zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda.
   - S13.23.2 (bitti, 2026-11-27; `KAYIT.md` › S13.23.2) **Sitede küçük düzeltmeler** (tek site gönderimi): ana sayfadan `lab.ayinedar.org` satırı; RSS
     bağlantıları (alt satırlar, Yenilikler'deki cümle, `<link rel="alternate">`; `yenilikler.xml` üretilmeye devam
     eder, görünmez); "6.236 âyet" sayısı (`ayinedar.org` ve `risalemcp.com` ana sayfaları).
-  - S13.23.3 **Kipler açılır menüde** (S13.18'in kipleri düğme taşımaz; her kipin altında kısa açıklama).
+  - S13.23.3 (bitti, 2026-11-27; `KAYIT.md` › S13.23.3) **Kipler açılır menüde** (S13.18'in kipleri düğme taşımaz; her kipin altında kısa açıklama).
     **Eklentiler Ayarlar'da:** oradaki seçim varsayılandır; âyet çalışmasının tefsiri açması ve konuşmada işareti
     geçen kütüphanenin açık kalması sürer; soru kutusunun yanında açık kütüphaneleri gösteren küçük işaret ("Risale
     + Tefsir").

@@ -66,9 +66,19 @@
     </main>
 
     <footer class="alt">
-      <div id="kipler" class="kipler" role="radiogroup" aria-label="Kip" data-kipler="{{KIPLER}}"></div>
-      <div id="kutuphaneler" class="kipler kutuphaneler" role="group" aria-label="Öbür kütüphaneler"
-        data-kutuphaneler="{{KUTUPHANELER}}" hidden></div>
+      <!-- S13.23.3: kip açılır menüde; açık kütüphaneler küçük bir işaret (seçimi Ayarlar › Kütüphaneler'de) -->
+      <div class="secici-satir">
+        <div id="kipler" class="kip-secici" data-kipler="{{KIPLER}}" hidden>
+          <button type="button" id="kip-dugme" class="kip-dugme" aria-haspopup="listbox" aria-expanded="false"
+            aria-controls="kip-liste"><span class="kip-on">Kip</span> <span id="kip-ad"></span>
+            <svg class="ok" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 7.5 6 4.5l3 3"/></svg></button>
+          <ul id="kip-liste" class="kip-liste" role="listbox" aria-label="Kip" tabindex="-1" hidden></ul>
+        </div>
+        <button type="button" id="kutuphaneler" class="kutuphane-isaret" data-kutuphaneler="{{KUTUPHANELER}}"
+          title="Cevabın dayandığı kütüphaneler; Ayarlar › Kütüphaneler'den seçilir" hidden>
+          <svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 3.5h3v13H4zM8.5 3.5h3v13h-3zM13 4.2l2.8-.8 3 12.4-2.8.8z"/></svg>
+          <span id="kutuphane-ad"></span></button>
+      </div>
       <form id="soru-formu" autocomplete="off">
         <textarea id="soru" rows="1" maxlength="2000" placeholder="Sorunuzu yazın…" aria-label="Soru"></textarea>
         <button type="submit" id="gonder">Sor</button>
@@ -111,6 +121,8 @@
       <button type="button" role="tab" id="sekme-hesap" aria-controls="ayar-hesap" aria-selected="true">Hesap</button>
       <button type="button" role="tab" id="sekme-konusmalar" aria-controls="ayar-konusmalar" aria-selected="false"
         tabindex="-1">Konuşmalar</button>
+      <button type="button" role="tab" id="sekme-kutuphaneler" aria-controls="ayar-kutuphaneler" aria-selected="false"
+        tabindex="-1">Kütüphaneler</button>
       <button type="button" role="tab" id="sekme-gorunum" aria-controls="ayar-gorunum" aria-selected="false"
         tabindex="-1">Görünüm</button>
       <button type="button" role="tab" id="sekme-belgeler" aria-controls="ayar-belgeler" aria-selected="false"
@@ -136,6 +148,14 @@
           class="dolu-tehlike">Evet, hepsini sil</button> <button type="button" id="hepsini-sil-vazgec"
           class="ghost">Vazgeç</button></span></p>
       <p id="ayar-hata" class="hata" hidden></p>
+    </section>
+
+    <section id="ayar-kutuphaneler" role="tabpanel" aria-labelledby="sekme-kutuphaneler" class="sekme-icerik" hidden>
+      <p class="small">Cevaplar her zaman Risale-i Nur'a dayanır. İsterseniz öbür kütüphaneleri de açın: açtıklarınız
+        her yeni soruda kullanılır.</p>
+      <div id="kutuphane-secimleri" class="kutuphane-secimleri"></div>
+      <p class="small">Âyet çalışması kipi Tefsir'i kendiliğinden açar. Bir konuşmada başka bir kütüphaneden kaynak
+        gösterildiyse o kütüphane o konuşmanın sonraki sorularında da açık kalır. Bu seçim bu cihazda saklanır.</p>
     </section>
 
     <section id="ayar-gorunum" role="tabpanel" aria-labelledby="sekme-gorunum" class="sekme-icerik" hidden>

@@ -5,9 +5,11 @@
 // S12'deki gibi yalnız bu tarayıcıda (localStorage) durur ve her soruda önceki sorular ve cevaplar yeniden gönderilir.
 // Açık konuşmanın kimliği adreste (#k/<kimlik>): sayfa yenilenince ve geri tuşunda aynı konuşma açılır.
 // S13.2: panellerin genişliği aradaki çizgiyi sürükleyerek (ya da odaklanıp ok tuşlarıyla) ayarlanır; ayarlar
-// sekmelidir (Hesap, Konuşmalar, Görünüm, Belgeler); görünüm (tema, cevapların yazı boyutu) ve genişlikler bu cihazda.
+// sekmelidir (Hesap, Konuşmalar, Kütüphaneler, Görünüm, Belgeler); görünüm (tema, cevapların yazı boyutu) ve genişlikler bu cihazda.
 // S13.3: yeni konuşmada örnek sorular sayfanın yeteneklerinden seçilir; cevap beklenirken yapılan adımlar ("… okunuyor")
 // dizilir, cevabın üstünde açılır bir özet olarak kalır.
+// S13.23.3: kip açılır menüde; öbür kütüphaneler Ayarlar › Kütüphaneler'de seçilir, soru kutusunun üstünde açık
+// olanlar küçük bir işaretle görünür (kipin ve konuşmanın açtıkları yalnız o konuşmada).
 "use strict";
 
 const P = document.body.dataset.prefix;
@@ -40,50 +42,111 @@ state.libraries = (() => {
     return v.filter((id) => KUTUPHANELER.some((k) => k.id === id)); } catch { return []; }
 })();
 
+const kipOf = (id) => KIPLER.find((k) => k.id === id) || {};
+const saveLibraries = () => { try { localStorage.setItem(LIB_KEY, JSON.stringify(state.libraries)); } catch { /* yalnız bu sayfada */ } };
+
+// S13.23.3: bu soruda açık olacak kütüphaneler: okuyucunun seçimi, kipin açtıkları ve konuşmada kullanılanlar
+// (sunucu da aynısını yapar: `Chat.ask`); işaret yalnız gösterir, seçim Ayarlar › Kütüphaneler'dedir
+function activeLibraries() {
+  const on = new Set(state.libraries);
+  for (const id of kipOf(state.mode).libraries || []) on.add(id);
+  for (const t of (cur && cur.turns) || []) for (const id of t.libraries || []) on.add(id);
+  return KUTUPHANELER.filter((k) => on.has(k.id)).map((k) => k.id);
+}
+
 function renderLibraries() {
-  const box = $("kutuphaneler");
+  const b = $("kutuphaneler");
+  b.hidden = !KUTUPHANELER.length;
+  if (b.hidden) return;
+  const ids = activeLibraries();
+  $("kutuphane-ad").textContent = ["Risale-i Nur", ...ids.map(libTitle)].join(" + ");
+  b.setAttribute("aria-label", "Kütüphaneler: " + ["Risale-i Nur", ...ids.map(libTitle)].join(", ")
+    + ". Değiştirmek için Ayarlar'ı açar.");
+}
+
+function renderLibraryChoices() {
+  const box = $("kutuphane-secimleri");
   box.innerHTML = "";
-  box.hidden = !KUTUPHANELER.length;
-  if (box.hidden) return;
-  box.append(el("span", "kutuphane-baslik", "Kütüphaneler:"));
-  const fixed = el("button", "kip kutuphane sabit", "Risale-i Nur");
-  fixed.type = "button";
-  fixed.setAttribute("aria-pressed", "true");
-  fixed.disabled = true;
-  fixed.title = "Bediüzzaman Said Nursî'nin eserleri; her soruda açık";
-  box.append(fixed);
+  const row = (title, hint, checked, disabled, onChange) => {
+    const label = el("label", "secenek kutuphane-secim");
+    const input = document.createElement("input");
+    input.type = "checkbox"; input.checked = checked; input.disabled = disabled;
+    if (onChange) input.addEventListener("change", () => onChange(input.checked));
+    const text = el("span", "", `<strong>${esc(title)}</strong><span class="small">${esc(hint)}</span>`);
+    label.append(input, text);
+    box.append(label);
+  };
+  row("Risale-i Nur", "Bediüzzaman Said Nursî'nin eserleri; her soruda açık.", true, true);
   for (const k of KUTUPHANELER) {
-    const on = state.libraries.includes(k.id);
-    const b = el("button", "kip kutuphane", esc(k.title));
-    b.type = "button";
-    b.setAttribute("aria-pressed", String(on));
-    b.title = k.hint + (on ? " (açık)" : " (kapalı; açmak için dokunun)");
-    b.addEventListener("click", () => {
-      state.libraries = on ? state.libraries.filter((x) => x !== k.id) : [...state.libraries, k.id];
-      try { localStorage.setItem(LIB_KEY, JSON.stringify(state.libraries)); } catch { /* yalnız bu sayfada */ }
+    row(k.title, k.hint, state.libraries.includes(k.id), false, (on) => {
+      state.libraries = on ? [...new Set([...state.libraries, k.id])] : state.libraries.filter((x) => x !== k.id);
+      saveLibraries();
       renderLibraries();
-      els.input.focus();
     });
-    box.append(b);
   }
 }
 
+// S13.23.3: kip açılır menüde (kipler çoğalınca düğmeler sığmaz); her kipin altında kısa açıklaması
+const kipButton = $("kip-dugme"), kipList = $("kip-liste");
 function renderModes() {
   const box = $("kipler");
-  box.innerHTML = "";
   box.hidden = KIPLER.length < 2;
-  for (const k of KIPLER) {
-    const b = el("button", "kip" + (k.id === state.mode ? " secili" : ""), esc(k.title));
-    b.type = "button";
-    b.setAttribute("role", "radio");
-    b.setAttribute("aria-checked", String(k.id === state.mode));
-    b.title = k.hint;
-    b.addEventListener("click", () => { state.mode = k.id; renderModes(); els.input.focus(); });
-    box.append(b);
+  const k = kipOf(state.mode);
+  $("kip-ad").textContent = k.title || "";
+  kipButton.classList.toggle("ozel", state.mode !== "serbest");
+  els.input.placeholder = k.id && k.id !== "serbest" ? k.hint + "…" : "Sorunuzu yazın…";
+  kipList.innerHTML = "";
+  for (const x of KIPLER) {
+    const li = el("li", "kip-secenek", `<strong>${esc(x.title)}</strong><span>${esc(x.hint)}</span>`);
+    li.id = "kip-" + x.id;
+    li.dataset.id = x.id;
+    li.setAttribute("role", "option");
+    li.setAttribute("aria-selected", String(x.id === state.mode));
+    li.addEventListener("click", () => chooseMode(x.id));
+    kipList.append(li);
   }
-  const k = KIPLER.find((x) => x.id === state.mode);
-  els.input.placeholder = k && k.id !== "serbest" ? k.hint + "…" : "Sorunuzu yazın…";
+  renderLibraries();
 }
+function chooseMode(id) {
+  state.mode = id;
+  closeModes();
+  renderModes();
+  els.input.focus();
+}
+let kipActive = 0;
+function markActive(i) {
+  const items = [...kipList.children];
+  kipActive = (i + items.length) % items.length;
+  items.forEach((li, j) => li.classList.toggle("etkin", j === kipActive));
+  kipList.setAttribute("aria-activedescendant", items[kipActive].id);
+  items[kipActive].scrollIntoView({ block: "nearest" });
+}
+function openModes() {
+  kipList.hidden = false;
+  kipButton.setAttribute("aria-expanded", "true");
+  markActive(Math.max(0, KIPLER.findIndex((k) => k.id === state.mode)));
+  kipList.focus();
+}
+function closeModes(focusButton = false) {
+  if (kipList.hidden) return;
+  kipList.hidden = true;
+  kipButton.setAttribute("aria-expanded", "false");
+  if (focusButton) kipButton.focus();
+}
+kipButton.addEventListener("click", () => (kipList.hidden ? openModes() : closeModes()));
+kipButton.addEventListener("keydown", (ev) => {
+  if (ev.key === "ArrowUp" || ev.key === "ArrowDown") { ev.preventDefault(); openModes(); }
+});
+kipList.addEventListener("keydown", (ev) => {
+  if (ev.key === "ArrowDown") { ev.preventDefault(); markActive(kipActive + 1); }
+  else if (ev.key === "ArrowUp") { ev.preventDefault(); markActive(kipActive - 1); }
+  else if (ev.key === "Home") { ev.preventDefault(); markActive(0); }
+  else if (ev.key === "End") { ev.preventDefault(); markActive(-1); }
+  else if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); chooseMode(KIPLER[kipActive].id); }
+  else if (ev.key === "Escape" || ev.key === "Tab") { ev.preventDefault(); closeModes(true); }
+});
+document.addEventListener("click", (ev) => { if (!$("kipler").contains(ev.target)) closeModes(); });
+$("kutuphaneler").addEventListener("click", () => openSettings("sekme-kutuphaneler"));
 let cur = { id: null, title: "", turns: [] };    // açık konuşma; turda q, markdown, sources, corrected, feedback, n, a
 let busy = false;
 
@@ -644,6 +707,7 @@ function renderAll() {
   renderSide();
   renderTitle();
   renderHistory();
+  renderLibraries();
 }
 
 function setHash(id) {
@@ -824,6 +888,7 @@ function selectTab(tab, focus = false) {
     $(t.getAttribute("aria-controls")).hidden = !on;
   }
   if (focus) tab.focus();
+  tab.scrollIntoView({ block: "nearest", inline: "nearest" });   // dar ekranda sekmeler yana kayar
 }
 for (const tab of tabs) {
   tab.addEventListener("click", () => selectTab(tab));
@@ -851,14 +916,17 @@ $("genislik-sifirla").addEventListener("click", () => {
   layout();
 });
 
-els.settingsOpen.addEventListener("click", () => {
+function openSettings(tabId) {
   els.keep.checked = state.keep;
+  renderLibraryChoices();
+  if (tabId) selectTab($(tabId));
   for (const name of ["tema", "boyut"]) {
     for (const input of els.settings.querySelectorAll(`input[name="${name}"]`)) input.checked = input.value === look[name];
   }
   els.wipeAsk.hidden = true; els.wipe.hidden = false; els.settingsError.hidden = true;
   els.settings.showModal();
-});
+}
+els.settingsOpen.addEventListener("click", () => openSettings());
 els.settingsClose.addEventListener("click", () => els.settings.close());
 els.settings.addEventListener("click", (ev) => { if (ev.target === els.settings) els.settings.close(); });
 els.keep.addEventListener("change", async () => {
@@ -1045,13 +1113,9 @@ async function ask(question, resume = null) {
       status.textContent = data.text; status.hidden = false;
     }
     else if (event === "done" && Array.isArray(data.libraries)) {
-      // S13.17: kipin ya da konuşmanın açtığı kütüphane seçicide de açık görünsün (âyet çalışması tefsiri açar)
-      const added = data.libraries.filter((id) => KUTUPHANELER.some((k) => k.id === id) && !state.libraries.includes(id));
-      if (added.length) {
-        state.libraries = [...state.libraries, ...added];
-        try { localStorage.setItem(LIB_KEY, JSON.stringify(state.libraries)); } catch { /* yalnız bu sayfada */ }
-        renderLibraries();
-      }
+      // S13.23.3: kipin ya da konuşmanın açtığı kütüphane yalnız bu konuşmada açıktır; okuyucunun seçimi (Ayarlar)
+      // değişmez. Tur konuşmaya eklenince işaret onu da gösterir.
+      turn.libraries = data.libraries;
     }
     if (event === "delta") {
       draft += data.text;
@@ -1078,6 +1142,7 @@ async function ask(question, resume = null) {
       owner.turns.push(turn);
       // S13.13: tarama bir sorunun kipidir; ardından gelen soru (karşılaştırma, ayrıntı) serbest sorudur
       if (turn.mode && turn.mode !== "serbest" && state.mode === turn.mode) { state.mode = "serbest"; renderModes(); }
+      renderLibraries();
       if (typeof data.remaining === "number") { state.remaining = data.remaining; state.questions = data.questions; }
       renderQuota();
       if (owner !== cur) return;          // başka konuşma açıldıysa sayfaya çizilmez (busy iken açılamaz)

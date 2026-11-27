@@ -357,8 +357,9 @@ async def run(url: str) -> None:
         check("silinen konuşma listeden gider", await page.locator(f"#gecmis li .ac >> text=Arayüz denemesi").count() == 0)
         # S13.13: tarama kipinde bir soru (gerçek API); cevaptan sonra kip serbeste döner, sonda bütün yerler eki
         await page.click("#yeni")
-        await page.click("#kipler .kip >> text=Konu taraması")
-        check("tarama kipi seçilir", "Konu taraması" in await page.inner_text("#kipler .kip.secili"))
+        await page.click("#kip-dugme")                      # S13.23.3: kip açılır menüde
+        await page.click("#kip-liste .kip-secenek >> text=Konu taraması")
+        check("tarama kipi seçilir", "Konu taraması" in await page.inner_text("#kip-ad"))
         await page.fill("#soru", "Mevlânâ")
         await page.click("#gonder")
         await page.wait_for_selector(".tur .cevap details.ek", timeout=240000)
@@ -366,7 +367,7 @@ async def run(url: str) -> None:
         check("tarama cevabında öbür yerler ve bütün yerler eki", "Konunun geçtiği öbür yerler" in await page.inner_text(".tur .cevap")
               and "Kelimelerin geçtiği bütün yerler" in summaries)
         check("cevabın altında kapsam notu (S13.14)", "Bu cevabın dayandığı okumalar" in summaries)
-        check("tarama cevabından sonra kip serbest", "Serbest soru" in await page.inner_text("#kipler .kip.secili"))
+        check("tarama cevabından sonra kip serbest", "Serbest soru" in await page.inner_text("#kip-ad"))
         await page.screenshot(path=OUT / "17-tarama.png")
         await page.hover("#gecmis li.secili")
         await page.click("#gecmis li.secili .islem .ikon >> nth=1")

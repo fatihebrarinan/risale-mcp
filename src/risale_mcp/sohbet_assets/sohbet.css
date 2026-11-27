@@ -241,18 +241,42 @@ main > * { max-width: 760px; margin-left: auto; margin-right: auto; }
 /* ------------------------------------------------ soru kutusu ve alt satır */
 .alt { flex: none; background: var(--bg); border-top: 1px solid var(--line);
   padding: 10px 16px max(6px, env(safe-area-inset-bottom)); }
-/* S13.12: kip seçimi (serbest soru, konu taraması…) */
-.kipler { max-width: 760px; margin: 0 auto 6px; display: flex; flex-wrap: wrap; gap: 6px; }
-.kipler[hidden] { display: none; }
-.kip { font: inherit; font-size: .82rem; padding: 3px 11px; border-radius: 999px; border: 1px solid var(--line);
-  background: var(--card); color: var(--muted); cursor: pointer; }
-.kip.secili { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-/* S13.17: öbür kütüphaneler (açılıp kapanır; Risale-i Nur hep açık) */
-.kutuphaneler { align-items: center; }
-.kutuphaneler .kutuphane-baslik { font-size: .78rem; font-weight: 600; color: var(--muted); margin-right: 2px; }
-.kip.kutuphane[aria-pressed="true"] { border-color: var(--accent); background: var(--accent-soft); color: var(--accent);
-  font-weight: 600; }
-.kip.kutuphane.sabit { cursor: default; opacity: .8; }
+/* S13.23.3: kip açılır menüde, solda; açık kütüphaneler sağda küçük bir işaret (seçimi Ayarlar'da) */
+.secici-satir { max-width: 760px; margin: 0 auto 6px; display: flex; align-items: center; gap: 8px;
+  justify-content: space-between; min-height: 30px; }
+.kip-secici { position: relative; }
+.kip-secici[hidden] { display: none; }
+.kip-dugme { font: inherit; font-size: .84rem; display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px 4px 12px;
+  border-radius: 999px; border: 1px solid var(--line); background: var(--card); color: var(--fg); cursor: pointer; }
+.kip-dugme .kip-on { color: var(--muted); font-size: .76rem; font-weight: 600; }
+.kip-dugme #kip-ad { font-weight: 600; }
+.kip-dugme.ozel { border-color: var(--accent); background: var(--accent-soft); color: var(--accent); }
+.kip-dugme .ok { width: 12px; height: 12px; fill: none; stroke: currentColor; stroke-width: 1.6; transition: transform .15s; }
+.kip-dugme[aria-expanded="true"] .ok { transform: rotate(180deg); }
+.kip-dugme:focus-visible, .kutuphane-isaret:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.kip-liste { position: absolute; bottom: calc(100% + 6px); left: 0; z-index: 30; list-style: none; margin: 0; padding: 6px;
+  width: min(360px, calc(100vw - 32px)); max-height: 60vh; overflow: auto; background: var(--card);
+  border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 8px 28px rgba(0, 0, 0, .16); }
+.kip-liste:focus { outline: none; }
+.kip-secenek { display: grid; gap: 1px; padding: 8px 10px; border-radius: 8px; cursor: pointer; }
+.kip-secenek strong { font-size: .9rem; font-weight: 600; }
+.kip-secenek span { font-size: .8rem; color: var(--muted); line-height: 1.35; }
+.kip-secenek:hover, .kip-secenek.etkin { background: var(--soft); }
+.kip-secenek[aria-selected="true"] { background: var(--accent-soft); }
+.kip-secenek[aria-selected="true"] strong { color: var(--accent); }
+.kip-secenek[aria-selected="true"] strong::after { content: " ✓"; }
+.kutuphane-isaret { font: inherit; font-size: .78rem; display: inline-flex; align-items: center; gap: 5px; margin-left: auto;
+  padding: 3px 8px; border: 0; border-radius: 8px; background: none; color: var(--muted); cursor: pointer;
+  text-align: right; min-width: 0; }
+.kutuphane-isaret:hover { color: var(--fg); background: var(--soft); }
+.kutuphane-isaret svg { flex: none; width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 1.4; }
+.kutuphane-isaret[hidden] { display: none; }
+.kutuphane-secimleri { display: grid; gap: 4px; margin: 10px 0 12px; }
+.secenek.kutuphane-secim { display: flex; gap: 10px; align-items: flex-start; padding: 8px 10px; border: 1px solid var(--line);
+  border-radius: 10px; }
+.kutuphane-secim > span { display: grid; gap: 2px; }
+.kutuphane-secim input { margin-top: 4px; }
+.kutuphane-secim input:disabled + span { opacity: .75; }
 .kip-etiket { display: inline-block; font-size: .72rem; font-weight: 600; padding: 1px 7px; margin-right: 6px;
   border-radius: 999px; border: 1px solid var(--line); color: var(--muted); vertical-align: 1px; }
 #soru-formu { max-width: 760px; margin: 0 auto; display: flex; gap: 8px; align-items: flex-end; }

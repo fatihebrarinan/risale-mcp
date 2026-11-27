@@ -448,6 +448,17 @@ satırlar, Yenilikler ve Çalışmalar'ın giriş cümlesi, `<link rel="alternat
 `calismalar.xml` üretilmeye devam eder; "6.236 âyet" sayısı dört ana sayfadan (çatı ve risalemcp.com, tr ve en) kalktı,
 sayı şeridi çatıda dört, risalemcp.com'da üç sütun; `ASSET_VERSION` 13.
 
+**S13.23.3. Kip menüsü, kütüphaneler Ayarlar'da** (2026-11-27). Soru kutusunun üstünde tek satır: solda kip açılır
+menüsü ("Kip · Serbest soru", yukarı açılan liste, her kipin altında açıklaması; klavyeyle ok, Home/End, Enter, Escape;
+serbest dışındaki kipte düğme vurgulu), sağda açık kütüphanelerin işareti ("Risale-i Nur + Tefsir"; dokununca Ayarlar ›
+Kütüphaneler). Ayarlar'da yeni sekme Kütüphaneler: Risale-i Nur sabit, öbürleri onay kutusuyla, seçim bu cihazda
+(`sohbet:kutuphaneler`). Davranış değişikliği: kipin (âyet çalışması → Tefsir) ya da konuşmanın açtığı kütüphane
+artık okuyucunun varsayılanına yazılmaz, yalnız o konuşmada açık görünür (sunucu zaten böyle: `Chat.ask`); işaret
+okuyucunun seçimi, kipin kütüphaneleri ve konuşmanın turlarındaki kütüphanelerin birleşimidir (`kipler.public`
+`libraries` verir). Dar ekranda ayar sekmeleri yana kayar, seçilen görünür. Deneme: testler ve başsız tarayıcıda
+geniş ve telefon genişliği (menü, klavye, işaret, ayar sekmesi; sayfa hatası yok); `scripts/sohbet-arayuz-dene.py`
+yeni menüye uyarlandı.
+
 **S13.15.6. Çatı sitesi `ayinedar.org`** (bitti ve yayında, 2026-11-27 gecesi, kullanıcının izniyle kesintisiz;
 yayın `yayin-20261127-020105`, araç çıktısında fark yok). Kullanıcının kararları (2026-11-27): yazılar **hemen taşınır**
 ("sayfayı taşıma derdini tekrar taşımayalım"); çatı ve **sohbet arama motorlarına açılır**, üstte görünmeye yarayan ne

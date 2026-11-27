@@ -69,7 +69,7 @@ def get(kip_id: str | None) -> Kip:
 
 def public() -> list[dict]:
     """Arayüz için: id, ad, açıklama."""
-    return [{"id": k.id, "title": k.title, "hint": k.hint} for k in KIPLER.values()]
+    return [{"id": k.id, "title": k.title, "hint": k.hint, "libraries": list(k.libraries)} for k in KIPLER.values()]
 
 
 # ------------------------------------------------------------ sohbetin kendi araçları
