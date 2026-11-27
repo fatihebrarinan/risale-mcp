@@ -2,6 +2,7 @@
 veritabanıyla (yoksa atlanır)."""
 
 import asyncio
+import time
 from types import SimpleNamespace as NS
 
 import pytest
@@ -807,3 +808,81 @@ def test_s13_16_unmarked_near_quote_of_a_read_sentence_takes_the_texts_words(che
     assert checked.sources[0]["id"] == "sozler/1/c026"
     # okunmamışsa uyarı kalır
     assert sohbet.check(checker, text).counts["unmarked_missing"] == 1
+
+
+# ------------------------------------------------------------ B13: tarayıcıdan bağımsız cevap
+
+def test_job_follow_replays_from_offset():
+    async def go():
+        job = sohbet.Job("soru", "serbest", [], None)
+        job.push("status", {"text": "a"})
+        job.push("delta", {"text": "b"})
+
+        async def later():
+            await asyncio.sleep(0.01)
+            job.push("done", {"raw": "b"})
+            job.finish()
+        asyncio.get_running_loop().create_task(later())
+        return [line async for line in job.follow(1)]
+    got = asyncio.run(go())
+    assert [g.split("\n")[0] for g in got] == ["event: delta", "event: done"]
+
+
+def test_only_finished_answers_count(tmp_path):
+    from risale_mcp.sohbet_hesap import Store
+    store = Store(tmp_path / "s.db")
+    now = time.time()
+    for outcome in ("done", "cancelled", "error"):
+        store._run("INSERT INTO usage (ts, email, model, rounds, tools, input, output, cache_write, cache_read, cost, "
+                   "seconds, outcome) VALUES (?, 'a@b.co', 'm', 1, 0, 0, 0, 0, 0, 0.01, 1, ?)", (now, outcome))
+    assert sohbet.asked_today(store, "a@b.co", now) == 1
+
+
+class GatedStream(FakeStream):
+    """Kapı açılana kadar bekleyen model akışı (cevap sürerken sayfanın yeniden bağlanması)."""
+    gate = None
+
+    async def __aenter__(self):
+        while not GatedStream.gate.is_set():
+            await asyncio.sleep(0.01)
+        return self
+
+
+@needs_db
+def test_answer_survives_and_resumes(library, tmp_path):
+    import threading
+    from starlette.testclient import TestClient
+    from risale_mcp.sohbet_hesap import Config, LogMailer, Store
+    store = Store(tmp_path / "s.db")
+    code, _ = store.new_code("a@b.co", 10)
+    store.redeem("a@b.co", code, "uzun-bir-parola")
+    client = FakeClient([reply(text_block("Cevap."))])
+    client.stream = lambda **params: (client.calls.append(params), GatedStream(client.replies.pop(0)))[1]
+    GatedStream.gate = threading.Event()
+    app = sohbet.build(sohbet.Chat(library, client, Config()), store, LogMailer(tmp_path / "e.log"), Config())
+    with TestClient(app, base_url="https://testserver") as web:
+        web.cookies.set("sohbet_oturum", store.open_session("a@b.co"))
+        assert web.get("/sohbet/api/sor/devam").status_code == 204
+        first = {}
+        thread = threading.Thread(target=lambda: first.update(r=web.post("/sohbet/api/sor", json={"question": "Soru?"})))
+        thread.start()
+        for _ in range(200):                               # iş başladı mı
+            peek = web.get("/sohbet/api/sor/devam", params={"peek": 1})
+            if peek.status_code == 200:
+                break
+            time.sleep(0.01)
+        meta = peek.json()
+        assert meta["question"] == "Soru?" and meta["finished"] is False and meta["conversation"] is None
+        assert web.post("/sohbet/api/sor", json={"question": "İkinci"}).status_code == 429
+        second = {}
+        again = threading.Thread(target=lambda: second.update(r=web.get("/sohbet/api/sor/devam", params={"from": 0})))
+        again.start()
+        time.sleep(0.05)
+        GatedStream.gate.set()
+        thread.join(5)
+        again.join(5)
+        assert "event: done" in first["r"].text and "event: done" in second["r"].text
+        assert '"conversation": "' in second["r"].text      # yeniden bağlanan sayfa konuşmayı da öğrenir
+        assert web.get("/sohbet/api/sor/devam").status_code == 204          # ulaştı: bellekte tutulmaz
+        assert store._run("SELECT outcome FROM usage")[0][0] == "done"
+        assert len(web.get("/sohbet/api/konusmalar").json()["conversations"]) == 1

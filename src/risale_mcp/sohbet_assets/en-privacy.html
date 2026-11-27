@@ -37,7 +37,9 @@ you delete them, conversations are kept; deleting your account deletes them all.
 <p>You can turn storing off with the "Ayarlar › Konuşmalarımı hesabımda sakla" (Settings › Store my conversations in my
 account) box. While it is off, new conversations are <strong>not stored</strong> on the server; they stay in your own
 browser, and the "Yeni konuşma" (new conversation) button deletes them from your browser too. Conversations stored
-earlier stay until you delete them.</p>
+earlier stay until you delete them. If your page closes or your connection drops while an answer is being written,
+the answer waits for you only in the server's memory (never written to disk) for at most one hour, so that it reaches
+you when you open the page again, and is deleted once it has reached you.</p>
 
 <h2>How your questions are answered</h2>
 <p>When you ask a question, the question, the earlier questions and answers of the same conversation and the texts the

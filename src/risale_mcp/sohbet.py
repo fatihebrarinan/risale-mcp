@@ -19,7 +19,10 @@ Kullanıcının kararları (2026-11-25, `PLANLAR.md` S12): yalnız Risale, model
   hiç bulunmayan alıntı "doğrulanamadı" işaretiyle görünür. Modele düzeltme turu (yol (a)) varsayılan kapalıdır
   (`SOHBET_MODEL_FIX`). Kaç işaretin düzeltildiği, doğrulanamadığı ve işaretsiz paragraf sayısı kullanım satırındadır.
 - **Akış:** cevap Server-Sent Events ile gelir (`status`: ne yapıldığı; araç adımında `step`, sayfa onları dizer; `delta`: metin, `clear`: araçtan önceki ara
-  metin silinir, `restart`: düzeltme başladı, `done`: denetlenmiş cevap ve kaynaklar, `error`).
+  metin silinir, `restart`: düzeltme başladı, `done`: denetlenmiş cevap ve kaynaklar, `error`). **Cevap sayfadan bağımsız
+  sürer** (B13, `Job`): sayfa kapansa ya da bağlantı kopsa da biter ve saklanan konuşmaya yazılır; sayfa
+  `api/sor/devam?from=N` ile kaldığı olaydan yeniden bağlanır, açılışta süren ya da ulaşmamış cevabı alır. Servis
+  kapanırken süren cevaplar beklenir (`DRAIN_SECONDS`). Hak yalnız biten cevaptan düşer.
 - **Konuşmalar** (S13.1, kullanıcının kararları 2026-11-25): hesapta saklanır (`Conversations`; ayar
   `users.keep_history`, varsayılan açık). Saklanan konuşmanın geçmişi sunucudan okunur, tarayıcının gönderdiği
   geçmişe güvenilmez; konuşma ilk cevap bitince açılır (hatalı soru boş konuşma bırakmaz), başlığı ilk sorudan
@@ -1635,7 +1638,9 @@ def spent(store: Store, now: float | None = None) -> tuple[float, float]:
 
 def asked_today(store: Store, email: str, now: float | None = None) -> int:
     day, _ = _starts(time.time() if now is None else now)
-    return store._run("SELECT COUNT(*) FROM usage WHERE email = ? AND ts >= ?", (email, day))[0][0]
+    # B13: yalnız biten cevap sayılır; sunucunun hatası ve yarıda kalan cevap haktan düşmez (maliyeti satırda durur)
+    return store._run("SELECT COUNT(*) FROM usage WHERE email = ? AND ts >= ? AND outcome = 'done'",
+                      (email, day))[0][0]
 
 
 def refusal(store: Store, email: str, limits: Limits, now: float | None = None) -> str | None:
@@ -1790,6 +1795,53 @@ def log_usage(store: Store, email: str | None, model: str, tally: Tally, seconds
     store._run("DELETE FROM usage WHERE ts < ?", (row["ts"] - USAGE_DAYS * 86400,))
 
 
+# ---------------------------------------------------------------- süren cevap (B13)
+
+JOB_KEEP = 3600
+INTERRUPTED = ("Cevap yarıda kaldı: sohbet servisi yeniden başladı. Hakkınız düşmedi; soruyu yeniden sorabilirsiniz.")               # biten ama sayfaya ulaşmamış cevabın bellekte bekleme süresi, sn
+
+
+class Job:
+    """B13: bir sorunun cevabı, sayfanın bağlantısından bağımsız bir iş olarak sürer (kullanıcının bulduğu,
+    2026-11-27: telefonda tarayıcı arkada kapanınca model yarıda kesiliyor, hak düşüyor, cevap kayboluyordu).
+
+    Olaylar sırayla birikir (SSE satırları); sayfa baştan ya da kaldığı yerden (`follow(start)`) okur, bağlantı
+    kopsa da iş biter ve saklanan konuşmaya yazılır. Biten iş sayfaya bir kez baştan sona ulaşınca ya da `JOB_KEEP`
+    saniye sonra bellekten silinir; diske yazılmaz (saklama kapalı hesapta cevap yalnız bu süre bellekte bekler)."""
+
+    def __init__(self, question: str, mode: str, libraries: list[str], conversation: str | None) -> None:
+        self.question, self.mode, self.libraries, self.conversation = question, mode, libraries, conversation
+        self.events: list[str] = []
+        self.finished = False
+        self.ended = 0.0
+        self.changed = asyncio.Event()
+        self.task: asyncio.Task | None = None
+
+    def push(self, event: str, data: dict) -> None:
+        self.events.append(f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n")
+        self.changed.set()
+
+    def finish(self) -> None:
+        self.finished, self.ended = True, time.time()
+        self.changed.set()
+
+    def meta(self) -> dict:
+        return {"question": self.question, "mode": self.mode, "libraries": self.libraries,
+                "conversation": self.conversation, "finished": self.finished, "events": len(self.events)}
+
+    async def follow(self, start: int = 0) -> AsyncIterator[str]:
+        i = max(0, start)
+        while True:
+            while i < len(self.events):
+                yield self.events[i]
+                i += 1
+            if self.finished:
+                return
+            self.changed.clear()
+            if i == len(self.events):
+                await self.changed.wait()
+
+
 # ---------------------------------------------------------------- web
 
 def feedback_row(body: dict, email: str, model: str) -> dict:
@@ -1882,11 +1934,11 @@ CSP = ("default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'se
 
 def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
     from starlette.requests import Request
-    from starlette.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
+    from starlette.responses import FileResponse, HTMLResponse, JSONResponse, Response, StreamingResponse
     from starlette.routing import Route
 
     p = config.prefix
-    busy: set[str] = set()
+    jobs: dict[str, Job] = {}        # B13: hesap başına süren ya da sayfaya ulaşmamış cevap
     headers = {"Cache-Control": "no-store", "Referrer-Policy": "no-referrer", "Content-Security-Policy": CSP}
     convs = Conversations(store)
     signed_out = {"error": "Oturumunuz kapanmış; yeniden giriş yapın."}
@@ -1912,6 +1964,8 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
 
     def home(request: Request, email: str) -> HTMLResponse:
         return HTMLResponse(page(config, email, chat.libraries.public()), headers=headers)
+
+    home.jobs = jobs                                    # servis kapanırken beklenir (`_drain`)
 
     async def asset(request: Request):
         name = request.path_params["name"]
@@ -1964,45 +2018,78 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
                 history = [] if keep else [t for t in body.get("history", []) if isinstance(t, dict)][:MAX_TURNS + 1]
         except Exception:
             return JSONResponse({"error": "geçersiz istek"}, status_code=400, headers=headers)
-        if email in busy:
+        for key in [k for k, j in jobs.items() if j.finished and j.ended < time.time() - JOB_KEEP]:
+            del jobs[key]
+        if (job := jobs.get(email)) and not job.finished:
             return JSONResponse({"error": "Önceki sorunuzun cevabı sürüyor."}, status_code=429, headers=headers)
         if message := refusal(store, email, limits):
             return JSONResponse({"error": message}, status_code=429, headers=headers)
+        job = jobs[email] = Job(question, mode, libraries, conversation)
+        job.task = asyncio.create_task(answer(job, email, history, question, mode, libraries, conversation, keep))
+        return deliver(email, job, 0)
 
+    async def answer(job: Job, email: str, history: list, question: str, mode: str, libraries: list,
+                     conversation: str | None, keep: bool) -> None:
+        """Cevabı yazar; sayfa bağlantısı kopsa da sürer (B13). Hak yalnız biten cevaptan düşer (`asked_today`)."""
+        tally, start, outcome, done = Tally(), time.time(), "cancelled", None
+        try:
+            async for event, data in chat.ask(history, question, tally, mode, libraries):
+                if event == "done":
+                    outcome, done = "done", data
+                    left = remaining(email)
+                    data["remaining"] = None if left is None else max(0, left - 1)
+                    data["questions"] = limits.questions if limits.counted(email) else None
+                    if keep:
+                        data["conversation"], data["n"] = convs.add(email, conversation, question, data)
+                        job.conversation = data["conversation"]
+                elif event == "error":
+                    outcome = "error"
+                job.push(event, data)
+        except Refusal as e:
+            outcome = "refused"
+            job.push("error", {"message": str(e)})
+        except asyncio.CancelledError:                 # servis kapanıyor: cevap yarıda kaldı, hak düşmez
+            job.push("error", {"message": INTERRUPTED})
+            raise
+        except Exception:
+            import logging
+            logging.exception("sohbet: cevap yazılamadı")
+            outcome = "error"
+            job.push("error", {"message": "Bir hata oldu; biraz sonra yeniden deneyin. Hakkınız düşmedi."})
+        finally:
+            job.finish()
+            if outcome != "refused":
+                before = spent(store)
+                log_usage(store, email, chat.settings.model, tally, time.time() - start, outcome, done)
+                for text in alerts(before, spent(store), limits):
+                    notify(text)
+
+    def deliver(email: str, job: Job, start: int):
         async def stream():
-            busy.add(email)
-            tally, start, outcome, done = Tally(), time.time(), "cancelled", None
-            try:
-                async for event, data in chat.ask(history, question, tally, mode, libraries):
-                    if event == "done":
-                        outcome, done = "done", data
-                        left = remaining(email)
-                        data["remaining"] = None if left is None else max(0, left - 1)
-                        data["questions"] = limits.questions if limits.counted(email) else None
-                        if keep:
-                            data["conversation"], data["n"] = convs.add(email, conversation, question, data)
-                    elif event == "error":
-                        outcome = "error"
-                    yield f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
-            except Refusal as e:
-                outcome = "refused"
-                yield f"event: error\ndata: {json.dumps({'message': str(e)}, ensure_ascii=False)}\n\n"
-            except Exception:
-                import logging
-                logging.exception("sohbet: cevap yazılamadı")
-                outcome = "error"
-                yield "event: error\ndata: " + json.dumps({"message": "Bir hata oldu; biraz sonra yeniden deneyin."},
-                                                          ensure_ascii=False) + "\n\n"
-            finally:
-                busy.discard(email)
-                if outcome != "refused":
-                    before = spent(store)
-                    log_usage(store, email, chat.settings.model, tally, time.time() - start, outcome, done)
-                    for text in alerts(before, spent(store), limits):
-                        notify(text)
+            async for line in job.follow(start):
+                yield line
+            if jobs.get(email) is job:                 # sayfa cevabı sonuna kadar aldı: bellekte tutulmaz
+                del jobs[email]
 
         return StreamingResponse(stream(), media_type="text/event-stream",
                                  headers={**headers, "X-Accel-Buffering": "no"})
+
+    async def resume(request: Request):
+        """B13: sayfa yeniden açılınca ya da bağlantı kopunca süren ya da bitip ulaşmamış cevabı alır. `from`: sayfanın
+        aldığı olay sayısı. İş yoksa 204; varsa önce `job` olayı (soru, kip, konuşma), sonra kalan olaylar."""
+        email = user(request)
+        if not email:
+            return reply(signed_out, 401)
+        job = jobs.get(email)
+        if job is None or (job.finished and job.ended < time.time() - JOB_KEEP):
+            return Response(status_code=204, headers=headers)
+        try:
+            start = int(request.query_params.get("from", "0"))
+        except ValueError:
+            start = 0
+        if request.query_params.get("peek"):
+            return reply(job.meta())
+        return deliver(email, job, start)
 
     async def feedback(request: Request):
         email = user(request)
@@ -2090,7 +2177,8 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
         count = convs.delete(email, None if body.get("all") is True else body["id"][:64])
         return reply({"ok": True, "deleted": count})
 
-    return home, [Route(f"{p}api/sor", ask, methods=["POST"]), Route(f"{p}api/metin", text),
+    return home, [Route(f"{p}api/sor", ask, methods=["POST"]), Route(f"{p}api/sor/devam", resume),
+                  Route(f"{p}api/metin", text),
                   Route(f"{p}api/geri-bildirim", feedback, methods=["POST"]), Route(f"{p}static/{{name}}", asset),
                   Route(f"{p}api/durum", status), Route(f"{p}api/ayarlar", settings, methods=["POST"]),
                   Route(f"{p}api/konusmalar", listing), Route(f"{p}api/konusma", conversation),
@@ -2100,7 +2188,27 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
 
 def build(chat: Chat, store: Store, mailer, config: Config, limits: Limits = Limits()):
     home, extra = routes(chat, store, config, limits)
-    return sohbet_hesap.build_app(store, mailer, config, extra_routes=extra, home_page=home)
+    return sohbet_hesap.build_app(store, mailer, config, extra_routes=extra, home_page=home,
+                                  lifespan=_drain(home.jobs))
+
+
+DRAIN_SECONDS = 80            # servis kapanırken süren cevapları bekleme (systemd'nin TimeoutStopSec'i 90 sn)
+
+
+def _drain(jobs: dict):
+    """B13: servis kapanırken (deploy) süren cevaplar bitsin; sayfa kapalı olsa da konuşmaya yazılır. Süre aşılırsa iş
+    kesilir, hak düşmez."""
+    from contextlib import asynccontextmanager
+
+    @asynccontextmanager
+    async def lifespan(app):
+        yield
+        running = [j.task for j in jobs.values() if j.task and not j.task.done()]
+        if running:
+            import logging
+            logging.warning("sohbet: kapanmadan önce %d cevap bekleniyor", len(running))
+            await asyncio.wait(running, timeout=DRAIN_SECONDS)
+    return lifespan
 
 
 def _client():

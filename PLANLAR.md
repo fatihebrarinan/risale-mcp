@@ -68,7 +68,9 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
 - **Son adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** B13 (tarayıcı kapanınca cevap ve hak
-  kaybı), sonra S13.23 (arayüz ve deneyim; içinde (0) doğrulama e-postası önde). S13.22 dizin kararlarını bekliyor.
+  kaybı) yerelde bitti, testler ve tarayıcı denemesi geçti; **yayın (`scripts/deploy.sh --sohbet`) kullanıcının
+  onayını bekliyor**. Sonra S13.23 (arayüz ve deneyim; S13.23.1 doğrulama e-postası önde). S13.22 dizin kararlarını
+  bekliyor.
 - **Arama motorları (2026-11-27):** kullanıcı siteye baktı (sorun yok), Search Console (alan adı mülkü `ayinedar.org`) ve Bing'e kaydoldu; iki site haritası ikisine de gönderildi. Google çatınınkini okudu (18 sayfa), sohbetinkine ilk anda "Getirilemedi" dedi (harita sorunsuz geliyor; birkaç gün içinde düzelmezse yeniden gönderilir).
 - **Yenilikler duyurusu yayında (2026-11-27):** kullanıcı web düzenleyicide düzeltti, `ayinedar.org/yenilikler/2026-11-27-ayinedar.html`.
 - **Kullanıcıdan beklenen:** "Bekleyen"deki

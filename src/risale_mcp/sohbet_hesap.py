@@ -767,7 +767,7 @@ DELETE = """<h1>Hesabı sil</h1>
 
 
 def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimiter | None = None, extra_routes=(),
-              home_page=None):
+              home_page=None, lifespan=None):
     """`home_page(request, email)`: girişli kullanıcının ana sayfası (S12.3: sohbet); yoksa yer tutucu sayfa."""
     from starlette.applications import Starlette
     from starlette.requests import Request
@@ -935,7 +935,7 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
         return shell("Sayfa bulunamadı", f'<h1>Sayfa bulunamadı</h1><p>Aradığınız sayfa yok ya da taşındı.</p>'
                                           f'<p><a href="{p}">Sohbete dönün</a></p>', 404)
 
-    return SecurityHeaders(Starlette(exception_handlers={404: not_found}, routes=[
+    return SecurityHeaders(Starlette(exception_handlers={404: not_found}, lifespan=lifespan, routes=[
         Route(p, home), Route(f"{p}giris", login, methods=["GET", "POST"]),
         Route(f"{p}kayit", register, methods=["GET", "POST"]), Route(f"{p}kayit/kod", redeem, methods=["POST"]),
         Route(f"{p}cikis", logout, methods=["POST"]), Route(f"{p}hesap", delete, methods=["GET", "POST"]),

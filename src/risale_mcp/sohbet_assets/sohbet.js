@@ -1006,16 +1006,20 @@ function setBusy(on) {
   els.fresh.disabled = on;
 }
 
-async function ask(question) {
+// B13: cevap sunucuda sayfadan bağımsız sürer. Bağlantı koparsa sayfa kaldığı olaydan yeniden bağlanır
+// (`api/sor/devam?from=N`); sayfa kapanıp yeniden açılınca süren ya da bitip ulaşmamış cevabı alır (`resumePending`).
+// `resume`: sunucunun `job` bilgisi (soru, kip, kütüphaneler); verilirse soru yeniden gönderilmez.
+async function ask(question, resume = null) {
   if (busy || !question.trim()) return;
   setBusy(true);
   els.empty.hidden = true;
   const owner = cur;                     // cevap bu konuşmaya yazılır
-  const turn = { q: question.trim(), mode: state.mode, libraries: [...state.libraries] };
+  const turn = resume ? { q: question.trim(), mode: resume.mode || "serbest", libraries: resume.libraries || [] }
+    : { q: question.trim(), mode: state.mode, libraries: [...state.libraries] };
   const box = renderTurn(turn);
   els.list.append(box);
   const answer = box.querySelector(".cevap");
-  const status = el("div", "durum", "Soru gönderiliyor…");
+  const status = el("div", "durum", resume ? "Cevap alınıyor…" : "Soru gönderiliyor…");
   const steps = [];                      // biten araç adımları
   let current = null;                    // şu anki satır (araç adımıysa biter bitmez listeye geçer)
   let trail = stepList(steps);
@@ -1092,25 +1096,14 @@ async function ask(question) {
     }
   };
 
-  try {
-    const r = await fetch(`${P}api/sor`, {
-      method: "POST", credentials: "same-origin",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (r.status === 401) { location.href = `${P}giris?next=${encodeURIComponent(P)}`; return; }
-    if (!r.ok || !r.body) {
-      let msg = "Soru gönderilemedi.";
-      try { msg = (await r.json()).error || msg; } catch { /* yok */ }
-      handle("error", { message: msg });
-      return;
-    }
+  let received = 0;                      // sunucudan alınan olay sayısı: yeniden bağlanınca oradan sürer
+  const read = async (r) => {            // akışı okur; bağlantı koparsa hata atar
     const reader = r.body.getReader();
     const dec = new TextDecoder();
     let buf = "";
     for (;;) {
       const { value, done } = await reader.read();
-      if (done) break;
+      if (done) return;
       buf += dec.decode(value, { stream: true });
       let k;
       while ((k = buf.indexOf("\n\n")) >= 0) {
@@ -1120,16 +1113,69 @@ async function ask(question) {
           if (l.startsWith("event: ")) event = l.slice(7);
           else if (l.startsWith("data: ")) data += l.slice(6);
         }
+        received += 1;
         try { handle(event, JSON.parse(data || "{}")); } catch { /* bozuk parça */ }
       }
     }
-    if (!finished) handle("error", { message: "Bağlantı kesildi; yeniden sorun." });
+  };
+  const lost = "Cevap yarıda kaldı ve alınamadı. Hakkınız düşmedi; soruyu yeniden sorabilirsiniz.";
+
+  try {
+    if (!resume) {
+      const r = await fetch(`${P}api/sor`, {
+        method: "POST", credentials: "same-origin",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      if (r.status === 401) { location.href = `${P}giris?next=${encodeURIComponent(P)}`; return; }
+      if (!r.ok || !r.body) {
+        let msg = "Soru gönderilemedi.";
+        try { msg = (await r.json()).error || msg; } catch { /* yok */ }
+        handle("error", { message: msg });
+        return;
+      }
+      try { await read(r); } catch { /* bağlantı koptu: aşağıda yeniden bağlanılır */ }
+    }
+    // cevap bitmeden akış kesildiyse (ya da sayfa yeniden açıldıysa) sunucudaki işe yeniden bağlan
+    for (let attempt = 0; !finished && attempt < 6; attempt++) {
+      if (attempt || !resume) {
+        status.textContent = "Bağlantı koptu, cevap yeniden alınıyor…"; status.hidden = false;
+        await new Promise((ok) => setTimeout(ok, 1000 * 2 ** Math.min(attempt, 4)));
+      }
+      let r;
+      try { r = await fetch(`${P}api/sor/devam?from=${received}`, { credentials: "same-origin" }); }
+      catch { continue; }                // ağ yok: biraz sonra yeniden
+      if (r.status === 401) { location.href = `${P}giris?next=${encodeURIComponent(P)}`; return; }
+      if (r.status === 204) break;       // sunucuda iş yok: servis yeniden başlamış
+      if (!r.ok || !r.body) continue;
+      try { await read(r); } catch { /* yine koptu */ }
+    }
+    if (!finished) handle("error", { message: lost });
   } catch {
-    if (!finished) handle("error", { message: "Bağlantı kurulamadı; yeniden deneyin." });
+    if (!finished) handle("error", { message: lost });
   } finally {
     setBusy(false);
     els.input.focus();
   }
+}
+
+// B13: sayfa açılınca sunucuda süren ya da bitip bu sayfaya ulaşmamış cevap varsa onu göster
+async function resumePending() {
+  let meta;
+  try {
+    const r = await fetch(`${P}api/sor/devam?peek=1`, { credentials: "same-origin" });
+    if (r.status !== 200) return;
+    meta = await r.json();
+  } catch { return; }
+  if (meta.conversation && meta.finished) {
+    // cevap konuşmaya yazıldı: konuşmayı aç, işi kapat (sunucu bellekten siler)
+    if (!cur || cur.id !== meta.conversation) await openConversation(meta.conversation, { push: true });
+    fetch(`${P}api/sor/devam?from=${meta.events}`, { credentials: "same-origin" }).catch(() => {});
+    return;
+  }
+  if (meta.conversation && (!cur || cur.id !== meta.conversation)) await openConversation(meta.conversation, { push: true });
+  else if (cur && cur.id && !meta.conversation) newConversation();
+  await ask(meta.question, meta);
 }
 
 els.form.addEventListener("submit", (ev) => {
@@ -1166,9 +1212,12 @@ async function start() {
   renderQuota();
   await refreshHistory();
   const m = location.hash.match(/^#k\/([\w-]+)$/);
-  if (m) { await openConversation(m[1], { push: false }); return; }
-  cur = { id: null, title: "", turns: state.keep ? [] : loadLocal() };
-  renderAll();
+  if (m) await openConversation(m[1], { push: false });
+  else {
+    cur = { id: null, title: "", turns: state.keep ? [] : loadLocal() };
+    renderAll();
+  }
+  await resumePending();
 }
 
 // S13.15.4 (3): PWA. Servis çalışanı yalnız bağlantı yokken "çevrimdışısınız" sayfasını gösterir (önbellek yok).
