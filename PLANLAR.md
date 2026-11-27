@@ -57,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E8, S13, A4, D16, B12 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E8, S13, A4, D16, B13 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -67,8 +67,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.md` › "Sıradaki'nin notları"):
 - **Son adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
-  Ayrıntı `KAYIT.md` › S13.15.6. **Önde:** sıradaki iş kullanıcının seçimi (S13.22 dizin kararlarını bekliyor; tabloda
-  ardından S13.18).
+  Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** B13 (tarayıcı kapanınca cevap ve hak
+  kaybı), sonra S13.23 (arayüz ve deneyim; içinde (0) doğrulama e-postası önde). S13.22 dizin kararlarını bekliyor.
 - **Arama motorları (2026-11-27):** kullanıcı siteye baktı (sorun yok), Search Console (alan adı mülkü `ayinedar.org`) ve Bing'e kaydoldu; iki site haritası ikisine de gönderildi. Google çatınınkini okudu (18 sayfa), sohbetinkine ilk anda "Getirilemedi" dedi (harita sorunsuz geliyor; birkaç gün içinde düzelmezse yeniden gönderilir).
 - **Yenilikler duyurusu yayında (2026-11-27):** kullanıcı web düzenleyicide düzeltti, `ayinedar.org/yenilikler/2026-11-27-ayinedar.html`.
 - **Kullanıcıdan beklenen:** "Bekleyen"deki
@@ -90,18 +90,57 @@ zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S13.22 | Göçün tamamlanması: eklentilerin tanıtımı `connect.ayinedar.org`'a, risalemcp.com'un kalan sayfaları (dizin kararlarından sonra) | S13.15.7 |
-| 2 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
-| 3 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
-| 4 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
-| 5 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
-| 6 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 7 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 8 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 9 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 10 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
-| 11 | B12 | Anlamsal dizinin bellekteki Python yapılarını sıkıştırmak (tefsir 1,26 GB → ≈0,5 GB) | |
+| 1 | B13 | Sohbet: tarayıcı kapansa da cevap sürsün, cevapsız soru haktan düşmesin | |
+| 2 | S13.23 | Arayüz ve deneyim: doğrulama e-postası, ilk girişte tanıtım, kip menüsü, eklentiler Ayarlar'da, temalar ve figür, sitede küçük düzeltmeler | |
+| 3 | S13.22 | Göçün tamamlanması: eklentilerin tanıtımı `connect.ayinedar.org`'a, risalemcp.com'un kalan sayfaları (dizin kararlarından sonra) | S13.15.7 |
+| 4 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
+| 5 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
+| 6 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
+| 7 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
+| 8 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 9 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 10 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 11 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 12 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 13 | B12 | Anlamsal dizinin bellekteki Python yapılarını sıkıştırmak (tefsir 1,26 GB → ≈0,5 GB) | |
 
+- B13 **Sohbet: tarayıcı kapanınca cevap ve hak kaybı** (kullanıcının bulduğu, 2026-11-27: telefonda soru sorulduktan
+  sonra tarayıcı arkada kapandı; cevap gelmedi, soru hakkı gitti). Sebep: cevap tarayıcının açık bağlantısına bağlı;
+  bağlantı kopunca sunucu modeli yarıda keser (`outcome = cancelled`), yine de `usage`'a satır yazar ve
+  `asked_today` her satırı sayar; konuşmaya yalnız biten cevap eklenir. Sunucuda o gün 3 kesik soru (13–25 sn, toplam
+  ≈0,02 $). Yapılacak: (1) cevap sunucuda tarayıcıdan bağımsız bir iş olarak sürer, sayfa ona yalnız abone olur;
+  bağlantı kopsa da biter ve konuşmaya yazılır; sayfa yeniden açılınca süren cevaba yeniden bağlanır ya da biteni
+  gösterir. Konuşmaları saklamayan hesapta biten cevap teslim edilene kadar sunucuda bekler (kısa süre, teslimde
+  silinir): gizlilik sayfası buna göre değişir. (2) Hak yalnız teslim edilen cevaptan düşer; sunucunun hatası ve
+  cevapsız kesilen soru düşmez (maliyeti `usage`'da yine görünür). (3) Bilinen sınır: servis yeniden başlarken
+  (`deploy.sh --sohbet`) süren cevap yine kesilir; okuyucuya "cevap yarıda kaldı, hakkınız düşmedi" denir.
+- S13.23 **Arayüz ve deneyim** (kullanıcının önerisi ve kararları, 2026-11-27; sıra içinde aşağıdaki gibi):
+  (0) **Doğrulama e-postası:** kayıtta kod ≈2 dakikada ve spam'e geliyor, anında gelmeli. Ölçüm (2026-11-27):
+  Scaleway bugünkü Gmail iletilerini 1–11 sn içinde teslim etmiş (250 OK), 25 Kasım'da bir Proton iletisi
+  Scaleway'de 2 dk 20 sn beklemiş; gecikme kimi zaman sağlayıcıda, kimi zaman alıcıda. Spam'in sebebi yeni alan adının
+  itibarsızlığı ve paylaşılan IP (SPF, DKIM, DMARC geçiyor). Yapılacak: kod sayfasına "Spam / Gereksiz klasörüne
+  bakın, 'Spam değil' deyin" notu; gönderimden sonra Scaleway'den akıbet sorulup teslim edilemeyen ileti sebebiyle
+  okuyucuya söylenir (2026-11-27'de bir okuyucunun kodu Gmail kutusu dolu diye hiç ulaşmadı, sayfa söylemedi);
+  `mailer.send` olay döngüsünü tıkamasın (`asyncio.to_thread`); istekten teslime geçen süre kayda girer; kullanıcı
+  Google Postmaster Tools'a kaydolur. Bir hafta sonra hâlâ geç ya da spam ise sağlayıcı değişikliği konuşulur
+  (gizlilik sayfası da değişir); "Google ile giriş" yok.
+  (1) **Sitede küçük düzeltmeler** (tek site gönderimi): ana sayfadan `lab.ayinedar.org` satırı; RSS bağlantıları
+  (alt satırlar, Yenilikler'deki cümle, `<link rel="alternate">`; `yenilikler.xml` üretilmeye devam eder, görünmez);
+  "6.236 âyet" sayısı (`ayinedar.org` ve `risalemcp.com` ana sayfaları).
+  (2) **Kipler açılır menüde** (S13.18'in kipleri düğme taşımaz; her kipin altında kısa açıklama). **Eklentiler
+  Ayarlar'da:** oradaki seçim varsayılandır; âyet çalışmasının tefsiri açması ve konuşmada işareti geçen kütüphanenin
+  açık kalması sürer; soru kutusunun yanında açık kütüphaneleri gösteren küçük işaret ("Risale + Tefsir").
+  (3) **Temalar ve figür:** 3–4 tema (açık, koyu, sepya, belki simgenin renklerinden), Ayarlar › Görünüm'de; yeni
+  konuşma sayfasında simgenin kemerli aynası ve kırmızı kapaklı kitabıyla büyük, sade bir figür, adla. Ölçü CLAUDE.md
+  › Âyinedâr: yanındaki söz yapay zekâya vasıf yüklemez. Birkaç seçenek kullanıcıya gösterilir.
+  (4) **Giriş sayfasının yenilenmesi:** kullanıcı ayrıntıyı sonra verecek; o zamana kadar beklemede.
+  (5) **İlk girişte tanıtım:** konuşma listesinde salt okunur "Örnek konuşma" ve üstünde 3–4 adımlık rehber (soru
+  kutusu, [1] işareti, Kaynaklar paneli ve metni okumak, kip menüsü, ayarlar); örnek soru "İmanımı nasıl
+  arttırabilirim? Risale-i Nur'dan cevapla" gibi (kullanıcının seçimi); cevap sistemin gerçek cevabıdır, kısaltılmaz
+  ve düzeltilmez, alıntıları veritabanıyla denetlenir; görüldüğü hesapta tutulur, Ayarlar'dan yeniden açılır, haktan
+  düşmez. Lügat gelince rehbere adım eklenir. Okuma platformunun karşılamasına (`#/~hosgeldin`) da aynı rehber.
+  (2)–(4)'ten sonra, rehberin gösterdiği ekran değişmesin diye. İngilizce ve Arapça arayüz (S13.20) bunun ardından:
+  yeni yazılar önce bitsin, sonra hepsi birlikte çevrilsin.
 - S13.22 **Göçün tamamlanması** (eski S13.15.7; kullanıcının kararı, 2026-11-27: S13.15'ten ayrı adım): eklentilerin
   tanıtımı ve kurulumu `connect.ayinedar.org`'a; risalemcp.com'un kalan sayfaları (eklenti sayfaları, kurulum,
   belgeler, hata bildirin, gizlilik ve şartlar, İngilizceleri) oraya 308 ile. Dizin başvuruları sonuçlandıktan sonra:
