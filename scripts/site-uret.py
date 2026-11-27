@@ -1022,6 +1022,9 @@ def pull_web(only: set[str] | None = None, commit: bool = False) -> list[Path]:
         local = path.read_text(encoding="utf-8")
         if _sha(local) == v["sha"]:
             continue
+        if re.search(r"^durum:\s*yayinda\s*$", local.split("\n---\n", 1)[0], re.M):
+            continue                    # yayımlandı: düzenleyici taslak içindir, sonraki düzeltme depodadır (aynı gün
+                                        # yayımlanan yazının adı değişmez; eski web sürümü onu ezmesin)
         if _sha(local) not in v["bilinen"]:
             path.with_suffix(".web.md").write_text(v["metin"], encoding="utf-8")
             conflicts.append(ad)
