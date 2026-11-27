@@ -115,32 +115,33 @@ zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda.
   cevapsız kesilen soru düşmez (maliyeti `usage`'da yine görünür). (3) Bilinen sınır: servis yeniden başlarken
   (`deploy.sh --sohbet`) süren cevap yine kesilir; okuyucuya "cevap yarıda kaldı, hakkınız düşmedi" denir.
 - S13.23 **Arayüz ve deneyim** (kullanıcının önerisi ve kararları, 2026-11-27; sıra içinde aşağıdaki gibi):
-  (0) **Doğrulama e-postası:** kayıtta kod ≈2 dakikada ve spam'e geliyor, anında gelmeli. Ölçüm (2026-11-27):
-  Scaleway bugünkü Gmail iletilerini 1–11 sn içinde teslim etmiş (250 OK), 25 Kasım'da bir Proton iletisi
-  Scaleway'de 2 dk 20 sn beklemiş; gecikme kimi zaman sağlayıcıda, kimi zaman alıcıda. Spam'in sebebi yeni alan adının
-  itibarsızlığı ve paylaşılan IP (SPF, DKIM, DMARC geçiyor). Yapılacak: kod sayfasına "Spam / Gereksiz klasörüne
-  bakın, 'Spam değil' deyin" notu; gönderimden sonra Scaleway'den akıbet sorulup teslim edilemeyen ileti sebebiyle
-  okuyucuya söylenir (2026-11-27'de bir okuyucunun kodu Gmail kutusu dolu diye hiç ulaşmadı, sayfa söylemedi);
-  `mailer.send` olay döngüsünü tıkamasın (`asyncio.to_thread`); istekten teslime geçen süre kayda girer; kullanıcı
-  Google Postmaster Tools'a kaydolur. Bir hafta sonra hâlâ geç ya da spam ise sağlayıcı değişikliği konuşulur
-  (gizlilik sayfası da değişir); "Google ile giriş" yok.
-  (1) **Sitede küçük düzeltmeler** (tek site gönderimi): ana sayfadan `lab.ayinedar.org` satırı; RSS bağlantıları
-  (alt satırlar, Yenilikler'deki cümle, `<link rel="alternate">`; `yenilikler.xml` üretilmeye devam eder, görünmez);
-  "6.236 âyet" sayısı (`ayinedar.org` ve `risalemcp.com` ana sayfaları).
-  (2) **Kipler açılır menüde** (S13.18'in kipleri düğme taşımaz; her kipin altında kısa açıklama). **Eklentiler
-  Ayarlar'da:** oradaki seçim varsayılandır; âyet çalışmasının tefsiri açması ve konuşmada işareti geçen kütüphanenin
-  açık kalması sürer; soru kutusunun yanında açık kütüphaneleri gösteren küçük işaret ("Risale + Tefsir").
-  (3) **Temalar ve figür:** 3–4 tema (açık, koyu, sepya, belki simgenin renklerinden), Ayarlar › Görünüm'de; yeni
-  konuşma sayfasında simgenin kemerli aynası ve kırmızı kapaklı kitabıyla büyük, sade bir figür, adla. Ölçü CLAUDE.md
-  › Âyinedâr: yanındaki söz yapay zekâya vasıf yüklemez. Birkaç seçenek kullanıcıya gösterilir.
-  (4) **Giriş sayfasının yenilenmesi:** kullanıcı ayrıntıyı sonra verecek; o zamana kadar beklemede.
-  (5) **İlk girişte tanıtım:** konuşma listesinde salt okunur "Örnek konuşma" ve üstünde 3–4 adımlık rehber (soru
-  kutusu, [1] işareti, Kaynaklar paneli ve metni okumak, kip menüsü, ayarlar); örnek soru "İmanımı nasıl
-  arttırabilirim? Risale-i Nur'dan cevapla" gibi (kullanıcının seçimi); cevap sistemin gerçek cevabıdır, kısaltılmaz
-  ve düzeltilmez, alıntıları veritabanıyla denetlenir; görüldüğü hesapta tutulur, Ayarlar'dan yeniden açılır, haktan
-  düşmez. Lügat gelince rehbere adım eklenir. Okuma platformunun karşılamasına (`#/~hosgeldin`) da aynı rehber.
-  (2)–(4)'ten sonra, rehberin gösterdiği ekran değişmesin diye. İngilizce ve Arapça arayüz (S13.20) bunun ardından:
-  yeni yazılar önce bitsin, sonra hepsi birlikte çevrilsin.
+  - S13.23.1 **Doğrulama e-postası:** kayıtta kod ≈2 dakikada ve spam'e geliyor, anında gelmeli. Ölçüm (2026-11-27):
+    Scaleway bugünkü Gmail iletilerini 1–11 sn içinde teslim etmiş (250 OK), 25 Kasım'da bir Proton iletisi
+    Scaleway'de 2 dk 20 sn beklemiş; gecikme kimi zaman sağlayıcıda, kimi zaman alıcıda. Spam'in sebebi yeni alan
+    adının itibarsızlığı ve paylaşılan IP (SPF, DKIM, DMARC geçiyor). Yapılacak: kod sayfasına "Spam / Gereksiz
+    klasörüne bakın, 'Spam değil' deyin" notu; gönderimden sonra Scaleway'den akıbet sorulup teslim edilemeyen ileti
+    sebebiyle okuyucuya söylenir (2026-11-27'de bir okuyucunun kodu Gmail kutusu dolu diye hiç ulaşmadı, sayfa
+    söylemedi); `mailer.send` olay döngüsünü tıkamasın (`asyncio.to_thread`); istekten teslime geçen süre kayda
+    girer; kullanıcı Google Postmaster Tools'a kaydolur. Bir hafta sonra hâlâ geç ya da spam ise sağlayıcı
+    değişikliği konuşulur (gizlilik sayfası da değişir); "Google ile giriş" yok.
+  - S13.23.2 **Sitede küçük düzeltmeler** (tek site gönderimi): ana sayfadan `lab.ayinedar.org` satırı; RSS
+    bağlantıları (alt satırlar, Yenilikler'deki cümle, `<link rel="alternate">`; `yenilikler.xml` üretilmeye devam
+    eder, görünmez); "6.236 âyet" sayısı (`ayinedar.org` ve `risalemcp.com` ana sayfaları).
+  - S13.23.3 **Kipler açılır menüde** (S13.18'in kipleri düğme taşımaz; her kipin altında kısa açıklama).
+    **Eklentiler Ayarlar'da:** oradaki seçim varsayılandır; âyet çalışmasının tefsiri açması ve konuşmada işareti
+    geçen kütüphanenin açık kalması sürer; soru kutusunun yanında açık kütüphaneleri gösteren küçük işaret ("Risale
+    + Tefsir").
+  - S13.23.4 **Temalar ve figür:** 3–4 tema (açık, koyu, sepya, belki simgenin renklerinden), Ayarlar › Görünüm'de;
+    yeni konuşma sayfasında simgenin kemerli aynası ve kırmızı kapaklı kitabıyla büyük, sade bir figür, adla. Ölçü
+    CLAUDE.md › Âyinedâr: yanındaki söz yapay zekâya vasıf yüklemez. Birkaç seçenek kullanıcıya gösterilir.
+  - S13.23.5 **Giriş sayfasının yenilenmesi:** kullanıcı ayrıntıyı sonra verecek; o zamana kadar beklemede.
+  - S13.23.6 **İlk girişte tanıtım:** konuşma listesinde salt okunur "Örnek konuşma" ve üstünde 3–4 adımlık rehber
+    (soru kutusu, [1] işareti, Kaynaklar paneli ve metni okumak, kip menüsü, ayarlar); örnek soru "İmanımı nasıl
+    arttırabilirim? Risale-i Nur'dan cevapla" gibi (kullanıcının seçimi); cevap sistemin gerçek cevabıdır,
+    kısaltılmaz ve düzeltilmez, alıntıları veritabanıyla denetlenir; görüldüğü hesapta tutulur, Ayarlar'dan yeniden
+    açılır, haktan düşmez. Lügat gelince rehbere adım eklenir. Okuma platformunun karşılamasına (`#/~hosgeldin`) da
+    aynı rehber. S13.23.3 ve S13.23.4'ten sonra, rehberin gösterdiği ekran değişmesin diye. İngilizce ve Arapça arayüz
+    (S13.20) bunun ardından: yeni yazılar önce bitsin, sonra hepsi birlikte çevrilsin.
 - S13.22 **Göçün tamamlanması** (eski S13.15.7; kullanıcının kararı, 2026-11-27: S13.15'ten ayrı adım): eklentilerin
   tanıtımı ve kurulumu `connect.ayinedar.org`'a; risalemcp.com'un kalan sayfaları (eklenti sayfaları, kurulum,
   belgeler, hata bildirin, gizlilik ve şartlar, İngilizceleri) oraya 308 ile. Dizin başvuruları sonuçlandıktan sonra:
