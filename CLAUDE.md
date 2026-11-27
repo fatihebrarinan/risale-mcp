@@ -605,7 +605,7 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   (`sohbet geri-bildirim`); kota ve bütçe `sohbet.Limits` (kişi günde 10 soru, servis günde 5 $, ayda 100 $, 2 $'da
   ntfy, konu sunucuda `data/sohbet-ntfy`). Arayüz denemesi `uv run --no-project --with playwright python
   scripts/sohbet-arayuz-dene.py` (başsız Brave). Yayında: `deploy.sh` servisi `risale-sohbet` (:8010) kurar, Caddy
-  `chat.ayinedar.org`'u tamponsuz ve sıkıştırmasız geçirir (tanıtıma kadar `noindex`), `.env`'den sohbet anahtarlarını da yazar. Kendi gizlilik ve şartlar sayfaları servisin içinde, girişsiz
+  `chat.ayinedar.org`'u tamponsuz ve sıkıştırmasız geçirir (S13.15.6'dan beri arama motorlarına açık), `.env`'den sohbet anahtarlarını da yazar. Kendi gizlilik ve şartlar sayfaları servisin içinde, girişsiz
   (`/gizlilik`, `/sartlar`, `/en/privacy`, `/en/terms`, `/hakkinda`; `sohbet_assets/`,
   `sohbet_hesap.DOCS`, tarih `POLICY_DATE`): sitenin ana politikasına sohbetin verisi girmez (eklentilerinkidir);
   saklanan değişirse bu sayfalar da değişir.
