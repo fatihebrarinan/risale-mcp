@@ -491,7 +491,13 @@ def test_conversations_stored(library, tmp_path):
     web = TestClient(app, base_url="https://testserver")
     web.cookies.set("sohbet_oturum", store.open_session("a@b.co"))
     status = web.get("/sohbet/api/durum").json()
-    assert status == {"email": "a@b.co", "keep": True, "questions": 10, "remaining": 10}
+    assert status == {"email": "a@b.co", "keep": True, "tour": False, "questions": 10, "remaining": 10}
+    # S13.23.6: rehber görüldü; örnek konuşmanın dosyası
+    assert web.post("/sohbet/api/ayarlar", json={"tour_seen": True}).json() == {"ok": True, "keep": True}
+    assert web.get("/sohbet/api/durum").json()["tour"] is True
+    example = web.get("/sohbet/static/ornek-konusma.json").json()
+    turn = example["turns"][0]
+    assert turn["q"] == sohbet.EXAMPLE_QUESTION and turn["markdown"] and turn["sources"]
 
     first = web.post("/sohbet/api/sor", json={"question": "Dokuzuncu Hakikat ne der?"})
     assert '"conversation": "' in first.text and '"n": 0' in first.text
@@ -886,3 +892,15 @@ def test_answer_survives_and_resumes(library, tmp_path):
         assert web.get("/sohbet/api/sor/devam").status_code == 204          # ulaştı: bellekte tutulmaz
         assert store._run("SELECT outcome FROM usage")[0][0] == "done"
         assert len(web.get("/sohbet/api/konusmalar").json()["conversations"]) == 1
+
+
+@needs_db
+def test_example_conversation_still_valid(library):
+    """S13.23.6: ilk girişteki örnek konuşmanın her kaynağı veritabanında durur (kimlik değişirse örnek
+    `sohbet ornek` ile yeniden üretilir ve kullanıcıya gösterilir)."""
+    import json
+    data = json.loads(sohbet.EXAMPLE_FILE.read_text(encoding="utf-8"))
+    turn = data["turns"][0]
+    assert turn["q"] == sohbet.EXAMPLE_QUESTION and turn["markdown"]
+    for source in turn["sources"]:
+        assert library.passage(source["id"])["sentences"], source["id"]

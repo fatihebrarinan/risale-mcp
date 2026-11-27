@@ -67,10 +67,10 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.md` › "Sıradaki'nin notları"):
 - **Son adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
-  Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.3 yayında;
-  S13.23.4 (temalar, ayna figürü, dinamik karşılama, telefonda ayar sekmeleri) yerelde bitti, **yayın
-  (`scripts/deploy.sh --sohbet`) kullanıcının onayını bekliyor**; S13.23.5 (giriş sayfası) kullanıcının ayrıntısını
-  bekliyor, sırada S13.23.6 (ilk girişte tanıtım). ≈2026-12-04 e-posta teslim süreleri ve spam yeniden bakılır
+  Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 yayında;
+  S13.23.6 (ilk girişte örnek konuşma ve rehber) yerelde bitti, **örnek cevap ve yayın kullanıcının onayını
+  bekliyor**; S13.23.5 (giriş sayfası) kullanıcının ayrıntısını bekliyor. Açık kalan: okuma platformunun karşılamasına
+  aynı rehber (S13.23.6'nın ikinci yarısı). ≈2026-12-04 e-posta teslim süreleri ve spam yeniden bakılır
   (`sohbet_hesap eposta-sure`, Postmaster Tools). S13.22 dizin kararlarını bekliyor.
 - **Arama motorları (2026-11-27):** kullanıcı siteye baktı (sorun yok), Search Console (alan adı mülkü `ayinedar.org`) ve Bing'e kaydoldu; iki site haritası ikisine de gönderildi. Google çatınınkini okudu (18 sayfa), sohbetinkine ilk anda "Getirilemedi" dedi (harita sorunsuz geliyor; birkaç gün içinde düzelmezse yeniden gönderilir).
 - **Yenilikler duyurusu yayında (2026-11-27):** kullanıcı web düzenleyicide düzeltti, `ayinedar.org/yenilikler/2026-11-27-ayinedar.html`.
@@ -127,7 +127,7 @@ zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda.
     yeni konuşma sayfasında simgenin kemerli aynası ve kırmızı kapaklı kitabıyla büyük, sade bir figür, adla. Ölçü
     CLAUDE.md › Âyinedâr: yanındaki söz yapay zekâya vasıf yüklemez. Birkaç seçenek kullanıcıya gösterilir.
   - S13.23.5 **Giriş sayfasının yenilenmesi:** kullanıcı ayrıntıyı sonra verecek; o zamana kadar beklemede.
-  - S13.23.6 **İlk girişte tanıtım:** konuşma listesinde salt okunur "Örnek konuşma" ve üstünde 3–4 adımlık rehber
+  - S13.23.6 (bitti, 2026-11-27; `KAYIT.md` › S13.23.6; okuma platformu ve lügat adımı sonraya) **İlk girişte tanıtım:** konuşma listesinde salt okunur "Örnek konuşma" ve üstünde 3–4 adımlık rehber
     (soru kutusu, [1] işareti, Kaynaklar paneli ve metni okumak, kip menüsü, ayarlar); örnek soru "İmanımı nasıl
     arttırabilirim? Risale-i Nur'dan cevapla" gibi (kullanıcının seçimi); cevap sistemin gerçek cevabıdır,
     kısaltılmaz ve düzeltilmez, alıntıları veritabanıyla denetlenir; görüldüğü hesapta tutulur, Ayarlar'dan yeniden

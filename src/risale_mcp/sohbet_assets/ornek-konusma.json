@@ -1,0 +1,91 @@
+{
+ "created": "2026-11-27",
+ "model": "claude-haiku-5-5",
+ "turns": [
+  {
+   "q": "İmanımı nasıl arttırabilirim? Risale-i Nur'dan cevapla.",
+   "markdown": "**Kısa cevap:** Risale-i Nur'a göre imanı artırmanın temel yolu, İslâm'ı başkalarından duyduğumuz gibi \"taklidî\" olarak bırakmayıp onu akıl, delil ve tefekkürle \"tahkîkî\" hâle getirmektir. İmanın pek çok derecesi olduğunu, tefekkürün de bu yükselişin önemli bir vasıtası olduğunu metin söyler.\n\n**Metnin söyledikleri**\n\nRisale-i Nur'un bu konudaki ana ayrımı şudur: taklidî iman ile tahkîkî iman. Sözler'in Konferans bölümünde, en önemli işin \"taklidî îmânı tahkîkî îmâna çevirerek îmânı kuvvetlendirmek\" [1] olduğu söylenir:\n\n> \"Bunun içindir ki; şimdi en mühim iş, taklidî îmânı tahkîkî îmâna çevirerek îmânı kuvvetlendirmektir, îmânı takviye etmektir; îmânı kurtarmaktır.\" [1]\n\nTaklidî imanın zayıflığı da orada açıkça anlatılır:\n\n> \"Taklidî bir îmân, hususan bu zamandaki dalâlet, sapkınlık fırtınaları karşısında çabuk söner.\" [2]\n\n> \"Tahkîkî îmân ise; sarsılmaz, sönmez bir kuvvettir.\" [3]\n\nİmanın derecelerine gelince, Emirdağ Lâhikası'nda şöyle denir:\n\n> \"Ondan çok kuvvetli ve çok geniş olan îmân-ı tahkîkîde pek çok merâtib var.\" [4]\n\nBu derecelerin birinde iman, kâinatı okumaya kadar varır. Metin, esmâ-i İlâhiye adedince tezahür derecelerinin bulunduğunu ve iman sahibinin \"Bütün kâinâtı bir Kur'ân gibi okuyabilecek derecesine gelir.\" [5] dediğini söyler. [6]\n\nTefekkür konusunda şu cümle önemlidir:\n\n> \"Bazen bir saat tefekkür, bir sene ibâdetten daha hayırlı olur.\" [7]\n\nAynı yerde Nakşîlerin hafî zikre verdiği büyük önemin de bu tür tefekküre ulaşmak için olduğu belirtilir. [8]\n\nYedinci Şuâ'da da iman üzerine düşünmenin önemi vurgulanır. Orada \"Bir tek mes'ele-i îmâniyenin vuzûh ile inkişafı, bin kerâmâta ve ezvâka, müreccahtır.\" [9] denir. [9] Aynı bölümde kesin bir hüküm de vardır: \"Elbette herşeyden evvel îmânımızı taklidden tahkîke çevirip kuvvetlendirmeliyiz.\" [10]\n\nSon olarak Konferans, bu kitabın okunmasını şöyle ister: \"...Kur'ân ve îmân hakikatlerini câmi' bir eseri, sebat ve devam ve dikkatle okumayı kat'iyyetle lâzım ve elzem gördük.\" [11]\n\n**Yorum**\n\nMetinden çıkan pratik sonuç bence şudur: İmanı artırmak için önce onu bir kez kabul edip bırakmamak, sonra onu düşünerek ve delillerle anlamaya çalışmak gerekir. Metnin gösterdiği yollar şunlardır:\n\n- Kâinattaki düzeni ve sanatı dikkatle düşünmek.\n- Risale-i Nur'u dikkatle ve sürekli okumak.\n- Düşünceyi kısa bile olsa her gün iman konusuna yöneltmek.\n\nBu yorum, metnin söylediklerinden çıkardığım bir özettir; metnin kendisi bu adımları bir program olarak sıralamaz.\n\n:::ek Bu cevabın dayandığı okumalar: 2 yer kısmen okundu\n- **Kısmen okunanlar:** Sözler › Konferans (7/419 cümle); Şualar › Yedinci Şuâ › Âyetü'l‑Kübrâ › İkinci Bâb › Üçüncü Menzil (8/14 cümle)\n- **Okunanlar:** Emirdağ Lahikası › Emirdağ Lâhikası 1 › Risale‑i Nur’a, daha vatana, idareye zararı dokunmak bahanesiyle tecavüz edilmez; daha kimseyi o bahane ile inandıramazlar › İkinci Cihet\n:::",
+   "sources": [
+    {
+     "n": 1,
+     "id": "sozler/konferans/c023",
+     "cite_as": "Sözler › Konferans › “Bunun içindir ki; şimdi…”",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 2,
+     "id": "sozler/konferans/c036",
+     "cite_as": "Sözler › Konferans › “Taklidî bir îmân, hususan…”",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 3,
+     "id": "sozler/konferans/c037",
+     "cite_as": "Sözler › Konferans › “Tahkîkî îmân ise; sarsılmaz,…”",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 4,
+     "id": "emirdag-lahikasi/emirdag-lahikasi-1/62/cihet-02/c003",
+     "cite_as": "Emirdağ Lahikası › Emirdağ Lâhikası 1 › Risale‑i Nur’a, daha vatana, idareye zararı dokunmak bahanesiyle tecavüz edilmez; daha kimseyi o bahane ile inandıramazlar › İkinci Cihet › “Ondan çok kuvvetli ve…”",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 5,
+     "id": "emirdag-lahikasi/emirdag-lahikasi-1/62/cihet-02/c008",
+     "cite_as": "Emirdağ Lahikası › Emirdağ Lâhikası 1 › Risale‑i Nur’a, daha vatana, idareye zararı dokunmak bahanesiyle tecavüz edilmez; daha kimseyi o bahane ile inandıramazlar › İkinci Cihet › “Bütün kâinâtı bir Kur'ân…”",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 6,
+     "id": "emirdag-lahikasi/emirdag-lahikasi-1/62/cihet-02/c007..c008",
+     "cite_as": "Emirdağ Lahikası › Emirdağ Lâhikası 1 › Risale‑i Nur’a, daha vatana, idareye zararı dokunmak bahanesiyle tecavüz edilmez; daha kimseyi o bahane ile inandıramazlar › İkinci Cihet › “Belki esmâ-i İlâhiye adedince…” ile başlayan 2 cümle",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 7,
+     "id": "emirdag-lahikasi/emirdag-lahikasi-1/62/cihet-02/c018",
+     "cite_as": "Emirdağ Lahikası › Emirdağ Lâhikası 1 › Risale‑i Nur’a, daha vatana, idareye zararı dokunmak bahanesiyle tecavüz edilmez; daha kimseyi o bahane ile inandıramazlar › İkinci Cihet › “Bazen bir saat tefekkür,…”",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 8,
+     "id": "emirdag-lahikasi/emirdag-lahikasi-1/62/cihet-02/c019",
+     "cite_as": "Emirdağ Lahikası › Emirdağ Lâhikası 1 › Risale‑i Nur’a, daha vatana, idareye zararı dokunmak bahanesiyle tecavüz edilmez; daha kimseyi o bahane ile inandıramazlar › İkinci Cihet › “Hattâ Nakşîlerin hafî zikre…”",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 9,
+     "id": "sualar/7/ayetul-kubra/bab-02/menzil-03/c003",
+     "cite_as": "Şualar › Yedinci Şuâ › Âyetü'l‑Kübrâ › İkinci Bâb › Üçüncü Menzil › ““Bütün tarîkatların en mühim…”",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 10,
+     "id": "sualar/7/ayetul-kubra/bab-02/menzil-03/c010",
+     "cite_as": "Şualar › Yedinci Şuâ › Âyetü'l‑Kübrâ › İkinci Bâb › Üçüncü Menzil › “Elbette herşeyden evvel îmânımızı…”",
+     "source_name": "e-Risale"
+    },
+    {
+     "n": 11,
+     "id": "sozler/konferans/c040",
+     "cite_as": "Sözler › Konferans › “İşte, bu hakikatlere binâen,…”",
+     "source_name": "e-Risale"
+    }
+   ],
+   "corrected": false,
+   "steps": [
+    "“imanı artırmanın yolları, imanın kuvvetlenmesi” anlamına yakın yerler aranıyor",
+    "“iman artar” geçen cümleler aranıyor",
+    "Sözler › Konferans okunuyor",
+    "Şualar › Yedinci Şuâ › Âyetü'l‑Kübrâ › İkinci Bâb › Üçüncü Menzil okunuyor",
+    "“taklidî imanı tahkikî imana çevirmek için tefekkür ve delil” anlamına yakın yerler aranıyor",
+    "“kâinata bakarak Allah'ı tanımak, tefekkürle imanın artması” anlamına yakın yerler aranıyor",
+    "Emirdağ Lahikası › Emirdağ Lâhikası 1 › Risale‑i Nur’a, daha vatana, idareye zararı dokunmak bahanesiyle tecavüz edilmez; daha kimseyi o bahane ile inandıramazlar › İkinci Cihet okunuyor",
+    "Sözler › Konferans okunuyor"
+   ],
+   "mode": "serbest",
+   "libraries": []
+  }
+ ]
+}

@@ -369,3 +369,24 @@ legend { padding: 0; margin: 0 0 6px; font-size: .8rem; font-weight: 600; color:
     padding: 6px; gap: 4px; }
   .sekmeler [role="tab"] { white-space: nowrap; padding: 6px 10px; }
 }
+
+/* ------------------------------------------------ S13.23.6: örnek konuşma ve rehber */
+.ornek-liste { margin-bottom: 6px; }
+.ornek-etiket { display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .02em; padding: 0 6px;
+  margin-right: 4px; border-radius: 999px; background: var(--accent-soft); color: var(--accent); vertical-align: 1px; }
+/* perde dört dikdörtgendir (hedefin üstü, altı, solu, sağı); ortası açık kalır (clip-path ile yarı saydamlık
+   bazı tarayıcılarda çizilmiyor) */
+.rehber-perde { position: fixed; inset: 0; z-index: 59; pointer-events: none; }
+.rehber-perde i { position: fixed; background: rgba(0, 0, 0, .45); pointer-events: auto; }
+.rehber-isik { position: fixed; z-index: 60; border-radius: 12px; pointer-events: none; box-shadow: 0 0 0 3px var(--accent); }
+.rehber { position: fixed; z-index: 61; width: min(340px, calc(100vw - 16px)); padding: 14px 16px 12px;
+  background: var(--card); color: var(--fg); border: 1px solid var(--line); border-radius: 14px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, .3); }
+.rehber h2 { font-size: 1.02rem; margin: 0 0 4px; }
+.rehber p { margin: 0 0 10px; font-size: .92rem; line-height: 1.5; }
+.rehber .rehber-sayi { font-size: .74rem; font-weight: 600; color: var(--muted); margin: 0 0 2px; }
+.rehber-dugmeler { display: flex; justify-content: flex-end; gap: 8px; }
+.rehber .dolu { border: 0; border-radius: 9px; padding: 7px 14px; background: var(--accent); color: var(--bg);
+  font: inherit; font-weight: 600; cursor: pointer; }
+.belgeler button.link { background: none; border: 0; padding: 0; font: inherit; color: var(--accent);
+  text-decoration: underline; cursor: pointer; }

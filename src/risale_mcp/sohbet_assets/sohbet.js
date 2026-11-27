@@ -600,7 +600,7 @@ function renderTurn(turn) {
     answer.innerHTML = markdown(turn.markdown, refs);
     renderSources(box, turn.sources);
     if (turn.corrected) box.append(el("p", "alt-bilgi", "Alıntılar denetimde düzeltildi."));
-    box.append(feedbackBox(turn));
+    if (!turn.example) box.append(feedbackBox(turn));
   }
   box._turn = turn;
   return box;
@@ -759,7 +759,7 @@ function newConversation() {
 async function openConversation(id, { push = true } = {}) {
   if (busy || !id) return;
   if (!docked.left.matches) closeDrawers();
-  if (cur.id === id) return;
+  if (cur.id === id && !cur.example) return;
   els.list.innerHTML = '<p class="yukleniyor">Konuşma açılıyor…</p>';
   els.empty.hidden = true;
   try {
@@ -783,7 +783,8 @@ async function openConversation(id, { push = true } = {}) {
 window.addEventListener("popstate", () => {
   const m = location.hash.match(/^#k\/([\w-]+)$/);
   if (m) openConversation(m[1], { push: false });
-  else if (cur.id) newConversation();
+  else if (location.hash === "#ornek") openExample({ push: false });
+  else if (cur.id || cur.example) newConversation();
 });
 
 // ------------------------------------------------------------ sol panel: geçmiş konuşmalar
@@ -798,6 +799,17 @@ function groupOf(ts) {
 
 function renderHistory() {
   els.history.innerHTML = "";
+  {                                                     // S13.23.6: örnek konuşma hep en üstte
+    const ul = el("ul", "ornek-liste");
+    const li = el("li", cur.example ? "secili" : "");
+    const open = el("button", "ac", `<span class="ornek-etiket">Örnek</span> ${esc(EXAMPLE_TITLE)}`);
+    open.type = "button";
+    open.title = "Sayfanın nasıl çalıştığını gösteren örnek konuşma";
+    open.addEventListener("click", () => openExample());
+    li.append(open);
+    ul.append(li);
+    els.history.append(ul);
+  }
   if (!state.keep) {
     els.history.append(el("p", "small bilgi", "Saklama kapalı: yeni konuşmalar yalnız bu tarayıcıda durur. "
       + "Ayarlardan açabilirsiniz."));
@@ -1278,6 +1290,7 @@ els.form.addEventListener("submit", (ev) => {
   if (!q.trim() || busy) return;
   els.input.value = "";
   grow();
+  if (cur.example) newConversation();                   // örnek konuşmaya soru eklenmez
   ask(q);
 });
 els.input.addEventListener("keydown", (ev) => {
@@ -1292,6 +1305,116 @@ $("ornekler").addEventListener("click", (ev) => {
 $("baska-ornek").addEventListener("click", renderExamples);
 els.fresh.addEventListener("click", newConversation);
 
+// ------------------------------------------------------------ örnek konuşma ve rehber (S13.23.6)
+
+// Kullanıcının kararı (2026-11-27): ilk girişte kısa bir tanıtım; önceden hazırlanmış bir soru ve cevap üzerinde
+// kaynağa dokunup metni okumayı gösterir. Cevap sistemin gerçek cevabıdır (`sohbet ornek`), kısaltılmaz ve düzeltilmez;
+// konuşma listesinin başında hep durur, salt okunurdur (soru sorulunca yeni konuşma açılır, geri bildirim yok).
+// Rehber ilk girişte kendiliğinden açılır, görüldüğü hesapta tutulur; Ayarlar › Belgeler'den ve `#tanitim` ile yeniden.
+const EXAMPLE_TITLE = "İmanımı nasıl arttırabilirim?";
+let exampleData = null;
+async function openExample({ push = true } = {}) {
+  if (busy) return;
+  if (!docked.left.matches) closeDrawers();
+  try {
+    if (!exampleData) {
+      const r = await fetch(`${P}static/ornek-konusma.json?v=${document.body.dataset.v}`, { credentials: "same-origin" });
+      exampleData = await r.json();
+    }
+  } catch { return; }
+  cur = { id: null, example: true, title: "Örnek konuşma", turns: exampleData.turns.map((x) => ({ ...x, example: true })) };
+  if (push && location.hash !== "#ornek") history.pushState(null, "", "#ornek");
+  showList();
+  renderAll();
+  els.list.firstElementChild?.scrollIntoView({ block: "start" });
+}
+
+const TOUR = [
+  { target: () => els.list.querySelector(".cevap blockquote"), title: "Örnek bir konuşma",
+    text: "Bu, sayfanın gerçek bir cevabı. Cevaplar Risale-i Nur'dan alıntılarla gelir; alıntılar eserdeki sözleriyle, olduğu gibi verilir." },
+  { target: () => els.list.querySelector(".cevap .ref"), title: "Her alıntının bir numarası var",
+    text: "Alıntının ardındaki numara, onun eserdeki yeridir. Numaraya ya da alıntıya dokununca o yer açılır.",
+    after: () => els.list.querySelector(".cevap .ref")?.click() },
+  { target: () => els.side, title: "Metni bağlamıyla okuyun",
+    text: "Kaynaklar panelinde alıntının geçtiği bölüm açılır: üstte eserdeki yeri, alıntılanan cümleler koyu yazılı. Önünü ve ardını buradan okuyabilirsiniz.",
+    after: () => { showList(); if (!docked.right.matches) closeDrawers(); } },
+  { target: () => $("kip-dugme"), title: "Sorunun türü",
+    text: "Serbest soru, konu taraması ya da âyet çalışması: buradan seçersiniz. Konu taraması bir konunun eserlerde geçtiği yerleri toplar." },
+  { target: () => ($("kutuphaneler").hidden ? els.settingsOpen : $("kutuphaneler")), title: "Kütüphaneler ve ayarlar",
+    text: "Cevaplar her zaman Risale-i Nur'a dayanır. Tefsir, Hadis ve Klasik eserleri, temayı ve yazı boyutunu Ayarlar'dan değiştirirsiniz. Örnek konuşma solda durur; bu rehberi Ayarlar › Belgeler'den yeniden açabilirsiniz." },
+];
+let tourAt = -1;
+const tourBox = $("rehber"), tourLight = $("rehber-isik"), tourShade = $("rehber-perde");
+async function startTour() {
+  if (busy) return;
+  await openExample({ push: location.hash !== "#ornek" });
+  if (!cur.example) return;
+  tourAt = 0;
+  showTourStep();
+}
+function endTour({ fresh = false } = {}) {
+  tourAt = -1;
+  tourBox.hidden = tourLight.hidden = tourShade.hidden = true;
+  if (!state.tourSeen) {
+    state.tourSeen = true;
+    api("ayarlar", { tour_seen: true }).catch(() => {});
+  }
+  if (location.hash === "#tanitim") history.replaceState(null, "", "#ornek");
+  if (fresh) newConversation();
+}
+function showTourStep() {
+  const step = TOUR[tourAt];
+  const target = step && step.target();
+  if (!target) { endTour(); return; }
+  target.scrollIntoView({ block: "center", behavior: "instant" });
+  $("rehber-sayi").textContent = `${tourAt + 1} / ${TOUR.length}`;
+  $("rehber-baslik").textContent = step.title;
+  $("rehber-yazi").textContent = step.text;
+  const last = tourAt === TOUR.length - 1;
+  $("rehber-ileri").textContent = last ? "Kendi sorumu soracağım" : "İleri";
+  $("rehber-gec").hidden = last;
+  tourBox.hidden = tourLight.hidden = tourShade.hidden = false;
+  placeTour();
+  setTimeout(placeTour, 350);                    // panel ve çekmece animasyonu bitince yeniden ölç
+  $("rehber-ileri").focus({ preventScroll: true });
+}
+function placeTour() {
+  if (tourAt < 0) return;
+  const target = TOUR[tourAt].target();
+  if (!target) return;
+  const r = target.getBoundingClientRect(), pad = 6;
+  Object.assign(tourLight.style, { left: `${r.left - pad}px`, top: `${r.top - pad}px`,
+    width: `${r.width + 2 * pad}px`, height: `${r.height + 2 * pad}px` });
+  // perde hedefin çevresini karartır: dört dikdörtgen (üst, alt, sol, sağ); hedef açık kalır, tıklamayı perde tutar
+  const x0 = Math.max(0, r.left - pad), y0 = Math.max(0, r.top - pad);
+  const x1 = Math.min(innerWidth, r.right + pad), y1 = Math.min(innerHeight, r.bottom + pad);
+  const [above, below, before, after] = tourShade.children;
+  const put = (e, x, y, w, h) => Object.assign(e.style, { left: `${x}px`, top: `${y}px`,
+    width: `${Math.max(0, w)}px`, height: `${Math.max(0, h)}px` });
+  put(above, 0, 0, innerWidth, y0);
+  put(below, 0, y1, innerWidth, innerHeight - y1);
+  put(before, 0, y0, x0, y1 - y0);
+  put(after, x1, y0, innerWidth - x1, y1 - y0);
+  const box = tourBox.getBoundingClientRect(), vw = innerWidth, vh = innerHeight, gap = 12;
+  let top = r.bottom + pad + gap;
+  if (top + box.height > vh - 8) top = r.top - pad - gap - box.height;          // altta yer yoksa üstte
+  if (top < 8) top = Math.max(8, Math.min(vh - box.height - 8, r.top + 16));      // ikisi de yoksa hedefin üstüne
+  const left = Math.max(8, Math.min(vw - box.width - 8, r.left + r.width / 2 - box.width / 2));
+  Object.assign(tourBox.style, { left: `${left}px`, top: `${top}px` });
+}
+$("rehber-ileri").addEventListener("click", async () => {
+  const step = TOUR[tourAt];
+  if (tourAt === TOUR.length - 1) { endTour({ fresh: true }); return; }
+  if (step && step.after) { step.after(); await new Promise((ok) => setTimeout(ok, 450)); }   // metin ve çekmece açılsın
+  tourAt += 1;
+  showTourStep();
+});
+$("rehber-gec").addEventListener("click", () => endTour());
+addEventListener("resize", placeTour);
+document.addEventListener("scroll", placeTour, true);
+document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && tourAt >= 0) endTour(); });
+$("rehber-yeniden").addEventListener("click", () => { els.settings.close(); startTour(); });
+
 // ------------------------------------------------------------ açılış
 
 async function start() {
@@ -1302,17 +1425,19 @@ async function start() {
   renderLibraries();
   try {
     const s = await api("durum");
-    Object.assign(state, { keep: s.keep, questions: s.questions, remaining: s.remaining });
+    Object.assign(state, { keep: s.keep, questions: s.questions, remaining: s.remaining, tourSeen: s.tour !== false });
   } catch { /* varsayılanlarla sürer */ }
   renderQuota();
   await refreshHistory();
   const m = location.hash.match(/^#k\/([\w-]+)$/);
   if (m) await openConversation(m[1], { push: false });
+  else if (location.hash === "#ornek") await openExample({ push: false });
   else {
     cur = { id: null, title: "", turns: state.keep ? [] : loadLocal() };
     renderAll();
   }
   await resumePending();
+  if (!busy && (location.hash === "#tanitim" || !state.tourSeen)) startTour();
 }
 
 // S13.15.4 (3): PWA. Servis çalışanı yalnız bağlantı yokken "çevrimdışısınız" sayfasını gösterir (önbellek yok).

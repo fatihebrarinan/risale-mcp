@@ -606,7 +606,9 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   beklerken adımlar (`status_line`, `turns.steps`). 👍/👎 geri bildirim
   (`sohbet geri-bildirim`); kota ve bütçe `sohbet.Limits` (kişi günde 10 soru, servis günde 5 $, ayda 100 $, 2 $'da
   ntfy, konu sunucuda `data/sohbet-ntfy`). Yeni konuşma sayfasında ayna figürü (dördünden biri; `scripts/ayna-figur.py` üretir) ve karşılama sözü
-  rastgele (S13.23.4); temalar Sistem, Açık, Koyu, Sepya, Zümrüt. Cevap sayfadan bağımsız sürer (B13, `sohbet.Job`): tarayıcı kapansa da biter ve konuşmaya
+  rastgele (S13.23.4); temalar Sistem, Açık, Koyu, Sepya, Zümrüt. İlk girişte rehber (S13.23.6): konuşma listesinin başında salt okunur örnek
+  konuşma (`sohbet_assets/ornek-konusma.json`, sistemin gerçek cevabı; yeniden üretmek `… sohbet ornek [--cikti <dosya>]`,
+  kullanıcı seçer) ve beş adımlık rehber; görüldüğü `users.tour_seen`'de, yeniden `#tanitim` ya da Ayarlar › Belgeler. Cevap sayfadan bağımsız sürer (B13, `sohbet.Job`): tarayıcı kapansa da biter ve konuşmaya
   yazılır, sayfa `api/sor/devam` ile yeniden bağlanır, servis kapanırken süren cevaplar beklenir; hak yalnız biten
   cevaptan düşer. Arayüz denemesi `uv run --no-project --with playwright python
   scripts/sohbet-arayuz-dene.py` (başsız Brave). Yayında: `deploy.sh` servisi `risale-sohbet` (:8010) kurar, Caddy

@@ -1710,6 +1710,13 @@ class Conversations:
     def set_keeps(self, email: str, on: bool) -> None:
         self.store._run("UPDATE users SET keep_history = ? WHERE email = ?", (int(on), email))
 
+    def tour_seen(self, email: str) -> bool:
+        row = self.store._run("SELECT tour_seen FROM users WHERE email = ?", (email,))
+        return bool(row and row[0][0])
+
+    def set_tour_seen(self, email: str) -> None:
+        self.store._run("UPDATE users SET tour_seen = 1 WHERE email = ?", (email,))
+
     def owned(self, email: str, ident: str) -> bool:
         return bool(self.store._run("SELECT 1 FROM conversations WHERE id = ? AND email = ?", (ident, email)))
 
@@ -1923,7 +1930,7 @@ def _kipler_public() -> list[dict]:
 def _asset_version() -> str:
     import hashlib
     h = hashlib.sha256()
-    for name in ("sohbet.js", "sohbet.css", *(f"ayna-{x}.svg" for x in "abcd")):
+    for name in ("sohbet.js", "sohbet.css", "ornek-konusma.json", *(f"ayna-{x}.svg" for x in "abcd")):
         h.update((ASSETS / name).read_bytes())
     return h.hexdigest()[:10]
 
@@ -1973,7 +1980,8 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
                  "literata-ad.woff2": "font/woff2", "favicon.ico": "image/x-icon", "icon-kucuk.svg": "image/svg+xml",
                  "apple-touch-icon.png": "image/png", "icon-192.png": "image/png", "icon-512.png": "image/png",
                  "icon-maskable-512.png": "image/png", "paylasim.jpg": "image/jpeg",
-                 **{f"ayna-{x}.svg": "image/svg+xml" for x in "abcd"}}.get(name)
+                 **{f"ayna-{x}.svg": "image/svg+xml" for x in "abcd"},
+                 "ornek-konusma.json": "application/json"}.get(name)
         if not media:
             return JSONResponse({"error": "yok"}, status_code=404)
         return FileResponse(ASSETS / name, media_type=media, headers={"Cache-Control": "public, max-age=31536000"})
@@ -2129,7 +2137,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
         email = user(request)
         if not email:
             return reply(signed_out, 401)
-        return reply({"email": email, "keep": convs.keeps(email),
+        return reply({"email": email, "keep": convs.keeps(email), "tour": convs.tour_seen(email),
                       "questions": limits.questions if limits.counted(email) else None, "remaining": remaining(email)})
 
     async def settings(request: Request):
@@ -2137,10 +2145,13 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
         if not email:
             return reply(signed_out, 401)
         body = await json_body(request)
-        if body is None or not isinstance(body.get("keep"), bool):
+        if body is None or not (isinstance(body.get("keep"), bool) or body.get("tour_seen") is True):
             return reply({"error": "geçersiz istek"}, 400)
-        convs.set_keeps(email, body["keep"])
-        return reply({"ok": True, "keep": body["keep"]})
+        if body.get("tour_seen") is True:                 # S13.23.6: rehber görüldü (bir daha kendiliğinden açılmaz)
+            convs.set_tour_seen(email)
+        if isinstance(body.get("keep"), bool):
+            convs.set_keeps(email, body["keep"])
+        return reply({"ok": True, "keep": convs.keeps(email)})
 
     async def listing(request: Request):
         email = user(request)
@@ -2210,6 +2221,36 @@ def _drain(jobs: dict):
             logging.warning("sohbet: kapanmadan önce %d cevap bekleniyor", len(running))
             await asyncio.wait(running, timeout=DRAIN_SECONDS)
     return lifespan
+
+
+EXAMPLE_QUESTION = "İmanımı nasıl arttırabilirim? Risale-i Nur'dan cevapla."   # kullanıcının seçimi, 2026-11-27
+EXAMPLE_FILE = ASSETS / "ornek-konusma.json"
+
+
+async def make_example(chat: "Chat", question: str, out: Path | None = None) -> None:
+    """S13.23.6: örnek konuşma. Sistemin gerçek cevabıdır; kısaltılmaz, düzeltilmez (sitedeki örnek cevaplar gibi).
+    Dosya cevabın sayfaya giden hâlini taşır (`done`: markdown, kaynaklar, adımlar); denetimden geçmeyen alıntı varsa
+    yazılmaz, yeniden üretilir."""
+    tally, start = Tally(), time.time()
+    done = None
+    async for event, data in chat.ask([], question, tally):
+        if event == "done":
+            done = data
+        elif event == "error":
+            raise SystemExit(f"hata: {data['message']}")
+    if done is None:
+        raise SystemExit("cevap gelmedi")
+    if done["problems"] or done["checks"].get("dropped"):
+        raise SystemExit(f"denetimden geçmeyen alıntı var ({done['checks']}); yeniden çalıştırın")
+    keep = ("markdown", "sources", "corrected", "steps", "mode", "libraries")
+    turn = {"q": question, **{k: done.get(k) for k in keep}}
+    payload = {"created": time.strftime("%Y-%m-%d"), "model": chat.settings.model, "turns": [turn]}
+    out = out or EXAMPLE_FILE
+    out.write_text(json.dumps(payload, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+    print(done["markdown"] + "\n\nKaynaklar")
+    for s in done["sources"]:
+        print(f"[{s['n']}] {s.get('cite_as') or s['id']}")
+    print(f"\n{out} · {tally.tools} araç, ≈{tally.cost:.4f} $, {time.time() - start:.0f} sn, denetim {done['checks']}")
 
 
 def _client():
@@ -2303,6 +2344,10 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("question")
     p.add_argument("--kutuphane", default="", help="öbür kütüphaneler, virgülle (S13.17): tefsir,hadis,klasik")
     p.add_argument("--kip", default=None, help="kip (kipler.py): serbest, tarama, ayet")
+    p = sub.add_parser("ornek", help="S13.23.6: ilk girişteki örnek konuşmayı gerçek sohbetten üret "
+                       "(sohbet_assets/ornek-konusma.json; yayından önce kullanıcı okur)")
+    p.add_argument("--soru", default=EXAMPLE_QUESTION)
+    p.add_argument("--cikti", type=Path, default=None, help="başka dosyaya yaz (birkaç cevap üretip seçmek için)")
     p = sub.add_parser("olc", help="altın soruları bu servisle sor; varsayılan: Risale'nin 29 sorusu. Model ve "
                                     "düşünme düzeyi SOHBET_MODEL, SOHBET_EFFORT")
     p.add_argument("ids", nargs="*")
@@ -2351,6 +2396,8 @@ def main(argv: list[str] | None = None) -> None:
             print(f"\n{tally.rounds} tur, {tally.tools} araç, girdi {tally.input} (önbellek yazma {tally.cache_write}, "
                   f"okuma {tally.cache_read}), çıktı {tally.output}, ≈{tally.cost:.4f} $, {time.time() - start:.1f} sn")
         asyncio.run(run())
+    elif args.command == "ornek":
+        asyncio.run(make_example(Chat(_library(), _client(), config, settings), args.soru, args.cikti))
     elif args.command == "dene":
         from risale_mcp import sohbet_dene
         asyncio.run(sohbet_dene.run(Chat(_library(), _client(), config, settings), args.file, args.names,

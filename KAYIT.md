@@ -448,6 +448,23 @@ satırlar, Yenilikler ve Çalışmalar'ın giriş cümlesi, `<link rel="alternat
 `calismalar.xml` üretilmeye devam eder; "6.236 âyet" sayısı dört ana sayfadan (çatı ve risalemcp.com, tr ve en) kalktı,
 sayı şeridi çatıda dört, risalemcp.com'da üç sütun; `ASSET_VERSION` 13.
 
+**S13.23.6. İlk girişte örnek konuşma ve rehber** (2026-11-27; sohbet tarafı). Örnek soru kullanıcının seçimi:
+"İmanımı nasıl arttırabilirim? Risale-i Nur'dan cevapla." Cevap sistemin gerçek cevabıdır, kısaltılmaz ve
+düzeltilmez: `sohbet ornek` (yeni komut; denetimden geçmeyen alıntı varsa yazmaz) dört kez çalıştırıldı (her biri
+≈0,005–0,007 $), en temizi seçildi: birincisinde aynı cümle Tarihçe'deki kopyası ve Şualar'daki aslıyla iki numara
+almış, bir yere okunmadan dayanılmış, nâşirin hadis meali tırnakta; ikincisinde yine nâşir meali; dördüncüsünde okunmadan
+dayanılan bir yer; seçilen üçüncüsünde bütün dayanılan yerler okunmuş, tefekkür cümlesi müellifin sözü (Emirdağ
+Lâhikası), alıntılar blok ve numaralı. Dosya `sohbet_assets/ornek-konusma.json`; kaynaklarının veritabanında durduğu
+test edilir. Sayfa: konuşma listesinin başında hep "Örnek · İmanımı nasıl ar…" (salt okunur, geri bildirim yok, soru
+sorulunca yeni konuşma açılır; adres `#ornek`). Rehber beş adım (örnek cevap, alıntının numarası, Kaynaklar panelinde
+metin, kip menüsü, kütüphaneler ve ayarlar; son düğme "Kendi sorumu soracağım" yeni konuşma açar): ışık halkası ve
+dört dikdörtgenli perde (clip-path'li yarı saydam perde başsız tarayıcıda çizilmedi sanıldı; piksel ölçümü çizildiğini
+gösterdi, yine de en sağlam yol seçildi), panel animasyonundan sonra yeniden ölçülür. İlk girişte kendiliğinden açılır;
+görüldüğü `users.tour_seen` (eklenen sütun; mevcut hesaplar da bir kez görür), `api/durum` `tour`, `api/ayarlar`
+`tour_seen`; yeniden Ayarlar › Belgeler › "Tanıtımı yeniden göster" ya da `#tanitim`. Deneme: geniş ve telefon
+genişliğinde baştan sona (beş adım, son adımda yeni konuşma, yeniden açılışta rehber yok, sayfa hatası yok).
+Okuma platformunun karşılamasına aynı rehber sonraki iş.
+
 **S13.23.4. Temalar, ayna figürü, dinamik karşılama** (2026-11-27; kullanıcının fikri ve kararları aynı gün).
 Kullanıcı başlığın üstünde "ayna, aynanın içinde kütüphane, logodan ayrıntılı" istedi; üç seçenek gösterildi (A raflar,
 kandil, rahle üstünde logonun kırmızı kapaklı kitabı; B iki yanı raflı koridor, sonda kemerli pencereden ışık; C A'nın

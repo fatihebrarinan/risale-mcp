@@ -190,6 +190,7 @@
 
     <section id="ayar-belgeler" role="tabpanel" aria-labelledby="sekme-belgeler" class="sekme-icerik" hidden>
       <ul class="belgeler">
+        <li><button type="button" id="rehber-yeniden" class="link">Tanıtımı yeniden göster</button></li>
         <li><a href="{{P}}hakkinda">Hakkında: nasıl çalışır, sınırları</a></li>
         <li><a href="{{P}}gizlilik">Gizlilik politikası</a></li>
         <li><a href="{{P}}sartlar">Kullanım şartları</a></li>
@@ -197,6 +198,17 @@
     </section>
   </div>
 </dialog>
+
+<!-- S13.23.6: ilk girişteki rehber (sohbet.js `TOUR`) -->
+<div id="rehber-perde" class="rehber-perde" hidden><i></i><i></i><i></i><i></i></div>
+<div id="rehber-isik" class="rehber-isik" hidden></div>
+<div id="rehber" class="rehber" role="dialog" aria-modal="false" aria-labelledby="rehber-baslik" hidden>
+  <p class="rehber-sayi" id="rehber-sayi"></p>
+  <h2 id="rehber-baslik"></h2>
+  <p id="rehber-yazi"></p>
+  <div class="rehber-dugmeler"><button type="button" id="rehber-gec" class="ghost">Geç</button>
+    <button type="button" id="rehber-ileri" class="dolu">İleri</button></div>
+</div>
 
 <script src="{{P}}static/sohbet.js?v={{V}}"></script>
 </body>

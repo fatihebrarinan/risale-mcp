@@ -173,7 +173,8 @@ CREATE TABLE IF NOT EXISTS turns (
 ADDED_COLUMNS = {"usage": {**{c: "INTEGER" for c in ("fixed", "dropped", "leaks", "paragraphs", "unmarked")},
                            "libraries": "TEXT"},     # S13.17: sorunun açık öbür kütüphaneleri ("tefsir,hadis")
                  # S13.1: konuşmaları hesapta sakla (varsayılan açık; kapalıyken konuşma yalnız tarayıcıda)
-                 "users": {"keep_history": "INTEGER NOT NULL DEFAULT 1"},
+                 "users": {"keep_history": "INTEGER NOT NULL DEFAULT 1",
+                           "tour_seen": "INTEGER NOT NULL DEFAULT 0"},   # S13.23.6: ilk girişteki rehber görüldü
                  # S13.3: cevabın adımları ("… okunuyor"), JSON; S13.4 (c): çağrılan araçlar (sonraki soruda modele), JSON
                  "turns": {"steps": "TEXT", "reads": "TEXT",
                            "mode": "TEXT",           # S13.12: turun kipi (serbest, tarama…)
