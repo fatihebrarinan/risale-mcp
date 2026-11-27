@@ -128,7 +128,7 @@ def test_web_does_not_reveal_account(client, store, mailer):
     store.redeem("var@b.co", code, PW, now=2)
     a = client.post("/sohbet/kayit", data={"email": "var@b.co"})
     b = client.post("/sohbet/kayit", data={"email": "yok@b.co"})
-    strip = lambda t: t.replace("var@b.co", "X").replace("yok@b.co", "X")
+    strip = lambda t: re.sub(r'data-t="[^"]*"', "", t.replace("var@b.co", "X").replace("yok@b.co", "X"))
     assert strip(a.text) == strip(b.text)                             # sayfa aynı; yalnız e-postanın metni farklı
     assert "parolasını yenilemek" in mailer.sent[-2][2] and "hesap açmak" in mailer.sent[-1][2]
 
@@ -259,3 +259,23 @@ def test_security_headers_404_and_card(client):
     assert missing.status_code == 404 and "Sayfa bulunamadı" in missing.text and "content-security-policy" in missing.headers
     api = client.get("/sohbet/api/olmayan")
     assert api.status_code == 404 and api.json() == {"error": "yok"}
+
+
+def test_mail_status(client, mailer):
+    """S13.23.1: kod sayfası e-postanın akıbetini sayfaya özgü jetonla sorar; adres sorulmaz."""
+    page = client.post("/sohbet/kayit", data={"email": "durum@b.co"}).text
+    token = re.search(r'data-t="([^"]+)"', page).group(1)
+    assert 'src="/sohbet/kod.js"' in page and "Spam değil" in page
+    assert client.get("/sohbet/kayit/eposta", params={"t": token}).json() == {"state": "sent", "seconds": 0}
+    assert client.get("/sohbet/kayit/eposta", params={"t": "uydurma"}).json() == {"state": "gone"}
+    assert client.get("/sohbet/kod.js").headers["content-type"].startswith("text/javascript")
+
+
+def test_delivery_reasons():
+    from risale_mcp.sohbet_hesap import delivery
+    base = {"created_at": "2026-11-27T12:07:09Z", "updated_at": "2026-11-27T12:08:21Z"}
+    full = delivery({**base, "status": "failed", "last_tries": [{"code": 452, "message": "4.2.2 The recipient's inbox is out of storage space."}]})
+    assert full == {"state": "failed", "seconds": 72, "reason": "gelen kutunuz dolu"}
+    assert delivery({**base, "status": "failed", "last_tries": [{"code": 550, "message": "5.1.1 The email account that you tried to reach does not exist"}]})["reason"].startswith("bu adreste")
+    assert delivery({**base, "status": "sent"}) == {"state": "sent", "seconds": 72}
+    assert delivery({"status": "sending"}) == {"state": "waiting"}

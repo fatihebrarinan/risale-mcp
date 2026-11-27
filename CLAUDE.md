@@ -586,7 +586,9 @@ Adımların geçmişi `KAYIT.md`'dedir (2026-11-19'a kadar `PLANLAR.md` "Kayıt"
   davetli bölümden ayrı (`data/sohbet.db`, çerez `sohbet_oturum`), e-posta doğrulama koduyla kayıt ve parola yenileme
   tek akış, sınırlar modülün başında; e-posta Scaleway Transactional Email (AB; `.env` `SCW_SECRET_KEY`,
   `SCW_PROJECT_ID`; kökteki SPF'te `include:_spf.tem.scaleway.com`, MX'ler `destek@` yönlendirmesinindir, dokunulmaz),
-  geliştirmede `serve --dev` (e-posta `data/interim/sohbet/eposta.log`'a). API anahtarı `ANTHROPIC_API_KEY`
+  geliştirmede `serve --dev` (e-posta `data/interim/sohbet/eposta.log`'a). Kod sayfası iletinin akıbetini sayfaya özgü jetonla sorar (S13.23.1, `kayit/eposta`,
+  `delivery`: teslim süresi ya da teslim edilemeyişin sebebi); son iletilerin teslim süreleri
+  `uv run python -m risale_mcp.sohbet_hesap eposta-sure [--n 30]`. API anahtarı `ANTHROPIC_API_KEY`
   (Console'da ayrı çalışma alanı, aylık tavan 100 $); `golden` ölçümü aboneliği kullanır, anahtarı alt sürece geçirmez.
   Sohbet servisi `sohbet.py` (S12.3; kuralları modülün başında): araçlar süreç içinde `create_server`'dan, talimat
   Risale talimatından türetilir; model `[[kimlik]]` yazar, Kaynaklar'ı sunucu kurar, alıntıyı denetler ve tutmayanı kendisi düzeltir (S12.9: başka yerde bulunan alıntıya taşır, bulunmayanı "doğrulanamadı" diye gösterir; model turu `SOHBET_MODEL_FIX`; S13.16: "…" ile birleşen alıntının tutmayan parçası metindeki karşılığıyla değişir ya da atılır, dört kelimelik ve üstü işaretsiz tırnaklı söz aranır: bulunursa işaret alır, okunan bir cümlede çok yakın karşılığı varsa (≥0,8) metnin sözleriyle değişir, bulunmazsa "⚠ eserlerde bu sözlerle bulunamadı"; dili belli olmayan soru Türkçe cevaplanır). Komutlar

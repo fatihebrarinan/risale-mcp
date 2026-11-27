@@ -31,6 +31,7 @@ E-posta: `ScalewayMailer` (Scaleway Transactional Email, AB; `SCW_SECRET_KEY`, `
 """
 
 import argparse
+import asyncio
 import hashlib
 import html
 import json
@@ -386,11 +387,15 @@ class LogMailer:
     path: Path = INTERIM_DIR / "sohbet" / "eposta.log"
     sent: list = field(default_factory=list)
 
-    def send(self, to: str, subject: str, text: str) -> None:
+    def send(self, to: str, subject: str, text: str) -> str:
         self.sent.append((to, subject, text))
         self.path.parent.mkdir(parents=True, exist_ok=True)
         with self.path.open("a", encoding="utf-8") as f:
             f.write(f"--- {time.strftime('%F %T')} → {to}\n{subject}\n\n{text}\n")
+        return f"log-{len(self.sent)}"
+
+    def status(self, ident: str) -> dict:
+        return {"state": "sent", "seconds": 0}
 
 
 @dataclass
@@ -413,7 +418,45 @@ class ScalewayMailer:
             data=json.dumps(body).encode(), method="POST",
             headers={"X-Auth-Token": self.secret, "Content-Type": "application/json"})
         with urllib.request.urlopen(req, timeout=20) as r:
-            r.read()
+            sent = json.loads(r.read() or b"{}")
+        return ((sent.get("emails") or [{}])[0]).get("id", "")
+
+    def _get(self, path: str) -> dict:
+        req = urllib.request.Request(f"https://api.scaleway.com/transactional-email/v1alpha1/regions/{self.region}/{path}",
+                                     headers={"X-Auth-Token": self.secret})
+        with urllib.request.urlopen(req, timeout=10) as r:
+            return json.loads(r.read())
+
+    def status(self, ident: str) -> dict:
+        """S13.23.1: iletinin akıbeti (`delivery`): sent, failed ya da waiting; teslimin süresi ve sebebi."""
+        return delivery(self._get(f"emails/{ident}"))
+
+    def recent(self, count: int = 30) -> list[dict]:
+        return self._get(f"emails?project_id={self.project}&page_size={count}&order_by=created_at_desc")["emails"]
+
+
+def _ts(value: str) -> float:
+    from datetime import datetime
+    return datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp()
+
+
+def delivery(email: dict) -> dict:
+    """S13.23.1: Scaleway'in ileti kaydından okuyucuya gösterilecek akıbet. `seconds`: Scaleway'e verilişten alıcı
+    sunucunun kabulüne (ya da reddine) kadar. Alıcının iletiyi kutuda geç göstermesi buraya girmez."""
+    state = email.get("status")
+    out = {"state": {"sent": "sent", "failed": "failed", "canceled": "failed"}.get(state, "waiting")}
+    if out["state"] != "waiting" and email.get("created_at") and email.get("updated_at"):
+        out["seconds"] = max(0, round(_ts(email["updated_at"]) - _ts(email["created_at"])))
+    if out["state"] == "failed":
+        last = (email.get("last_tries") or [{}])[-1]
+        text = f"{last.get('code', '')} {last.get('message', '')}".lower()
+        if any(w in text for w in ("storage", "full", "quota", "4.2.2", "5.2.2")):
+            out["reason"] = "gelen kutunuz dolu"
+        elif any(w in text for w in ("does not exist", "no such", "unknown user", "5.1.1", "user unknown", "not found")):
+            out["reason"] = "bu adreste bir e-posta kutusu bulunamadı"
+        else:
+            out["reason"] = "alıcının e-posta sunucusu iletiyi kabul etmedi"
+    return out
 
 
 def mailer_from_env(config: Config, dev: bool):
@@ -432,6 +475,38 @@ def mailer_from_env(config: Config, dev: bool):
 # S13.15.6 (kullanıcının kararı, 2026-11-27): sohbet arama motorlarına açıldı. Tanıtımlı sayfalar (girişsiz açılış,
 # kayıt, giriş) dizine açıktır, kanonik adresleri köktür ve yapılandırılmış veri taşır (`seo`); öbürleri (kod, hesabı
 # silme, çevrimdışı) `noindex`.
+# S13.23.1: kod sayfası e-postanın akıbetini sorar (`kayit/eposta?t=…`); betik yoksa sayfa yine çalışır.
+CODE_JS = """(() => {
+  const box = document.getElementById("eposta-durum");
+  if (!box || !box.dataset.t) return;
+  const url = box.dataset.url + "?t=" + encodeURIComponent(box.dataset.t);
+  const say = (text, cls) => { box.textContent = text; box.className = "small " + (cls || ""); box.hidden = false; };
+  say("E-posta gönderiliyor…");
+  let tries = 0;
+  const ask = async () => {
+    tries += 1;
+    let s = null;
+    try { const r = await fetch(url, { credentials: "same-origin" }); if (r.ok) s = await r.json(); } catch (e) {}
+    if (s && s.state === "sent") {
+      const n = s.seconds;
+      say("✓ Kod, adresinizin e-posta sunucusuna ulaştı" + (n > 1 ? " (" + n + " saniyede)" : "") + ". Gelen "
+        + "kutunuzda birkaç dakika içinde görünmezse aşağıdaki klasörlere bakın.", "ok");
+    } else if (s && s.state === "failed") {
+      say("✗ E-posta bu adrese ulaştırılamadı: " + s.reason + ". Adresi denetleyin ya da başka bir adresle yeniden "
+        + "deneyin.", "err");
+    } else if (s && s.state === "gone") {
+      box.hidden = true;
+    } else if (tries < 40) {
+      if (tries === 10) say("E-posta hâlâ gönderim sırasında; biraz daha bekleyin.");
+      setTimeout(ask, tries < 10 ? 2000 : 5000);
+    } else {
+      say("E-postanın durumu öğrenilemedi. Birkaç dakika içinde gelmezse \u201cYeni kod gönder\u201de basın.");
+    }
+  };
+  setTimeout(ask, 1500);
+})();
+"""
+
 SHELL = """<!doctype html><html lang="tr"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">{robots}
 <meta name="referrer" content="no-referrer"><title>{title}</title>{head}{seo}<style>{style}</style></head>
@@ -734,8 +809,11 @@ yenisini belirlersiniz.</p>
 <p class="gecis">Zaten hesabınız var mı? <a href="{p}giris">Giriş yapın</a></p>"""
 
 CODE_FORM = """<h1>Kodu yazın</h1>
-<p><strong>{email_text}</strong> adresine bir doğrulama kodu gönderdik (birkaç dakika sürebilir; gelmezse istenmeyen
-e-posta klasörüne bakın). Kodu ve kendinize bir parola yazın. Hesabınız varsa parolanız yenilenir.</p>
+<p><strong>{email_text}</strong> adresine bir doğrulama kodu gönderdik. Kodu ve kendinize bir parola yazın. Hesabınız
+varsa parolanız yenilenir.</p>
+<p class="small" id="eposta-durum" data-t="{token}" hidden></p>
+<p class="small">Gelen kutunuzda göremezseniz <strong>İstenmeyen (Spam)</strong> ya da <strong>Gereksiz</strong>
+klasörüne bakın. Orada bulursanız "Spam değil" diye işaretleyin; sonraki e-postalarımız gelen kutunuza düşer.</p>
 {message}
 <form method="post" action="{p}kayit/kod">
 <input type="hidden" name="email" value="{email}">
@@ -745,7 +823,7 @@ e-posta klasörüne bakın). Kodu ve kendinize bir parola yazın. Hesabınız va
 <button type="submit">Doğrula ve gir</button>
 <p class="small">Devam ederek sohbet sayfasının <a href="{p}sartlar">kullanım şartlarını</a> ve
 <a href="{p}gizlilik">gizlilik politikasını</a> kabul etmiş olursunuz.</p>
-</form>
+</form>{script}
 <form method="post" action="{p}kayit" class="yalin">
 <input type="hidden" name="email" value="{email}"><button class="link" type="submit">Yeni kod gönder</button>
 </form>"""
@@ -812,9 +890,36 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
     def user(request: Request) -> str | None:
         return store.check(request.cookies.get(COOKIE))
 
-    def code_page(email: str, message: str = "", status: int = 200) -> HTMLResponse:
-        return shell("Kod", CODE_FORM.format(p=p, email=esc(email), email_text=esc(email), message=message,
-                                             min=MIN_PASSWORD), status)
+    sent_mail: dict[str, tuple[str, float]] = {}      # S13.23.1: sayfa jetonu → (iletinin kimliği, zaman)
+
+    def code_page(email: str, message: str = "", status: int = 200, mail_id: str = "") -> HTMLResponse:
+        token = ""
+        if mail_id:
+            import secrets
+            now = time.time()
+            for k in [k for k, (_, ts) in sent_mail.items() if ts < now - 1800]:
+                del sent_mail[k]
+            token = secrets.token_urlsafe(16)
+            sent_mail[token] = (mail_id, now)
+        body = CODE_FORM.format(p=p, email=esc(email), email_text=esc(email), message=message, min=MIN_PASSWORD,
+                                token=esc(token), script=f'<script src="{p}kod.js" defer></script>' if token else "")
+        if token:
+            body = body.replace('data-t="', f'data-url="{p}kayit/eposta" data-t="', 1)
+        return shell("Kod", body, status)
+
+    async def mail_status(request: Request):
+        """S13.23.1: kod sayfasının sorduğu akıbet. Jeton yalnız o sayfada; adres sorulmaz, başkası öğrenemez."""
+        found = sent_mail.get(request.query_params.get("t", "")[:64])
+        if not found:
+            return JSONResponse({"state": "gone"}, headers={"Cache-Control": "no-store"})
+        try:
+            got = await asyncio.to_thread(mailer.status, found[0])
+        except Exception:
+            got = {"state": "waiting"}
+        return JSONResponse(got, headers={"Cache-Control": "no-store"})
+
+    async def code_js(request: Request):
+        return Response(CODE_JS, media_type="text/javascript", headers={"Cache-Control": "public, max-age=3600"})
 
     async def home(request: Request):
         email = user(request)
@@ -859,13 +964,13 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
             return shell("Hesap", REGISTER.format(p=p, message=err(str(e)), email=esc(email)), 429, intro=True)
         subject, text = code_message(config, code, existing)
         try:
-            mailer.send(email, subject, text)
+            mail_id = await asyncio.to_thread(mailer.send, email, subject, text) or ""   # olay döngüsünü tıkamasın
         except Exception:                                # servis hatası: kullanıcıya sade ileti, ayrıntı günlükte
             import logging
             logging.exception("sohbet: doğrulama e-postası gönderilemedi")
             return shell("Hesap", REGISTER.format(p=p, message=err("E-posta şu an gönderilemedi. Biraz sonra yeniden "
                                                                    "deneyin."), email=esc(email)), 502, intro=True)
-        return code_page(email)
+        return code_page(email, mail_id=mail_id)
 
     async def redeem(request: Request):
         form = await request.form()
@@ -938,6 +1043,7 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
     return SecurityHeaders(Starlette(exception_handlers={404: not_found}, lifespan=lifespan, routes=[
         Route(p, home), Route(f"{p}giris", login, methods=["GET", "POST"]),
         Route(f"{p}kayit", register, methods=["GET", "POST"]), Route(f"{p}kayit/kod", redeem, methods=["POST"]),
+        Route(f"{p}kayit/eposta", mail_status), Route(f"{p}kod.js", code_js),
         Route(f"{p}cikis", logout, methods=["POST"]), Route(f"{p}hesap", delete, methods=["GET", "POST"]),
         Route(f"{p}api/ben", me), Route(f"{p}manifest.webmanifest", web_manifest), Route(f"{p}sw.js", worker),
         Route(f"{p}cevrimdisi", offline), Route(f"{p}robots.txt", robots), Route(f"{p}sitemap.xml", site_map),
@@ -990,6 +1096,8 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--port", type=int, default=8010)
     p.add_argument("--dev", action="store_true", help="e-posta gönderilmez, data/interim/sohbet/eposta.log'a yazılır")
     sub.add_parser("users")
+    p = sub.add_parser("eposta-sure", help="S13.23.1: son iletilerin teslim süreleri (Scaleway'in kaydından)")
+    p.add_argument("--n", type=int, default=30)
     for name in ("remove-user", "revoke"):
         sub.add_parser(name).add_argument("email")
     args = parser.parse_args(argv)
@@ -1001,6 +1109,23 @@ def main(argv: list[str] | None = None) -> None:
         config = Config.from_env()
         uvicorn.run(build_app(store, mailer_from_env(config, args.dev), config), host="127.0.0.1", port=args.port,
                     proxy_headers=True, forwarded_allow_ips="127.0.0.1", access_log=False)
+    elif args.command == "eposta-sure":
+        config = Config.from_env()
+        mailer = mailer_from_env(config, False)
+        rows = mailer.recent(args.n)
+        times = []
+        for e in rows:
+            d = delivery(e)
+            to = e.get("rcpt_to") or ""
+            domain = to.split("@")[-1]
+            secs = d.get("seconds")
+            if d["state"] == "sent" and secs is not None:
+                times.append(secs)
+            print(f"{_when(_ts(e['created_at']))}  {d['state']:<7} {'' if secs is None else f'{secs:>4} sn'}  "
+                  f"…@{domain}  {d.get('reason', '')}")
+        if times:
+            times.sort()
+            print(f"{len(times)} teslim: ortanca {times[len(times) // 2]} sn, en uzun {times[-1]} sn")
     elif args.command == "users":
         rows = store.users()
         for u in rows:
