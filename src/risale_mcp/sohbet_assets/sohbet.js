@@ -1338,8 +1338,8 @@ const TOUR = [
   { target: () => els.side, title: "Metni bağlamıyla okuyun",
     text: "Kaynaklar panelinde alıntının geçtiği bölüm açılır: üstte eserdeki yeri, alıntılanan cümleler koyu yazılı. Önünü ve ardını buradan okuyabilirsiniz.",
     after: () => { showList(); if (!docked.right.matches) closeDrawers(); } },
-  { target: () => $("kip-dugme"), title: "Sorunun türü",
-    text: "Serbest soru, konu taraması ya da âyet çalışması: buradan seçersiniz. Konu taraması bir konunun eserlerde geçtiği yerleri toplar." },
+  { target: () => $("kip-dugme"), title: "Mod",
+    text: "Serbest soru, konu taraması ya da âyet çalışması: modu buradan seçersiniz. Konu taraması bir konunun eserlerde geçtiği yerleri toplar." },
   { target: () => ($("kutuphaneler").hidden ? els.settingsOpen : $("kutuphaneler")), title: "Kütüphaneler ve ayarlar",
     text: "Cevaplar her zaman Risale-i Nur'a dayanır. Tefsir, Hadis ve Klasik eserleri, temayı ve yazı boyutunu Ayarlar'dan değiştirirsiniz. Örnek konuşma solda durur; bu rehberi Ayarlar › Belgeler'den yeniden açabilirsiniz." },
 ];

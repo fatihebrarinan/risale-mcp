@@ -464,6 +464,10 @@ görüldüğü `users.tour_seen` (eklenen sütun; mevcut hesaplar da bir kez gö
 `tour_seen`; yeniden Ayarlar › Belgeler › "Tanıtımı yeniden göster" ya da `#tanitim`. Deneme: geniş ve telefon
 genişliğinde baştan sona (beş adım, son adımda yeni konuşma, yeniden açılışta rehber yok, sayfa hatası yok).
 Okuma platformunun karşılamasına aynı rehber sonraki iş.
+Kullanıcı örnek cevabı onayladı (2026-11-27) ve iki düzeltme istedi: başlığın altındaki "Cevaplar Risale-i Nur'dan
+alıntılarla gelir; her alıntının yeri Kaynaklar'dadır." cümlesi kalktı (rehber anlatıyor); okuyucuya görünen ad "kip"
+değil **"mod"** (menüde "Mod · Serbest soru", rehberde ve Ayarlar › Kütüphaneler'de de). Koddaki adlar (`kipler.py`,
+`mode`) ve iç belgeler değişmedi.
 
 **S13.23.4. Temalar, ayna figürü, dinamik karşılama** (2026-11-27; kullanıcının fikri ve kararları aynı gün).
 Kullanıcı başlığın üstünde "ayna, aynanın içinde kütüphane, logodan ayrıntılı" istedi; üç seçenek gösterildi (A raflar,
