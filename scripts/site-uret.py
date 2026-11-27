@@ -82,7 +82,7 @@ CHAT = "https://chat.ayinedar.org/"
 IMAGE = "/img/paylasim.png"                # iki sitede de aynı yolda, ayrı resim (çatınınki `--resim` ile değil,
                                            # scripts/paylasim-ayinedar.py ile)
 SHARED = ("style.css", "site.js", "fonts/naskh.woff2")   # site/'tan çatıya kopyalanır
-ASSET_VERSION = 12                      # style.css ve site.js sürümü (sayfalardaki ?v=N ile aynı tutulur)
+ASSET_VERSION = 13                      # style.css ve site.js sürümü (sayfalardaki ?v=N ile aynı tutulur)
 MONTHS = ("Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık")
 STATUSES = ("taslak", "yayinda")
 
@@ -330,7 +330,7 @@ CURRENT = {"risale.html": "/#eklentiler", "hadis.html": "/#eklentiler", "tefsir.
            "claude.html": "/#ekle", "chatgpt.html": "/#ekle", "belgeler.html": "/belgeler.html"}
 FOOTER = ("<footer>Risale MCP: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti "
           "değildir.<br><a href=\"/gizlilik.html\">Gizlilik</a> · <a href=\"/kullanim-sartlari.html\">Kullanım "
-          "şartları</a> · <a href=\"/katki.html\">Hata bildirin</a> · <a href=\"" + CATI_BASE + "/yenilikler.xml\">RSS</a> · "
+          "şartları</a> · <a href=\"/katki.html\">Hata bildirin</a> · "
           "<a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a> · <a href=\"" + CATI_BASE + "/\">Âyinedâr"
           "</a>'ın eklentileri</footer>")
 
@@ -365,7 +365,7 @@ CURRENT_CATI = {"yenilikler.html": "/yenilikler.html", "calismalar.html": "/cali
 INDEPENDENT = "gönüllü ve bağımsız bir hizmettir; herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir"
 FOOTER_CATI = (f"<footer>Âyinedâr: {INDEPENDENT}. Yayıncısı Nur Hadimleri. Ücretsizdir, reklam ve ziyaretçi sayacı "
                "yoktur.<br><a href=\"/gizlilik.html\">Gizlilik</a> · <a href=\"/kullanim-sartlari.html\">Kullanım "
-               "şartları</a> · <a href=\"/belgeler.html\">Belgeler</a> · <a href=\"/yenilikler.xml\">RSS</a> · "
+               "şartları</a> · <a href=\"/belgeler.html\">Belgeler</a> · "
                "<a href=\"mailto:destek@ayinedar.org\">destek@ayinedar.org</a></footer>")
 NAV_CATI_EN = [(CHAT, "Chat"), ("/en/#projects", "Projects"), ("/en/privacy.html", "Privacy")]
 CURRENT_CATI_EN = {"privacy.html": "/en/privacy.html"}
@@ -428,7 +428,7 @@ def page(title: str, description: str, path: str, body: str, kind: str = "websit
 {og_block(title, description, path, kind=kind, cati=True)}
 <meta name="description" content="{html.escape(description)}">{robots_tag}{canonical}
 {HEAD_CATI.format(v=ASSET_VERSION)}
-<link rel="alternate" type="application/rss+xml" title="Âyinedâr: {feed.title}" href="/{feed.key}.xml">{extra_head}
+{extra_head}
 <script>try{{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}}catch(e){{}}</script>
 <script src="/site.js?v={ASSET_VERSION}" defer></script>
 </head>
@@ -523,7 +523,7 @@ def index_page(kind: Kind, posts: list[Post]) -> str:
   <p>{inline(p.summary)}</p>
 </article>""" for p in posts) or '<p class="muted">Henüz yazı yok.</p>'
     body = f"""<h1>{kind.title}</h1>
-<p class="lead">{kind.lead} <a href="/{kind.key}.xml">RSS</a> ile de takip edebilirsiniz.</p>
+<p class="lead">{kind.lead}</p>
 
 {items}"""
     return page(f"{kind.title} · Âyinedâr", kind.description, kind.index, body, current=kind.index, feed=kind)

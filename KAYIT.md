@@ -422,6 +422,32 @@ ve sırası `docs/tefsir-pilot-degerlendirme.md` "Nihai adım listesi"nde.
 
 #### Kimlikli işler (2026-11-09'dan sonra)
 
+**B13. Sohbette tarayıcı kapanınca cevap ve hak kaybı** (bitti ve yayında, 2026-11-27 17.30, `deploy.sh --sohbet`;
+kullanıcının bulduğu: telefonda soru sorulduktan sonra tarayıcı arkada kapandı, cevap gelmedi, hak gitti). Sebep: cevap
+sayfanın bağlantısına bağlıydı; kopunca model yarıda kesiliyor, `usage`'a `cancelled` satırı yazılıyor, `asked_today`
+her satırı sayıyordu (o gün 3 kesik soru, 13–25 sn). Yapılan: cevap ayrı bir iş (`sohbet.Job`): olaylar bellekte birikir,
+sayfa `api/sor/devam?from=N` ile kaldığı yerden yeniden bağlanır (6 deneme, artan bekleme), açılışta süren ya da
+ulaşmamış cevabı alır (`resumePending`: konuşmaya yazılmışsa konuşma açılır); biten iş sayfaya bir kez ulaşınca ya da
+bir saat sonra silinir, diske yazılmaz. Servis kapanırken süren cevaplar beklenir (`_drain`, `DRAIN_SECONDS = 80`,
+Starlette lifespan). Hak yalnız `outcome = 'done'` satırından düşer (geriye dönük: kesik sorular sayılmaz). Gizlilik
+sayfaları (tr, en): ulaşmamış cevap en çok bir saat yalnız bellekte. Deneme: testler (3 yeni) ve başsız tarayıcıyla
+gerçek API'de üç durum: sayfa kapatılıp 40 sn sonra açıldı (cevap konuşmasıyla geldi), 6 sn çevrimdışı (yeniden bağlanıp
+bitti), sayfa kapalıyken servis durduruldu (cevap beklendi, konuşmaya yazıldı).
+
+**S13.23.1. Doğrulama e-postası** (bitti ve yayında, 2026-11-27, `deploy.sh --sohbet`). Ölçüm (`sohbet_hesap
+eposta-sure`, son 20 ileti): Scaleway'den alıcı sunucuya ortanca 3 sn; Gmail'e 1–11 sn; tek uzun bekleme 25 Kasım'da bir
+Proton iletisi (140 sn, Scaleway'in sırasında). Kullanıcının gördüğü ≈2 dakikalık gecikme Gmail'in içinde (yeni alan
+adı). Yapılan: kod sayfası iletinin akıbetini sayfaya özgü jetonla sorar (`kayit/eposta?t=…`, `kod.js`, `delivery`):
+ulaştıysa süresi, ulaşmadıysa sebebi ("gelen kutunuz dolu", "bu adreste bir e-posta kutusu bulunamadı"); adres sorguya
+girmez. Spam klasörü ve "Spam değil" notu. `mailer.send` `asyncio.to_thread` ile (önceden olay döngüsünü tıkıyordu).
+Kullanıcı Google Postmaster Tools'a kaydoldu (2026-11-27). ≈2026-12-04 teslim süreleri ve spam yeniden bakılır.
+
+**S13.23.2. Sitede küçük düzeltmeler** (2026-11-27): çatının ana sayfasından (tr, en) ar-ge masası satırı kalktı
+(Belgeler'deki adres tablosu ve gizlilik sayfaları masayı anmaya devam eder: politika gereği); RSS bağlantıları (alt
+satırlar, Yenilikler ve Çalışmalar'ın giriş cümlesi, `<link rel="alternate">`) kalktı, `yenilikler.xml` ve
+`calismalar.xml` üretilmeye devam eder; "6.236 âyet" sayısı dört ana sayfadan (çatı ve risalemcp.com, tr ve en) kalktı,
+sayı şeridi çatıda dört, risalemcp.com'da üç sütun; `ASSET_VERSION` 13.
+
 **S13.15.6. Çatı sitesi `ayinedar.org`** (bitti ve yayında, 2026-11-27 gecesi, kullanıcının izniyle kesintisiz;
 yayın `yayin-20261127-020105`, araç çıktısında fark yok). Kullanıcının kararları (2026-11-27): yazılar **hemen taşınır**
 ("sayfayı taşıma derdini tekrar taşımayalım"); çatı ve **sohbet arama motorlarına açılır**, üstte görünmeye yarayan ne
