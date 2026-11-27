@@ -69,7 +69,8 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde:** sıradaki iş kullanıcının seçimi (S13.22 dizin kararlarını bekliyor; tabloda
   ardından S13.18).
-- **Kullanıcıdan beklenen:** çatının ana sayfasına ve örnek cevabına bakmak; Search Console ve Bing doğrulaması (Cloudflare'de TXT kaydı; sonra iki site haritası birlikte gönderilir: `ayinedar.org/sitemap.xml`, `chat.ayinedar.org/sitemap.xml`); "Bekleyen"deki
+- **Arama motorları (2026-11-27):** kullanıcı siteye baktı (sorun yok), Search Console (alan adı mülkü `ayinedar.org`) ve Bing'e kaydoldu; iki site haritası ikisine de gönderildi. Google çatınınkini okudu (18 sayfa), sohbetinkine ilk anda "Getirilemedi" dedi (harita sorunsuz geliyor; birkaç gün içinde düzelmezse yeniden gönderilir).
+- **Kullanıcıdan beklenen:** Yenilikler duyurusunu okumak (`docs/yenilikler/2026-11-27-ayinedar.md`, önizleme `lab.ayinedar.org/onizleme/`; yayın `python3 scripts/site-uret.py yayinla yenilikler/ayinedar --gonder`); "Bekleyen"deki
   cevaplar gelince haber; dizin metinleri başvurular sonuçlanınca (`docs/e5-dizin-metni-taslagi.md`); okuma
   platformunun karşılaması (`read.ayinedar.org/#/~hosgeldin`) ve ilk davetler (`scripts/sunucu.sh taslak davet
   <e-posta>`); lügatın eşleme örnekleri (`data/interim/lugat/olcum.md`); E8.6 için Arapça okuyan bir denetçi.
