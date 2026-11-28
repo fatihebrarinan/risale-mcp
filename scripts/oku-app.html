@@ -122,11 +122,46 @@ table.t { width: 100%; border-collapse: collapse; font-size: .85rem; } table.t t
 #lugat .lx { float: right; border: 0; font-size: 1rem; padding: 0 4px; color: var(--muted); }
 #lugat .lf { font-size: .75rem; color: var(--muted); border-top: 1px solid var(--line); padding-top: 4px; }
 mark.lg { background: var(--src-soft); color: inherit; border-radius: 2px; }
+/* S13.23.8: rehber (sohbetteki S13.23.6–7'nin aynısı): sağ üstte bildirim, "Başlayın" ile örnek birimde adım adım */
+.rb { position: fixed; z-index: 58; top: 54px; right: 16px; width: min(320px, calc(100vw - 16px)); padding: 12px 16px;
+  background: var(--card); color: var(--fg); border: 1px solid var(--line); border-left: 4px solid var(--accent);
+  border-radius: 12px; box-shadow: 0 10px 32px rgba(0,0,0,.22); animation: rb-gel .28s ease-out; }
+.rb h2, .rh h2 { font-size: 1rem; color: var(--fg); margin: 0 22px 4px 0; }
+.rb p { margin: 0 0 10px; font-size: .9rem; line-height: 1.5; color: var(--muted); }
+.rb .kapat { position: absolute; top: 6px; right: 8px; border: 0; color: var(--muted); font-size: 1.25rem; line-height: 1; padding: 2px 6px; }
+.rb .kapat:hover { background: var(--soft); color: var(--fg); }
+@keyframes rb-gel { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .rb { animation: none; } }
+@media (max-width: 560px) { .rb { left: 8px; right: 8px; width: auto; top: 50px; } }
+.rp { position: fixed; inset: 0; z-index: 59; pointer-events: none; }
+.rp i { position: fixed; background: rgba(0,0,0,.45); pointer-events: auto; }
+.ri { position: fixed; z-index: 60; border-radius: 10px; pointer-events: none; box-shadow: 0 0 0 3px var(--accent); }
+.rh { position: fixed; z-index: 61; width: min(340px, calc(100vw - 16px)); padding: 14px 16px 12px; background: var(--card);
+  color: var(--fg); border: 1px solid var(--line); border-radius: 14px; box-shadow: 0 12px 40px rgba(0,0,0,.3); }
+.rh h2 { margin-top: 0; }
+.rh p { margin: 0 0 10px; font-size: .92rem; line-height: 1.5; }
+.rh .rs { font-size: .74rem; font-weight: 600; color: var(--muted); margin: 0 0 2px; }
+.rd { display: flex; justify-content: flex-end; gap: 8px; }
+.rd button { padding: 6px 12px; border-radius: 9px; }
+.rd button.dolu { background: var(--accent); color: var(--bg); border: 0; font-weight: 600; }
 </style></head><body>
 <header><button id="menu" aria-label="Kur'ân paneli" title="Kur'ân panelini aç/kapa">☰</button><span class="t" id="ttl"></span><span class="aistamp" title="Bu sayfadaki taslak, tercüme ve izahlar yapay zekânındır; tefsir değildir">yapay zekâ taslağı · tefsir değildir</span>
 <button id="genis" title="Metni ekranın tamamına yay" hidden>↔ geniş</button>
 <a class="hbtn" id="masaBtn" href="https://lab.ayinedar.org/" hidden>Ar-ge masası</a><a class="hbtn" id="notlarimBtn" href="#/~notlarim" hidden>Notlarım</a><a class="hbtn" id="usulBtn" href="__USUL__">Usul</a>__EXTRA__<span class="small muted" id="ben"></span></header>
 <div class="wrap"><aside id="panel"></aside><main id="main"></main><aside id="side"><p class="small muted">Bir atfın numarasına tıklayınca kaynağın metni burada açılır.</p></aside></div>
+<!-- S13.23.8: rehberi öneren bildirim ve rehber (aşağıda `TOUR`) -->
+<div id="rb" class="rb" role="status" aria-labelledby="rb-baslik" hidden>
+  <button type="button" id="rb-kapat" class="kapat" aria-label="Kapat" title="Kapat">×</button>
+  <h2 id="rb-baslik">Nasıl okuyacağınızı öğrenin</h2>
+  <p>Bir birim üzerinde birkaç adımda gösterelim. Sonra soldaki panelin altındaki "Tanıtım" bağlantısından da açabilirsiniz.</p>
+  <div class="rd"><button type="button" id="rb-sonra">Şimdi değil</button><button type="button" id="rb-basla" class="dolu">Başlayın</button></div>
+</div>
+<div id="rp" class="rp" hidden><i></i><i></i><i></i><i></i></div>
+<div id="ri" class="ri" hidden></div>
+<div id="rh" class="rh" role="dialog" aria-modal="false" aria-labelledby="rh-baslik" hidden>
+  <p class="rs" id="rh-sayi"></p><h2 id="rh-baslik"></h2><p id="rh-yazi"></p>
+  <div class="rd"><button type="button" id="rh-gec">Geç</button><button type="button" id="rh-ileri" class="dolu">İleri</button></div>
+</div>
 <script>
 const MASA = __MASA__;
 const DATA = MASA ? 'birim/' : 'veri/', TDATA = MASA ? 'oku/veri/' : 'veri/', API = '/api/';
@@ -155,7 +190,7 @@ function panel(cur) {
   }
   L.push('</ul><p class="small muted">● taslak var · ◐ yalnız İşârât · ○ henüz yazılmadı</p>');
   L.push('<p class="small"><a href="#/~sure">Sûre boyunca kesintisiz oku</a></p>');
-  if (!MASA) L.push('<p class="small"><a href="#/~notlarim">Notlarım</a> · <a href="#/~giris">Giriş sayfası</a> · <a href="#/~hosgeldin">Bu platform hakkında</a></p>');
+  if (!MASA) L.push('<p class="small"><a href="#/~notlarim">Notlarım</a> · <a href="#/~giris">Giriş sayfası</a> · <a href="#/~hosgeldin">Bu platform hakkında</a> · <a href="#/~tanitim" data-tanitim>Tanıtım</a></p>');
   $('panel').innerHTML = L.join('');
   $('git').addEventListener('keydown', e => {
     if (e.key !== 'Enter') return;
@@ -829,7 +864,7 @@ function welcome() {
     <h2>Metin kopyalarsanız</h2>
     <p>Kopyaladığınız metnin sonuna, nereden alındığını ve yapay zekâ taslağı olduğunu söyleyen bir satır kendiliğinden eklenir. Başka bir yerde paylaşırken bu satırı silmemenizi rica ederiz.</p>
     <p>Taslakların nasıl yazıldığını <a href="__USUL__">usul sayfası</a> anlatır.</p>
-    <p style="margin-top:22px">${first ? '<button class="big" data-act="karsilandi">Okumaya başla</button>' : '<a class="big" href="#/~giris">Giriş sayfasına dön</a>'}</p></div>`;
+    <p style="margin-top:22px">${first ? '<button class="big" data-act="karsilandi">Okumaya başla</button>' : '<a class="big" href="#/~giris">Giriş sayfasına dön</a> <a class="big" href="#/~tanitim" data-tanitim>Tanıtımı göster</a>'}</p></div>`;
 }
 
 // ---------------------------------------------------------------- S10 (g2): Notlarım
@@ -1013,6 +1048,126 @@ document.addEventListener('click', async e => {
 document.addEventListener('keydown', e => { if (e.key === 'Escape') lugatClose(); });
 addEventListener('hashchange', lugatClose);
 
+// ---------------------------------------------------------------- S13.23.8: rehber
+// Sohbetteki rehberin (S13.23.6–7) aynısı: karşılamadan sonra sağ üstte "Nasıl okuyacağınızı öğrenin" bildirimi çıkar,
+// "Başlayın" taslağı olan ilk birimi açar ve adım adım gösterir (panel, sekmeler, atıf numarası ve kaynağı, Arapça,
+// İzah ve Lügat düğmeleri, not, Notlarım). Rehber bitince ya da bildirim kapatılınca hesapta tutulur (`/api/rehber`);
+// bildirime dokunulmazsa sonraki açılışta yine çıkar. Panelin altındaki "Tanıtım" (`#/~tanitim`) rehberi doğrudan açar;
+// bitince okuyucu başladığı yere döner.
+let TOUR_AT = -1,      // -1 kapalı, -2 açılıyor (birim yükleniyor), 0… adım
+    TOUR_BACK = null, TOUR_UNIT = null, NOTICE_TIMER = null;
+const sideOpen = () => getComputedStyle($('side')).display !== 'none';
+// görünen ilk atıf numarası (Arapça kapalıyken gizli satırdakiler sayılmaz); ışık köşeli ayracın tamamına düşer
+const firstRef = () => [...document.querySelectorAll('#main .blk p.tr a.n, #main .blk a.n')].find(a => a.getClientRects().length);
+const TOUR = [
+  {target: () => narrow() ? $('menu') : $('panel'), title: "Kur'ân paneli",
+   text: () => (narrow() ? '☰ düğmesi Kur\'ân panelini açar. ' : '') + 'Panelden bir birim seçersiniz ya da âyete gidersiniz ("2:255"). ● taslağı yazılmış birimleri gösterir.'},
+  {target: () => document.querySelector('#main .tabs'), title: 'Müellifin sözü ve taslak',
+   text: () => (U && U.isarat ? 'Bakara 1–33\'te önce müellifin sözü (İşârâtü\'l-İ\'câz) durur, yanındaki sekmede onu görmeden yazılmış taslak. ' : '')
+     + 'Taslak yapay zekânındır; tefsir değildir, müellife mal edilmez.'},
+  {target: () => { const a = firstRef(); return a && (a.closest('.mk') || a); }, title: 'Her atfın kaynağı',
+   text: 'Köşeli ayraçtaki numara taslağın dayandığı kaynaktır. Numaraya dokununca kaynağın kendi metni açılır.',
+   after: () => firstRef()?.click()},
+  {target: () => sideOpen() ? $('side') : document.querySelector('#main .srcbox'), title: 'Kaynağın metni',
+   text: () => 'Kaynağın kendi sözü ' + (sideOpen() ? 'sağdaki sütunda' : 'paragrafın altında') + ' açılır: eserin adı ve yeri, Arapçaysa yanında damgalı yapay zekâ tercümesi.',
+   after: () => { if (!sideOpen()) document.querySelector('#main .srcbox')?.parentElement?.remove(); }},
+  {target: () => document.querySelector('#main button[data-v="lugat"]')?.parentElement, title: 'Arapça, İzah ve Lügat',
+   text: 'Bu düğmeler taslağın Arapçasını ve izahını açıp kapatır. Lügat açıkken eski bir kelimeye dokununca lügatteki anlamı çıkar (nâşirin lügatı, metnin parçası değil).'},
+  {target: () => document.querySelector('#main .notbtn'), title: 'Not bırakmak',
+   text: 'Paragrafın altındaki "Not ekle" ile not yazarsınız. Bir sözü işaretlemek isterseniz önce onu seçin. Notlarınızı yalnız siz görürsünüz.'},
+  {target: () => $('notlarimBtn'), title: 'Notlarım',
+   text: 'Bütün notlarınız burada toplanır; Word dosyası olarak da indirebilirsiniz. Bu tanıtımı soldaki panelin altındaki "Tanıtım" bağlantısından yeniden açabilirsiniz.'},
+];
+function markToured() {
+  if (!ME || ME.toured) return;
+  ME.toured = true;
+  fetch(API + 'rehber', {method: 'POST'}).catch(() => {});
+}
+function maybeNotice() {
+  clearTimeout(NOTICE_TIMER);
+  if (MASA || !ME || !ME.welcomed || ME.toured || TOUR_AT !== -1) return;
+  NOTICE_TIMER = setTimeout(() => { if (TOUR_AT === -1 && PAGE !== 'hosgeldin' && !ME.toured) $('rb').hidden = false; }, 700);
+}
+function hideNotice() { clearTimeout(NOTICE_TIMER); $('rb').hidden = true; }
+async function startTour(back) {
+  if (TOUR_AT !== -1) return;
+  hideNotice();
+  const x = INDEX.birimler.find(b => b.taslak && b.isarat) || INDEX.birimler.find(b => b.taslak);
+  if (!x) return;
+  TOUR_AT = -2;
+  TOUR_BACK = back || location.hash || '#/~giris';
+  TOUR_UNIT = x.id;
+  document.body.classList.remove('panelopen');
+  const want = '#/' + x.id + '/~taslak';
+  if (location.hash !== want) {
+    location.hash = want;
+    for (let k = 0; k < 50 && !(U && U.birim === x.id && document.querySelector('#main .notbtn')); k++) await new Promise(ok => setTimeout(ok, 100));
+  }
+  if (!document.querySelector('#main .blk')) { TOUR_AT = -1; return; }
+  scrollTo(0, 0);
+  TOUR_AT = 0;
+  showStep();
+}
+function endTour() {
+  TOUR_AT = -1;
+  for (const id of ['rh', 'ri', 'rp']) $(id).hidden = true;
+  markToured();
+  const back = TOUR_BACK; TOUR_BACK = null;
+  if (back && back !== location.hash && back !== '#/' + TOUR_UNIT + '/~taslak') location.hash = back;
+}
+function showStep() {
+  const st = TOUR[TOUR_AT], el = st && st.target();
+  if (!el) { if (TOUR_AT < TOUR.length - 1) { TOUR_AT++; return showStep(); } return endTour(); }   // bu birimde olmayan adım atlanır
+  if (el.getBoundingClientRect().height < innerHeight - 60) el.scrollIntoView({block: 'center', behavior: 'instant'});
+  else el.scrollIntoView({block: 'start', behavior: 'instant'});
+  $('rh-sayi').textContent = `${TOUR_AT + 1} / ${TOUR.length}`;
+  $('rh-baslik').textContent = st.title;
+  $('rh-yazi').textContent = typeof st.text === 'function' ? st.text() : st.text;
+  const last = TOUR_AT === TOUR.length - 1;
+  $('rh-ileri').textContent = last ? 'Okumaya başla' : 'İleri';
+  $('rh-gec').hidden = last;
+  for (const id of ['rh', 'ri', 'rp']) $(id).hidden = false;
+  placeStep();
+  setTimeout(placeStep, 350);
+  $('rh-ileri').focus({preventScroll: true});
+}
+function placeStep() {
+  if (TOUR_AT < 0) return;
+  const el = TOUR[TOUR_AT].target();
+  if (!el) return;
+  const r = el.getBoundingClientRect(), pad = 6, top0 = Math.max(r.top, 0), bot0 = Math.min(r.bottom, innerHeight);
+  Object.assign($('ri').style, {left: `${r.left - pad}px`, top: `${top0 - pad}px`, width: `${r.width + 2 * pad}px`, height: `${bot0 - top0 + 2 * pad}px`});
+  const x0 = Math.max(0, r.left - pad), y0 = Math.max(0, top0 - pad), x1 = Math.min(innerWidth, r.right + pad), y1 = Math.min(innerHeight, bot0 + pad);
+  const [above, below, before, after] = $('rp').children;
+  const put = (e, x, y, w, h) => Object.assign(e.style, {left: `${x}px`, top: `${y}px`, width: `${Math.max(0, w)}px`, height: `${Math.max(0, h)}px`});
+  put(above, 0, 0, innerWidth, y0); put(below, 0, y1, innerWidth, innerHeight - y1);
+  put(before, 0, y0, x0, y1 - y0); put(after, x1, y0, innerWidth - x1, y1 - y0);
+  const box = $('rh').getBoundingClientRect(), gap = 12;
+  let top = bot0 + pad + gap;
+  if (top + box.height > innerHeight - 8) top = top0 - pad - gap - box.height;            // altta yer yoksa üstte
+  if (top < 8) top = Math.max(8, Math.min(innerHeight - box.height - 8, top0 + 16));       // ikisi de yoksa hedefin üstüne
+  const left = Math.max(8, Math.min(innerWidth - box.width - 8, r.left + r.width / 2 - box.width / 2));
+  Object.assign($('rh').style, {left: `${left}px`, top: `${top}px`});
+}
+$('rh-ileri').onclick = async () => {
+  const st = TOUR[TOUR_AT];
+  if (TOUR_AT === TOUR.length - 1) return endTour();
+  if (st && st.after) { st.after(); await new Promise(ok => setTimeout(ok, 300)); }
+  TOUR_AT++;
+  showStep();
+};
+$('rh-gec').onclick = () => endTour();
+$('rb-basla').onclick = () => startTour();
+document.addEventListener('click', e => {           // panelden ve karşılamadan: bitince okuyucu bulunduğu yere döner
+  if (!e.target.closest('a[data-tanitim]')) return;
+  e.preventDefault();
+  startTour(location.hash === '#/~hosgeldin' ? '#/~giris' : location.hash);
+});
+$('rb-sonra').onclick = $('rb-kapat').onclick = () => { hideNotice(); markToured(); };
+addEventListener('resize', placeStep);
+document.addEventListener('scroll', placeStep, true);
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && TOUR_AT >= 0) endTour(); });
+
 async function route() {
   const parts = location.hash.slice(2).split('/').filter(Boolean);
   const first = FIRST; FIRST = false;
@@ -1021,10 +1176,11 @@ async function route() {
   }
   if (!parts.length) {                                                 // S10 (f): dönünce kaldığı yer
     if (first && !MASA && ME && ME.place) { location.replace(placeHash(ME.place)); return; }
-    return home();
+    home(); return maybeNotice();
   }
-  if (parts[0] === '~giris') return home();
+  if (parts[0] === '~giris') { home(); return maybeNotice(); }
   if (parts[0] === '~hosgeldin') return welcome();
+  if (parts[0] === '~tanitim') return startTour('#/~giris');          // doğrudan adres; bağlantılar `data-tanitim` ile
   if (parts[0] === '~notlarim') return myNotes();
   PAGE = parts[0];
   if (parts[0] === '~ara') return search(decodeURIComponent(parts.slice(1).join('/')));
@@ -1045,6 +1201,7 @@ async function route() {
   render(focus);
   savePlace(uid, focus);
   document.body.classList.remove('panelopen');
+  maybeNotice();
 }
 addEventListener('hashchange', route);
 (async () => {

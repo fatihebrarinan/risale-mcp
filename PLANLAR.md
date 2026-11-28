@@ -68,8 +68,9 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
 - **Son adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
-  sohbet tarafı yayında (örnek cevabı kullanıcı onayladı; okuyucuya görünen ad "mod"). S13.23.7 (rehber sağ üstteki bildirimle başlar) yayında (2026-11-28). Açık kalan: okuma platformunun
-  karşılamasına aynı rehber (S13.23.6'nın ikinci yarısı); S13.23.5 (giriş sayfası) kullanıcının ayrıntısını bekliyor;
+  sohbet tarafı yayında (örnek cevabı kullanıcı onayladı; okuyucuya görünen ad "mod"). S13.23.7 (rehber sağ üstteki bildirimle başlar) yayında (2026-11-28). S13.23.8 (okuma platformunda aynı
+  bildirim ve rehber) bitti, yayına gitmedi: önce `scripts/deploy.sh --code` (giriş servisinin `/api/rehber`'i), sonra
+  `git -C data/d1 pull && uv run python scripts/oku-veri.py --gonder`. Açık kalan: S13.23.5 (giriş sayfası) kullanıcının ayrıntısını bekliyor;
   ardından S13.20 (İngilizce ve Arapça arayüz). ≈2026-12-04 e-posta teslim süreleri ve spam yeniden bakılır
   (`sohbet_hesap eposta-sure`, Postmaster Tools). S13.22 dizin kararlarını bekliyor.
 - **Arama motorları (2026-11-27):** kullanıcı siteye baktı (sorun yok), Search Console (alan adı mülkü `ayinedar.org`) ve Bing'e kaydoldu; iki site haritası ikisine de gönderildi. Google çatınınkini okudu (18 sayfa), sohbetinkine ilk anda "Getirilemedi" dedi (harita sorunsuz geliyor; birkaç gün içinde düzelmezse yeniden gönderilir).
@@ -137,6 +138,8 @@ zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda.
   - S13.23.7 (bitti ve yayında, 2026-11-28; `KAYIT.md` › S13.23.7) **Rehber bildirimle başlar:** ilk girişte rehber
     kendiliğinden açılmaz; sağ üstte "Nasıl kullanacağınızı öğrenin" bildirimi çıkar, "Başlayın" rehberi açar
     (kullanıcının önerisi, 2026-11-28).
+  - S13.23.8 (bitti, 2026-11-28; `KAYIT.md` › S13.23.8; yayına gitmedi) **Okuma platformunda rehber** (S13.23.6'nın ikinci
+    yarısı): karşılamadan sonra sağ üstte aynı bildirim, "Başlayın" taslaklı ilk birimde yedi adım; görüldüğü hesapta.
 - S13.22 **Göçün tamamlanması** (eski S13.15.7; kullanıcının kararı, 2026-11-27: S13.15'ten ayrı adım): eklentilerin
   tanıtımı ve kurulumu `connect.ayinedar.org`'a; risalemcp.com'un kalan sayfaları (eklenti sayfaları, kurulum,
   belgeler, hata bildirin, gizlilik ve şartlar, İngilizceleri) oraya 308 ile. Dizin başvuruları sonuçlandıktan sonra:

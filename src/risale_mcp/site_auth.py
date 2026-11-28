@@ -19,7 +19,7 @@ hesap açılınca hesabın `label`ı olur, `users` gösterir, okuyucu görmez (g
 
 **Düzen (S13.15.5, 2026-11-27; önce `risalemcp.com/taslak/` ve `/oku/`):** iki alt alan adı, tek servis, aynı yollar:
 `/giris`, `/cikis`, `/ben` (girişli kişinin adı, kapsamı, karşılama, kaldığı yer), `/api/…` (masa, defter, yazılar,
-`yer`, `karsilandi`), `/davet/<jeton>` (yalnız platformda). Sayfalar statik dosyadır (masa `/var/www/ozel/taslak/`,
+`yer`, `karsilandi`, `rehber`), `/davet/<jeton>` (yalnız platformda). Sayfalar statik dosyadır (masa `/var/www/ozel/taslak/`,
 platform onun `oku/` klasörü); Caddy her istekte bu servise sorar (`forward_auth`, `GET /_auth`): oturum geçerliyse
 200, değilse giriş sayfasına yönlendirme. Hangi bölümde olunduğunu Caddy `X-Bolum` başlığıyla söyler (`lab` | `read`,
 her istekte üstüne yazılır; başlık yoksa `lab`, dar olanı). Masaya yalnız `masa` kapsamı girer; `oku` kapsamı yalnız
@@ -83,6 +83,7 @@ CREATE TABLE IF NOT EXISTS users (
     locked_until REAL NOT NULL DEFAULT 0,
     last_login   REAL,
     welcomed     REAL,                     -- karşılama sayfası görüldü (S10)
+    toured       REAL,                     -- okuma platformunun rehberi görüldü ya da kapatıldı (S13.23.8)
     place        TEXT,                     -- kaldığı yer {birim, paragraf, zaman} (JSON; S10)
     label        TEXT                      -- yöneticinin notu (hesabı tanımak için; okuyucu görmez)
 );
@@ -125,7 +126,7 @@ class Store:
                 c.execute("ALTER TABLE users ADD COLUMN name TEXT")
             if "scope" not in cols:                                                    # 2026-11-21'den önceki dosya
                 c.execute("ALTER TABLE users ADD COLUMN scope TEXT NOT NULL DEFAULT 'masa'")
-            for col in ("welcomed REAL", "place TEXT", "label TEXT"):                  # S10'dan önceki dosya
+            for col in ("welcomed REAL", "place TEXT", "label TEXT", "toured REAL"):   # S10 ve S13.23.8'den önceki dosya
                 if col.split()[0] not in cols:
                     c.execute(f"ALTER TABLE users ADD COLUMN {col}")
             if "label" not in {r[1] for r in c.execute("PRAGMA table_info(invites)")}:
@@ -272,6 +273,13 @@ class Store:
     def welcomed(self, email: str) -> bool:
         rows = self._run("SELECT welcomed FROM users WHERE email = ?", (norm_email(email),))
         return bool(rows and rows[0]["welcomed"])
+
+    def toured(self, email: str) -> bool:
+        rows = self._run("SELECT toured FROM users WHERE email = ?", (norm_email(email),))
+        return bool(rows and rows[0]["toured"])
+
+    def mark_toured(self, email: str) -> None:
+        self._run("UPDATE users SET toured = coalesce(toured, ?) WHERE email = ?", (time.time(), norm_email(email)))
 
     def mark_welcomed(self, email: str) -> None:
         self._run("UPDATE users SET welcomed = coalesce(welcomed, ?) WHERE email = ?", (time.time(), norm_email(email)))
@@ -510,7 +518,8 @@ def build_app(store: Store, masa_store=None, yazi_store=None):
         if not email:
             return JSONResponse({"error": "oturum yok"}, status_code=401, headers={"Cache-Control": "no-store"})
         return JSONResponse({"email": email, "name": store.display_name(email), "scope": store.scope(email),
-                             "welcomed": store.welcomed(email), "place": store.place(email)},
+                             "welcomed": store.welcomed(email), "toured": store.toured(email),
+                             "place": store.place(email)},
                             headers={"Cache-Control": "no-store"})
 
     async def welcomed(request: Request):
@@ -519,6 +528,14 @@ def build_app(store: Store, masa_store=None, yazi_store=None):
         if not email:
             return JSONResponse({"error": "oturum yok"}, status_code=401, headers={"Cache-Control": "no-store"})
         store.mark_welcomed(email)
+        return JSONResponse({"ok": True}, headers={"Cache-Control": "no-store"})
+
+    async def toured(request: Request):
+        """S13.23.8: okuma platformunun rehberi görüldü ya da bildirimi kapatıldı."""
+        email = store.check(request.cookies.get(COOKIE))
+        if not email:
+            return JSONResponse({"error": "oturum yok"}, status_code=401, headers={"Cache-Control": "no-store"})
+        store.mark_toured(email)
         return JSONResponse({"ok": True}, headers={"Cache-Control": "no-store"})
 
     async def place(request: Request):
@@ -545,6 +562,7 @@ def build_app(store: Store, masa_store=None, yazi_store=None):
                              Route(LOGOUT_PATH, logout, methods=["GET", "POST"]), Route(ME_PATH, me),
                              Route(INVITE + "{token}", invite, methods=["GET", "POST"]),
                              Route(f"{API}karsilandi", welcomed, methods=["POST"]),
+                             Route(f"{API}rehber", toured, methods=["POST"]),
                              Route(f"{API}yer", place, methods=["GET", "PUT"]),
                              *masa.routes(store, masa_store or masa.MasaStore()),
                              *yazilar.routes(store, yazi_store or yazilar.YaziStore())])

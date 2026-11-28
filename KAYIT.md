@@ -477,6 +477,20 @@ açılışta kalkar, sonraki girişte yine çıkar. `#tanitim` ve Ayarlar › Be
 boydan boya. Başsız tarayıcıda geniş ve telefon genişliğinde denendi (görünür, Başlayın → rehber, Şimdi değil →
 kaydedildi, yeniden yüklemede çıkmıyor; sayfa hatası yok).
 
+**S13.23.8. Okuma platformunda rehber** (2026-11-28; kullanıcının isteği, S13.23.6'nın ikinci yarısı). Sohbetteki
+bildirim ve rehberin aynısı `scripts/oku-app.html`'de (yalnız platformda, masada yok). Karşılama sayfası (S10,
+"tefsir değildir" uyarısıyla) yerinde kalır; "Okumaya başla"dan sonra sağ üstte "Nasıl okuyacağınızı öğrenin" bildirimi
+çıkar. "Başlayın" taslağı ve İşârât'ı olan ilk birimi (bugün Bakara 9–10) taslak sekmesinde açar, yedi adım: Kur'ân
+paneli (telefonda ☰), sekmeler (müellifin sözü ve taslak), görünen ilk atıf numarası, kaynağın metni (geniş ekranda
+yan sütun, dar ekranda paragrafın altı; adım bitince kapanır), Arapça/İzah/Lügat düğmeleri, "Not ekle", Notlarım.
+Birimde olmayan adım atlanır. Bitince ya da Escape ile okuyucu başladığı yere döner. Bildirim kapatılınca ya da rehber
+bitince `users.toured` yazılır (`site_auth.py`, `POST /api/rehber`, `/ben` `toured` verir); bildirime dokunulmazsa
+sonraki açılışta yine çıkar. Panelin altında "Tanıtım" bağlantısı, karşılama sayfasında (ikinci gelişte) "Tanıtımı
+göster"; `#/~tanitim` doğrudan açar. Deneme: `tests/test_site_auth.py` (rehber bayrağı); başsız tarayıcıda geniş, orta ve
+telefon genişliğinde sahte giriş servisiyle (karşılama → bildirim → yedi adım → giriş sayfası, bayrak yazıldı, yeniden
+yüklemede çıkmıyor; "Şimdi değil"; panelden açılıp Escape ile dönüş; sayfa hatası yok). İlk denemede 3. adım gizli
+Arapça satırdaki numarayı hedefliyordu: görünen ilk numara seçilir, ışık köşeli ayracın tamamına düşer.
+
 **S13.23.4. Temalar, ayna figürü, dinamik karşılama** (2026-11-27; kullanıcının fikri ve kararları aynı gün).
 Kullanıcı başlığın üstünde "ayna, aynanın içinde kütüphane, logodan ayrıntılı" istedi; üç seçenek gösterildi (A raflar,
 kandil, rahle üstünde logonun kırmızı kapaklı kitabı; B iki yanı raflı koridor, sonda kemerli pencereden ışık; C A'nın

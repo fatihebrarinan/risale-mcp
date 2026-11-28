@@ -99,7 +99,7 @@ def test_gate_flow(client):
     assert client.get("/_auth", headers={"Cookie": f"{COOKIE}={token}"}).status_code == 200
     r = client.get("/ben", headers={"Cookie": f"{COOKIE}={token}"})
     assert r.json() == {"email": "okur@example.org", "name": "okur@example.org", "scope": "masa", "welcomed": False,
-                        "place": None}
+                        "toured": False, "place": None}
     client.cookies.clear()
     assert client.get("/ben").status_code == 401
     r = client.get("/cikis", headers={"Cookie": f"{COOKIE}={token}"})
@@ -222,6 +222,9 @@ def test_welcome_and_place(store, read):
     assert read.get("/ben").json()["welcomed"] is False
     assert read.post("/api/karsilandi").json() == {"ok": True}
     assert read.get("/ben").json()["welcomed"] is True
+    assert read.get("/ben").json()["toured"] is False             # S13.23.8: rehber ayrı tutulur
+    assert read.post("/api/rehber").json() == {"ok": True}
+    assert read.get("/ben").json()["toured"] is True
     assert read.get("/api/yer").json() == {"place": None}
     read.put("/api/yer", json={"birim": "40-46", "paragraf": "p-abc"})
     place = read.get("/ben").json()["place"]
@@ -229,6 +232,7 @@ def test_welcome_and_place(store, read):
     read.cookies.clear()
     assert read.put("/api/yer", json={"birim": "1"}).status_code == 401
     assert read.post("/api/karsilandi").status_code == 401
+    assert read.post("/api/rehber").status_code == 401
 
 
 def test_remove_user_drops_invites(store):
