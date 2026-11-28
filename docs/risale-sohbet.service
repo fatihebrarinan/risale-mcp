@@ -14,6 +14,9 @@ Environment="SOHBET_NAME=Âyinedâr"
 Environment=SOHBET_FROM=noreply@ayinedar.org
 Environment=SOHBET_DESTEK=destek@ayinedar.org
 Environment=SOHBET_CATI=https://ayinedar.org
+# S14.6 (kullanıcının kararı, 2026-11-28): genel sayfa (Kur'ân ve Sünnet merkezli, bütün kütüphaneler); geri dönüş: bu
+# satırı silip `scripts/deploy.sh --code`
+Environment=SOHBET_GENEL=1
 ExecStart=/home/risale/risale-mcp/.venv/bin/python -m risale_mcp.sohbet serve --port 8010
 Restart=on-failure
 RestartSec=5
