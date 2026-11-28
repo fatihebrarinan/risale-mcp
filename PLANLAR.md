@@ -75,8 +75,11 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
   26 soru), temel ölçüm alındı. S14.4 bitti (2026-11-28): genel talimat, `search_all`, önekli Risale araçları,
   "Risale-i Nur'dan" modu; kullanıcı A'yı seçti (bütün kütüphaneler varsayılan açık), sayfaya bağlandı; hepsi
   `SOHBET_GENEL`'in arkasında, yayın S14.6'da. İnce ayarlar S14.8'de. S14.5 bitti (2026-11-28): metinler işlendi (çatı tr/en, sohbetin
-  `SOHBET_GENEL`'e bağlı metinleri), genel örnek "Kişi imanını nasıl arttırır?" (22. üretim, kullanıcı seçti). **Önde:**
-  S14.6 (yayın: `SOHBET_GENEL=1` servis biriminde, çatı sitesi, duyuru taslağı).
+  `SOHBET_GENEL`'e bağlı metinleri), genel örnek "Kişi imanını nasıl arttırır?" (22. üretim, kullanıcı seçti). S14.6: genel sayfa
+  yayında (2026-11-28, `scripts/deploy.sh --code`, araç çıktısında fark yok, sunucuda uçtan uca denendi); okuyucuya giden
+  metinlerde noktalı virgül virgüle çevrildi. **Kullanıcıdan beklenen:** Yenilikler duyurusunun taslağını okumak
+  (`docs/yenilikler/2026-11-28-kuran-ve-sunnet-etrafinda.md`, önizleme `lab.ayinedar.org/onizleme/`); onaydan sonra
+  `python3 scripts/site-uret.py yayinla yenilikler/2026-11-28-kuran-ve-sunnet-etrafinda --gonder`. Sonra S14.8 ya da S14.7.
 - **Önceki adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
@@ -134,11 +137,13 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
     ölçülür (Risale seti düşmemeli, maliyet); kullanıcı seçer.
   - S14.5 (bitti, 2026-11-28; yayına S14.6'da; `docs/s14-anlatim-taslagi.md`) **Anlatım** (S13.23.5 giriş sayfası buraya katıldı): çatı, sohbetin girişi, Hakkında, modlar, örnekler;
     önizlemede, kullanıcı okur.
-  - S14.6 **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
+  - S14.6 (yayında, 2026-11-28; duyuru taslağı kullanıcının okumasını bekliyor; izleme kullanıcının kararıyla yok) **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
   - S14.8 **İnce ayarlar ve iyileştirmeler** (kullanıcının kararı, 2026-11-28: S14.4'ten sonra ayrı adım): S14.4'ün
     denemelerinde görülenler: bazı cevaplar hâlâ "Risale-i Nur'a göre…" diye açılıyor; âyetin mealine karışık etiket
     ("Nâşirin meali (Türkiye Diyanet Vakfı meali)"); G10 (kader) ve G24 (kredi kartı) yalnız Risale'den; D15'te beklenen
-    bölüm adıyla anıldı, okunmadı; nâşirin meali alıntı bloğunda. Her biri iki setle ölçülür.
+    bölüm adıyla anıldı, okunmadı; nâşirin meali alıntı bloğunda; yayındaki denemede âyet `get_ayah` yerine
+    Hizbü'l-Kur'ân'dan alındı ve modelin Yorum'daki kendi örnek sözüne "Risale'de bulunamadı" uyarısı düştü. Her biri
+    iki setle ölçülür.
   - S14.7 **Yeni modlar:** S13.18 ile birleşir (kavram, karşılaştırma, hadis kontrolü, siyer olayı), S14.6'dan sonra.
     Konu taramasının öbür kütüphanelere genişlemesi de burada (2.10).
 - E9 **Siyer kütüphanesi** (S14'ün parçası; `docs/s14-acilis-plani.md` › E9): E9.1 genel platform için yazılı seçim
