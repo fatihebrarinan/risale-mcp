@@ -1264,7 +1264,9 @@ def status_line(library, name: str, args: dict) -> str:
     return "Eserlere bakılıyor"
 
 
-SEARCH_ALL_RISALE, SEARCH_ALL_OTHER, SEARCH_ALL_TEXT = 6, 5, 260     # S14.4: search_all'ın sonuç sayıları
+SEARCH_ALL_RISALE, SEARCH_ALL_OTHER, SEARCH_ALL_TEXT = 5, 5, 260     # S14.4: search_all'ın sonuç sayıları (S14.8: eşit)
+# S14.8 (kullanıcının kararı, 2026-11-28): search_all'da kütüphanelerin sırası; Risale önde değil, tefsirin ardında
+SEARCH_ALL_ORDER = ("tefsir", "risale", "hadis", "klasik")
 
 # S14.4 (kullanıcının önerisi, 2026-11-28): genel sayfada Risale'nin araçları da öbür kütüphaneler gibi adıyla
 # önek alır (`risale_search`…); öneksiz araç "asıl araç" gibi görünüyordu. Kur'ân'ın aracı (`get_ayah`) öneksiz kalır:
@@ -1512,9 +1514,10 @@ class Chat:
             return await self.libraries.call(k, "semantic_search", {"query": query, "limit": SEARCH_ALL_OTHER})
 
         names = ("risale",) + chosen
-        found = await asyncio.gather(risale(), *(other(k) for k in chosen), return_exceptions=True)
+        found = dict(zip(names, await asyncio.gather(risale(), *(other(k) for k in chosen), return_exceptions=True)))
         out = {}
-        for name, got in zip(names, found):
+        for name in sorted(names, key=lambda n: SEARCH_ALL_ORDER.index(n) if n in SEARCH_ALL_ORDER else 99):
+            got = found[name]
             title = "Risale-i Nur Library" if name == "risale" else KUTUPHANELER[name].label
             if isinstance(got, Exception) or got[1]:
                 out[title] = {"error": "not reachable now" if isinstance(got, Exception) else got[0][:300]}

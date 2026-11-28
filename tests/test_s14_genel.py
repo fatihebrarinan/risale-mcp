@@ -109,3 +109,23 @@ def test_s14_8_general_instructions_do_not_push_the_risale():
 def test_s14_8_one_rule_for_both_translations():
     for text in (sohbet.instructions("X"), sohbet.instructions("X", general=True)):
         assert "never join the two names in one label" in text and "never inside a block quote" in text
+
+
+def test_s14_8_search_all_order_and_equal_counts():
+    import asyncio
+    import json
+    asked = {}
+
+    class Server:
+        async def call_tool(self, name, args):
+            asked["risale"] = args["limit"]
+            return SimpleNamespace(content=[SimpleNamespace(text='{"results":[{"id":"sozler/1/c001"}]}')], is_error=False)
+
+    class Libraries:
+        async def call(self, k, name, args):
+            asked[k] = args["limit"]
+            return '{"results":[{"id":"x/1"}]}', False
+    fake = SimpleNamespace(server=Server(), libraries=Libraries())
+    out = json.loads(asyncio.run(sohbet.Chat._search_all(fake, "kader", ("tefsir", "hadis", "klasik"))))
+    assert list(out)[:4] == ["Tafsir Library", "Risale-i Nur Library", "Hadith Library", "Classical Islamic Library"]
+    assert len(set(asked.values())) == 1
