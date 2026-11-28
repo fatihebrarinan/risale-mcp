@@ -239,6 +239,9 @@ class Library:
         self._version: int | None = None
         self._semantic: tuple[sqlite3.Connection, SemanticIndex] | None = None
         self._lexicon: tuple[sqlite3.Connection, lugat.Lexicon] | None = None
+        # S14.8: eser ve grup verilmemiş aramada (search, semantic_search) gizli eserler; MCP sunucusunda boş, sohbet
+        # kendi kopyasında doldurur (Hizbü'l-Kur'ân: âyet Kur'ân'dan alınır). Eser ya da grup verilirse aranır.
+        self.search_excluded: frozenset[str] = frozenset()
 
     @property
     def conn(self) -> sqlite3.Connection:
@@ -898,16 +901,19 @@ class Library:
             self._node(work)
         collection = self._scope(work, group, include_related)
         limit = min(max(limit, 1), MAX_RESULTS)
+        hidden = () if work or group else tuple(sorted(self.search_excluded))
         try:
             expanded = False
-            by_work = fts.count_by_work(self.conn, query, group=group, collection=collection)
+            by_work = fts.count_by_work(self.conn, query, group=group, collection=collection, exclude=hidden)
             if not by_work:            # Türkçe ek: "Beyzavi" dizinde "beyzavinin"; sonuçsuzsa kelime başı olarak bir kez daha
-                retry = fts.count_by_work(self.conn, query, group=group, collection=collection, prefix_all=True)
+                retry = fts.count_by_work(self.conn, query, group=group, collection=collection, prefix_all=True,
+                                          exclude=hidden)
                 if retry:
                     by_work, expanded = retry, True
             hits = fts.search(self.conn, query, work=work, group=group, limit=limit, offset=max(offset, 0),
-                              collection=collection, prefix_all=expanded)
-            sections = fts.search_nodes(self.conn, query, work=work, limit=5, collection=collection, prefix_all=expanded)
+                              collection=collection, prefix_all=expanded, exclude=hidden)
+            sections = fts.search_nodes(self.conn, query, work=work, limit=5, collection=collection, prefix_all=expanded,
+                                        exclude=hidden)
         except fts.QueryError as error:
             raise LibraryError(str(error)) from None
         if work:
@@ -933,7 +939,7 @@ class Library:
             # diyordu. Az sonuçta kelime başı aramasının sayısı verilir.
             try:
                 wider = sum(fts.count_by_work(self.conn, query, group=group, collection=collection,
-                                              prefix_all=True).values()) if not work else \
+                                              prefix_all=True, exclude=hidden).values()) if not work else \
                     fts.count_by_work(self.conn, query, group=group, collection=collection,
                                       prefix_all=True).get(work, 0)
             except fts.QueryError:
@@ -965,6 +971,10 @@ class Library:
                 raise LibraryError(f"Unknown group {group!r}; groups are: eski-said, ana-cilt, mecmua, hizb, osmanlica.")
         elif collection := self._scope(work, group, include_related):
             works = {r[0] for r in self.conn.execute("SELECT slug FROM works WHERE collection = ?", (collection,))}
+        if self.search_excluded and not work and not group:
+            if works is None:
+                works = {r[0] for r in self.conn.execute("SELECT slug FROM works")}
+            works = works - self.search_excluded
         try:
             hits, sections = self._semantic_index().search(query, works, min(max(limit, 1), MAX_RESULTS), max(offset, 0))
         except SemanticUnavailable:

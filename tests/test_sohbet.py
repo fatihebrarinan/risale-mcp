@@ -954,3 +954,30 @@ def test_s14_8_doubly_quoted_words_are_one_quote():
     line = 'Kendi sınırını çizer: "“Buraya kadar benim, ondan sonra O’nundur.”" der ve "ikinci söz burada" gelir.'
     assert [q.group(2) for q in sohbet._unmarked_quotes_in(line)] == ["Buraya kadar benim, ondan sonra O’nundur.",
                                                                       "ikinci söz burada"]
+
+
+@needs_db
+def test_s14_8_hizbul_kuran_is_hidden_from_the_chats_searches_only():
+    from risale_mcp.library import Library
+    hizb = "hizbul-kuranil-muazzam"
+    query = "الحمد لله رب العالمين"
+    plain = Library(GENEL.db, GENEL.vectors)                 # MCP sunucusunun Library'si gibi
+    assert hizb in plain.search(query, limit=50)["by_work"]
+    chat_library = Library(GENEL.db, GENEL.vectors)
+    chat_library.search_excluded = sohbet.SEARCH_EXCLUDED
+    found = chat_library.search(query, limit=50)
+    assert hizb not in found["by_work"] and not any(r["id"].startswith(hizb + "/") for r in found["results"])
+    assert chat_library.search(query, work=hizb)["total"] > 0          # eser verilirse aranır
+    assert chat_library.search(query, group="hizb")["by_work"].get(hizb)
+    seen = []
+
+    class Index:                                              # ağsız: aramaya giden eser kümesi
+        unindexed = 0
+
+        def search(self, query, works, limit, offset):
+            seen.append(works)
+            return [], []
+    chat_library._semantic_index = lambda: Index()
+    chat_library.semantic_search("Kur'ân'dan dua ve hamd")
+    chat_library.semantic_search("Kur'ân'dan dua ve hamd", work=hizb)
+    assert hizb not in seen[0] and "sozler" in seen[0] and seen[1] == {hizb}

@@ -1369,12 +1369,18 @@ class Settings:
                    general=os.environ.get("SOHBET_GENEL", "") not in ("", "0"))
 
 
+SEARCH_EXCLUDED = frozenset({"hizbul-kuranil-muazzam"})
+
+
 class Chat:
     def __init__(self, library, client, config: Config = Config(), settings: Settings = Settings(),
                  libraries=None) -> None:
         from risale_mcp.citations import CitationChecker
         from risale_mcp.server import create_server
         self.library = library
+        # S14.8 (kullanıcının kararı, 2026-11-28): Hizbü'l-Kur'ân sohbetin aramalarında yok; âyet Kur'ân'dan alınır.
+        # Eser kimliğiyle okunabilir; MCP eklentisi değişmez (kendi Library'si).
+        library.search_excluded = library.search_excluded | SEARCH_EXCLUDED
         self.client = client
         self.config = config
         self.settings = settings
