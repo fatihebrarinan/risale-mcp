@@ -85,3 +85,12 @@ def test_prefixed_names():
     assert sohbet.internal_name("get_ayah") == "get_ayah"
     text = chat.system_for(("tefsir",), (), True)
     assert "risale_get_passage" in text and "tefsir_get_passage" in text and "tefsir_risale_" not in text
+
+
+def test_survey_is_risale_scope_in_general():
+    today = {k["id"]: k for k in kipler.public()}
+    general = {k["id"]: k for k in kipler.public(general=True)}
+    assert today["tarama"]["title"] == "Konu taraması" and "risale_only" not in today["tarama"]
+    assert general["tarama"]["title"] == "Risale-i Nur'da konu taraması" and general["tarama"]["risale_only"]
+    assert general["risale"]["risale_only"] and "risale_only" not in general["serbest"]
+    assert kipler.risale_only(kipler.get("tarama"), True) and not kipler.risale_only(kipler.get("tarama"), False)

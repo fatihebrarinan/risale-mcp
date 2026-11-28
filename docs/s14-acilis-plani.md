@@ -180,6 +180,9 @@ okuyucu kapatabilir) + "Risale-i Nur'dan" kipi.
 "Risale-i Nur'dan" (seçilince hatırlanır, sorudan sonra serbeste dönmez; o modda kütüphane işareti yalnız Risale),
 Ayarlar › Kütüphaneler'in giriş cümlesi genel sayfaya göre. Ayar kapalıyken sayfa bugünkü gibi (başsız tarayıcıda
 denendi). İnce ayarlar ve iyileştirmeler ayrı adım: S14.8.
+Konu taraması (S14.2, 2.10): genel sayfada adı "Risale-i Nur'da konu taraması", davranışı "Risale-i Nur'dan" gibi
+(bugünkü talimat, yalnız Risale; `Kip.risale_scope`); bugünkü sayfada adı ve davranışı değişmedi. Örnek soru kartı
+kipi kendi adıyla da bulur (genel sayfada ad farklı).
 
 ## Açık sorular (sırası gelince)
 

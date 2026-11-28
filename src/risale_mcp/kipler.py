@@ -24,6 +24,10 @@ class Kip:
     # yalnız Risale'nin araçları (okuyucunun açtığı kütüphaneler de kapanır)
     general_only: bool = False
     risale_only: bool = False
+    # S14.2 (2.10, kullanıcının kararı 2026-11-28): genel sayfada da Risale'ye ait kip (konu taraması yalnız Risale'de
+    # tarar): orada adı `general_title`, davranışı "Risale-i Nur'dan" gibi (bugünkü talimat, yalnız Risale)
+    risale_scope: bool = False
+    general_title: str = ""
 
 
 SURVEY_INSTRUCTIONS = """\
@@ -62,7 +66,8 @@ KIPLER: dict[str, Kip] = {k.id: k for k in (
     # S14.1 K2 (kullanıcının kararı, 2026-11-28): "Risale-i Nur'dan cevapla" seçeneği; açıkken bugünkü davranış aynen
     Kip("risale", "Risale-i Nur'dan", "Cevap yalnız Risale-i Nur'dan gelsin", general_only=True, risale_only=True),
     Kip("tarama", "Konu taraması", "Bir konu yazın; eserlerde geçtiği yerleri toplayalım",
-        instructions=SURVEY_INSTRUCTIONS, tools=("survey",), post=("other_places",)),
+        instructions=SURVEY_INSTRUCTIONS, tools=("survey",), post=("other_places",),
+        risale_scope=True, general_title="Risale-i Nur'da konu taraması"),
     Kip("ayet", "Âyet çalışması", "Bir âyet yazın (Bakara 255, Âyetü'l-Kürsî); Risale'de ve tefsirlerde birlikte bakalım",
         instructions=VERSE_INSTRUCTIONS, tools=("verse_file",), post=("verse_places",), libraries=("tefsir",)),
 )}
@@ -73,10 +78,18 @@ def get(kip_id: str | None) -> Kip:
     return KIPLER.get(kip_id or DEFAULT, KIPLER[DEFAULT])
 
 
+def risale_only(kip: Kip, general: bool) -> bool:
+    """Bu kip bu sayfada yalnız Risale mi (bugünkü talimat, öbür kütüphaneler kapalı)."""
+    return kip.risale_only or (general and kip.risale_scope)
+
+
 def public(general: bool = False) -> list[dict]:
-    """Arayüz için: id, ad, açıklama. Genel sayfanın kipleri yalnız `general` açıkken (S14.4)."""
-    return [{"id": k.id, "title": k.title, "hint": k.hint, "libraries": list(k.libraries)} for k in KIPLER.values()
-            if general or not k.general_only]
+    """Arayüz için: id, ad, açıklama. Genel sayfanın kipleri yalnız `general` açıkken (S14.4); genel sayfada Risale'ye
+    ait kipin adı `general_title`, `risale_only` işaretiyle (sayfa kütüphane işaretini ona göre gösterir)."""
+    return [{"id": k.id, "title": (k.general_title if general and k.general_title else k.title), "base": k.title,
+             "hint": k.hint,
+             "libraries": list(k.libraries), **({"risale_only": True} if risale_only(k, general) else {})}
+            for k in KIPLER.values() if general or not k.general_only]
 
 
 # ------------------------------------------------------------ sohbetin kendi araçları

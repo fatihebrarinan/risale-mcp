@@ -1511,8 +1511,9 @@ class Chat:
         # takip sorusu tefsiri okuyabilsin)
         chosen = self.chosen(tuple(libraries or ()) + kip.libraries + used_libraries(history))
         # S14.4: "Risale-i Nur'dan" kipi bugünkü sayfadır: yalnız Risale, bugünkü talimat
-        general = self.settings.general and not kip.risale_only
-        if kip.risale_only:
+        only_risale = kipler.risale_only(kip, self.settings.general)    # S14.2 (2.10): genel sayfada tarama da
+        general = self.settings.general and not only_risale
+        if only_risale:
             chosen = ()
         messages = self.messages(history, question, kip.id)
         tools, missing = await self.tools(kip.id, chosen, general)

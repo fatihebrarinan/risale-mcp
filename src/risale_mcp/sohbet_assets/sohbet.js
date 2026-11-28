@@ -56,7 +56,7 @@ const saveLibraries = () => { try { localStorage.setItem(LIB_KEY, JSON.stringify
 // S13.23.3: bu soruda açık olacak kütüphaneler: okuyucunun seçimi, kipin açtıkları ve konuşmada kullanılanlar
 // (sunucu da aynısını yapar: `Chat.ask`); işaret yalnız gösterir, seçim Ayarlar › Kütüphaneler'dedir
 function activeLibraries() {
-  if (state.mode === RISALE_ONLY) return [];          // S14.4: yalnız Risale (sunucu da öyle yapar)
+  if (kipOf(state.mode).risale_only) return [];       // S14.4: yalnız Risale (sunucu da öyle yapar)
   const on = new Set(state.libraries);
   for (const id of kipOf(state.mode).libraries || []) on.add(id);
   for (const t of (cur && cur.turns) || []) for (const id of t.libraries || []) on.add(id);
@@ -571,7 +571,7 @@ function renderExamples() {
     const q = pick(questions);
     b.dataset.q = q;
     // S13.12: kipin adını taşıyan kart o kipi seçer ("Konu taraması"); öbürleri serbest soru
-    b.dataset.mode = (KIPLER.find((k) => k.title === label) || { id: "serbest" }).id;
+    b.dataset.mode = (KIPLER.find((k) => k.title === label || k.base === label) || { id: "serbest" }).id;   // S14.4: genel sayfada ad farklı
     b.append(el("span", "ornek-tur", esc(label)), el("span", "", esc(q)));
     return b;
   }));
@@ -1137,7 +1137,7 @@ async function ask(question, resume = null) {
   els.empty.hidden = true;
   const owner = cur;                     // cevap bu konuşmaya yazılır
   const turn = resume ? { q: question.trim(), mode: resume.mode || "serbest", libraries: resume.libraries || [] }
-    : { q: question.trim(), mode: state.mode, libraries: state.mode === RISALE_ONLY ? [] : [...state.libraries] };
+    : { q: question.trim(), mode: state.mode, libraries: kipOf(state.mode).risale_only ? [] : [...state.libraries] };
   const box = renderTurn(turn);
   els.list.append(box);
   const answer = box.querySelector(".cevap");
