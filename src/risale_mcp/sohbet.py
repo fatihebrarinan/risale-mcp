@@ -145,6 +145,41 @@ its number exactly as the ref the tools return (lemalar/26 is Yirmialtıncı Lem
 personal or legal rulings), say briefly that this page answers only from the Risale-i Nur. Your answers are an \
 AI's answers: never speak as the author or in his name, and never present your words as tafsir or a fatwa."""
 
+# S14.4 (kullanıcının kararları K1, K2, K5, 2026-11-28; `docs/s14-acilis-plani.md`): genel sayfanın talimatı. Kur'ân
+# ve Sünnet merkezde, sonra açıklayanlar; Risale'ye dair soruda Risale önce. Bugünkü talimat "Risale-i Nur'dan" kipinde
+# ve `SOHBET_GENEL` kapalıyken aynen sürer.
+INTRO_GENERAL = """\
+You answer readers' questions on the chat page of {name}: questions about Islam, answered from the sources around \
+the Qur'an and the Sunna. The reader sees only your final answer, rendered from Markdown; while you work, each tool \
+call shows as a short status line. Do not write anything before or between tool calls: write only the final answer. \
+You have no web access and no memory of other conversations.
+
+Through the tools below you read: the Qur'an; the Risale-i Nur, the complete works of Bediüzzaman Said Nursî (in \
+Turkish, with the works he wrote in Arabic and their translations; the tools without a library name); and the other \
+libraries listed at the end (hadith collections, classical tafsirs, classical works of the Islamic sciences), in \
+their original Arabic. Texts are split into sentences or reports; every one has an id.
+"""
+
+ORDER_GENERAL = """\
+Building the answer: the Qur'an and the Sunna come first, then those who explain them.
+- When a verse bears on the question, give it first (read it with get_ayah and name it by its ref); when a report of \
+the Prophet bears on it, give it next, from the hadith collections. Then the explanations: the classical tafsirs, \
+the Risale-i Nur and the classical works, as the question needs. A question needs no verse or report forced into it.
+- Choose the libraries by the question: a verse: tefsir_find_ayah and find_ayah (its places in the Risale); a \
+saying of the Prophet: the hadis_ tools, and find_hadith for its places in the Risale; creed and kalam: the \
+classical works (Sharh al-Mawaqif, Sharh al-Maqasid, al-Fiqh al-Akbar) and the Risale; the inner life, morals and \
+worship: al-Ghazali's Ihya and the Risale; the life of the Prophet (sira): al-Mawahib and the hadith collections; the \
+meaning of a Qur'anic word or a term: al-Mufradat, al-Ta'rifat and the tafsirs; rhetoric: Dala'il al-I'jaz, Asrar \
+al-Balagha, Miftah al-'Ulum.
+- The Risale-i Nur is the fullest Turkish voice on faith and worship: when it treats the question (faith, the \
+hereafter, destiny, prayer, sincerity, patience…), include it after the verses and reports; never leave it out where \
+it speaks to the question, and never stretch it to a question it does not treat.
+- When the question is about the Risale-i Nur itself (it names one of its works or treatises, or Bediüzzaman, or \
+asks what the Risale says), answer it from the Risale first, as its readers expect; the other libraries only where \
+they add to it.
+- Each library speaks for itself: give what each work says with its own quotations and marks, name its author, and \
+never merge several works into one voice ("the scholars say")."""
+
 EARLIER = """\
 Earlier answers in this conversation: before the reader's new question the page lists, for each of your earlier \
 answers, the tools you called for it and, after each reading call, the title of the place read (a page note, not the \
@@ -187,18 +222,39 @@ block with one source (a range, at most 8 sentences); a longer passage is quoted
 own range."""
 
 
-def instructions(name: str, lugat: bool = True) -> str:
+# S14.4: genel sayfada SHAPE'in iki cümlesi (okuyucular, kapsam) değişir; fıkıh kütüphanesi yokken hüküm sorusu (K5)
+GENERAL_SHAPE = (
+    ("people who read the Risale-i Nur, some for years and some for the first time",
+     "people of every background, some who have read the classical sources or the Risale-i Nur for years and some "
+     "asking for the first time"),
+    ("For a question outside them (news, other books, personal or legal rulings), say briefly that this page answers "
+     "only from the Risale-i Nur.",
+     "For a question outside them (news, books not in the libraries), say briefly that this page answers only from "
+     "these libraries. There is no fiqh library: to a question asking for a ruling (\"can I…\", \"is it "
+     "permissible…\"), give no ruling; show what the verses, reports and books you read say in general, say that the "
+     "answer depends on one's madhhab and circumstances, and refer the reader to a mufti or a scholar they trust."),
+)
+
+
+def instructions(name: str, lugat: bool = True, general: bool = False) -> str:
     """Sohbetin talimatı (S12.10): kendi girişi, akışı ve cevap biçimi; kaynağa bağlılığın kuralları ve müellifin sözü
-    olmayan katmanlar Risale talimatının ortak bloklarından (`server`), kopyasız."""
+    olmayan katmanlar Risale talimatının ortak bloklarından (`server`), kopyasız. `general` (S14.4): genel sayfanın
+    girişi, cevabın kuruluşu (önce Kur'ân ve Sünnet) ve kapsamı; geri kalanı aynı."""
     from risale_mcp import server as s
-    return (INTRO.format(name=name) + f"""
+    shape = SHAPE
+    if general:
+        for old, new in GENERAL_SHAPE:
+            assert old in shape, old
+            shape = shape.replace(old, new)
+    order = "\n" + ORDER_GENERAL + "\n" if general else ""
+    return ((INTRO_GENERAL if general else INTRO).format(name=name) + f"""
 Workflow:
 1. {s.FIND}
 2. {s.READ}
 3. {MARK_STEP}
 
-{SHAPE}
-
+{shape}
+{order}
 Rules:
 1. {s.GROUNDED}{s.NEVER_INVENT}
 2. {QUOTE_EXACTLY}
@@ -270,7 +326,8 @@ def _quote_text(text: str) -> str | None:
     return text.strip('"“”«» \n') or None
 
 
-def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), foreign=None) -> Checked:
+def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), foreign=None,
+          foreign_read: frozenset[str] | set[str] = frozenset()) -> Checked:
     """İşaretleri denetler, düzeltir ve numaralar (S12.9: düzeltmeyi sunucu yapar). Her işaret ayrı denetlenir:
 
     - tutan işaret kalır;
@@ -287,7 +344,10 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), for
 
     S13.17: öbür kütüphanenin işareti (`[[tefsir:…]]`) o kütüphanenin `cite`'ıyla denetlenir (`foreign(kütüphane,
     öğeler) -> kayıtlar`, `Kutuphaneler.verify`); tutmayan alıntı "doğrulanamadı" olur (taşınmaz), bilinmeyen kimlik
-    silinir. `foreign` yoksa öneki olan işaret silinir. Risale'nin `risale:` öneki atılır."""
+    silinir. `foreign` yoksa öneki olan işaret silinir. Risale'nin `risale:` öneki atılır.
+
+    S14.4: öneksiz yazılmış ama Risale'de olmayan kimlik, bu cevapta tek bir öbür kütüphanede okunduysa
+    (`foreign_read`: `foreign_read_ids`) o kütüphanenin işareti sayılır (model `[[ihya/4/3/4/c041]]` yazmıştı)."""
     text = _marks_before_translation(_translations_out_of_blocks(_split_blocks(strip_own_sources(text))))
     text, unmarked = unmarked_quotes(checker, text, read,
                                      UNMARKED_NOTE_LIBRARIES if foreign is not None else UNMARKED_NOTE)
@@ -296,6 +356,8 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), for
                  "Put an id only inside [[ ]] right after the words it supports, or drop it."} for leak in leaks]
     counts = {"fixed": 0, "repaired": 0, "unverified": 0, "dropped": 0, "leaks": len(leaks), **unmarked}
     found = [(_risale_id(ident), quote, span) for ident, quote, span in marks(text)]
+    if foreign is not None and foreign_read:
+        found = [(_prefix_foreign(checker, ident, foreign_read), quote, span) for ident, quote, span in found]
     outside = _verify_foreign(found, foreign)        # (kütüphane, kimlik, alıntı) -> kayıt
     edits: dict[int, list[tuple[str, str]]] = {}     # S13.16 (c): onarılan alıntının cevaptaki sözleri
     checker.refresh()
@@ -428,6 +490,20 @@ def used_libraries(history: list[dict] | None) -> tuple[str, ...]:
 
 def _risale_id(ident: str) -> str:
     return ident[len("risale:"):] if ident.startswith("risale:") else ident
+
+
+def _prefix_foreign(checker, ident: str, foreign_read) -> str:
+    """S14.4: öneksiz kimlik Risale'de yoksa ve yalnız bir öbür kütüphanede okunduysa o kütüphanenin öneki eklenir."""
+    if _foreign(ident) is not None:
+        return ident
+    first = ident.split("..", 1)[0]
+    conn = checker.library.conn
+    if conn.execute("SELECT 1 FROM sentences WHERE id = ? UNION SELECT 1 FROM nodes WHERE id = ?",
+                    (first, first)).fetchone():
+        return ident
+    libs = {r.split(":", 1)[0] for r in foreign_read
+            if (local := r.split(":", 1)[1]) == first or first.startswith(local + "/") or local.startswith(first + "/")}
+    return f"{libs.pop()}:{ident}" if len(libs) == 1 else ident
 
 
 def _foreign(ident: str) -> tuple[str, str] | None:
@@ -802,6 +878,17 @@ def _near_read(checker, quote: str, read) -> tuple[str, str] | None:
     return best
 
 
+TITLE_SMALL = {"ve", "ile", "ya", "da", "de", "ki", "fî", "fi", "min", "ilâ", "ila", "an", "alâ", "ala", "li", "bi"}
+
+
+def _title_like(quote: str) -> bool:
+    """Bir adın yazılışı mı: cümle işareti yok, (bağlaçlar dışında) her kelime büyük harfle başlar."""
+    if re.search(r"[.!?;:,]", quote):
+        return False
+    words = [w for w in re.findall(r"[^\s]+", quote) if w.lower() not in TITLE_SMALL]
+    return len(words) >= 2 and all(w[0].isupper() for w in words if w[0].isalpha())
+
+
 def _place_unmarked(checker, quote: str, read) -> str | tuple[str, str] | None:
     """İşaretsiz sözün yeri: kimlik, (kimlik, metnin sözleri: yakın karşılık), uyarı ("") ya da dokunulmaz (None)."""
     from risale_mcp.citations import _block_parts, _key
@@ -816,6 +903,8 @@ def _place_unmarked(checker, quote: str, read) -> str | tuple[str, str] | None:
     if all(any(p in m for m in meals) for p in parts):
         return None
     if _key(quote) in getattr(checker, "by_key", {}):     # bölüm başlığı
+        return None
+    if _title_like(quote):        # S14.4: kitap ya da bölüm adı ("Kitâbu Esrâri's-Salât ve Mühimmâtihâ") söz değildir
         return None
     if found := _relocate(checker, "", quote, read):
         return found
@@ -1075,11 +1164,15 @@ class Settings:
     # S12.9: tutmayan alıntıyı sunucu düzeltir; model turu (yol (a)) kapalı. Gerekip gerekmediği deneme ayının
     # sayılarıyla anlaşılır (`SOHBET_MODEL_FIX=1`: önce modele bir kez döner, kalanı sunucu düzeltir).
     model_fix: bool = False
+    # S14.4: genel sayfa (Kur'ân ve Sünnet merkezli talimat, "Risale-i Nur'dan" kipi). S14.6'ya kadar kapalı:
+    # yayında bugünkü sayfa sürer (`SOHBET_GENEL=1` ile açılır, ölçüm ve yerel deneme)
+    general: bool = False
 
     @classmethod
     def from_env(cls) -> "Settings":
         return cls(model=os.environ.get("SOHBET_MODEL", MODEL), effort=os.environ.get("SOHBET_EFFORT", EFFORT),
-                   model_fix=os.environ.get("SOHBET_MODEL_FIX", "") not in ("", "0"))
+                   model_fix=os.environ.get("SOHBET_MODEL_FIX", "") not in ("", "0"),
+                   general=os.environ.get("SOHBET_GENEL", "") not in ("", "0"))
 
 
 class Chat:
@@ -1094,7 +1187,9 @@ class Chat:
         self.server = create_server(library, profile="genel")
         self.checker = CitationChecker(library)
         from risale_mcp.server import LUGAT_INSTRUCTIONS
-        self.system = instructions(config.name, lugat=LUGAT_INSTRUCTIONS in self.server.instructions)
+        lugat = LUGAT_INSTRUCTIONS in self.server.instructions
+        self.system = instructions(config.name, lugat=lugat)
+        self.system_general = instructions(config.name, lugat=lugat, general=True)      # S14.4
         self._tools: list[dict] | None = None
         from risale_mcp.kutuphaneler import Kutuphaneler
         self.libraries = libraries if libraries is not None else Kutuphaneler()    # S13.17: öbür kütüphaneler
@@ -1123,9 +1218,12 @@ class Chat:
         from risale_mcp.kutuphaneler import selected
         return tuple(k for k in selected(libraries) if k in self.libraries.available())
 
-    def system_for(self, chosen: tuple[str, ...], missing: tuple[str, ...] = ()) -> str:
+    def system_for(self, chosen: tuple[str, ...], missing: tuple[str, ...] = (), general: bool = False) -> str:
+        """`general` (S14.4): genel sayfanın talimatı; kütüphane bloğu hiçbiri açık değilken de (okuyucu kapattı)."""
         from risale_mcp.kutuphaneler import instructions as library_instructions
         usable = tuple(k for k in chosen if k not in missing)
+        if general:
+            return self.system_general + "\n" + library_instructions(usable, missing, general=True)
         return self.system + ("\n" + library_instructions(usable, missing) if chosen else "")
 
     def messages(self, history: list[dict], question: str, mode: str | None = None) -> list[dict]:
@@ -1233,9 +1331,13 @@ class Chat:
         # kipin açtıkları da (âyet: tefsir); konuşmada işareti geçen kütüphane de açık kalır (âyet çalışmasından sonra
         # takip sorusu tefsiri okuyabilsin)
         chosen = self.chosen(tuple(libraries or ()) + kip.libraries + used_libraries(history))
+        # S14.4: "Risale-i Nur'dan" kipi bugünkü sayfadır: yalnız Risale, bugünkü talimat
+        general = self.settings.general and not kip.risale_only
+        if kip.risale_only:
+            chosen = ()
         messages = self.messages(history, question, kip.id)
         tools, missing = await self.tools(kip.id, chosen)
-        system = self.system_for(chosen, missing)
+        system = self.system_for(chosen, missing, general)
         tally.libraries = chosen
         loop = asyncio.get_running_loop()
 
@@ -1254,7 +1356,7 @@ class Chat:
             tally.model_text = text
             yield "status", {"text": CHECKING}
             checked = await asyncio.to_thread(check, self.checker, text, read_ids(tally.calls),
-                                              foreign if chosen else None)
+                                              foreign if chosen else None, foreign_read_ids(tally.calls))
             if (self.settings.model_fix and checked.problems and not corrected and tally.rounds < MAX_ROUNDS):
                 corrected = True
                 messages.append({"role": "user", "content": correction(checked.problems)})
@@ -1922,9 +2024,9 @@ def page(config: Config, email: str, libraries: list[dict] | None = None) -> str
             .replace("{{KIPLER}}", _html.escape(json.dumps(_kipler_public(), ensure_ascii=False))))
 
 
-def _kipler_public() -> list[dict]:
+def _kipler_public(general: bool = False) -> list[dict]:
     from risale_mcp import kipler
-    return kipler.public()
+    return kipler.public(general)
 
 
 def _asset_version() -> str:

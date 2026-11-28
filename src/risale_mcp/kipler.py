@@ -20,6 +20,10 @@ class Kip:
     post: tuple[str, ...] = ()     # cevaptan sonra sunucunun eklediği listeler
     scope: tuple[str, ...] = field(default=("risale",))   # varsayılan kapsam (ileride: kuran, tefsir, hadis, klasik)
     libraries: tuple[str, ...] = ()   # S13.17: kipin kendiliğinden açtığı öbür kütüphaneler (okuyucunun seçimine eklenir)
+    # S14.4: genel sayfanın kipi (yalnız `SOHBET_GENEL` açıkken görünür); `risale_only`: bugünkü Risale talimatı,
+    # yalnız Risale'nin araçları (okuyucunun açtığı kütüphaneler de kapanır)
+    general_only: bool = False
+    risale_only: bool = False
 
 
 SURVEY_INSTRUCTIONS = """\
@@ -55,6 +59,8 @@ read: the page adds them. Follow verse_file's note about the Hadith Library."""
 
 KIPLER: dict[str, Kip] = {k.id: k for k in (
     Kip("serbest", "Serbest soru", "Risale-i Nur'a dair bir soru yazın"),
+    # S14.1 K2 (kullanıcının kararı, 2026-11-28): "Risale-i Nur'dan cevapla" seçeneği; açıkken bugünkü davranış aynen
+    Kip("risale", "Risale-i Nur'dan", "Cevap yalnız Risale-i Nur'dan gelsin", general_only=True, risale_only=True),
     Kip("tarama", "Konu taraması", "Bir konu yazın; eserlerde geçtiği yerleri toplayalım",
         instructions=SURVEY_INSTRUCTIONS, tools=("survey",), post=("other_places",)),
     Kip("ayet", "Âyet çalışması", "Bir âyet yazın (Bakara 255, Âyetü'l-Kürsî); Risale'de ve tefsirlerde birlikte bakalım",
@@ -67,9 +73,10 @@ def get(kip_id: str | None) -> Kip:
     return KIPLER.get(kip_id or DEFAULT, KIPLER[DEFAULT])
 
 
-def public() -> list[dict]:
-    """Arayüz için: id, ad, açıklama."""
-    return [{"id": k.id, "title": k.title, "hint": k.hint, "libraries": list(k.libraries)} for k in KIPLER.values()]
+def public(general: bool = False) -> list[dict]:
+    """Arayüz için: id, ad, açıklama. Genel sayfanın kipleri yalnız `general` açıkken (S14.4)."""
+    return [{"id": k.id, "title": k.title, "hint": k.hint, "libraries": list(k.libraries)} for k in KIPLER.values()
+            if general or not k.general_only]
 
 
 # ------------------------------------------------------------ sohbetin kendi araçları

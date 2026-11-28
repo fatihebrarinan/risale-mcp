@@ -377,12 +377,24 @@ class Kutuphaneler:
                               for s in passage.get("sentences", [])]}
 
 
-def instructions(chosen: tuple[str, ...], unavailable: tuple[str, ...] = ()) -> str:
-    """Seçilen kütüphanelerin talimata eklenen bloğu (sohbetin talimatının sonunda; seçime göre önbellekte ayrı)."""
+# S14.4: genel sayfada (Kur'ân ve Sünnet merkezli, K1) klasik eserler Risale'ye göre tarif edilmez (K3)
+KLASIK_GENERAL = ("the classical works the Risale-i Nur refers its reader to and relies on",
+                  "classical works of the Islamic sciences (kalam, rhetoric, terms, the inner life, the Prophet's life; "
+                  "among them the works the Risale-i Nur refers its reader to)")
+
+
+def instructions(chosen: tuple[str, ...], unavailable: tuple[str, ...] = (), general: bool = False) -> str:
+    """Seçilen kütüphanelerin talimata eklenen bloğu (sohbetin talimatının sonunda; seçime göre önbellekte ayrı).
+    `general` (S14.4): genel sayfanın talimatıyla; Risale önce gelmez, her kütüphane kendi sesiyle."""
     if not chosen:
-        return ""
-    lines = ["Other libraries the reader opened for this conversation, beside the Risale-i Nur:", ""]
-    lines += [KUTUPHANELER[k].rules + "\n" for k in chosen]
+        return ("Only the Risale-i Nur and the Qur'an are open for this question: the reader closed the other "
+                "libraries. If the question needs them, answer from what is open and say the reader can open the "
+                "hadith, tafsir and classical libraries on the page.") if general else ""
+    head = ("The other libraries open for this question:" if general
+            else "Other libraries the reader opened for this conversation, beside the Risale-i Nur:")
+    lines = [head, ""]
+    lines += [(KUTUPHANELER[k].rules.replace(*KLASIK_GENERAL) if general else KUTUPHANELER[k].rules) + "\n"
+              for k in chosen]
     lines.append(
         "In these libraries: mark a quotation or a statement drawn from them with the library's name before the id: "
         "[[tefsir:ibnkesir/2/255/c001]], a range [[tefsir:ibnkesir/2/255/c001..c003]], a report [[hadis:bukhari/1]], "
@@ -394,6 +406,9 @@ def instructions(chosen: tuple[str, ...], unavailable: tuple[str, ...] = ()) -> 
         "anlar\"). Keep the Risale-i Nur first and apart: what each library says has its own "
         "quotations and marks; never present a classical work's words as the Risale's, or the Risale's as a "
         "tafsir. Read in these libraries only what the question needs: their results are long.")
+    if general:
+        lines[-1] = lines[-1].replace("Keep the Risale-i Nur first and apart: what each library says",
+                                      "Keep each library apart: what each says")
     if unavailable:
         lines.append("Not reachable now: " + ", ".join(KUTUPHANELER[k].label for k in unavailable)
                      + ". Say so if the question needs it.")
