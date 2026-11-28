@@ -239,8 +239,9 @@ class Library:
         self._version: int | None = None
         self._semantic: tuple[sqlite3.Connection, SemanticIndex] | None = None
         self._lexicon: tuple[sqlite3.Connection, lugat.Lexicon] | None = None
-        # S14.8: eser ve grup verilmemiş aramada (search, semantic_search) gizli eserler; MCP sunucusunda boş, sohbet
-        # kendi kopyasında doldurur (Hizbü'l-Kur'ân: âyet Kur'ân'dan alınır). Eser ya da grup verilirse aranır.
+        # S14.8: eser ve grup verilmemiş aramada (search, semantic_search) ve find_ayah'ın yerlerinde gizli eserler;
+        # MCP sunucusunda boş, sohbet kendi kopyasında doldurur (Hizbü'l-Kur'ân: âyet Kur'ân'dan alınır). Eser ya da
+        # grup verilirse aranır, kimlikle okunur.
         self.search_excluded: frozenset[str] = frozenset()
 
     @property
@@ -1026,6 +1027,9 @@ class Library:
         if ayah is not None:
             where += " AND ? BETWEEN q.ayah_start AND q.ayah_end"
             params.append(ayah)
+        for hidden in sorted(self.search_excluded):     # S14.8: sohbette Hizbü'l-Kur'ân âyetin yeri olarak da gelmez
+            where += " AND q.sentence_id NOT LIKE ?"
+            params.append(hidden + "/%")
         quotes = (
             "SELECT CASE a.kind_source WHEN 'kaynak' THEN 'source' ELSE 'text' END AS via, a.sentence_id, a.paragraph_id, a.span_start, a.span_end, a.meal, a.source,"
             " a.ayah_check, a.sura, a.ayah_start, a.ayah_end FROM arabic a WHERE a.sura IS NOT NULL"

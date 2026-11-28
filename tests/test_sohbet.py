@@ -981,3 +981,8 @@ def test_s14_8_hizbul_kuran_is_hidden_from_the_chats_searches_only():
     chat_library.semantic_search("Kur'ân'dan dua ve hamd")
     chat_library.semantic_search("Kur'ân'dan dua ve hamd", work=hizb)
     assert hizb not in seen[0] and "sozler" in seen[0] and seen[1] == {hizb}
+    # find_ayah: Lokmân 31:18 Hizb'de geçer (G19); sohbette yeri gelmez
+    assert any(r["id"].startswith(hizb + "/") for r in plain.find_ayah("31", 18)["results"])
+    hidden = chat_library.find_ayah("31", 18)
+    assert not any(r["id"].startswith(hizb + "/") for r in hidden["results"])
+    assert hidden["total"] == len(hidden["results"]) or hidden["total"] > 0
