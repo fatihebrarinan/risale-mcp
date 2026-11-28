@@ -59,6 +59,29 @@ def test_search_all_only_in_general():
     names = lambda general: [t["name"] for t in asyncio.run(chat.tools("serbest", (), general))[0]]
     assert "search_all" in names(True) and "search_all" not in names(False)
     tools = asyncio.run(chat.tools("serbest", (), True))[0]
-    assert next(t for t in tools if t["name"] == "search")["description"].startswith("[Risale-i Nur Library]")
+    assert next(t for t in tools if t["name"] == "risale_search")["description"].startswith("[Risale-i Nur Library]")
     assert "search_all first" in sohbet.instructions("X", general=True)
     assert "search_all" not in sohbet.instructions("X")
+
+
+def test_risale_mode_is_todays_page():
+    """"Risale-i Nur'dan" kipi: genel sayfa açıkken de bugünkü talimat, bugünkü araçlar, kütüphanesiz."""
+    import asyncio
+    general = sohbet.Chat(sohbet._library(), None, settings=sohbet.Settings(general=True))
+    today = sohbet.Chat(sohbet._library(), None)
+    assert kipler.get("risale").risale_only
+    assert general.system_for((), (), False) == today.system_for((), ())
+    assert asyncio.run(general.tools("risale", (), False)) == asyncio.run(today.tools("serbest", ()))
+    assert sohbet.wrong_library_hint("get_hadith", {"id": "bukhari/1"}, ()) == ""      # kapalı kütüphane önerilmez
+
+
+def test_prefixed_names():
+    import asyncio
+    chat = sohbet.Chat(sohbet._library(), None, settings=sohbet.Settings(general=True))
+    names = [t["name"] for t in asyncio.run(chat.tools("serbest", ("tefsir",), True))[0]]
+    assert "risale_get_passage" in names and "get_ayah" in names and "get_passage" not in names
+    assert sohbet.internal_name("risale_get_passage") == "get_passage"
+    assert sohbet.internal_name("tefsir_get_passage") == "tefsir_get_passage"
+    assert sohbet.internal_name("get_ayah") == "get_ayah"
+    text = chat.system_for(("tefsir",), (), True)
+    assert "risale_get_passage" in text and "tefsir_get_passage" in text and "tefsir_risale_" not in text

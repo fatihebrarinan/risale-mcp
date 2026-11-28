@@ -162,10 +162,8 @@ their original Arabic. Texts are split into sentences or reports; every one has 
 
 ORDER_GENERAL = """\
 Building the answer: the Qur'an and the Sunna come first, then those who explain them.
-- A general question (not about the Risale-i Nur itself) is answered from whichever libraries treat it best: the \
-Risale is one of them, not the default, and an answer that explains everything through one library alone is \
-incomplete when others speak to the question. Open the answer with the answer itself, in your own words; say \
-"according to the Risale-i Nur" only when the question asks for the Risale.
+- Open the answer with the answer itself, in your own words; say "according to the Risale-i Nur" only when the \
+question asks for the Risale.
 - When a verse bears on the question, give it first (read it with get_ayah and name it by its ref); when a report of \
 the Prophet bears on it, give it next, from the hadith collections. Then the explanations: the classical tafsirs, \
 the Risale-i Nur and the classical works, as the question needs. A question needs no verse or report forced into it.
@@ -230,10 +228,10 @@ own range."""
 FIND_GENERAL = ("Find: for a question in today's words, call search_all first: it searches every open library at once "
                 "and returns each library's closest passages side by side; choose by how well they answer the question, "
                 "not by library. For the text's own words, names and terms, use the search tool of the library "
-                "concerned (search for the Risale-i Nur, tefsir_search, hadis_search_hadith, klasik_search). Each "
-                "library has its own reading tools: read a Risale id with get_passage or read_section, and an id "
-                "marked tefsir:, hadis: or klasik: only with that library's tools. Results are candidates, not "
-                "evidence.")
+                "concerned (risale_search, tefsir_search, hadis_search_hadith, klasik_search). Each library has its "
+                "own tools, named after it: read a Risale-i Nur id with risale_get_passage or risale_read_section, and "
+                "an id marked tefsir:, hadis: or klasik: only with that library's tools. get_ayah reads the Qur'an "
+                "itself. Results are candidates, not evidence.")
 
 # S14.4: genel sayfada SHAPE'in iki cümlesi (okuyucular, kapsam) değişir; fıkıh kütüphanesi yokken hüküm sorusu (K5)
 GENERAL_SHAPE = (
@@ -1197,6 +1195,26 @@ def status_line(library, name: str, args: dict) -> str:
 
 SEARCH_ALL_RISALE, SEARCH_ALL_OTHER, SEARCH_ALL_TEXT = 6, 5, 260     # S14.4: search_all'ın sonuç sayıları
 
+# S14.4 (kullanıcının önerisi, 2026-11-28): genel sayfada Risale'nin araçları da öbür kütüphaneler gibi adıyla
+# önek alır (`risale_search`…); öneksiz araç "asıl araç" gibi görünüyordu. Kur'ân'ın aracı (`get_ayah`) öneksiz kalır:
+# Kur'ân ortak adrestir. Önek yalnız modelin gördüğü yüzdür: içeride (çağrı kaydı, durum satırı, okuma denetimi)
+# bugünkü adlar kullanılır; model öneksiz eski adla çağırırsa da çalışır.
+RISALE_PREFIXED = ("search", "semantic_search", "get_passage", "read_section", "get_outline", "find_sentence",
+                   "find_ayah", "find_hadith", "get_hadith", "lookup_word", "list_works")
+_RISALE_NAME = re.compile(r"(?<![\w])(" + "|".join(sorted(RISALE_PREFIXED, key=len, reverse=True)) + r")(?![\w])")
+
+
+def internal_name(name: str) -> str:
+    """`risale_get_passage` -> `get_passage` (S14.4); öbür adlar aynen."""
+    return name[len("risale_"):] if name.startswith("risale_") and name[len("risale_"):] in RISALE_PREFIXED else name
+
+
+def prefixed_text(text: str) -> str:
+    """Genel sayfanın talimatında Risale araçlarının adları önekli (öbür kütüphanelerin `tefsir_get_passage` gibi
+    adlarına dokunulmaz: alt çizgi kelimenin parçasıdır). "search" yalnız araç adı olarak geçtiği yerde değişmez:
+    düz yazıdaki "search" sözcüğü de olabilir, bu yüzden listede ama talimatta ayrıca yazılır."""
+    return _RISALE_NAME.sub(lambda m: m.group(1) if m.group(1) == "search" else "risale_" + m.group(1), text)
+
 # S14.4 (genel setin ölçümü): model öbür kütüphanelerin kimliklerini Risale'nin öneksiz araçlarıyla okumaya çalışıyor
 # (get_hadith("bukhari/1"), get_passage("serhul-mevakif/…")), hata alınca o kütüphaneyi bırakıyordu: yedi soruda on bir
 # çağrı. Hata iletisine doğru araç eklenir.
@@ -1230,13 +1248,14 @@ HADITH_BOOKS = ("bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah"
                 "mucem-sagir", "mustedrek", "delail", "sifa", "ihsan", "mecma", "kenz", "feyz", "kesfulhafa")
 
 
-def wrong_library_hint(tool: str, args: dict) -> str:
-    """Risale aracına gelen kimlik başka bir kütüphanenin ise, doğru aracı söyleyen ek ("" değilse)."""
+def wrong_library_hint(tool: str, args: dict, open_libraries=("tefsir", "hadis", "klasik")) -> str:
+    """Risale aracına gelen kimlik başka bir kütüphanenin ise, doğru aracı söyleyen ek ("" değilse). Yalnız o kütüphane
+    bu soruda açıksa ("Risale-i Nur'dan" kipinde ve okuyucunun kapattığı kütüphanede olmayan aracı önermesin)."""
     for key in ("id", "section", "work"):
         value = str((args or {}).get(key) or "")
         slug = re.split(r"[/:]", value, maxsplit=1)[0]
         lib = _foreign_slugs().get(slug)
-        if lib:
+        if lib and lib in open_libraries:
             name = "get_hadith" if lib == "hadis" and tool in ("get_passage", "get_hadith") else WRONG_TOOL.get(tool, tool)
             if lib == "hadis" and name not in ("get_hadith", "semantic_search", "get_outline"):
                 name = "get_hadith"
@@ -1312,8 +1331,10 @@ class Chat:
             self._tools = [{"name": t.name, "description": t.description or "", "input_schema": t.input_schema}
                            for t in await self.server.list_tools() if t.name not in EXCLUDED_TOOLS]
         tools, missing = list(self._tools), []
-        if general:        # S14.4: Risale'nin öneksiz araçları da bir kütüphanenin araçlarıdır, varsayılan değil
-            tools = [{**t, "description": "[Risale-i Nur Library] " + t["description"]} for t in tools]
+        if general:        # S14.4: Risale'nin araçları da bir kütüphanenin araçlarıdır: adıyla ve etiketiyle
+            tools = [{**t, "name": "risale_" + t["name"] if t["name"] in RISALE_PREFIXED else t["name"],
+                      "description": prefixed_text(("[Risale-i Nur Library] " if t["name"] in RISALE_PREFIXED
+                                                    else "") + t["description"])} for t in tools]
         for kutuphane in chosen:
             try:
                 tools += await self.libraries.tools(kutuphane)
@@ -1336,7 +1357,7 @@ class Chat:
         from risale_mcp.kutuphaneler import instructions as library_instructions
         usable = tuple(k for k in chosen if k not in missing)
         if general:
-            return self.system_general + "\n" + library_instructions(usable, missing, general=True)
+            return prefixed_text(self.system_general + "\n" + library_instructions(usable, missing, general=True))
         return self.system + ("\n" + library_instructions(usable, missing) if chosen else "")
 
     def messages(self, history: list[dict], question: str, mode: str | None = None) -> list[dict]:
@@ -1391,11 +1412,11 @@ class Chat:
             text = "".join(getattr(c, "text", "") for c in result.content)
             error = bool(getattr(result, "is_error", False))
             return {"type": "tool_result", "tool_use_id": block.id, "is_error": True,
-                    "content": text + wrong_library_hint(block.name, args)} if error else \
+                    "content": text + wrong_library_hint(block.name, args, chosen)} if error else \
                 {"type": "tool_result", "tool_use_id": block.id, "content": text}
         except ToolError as e:
             return {"type": "tool_result", "tool_use_id": block.id, "is_error": True,
-                    "content": str(e) + wrong_library_hint(block.name, args)}
+                    "content": str(e) + wrong_library_hint(block.name, args, chosen)}
         except Exception:
             import logging
             logging.exception("sohbet: araç hatası %s", block.name)
@@ -1588,6 +1609,9 @@ class Chat:
                                                "you have read, and say what you could not check."})
                     continue
                 tally.tools += 1
+                if (name := internal_name(block.name)) != block.name:      # S14.4: risale_… -> iç ad
+                    from types import SimpleNamespace
+                    block = SimpleNamespace(id=block.id, name=name, input=block.input)
                 owner = self.libraries.owner(block.name, chosen)
                 if owner:
                     from risale_mcp.kutuphaneler import status_line as library_status
