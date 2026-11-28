@@ -2581,7 +2581,7 @@ def answer_text(done: dict) -> str:
     return "\n".join(lines) if done["sources"] else done["markdown"]
 
 
-MEASURE_PARALLEL = 6        # S14.4 (kullanıcının isteği, 2026-11-28): ölçümde aynı anda sorulan soru
+MEASURE_PARALLEL = 10       # S14.4 (kullanıcının isteği, 2026-11-28): ölçümde aynı anda sorulan soru
 
 
 async def measure(chat: Chat, ids: list[str], question_set: Path | None = None, libraries=(),
