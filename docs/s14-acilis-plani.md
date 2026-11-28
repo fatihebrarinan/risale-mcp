@@ -124,4 +124,6 @@ En riskli kütüphane: fıkıh sorusu amel için sorulur. Ayaktaki "fetva değil
 
 ## Kararlar
 
-(henüz yok)
+- **K1 (2026-11-28): Kur'ân ve Sünnet merkezli.** Tarif: "Kur'ân ve Sünnet etrafında, İslâm ilimlerinin kaynakları."
+  (Kullanıcının sözü; önerideki "klasik" kelimesi yok.) Anlatımın ikinci yarısı usuldür: her söz kaynağıyla, alıntılar
+  denetlenir. Risale bu çerçevenin içinde durur. Örnek cümleler S14.5'te yazılır.
