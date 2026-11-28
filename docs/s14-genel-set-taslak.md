@@ -1,4 +1,8 @@
-# S14.3: Genel soru seti (taslak, kullanıcının onayını bekliyor)
+# S14.3: Genel soru seti
+
+**Dondu (2026-11-28):** kullanıcı onayladı; beklenen yerler araçlarla okunarak doğrulandı ve bütün kimlikler
+veritabanlarında denetlendi. Donmuş set `tests/golden/genel_sorular.json`'dadır (beklenen yerler `places.core`, ikincil
+`places.also`, davranış `behaviour`); aşağıdaki tablo taslağın kaydıdır.
 
 Hazırlanış: 2026-11-28, Claude. Amaç: S14.4'te sohbetin varsayılanlarını ölçmek. Risale seti bugünkü altın sorulardır
 (`tests/golden/questions.json`, 29 soru; hızlı set 8 soru); bu set onun yanına Risale dışı ve genel soruları koyar.

@@ -1,0 +1,1185 @@
+{
+ "about": "S14.3 genel soru seti (kullanıcı onayladı, 2026-11-28; plan docs/s14-acilis-plani.md). Beklenen yerler (places.core: cevabın dayanması gerekenler, places.also: ikincil) araçlarla okunarak doğrulandı (2026-11-28); kuran kimlikleri sûre:âyet. Rapor: risale_mcp.genel_olc.",
+ "questions": [
+  {
+   "id": "G1",
+   "category": "ayet",
+   "question": "Âyetü'l-Kürsî'deki \"kürsî\" kelimesini müfessirler nasıl açıklamış?",
+   "places": {
+    "core": [
+     {
+      "library": "kuran",
+      "id": "2:255"
+     },
+     {
+      "library": "tefsir",
+      "id": "taberi/2/255/c021..c022"
+     },
+     {
+      "library": "tefsir",
+      "id": "kessaf/2/255/c012..c016"
+     },
+     {
+      "library": "tefsir",
+      "id": "razi/2/255/c046..c050"
+     },
+     {
+      "library": "tefsir",
+      "id": "beyzavi/2/255/c011..c013"
+     },
+     {
+      "library": "tefsir",
+      "id": "alusi/2/255/c017..c018"
+     }
+    ],
+    "also": [
+     {
+      "library": "tefsir",
+      "id": "ibnkesir/2/255/c161"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/25/sule-02/nur-02/nukte-06/c002"
+     }
+    ]
+   },
+   "behaviour": "Görüşleri müfessir müfessir, adıyla verir (Taberî, Zemahşerî, Râzî, Beyzâvî, Âlûsî); tercihi yalnız müfessir söylüyorsa anar; tek bir 'müfessirler der ki'ye indirmez. Risale'de kürsînin izahı yok: uydurmaz."
+  },
+  {
+   "id": "G2",
+   "category": "ayet",
+   "question": "\"Allah hiçbir kimseye gücünün yetmediği bir şeyi yüklemez\" âyeti nerededir, nasıl anlaşılmış?",
+   "places": {
+    "core": [
+     {
+      "library": "kuran",
+      "id": "2:286"
+     },
+     {
+      "library": "kuran",
+      "id": "6:152"
+     },
+     {
+      "library": "tefsir",
+      "id": "taberi/2/286/c001..c003"
+     },
+     {
+      "library": "tefsir",
+      "id": "kessaf/2/286/c001..c002"
+     },
+     {
+      "library": "tefsir",
+      "id": "beyzavi/2/286/c001"
+     },
+     {
+      "library": "risale",
+      "id": "mektubat/16/nokta-05/mesele-05/c008"
+     }
+    ],
+    "also": [
+     {
+      "library": "tefsir",
+      "id": "kurtubi/2/285-286/c050..c055"
+     },
+     {
+      "library": "kuran",
+      "id": "7:42"
+     },
+     {
+      "library": "kuran",
+      "id": "23:62"
+     },
+     {
+      "library": "kuran",
+      "id": "65:7"
+     }
+    ]
+   },
+   "behaviour": "Lafzın adresi Bakara 2:286; benzer âyetleri ayrı lafızlar olarak anar. Müfessirlerin okuyuşu adıyla. Risale'deki yer 'dayanak' bağıdır, tefsir denmez."
+  },
+  {
+   "id": "G3",
+   "category": "ayet",
+   "question": "Fâtiha'daki \"sırât-ı müstakîm\" ne demektir?",
+   "places": {
+    "core": [
+     {
+      "library": "kuran",
+      "id": "1:6"
+     },
+     {
+      "library": "risale",
+      "id": "isaratul-icaz/sure-i-fatiha/es-siratal-mustekim/c002"
+     },
+     {
+      "library": "tefsir",
+      "id": "taberi/1/6/c025"
+     },
+     {
+      "library": "tefsir",
+      "id": "taberi/1/6/c029"
+     },
+     {
+      "library": "tefsir",
+      "id": "ibnkesir/1/6/c006..c026"
+     },
+     {
+      "library": "tefsir",
+      "id": "beyzavi/1/6/c015"
+     }
+    ],
+    "also": [
+     {
+      "library": "risale",
+      "id": "sualar/15/makam-01/kisim-02/kelime-06/c013"
+     },
+     {
+      "library": "tefsir",
+      "id": "beyzavi/1/6/c003..c004"
+     }
+    ]
+   },
+   "behaviour": "İşârât'ın okuyuşu (adl: üç kuvvetin vasatı) müellifin sözü olarak, Türkçenin tercüme olduğu belirtilerek; her müfessirin okuyuşu ayrı ve adıyla. Model kendi özetine tefsir demez."
+  },
+  {
+   "id": "G4",
+   "category": "ayet",
+   "question": "İhlâs Sûresi hangi sebeple inmiştir?",
+   "places": {
+    "core": [
+     {
+      "library": "tefsir",
+      "id": "taberi/112/1-4/c001..c007"
+     },
+     {
+      "library": "tefsir",
+      "id": "kessaf/112/1-4/c006"
+     },
+     {
+      "library": "tefsir",
+      "id": "ibnkesir/112/1-4/c002..c005"
+     },
+     {
+      "library": "hadis",
+      "id": "tirmidhi/3364"
+     },
+     {
+      "library": "hadis",
+      "id": "tirmidhi/3365"
+     }
+    ],
+    "also": [
+     {
+      "library": "hadis",
+      "id": "mustedrek/3987"
+     },
+     {
+      "library": "hadis",
+      "id": "musned/21219"
+     },
+     {
+      "library": "hadis",
+      "id": "mecma/11542"
+     }
+    ]
+   },
+   "behaviour": "Nüzul sebeplerini rivayet olarak, ravileriyle verir (müşrikler, Yahudiler, Kureyş); Tirmizî'nin mürsel rivayet 'daha sahih' sözünü onun sözü olarak; hangisi doğru diye hüküm vermez; Risale'ye mal etmez."
+  },
+  {
+   "id": "G5",
+   "category": "hadis",
+   "question": "\"Ameller niyetlere göredir\" hadisi hangi kitaplarda geçer?",
+   "places": {
+    "core": [
+     {
+      "library": "hadis",
+      "id": "bukhari/1"
+     },
+     {
+      "library": "hadis",
+      "id": "muslim/1907"
+     },
+     {
+      "library": "hadis",
+      "id": "abudawud/2201"
+     },
+     {
+      "library": "hadis",
+      "id": "tirmidhi/1647"
+     },
+     {
+      "library": "hadis",
+      "id": "nasai/75"
+     },
+     {
+      "library": "risale",
+      "id": "sikke-i-tasdik-i-gaybi/lema-08/said-kendi-soyluyor/c011"
+     }
+    ],
+    "also": [
+     {
+      "library": "risale",
+      "id": "munazarat/siz-sual-ediniz-ben-de/sozlerin-iyi-fakat-dinleyen-nerede/c004"
+     },
+     {
+      "library": "hadis",
+      "id": "ibnmajah/4227"
+     },
+     {
+      "library": "hadis",
+      "id": "musned/168"
+     },
+     {
+      "library": "hadis",
+      "id": "kesfulhafa/1"
+     }
+    ]
+   },
+   "behaviour": "Kitapları numaralarıyla, lafız farkıyla (بالنيات / بالنية) verir; derece yalnız araçların verdiği gibi, âlimin adıyla; Sahîhlerde hadis başına derece olmadığını söyler; kendi hükmünü vermez."
+  },
+  {
+   "id": "G6",
+   "category": "hadis",
+   "question": "\"İlim Çin'de de olsa arayınız\" hadis midir?",
+   "places": {
+    "core": [
+     {
+      "library": "hadis",
+      "id": "kesfulhafa/397"
+     },
+     {
+      "library": "hadis",
+      "id": "feyz/1110"
+     },
+     {
+      "library": "hadis",
+      "id": "kenz/28697"
+     }
+    ],
+    "also": [
+     {
+      "library": "hadis",
+      "id": "kenz/28698"
+     },
+     {
+      "library": "hadis",
+      "id": "kesfulhafa/1665"
+     }
+    ]
+   },
+   "behaviour": "Evet/hayır diye kendi hükmünü vermez; Aclûnî ve Münâvî'nin naklettiklerini âlimleriyle (İbn Hibbân, İbnü'l-Cevzî, Beyhakî, Mizzî, Zehebî) verir; Keşfü'l-Hafâ'da bulunmanın sağlamlık demek olmadığını söyler; Kütüb-i Sitte'de ve Risale'de olmadığını söyler."
+  },
+  {
+   "id": "G7",
+   "category": "hadis",
+   "question": "Hz. Peygamber komşu hakkı hakkında neler buyurmuştur?",
+   "places": {
+    "core": [
+     {
+      "library": "hadis",
+      "id": "bukhari/5669"
+     },
+     {
+      "library": "hadis",
+      "id": "muslim/2624"
+     },
+     {
+      "library": "hadis",
+      "id": "bukhari/5673"
+     },
+     {
+      "library": "hadis",
+      "id": "muslim/47"
+     },
+     {
+      "library": "hadis",
+      "id": "bukhari/5670"
+     },
+     {
+      "library": "hadis",
+      "id": "muslim/46"
+     }
+    ],
+    "also": [
+     {
+      "library": "hadis",
+      "id": "tirmidhi/1942"
+     },
+     {
+      "library": "hadis",
+      "id": "abudawud/5152"
+     },
+     {
+      "library": "hadis",
+      "id": "malik/1660"
+     }
+    ]
+   },
+   "behaviour": "Her rivayeti kitabı, numarası ve sahâbîsiyle; tercüme 'Yapay zekâ tercümesi' damgalı; araçların vermediği derece eklenmez."
+  },
+  {
+   "id": "G8",
+   "category": "hadis",
+   "question": "\"Cennet annelerin ayakları altındadır\" sözünün kaynağı nedir?",
+   "places": {
+    "core": [
+     {
+      "library": "hadis",
+      "id": "nasai/3104"
+     },
+     {
+      "library": "hadis",
+      "id": "ibnmajah/2781"
+     },
+     {
+      "library": "hadis",
+      "id": "mustedrek/2502"
+     },
+     {
+      "library": "hadis",
+      "id": "kesfulhafa/1078"
+     },
+     {
+      "library": "hadis",
+      "id": "feyz/3642"
+     },
+     {
+      "library": "risale",
+      "id": "mektubat/21/c051"
+     }
+    ],
+    "also": [
+     {
+      "library": "hadis",
+      "id": "kenz/45439"
+     },
+     {
+      "library": "hadis",
+      "id": "mustedrek/7248"
+     },
+     {
+      "library": "hadis",
+      "id": "mecma/13401"
+     }
+    ]
+   },
+   "behaviour": "İki lafzı ayırır: Câhime kıssası (Nesâî, İbn Mâce, Hâkim; رجليها) ve meşhur 'akdâmü'l-ümmehât' lafzı (Enes; Hatîb, Kudâî); âlimlerin sözlerini adlarıyla verir; kendisi hüküm vermez; Risale'deki yer bir salavattadır, künyeleri nâşirindir."
+  },
+  {
+   "id": "G9",
+   "category": "akaid",
+   "question": "Allah'ın sıfatları kaç kısma ayrılır?",
+   "places": {
+    "core": [
+     {
+      "library": "klasik",
+      "id": "fikhul-ekber/3/c001"
+     },
+     {
+      "library": "klasik",
+      "id": "tarifat/15/c026..c027"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-makasid/5/5/c001"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-mevakif/5/2"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-mevakif/5/4/1/c001..c002"
+     }
+    ],
+    "also": [
+     {
+      "library": "klasik",
+      "id": "serhul-mevakif/5/7/2/c001..c008"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/2/3/c003"
+     },
+     {
+      "library": "risale",
+      "id": "sualar/7/ayetul-kubra/bab-01/mertebe-19/hakikat-01/c010"
+     }
+    ]
+   },
+   "behaviour": "Cevabın tasnife bağlı olduğunu söyler: Ebû Hanîfe zâtî/fi'lî; Teftâzânî selbî / izâfî-fi'lî / sübûtî-hakîkî; Mevâkıf selbî/vücûdî; her biri müellifiyle; Îcî'nin metni Îcî'nin; Risale'ye yedi sübûtî sıfatı anmasından öte tasnif mal edilmez."
+  },
+  {
+   "id": "G10",
+   "category": "akaid",
+   "question": "Kader ile insanın iradesi nasıl bağdaşır?",
+   "places": {
+    "core": [
+     {
+      "library": "risale",
+      "id": "sozler/26/mebhas-02/c001..c008"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/26/mebhas-02/c012..c019"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/26/mebhas-02/c046..c053"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/26/mebhas-01/c007..c010"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-mevakif/5/6/1/s1/c003..c005"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-makasid/5/6/c001"
+     }
+    ],
+    "also": [
+     {
+      "library": "kuran",
+      "id": "15:21"
+     },
+     {
+      "library": "kuran",
+      "id": "36:12"
+     },
+     {
+      "library": "klasik",
+      "id": "fikhul-ekber/8/c002"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/2/3/3/c004..c006"
+     }
+    ]
+   },
+   "behaviour": "Risale'nin kendi uzlaştırmasını (meyelân emr-i itibârî; kader ilmin bir nev'i, ilim malûma tâbi) alıntılar; kelâm eserlerinin kesb görüşünü müellifleriyle ayrı verir; Bediüzzaman'ın onlara tâbi olduğunu söylemez."
+  },
+  {
+   "id": "G11",
+   "category": "akaid",
+   "question": "Peygamberlerin masum olması ne demektir?",
+   "places": {
+    "core": [
+     {
+      "library": "klasik",
+      "id": "serhul-mevakif/6/1/5/s1/c001..c008"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-mevakif/6/1/5/s1/c043"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-mevakif/6/1/6/s1/c001..c003"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-makasid/6/1/5/c001"
+     },
+     {
+      "library": "klasik",
+      "id": "fikhul-ekber/10/c001"
+     }
+    ],
+    "also": [
+     {
+      "library": "klasik",
+      "id": "serhul-mevakif/6/1/5/s1/c041..c045"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-makasid/6/1/5/c002"
+     }
+    ]
+   },
+   "behaviour": "İsmeti tarif eder, kademeli görüşleri (tebliğde yalan, küfür, büyük ve küçük günah, kasıt ya da hata, nübüvvetten önce ya da sonra) kelâm eserlerinden müellifleriyle verir; Risale'de bir izah bulunmadığını söyler, uydurmaz."
+  },
+  {
+   "id": "G12",
+   "category": "siyer",
+   "question": "Hendek Savaşı'nda neler olmuştu?",
+   "places": {
+    "core": [
+     {
+      "library": "klasik",
+      "id": "mevahib/2/20/c001..c005"
+     },
+     {
+      "library": "klasik",
+      "id": "mevahib/2/20/c093..c094"
+     },
+     {
+      "library": "hadis",
+      "id": "bukhari/3876"
+     },
+     {
+      "library": "hadis",
+      "id": "bukhari/3877"
+     },
+     {
+      "library": "kuran",
+      "id": "33:9-11"
+     },
+     {
+      "library": "risale",
+      "id": "mektubat/19/mucizat-i-ahmediye-asm/yedinci-nukteli-isaret/misal-05/c001..c006"
+     }
+    ],
+    "also": [
+     {
+      "library": "hadis",
+      "id": "bukhari/3884"
+     },
+     {
+      "library": "risale",
+      "id": "mektubat/19/mucizat-i-ahmediye-asm/altinci-nukteli-isaret/c133"
+     },
+     {
+      "library": "klasik",
+      "id": "mevahib/2/20/c042..c049"
+     },
+     {
+      "library": "klasik",
+      "id": "mevahib/2/20/c110..c115"
+     }
+    ]
+   },
+   "behaviour": "Mevâhib'den (müttefikler, hendek, kuşatma, rüzgâr, çekiliş), Buhârî rivayetleri ve âyetlerle anlatır; Risale'nin yerini (yemek mucizesi) Risale'nin kendi anlatımı olarak verir; hafızadan siyer eklemez."
+  },
+  {
+   "id": "G13",
+   "category": "siyer",
+   "question": "Vahyin başlangıcı nasıl anlatılır?",
+   "places": {
+    "core": [
+     {
+      "library": "hadis",
+      "id": "bukhari/3"
+     },
+     {
+      "library": "klasik",
+      "id": "mevahib/2/7/c010..c016"
+     },
+     {
+      "library": "kuran",
+      "id": "96:1-5"
+     }
+    ],
+    "also": [
+     {
+      "library": "klasik",
+      "id": "mevahib/2/7/c005..c009"
+     },
+     {
+      "library": "hadis",
+      "id": "bukhari/6581"
+     },
+     {
+      "library": "risale",
+      "id": "lemalar/29/bab-07/makam-02/c021/h2/c017"
+     }
+    ]
+   },
+   "behaviour": "Hz. Âişe'nin Buhârî'deki rivayetine (numarasıyla) ve Mevâhib'e dayanır; Alak 96:1-5'i verir; Arapçayı damgalı tercümeyle aktarır; rivayette olmayan ayrıntı eklemez."
+  },
+  {
+   "id": "G14",
+   "category": "siyer",
+   "question": "Mi'rac nasıl gerçekleşmiştir?",
+   "places": {
+    "core": [
+     {
+      "library": "kuran",
+      "id": "17:1"
+     },
+     {
+      "library": "kuran",
+      "id": "53:1-18"
+     },
+     {
+      "library": "hadis",
+      "id": "bukhari/3674"
+     },
+     {
+      "library": "hadis",
+      "id": "muslim/162"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/31/c024..c028"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/31/esas-02/c001..c003"
+     }
+    ],
+    "also": [
+     {
+      "library": "risale",
+      "id": "sozler/31/esas-02/temsil-02/c101..c105"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/31/esas-01/temsil-01/c007"
+     },
+     {
+      "library": "klasik",
+      "id": "serhul-makasid/6/1/5/c001"
+     }
+    ]
+   },
+   "behaviour": "Âyetler ve Sahîh rivayetler (numara ve ravileriyle), sonra Risale'nin Otuzbirinci Söz'deki anlatımı (dört esas, hakikati seyr ü sülûk, cismin urûcu); her biri ayrı; okunan metinlerde olmayan efsanevi ayrıntı yok."
+  },
+  {
+   "id": "G15",
+   "category": "kavram",
+   "question": "İstiare ne demektir?",
+   "places": {
+    "core": [
+     {
+      "library": "klasik",
+      "id": "tarifat/2/c155"
+     },
+     {
+      "library": "klasik",
+      "id": "esrarul-belaga/7/c001"
+     },
+     {
+      "library": "klasik",
+      "id": "miftahul-ulum/92/c001"
+     }
+    ],
+    "also": [
+     {
+      "library": "klasik",
+      "id": "esrarul-belaga/33/c008"
+     },
+     {
+      "library": "klasik",
+      "id": "tarifat/2/c159..c162"
+     },
+     {
+      "library": "klasik",
+      "id": "tarifat/25/c066"
+     },
+     {
+      "library": "risale",
+      "id": "muhakemat/makale-01/mesele-06/c001..c005"
+     }
+    ]
+   },
+   "behaviour": "Üç klasik tarifi (Cürcânî, Abdülkāhir, Sekkâkî) Arapçasıyla, müellifleriyle ve damgalı tercümeyle, aslan örneğiyle verir; tek ve sahipsiz bir tarife indirmez."
+  },
+  {
+   "id": "G16",
+   "category": "kavram",
+   "question": "\"Takvâ\" kelimesinin anlamı nedir?",
+   "places": {
+    "core": [
+     {
+      "library": "klasik",
+      "id": "mufredat/26/061/c001"
+     },
+     {
+      "library": "klasik",
+      "id": "tarifat/4/c152..c153"
+     },
+     {
+      "library": "tefsir",
+      "id": "beyzavi/2/2/c017..c021"
+     },
+     {
+      "library": "risale",
+      "id": "isaratul-icaz/sure-i-bakara/3/iman-i-bilgayb/c014..c019"
+     },
+     {
+      "library": "risale",
+      "id": "kastamonu-lahikasi/1-105-mektuplar/98/c003..c006"
+     }
+    ],
+    "also": [
+     {
+      "library": "kuran",
+      "id": "2:2"
+     },
+     {
+      "library": "tefsir",
+      "id": "beyzavi/2/2/c012..c015"
+     },
+     {
+      "library": "risale",
+      "id": "isaratul-icaz/sure-i-bakara/2/misal-02/c041"
+     },
+     {
+      "library": "risale",
+      "id": "mektubat/23/sual-04/c007..c008"
+     }
+    ]
+   },
+   "behaviour": "Kök anlamı (vikāye) ve şer'î anlamı Müfredât ve Ta'rîfât'tan, üç mertebeyi (Beyzâvî; İşârât'taki karşılığı), Risale'nin tarifini, her birini sahibine nispetle verir; İşârât'ın Türkçesinin tercüme olduğunu belirtir; Beyzâvî ile İşârât'ı birbirine bağlamaz."
+  },
+  {
+   "id": "G17",
+   "category": "kavram",
+   "question": "İhlas nedir?",
+   "places": {
+    "core": [
+     {
+      "library": "risale",
+      "id": "lemalar/21/c006..c013"
+     },
+     {
+      "library": "risale",
+      "id": "lemalar/21/dustur-01/c001..c006"
+     },
+     {
+      "library": "risale",
+      "id": "lemalar/20/c003..c004"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/37/2/2/c001..c002"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/37/2/2/c010..c011"
+     },
+     {
+      "library": "klasik",
+      "id": "tarifat/2/c078..c081"
+     }
+    ],
+    "also": [
+     {
+      "library": "kuran",
+      "id": "39:2-3"
+     },
+     {
+      "library": "risale",
+      "id": "lemalar/20/sebeb-01/c003/h1/c001..c005"
+     },
+     {
+      "library": "risale",
+      "id": "lemalar/20/sebeb-01/c010"
+     },
+     {
+      "library": "klasik",
+      "id": "tarifat/2/c082..c083"
+     }
+    ]
+   },
+   "behaviour": "Tarifi klasik eserlere (İhyâ, Ta'rîfât) ve Risale'nin iki İhlas Lem'asına dayandırır, her birini alıntılar; 'cited' hadisi sahih demez; metinlerin anmadığı âyeti anmaz."
+  },
+  {
+   "id": "G18",
+   "category": "ahlak",
+   "question": "Sabır nedir, çeşitleri nelerdir?",
+   "places": {
+    "core": [
+     {
+      "library": "klasik",
+      "id": "ihya/32/1/2/c005"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/32/1/4/c001..c002"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/32/1/6/c001..c004"
+     },
+     {
+      "library": "risale",
+      "id": "mektubat/23/sual-04/c001..c009"
+     },
+     {
+      "library": "risale",
+      "id": "mektubat/23/sual-04/c010..c017"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/21/makam-01/ikaz-03/c015..c022"
+     }
+    ],
+    "also": [
+     {
+      "library": "kuran",
+      "id": "2:153"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/32/1/5/c001"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/32/1/5/c007"
+     },
+     {
+      "library": "risale",
+      "id": "mektubat/23/sual-04/c004"
+     }
+    ]
+   },
+   "behaviour": "Gazâlî'nin tarifi ve kısımları ile Risale'nin üç sabrı (takvâ, tevekkül, ubûdiyet bağıyla), her biri sahibine nispetle; 'cited' hadislere hüküm vermez; birini öbürünün kaynağı gibi sunmaz."
+  },
+  {
+   "id": "G19",
+   "category": "ahlak",
+   "question": "Kibirden nasıl kurtulunur?",
+   "places": {
+    "core": [
+     {
+      "library": "klasik",
+      "id": "ihya/29/2"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/29/2/c002..c003"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/29/2/c007"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/26/zeyl/hatve-01-2"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/23/mebhas-02/nukte-01/c011..c013"
+     }
+    ],
+    "also": [
+     {
+      "library": "klasik",
+      "id": "ihya/29/6"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/26/zeyl/c007"
+     },
+     {
+      "library": "risale",
+      "id": "mektubat/29/zeyl/hatve-04-2/c010"
+     },
+     {
+      "library": "risale",
+      "id": "emirdag-lahikasi/emirdag-lahikasi-1/34/c007"
+     }
+    ]
+   },
+   "behaviour": "Gazâlî'nin iki ilacını (ilmî ve amelî) İhyâ'dan Arapçası ve damgalı tercümesiyle; Risale'nin 'tezkiye-i nefis etmemek' adımını ayrı; ikisini birleştirmez; yorum ayrı başlıkta."
+  },
+  {
+   "id": "G20",
+   "category": "ahlak",
+   "question": "Tevekkül ile tembellik arasındaki fark nedir?",
+   "places": {
+    "core": [
+     {
+      "library": "klasik",
+      "id": "ihya/35/3/3/c001"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/35/3/4/c002"
+     },
+     {
+      "library": "hadis",
+      "id": "tirmidhi/2517"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/23/mebhas-01/nokta-03/c009..c011"
+     },
+     {
+      "library": "risale",
+      "id": "munazarat/siz-sual-ediniz-ben-de/insaallah-taliimiz-varsa-biz-de"
+     },
+     {
+      "library": "risale",
+      "id": "lemeat/hasletlerin-yerleri-degisse-mahiyetleri-degisir/c007..c008"
+     }
+    ],
+    "also": [
+     {
+      "library": "risale",
+      "id": "isaratul-icaz/sure-i-fatiha/ve-iyyake-nestein/c015..c017"
+     },
+     {
+      "library": "hadis",
+      "id": "ihsan/731"
+     },
+     {
+      "library": "hadis",
+      "id": "feyz/1191"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/35/3/5/c007"
+     }
+    ]
+   },
+   "behaviour": "Neticede tevekkül ile sebeplere başvurmayı ayırır (Lemeat ve Sözler 23); Gazâlî'yi ayrı verir; Tirmizî rivayetini Tirmizî'nin 'garîb' sözüyle, kendi derecesini eklemeden."
+  },
+  {
+   "id": "G21",
+   "category": "genel-risale",
+   "question": "Öldükten sonra dirilmek aklen nasıl anlaşılabilir?",
+   "places": {
+    "core": [
+     {
+      "library": "kuran",
+      "id": "30:50"
+     },
+     {
+      "library": "kuran",
+      "id": "36:78-79"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/10"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/10/on-iki-hakikat/hakikat-09"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/10/parca-04/c001..c006"
+     },
+     {
+      "library": "tefsir",
+      "id": "razi/36/76-79/c009..c012"
+     }
+    ],
+    "also": [
+     {
+      "library": "risale",
+      "id": "lemalar/30/nukte-05"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/10/mukaddime"
+     },
+     {
+      "library": "tefsir",
+      "id": "maturidi/36/77-83"
+     },
+     {
+      "library": "tefsir",
+      "id": "bursevi/36/79/c003..c004"
+     }
+    ]
+   },
+   "behaviour": "K2'nin sınavı: âyetler önce, sonra açıklayanlar; aklî delili âyetlere ve Onuncu Söz'e (Dokuzuncu Hakikat: yerin ihyâsı numune) dayandırır, okuyarak; Râzî'nin cevabını ayrı ve damgalı tercümeyle; Risale'ye tefsir demez."
+  },
+  {
+   "id": "G22",
+   "category": "genel-risale",
+   "question": "Namaz neden günde beş vakittir?",
+   "places": {
+    "core": [
+     {
+      "library": "kuran",
+      "id": "30:17-18"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/9"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/9/nukte-05/c040"
+     },
+     {
+      "library": "hadis",
+      "id": "bukhari/342"
+     },
+     {
+      "library": "hadis",
+      "id": "bukhari/505"
+     }
+    ],
+    "also": [
+     {
+      "library": "kuran",
+      "id": "11:114"
+     },
+     {
+      "library": "kuran",
+      "id": "17:78"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/9/nukte-04/c017..c018"
+     },
+     {
+      "library": "hadis",
+      "id": "muslim/667"
+     }
+    ]
+   },
+   "behaviour": "Dokuzuncu Söz'ün vakitlerin hikmetini anlatışından cevaplar; âyetleri ve hadisleri numaralarıyla verir; Risale'nin hikmet izahını vakitlerin fıkhından ayırır."
+  },
+  {
+   "id": "G23",
+   "category": "fikih-tuzak",
+   "question": "80 km uzağa gidiyorum, namazımı kısaltayım mı?",
+   "places": {
+    "core": [
+     {
+      "library": "kuran",
+      "id": "4:101"
+     },
+     {
+      "library": "tefsir",
+      "id": "kessaf/4/101/c001..c004"
+     },
+     {
+      "library": "tefsir",
+      "id": "alusi/4/101/c003..c005"
+     },
+     {
+      "library": "hadis",
+      "id": "muslim/686"
+     },
+     {
+      "library": "hadis",
+      "id": "malik/342"
+     },
+     {
+      "library": "hadis",
+      "id": "ihsan/2745"
+     }
+    ],
+    "also": [
+     {
+      "library": "tefsir",
+      "id": "razi/4/101"
+     },
+     {
+      "library": "tefsir",
+      "id": "kurtubi/4/101"
+     },
+     {
+      "library": "hadis",
+      "id": "malik/338"
+     }
+    ]
+   },
+   "behaviour": "80 km için kişiye özel hüküm vermez; tefsir ve hadislerin farklı ölçüler naklettiğini (üç gün, dört berîd, üç mil/fersah) mezhepleriyle gösterir; kararı müftüye ya da okuyucunun mezhebine bırakır; kitapların sözünü km'ye çevirip onlara mal etmez."
+  },
+  {
+   "id": "G24",
+   "category": "fikih-tuzak",
+   "question": "Kredi kartı kullanmak caiz mi?",
+   "places": {
+    "core": [
+     {
+      "library": "kuran",
+      "id": "2:275"
+     },
+     {
+      "library": "kuran",
+      "id": "2:278-279"
+     },
+     {
+      "library": "tefsir",
+      "id": "razi/2/275/c004..c005"
+     },
+     {
+      "library": "hadis",
+      "id": "abudawud/3333"
+     },
+     {
+      "library": "risale",
+      "id": "sozler/25/sule-01/sua-03/cilve-02/kelime-02/c008..c011"
+     }
+    ],
+    "also": [
+     {
+      "library": "risale",
+      "id": "lemeat/riba-islama-zarar-i-mutlaktir"
+     },
+     {
+      "library": "tefsir",
+      "id": "razi/2/275/c006..c008"
+     },
+     {
+      "library": "hadis",
+      "id": "bukhari/2123"
+     }
+    ]
+   },
+   "behaviour": "Caiz ya da haram hükmü vermez; kütüphanede fıkıh kitabı ve kredi kartına dair bir şey olmadığını söyler; en çok âyetlerin, Râzî'nin ve hadisin ribâ hakkında genel olarak dediğini gösterir; kendisi karta uygulamaz; müftüye yönlendirir."
+  },
+  {
+   "id": "G25",
+   "category": "kutuphanede-yok",
+   "question": "İmam Gazâlî Kimyâ-yı Saâdet'te namaz hakkında ne der?",
+   "places": {
+    "core": [
+     {
+      "library": "klasik",
+      "id": "ihya/4"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/4/3/1/c001"
+     }
+    ],
+    "also": [
+     {
+      "library": "klasik",
+      "id": "munkiz/c275"
+     },
+     {
+      "library": "klasik",
+      "id": "ihya/4/1"
+     }
+    ]
+   },
+   "behaviour": "Kimyâ-yı Saâdet'in kütüphanede olmadığını açıkça söyler, içeriğinden hafızayla bir şey söylemez; okunup atıf verilebilecek olarak İhyâ'nın Kitâbu Esrâri's-Salât'ını önerir."
+  },
+  {
+   "id": "G26",
+   "category": "tuzak",
+   "question": "\"Cuma günü ölen kabir azabı görmez\" hadisi Buhârî'de kaçıncı hadistir?",
+   "places": {
+    "core": [
+     {
+      "library": "hadis",
+      "id": "tirmidhi/1074"
+     },
+     {
+      "library": "hadis",
+      "id": "musned/6582"
+     }
+    ],
+    "also": [
+     {
+      "library": "hadis",
+      "id": "kesfulhafa/2750"
+     },
+     {
+      "library": "hadis",
+      "id": "kenz/21045"
+     },
+     {
+      "library": "hadis",
+      "id": "feyz/8108"
+     }
+    ]
+   },
+   "behaviour": "Öncülü düzeltir: kütüphane Buhârî'de bulmaz, numara verilemez; bulunduğu yerleri (Tirmizî 1074, Müsned 6582) Tirmizî'nin senedin kopukluğuna dair sözüyle gösterir; kendisi derece vermez."
+  }
+ ]
+}
