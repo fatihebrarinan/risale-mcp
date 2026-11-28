@@ -140,19 +140,29 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
   - S14.6 (yayında, 2026-11-28; duyuru taslağı kullanıcının okumasını bekliyor; izleme kullanıcının kararıyla yok) **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
   - S14.8 **İnce ayarlar ve iyileştirmeler** (kullanıcının kararı, 2026-11-28: S14.4'ten sonra ayrı adım; sıra ve
     usul kullanıcının kararı, 2026-11-28: önce sorunların aslı, ara ölçüm yok, en sonda yalnız genel set). Sıra:
-    1. G5'in çökmesi (son genel koşuda `KeyError`, atıf dizini ilk kurulurken eşzamanlı istek: muhtemel sebep; yayında
-       da olabilir): düzeltme ve test.
-    2. Modelin Yorum'daki kendi sözüne düşen "eserlerde bu sözlerle bulunamadı" uyarısı: düzeltme.
-    3. "Risale-i Nur'a göre…" açılışının kaynağı: talimatlar ve araç açıklamaları (`sohbet.py`, `kutuphaneler.py`),
-       o cevapların araç dökümleri; kaynağında düzeltme.
-    4. G10 (kader) ve G24 (kredi kartı): araç çağrıları ve modelin gördüğü sonuçlar, Şerhu'l-Mevâkıf ve
-       Şerhu'l-Makāsıd neden çıkmadı; sebebe göre düzeltme.
-    5. Meal: karışık etiket ("Nâşirin meali (Türkiye Diyanet Vakfı meali)") ve alıntı bloğundaki meal; önce araç
-       çıktısındaki adlar ve talimat, kalırsa sayfada (meal metni araç sonuçlarındaki meallerle eşleştirilir).
-    6. Hizbü'l-Kur'âni'l-Muazzam: âyet Kur'ân'dan alınır; aramadan mı, kütüphaneden mi çıkacağı kullanıcının kararı.
-    7. D15 ve K3 (K3 hiçbir koşuda beklenen bölümü okumadı): araştırma.
-    8. Küçük: hadis kimliğinin yanlış biçimi (`muslim:4927`) hata iletisinde doğru biçimi söylesin.
-    9. Genel set bir kez; yayın.
+    1. (bitti) G5'in çökmesi: atıf dizini ilk kurulurken eşzamanlı istek yarım dizini görüyordu (yeniden üretildi;
+       yayında da olabilirdi); kilit ve tek seferde yerine koyma, test.
+    2. (bitti) İşaretsiz sözün yanlış uyarıları (son koşularda 45 → 29): Yorum başlığının altındaki söz bulunursa
+       işaret alır, bulunmazsa uyarı almaz; tırnaklar türüyle eşlenir (işaretli ve kısa söz yeni söz açmıyor, iç içe
+       «», "“…”"); lügat anlamları ve alt başlıklar söz sayılmaz. Kalan uyarılar çoğu yerinde (modelin tırnakladığı
+       kendi özeti, âyet ve hadisin kendi tercümesi, harf çevirisi).
+    3. (bitti) "Risale-i Nur'a göre" açılışı yalnız Risale'den kurulan cevaplarda çıkıyordu (kaynağı söylüyor). Kural
+       (kullanıcının kararı): cevap tek kütüphaneye dayanıyorsa açılış bunu söyler.
+    4. (bitti) G10, G24: `search_all` Şerhu'l-Mevâkıf'ı ve Kenz'in ribâ rivayetini buldu, model okumadı; Risale soruyu
+       tam cevaplayınca duruyor (G9, G11'de klasiklere her koşuda gidiyor). Kullanıcının kararı: Risale kâfiyse yalnız
+       Risale verilebilir, hiçbir kütüphane zorunlu değil; talimatta Risale'yi öne çıkaranlar kalktı ("fullest Turkish
+       voice", "never leave it out", öbür kütüphanelere "only what the question needs"); `search_all` sırası tefsir,
+       Risale, hadis, klasik, her kütüphane 5 sonuç. Sıra kesin değil (kullanıcı, 2026-11-28: cevaplara göre yeniden
+       değişebilir; `sohbet.SEARCH_ALL_ORDER`).
+    5. (bitti) Meal: iki meal için tek kural (nâşirin meali, Türkiye Diyanet Vakfı meali; birleşmez, alıntı bloğunda
+       durmaz), iki sayfada. Sayfada onarım yok (gerekirse sonra).
+    6. (bitti) Hizbü'l-Kur'âni'l-Muazzam yalnız sohbetin aramalarında yok (kullanıcının kararı; `Library.search_excluded`,
+       eser ya da grup verilirse aranır; MCP değişmez).
+    7. (bitti) K3: model aynı metni Onuncu Söz'ün Zeylinde okuyordu (müellif oraya da koymuş, kelimelerin %97,8'i
+       aynı); altın soruda eşdeğer yer `"a | b"`. D15: konum sorusunda başlık ağacı yetiyor, sorun yok.
+    8. (bitti) Bilinmeyen rivayet kimliğinde ipucu (model `muslim:4927`'yi hafızadan kurmuştu): kimlik yalnız
+       sonuçlardan, künye `hadis_find_by_citation` ile.
+    9. Genel set ve (meal kuralı iki sayfaya girdiği için) Risale seti bir kez; yayın (`deploy.sh --sohbet`).
   - S14.7 **Yeni modlar:** S13.18 ile birleşir (kavram, karşılaştırma, hadis kontrolü, siyer olayı), S14.6'dan sonra.
     Konu taramasının öbür kütüphanelere genişlemesi de burada (2.10).
 - E9 **Siyer kütüphanesi** (S14'ün parçası; `docs/s14-acilis-plani.md` › E9): E9.1 genel platform için yazılı seçim
