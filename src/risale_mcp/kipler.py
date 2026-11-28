@@ -114,4 +114,22 @@ VERSE_TOOL = {
         "required": ["sura", "ayah"],
     },
 }
-LOCAL_TOOLS = {"survey": SURVEY_TOOL, "verse_file": VERSE_TOOL}
+# S14.4 (genel setin ölçümü, 2026-11-28): genel sayfada model ilk aramayı Risale'nin `semantic_search`'üyle yapıyor,
+# Türkçe ve zengin sonuçla yetinip öbür kütüphanelere hiç bakmıyordu (yalnız Risale'den cevaplanan yedi sorunun
+# yedisinde ilk adım buydu). Bu araç anlamca aramayı bütün açık kütüphanelerde birlikte yapar ve sonuçları kütüphane
+# kütüphane, yan yana verir: tek listede sıralansa Türkçe soru Türkçe külliyatta hep yüksek puan alır.
+SEARCH_ALL_TOOL = {
+    "name": "search_all",
+    "description": ("Find passages by meaning in every open library at once: the Risale-i Nur and, if open, the hadith "
+                    "collections, the tafsirs and the classical works. Returns, library by library, the closest "
+                    "sentences or reports (id with the library's name, work, excerpt) and the sections where the topic "
+                    "concentrates. Similarity is comparable only within one library (a question in Turkish scores "
+                    "higher in the Turkish Risale). Use it first for a question in today's words; then read the "
+                    "candidates that answer the question best, in their own library."),
+    "input_schema": {
+        "type": "object",
+        "properties": {"query": {"type": "string", "description": "The question or topic, in any language."}},
+        "required": ["query"],
+    },
+}
+LOCAL_TOOLS = {"survey": SURVEY_TOOL, "verse_file": VERSE_TOOL, "search_all": SEARCH_ALL_TOOL}

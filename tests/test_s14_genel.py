@@ -44,3 +44,21 @@ def test_prefix_foreign():
     assert sohbet._prefix_foreign(checker, "ihya/4/3/4/c040..c041", read) == "klasik:ihya/4/3/4/c040..c041"
     assert sohbet._prefix_foreign(checker, "sozler/10/c001", read) == "sozler/10/c001"        # Risale'de var
     assert sohbet._prefix_foreign(checker, "yok/1", read) == "yok/1"                          # hiçbir yerde okunmadı
+
+
+def test_wrong_library_hint():
+    assert "hadis_get_hadith with id='bukhari/1'" in sohbet.wrong_library_hint("get_hadith", {"id": "bukhari/1"})
+    assert "klasik_get_passage" in sohbet.wrong_library_hint("get_passage", {"id": "serhul-mevakif/5/2/6/c210"})
+    assert "hadis_get_hadith with id='malik/342'" in sohbet.wrong_library_hint("get_passage", {"id": "malik/342"})
+    assert sohbet.wrong_library_hint("get_passage", {"id": "sozler/10/c001"}) == ""
+
+
+def test_search_all_only_in_general():
+    import asyncio
+    chat = sohbet.Chat(sohbet._library(), None)
+    names = lambda general: [t["name"] for t in asyncio.run(chat.tools("serbest", (), general))[0]]
+    assert "search_all" in names(True) and "search_all" not in names(False)
+    tools = asyncio.run(chat.tools("serbest", (), True))[0]
+    assert next(t for t in tools if t["name"] == "search")["description"].startswith("[Risale-i Nur Library]")
+    assert "search_all first" in sohbet.instructions("X", general=True)
+    assert "search_all" not in sohbet.instructions("X")

@@ -162,19 +162,17 @@ their original Arabic. Texts are split into sentences or reports; every one has 
 
 ORDER_GENERAL = """\
 Building the answer: the Qur'an and the Sunna come first, then those who explain them.
-- A general question (not about the Risale-i Nur itself) is answered from more than one library: look for the verse \
-that speaks to it, search the hadith collections once for a report on it (hadis_semantic_search), and read the \
-explanations the question needs. Do not answer a general question from the Risale alone when another library treats \
-it. Open the answer with the answer itself, in your own words; say "according to the Risale-i Nur" only when the \
-question asks for the Risale.
+- A general question (not about the Risale-i Nur itself) is answered from whichever libraries treat it best: the \
+Risale is one of them, not the default, and an answer that explains everything through one library alone is \
+incomplete when others speak to the question. Open the answer with the answer itself, in your own words; say \
+"according to the Risale-i Nur" only when the question asks for the Risale.
 - When a verse bears on the question, give it first (read it with get_ayah and name it by its ref); when a report of \
 the Prophet bears on it, give it next, from the hadith collections. Then the explanations: the classical tafsirs, \
 the Risale-i Nur and the classical works, as the question needs. A question needs no verse or report forced into it.
 - Choose the libraries by the question: a verse: tefsir_find_ayah and find_ayah (its places in the Risale); a \
 saying of the Prophet: the hadis_ tools, and find_hadith for its places in the Risale; creed and kalam: the \
 classical works (Sharh al-Mawaqif, Sharh al-Maqasid, al-Fiqh al-Akbar) and the Risale; the inner life, morals and \
-worship: al-Ghazali's Ihya (it has a book on each virtue and vice: patience, gratitude, sincerity, trust, pride, \
-envy…; read its definition and divisions) and the Risale; the life of the Prophet (sira): al-Mawahib and the hadith collections; the \
+worship: al-Ghazali's Ihya and the Risale; the life of the Prophet (sira): al-Mawahib and the hadith collections; the \
 meaning of a Qur'anic word or a term: al-Mufradat, al-Ta'rifat and the tafsirs; rhetoric: Dala'il al-I'jaz, Asrar \
 al-Balagha, Miftah al-'Ulum.
 - The Risale-i Nur is the fullest Turkish voice on faith and worship: when it treats the question (faith, the \
@@ -228,6 +226,15 @@ block with one source (a range, at most 8 sentences); a longer passage is quoted
 own range."""
 
 
+# S14.4: genel sayfada ilk arama bütün açık kütüphanelerde birlikte (`search_all`, kipler.SEARCH_ALL_TOOL)
+FIND_GENERAL = ("Find: for a question in today's words, call search_all first: it searches every open library at once "
+                "and returns each library's closest passages side by side; choose by how well they answer the question, "
+                "not by library. For the text's own words, names and terms, use the search tool of the library "
+                "concerned (search for the Risale-i Nur, tefsir_search, hadis_search_hadith, klasik_search). Each "
+                "library has its own reading tools: read a Risale id with get_passage or read_section, and an id "
+                "marked tefsir:, hadis: or klasik: only with that library's tools. Results are candidates, not "
+                "evidence.")
+
 # S14.4: genel sayfada SHAPE'in iki cümlesi (okuyucular, kapsam) değişir; fıkıh kütüphanesi yokken hüküm sorusu (K5)
 GENERAL_SHAPE = (
     ("people who read the Risale-i Nur, some for years and some for the first time",
@@ -253,9 +260,10 @@ def instructions(name: str, lugat: bool = True, general: bool = False) -> str:
             assert old in shape, old
             shape = shape.replace(old, new)
     order = "\n" + ORDER_GENERAL + "\n" if general else ""
+    find = FIND_GENERAL if general else s.FIND
     return ((INTRO_GENERAL if general else INTRO).format(name=name) + f"""
 Workflow:
-1. {s.FIND}
+1. {find}
 2. {s.READ}
 3. {MARK_STEP}
 
@@ -1180,10 +1188,63 @@ def status_line(library, name: str, args: dict) -> str:
                 return f"{_sura(args)} âyetinin Risale'deki ve tefsirlerdeki yerleri toplanıyor"
             case "survey":
                 return f"“{_short(args.get('topic'))}” konusunun eserlerdeki yerleri toplanıyor"
+            case "search_all":
+                return f"Bütün kütüphanelerde “{_short(args.get('query'))}” anlamına yakın yerler aranıyor"
     except Exception:
         pass
     return "Eserlere bakılıyor"
 
+
+SEARCH_ALL_RISALE, SEARCH_ALL_OTHER, SEARCH_ALL_TEXT = 6, 5, 260     # S14.4: search_all'ın sonuç sayıları
+
+# S14.4 (genel setin ölçümü): model öbür kütüphanelerin kimliklerini Risale'nin öneksiz araçlarıyla okumaya çalışıyor
+# (get_hadith("bukhari/1"), get_passage("serhul-mevakif/…")), hata alınca o kütüphaneyi bırakıyordu: yedi soruda on bir
+# çağrı. Hata iletisine doğru araç eklenir.
+WRONG_TOOL = {"get_passage": "get_passage", "read_section": "read_section", "get_outline": "get_outline",
+              "find_sentence": "find_sentence", "semantic_search": "semantic_search", "search": "search",
+              "get_hadith": "get_hadith"}
+
+
+def _foreign_slugs() -> dict[str, str]:
+    """Öbür kütüphanelerin eser ve kitap kimlikleri -> kütüphane."""
+    global _SLUGS
+    if _SLUGS is None:
+        out = {}
+        try:
+            from risale_mcp.catalog.tefsir import TEFSIR_WORKS
+            out.update({w.slug: "tefsir" for w in TEFSIR_WORKS})
+        except Exception:
+            pass
+        try:
+            from risale_mcp.catalog.klasik import KLASIK_WORKS
+            out.update({w.slug: "klasik" for w in KLASIK_WORKS})
+        except Exception:
+            pass
+        out.update({b: "hadis" for b in HADITH_BOOKS})
+        _SLUGS = out
+    return _SLUGS
+
+
+_SLUGS = None
+HADITH_BOOKS = ("bukhari", "muslim", "abudawud", "tirmidhi", "nasai", "ibnmajah", "malik", "musned", "darimi",
+                "mucem-sagir", "mustedrek", "delail", "sifa", "ihsan", "mecma", "kenz", "feyz", "kesfulhafa")
+
+
+def wrong_library_hint(tool: str, args: dict) -> str:
+    """Risale aracına gelen kimlik başka bir kütüphanenin ise, doğru aracı söyleyen ek ("" değilse)."""
+    for key in ("id", "section", "work"):
+        value = str((args or {}).get(key) or "")
+        slug = re.split(r"[/:]", value, maxsplit=1)[0]
+        lib = _foreign_slugs().get(slug)
+        if lib:
+            name = "get_hadith" if lib == "hadis" and tool in ("get_passage", "get_hadith") else WRONG_TOOL.get(tool, tool)
+            if lib == "hadis" and name not in ("get_hadith", "semantic_search", "get_outline"):
+                name = "get_hadith"
+            fixed = value.replace(":", "/", 1) if lib == "hadis" and re.fullmatch(r"[a-z-]+:\d+", value) else value
+            return (f" '{value}' is not a Risale-i Nur id: it belongs to the "
+                    f"{ {'tefsir': 'Tafsir', 'hadis': 'Hadith', 'klasik': 'Classical Islamic'}[lib]} Library. "
+                    f"Call {lib}_{name} with {key}='{fixed}'.")
+    return ""
 
 THINKING_FIRST = "Soru inceleniyor…"
 THINKING_LATER = "Okunanlar değerlendiriliyor…"
@@ -1241,7 +1302,8 @@ class Chat:
         from risale_mcp.kutuphaneler import Kutuphaneler
         self.libraries = libraries if libraries is not None else Kutuphaneler()    # S13.17: öbür kütüphaneler
 
-    async def tools(self, mode: str | None = None, chosen: tuple[str, ...] = ()) -> tuple[list[dict], tuple[str, ...]]:
+    async def tools(self, mode: str | None = None, chosen: tuple[str, ...] = (),
+                    general: bool = False) -> tuple[list[dict], tuple[str, ...]]:
         """MCP araçları; seçilen kütüphanelerin araçları (S13.17, önekli) ve kipin sohbete özgü araçları sona eklenir
         (S13.12: önbellek önek tutar). (araçlar, ulaşılamayan kütüphaneler)."""
         from risale_mcp import kipler
@@ -1250,6 +1312,8 @@ class Chat:
             self._tools = [{"name": t.name, "description": t.description or "", "input_schema": t.input_schema}
                            for t in await self.server.list_tools() if t.name not in EXCLUDED_TOOLS]
         tools, missing = list(self._tools), []
+        if general:        # S14.4: Risale'nin öneksiz araçları da bir kütüphanenin araçlarıdır, varsayılan değil
+            tools = [{**t, "description": "[Risale-i Nur Library] " + t["description"]} for t in tools]
         for kutuphane in chosen:
             try:
                 tools += await self.libraries.tools(kutuphane)
@@ -1258,6 +1322,8 @@ class Chat:
                 logging.warning("sohbet: %s kütüphanesine ulaşılamadı", kutuphane)
                 missing.append(kutuphane)
         tools += [kipler.LOCAL_TOOLS[name] for name in kipler.get(mode).tools]
+        if general:
+            tools.append(kipler.SEARCH_ALL_TOOL)
         return tools, tuple(missing)
 
     def chosen(self, libraries) -> tuple[str, ...]:
@@ -1323,15 +1389,54 @@ class Chat:
         try:
             result = await self.server.call_tool(block.name, args)
             text = "".join(getattr(c, "text", "") for c in result.content)
-            return {"type": "tool_result", "tool_use_id": block.id, "content": text,
-                    **({"is_error": True} if getattr(result, "is_error", False) else {})}
+            error = bool(getattr(result, "is_error", False))
+            return {"type": "tool_result", "tool_use_id": block.id, "is_error": True,
+                    "content": text + wrong_library_hint(block.name, args)} if error else \
+                {"type": "tool_result", "tool_use_id": block.id, "content": text}
         except ToolError as e:
-            return {"type": "tool_result", "tool_use_id": block.id, "content": str(e), "is_error": True}
+            return {"type": "tool_result", "tool_use_id": block.id, "is_error": True,
+                    "content": str(e) + wrong_library_hint(block.name, args)}
         except Exception:
             import logging
             logging.exception("sohbet: araç hatası %s", block.name)
             return {"type": "tool_result", "tool_use_id": block.id, "is_error": True,
                     "content": f"The tool {block.name} failed; try another way."}
+
+    async def _search_all(self, query: str, chosen: tuple[str, ...]) -> str:
+        """S14.4: anlamca arama bütün açık kütüphanelerde birlikte; sonuç kütüphane başına, kısa (kimlik önekli)."""
+        from risale_mcp.kutuphaneler import KUTUPHANELER
+
+        async def risale():
+            r = await self.server.call_tool("semantic_search", {"query": query, "limit": SEARCH_ALL_RISALE})
+            return "".join(getattr(c, "text", "") for c in r.content), bool(getattr(r, "is_error", False))
+
+        async def other(k):
+            return await self.libraries.call(k, "semantic_search", {"query": query, "limit": SEARCH_ALL_OTHER})
+
+        names = ("risale",) + chosen
+        found = await asyncio.gather(risale(), *(other(k) for k in chosen), return_exceptions=True)
+        out = {}
+        for name, got in zip(names, found):
+            title = "Risale-i Nur Library" if name == "risale" else KUTUPHANELER[name].label
+            if isinstance(got, Exception) or got[1]:
+                out[title] = {"error": "not reachable now" if isinstance(got, Exception) else got[0][:300]}
+                continue
+            try:
+                data = json.loads(got[0])
+            except ValueError:
+                out[title] = {"error": "unreadable result"}
+                continue
+            prefix = "" if name == "risale" else name + ":"
+            items = [{"id": prefix + str(x.get("id")), "cite_as": x.get("cite_as"),
+                      **({"author": x["author"]} if x.get("author") else {}),
+                      "text": _short(x.get("text"), SEARCH_ALL_TEXT), "similarity": x.get("similarity")}
+                     for x in (data.get("results") or [])]
+            sections = [{"id": prefix + str(x.get("id")), "ref": x.get("ref")} for x in (data.get("sections") or [])[:3]]
+            out[title] = {"results": items, **({"sections": sections} if sections else {})}
+        out["note"] = ("Candidates, not evidence. Similarity compares only within one library. Read what you will use "
+                       "with that library's own tools (get_passage for the Risale; tefsir_get_passage, hadis_get_hadith, "
+                       "klasik_get_passage for the others, with the id after the library's name).")
+        return json.dumps(out, ensure_ascii=False, separators=(",", ":"))
 
     async def _call_local(self, block, args: dict, chosen: tuple[str, ...] = ()) -> dict:
         from risale_mcp import dosya
@@ -1345,6 +1450,12 @@ class Chat:
                 places = result.pop("places", [])        # S13.13: bütün yerler sayfaya; modele sayımı gider
                 return {"type": "tool_result", "tool_use_id": block.id, PAGE_ONLY: places,
                         "content": json.dumps(result, ensure_ascii=False, separators=(",", ":"))}
+            if block.name == "search_all":            # S14.4
+                query = str(args.get("query") or "").strip()
+                if not query:
+                    raise ValueError("Give the query.")
+                return {"type": "tool_result", "tool_use_id": block.id,
+                        "content": await self._search_all(query, chosen)}
             if block.name == "verse_file":           # S13.17: âyet çalışması
                 from risale_mcp import ayet_dosyasi
                 try:
@@ -1383,7 +1494,7 @@ class Chat:
         if kip.risale_only:
             chosen = ()
         messages = self.messages(history, question, kip.id)
-        tools, missing = await self.tools(kip.id, chosen)
+        tools, missing = await self.tools(kip.id, chosen, general)
         system = self.system_for(chosen, missing, general)
         tally.libraries = chosen
         loop = asyncio.get_running_loop()
