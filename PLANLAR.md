@@ -71,7 +71,8 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
   ve Sünnet merkezli; önce Kur'ân ve Sünnet, "Risale-i Nur'dan cevapla" seçeneği; Risale adıyla öne çıkan kütüphane;
   çatıda Âyinedâr adı; fıkıhta "kitaplar ne diyor, mezhebiyle"). S14.2 bitti (öneriler uygun; giriş
   sayfasının ve rehberin örneği altyapıdan sonra genel bir soruyla, Risale'nin de ele aldığı bir konudan; konu taraması
-  Risale'ye ait kalır). **Önde:** S14.3, ölçü setleri.
+  Risale'ye ait kalır). S14.3'ün genel set taslağı hazır (`docs/s14-genel-set-taslak.md`, 26 soru);
+  **kullanıcıdan beklenen:** setin onayı. Sonra beklenen yerler araçlarla doğrulanır, set donar, temel ölçüm alınır.
 - **Önceki adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
