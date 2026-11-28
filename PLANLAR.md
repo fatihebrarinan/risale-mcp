@@ -72,7 +72,9 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
   çatıda Âyinedâr adı; fıkıhta "kitaplar ne diyor, mezhebiyle"). S14.2 bitti (öneriler uygun; giriş
   sayfasının ve rehberin örneği altyapıdan sonra genel bir soruyla, Risale'nin de ele aldığı bir konudan; konu taraması
   Risale'ye ait kalır). S14.3 bitti: genel set dondu (`tests/golden/genel_sorular.json`,
-  26 soru), temel ölçüm alındı (kütüphaneler açıkken bile model Risale'ye gidiyor: talimat). **Önde:** S14.4.
+  26 soru), temel ölçüm alındı. S14.4 bitti (2026-11-28): genel talimat, `search_all`, önekli Risale araçları,
+  "Risale-i Nur'dan" modu; kullanıcı A'yı seçti (bütün kütüphaneler varsayılan açık), sayfaya bağlandı; hepsi
+  `SOHBET_GENEL`'in arkasında, yayın S14.6'da. İnce ayarlar S14.8'de. **Önde:** S14.5 (anlatım).
 - **Önceki adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
@@ -126,11 +128,15 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
   - S14.2 (bitti, 2026-11-28; `docs/s14-envanter.md` › Kullanıcının işaretleri) **Envanter** (Claude): "Risale-i Nur" nerede geçiyor, ne olmalı (`docs/s14-envanter.md`); kullanıcı işaretler.
   - S14.3 (bitti, 2026-11-28; sonuçlar `docs/s14-acilis-plani.md` › S14.3'ün temel ölçümü) **Ölçü setleri:** Risale seti (bugünkü altın sorular) ve yeni genel set (≈25 soru, kullanıcı onaylar);
     bugünkü sistemle temel ölçüm.
-  - S14.4 **Sohbetin varsayılanları** (yerelde): A bütün kütüphaneler açık, B model seçer, C okuyucu seçer; iki setle
+  - S14.4 (bitti, 2026-11-28; `docs/s14-acilis-plani.md` › S14.4'ün denemeleri; A seçildi) **Sohbetin varsayılanları** (yerelde): A bütün kütüphaneler açık, B model seçer, C okuyucu seçer; iki setle
     ölçülür (Risale seti düşmemeli, maliyet); kullanıcı seçer.
   - S14.5 **Anlatım** (S13.23.5 giriş sayfası buraya katıldı): çatı, sohbetin girişi, Hakkında, modlar, örnekler;
     önizlemede, kullanıcı okur.
   - S14.6 **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
+  - S14.8 **İnce ayarlar ve iyileştirmeler** (kullanıcının kararı, 2026-11-28: S14.4'ten sonra ayrı adım): S14.4'ün
+    denemelerinde görülenler: bazı cevaplar hâlâ "Risale-i Nur'a göre…" diye açılıyor; âyetin mealine karışık etiket
+    ("Nâşirin meali (Türkiye Diyanet Vakfı meali)"); G10 (kader) ve G24 (kredi kartı) yalnız Risale'den; D15'te beklenen
+    bölüm adıyla anıldı, okunmadı; nâşirin meali alıntı bloğunda. Her biri iki setle ölçülür.
   - S14.7 **Yeni modlar:** S13.18 ile birleşir (kavram, karşılaştırma, hadis kontrolü, siyer olayı), S14.6'dan sonra.
     Konu taramasının öbür kütüphanelere genişlemesi de burada (2.10).
 - E9 **Siyer kütüphanesi** (S14'ün parçası; `docs/s14-acilis-plani.md` › E9): E9.1 genel platform için yazılı seçim

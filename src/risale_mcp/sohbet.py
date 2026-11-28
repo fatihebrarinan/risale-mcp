@@ -2208,15 +2208,16 @@ def section_opening(checker, ident: str) -> dict:
     return passage
 
 
-def page(config: Config, email: str, libraries: list[dict] | None = None) -> str:
+def page(config: Config, email: str, libraries: list[dict] | None = None, general: bool = False) -> str:
+    """`general` (S14.4): genel sayfa: kütüphaneler varsayılan açık, "Risale-i Nur'dan" kipi menüde."""
     import html as _html
     version = _asset_version()
     return ((ASSETS / "sohbet.html").read_text(encoding="utf-8")
             .replace("{{KUTUPHANELER}}", _html.escape(json.dumps(libraries or [], ensure_ascii=False)))
             .replace("{{P}}", _html.escape(config.prefix)).replace("{{NAME}}", _html.escape(config.name))
             .replace("{{EMAIL}}", _html.escape(email)).replace("{{INITIAL}}", _html.escape(email[:1].upper()))
-            .replace("{{V}}", version)
-            .replace("{{KIPLER}}", _html.escape(json.dumps(_kipler_public(), ensure_ascii=False))))
+            .replace("{{V}}", version).replace("{{GENEL}}", "1" if general else "0")
+            .replace("{{KIPLER}}", _html.escape(json.dumps(_kipler_public(general), ensure_ascii=False))))
 
 
 def _kipler_public(general: bool = False) -> list[dict]:
@@ -2267,7 +2268,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
         return max(0, limits.questions - asked_today(store, email)) if limits.counted(email) else None
 
     def home(request: Request, email: str) -> HTMLResponse:
-        return HTMLResponse(page(config, email, chat.libraries.public()), headers=headers)
+        return HTMLResponse(page(config, email, chat.libraries.public(), chat.settings.general), headers=headers)
 
     home.jobs = jobs                                    # servis kapanırken beklenir (`_drain`)
 

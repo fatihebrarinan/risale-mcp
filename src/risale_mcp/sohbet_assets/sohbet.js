@@ -35,12 +35,20 @@ const KIPLER = (() => { try { return JSON.parse($("kipler").dataset.kipler); } c
 const kipTitle = (id) => (KIPLER.find((k) => k.id === id) || {}).title || "";
 // S13.17: öbür kütüphaneler (tefsir, hadis, klasik): okuyucu açar, seçim tarayıcıda kalır; Risale-i Nur hep açık
 const KUTUPHANELER = (() => { try { return JSON.parse($("kutuphaneler").dataset.kutuphaneler); } catch { return []; } })();
-const LIB_KEY = "sohbet:kutuphaneler";
+// S14.4 (kullanıcının kararı, 2026-11-28): genel sayfada (Kur'ân ve Sünnet merkezli) bütün kütüphaneler varsayılan
+// açıktır, okuyucu kapatabilir; seçim ayrı anahtarda (eski sayfadaki "yalnız Risale" seçimi taşınmasın). "Risale-i
+// Nur'dan" kipi bugünkü sayfadır: yalnız Risale; seçildiyse hatırlanır.
+const GENEL = document.body.dataset.genel === "1";
+const LIB_KEY = GENEL ? "sohbet:kutuphaneler:genel" : "sohbet:kutuphaneler";
+const MODE_KEY = "sohbet:mod";
+const RISALE_ONLY = "risale";
 const libTitle = (id) => (KUTUPHANELER.find((k) => k.id === id) || {}).title || id;
 state.libraries = (() => {
-  try { const v = JSON.parse(localStorage.getItem(LIB_KEY)) || [];
-    return v.filter((id) => KUTUPHANELER.some((k) => k.id === id)); } catch { return []; }
+  try { const raw = localStorage.getItem(LIB_KEY);
+    const v = raw === null ? (GENEL ? KUTUPHANELER.map((k) => k.id) : []) : JSON.parse(raw) || [];
+    return v.filter((id) => KUTUPHANELER.some((k) => k.id === id)); } catch { return GENEL ? KUTUPHANELER.map((k) => k.id) : []; }
 })();
+if (GENEL) { try { if (localStorage.getItem(MODE_KEY) === RISALE_ONLY) state.mode = RISALE_ONLY; } catch { /* yok */ } }
 
 const kipOf = (id) => KIPLER.find((k) => k.id === id) || {};
 const saveLibraries = () => { try { localStorage.setItem(LIB_KEY, JSON.stringify(state.libraries)); } catch { /* yalnız bu sayfada */ } };
@@ -48,6 +56,7 @@ const saveLibraries = () => { try { localStorage.setItem(LIB_KEY, JSON.stringify
 // S13.23.3: bu soruda açık olacak kütüphaneler: okuyucunun seçimi, kipin açtıkları ve konuşmada kullanılanlar
 // (sunucu da aynısını yapar: `Chat.ask`); işaret yalnız gösterir, seçim Ayarlar › Kütüphaneler'dedir
 function activeLibraries() {
+  if (state.mode === RISALE_ONLY) return [];          // S14.4: yalnız Risale (sunucu da öyle yapar)
   const on = new Set(state.libraries);
   for (const id of kipOf(state.mode).libraries || []) on.add(id);
   for (const t of (cur && cur.turns) || []) for (const id of t.libraries || []) on.add(id);
@@ -76,6 +85,8 @@ function renderLibraryChoices() {
     label.append(input, text);
     box.append(label);
   };
+  if (GENEL) $("kutuphane-giris").textContent = "Cevaplar açık kütüphanelerden gelir: önce Kur'ân ve hadis, sonra "
+    + "açıklayanlar. Yalnız Risale-i Nur'dan cevap için soru kutusunun üstündeki menüden “Risale-i Nur'dan” modunu seçin.";
   row("Risale-i Nur", "Bediüzzaman Said Nursî'nin eserleri; her soruda açık.", true, true);
   for (const k of KUTUPHANELER) {
     row(k.title, k.hint, state.libraries.includes(k.id), false, (on) => {
@@ -109,6 +120,7 @@ function renderModes() {
 }
 function chooseMode(id) {
   state.mode = id;
+  if (GENEL) { try { localStorage.setItem(MODE_KEY, id === RISALE_ONLY ? RISALE_ONLY : ""); } catch { /* yok */ } }
   closeModes();
   renderModes();
   els.input.focus();
@@ -1125,7 +1137,7 @@ async function ask(question, resume = null) {
   els.empty.hidden = true;
   const owner = cur;                     // cevap bu konuşmaya yazılır
   const turn = resume ? { q: question.trim(), mode: resume.mode || "serbest", libraries: resume.libraries || [] }
-    : { q: question.trim(), mode: state.mode, libraries: [...state.libraries] };
+    : { q: question.trim(), mode: state.mode, libraries: state.mode === RISALE_ONLY ? [] : [...state.libraries] };
   const box = renderTurn(turn);
   els.list.append(box);
   const answer = box.querySelector(".cevap");
@@ -1183,7 +1195,9 @@ async function ask(question, resume = null) {
       }
       owner.turns.push(turn);
       // S13.13: tarama bir sorunun kipidir; ardından gelen soru (karşılaştırma, ayrıntı) serbest sorudur
-      if (turn.mode && turn.mode !== "serbest" && state.mode === turn.mode) { state.mode = "serbest"; renderModes(); }
+      if (turn.mode && turn.mode !== "serbest" && turn.mode !== RISALE_ONLY && state.mode === turn.mode) {
+        state.mode = "serbest"; renderModes();     // S14.4: "Risale-i Nur'dan" bir tercih, sürer
+      }
       renderLibraries();
       if (typeof data.remaining === "number") { state.remaining = data.remaining; state.questions = data.questions; }
       renderQuota();

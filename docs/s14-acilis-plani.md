@@ -175,6 +175,12 @@ kipi bugünkü sayfanın aynısıdır (talimat ve araçlar testle kilitli). Öl�
 ≈0,007 $), `search_all` zaten soruya göre seçtiriyor. Öneri: A (genel sayfada bütün kütüphaneler varsayılan açık,
 okuyucu kapatabilir) + "Risale-i Nur'dan" kipi.
 
+**Karar (kullanıcı, 2026-11-28): A.** Sayfaya bağlandı (`SOHBET_GENEL=1` iken): bütün kütüphaneler varsayılan açık
+(seçim ayrı anahtarda, `sohbet:kutuphaneler:genel`; eski sayfanın "yalnız Risale" seçimi taşınmaz), mod menüsünde
+"Risale-i Nur'dan" (seçilince hatırlanır, sorudan sonra serbeste dönmez; o modda kütüphane işareti yalnız Risale),
+Ayarlar › Kütüphaneler'in giriş cümlesi genel sayfaya göre. Ayar kapalıyken sayfa bugünkü gibi (başsız tarayıcıda
+denendi). İnce ayarlar ve iyileştirmeler ayrı adım: S14.8.
+
 ## Açık sorular (sırası gelince)
 
 - **Dil engeli:** Risale Türkçe, öbür kütüphaneler Arapça; genel Türk okuyucu Arapça alıntı ve "Yapay zekâ tercümesi"

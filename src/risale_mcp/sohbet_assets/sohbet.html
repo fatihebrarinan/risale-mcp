@@ -13,7 +13,7 @@
 <link rel="apple-touch-icon" href="{{P}}static/apple-touch-icon.png">
 <link rel="stylesheet" href="{{P}}static/sohbet.css?v={{V}}">
 </head>
-<body data-prefix="{{P}}" data-v="{{V}}">
+<body data-prefix="{{P}}" data-v="{{V}}" data-genel="{{GENEL}}">
 <div class="cerceve">
 
   <!-- S13.1: solda konuşmalar (masaüstünde açılıp kapanır, telefonda soldan çekmece) -->
@@ -150,7 +150,7 @@
     </section>
 
     <section id="ayar-kutuphaneler" role="tabpanel" aria-labelledby="sekme-kutuphaneler" class="sekme-icerik" hidden>
-      <p class="small">Cevaplar her zaman Risale-i Nur'a dayanır. İsterseniz öbür kütüphaneleri de açın: açtıklarınız
+      <p class="small" id="kutuphane-giris">Cevaplar her zaman Risale-i Nur'a dayanır. İsterseniz öbür kütüphaneleri de açın: açtıklarınız
         her yeni soruda kullanılır.</p>
       <div id="kutuphane-secimleri" class="kutuphane-secimleri"></div>
       <p class="small">Âyet çalışması modu Tefsir'i kendiliğinden açar. Bir konuşmada başka bir kütüphaneden kaynak
