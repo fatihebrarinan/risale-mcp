@@ -67,8 +67,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.md` › "Sıradaki'nin notları"):
 - **Son adım (2026-11-28): S13.23 bitti, S14 planlandı.** Kullanıcının fikri: Âyinedâr bütün İslâm âleminin
   platformu olsun, Risale cevapları bugünkü gibi kalsın. Plan `docs/s14-acilis-plani.md` (kapılı; S14.6'ya kadar
-  yayında değişiklik yok); S13.23.5 (giriş sayfası) S14.5'e katıldı. **Önde:** S14.1'in kararları (kullanıcıyla
-  sohbet) ve S14.2 envanteri.
+  yayında değişiklik yok); S13.23.5 (giriş sayfası) S14.5'e katıldı. S14.1'in beş kararı verildi (2026-11-28: Kur'ân
+  ve Sünnet merkezli; önce Kur'ân ve Sünnet, "Risale-i Nur'dan cevapla" seçeneği; Risale adıyla öne çıkan kütüphane;
+  çatıda Âyinedâr adı; fıkıhta "kitaplar ne diyor, mezhebiyle"). **Önde:** S14.2 envanteri.
 - **Önceki adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
@@ -116,7 +117,7 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
   Âyinedâr Risale-i Nur'la hiç alakadar olmayanların da gönül rahatlığıyla kullanacağı, bütün İslâm âleminin platformu
   olsun; Risale sorularında cevaplar bugünkü gibi kalır (ölçüyle korunur). Kapılı plan: her adım kullanıcının
   kararıyla biter, **S14.6'ya kadar yayında hiçbir şey değişmez**.
-  - S14.1 **Kararlar** (kullanıcı): K1 merkez (Kur'ân mı, nötr "İslâmî kaynaklar" mı), K2 genel soruda Risale'nin
+  - S14.1 (bitti, 2026-11-28; kararlar `docs/s14-acilis-plani.md` › Kararlar) **Kararlar** (kullanıcı): K1 merkez (Kur'ân mı, nötr "İslâmî kaynaklar" mı), K2 genel soruda Risale'nin
     yeri, K3 Risale'nin anılışı (adıyla öne çıkan kütüphane), K4 adlar ("Risale MCP", `risalemcp.com`), K5 fıkıhta
     sınır (E10'dan önce).
   - S14.2 **Envanter** (Claude): "Risale-i Nur" nerede geçiyor, ne olmalı (`docs/s14-envanter.md`); kullanıcı işaretler.

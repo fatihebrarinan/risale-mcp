@@ -143,3 +143,10 @@ En riskli kütüphane: fıkıh sorusu amel için sorulur. Ayaktaki "fetva değil
   tanıtımı S13.22'de `connect.ayinedar.org`'a. (4) `risalemcp.com` ve MCP adresleri değişmez (kurulumlar, dizin
   kayıtları, Claude'un simgesi). (5) İç proje adı "Risale MCP" kalır. "Nur Hadimleri"nin kullanıcı için özel bir yeri
   yok.
+- **K5 (2026-11-28): fıkıhta "kitaplar ne diyor, mezhebiyle" (B).** Dört mezhepten muteber metinler; cevap "X kitabı
+  şöyle der" diye kurulur, "mezhebin hükmü budur" diye değil; mezhepler arasında tercih ve hüküm yok; kişiye özel soruda
+  kitapların dediği genel olarak gösterilir, açıkça ehline yönlendirilir. Eser seçiminde müftâ bih görüşü kendisi
+  söyleyen eserler öne alınır (Hanefîlerde Reddü'l-Muhtâr gibi). Okuyucunun mezhep seçmesi (C) B ölçüldükten sonra
+  ayrıca düşünülür. Fetva tuzaklı sorular ölçü setine girer (E10.3); "Tefsir ve fetva değildir" yazısı kalır.
+
+**S14.1 bitti (2026-11-28).**
