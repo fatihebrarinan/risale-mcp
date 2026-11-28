@@ -2229,7 +2229,8 @@ def _kipler_public(general: bool = False) -> list[dict]:
 def _asset_version() -> str:
     import hashlib
     h = hashlib.sha256()
-    for name in ("sohbet.js", "sohbet.css", "ornek-konusma.json", *(f"ayna-{x}.svg" for x in "abcd")):
+    for name in ("sohbet.js", "sohbet.css", "ornek-konusma.json", "ornek-konusma-genel.json",
+                 *(f"ayna-{x}.svg" for x in "abcd")):
         h.update((ASSETS / name).read_bytes())
     return h.hexdigest()[:10]
 
@@ -2280,7 +2281,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
                  "apple-touch-icon.png": "image/png", "icon-192.png": "image/png", "icon-512.png": "image/png",
                  "icon-maskable-512.png": "image/png", "paylasim.jpg": "image/jpeg",
                  **{f"ayna-{x}.svg": "image/svg+xml" for x in "abcd"},
-                 "ornek-konusma.json": "application/json"}.get(name)
+                 "ornek-konusma.json": "application/json", "ornek-konusma-genel.json": "application/json"}.get(name)
         if not media:
             return JSONResponse({"error": "yok"}, status_code=404)
         return FileResponse(ASSETS / name, media_type=media, headers={"Cache-Control": "public, max-age=31536000"})

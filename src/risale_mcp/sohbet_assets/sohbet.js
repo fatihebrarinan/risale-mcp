@@ -87,7 +87,7 @@ function renderLibraryChoices() {
   };
   if (GENEL) $("kutuphane-giris").textContent = "Cevaplar açık kütüphanelerden gelir: önce Kur'ân ve hadis, sonra "
     + "açıklayanlar. Yalnız Risale-i Nur'dan cevap için soru kutusunun üstündeki menüden “Risale-i Nur'dan” modunu seçin.";
-  row("Risale-i Nur", "Bediüzzaman Said Nursî'nin eserleri; her soruda açık.", true, true);
+  row("Risale-i Nur", GENEL ? "Bediüzzaman Said Nursî'nin eserleri, her soruda açık." : "Bediüzzaman Said Nursî'nin eserleri; her soruda açık.", true, true);
   for (const k of KUTUPHANELER) {
     row(k.title, k.hint, state.libraries.includes(k.id), false, (on) => {
       state.libraries = on ? [...new Set([...state.libraries, k.id])] : state.libraries.filter((x) => x !== k.id);
@@ -560,11 +560,28 @@ const EXAMPLES = [
     "“Dünya âhiretin tarlasıdır” sözü nerede geçer, kaynağı ne?"]],
   ["Meseleler", ["Kader ile cüz-i ihtiyarî nasıl bağdaşır?", "Musibetler insan için neden hayır olabilir?"]],
 ];
+// S14.5 (kullanıcının onayı, 2026-11-28): genel sayfanın örnek soruları; türler korunur, sorular genel ve Risale'ye dair
+// karışık, yeni tür Siyer. Konu taraması Risale'de kalır (S14.7'ye kadar).
+const EXAMPLES_GENERAL = [
+  ["Konu taraması", ["Risale-i Nur'da şefkat hangi eserlerde, nasıl anlatılır?", "Tevekkül hangi risalelerde işlenir?"]],
+  ["Bugünün diliyle", ["Ümitsizliğe düşen birine ne tavsiye edilir?", "Hayatı anlamsız bulan birine Kur'ân ne söyler?",
+    "Yalnızlık duygusuyla nasıl baş edilir?"]],
+  ["Bir bölümü anlamak", ["Onuncu Söz'ün Dokuzuncu Hakikati'ni sade bir dille özetler misin?",
+    "Hastalar Risalesi'nin ilk devalarını özetler misin?"]],
+  ["Temsiller", ["Birinci Söz'deki iki yolcu temsili neyi anlatır?", "Sekizinci Söz'deki kuyu temsilini açıklar mısın?"]],
+  ["Âyetler", ["Âyetü'l-Kürsî'yi müfessirler ve Risale-i Nur nasıl açıklar?",
+    "“Her nefis ölümü tadacaktır” âyeti nasıl anlaşılmış?"]],
+  ["Kelimeler", ["“Takvâ” ne demektir?", "“Mânâ-yı harfî” ne demek, Risale'de nasıl kullanılır?"]],
+  ["Hadisler", ["“Ameller niyetlere göredir” hadisi hangi kitaplarda geçer?", "“Bir saat tefekkür” hadisinin kaynağı nedir?"]],
+  ["Meseleler", ["Kader ile cüz-i ihtiyarî nasıl bağdaşır?", "Musibetler insan için neden hayır olabilir?"]],
+  ["Siyer", ["Vahyin başlangıcı nasıl anlatılır?", "Hendek Savaşı'nda neler olmuştu?"]],
+];
+const EXAMPLE_GROUPS = GENEL ? EXAMPLES_GENERAL : EXAMPLES;
 const pick = (list) => list[Math.floor(Math.random() * list.length)];
 
 function renderExamples() {
   const box = $("ornekler");
-  const groups = [...EXAMPLES].sort(() => Math.random() - .5).slice(0, 6);
+  const groups = [...EXAMPLE_GROUPS].sort(() => Math.random() - .5).slice(0, 6);
   box.replaceChildren(...groups.map(([label, questions]) => {
     const b = el("button", "ornek");
     b.type = "button";
@@ -1329,14 +1346,16 @@ els.fresh.addEventListener("click", newConversation);
 // öğrenin" bildirimi çıkar, rehber "Başlayın" ile başlar. Rehber bitince ya da bildirim kapatılınca görüldüğü hesapta
 // tutulur; bildirime dokunmadan soru sorulursa yalnız bu açılışta gizlenir, sonraki girişte yine çıkar.
 // Ayarlar › Belgeler'den ve `#tanitim` ile rehber doğrudan açılır.
-const EXAMPLE_TITLE = "İmanımı nasıl arttırabilirim?";
+// S14.5: genel sayfanın örneği "Kişi imanını nasıl arttırır?" sorusuna bütün kütüphanelerle verilen gerçek cevap
+const EXAMPLE_TITLE = GENEL ? "Kişi imanını nasıl arttırır?" : "İmanımı nasıl arttırabilirim?";
+const EXAMPLE_FILE = GENEL ? "ornek-konusma-genel.json" : "ornek-konusma.json";
 let exampleData = null;
 async function openExample({ push = true } = {}) {
   if (busy) return;
   if (!docked.left.matches) closeDrawers();
   try {
     if (!exampleData) {
-      const r = await fetch(`${P}static/ornek-konusma.json?v=${document.body.dataset.v}`, { credentials: "same-origin" });
+      const r = await fetch(`${P}static/${EXAMPLE_FILE}?v=${document.body.dataset.v}`, { credentials: "same-origin" });
       exampleData = await r.json();
     }
   } catch { return; }
@@ -1349,7 +1368,8 @@ async function openExample({ push = true } = {}) {
 
 const TOUR = [
   { target: () => els.list.querySelector(".cevap blockquote"), title: "Örnek bir konuşma",
-    text: "Bu, sayfanın gerçek bir cevabı. Cevaplar Risale-i Nur'dan alıntılarla gelir; alıntılar eserdeki sözleriyle, olduğu gibi verilir." },
+    text: GENEL ? "Bu, sayfanın gerçek bir cevabı. Cevaplar kaynaklardan alıntılarla gelir, alıntılar eserdeki sözleriyle, olduğu gibi verilir."
+      : "Bu, sayfanın gerçek bir cevabı. Cevaplar Risale-i Nur'dan alıntılarla gelir; alıntılar eserdeki sözleriyle, olduğu gibi verilir." },
   { target: () => els.list.querySelector(".cevap .ref"), title: "Her alıntının bir numarası var",
     text: "Alıntının ardındaki numara, onun eserdeki yeridir. Numaraya ya da alıntıya dokununca o yer açılır.",
     after: () => els.list.querySelector(".cevap .ref")?.click() },
@@ -1357,9 +1377,11 @@ const TOUR = [
     text: "Kaynaklar panelinde alıntının geçtiği bölüm açılır: üstte eserdeki yeri, alıntılanan cümleler koyu yazılı. Önünü ve ardını buradan okuyabilirsiniz.",
     after: () => { showList(); if (!docked.right.matches) closeDrawers(); } },
   { target: () => $("kip-dugme"), title: "Mod",
-    text: "Serbest soru, konu taraması ya da âyet çalışması: modu buradan seçersiniz. Konu taraması bir konunun eserlerde geçtiği yerleri toplar." },
+    text: GENEL ? "Serbest soru, yalnız Risale-i Nur'dan cevap, Risale-i Nur'da konu taraması ya da âyet çalışması: modu buradan seçersiniz."
+      : "Serbest soru, konu taraması ya da âyet çalışması: modu buradan seçersiniz. Konu taraması bir konunun eserlerde geçtiği yerleri toplar." },
   { target: () => ($("kutuphaneler").hidden ? els.settingsOpen : $("kutuphaneler")), title: "Kütüphaneler ve ayarlar",
-    text: "Cevaplar her zaman Risale-i Nur'a dayanır. Tefsir, Hadis ve Klasik eserleri, temayı ve yazı boyutunu Ayarlar'dan değiştirirsiniz. Örnek konuşma solda durur; bu rehberi Ayarlar › Belgeler'den yeniden açabilirsiniz." },
+    text: GENEL ? "Cevaplar açık kütüphanelerden gelir: önce Kur'ân ve hadis, sonra açıklayanlar. Kütüphaneleri, temayı ve yazı boyutunu Ayarlar'dan değiştirirsiniz. Örnek konuşma solda durur, bu rehberi Ayarlar › Belgeler'den yeniden açabilirsiniz."
+      : "Cevaplar her zaman Risale-i Nur'a dayanır. Tefsir, Hadis ve Klasik eserleri, temayı ve yazı boyutunu Ayarlar'dan değiştirirsiniz. Örnek konuşma solda durur; bu rehberi Ayarlar › Belgeler'den yeniden açabilirsiniz." },
 ];
 let tourAt = -1;
 const tourBox = $("rehber"), tourLight = $("rehber-isik"), tourShade = $("rehber-perde");

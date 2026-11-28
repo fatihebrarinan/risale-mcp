@@ -584,6 +584,9 @@ input[readonly] { color: var(--muted); } .small { font-size: .82rem; }
   font-size: 1.1rem; color: #fbf8ef; }
 .ornek sup { color: var(--gold); font-family: system-ui, sans-serif; font-size: .7em; margin-left: 3px; }
 .ornek .kaynak { margin: 10px 0 0; font-size: .8rem; color: #b7c2b6; }
+.ornek blockquote[dir="rtl"] { border-left: 0; border-right: 3px solid var(--gold); padding: 4px 14px 4px 0;
+  font-family: "Sohbet Naskh", serif; font-size: 1.3rem; line-height: 1.9; text-align: right; }
+.ornek .tercume { margin: 8px 0 0; font-size: .88rem; color: #d7dfd6; }
 .ornek .etiket { float: right; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: #9fb09f; }
 .uyari-not { font-size: .8rem; color: #a9b6a8; margin: 22px 0 0; }
 .uyari-not a { color: var(--gold); }
@@ -636,6 +639,33 @@ yerleri bulur.</span></div></li>
 <a href="{p}hakkinda">Nasıl çalışır, sınırları neler?</a></p>
 </aside>
 """
+# S14.5 (kullanıcının onayı, 2026-11-28): genel sayfanın girişi (`SOHBET_GENEL`); örnek, sohbetin "Kişi imanını nasıl
+# arttırır?" sorusuna verdiği gerçek cevaptan (data/interim/sohbet/ornek-genel/iman-22.json) hadis alıntısı
+HERO_GENERAL = """<aside class="tanitim" aria-label="Tanıtım">
+<p class="ust-yazi"><span class="ad">{name}</span> · Sohbet</p>
+<h2>İslâm ilimlerinin kaynaklarına sorun,<br>cevabı kaynağıyla okuyun.</h2>
+<p class="giris-yazi">Sorularınızı Kur'ân-ı Kerîm'den, hadis kitaplarından, klasik tefsirlerden, Risale-i Nur'dan ve
+klasik eserlerden cevaplayan bir yapay zekâ. Dayandığı her söz eserlerden alıntıdır, alıntılar eserlerin metniyle
+denetlenir, yeri ve kaynağıyla gösterilir.</p>
+<ul class="ozellikler">
+<li>{i_kaynak}<div><strong>Her alıntı kaynağıyla</strong><span>Alıntıya dokunun, metni eserdeki yerinde, öncesi ve
+sonrasıyla okuyun.</span></div></li>
+<li>{i_kulliyat}<div><strong>Kur'ân ve Sünnet etrafında</strong><span>Önce âyet ve hadis, sonra onları açıklayan
+tefsirler, Risale-i Nur ve klasik eserler, eski kelimelerin lügat anlamı. Dilerseniz cevabı yalnız Risale-i Nur'dan
+alırsınız.</span></div></li>
+<li>{i_dil}<div><strong>Bugünün diliyle sorun</strong><span>Metindeki kelimeyi bilmeseniz de anlamca arar; konunun geçtiği
+yerleri bulur.</span></div></li>
+</ul>
+<div class="ornek"><span class="etiket">Örnek</span>
+<p class="soru">Kişi imanını nasıl arttırır?</p>
+<blockquote dir="rtl" lang="ar">جددوا إيمانكم … أكثروا من قول لا إله إلا الله<sup>[1]</sup></blockquote>
+<p class="tercume">Yapay zekâ tercümesi: "İmanınızı yenileyin." … "Lâ ilâhe illallah sözünü çok söyleyin."</p>
+<p class="kaynak">[1] Mecmaü'z-Zevâid (Nûreddîn el-Heysemî), no. 159 · Kaynak: OpenITI</p>
+</div>
+<p class="uyari-not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Ücretsizdir.
+<a href="{p}hakkinda">Nasıl çalışır, sınırları neler?</a></p>
+</aside>
+"""
 
 
 # S12.6: sohbet sayfasının kendi gizlilik politikası ve kullanım şartları (kullanıcının kararı, 2026-11-25: sitenin
@@ -683,7 +713,8 @@ def manifest(config: "Config") -> dict:
                                               "type": "image/png", "purpose": purpose}
     return {"name": f"{config.name} · Sohbet", "short_name": config.name, "id": p, "start_url": p, "scope": p,
             "display": "standalone", "lang": "tr", "dir": "ltr", "background_color": "#fbfaf7", "theme_color": THEME,
-            "description": "Sorularınızı Bediüzzaman Said Nursî'nin eserlerinden, kaynağıyla cevaplayan yapay zekâ.",
+            "description": (DESCRIPTION_GENERAL if general_page()
+                            else "Sorularınızı Bediüzzaman Said Nursî'nin eserlerinden, kaynağıyla cevaplayan yapay zekâ."),
             "icons": [icon("icon-192.png", 192), icon("icon-512.png", 512),
                       icon("icon-maskable-512.png", 512, "maskable")]}
 
@@ -711,6 +742,20 @@ OFFLINE = """<h1>Bağlantı yok</h1>
 <p>Konuşmalarınız kaybolmaz: hesabınızda saklananlar bağlantı gelince yeniden görünür.</p>"""
 
 
+# S14.5: Hakkında'da genel sayfanın cevabı nasıl kurduğu (yalnız `SOHBET_GENEL` açıkken)
+HOW_GENERAL = ("<h2>Cevap nasıl kurulur?</h2>\n<p>Önce soruyla ilgili âyet ve hadis, sonra onları açıklayan eserler gelir. "
+               "Her eserin sözü kendi sahibine aittir, birbirine karıştırılmaz. Cevabı yalnız Risale-i Nur'dan almak "
+               "isterseniz soru kutusunun üstündeki menüden “Risale-i Nur'dan” modunu seçin.</p>\n\n")
+
+
+def general_page() -> bool:
+    """S14.4–S14.5: genel sayfa (Kur'ân ve Sünnet merkezli) açık mı (`SOHBET_GENEL`)."""
+    return os.environ.get("SOHBET_GENEL", "") not in ("", "0")
+
+
+DESCRIPTION_GENERAL = ("Kur'ân-ı Kerîm'e, hadis kitaplarına, klasik tefsirlere, Risale-i Nur'a ve klasik eserlere dayanan "
+                       "ücretsiz yapay zekâ sohbeti. Her alıntı, eserdeki yeri ve kaynağıyla gösterilir.")
+SEO_TITLE_GENERAL = "{name} · Sohbet: Kur'ân, Hadis, Tefsir, Risale-i Nur ve Klasik Eserler için Yapay Zekâ"
 DESCRIPTION = ("Bediüzzaman Said Nursî'nin eserlerinden, isterseniz klasik tefsirlerden, hadis kitaplarından ve klasik İslâm "
                "eserlerinden kaynağıyla cevaplayan ücretsiz yapay zekâ sohbeti. Her alıntı, eserdeki yeri ve kaynağıyla "
                "gösterilir.")
@@ -734,7 +779,7 @@ def seo_head(config: "Config") -> str:
     data = {"@context": "https://schema.org", "@type": "WebApplication", "@id": f"{url}#app",
             "name": f"{config.name} · Sohbet", "url": url, "applicationCategory": "EducationalApplication",
             "operatingSystem": "Web", "inLanguage": "tr", "isAccessibleForFree": True,
-            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TRY"}, "description": DESCRIPTION}
+            "offers": {"@type": "Offer", "price": "0", "priceCurrency": "TRY"}, "description": DESCRIPTION_GENERAL if general_page() else DESCRIPTION}
     if config.home:
         data["publisher"] = {"@type": "Organization", "name": "Nur Hadimleri", "url": config.home.rstrip("/") + "/"}
     return (f'<link rel="canonical" href="{html.escape(url)}">'
@@ -753,10 +798,11 @@ def head_links(config: "Config") -> str:
     Paylaşım kartı (Open Graph) bağlantı WhatsApp gibi yerlerde paylaşılınca görünür; resim tam adresle verilir."""
     p, title = html.escape(config.prefix), html.escape(f"{config.name} · Sohbet")
     card = html.escape(f"{config.site}{config.prefix}static/paylasim.jpg")
-    return (f'<meta name="description" content="{html.escape(DESCRIPTION)}">'
+    description = DESCRIPTION_GENERAL if general_page() else DESCRIPTION
+    return (f'<meta name="description" content="{html.escape(description)}">'
             f'<meta property="og:type" content="website"><meta property="og:locale" content="tr_TR">'
             f'<meta property="og:site_name" content="{html.escape(config.name)}"><meta property="og:title" content="{title}">'
-            f'<meta property="og:description" content="{html.escape(DESCRIPTION)}">'
+            f'<meta property="og:description" content="{html.escape(description)}">'
             f'<meta property="og:image" content="{card}"><meta property="og:image:width" content="1200">'
             f'<meta property="og:image:height" content="630"><meta name="twitter:card" content="summary_large_image">'
             f'<link rel="manifest" href="{p}manifest.webmanifest"><meta name="theme-color" content="{THEME}">'
@@ -764,7 +810,9 @@ def head_links(config: "Config") -> str:
             f'<link rel="icon" href="{p}static/icon-kucuk.svg" type="image/svg+xml">'
             f'<link rel="apple-touch-icon" href="{p}static/apple-touch-icon.png">'
             f'<style>@font-face {{ font-family: "Ayinedar Ad"; src: url("{p}static/literata-ad.woff2") format("woff2"); '
-            f'font-display: swap; }}</style>')
+            f'font-display: swap; }} @font-face {{ font-family: "Sohbet Naskh"; src: url("{p}static/naskh.woff2") '
+            f'format("woff2"); font-display: swap; unicode-range: U+0600-06FF, U+0750-077F, U+FB50-FDFF, U+FE70-FEFF; }}'
+            f'</style>')
 
 
 def doc_page(path: str, config: "Config") -> str:
@@ -774,7 +822,8 @@ def doc_page(path: str, config: "Config") -> str:
     body = ((ASSETS / file).read_text(encoding="utf-8").replace("{{P}}", html.escape(config.prefix))
             .replace("{{HOST}}", html.escape(host)).replace("{{DATE}}", POLICY_DATE[0])
             .replace("{{DATE_EN}}", POLICY_DATE[1]).replace("{{NAME}}", html.escape(config.name))
-            .replace("{{SUPPORT}}", html.escape(config.support)))
+            .replace("{{SUPPORT}}", html.escape(config.support))
+            .replace("{{GENEL_BOLUM}}", HOW_GENERAL if general_page() else ""))
     tr = lang == "tr"
     return DOC_SHELL.format(lang=lang, title=html.escape(title), name=html.escape(config.name), p=html.escape(config.prefix),
                             support=html.escape(config.support),
@@ -857,10 +906,10 @@ def build_app(store: Store, mailer, config: Config = Config(), limiter: IpLimite
     limiter = limiter or IpLimiter()
     esc = lambda s: html.escape(str(s), quote=True)
 
-    hero = HERO.format(name=esc(config.name), p=p, **{f"i_{k}": v for k, v in _ICONS.items()})
+    hero = (HERO_GENERAL if general_page() else HERO).format(name=esc(config.name), p=p, **{f"i_{k}": v for k, v in _ICONS.items()})
 
     def shell(title: str, body: str, status: int = 200, intro: bool = False) -> HTMLResponse:
-        full = SEO_TITLE.format(name=config.name) if intro else f"{title} · {config.name}"
+        full = (SEO_TITLE_GENERAL if general_page() else SEO_TITLE).format(name=config.name) if intro else f"{title} · {config.name}"
         return HTMLResponse(SHELL.format(title=esc(full), name=esc(config.name), body=body, p=p, head=head_links(config),
                                          robots="" if intro else '<meta name="robots" content="noindex">',
                                          seo=seo_head(config) if intro else "",
