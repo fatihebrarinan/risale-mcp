@@ -315,8 +315,13 @@ def evaluate(question: dict, transcript: Transcript, checker: Checker) -> dict:
     citations = [] if question.get("profile") == "hadis" else checker.citations(transcript.answer)
     read = checker.read_sections(transcript.calls)
     answer_key = _key(transcript.answer)
-    sections = [{"id": s, "read": any(_within(r, s) for r in read), "named": _key(checker.title(s)) in answer_key}
-                for s in question["sections"]]
+    # S14.8: "a | b": aynı metnin müellifin koyduğu iki yeri (K3: Otuzuncu Lem'a'nın Dördüncü Remzi Onuncu Söz'ün
+    # Zeylinde de); biri okunduysa okunmuş, biri anıldıysa anılmış sayılır
+    sections = []
+    for s in question["sections"]:
+        options = [o.strip() for o in s.split("|")]
+        sections.append({"id": options[0], "read": any(_within(r, o) for r in read for o in options),
+                         "named": any(_key(checker.title(o)) in answer_key for o in options)})
     multi = {}
     if isinstance(checker, MultiChecker):
         cites = [c for c in transcript.calls if c.name == "cite" and not c.error]

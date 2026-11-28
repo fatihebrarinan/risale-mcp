@@ -78,3 +78,10 @@ def test_sandbox_must_be_outside_project(tmp_path):
     assert json.loads((tmp_path / "deneme" / ".mcp.json").read_text())["mcpServers"]["risale"]["args"][-1] == "risale-mcp"
     with pytest.raises(SystemExit):
         sandbox(ROOT / "deneme")
+
+
+def test_evaluate_accepts_an_equivalent_place(checker):
+    # S14.8 (K3): "a | b": aynı metnin iki yeri; biri okunduysa okunmuş
+    question = {"id": "K3", "sections": ["sozler/11 | sozler/10"]}
+    transcript = Transcript(answer="Cevap.", calls=[ToolCall("read_section", {"section": "sozler/10/hakikat-01"})])
+    assert evaluate(question, transcript, checker)["sections"] == [{"id": "sozler/11", "read": True, "named": False}]
