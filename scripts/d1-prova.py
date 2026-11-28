@@ -877,6 +877,15 @@ def yazdir(unit: str, times: int, model: str, effort: str, istem: str = "tam", s
             done = claude_p(command, prompt, log, env, TIMEOUT, esik=0.75, prefix="d1-prova-")
             if done.returncode or done.stderr.strip():
                 (out / f"taslak-{n}.stderr.txt").write_text(done.stderr, encoding="utf-8")
+            # 217, 2026-11-28: son tur API zaman aşımına düştü, "Request timed out…" iletisi taslak diye kaydedildi ve
+            # hat onun üstüne sürdü. Hatayla biten çağrı taslak değildir: döküm `basarisiz/`'e, adım başarısız.
+            if (error := result_error(log)) is not None:
+                failed = out / "basarisiz" / f"taslak-{n}.hata-{datetime.now():%Y%m%d-%H%M}.jsonl"
+                failed.parent.mkdir(exist_ok=True)
+                shutil.move(log, failed)
+                (out / f"taslak-{n}.stderr.txt").unlink(missing_ok=True)
+                raise SystemExit(f"taslak {n}: çağrı hatayla bitti (çıkış {done.returncode}): {error[:200]}; "
+                                 f"döküm {failed.relative_to(out)}")
             answer, calls, cost = transcript(log)
             meta = {"model": model, "effort": effort, "istem": istem, "surum": surum, "prompt_sha": _sha(prompt), "seconds": round(time.monotonic() - started),
                     "returncode": done.returncode, "calls": calls, "cost_usd": cost, "at": datetime.now().isoformat()}
@@ -1019,6 +1028,23 @@ def transcript(log: Path) -> tuple[str, dict, float | None]:
             answer = event.get("result") or ""
             cost = event.get("total_cost_usd")
     return answer, dict(calls), cost
+
+
+def result_error(log: Path) -> str | None:
+    """Döküm hatayla bittiyse (sonuç `is_error` ya da hiç sonuç yok) hatanın metni, bittiyse None."""
+    result = None
+    for line in log.read_text(encoding="utf-8").splitlines():
+        try:
+            event = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if event.get("type") == "result":
+            result = event
+    if result is None:
+        return "dökümde sonuç yok"
+    if result.get("is_error") or not (result.get("result") or "").strip():
+        return (result.get("result") or result.get("subtype") or "boş cevap").strip()
+    return None
 
 
 def karsilastir(unit: str) -> None:
