@@ -95,7 +95,10 @@ kaynak adları ("e-Risale", "Kaynak: e-Risale" satırları, izinlerin şartı); 
 - **2.4 ve 2.14:** genel bir örnekle değişir. Altyapı (S14.4) hazır olana kadar bugünküler kalır. Soru, Risale-i Nur'un
   da ele aldığı bir konudan seçilir: böylece cevapta âyet ve hadisin yanında Risale'den de alıntı bulunur. Örnek yine
   sistemin gerçek cevabıdır (kısaltılmaz, düzeltilmez); soruyu kullanıcı seçer.
-- **2.10:** (cevap bekleniyor)
+- **2.10:** konu taraması Risale'ye ait kalır ("Risale-i Nur'da konu taraması"); öbür kütüphanelere genişletmek S14.7'de
+  düşünülür.
+
+**S14.2 bitti (2026-11-28).**
 
 ## Özet
 

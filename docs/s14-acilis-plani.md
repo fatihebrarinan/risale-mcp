@@ -90,7 +90,8 @@ Risale seti yayından sonra yeniden ölçülür. Geri dönüş yolu: eski varsay
 
 S13.18 ile birleşir (kip kaydı tek kaynak, `kipler.py`): kavram ve terim (Ta'rîfât, Müfredât), karşılaştırma (bir
 meselede farklı eserler), hadis kontrolü (eklentideki skill'in sohbetteki karşılığı), siyer olayı (E9'dan sonra);
-sonra yönlendirici. S14.6'dan sonra.
+sonra yönlendirici. S14.6'dan sonra. Konu taramasının öbür kütüphanelere genişlemesi de burada düşünülür (S14.2,
+2.10: o zamana kadar "Risale-i Nur'da konu taraması" olarak Risale'ye ait kalır).
 
 ## Kütüphaneler
 
