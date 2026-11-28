@@ -2284,22 +2284,28 @@ def answer_text(done: dict) -> str:
     return "\n".join(lines) if done["sources"] else done["markdown"]
 
 
-async def measure(chat: Chat, ids: list[str]) -> Path:
+async def measure(chat: Chat, ids: list[str], question_set: Path | None = None, libraries=(),
+                  mode: str | None = None) -> Path:
     """Altın soruları bu servisle sorar; dökümü `golden` biçiminde (`<soru>.jsonl`) yazar, raporu `golden.report`
-    kurar. Maliyet API'nin gerçek fiyatıdır (S12.1'inki Claude Code'un istemiyle eşdeğer maliyetti)."""
+    kurar. Maliyet API'nin gerçek fiyatıdır (S12.1'inki Claude Code'un istemiyle eşdeğer maliyetti).
+    S14.3: `question_set` başka bir soru seti (genel set, `tests/golden/genel_sorular.json`): raporu `genel_olc`
+    kurar; `libraries` ve `mode` her soruda okuyucunun açtığı kütüphaneler ve kip gibi gider."""
     from datetime import datetime
     from risale_mcp import golden
-    questions = [q for q in golden.load_questions() if q["id"] in ids] if ids else \
-        [q for q in golden.load_questions() if not q.get("profile")]
-    out = golden.RUNS_DIR / f"{datetime.now():%Y%m%d-%H%M%S}-sohbet-{chat.settings.model}-{chat.settings.effort}"
+    loaded = golden.load_questions(question_set) if question_set else golden.load_questions()
+    questions = [q for q in loaded if q["id"] in ids] if ids else [q for q in loaded if not q.get("profile")]
+    tag = (f"-{question_set.stem}" if question_set else "") + (f"-{'+'.join(libraries)}" if libraries else "") \
+        + (f"-{mode}" if mode else "")
+    out = golden.RUNS_DIR / f"{datetime.now():%Y%m%d-%H%M%S}-sohbet-{chat.settings.model}-{chat.settings.effort}{tag}"
     out.mkdir(parents=True)
     (out / "model.json").write_text(json.dumps({"model": chat.settings.model, "effort": chat.settings.effort,
-                                                "kind": "sohbet"}), encoding="utf-8")
+                                                "kind": "sohbet", "set": str(question_set or golden.QUESTIONS),
+                                                "libraries": list(libraries), "mode": mode}), encoding="utf-8")
     print(f"{len(questions)} soru; döküm: {out}", flush=True)
     for q in questions:
         tally, start, done, failure, restarts = Tally(), time.time(), None, None, 0
         try:
-            async for event, data in chat.ask([], q["question"], tally):
+            async for event, data in chat.ask([], q["question"], tally, mode, libraries):
                 if event == "done":
                     done = data
                 elif event == "error":
@@ -2321,7 +2327,9 @@ async def measure(chat: Chat, ids: list[str]) -> Path:
                       "sohbet": {"corrected": bool(done and done["corrected"]), "problems": done and done["problems"],
                                  "checks": done and done["checks"], "model_text": tally.model_text,
                                  "failure": failure, "input": tally.input, "cache_write": tally.cache_write,
-                                 "cache_read": tally.cache_read}})
+                                 "cache_read": tally.cache_read, "libraries": list(tally.libraries),
+                                 "sources": [{k: x.get(k) for k in ("n", "id", "library", "unverified", "section")}
+                                             for x in (done["sources"] if done else [])]}})
         (out / f"{q['id']}.jsonl").write_text("\n".join(json.dumps(x, ensure_ascii=False) for x in lines) + "\n",
                                               encoding="utf-8")
         print(f"  {q['id']}: {time.time() - start:.0f} sn, {tally.tools} araç, {tally.cost:.4f} $"
@@ -2330,7 +2338,11 @@ async def measure(chat: Chat, ids: list[str]) -> Path:
               + (f" {done['problems']} doğrulanamadı" if done and done["problems"] else "")
               + (f" HATA {failure}" if failure else ""),
               flush=True)
-    golden.report(out)
+    if question_set:
+        from risale_mcp import genel_olc
+        print(genel_olc.report(out, question_set))
+    else:
+        golden.report(out)
     return out
 
 
@@ -2352,6 +2364,9 @@ def main(argv: list[str] | None = None) -> None:
                                     "düşünme düzeyi SOHBET_MODEL, SOHBET_EFFORT")
     p.add_argument("ids", nargs="*")
     p.add_argument("--hizli", action="store_true", help=f"hızlı set (S12.13): {' '.join(QUICK)}")
+    p.add_argument("--set", type=Path, default=None, help="S14.3: başka soru seti (tests/golden/genel_sorular.json)")
+    p.add_argument("--kutuphane", default="", help="öbür kütüphaneler, virgülle: tefsir,hadis,klasik")
+    p.add_argument("--kip", default=None, help="kip (kipler.py)")
     p = sub.add_parser("dene", help="hata ayıklama turu (S13.11): soru dosyasındaki konuşmaları yerelde sorar, "
                                      "araç çağrılarıyla döker (sohbet_dene.py)")
     p.add_argument("file", type=Path)
@@ -2403,7 +2418,8 @@ def main(argv: list[str] | None = None) -> None:
         asyncio.run(sohbet_dene.run(Chat(_library(), _client(), config, settings), args.file, args.names,
                                     args.paralel))
     elif args.command == "olc":
-        asyncio.run(measure(Chat(_library(), _client(), config, settings), QUICK if args.hizli else args.ids))
+        asyncio.run(measure(Chat(_library(), _client(), config, settings), QUICK if args.hizli else args.ids,
+                            args.set, tuple(x for x in args.kutuphane.split(",") if x), args.kip))
     elif args.command == "geri-bildirim":
         from datetime import datetime
         store = Store()
