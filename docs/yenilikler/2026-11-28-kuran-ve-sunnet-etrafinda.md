@@ -2,7 +2,7 @@
 baslik: Âyinedâr artık bütün kütüphanelerden cevap veriyor
 tarih: 2026-11-28
 ozet: Sohbet sayfasında sorduğunuz soru artık Kur'ân'dan, hadis kitaplarından, tefsirlerden, Risale-i Nur'dan ve klasik eserlerden birlikte cevaplanıyor: önce âyet ve hadis, sonra onları açıklayan eserler.
-durum: taslak
+durum: yayinda
 whatsapp: |
   Âyinedâr'ın sohbet sayfasında artık bir soruyu bütün kütüphanelerle birlikte sorabilirsiniz: cevap önce âyet ve hadisle, sonra tefsirlerden, Risale-i Nur'dan ve klasik eserlerden gelir. Her söz kaynağıyla.
 
@@ -24,10 +24,5 @@ Bu soruya verilen bir cevapta Enfâl Sûresi'nin "âyetleri okunduğunda imanlar
 - **Konu taraması** şimdilik Risale-i Nur'da çalışıyor, adı da "Risale-i Nur'da konu taraması" oldu.
 - **Hüküm sorularında** yapay zekâ fıkhî hüküm vermez. Kitapların genel olarak ne dediğini gösterir ve sizi bir müftüye ya da güvendiğiniz bir âlime yönlendirir.
 
-Bir soru daha:
-
-> Tevekkül ile tembellik arasındaki fark nedir?
-
-Yapay zekânın cevapları tefsir ya da fetva değildir, müellife mal edilmez. Sayfa ücretsizdir, her hesap günde 10 soru sorabilir.
 
 [Sohbet sayfası](https://chat.ayinedar.org/) · [Âyinedâr'ın ana sayfası](/)

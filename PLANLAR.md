@@ -67,7 +67,8 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.md` › "Sıradaki'nin notları"):
 - **Son adım (2026-11-28): S14.8 bitti ve yayında.** Ayrıntı "Sıradaki" › S14 › S14.8. `search_all`'ın sırası
   (tefsir, Risale, hadis, klasik) kesin değil: kullanıcı cevaplara göre yeniden bakabilir. Sonra S14.7 (yeni modlar) ya
-  da E9. **Kullanıcıdan beklenen:** Yenilikler duyurusunun taslağı (aşağıda).
+  da E9. S14.6'nın duyurusu yayında (2026-11-28, kullanıcı web düzenleyicide düzeltti):
+  `ayinedar.org/yenilikler/2026-11-28-kuran-ve-sunnet-etrafinda.html`.
 - **Son adım (2026-11-28): S13.23 bitti, S14 planlandı.** Kullanıcının fikri: Âyinedâr bütün İslâm âleminin
   platformu olsun, Risale cevapları bugünkü gibi kalsın. Plan `docs/s14-acilis-plani.md` (kapılı; S14.6'ya kadar
   yayında değişiklik yok); S13.23.5 (giriş sayfası) S14.5'e katıldı. S14.1'in beş kararı verildi (2026-11-28: Kur'ân
@@ -80,9 +81,7 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
   `SOHBET_GENEL`'in arkasında, yayın S14.6'da. İnce ayarlar S14.8'de. S14.5 bitti (2026-11-28): metinler işlendi (çatı tr/en, sohbetin
   `SOHBET_GENEL`'e bağlı metinleri), genel örnek "Kişi imanını nasıl arttırır?" (22. üretim, kullanıcı seçti). S14.6: genel sayfa
   yayında (2026-11-28, `scripts/deploy.sh --code`, araç çıktısında fark yok, sunucuda uçtan uca denendi); okuyucuya giden
-  metinlerde noktalı virgül virgüle çevrildi. **Kullanıcıdan beklenen:** Yenilikler duyurusunun taslağını okumak
-  (`docs/yenilikler/2026-11-28-kuran-ve-sunnet-etrafinda.md`, önizleme `lab.ayinedar.org/onizleme/`); onaydan sonra
-  `python3 scripts/site-uret.py yayinla yenilikler/2026-11-28-kuran-ve-sunnet-etrafinda --gonder`. Sonra S14.8 ya da S14.7.
+  metinlerde noktalı virgül virgüle çevrildi; duyurusu yayında.
 - **Önceki adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
@@ -140,7 +139,7 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
     ölçülür (Risale seti düşmemeli, maliyet); kullanıcı seçer.
   - S14.5 (bitti, 2026-11-28; yayına S14.6'da; `docs/s14-anlatim-taslagi.md`) **Anlatım** (S13.23.5 giriş sayfası buraya katıldı): çatı, sohbetin girişi, Hakkında, modlar, örnekler;
     önizlemede, kullanıcı okur.
-  - S14.6 (yayında, 2026-11-28; duyuru taslağı kullanıcının okumasını bekliyor; izleme kullanıcının kararıyla yok) **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
+  - S14.6 (yayında, 2026-11-28; duyuru yayında; izleme kullanıcının kararıyla yok) **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
   - S14.8 (bitti ve yayında, 2026-11-28, `deploy.sh --code`, araç çıktısında fark yok) **İnce ayarlar ve iyileştirmeler** (kullanıcının kararı, 2026-11-28: S14.4'ten sonra ayrı adım; sıra ve
     usul kullanıcının kararı, 2026-11-28: önce sorunların aslı, ara ölçüm yok, en sonda yalnız genel set). Sıra:
     1. (bitti) G5'in çökmesi: atıf dizini ilk kurulurken eşzamanlı istek yarım dizini görüyordu (yeniden üretildi;
