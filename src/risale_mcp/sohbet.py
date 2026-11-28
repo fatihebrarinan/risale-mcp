@@ -162,13 +162,19 @@ their original Arabic. Texts are split into sentences or reports; every one has 
 
 ORDER_GENERAL = """\
 Building the answer: the Qur'an and the Sunna come first, then those who explain them.
+- A general question (not about the Risale-i Nur itself) is answered from more than one library: look for the verse \
+that speaks to it, search the hadith collections once for a report on it (hadis_semantic_search), and read the \
+explanations the question needs. Do not answer a general question from the Risale alone when another library treats \
+it. Open the answer with the answer itself, in your own words; say "according to the Risale-i Nur" only when the \
+question asks for the Risale.
 - When a verse bears on the question, give it first (read it with get_ayah and name it by its ref); when a report of \
 the Prophet bears on it, give it next, from the hadith collections. Then the explanations: the classical tafsirs, \
 the Risale-i Nur and the classical works, as the question needs. A question needs no verse or report forced into it.
 - Choose the libraries by the question: a verse: tefsir_find_ayah and find_ayah (its places in the Risale); a \
 saying of the Prophet: the hadis_ tools, and find_hadith for its places in the Risale; creed and kalam: the \
 classical works (Sharh al-Mawaqif, Sharh al-Maqasid, al-Fiqh al-Akbar) and the Risale; the inner life, morals and \
-worship: al-Ghazali's Ihya and the Risale; the life of the Prophet (sira): al-Mawahib and the hadith collections; the \
+worship: al-Ghazali's Ihya (it has a book on each virtue and vice: patience, gratitude, sincerity, trust, pride, \
+envy…; read its definition and divisions) and the Risale; the life of the Prophet (sira): al-Mawahib and the hadith collections; the \
 meaning of a Qur'anic word or a term: al-Mufradat, al-Ta'rifat and the tafsirs; rhetoric: Dala'il al-I'jaz, Asrar \
 al-Balagha, Miftah al-'Ulum.
 - The Risale-i Nur is the fullest Turkish voice on faith and worship: when it treats the question (faith, the \
@@ -349,6 +355,8 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), for
     S14.4: öneksiz yazılmış ama Risale'de olmayan kimlik, bu cevapta tek bir öbür kütüphanede okunduysa
     (`foreign_read`: `foreign_read_ids`) o kütüphanenin işareti sayılır (model `[[ihya/4/3/4/c041]]` yazmıştı)."""
     text = _marks_before_translation(_translations_out_of_blocks(_split_blocks(strip_own_sources(text))))
+    if foreign is not None:
+        text = _foreign_quote_fixes(text)                      # S14.4
     text, unmarked = unmarked_quotes(checker, text, read,
                                      UNMARKED_NOTE_LIBRARIES if foreign is not None else UNMARKED_NOTE)
     leaks = list(dict.fromkeys(m.group().strip() for m in BARE_ID.finditer(MARK.sub(" ", text))))
@@ -806,6 +814,45 @@ def _foreign_paragraphs(lines: list[str]) -> set[int]:
         if found and all(_foreign(m) for m in found):
             zone.update(group)
     return zone
+
+
+# S14.4 (genel setin ölçümü, 2026-11-28): öbür kütüphanelerin alıntılarında iki kalıp doğrulanamıyordu. (a) Model
+# tercümeyi alıntıyla işaretin arasına yazıyor: `> "عربي" (Yapay zekâ tercümesi: …) [[tefsir:…]]`; işaret alıntının
+# hemen ardına, tercüme kendi paragrafına alınır. (b) Model Arapçanın kendi Türkçe tercümesini tırnağa alıp işaret
+# koyuyor (`"Kürsîsi, ilmidir" [[tefsir:…]]`): eser Arapça olduğu için bu söz alıntı olamaz; tırnakları kalkar,
+# işaret kaynağa gönderme olarak kalır (alıntı denetlenmez, kimlik denetlenir).
+TRANSLATION_BETWEEN = re.compile(rf"([\"”»])\s*\(\s*({TRANSLATION_LABEL}\s*:[^()]*?)\s*\)\s*((?:\[\[[^\[\]]+\]\]\s*)+)", re.I)
+FOREIGN_MARK = re.compile(r"\[\[\s*(?:tefsir|hadis|klasik):[^\[\]\s]+?\s*\]\]")
+QUOTED_BEFORE = re.compile(r"[\"“]([^\"“”\n]{2,}?)[\"”](\s*)$")
+
+
+def _foreign_quote_fixes(text: str) -> str:
+    out = []
+    for line in text.split("\n"):
+        moved = []
+
+        def between(m):
+            moved.append(m.group(2).strip())
+            return f"{m.group(1)} {m.group(3).strip()}"
+        line = TRANSLATION_BETWEEN.sub(between, line)
+        if FOREIGN_MARK.search(line):
+            if line.lstrip().startswith(">"):
+                if not ARABIC.search(MARK.sub("", line)):     # Arapçasız alıntı bloğu: modelin tercümesidir
+                    line = re.sub(r"^\s*>\s?", "", line)
+                    line = re.sub(r'^([*_]{0,2})[\"“]([^\"“”]+)[\"”]', r"\1\2", line)
+            else:
+                parts, last = [], 0
+                for m in FOREIGN_MARK.finditer(line):
+                    before = line[last:m.start()]
+                    q = QUOTED_BEFORE.search(before)
+                    if q and not ARABIC.search(q.group(1)):
+                        before = before[:q.start()] + q.group(1) + q.group(2)
+                    parts.append(before + m.group())
+                    last = m.end()
+                line = "".join(parts) + line[last:]
+        out.append(line)
+        out += [x for t in moved for x in ("", t)]
+    return "\n".join(out)
 
 
 def _marks_before_translation(text: str) -> str:
@@ -1356,7 +1403,7 @@ class Chat:
             tally.model_text = text
             yield "status", {"text": CHECKING}
             checked = await asyncio.to_thread(check, self.checker, text, read_ids(tally.calls),
-                                              foreign if chosen else None, foreign_read_ids(tally.calls))
+                                              foreign if chosen else None, foreign_seen_ids(tally.calls))
             if (self.settings.model_fix and checked.problems and not corrected and tally.rounds < MAX_ROUNDS):
                 corrected = True
                 messages.append({"role": "user", "content": correction(checked.problems)})
@@ -1664,6 +1711,19 @@ def read_place(library, call: str) -> str:
 READING_TOOLS = {"read_section", "get_passage", "find_sentence"}
 FOREIGN_READING = {"read_section", "get_passage", "find_sentence", "get_hadith", "read_chapter"}   # S13.17
 _RESULT_ANY_ID = re.compile(r'"id"\s*:\s*"([^"]+)"')
+
+
+def foreign_seen_ids(calls: list) -> set[str]:
+    """S14.4: öbür kütüphanelerin bütün araç sonuçlarında geçen kimlikler, alan adıyla (arama sonuçları da): öneksiz
+    yazılmış kimliğin hangi kütüphaneden geldiğini bulmak için (`_prefix_foreign`)."""
+    out = set()
+    for name, args, result, error in calls:
+        head = name.partition("_")[0]
+        if error or head not in ("tefsir", "hadis", "klasik"):
+            continue
+        out.update(f"{head}:{m}" for m in _RESULT_ANY_ID.findall(result or ""))
+        out.update(f"{head}:{v}" for v in (args or {}).values() if isinstance(v, str) and "/" in v)
+    return out
 
 
 def foreign_read_ids(calls: list) -> set[str]:
