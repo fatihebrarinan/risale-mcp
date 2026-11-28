@@ -57,7 +57,7 @@ durur, `KAYIT.md`'deki geçmiş onlarla okunur.
 | **D** | Deneme ve araştırma |
 | **B** | Bakım: kontrol ve küçük açıklar |
 
-Son verilen kimlikler: E8, S13, A4, D16, B13 (yeni iş bir sonrakini alır).
+Son verilen kimlikler: E10, S14, A4, D16, B13 (yeni iş bir sonrakini alır).
 
 ## Sıradaki
 
@@ -65,12 +65,15 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; yalnız şu an yapılan iş, kullanıcıdan beklenen ve tarihli hatırlatmalar, kısa
 tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.md` › "Sıradaki'nin notları"):
-- **Son adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
+- **Son adım (2026-11-28): S13.23 bitti, S14 planlandı.** Kullanıcının fikri: Âyinedâr bütün İslâm âleminin
+  platformu olsun, Risale cevapları bugünkü gibi kalsın. Plan `docs/s14-acilis-plani.md` (kapılı; S14.6'ya kadar
+  yayında değişiklik yok); S13.23.5 (giriş sayfası) S14.5'e katıldı. **Önde:** S14.1'in kararları (kullanıcıyla
+  sohbet) ve S14.2 envanteri.
+- **Önceki adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
   sohbet tarafı yayında (örnek cevabı kullanıcı onayladı; okuyucuya görünen ad "mod"). S13.23.7 (rehber sağ üstteki bildirimle başlar) yayında (2026-11-28). S13.23.8 (okuma platformunda aynı
-  bildirim ve rehber) yayında (2026-11-28). Açık kalan: S13.23.5 (giriş sayfası) kullanıcının ayrıntısını bekliyor;
-  ardından S13.20 (İngilizce ve Arapça arayüz). ≈2026-12-04 e-posta teslim süreleri ve spam yeniden bakılır
+  bildirim ve rehber) yayında (2026-11-28). S13.20 (İngilizce ve Arapça arayüz) S14'ün anlatımından sonra. ≈2026-12-04 e-posta teslim süreleri ve spam yeniden bakılır
   (`sohbet_hesap eposta-sure`, Postmaster Tools). S13.22 dizin kararlarını bekliyor.
 - **Arama motorları (2026-11-27):** kullanıcı siteye baktı (sorun yok), Search Console (alan adı mülkü `ayinedar.org`) ve Bing'e kaydoldu; iki site haritası ikisine de gönderildi. Google çatınınkini okudu (18 sayfa), sohbetinkine ilk anda "Getirilemedi" dedi (harita sorunsuz geliyor; birkaç gün içinde düzelmezse yeniden gönderilir).
 - **Yenilikler duyurusu yayında (2026-11-27):** kullanıcı web düzenleyicide düzeltti, `ayinedar.org/yenilikler/2026-11-27-ayinedar.html`.
@@ -89,56 +92,48 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
 
 Sıra (kullanıcının kararı, 2026-11-27): S13'ün açık adımları önde (S13.22 dizin kararlarına bağlı); sonra mekanik
 işler (E7, B9, E8; Pro'da da yürür); tefsir verisine Aralık'ta, D5 kuyruğu durunca tek dokunuş (B3, E6), D16 da o
-zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda.
+zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda. **2026-11-28 (kullanıcının kararı):**
+S14 en önde; E9 S14.6'dan sonra, E10 en son.
 
 | Sıra | Kimlik | İş | Eski adı |
 |---:|---|---|---|
-| 1 | S13.23 | Arayüz ve deneyim: doğrulama e-postası, ilk girişte tanıtım, kip menüsü, eklentiler Ayarlar'da, temalar ve figür, sitede küçük düzeltmeler | |
+| 1 | S14 | Bütün İslâm âlemine açılış: kararlar, envanter, ölçü setleri, sohbetin varsayılanları, anlatım (giriş sayfası dahil), yayın, yeni modlar | |
 | 2 | S13.22 | Göçün tamamlanması: eklentilerin tanıtımı `connect.ayinedar.org`'a, risalemcp.com'un kalan sayfaları (dizin kararlarından sonra) | S13.15.7 |
-| 3 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
-| 4 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
-| 5 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
-| 6 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
-| 7 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
-| 8 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
-| 9 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
-| 10 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
-| 11 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
-| 12 | B12 | Anlamsal dizinin bellekteki Python yapılarını sıkıştırmak (tefsir 1,26 GB → ≈0,5 GB) | |
+| 3 | E9 | Siyer kütüphanesi: seçim ölçütü, eser listesi, `klasik` koleksiyonuna ayrıştırma, siyer modu (S14.6'dan sonra) | |
+| 4 | S13.18 | Öbür kipler: ders, beni sına, müzakere, kavram, karşılaştırma; yönlendirici | S13 (4) |
+| 5 | S13.19 | Okuma ve paylaşma: lügat, okuma platformuyla bağ, âyet görünümü, defter, paylaşım bağlantısı | S13 (5)–(9) |
+| 6 | S13.20 | İngilizce ve Arapça arayüz | S13 (10) |
+| 7 | S13.21 | Tanıtımdan sonra: gerçek kullanımdan öğrenmek | S13 (3) |
+| 8 | E7 | Hadis: (a) rivayet grupları, (c) yalnız Türkçe aktarılan hadisler | HA7 |
+| 9 | B9 | Türk hattının iki kaynağı arasındaki işaret farkları | |
+| 10 | E8 | Külliyatın Arapça tercümesi (İhsan Kasım; risaleoku'nun izni, 2026-11-23): ayrıştırma, bölüm eşlemesi, Sîret-i Zâtiyye mecmua, Arapça arama | |
+| 11 | B3, E6 | **Aralık'ta, D5 kuyruğu durunca, tek tefsir kurulumu:** B3 (uzun cümleler, kayan âyet birimleri), E6 Elmalılı'nın eklenmesi, el-Bahru'l-Muhît (sıraya girince kimlik alır) | |
+| 12 | D16 | Kuyruk durunca: Bakara'nın maliyet raporu ve hesap kararı | |
+| 13 | B12 | Anlamsal dizinin bellekteki Python yapılarını sıkıştırmak (tefsir 1,26 GB → ≈0,5 GB) | |
+| 14 | E10 | Fıkıh kütüphanesi: sınır belgesi, dört mezhebin dengeli listesi, fetva tuzaklı ölçü, ayrıştırma (en son) | |
 
-- S13.23 **Arayüz ve deneyim** (kullanıcının önerisi ve kararları, 2026-11-27; sıra içinde aşağıdaki gibi):
-  - S13.23.1 (bitti ve yayında, 2026-11-27; `KAYIT.md` › S13.23.1) **Doğrulama e-postası:** kayıtta kod ≈2 dakikada ve spam'e geliyor, anında gelmeli. Ölçüm (2026-11-27):
-    Scaleway bugünkü Gmail iletilerini 1–11 sn içinde teslim etmiş (250 OK), 25 Kasım'da bir Proton iletisi
-    Scaleway'de 2 dk 20 sn beklemiş; gecikme kimi zaman sağlayıcıda, kimi zaman alıcıda. Spam'in sebebi yeni alan
-    adının itibarsızlığı ve paylaşılan IP (SPF, DKIM, DMARC geçiyor). Yapılacak: kod sayfasına "Spam / Gereksiz
-    klasörüne bakın, 'Spam değil' deyin" notu; gönderimden sonra Scaleway'den akıbet sorulup teslim edilemeyen ileti
-    sebebiyle okuyucuya söylenir (2026-11-27'de bir okuyucunun kodu Gmail kutusu dolu diye hiç ulaşmadı, sayfa
-    söylemedi); `mailer.send` olay döngüsünü tıkamasın (`asyncio.to_thread`); istekten teslime geçen süre kayda
-    girer; kullanıcı Google Postmaster Tools'a kaydolur. Bir hafta sonra hâlâ geç ya da spam ise sağlayıcı
-    değişikliği konuşulur (gizlilik sayfası da değişir); "Google ile giriş" yok.
-  - S13.23.2 (bitti, 2026-11-27; `KAYIT.md` › S13.23.2) **Sitede küçük düzeltmeler** (tek site gönderimi): ana sayfadan `lab.ayinedar.org` satırı; RSS
-    bağlantıları (alt satırlar, Yenilikler'deki cümle, `<link rel="alternate">`; `yenilikler.xml` üretilmeye devam
-    eder, görünmez); "6.236 âyet" sayısı (`ayinedar.org` ve `risalemcp.com` ana sayfaları).
-  - S13.23.3 (bitti, 2026-11-27; `KAYIT.md` › S13.23.3) **Kipler açılır menüde** (S13.18'in kipleri düğme taşımaz; her kipin altında kısa açıklama).
-    **Eklentiler Ayarlar'da:** oradaki seçim varsayılandır; âyet çalışmasının tefsiri açması ve konuşmada işareti
-    geçen kütüphanenin açık kalması sürer; soru kutusunun yanında açık kütüphaneleri gösteren küçük işaret ("Risale
-    + Tefsir").
-  - S13.23.4 (bitti, 2026-11-27; `KAYIT.md` › S13.23.4) **Temalar ve figür:** 3–4 tema (açık, koyu, sepya, belki simgenin renklerinden), Ayarlar › Görünüm'de;
-    yeni konuşma sayfasında simgenin kemerli aynası ve kırmızı kapaklı kitabıyla büyük, sade bir figür, adla. Ölçü
-    CLAUDE.md › Âyinedâr: yanındaki söz yapay zekâya vasıf yüklemez. Birkaç seçenek kullanıcıya gösterilir.
-  - S13.23.5 **Giriş sayfasının yenilenmesi:** kullanıcı ayrıntıyı sonra verecek; o zamana kadar beklemede.
-  - S13.23.6 (bitti, 2026-11-27; `KAYIT.md` › S13.23.6; okuma platformu ve lügat adımı sonraya) **İlk girişte tanıtım:** konuşma listesinde salt okunur "Örnek konuşma" ve üstünde 3–4 adımlık rehber
-    (soru kutusu, [1] işareti, Kaynaklar paneli ve metni okumak, kip menüsü, ayarlar); örnek soru "İmanımı nasıl
-    arttırabilirim? Risale-i Nur'dan cevapla" gibi (kullanıcının seçimi); cevap sistemin gerçek cevabıdır,
-    kısaltılmaz ve düzeltilmez, alıntıları veritabanıyla denetlenir; görüldüğü hesapta tutulur, Ayarlar'dan yeniden
-    açılır, haktan düşmez. Lügat gelince rehbere adım eklenir. Okuma platformunun karşılamasına (`#/~hosgeldin`) da
-    aynı rehber. S13.23.3 ve S13.23.4'ten sonra, rehberin gösterdiği ekran değişmesin diye. İngilizce ve Arapça arayüz
-    (S13.20) bunun ardından: yeni yazılar önce bitsin, sonra hepsi birlikte çevrilsin.
-  - S13.23.7 (bitti ve yayında, 2026-11-28; `KAYIT.md` › S13.23.7) **Rehber bildirimle başlar:** ilk girişte rehber
-    kendiliğinden açılmaz; sağ üstte "Nasıl kullanacağınızı öğrenin" bildirimi çıkar, "Başlayın" rehberi açar
-    (kullanıcının önerisi, 2026-11-28).
-  - S13.23.8 (bitti ve yayında, 2026-11-28; `KAYIT.md` › S13.23.8) **Okuma platformunda rehber** (S13.23.6'nın ikinci
-    yarısı): karşılamadan sonra sağ üstte aynı bildirim, "Başlayın" taslaklı ilk birimde yedi adım; görüldüğü hesapta.
+- S14 **Bütün İslâm âlemine açılış** (kullanıcının fikri ve kararı, 2026-11-28; plan `docs/s14-acilis-plani.md`):
+  Âyinedâr Risale-i Nur'la hiç alakadar olmayanların da gönül rahatlığıyla kullanacağı, bütün İslâm âleminin platformu
+  olsun; Risale sorularında cevaplar bugünkü gibi kalır (ölçüyle korunur). Kapılı plan: her adım kullanıcının
+  kararıyla biter, **S14.6'ya kadar yayında hiçbir şey değişmez**.
+  - S14.1 **Kararlar** (kullanıcı): K1 merkez (Kur'ân mı, nötr "İslâmî kaynaklar" mı), K2 genel soruda Risale'nin
+    yeri, K3 Risale'nin anılışı (adıyla öne çıkan kütüphane), K4 adlar ("Risale MCP", `risalemcp.com`), K5 fıkıhta
+    sınır (E10'dan önce).
+  - S14.2 **Envanter** (Claude): "Risale-i Nur" nerede geçiyor, ne olmalı (`docs/s14-envanter.md`); kullanıcı işaretler.
+  - S14.3 **Ölçü setleri:** Risale seti (bugünkü altın sorular) ve yeni genel set (≈25 soru, kullanıcı onaylar);
+    bugünkü sistemle temel ölçüm.
+  - S14.4 **Sohbetin varsayılanları** (yerelde): A bütün kütüphaneler açık, B model seçer, C okuyucu seçer; iki setle
+    ölçülür (Risale seti düşmemeli, maliyet); kullanıcı seçer.
+  - S14.5 **Anlatım** (S13.23.5 giriş sayfası buraya katıldı): çatı, sohbetin girişi, Hakkında, modlar, örnekler;
+    önizlemede, kullanıcı okur.
+  - S14.6 **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
+  - S14.7 **Yeni modlar:** S13.18 ile birleşir (kavram, karşılaştırma, hadis kontrolü, siyer olayı), S14.6'dan sonra.
+- E9 **Siyer kütüphanesi** (S14'ün parçası; `docs/s14-acilis-plani.md` › E9): E9.1 genel platform için yazılı seçim
+  ölçütü, E9.2 eser listesi ve kaynak (kullanıcı onaylar; bugün Mevâhib, eş-Şifâ, Delâil var; İbn Hişâm, İbn Sa'd
+  aday), E9.3 `klasik` koleksiyonuna ayrıştırma (ayrı eklenti yok), E9.4 siyer modu. S14.6'dan sonra.
+- E10 **Fıkıh kütüphanesi** (en son; `docs/s14-acilis-plani.md` › E10): E10.1 sınır belgesi (kitapların dediği
+  mezhebiyle, hüküm yok, kişiye özel soruda ehline yönlendirme; K5), E10.2 dört mezhebin dengeli eser listesi,
+  E10.3 fetva tuzaklı ölçü seti, E10.4 ayrıştırma; ayrı eklenti ileride.
 - S13.22 **Göçün tamamlanması** (eski S13.15.7; kullanıcının kararı, 2026-11-27: S13.15'ten ayrı adım): eklentilerin
   tanıtımı ve kurulumu `connect.ayinedar.org`'a; risalemcp.com'un kalan sayfaları (eklenti sayfaları, kurulum,
   belgeler, hata bildirin, gizlilik ve şartlar, İngilizceleri) oraya 308 ile. Dizin başvuruları sonuçlandıktan sonra:
@@ -147,7 +142,8 @@ zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda.
   simgesini oradan alır; kök yönlense de favicon sunulur).
 - S13.18 **Öbür kipler** (eski S13 (4) ve S13.12'nin 3.–4. aşaması): ders (Word), beni sına, müzakere, kavram ve terim,
   karşılaştırma; kip kaydı tek kaynak (`kipler.py`; MCP hazır komutları ve eklentinin skill'leri ondan); sonra
-  yönlendirici (önce öneri, sonra otomatik kip).
+  yönlendirici (önce öneri, sonra otomatik kip). S14.7 ile birleşir (2026-11-28): S14'ün modları da buradan,
+  yönlendirici S14.4'ün B seçeneğine bağlı.
 - S13.19 **Okuma ve paylaşma** (eski S13 (5), (6), (7), (9)): alıntıda kelimeye dokununca lügat (okuma platformunun
   `lugatWords`'ü); okuma platformuyla bağ ("bu bölüm hakkında sor"); âyet görünümü (Türk hattı, Medine seçilebilir;
   meal ayrı ve etiketli); alıntıyı kişisel deftere kaydetmek, cevabı kalıcı bağlantıyla paylaşmak (tek cevabın
@@ -430,6 +426,10 @@ Kod, veri ve belgeler yerinde durur; ileride bir heyet çıkarsa altyapı hazır
   Ölçüt: çizelgeyle V3 gizlenen metnin nüktelerinden daha çoğunu yakalıyor mu.
 ## Biten (özet)
 
+- S13.23 Arayüz ve deneyim (2026-11-27 – 2026-11-28, yayında): doğrulama e-postasının akıbeti ve süresi, sitede küçük
+  düzeltmeler, kip menüsü ve kütüphaneler Ayarlar'da, temalar ve ayna figürü, ilk girişte örnek konuşma ve rehber
+  (sağ üstteki bildirimle; okuma platformunda da). S13.23.5 (giriş sayfası) S14.5'e katıldı (2026-11-28). Ayrıntı
+  `KAYIT.md` › S13.23.x.
 - B13 Sohbette tarayıcı kapanınca cevap ve hak kaybı (2026-11-27, yayında): cevap sayfadan bağımsız sürer,
   sayfa yeniden bağlanır, servis kapanırken beklenir, hak yalnız biten cevaptan düşer. Ayrıntı `KAYIT.md` › B13.
 - S13.15 Ad, logo ve site düzeni: Âyinedâr (2026-11-26 – 2026-11-27, yayında): ad ve alan adları (`ayinedar.org`,

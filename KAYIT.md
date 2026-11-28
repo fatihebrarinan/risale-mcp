@@ -434,6 +434,42 @@ sayfaları (tr, en): ulaşmamış cevap en çok bir saat yalnız bellekte. Denem
 gerçek API'de üç durum: sayfa kapatılıp 40 sn sonra açıldı (cevap konuşmasıyla geldi), 6 sn çevrimdışı (yeniden bağlanıp
 bitti), sayfa kapalıyken servis durduruldu (cevap beklendi, konuşmaya yazıldı).
 
+**S13.23. Arayüz ve deneyim: planın son hâli** (2026-11-28'de "Sıradaki"nden taşındı; S13.23.5 S14.5'e katıldı)
+
+- S13.23 **Arayüz ve deneyim** (kullanıcının önerisi ve kararları, 2026-11-27; sıra içinde aşağıdaki gibi):
+  - S13.23.1 (bitti ve yayında, 2026-11-27; `KAYIT.md` › S13.23.1) **Doğrulama e-postası:** kayıtta kod ≈2 dakikada ve spam'e geliyor, anında gelmeli. Ölçüm (2026-11-27):
+    Scaleway bugünkü Gmail iletilerini 1–11 sn içinde teslim etmiş (250 OK), 25 Kasım'da bir Proton iletisi
+    Scaleway'de 2 dk 20 sn beklemiş; gecikme kimi zaman sağlayıcıda, kimi zaman alıcıda. Spam'in sebebi yeni alan
+    adının itibarsızlığı ve paylaşılan IP (SPF, DKIM, DMARC geçiyor). Yapılacak: kod sayfasına "Spam / Gereksiz
+    klasörüne bakın, 'Spam değil' deyin" notu; gönderimden sonra Scaleway'den akıbet sorulup teslim edilemeyen ileti
+    sebebiyle okuyucuya söylenir (2026-11-27'de bir okuyucunun kodu Gmail kutusu dolu diye hiç ulaşmadı, sayfa
+    söylemedi); `mailer.send` olay döngüsünü tıkamasın (`asyncio.to_thread`); istekten teslime geçen süre kayda
+    girer; kullanıcı Google Postmaster Tools'a kaydolur. Bir hafta sonra hâlâ geç ya da spam ise sağlayıcı
+    değişikliği konuşulur (gizlilik sayfası da değişir); "Google ile giriş" yok.
+  - S13.23.2 (bitti, 2026-11-27; `KAYIT.md` › S13.23.2) **Sitede küçük düzeltmeler** (tek site gönderimi): ana sayfadan `lab.ayinedar.org` satırı; RSS
+    bağlantıları (alt satırlar, Yenilikler'deki cümle, `<link rel="alternate">`; `yenilikler.xml` üretilmeye devam
+    eder, görünmez); "6.236 âyet" sayısı (`ayinedar.org` ve `risalemcp.com` ana sayfaları).
+  - S13.23.3 (bitti, 2026-11-27; `KAYIT.md` › S13.23.3) **Kipler açılır menüde** (S13.18'in kipleri düğme taşımaz; her kipin altında kısa açıklama).
+    **Eklentiler Ayarlar'da:** oradaki seçim varsayılandır; âyet çalışmasının tefsiri açması ve konuşmada işareti
+    geçen kütüphanenin açık kalması sürer; soru kutusunun yanında açık kütüphaneleri gösteren küçük işaret ("Risale
+    + Tefsir").
+  - S13.23.4 (bitti, 2026-11-27; `KAYIT.md` › S13.23.4) **Temalar ve figür:** 3–4 tema (açık, koyu, sepya, belki simgenin renklerinden), Ayarlar › Görünüm'de;
+    yeni konuşma sayfasında simgenin kemerli aynası ve kırmızı kapaklı kitabıyla büyük, sade bir figür, adla. Ölçü
+    CLAUDE.md › Âyinedâr: yanındaki söz yapay zekâya vasıf yüklemez. Birkaç seçenek kullanıcıya gösterilir.
+  - S13.23.5 **Giriş sayfasının yenilenmesi:** kullanıcı ayrıntıyı sonra verecek; o zamana kadar beklemede.
+  - S13.23.6 (bitti, 2026-11-27; `KAYIT.md` › S13.23.6; okuma platformu ve lügat adımı sonraya) **İlk girişte tanıtım:** konuşma listesinde salt okunur "Örnek konuşma" ve üstünde 3–4 adımlık rehber
+    (soru kutusu, [1] işareti, Kaynaklar paneli ve metni okumak, kip menüsü, ayarlar); örnek soru "İmanımı nasıl
+    arttırabilirim? Risale-i Nur'dan cevapla" gibi (kullanıcının seçimi); cevap sistemin gerçek cevabıdır,
+    kısaltılmaz ve düzeltilmez, alıntıları veritabanıyla denetlenir; görüldüğü hesapta tutulur, Ayarlar'dan yeniden
+    açılır, haktan düşmez. Lügat gelince rehbere adım eklenir. Okuma platformunun karşılamasına (`#/~hosgeldin`) da
+    aynı rehber. S13.23.3 ve S13.23.4'ten sonra, rehberin gösterdiği ekran değişmesin diye. İngilizce ve Arapça arayüz
+    (S13.20) bunun ardından: yeni yazılar önce bitsin, sonra hepsi birlikte çevrilsin.
+  - S13.23.7 (bitti ve yayında, 2026-11-28; `KAYIT.md` › S13.23.7) **Rehber bildirimle başlar:** ilk girişte rehber
+    kendiliğinden açılmaz; sağ üstte "Nasıl kullanacağınızı öğrenin" bildirimi çıkar, "Başlayın" rehberi açar
+    (kullanıcının önerisi, 2026-11-28).
+  - S13.23.8 (bitti ve yayında, 2026-11-28; `KAYIT.md` › S13.23.8) **Okuma platformunda rehber** (S13.23.6'nın ikinci
+    yarısı): karşılamadan sonra sağ üstte aynı bildirim, "Başlayın" taslaklı ilk birimde yedi adım; görüldüğü hesapta.
+
 **S13.23.1. Doğrulama e-postası** (bitti ve yayında, 2026-11-27, `deploy.sh --sohbet`). Ölçüm (`sohbet_hesap
 eposta-sure`, son 20 ileti): Scaleway'den alıcı sunucuya ortanca 3 sn; Gmail'e 1–11 sn; tek uzun bekleme 25 Kasım'da bir
 Proton iletisi (140 sn, Scaleway'in sırasında). Kullanıcının gördüğü ≈2 dakikalık gecikme Gmail'in içinde (yeni alan
