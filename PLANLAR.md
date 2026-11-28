@@ -138,12 +138,21 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
   - S14.5 (bitti, 2026-11-28; yayına S14.6'da; `docs/s14-anlatim-taslagi.md`) **Anlatım** (S13.23.5 giriş sayfası buraya katıldı): çatı, sohbetin girişi, Hakkında, modlar, örnekler;
     önizlemede, kullanıcı okur.
   - S14.6 (yayında, 2026-11-28; duyuru taslağı kullanıcının okumasını bekliyor; izleme kullanıcının kararıyla yok) **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
-  - S14.8 **İnce ayarlar ve iyileştirmeler** (kullanıcının kararı, 2026-11-28: S14.4'ten sonra ayrı adım): S14.4'ün
-    denemelerinde görülenler: bazı cevaplar hâlâ "Risale-i Nur'a göre…" diye açılıyor; âyetin mealine karışık etiket
-    ("Nâşirin meali (Türkiye Diyanet Vakfı meali)"); G10 (kader) ve G24 (kredi kartı) yalnız Risale'den; D15'te beklenen
-    bölüm adıyla anıldı, okunmadı; nâşirin meali alıntı bloğunda; yayındaki denemede âyet `get_ayah` yerine
-    Hizbü'l-Kur'ân'dan alındı ve modelin Yorum'daki kendi örnek sözüne "Risale'de bulunamadı" uyarısı düştü. Her biri
-    iki setle ölçülür.
+  - S14.8 **İnce ayarlar ve iyileştirmeler** (kullanıcının kararı, 2026-11-28: S14.4'ten sonra ayrı adım; sıra ve
+    usul kullanıcının kararı, 2026-11-28: önce sorunların aslı, ara ölçüm yok, en sonda yalnız genel set). Sıra:
+    1. G5'in çökmesi (son genel koşuda `KeyError`, atıf dizini ilk kurulurken eşzamanlı istek: muhtemel sebep; yayında
+       da olabilir): düzeltme ve test.
+    2. Modelin Yorum'daki kendi sözüne düşen "eserlerde bu sözlerle bulunamadı" uyarısı: düzeltme.
+    3. "Risale-i Nur'a göre…" açılışının kaynağı: talimatlar ve araç açıklamaları (`sohbet.py`, `kutuphaneler.py`),
+       o cevapların araç dökümleri; kaynağında düzeltme.
+    4. G10 (kader) ve G24 (kredi kartı): araç çağrıları ve modelin gördüğü sonuçlar, Şerhu'l-Mevâkıf ve
+       Şerhu'l-Makāsıd neden çıkmadı; sebebe göre düzeltme.
+    5. Meal: karışık etiket ("Nâşirin meali (Türkiye Diyanet Vakfı meali)") ve alıntı bloğundaki meal; önce araç
+       çıktısındaki adlar ve talimat, kalırsa sayfada (meal metni araç sonuçlarındaki meallerle eşleştirilir).
+    6. Hizbü'l-Kur'âni'l-Muazzam: âyet Kur'ân'dan alınır; aramadan mı, kütüphaneden mi çıkacağı kullanıcının kararı.
+    7. D15 ve K3 (K3 hiçbir koşuda beklenen bölümü okumadı): araştırma.
+    8. Küçük: hadis kimliğinin yanlış biçimi (`muslim:4927`) hata iletisinde doğru biçimi söylesin.
+    9. Genel set bir kez; yayın.
   - S14.7 **Yeni modlar:** S13.18 ile birleşir (kavram, karşılaştırma, hadis kontrolü, siyer olayı), S14.6'dan sonra.
     Konu taramasının öbür kütüphanelere genişlemesi de burada (2.10).
 - E9 **Siyer kütüphanesi** (S14'ün parçası; `docs/s14-acilis-plani.md` › E9): E9.1 genel platform için yazılı seçim
