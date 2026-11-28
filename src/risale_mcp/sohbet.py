@@ -2581,12 +2581,16 @@ def answer_text(done: dict) -> str:
     return "\n".join(lines) if done["sources"] else done["markdown"]
 
 
+MEASURE_PARALLEL = 6        # S14.4 (kullanıcının isteği, 2026-11-28): ölçümde aynı anda sorulan soru
+
+
 async def measure(chat: Chat, ids: list[str], question_set: Path | None = None, libraries=(),
-                  mode: str | None = None) -> Path:
+                  mode: str | None = None, parallel: int = MEASURE_PARALLEL) -> Path:
     """Altın soruları bu servisle sorar; dökümü `golden` biçiminde (`<soru>.jsonl`) yazar, raporu `golden.report`
     kurar. Maliyet API'nin gerçek fiyatıdır (S12.1'inki Claude Code'un istemiyle eşdeğer maliyetti).
     S14.3: `question_set` başka bir soru seti (genel set, `tests/golden/genel_sorular.json`): raporu `genel_olc`
-    kurar; `libraries` ve `mode` her soruda okuyucunun açtığı kütüphaneler ve kip gibi gider."""
+    kurar; `libraries` ve `mode` her soruda okuyucunun açtığı kütüphaneler ve kip gibi gider. Sorular `parallel` kadar
+    aynı anda sorulur (sohbet servisi zaten aynı anda birçok okuyucuya cevap verir); satırlar biten sırayla yazılır."""
     from datetime import datetime
     from risale_mcp import golden
     loaded = golden.load_questions(question_set) if question_set else golden.load_questions()
@@ -2598,49 +2602,59 @@ async def measure(chat: Chat, ids: list[str], question_set: Path | None = None, 
     (out / "model.json").write_text(json.dumps({"model": chat.settings.model, "effort": chat.settings.effort,
                                                 "kind": "sohbet", "set": str(question_set or golden.QUESTIONS),
                                                 "libraries": list(libraries), "mode": mode}), encoding="utf-8")
-    print(f"{len(questions)} soru; döküm: {out}", flush=True)
-    for q in questions:
-        tally, start, done, failure, restarts = Tally(), time.time(), None, None, 0
-        try:
-            async for event, data in chat.ask([], q["question"], tally, mode, libraries):
-                if event == "done":
-                    done = data
-                elif event == "error":
-                    failure = data["message"]
-                elif event == "restart":
-                    restarts += 1
-        except Exception as error:                       # bir sorunun hatası ölçümü durdurmasın
-            failure = f"{type(error).__name__}: {error}"
-        lines = []
-        for i, (name, args, result, error) in enumerate(tally.calls):
-            lines.append({"type": "assistant", "message": {"content": [
-                {"type": "tool_use", "id": f"t{i}", "name": name, "input": args}]}})
-            lines.append({"type": "user", "message": {"content": [
-                {"type": "tool_result", "tool_use_id": f"t{i}", "content": result, "is_error": error}]}})
-        lines.append({"type": "result", "subtype": "success" if done else "error",
-                      "is_error": done is None, "result": answer_text(done) if done else "",
-                      "total_cost_usd": tally.cost, "num_turns": tally.rounds,
-                      "duration_ms": int((time.time() - start) * 1000), "usage": {"output_tokens": tally.output},
-                      "sohbet": {"corrected": bool(done and done["corrected"]), "problems": done and done["problems"],
-                                 "checks": done and done["checks"], "model_text": tally.model_text,
-                                 "failure": failure, "input": tally.input, "cache_write": tally.cache_write,
-                                 "cache_read": tally.cache_read, "libraries": list(tally.libraries),
-                                 "sources": [{k: x.get(k) for k in ("n", "id", "library", "unverified", "section")}
-                                             for x in (done["sources"] if done else [])]}})
-        (out / f"{q['id']}.jsonl").write_text("\n".join(json.dumps(x, ensure_ascii=False) for x in lines) + "\n",
-                                              encoding="utf-8")
-        print(f"  {q['id']}: {time.time() - start:.0f} sn, {tally.tools} araç, {tally.cost:.4f} $"
-              + (" model düzeltti" if done and done["corrected"] else "")
-              + (f" sunucu {done['checks']['fixed']} düzeltti" if done and done["checks"]["fixed"] else "")
-              + (f" {done['problems']} doğrulanamadı" if done and done["problems"] else "")
-              + (f" HATA {failure}" if failure else ""),
-              flush=True)
+    print(f"{len(questions)} soru, {max(1, parallel)} paralel; döküm: {out}", flush=True)
+    gate = asyncio.Semaphore(max(1, parallel))
+
+    async def one(q: dict) -> None:
+        async with gate:
+            await _measure_one(chat, q, out, mode, libraries)
+
+    await asyncio.gather(*(one(q) for q in questions))
     if question_set:
         from risale_mcp import genel_olc
         print(genel_olc.report(out, question_set))
     else:
         golden.report(out)
     return out
+
+
+async def _measure_one(chat: Chat, q: dict, out: Path, mode: str | None, libraries) -> None:
+    """Bir altın soru: sorar, dökümü `<soru>.jsonl` olarak yazar, satırını basar."""
+    tally, start, done, failure, restarts = Tally(), time.time(), None, None, 0
+    try:
+        async for event, data in chat.ask([], q["question"], tally, mode, libraries):
+            if event == "done":
+                done = data
+            elif event == "error":
+                failure = data["message"]
+            elif event == "restart":
+                restarts += 1
+    except Exception as error:                       # bir sorunun hatası ölçümü durdurmasın
+        failure = f"{type(error).__name__}: {error}"
+    lines = []
+    for i, (name, args, result, error) in enumerate(tally.calls):
+        lines.append({"type": "assistant", "message": {"content": [
+            {"type": "tool_use", "id": f"t{i}", "name": name, "input": args}]}})
+        lines.append({"type": "user", "message": {"content": [
+            {"type": "tool_result", "tool_use_id": f"t{i}", "content": result, "is_error": error}]}})
+    lines.append({"type": "result", "subtype": "success" if done else "error",
+                  "is_error": done is None, "result": answer_text(done) if done else "",
+                  "total_cost_usd": tally.cost, "num_turns": tally.rounds,
+                  "duration_ms": int((time.time() - start) * 1000), "usage": {"output_tokens": tally.output},
+                  "sohbet": {"corrected": bool(done and done["corrected"]), "problems": done and done["problems"],
+                             "checks": done and done["checks"], "model_text": tally.model_text,
+                             "failure": failure, "input": tally.input, "cache_write": tally.cache_write,
+                             "cache_read": tally.cache_read, "libraries": list(tally.libraries),
+                             "sources": [{k: x.get(k) for k in ("n", "id", "library", "unverified", "section")}
+                                         for x in (done["sources"] if done else [])]}})
+    (out / f"{q['id']}.jsonl").write_text("\n".join(json.dumps(x, ensure_ascii=False) for x in lines) + "\n",
+                                          encoding="utf-8")
+    print(f"  {q['id']}: {time.time() - start:.0f} sn, {tally.tools} araç, {tally.cost:.4f} $"
+          + (" model düzeltti" if done and done["corrected"] else "")
+          + (f" sunucu {done['checks']['fixed']} düzeltti" if done and done["checks"]["fixed"] else "")
+          + (f" {done['problems']} doğrulanamadı" if done and done["problems"] else "")
+          + (f" HATA {failure}" if failure else ""),
+          flush=True)
 
 
 def main(argv: list[str] | None = None) -> None:
@@ -2664,6 +2678,7 @@ def main(argv: list[str] | None = None) -> None:
     p.add_argument("--set", type=Path, default=None, help="S14.3: başka soru seti (tests/golden/genel_sorular.json)")
     p.add_argument("--kutuphane", default="", help="öbür kütüphaneler, virgülle: tefsir,hadis,klasik")
     p.add_argument("--kip", default=None, help="kip (kipler.py)")
+    p.add_argument("--paralel", type=int, default=MEASURE_PARALLEL, help="aynı anda sorulan soru (1: sırayla)")
     p = sub.add_parser("dene", help="hata ayıklama turu (S13.11): soru dosyasındaki konuşmaları yerelde sorar, "
                                      "araç çağrılarıyla döker (sohbet_dene.py)")
     p.add_argument("file", type=Path)
@@ -2716,7 +2731,7 @@ def main(argv: list[str] | None = None) -> None:
                                     args.paralel))
     elif args.command == "olc":
         asyncio.run(measure(Chat(_library(), _client(), config, settings), QUICK if args.hizli else args.ids,
-                            args.set, tuple(x for x in args.kutuphane.split(",") if x), args.kip))
+                            args.set, tuple(x for x in args.kutuphane.split(",") if x), args.kip, args.paralel))
     elif args.command == "geri-bildirim":
         from datetime import datetime
         store = Store()
