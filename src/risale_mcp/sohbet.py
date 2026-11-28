@@ -165,8 +165,8 @@ Building the answer: the Qur'an and the Sunna come first, then those who explain
 - Open the answer with the answer itself, in your own words; say "according to the Risale-i Nur" only when the \
 question asks for the Risale.
 - When a verse bears on the question, give it first (read it with get_ayah and name it by its ref); when a report of \
-the Prophet bears on it, give it next, from the hadith collections. Then the explanations: the classical tafsirs, \
-the Risale-i Nur and the classical works, as the question needs. A question needs no verse or report forced into it.
+the Prophet bears on it, give it right after the verse, before any explanation, from the hadith collections. Then \
+the explanations: the classical tafsirs, the Risale-i Nur and the classical works, as the question needs. A question needs no verse or report forced into it.
 - Choose the libraries by the question: a verse: tefsir_find_ayah and find_ayah (its places in the Risale); a \
 saying of the Prophet: the hadis_ tools, and find_hadith for its places in the Risale; creed and kalam: the \
 classical works (Sharh al-Mawaqif, Sharh al-Maqasid, al-Fiqh al-Akbar) and the Risale; the inner life, morals and \
@@ -2526,13 +2526,13 @@ EXAMPLE_QUESTION = "İmanımı nasıl arttırabilirim? Risale-i Nur'dan cevapla.
 EXAMPLE_FILE = ASSETS / "ornek-konusma.json"
 
 
-async def make_example(chat: "Chat", question: str, out: Path | None = None) -> None:
+async def make_example(chat: "Chat", question: str, out: Path | None = None, libraries=()) -> None:
     """S13.23.6: örnek konuşma. Sistemin gerçek cevabıdır; kısaltılmaz, düzeltilmez (sitedeki örnek cevaplar gibi).
     Dosya cevabın sayfaya giden hâlini taşır (`done`: markdown, kaynaklar, adımlar); denetimden geçmeyen alıntı varsa
     yazılmaz, yeniden üretilir."""
     tally, start = Tally(), time.time()
     done = None
-    async for event, data in chat.ask([], question, tally):
+    async for event, data in chat.ask([], question, tally, None, libraries):     # S14.5: genel örnek kütüphanelerle
         if event == "done":
             done = data
         elif event == "error":
@@ -2673,6 +2673,7 @@ def main(argv: list[str] | None = None) -> None:
                        "(sohbet_assets/ornek-konusma.json; yayından önce kullanıcı okur)")
     p.add_argument("--soru", default=EXAMPLE_QUESTION)
     p.add_argument("--cikti", type=Path, default=None, help="başka dosyaya yaz (birkaç cevap üretip seçmek için)")
+    p.add_argument("--kutuphane", default="", help="öbür kütüphaneler, virgülle: tefsir,hadis,klasik (S14.5)")
     p = sub.add_parser("olc", help="altın soruları bu servisle sor; varsayılan: Risale'nin 29 sorusu. Model ve "
                                     "düşünme düzeyi SOHBET_MODEL, SOHBET_EFFORT")
     p.add_argument("ids", nargs="*")
@@ -2726,7 +2727,8 @@ def main(argv: list[str] | None = None) -> None:
                   f"okuma {tally.cache_read}), çıktı {tally.output}, ≈{tally.cost:.4f} $, {time.time() - start:.1f} sn")
         asyncio.run(run())
     elif args.command == "ornek":
-        asyncio.run(make_example(Chat(_library(), _client(), config, settings), args.soru, args.cikti))
+        asyncio.run(make_example(Chat(_library(), _client(), config, settings), args.soru, args.cikti,
+                                 tuple(x for x in args.kutuphane.split(",") if x)))
     elif args.command == "dene":
         from risale_mcp import sohbet_dene
         asyncio.run(sohbet_dene.run(Chat(_library(), _client(), config, settings), args.file, args.names,
