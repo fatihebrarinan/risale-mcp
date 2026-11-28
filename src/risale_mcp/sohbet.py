@@ -352,6 +352,7 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), for
       cümle kimlikleri), sonra işaretin bölümündeki, sonra eserindeki yer seçilir;
     - alıntısız işaretin aralığı uzunsa ya da bölümü aşıyorsa geçerli kısmına kısalır; kimliği yoksa işaret silinir;
     - "…" ile birleşen alıntının bir parçası tutmuyorsa o parça metindeki karşılığıyla değişir ya da atılır (S13.16);
+      "…"suz alıntının işaretin cümlelerinde çok yakın karşılığı varsa söz onunla değişir (S14.8);
     - eserlerde hiç bulunmayan alıntı ayrı numara alır, kaynağı "doğrulanamadı" işaretiyle (`unverified`) görünür;
     - işaretsiz tırnaklı söz (dört kelime ve üstü) aranır: bulunursa işaret alır, bulunmazsa uyarı (S13.16);
     - düz metne yazılmış kimlik ("(c033)") silinir.
@@ -416,7 +417,8 @@ def check(checker, text: str, read: frozenset[str] | set[str] = frozenset(), for
         if fixed:
             counts["fixed"] += 1
             resolved.append((fixed, quote, True, span))
-        elif quote and (repaired := _repair(checker, ident, quote, segment)):
+        elif quote and (repaired := _repair(checker, ident, quote, segment)
+                        or _near_marked(checker, ident, quote, segment)):
             counts["repaired"] += 1
             edits[len(resolved)] = repaired[1]
             resolved.append((ident, repaired[0], True, span))
@@ -709,7 +711,7 @@ def _span_text(checker, ident: str) -> str | None:
     return " ".join(r[0] for r in rows)
 
 
-def _counterpart(part: str, text: str, least: float = REPAIR_RATIO) -> str | None:
+def _counterpart(part: str, text: str, least: float = REPAIR_RATIO, must: set[str] | None = None) -> str | None:
     """Parçanın metindeki en yakın karşılığı, metnin kendi sözleriyle; yeterince yakın değilse None. Karşılaştırma
     arama biçiminde (şapka, çengel, büyük harf yok sayılır), harf düzeyinde: "tefekküre teşvik ettiği" →
     "tefekkür mesleğine teşvik ettiği"."""
@@ -727,6 +729,8 @@ def _counterpart(part: str, text: str, least: float = REPAIR_RATIO) -> str | Non
         for start in range(0, max(0, len(stream) - size) + 1):
             window = stream[start:start + size]
             if not window:
+                continue
+            if must and not must <= {w for w, _ in window}:        # S14.8: sözün metinde geçen kelimeleri pencerede
                 continue
             matcher = SequenceMatcher(None, target, " ".join(w for w, _ in window), autojunk=False)
             if matcher.real_quick_ratio() <= best or matcher.quick_ratio() <= best:
@@ -765,6 +769,24 @@ def _repair(checker, ident: str, quote: str, segment: str) -> tuple[str, list[tu
             kept.append(new)
     new_quote = " … ".join(kept)
     return (new_quote, edits) if _passes(checker, ident, new_quote) else None
+
+
+def _near_marked(checker, ident: str, quote: str, segment: str) -> tuple[str, list[tuple[str, str]]] | None:
+    """S14.8 (kullanıcının kararı, 2026-11-28): "…"suz alıntı işaretin cümlelerinde aynen yoksa ama çok yakın karşılığı
+    varsa (bir kelime farklı, bir ibare atlanmış: "Mâdem" yerine "Hem", "(Radıyallahu Anh)" yok), söz metnin kendi
+    sözleriyle değişir; işaretsiz sözdeki eşik (`NEAR_RATIO`). Söz cevapta olduğu gibi bulunamazsa onarılmaz."""
+    if re.search(r"…|\.\.\.", quote):
+        return None
+    words = quote.strip().strip('"“”«» ')
+    if not words or words not in segment or (text := _span_text(checker, ident)) is None:
+        return None
+    # sözün metinde de geçen kelimeleri yeni sözde kalır: benzerlik kısa pencereyi kayırıyor, sözün başı kesiliyordu
+    # (K2: "İmâm‑ı Ali'nin …" → "Anh) Risale-i Nur'a …")
+    must = set(search_words(words)) & set(search_words(text))
+    new = _counterpart(words, text, NEAR_RATIO, must)
+    if not new or new == words or not _passes(checker, ident, new):
+        return None
+    return new, [(words, new)]
 
 
 # S13.16 (d), kullanıcının kararı (2026-11-26): işaretsiz tırnaklı söz. Dört ve daha çok kelimelik, ardında işaret

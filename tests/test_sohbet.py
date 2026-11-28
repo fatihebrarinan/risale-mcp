@@ -986,3 +986,18 @@ def test_s14_8_hizbul_kuran_is_hidden_from_the_chats_searches_only():
     hidden = chat_library.find_ayah("31", 18)
     assert not any(r["id"].startswith(hizb + "/") for r in hidden["results"])
     assert hidden["total"] == len(hidden["results"]) or hidden["total"] > 0
+
+
+@needs_db
+def test_s14_8_marked_quote_with_a_slip_takes_the_texts_words(checker):
+    # Risale seti (2026-11-28): bir kelime farklı (K3) ve atlanmış ibare (K2) "doğrulanamadı" oluyordu
+    one = sohbet.check(checker, '> "Mâdem herşeyin mikdar‑ı muntazaması, kaderi vâzıhan gösterir." '
+                                '[[sozler/26/mebhas-03/mukaddime/c008]]')
+    assert one.counts["repaired"] == 1 and one.counts["unverified"] == 0
+    assert '"Hem, herşeyin mikdar‑ı muntazaması, kaderi vâzıhan gösterir' in one.markdown
+    two = sohbet.check(checker, 'Şöyle der: "İmâm‑ı Ali\'nin Risale-i Nur\'a dair üçüncü bir kerâmetidir" '
+                                '[[sualar/8/bir-ifade-i-meram/c010]].')
+    assert two.counts["repaired"] == 1
+    assert '"İmâm‑ı Ali’nin (Radıyallahu Anh) Risale-i Nur’a dair üçüncü bir kerâmetidir" [1]' in two.markdown
+    far = sohbet.check(checker, '> "Her şey ölçülüdür ve bu ölçü kaderi gösterir." [[sozler/26/mebhas-03/mukaddime/c008]]')
+    assert far.counts["repaired"] == 0 and far.counts["unverified"] == 1
