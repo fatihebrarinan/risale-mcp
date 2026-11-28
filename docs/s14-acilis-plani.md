@@ -132,3 +132,8 @@ En riskli kütüphane: fıkıh sorusu amel için sorulur. Ayaktaki "fetva değil
   Risale'ye dairse (eser adı, Bediüzzaman, "Risale'de…") Risale önce gelir, cevap bugünkü gibi kurulur. **"Risale-i
   Nur'dan cevapla" seçeneği kesinlikle olacak** (Ayarlar'da ya da modlarda; açıkken bugünkü davranış aynen sürer).
   Hangi sorunun "Risale'ye dair" sayılacağı ve kütüphanelerin kimin açtığı S14.4'te ölçüyle.
+- **K3 (2026-11-28): Risale adıyla öne çıkan kütüphane.** Listede K1'in sırasıyla yerini alır, kendine has özelliğiyle
+  anılır ("Risale-i Nur Külliyatı: Bediüzzaman'ın bütün eserleri, Türkçe, cümle düzeyinde atıfla"); ana sayfada bugünkü
+  okuyuculara seslenen kısa bölüm ("Risale-i Nur'dan cevapla" seçeneğiyle). Klasik eserler "İslâm ilimlerinin
+  klasikleri" diye tanıtılır (Risale'nin havale ettiği eserler bir özellik olarak anılabilir); ana sayfada iki örnek:
+  genel soru ve Risale sorusu. Ayrı kapı (C) şimdilik yok, gerekirse B'nin üstüne kurulur.
