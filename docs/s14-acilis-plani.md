@@ -137,3 +137,9 @@ En riskli kütüphane: fıkıh sorusu amel için sorulur. Ayaktaki "fetva değil
   okuyuculara seslenen kısa bölüm ("Risale-i Nur'dan cevapla" seçeneğiyle). Klasik eserler "İslâm ilimlerinin
   klasikleri" diye tanıtılır (Risale'nin havale ettiği eserler bir özellik olarak anılabilir); ana sayfada iki örnek:
   genel soru ve Risale sorusu. Ayrı kapı (C) şimdilik yok, gerekirse B'nin üstüne kurulur.
+- **K4 (2026-11-28): adlar.** (1) Çatı ve sohbette ayrı yayıncı adı anılmaz, hizmetin adı Âyinedâr (alt bilgi, JSON-LD
+  kurum adı); S14.5'te. (2) Dizinlerdeki yayıncı adı ("Nur Hadimleri") ve dört kütüphaneli Claude eklentisinin genel
+  adı ("Risale-i Nur Library") başvurular sonuçlanınca bir sonraki gönderimde "Âyinedâr" olur; S13.22 ile. (3) Eklenti
+  tanıtımı S13.22'de `connect.ayinedar.org`'a. (4) `risalemcp.com` ve MCP adresleri değişmez (kurulumlar, dizin
+  kayıtları, Claude'un simgesi). (5) İç proje adı "Risale MCP" kalır. "Nur Hadimleri"nin kullanıcı için özel bir yeri
+  yok.

@@ -140,6 +140,8 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
   başvurularda adı geçen gizlilik ve kurulum sayfaları o zamana kadar yerinde. Dokunulmayanlar: eklentilerin MCP
   adresleri (`mcp.`, `hadis.`, `tefsir.`, `klasik.risalemcp.com`) ve risalemcp.com kökünün favicon'u (Claude eklenti
   simgesini oradan alır; kök yönlense de favicon sunulur).
+  S14.1 K4 (2026-11-28): aynı gönderimde dizinlerdeki yayıncı adı ("Nur Hadimleri") ve dört kütüphaneli Claude
+  eklentisinin genel adı ("Risale-i Nur Library") "Âyinedâr" olur.
 - S13.18 **Öbür kipler** (eski S13 (4) ve S13.12'nin 3.–4. aşaması): ders (Word), beni sına, müzakere, kavram ve terim,
   karşılaştırma; kip kaydı tek kaynak (`kipler.py`; MCP hazır komutları ve eklentinin skill'leri ondan); sonra
   yönlendirici (önce öneri, sonra otomatik kip). S14.7 ile birleşir (2026-11-28): S14'ün modları da buradan,
