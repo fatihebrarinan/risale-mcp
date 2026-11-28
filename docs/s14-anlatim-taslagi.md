@@ -1,5 +1,12 @@
 # S14.5: Anlatım taslağı
 
+**Onaylandı ve işlendi (2026-11-28).** Kullanıcının düzeltmeleri: okuyucuya giden metinlerde noktalı virgül yok
+(virgül), başlık A, genel örnek "Kişi imanını nasıl arttırır?" (bütün kütüphanelerle üretilen 14 cevaptan 22. üretim,
+`src/risale_mcp/sohbet_assets/ornek-konusma-genel.json`; alıntıları veritabanıyla ayrıca denetlendi), sohbetin giriş
+sayfasında o cevabın hadis alıntısı. Örnek üretilirken bulunan "cayyid" yazımı düzeltildi (hadis talimatı: Türkçe
+okunuş) ve genel sayfada hadis âyetten hemen sonra gelir; iki setle ölçüldü (genel 77/132 okundu, 0 doğrulanamayan;
+Risale %95,8, 28/34). Sohbetin metinleri `SOHBET_GENEL`'e bağlı; çatı sitesi S14.6'daki gönderimle yayına çıkar.
+
 Hazırlanış: 2026-11-28, Claude. Dayanak: K1 (Kur'ân ve Sünnet merkezli: "Kur'ân ve Sünnet etrafında, İslâm
 ilimlerinin kaynakları"), K3 (Risale adıyla öne çıkan kütüphane), K4 (çatıda yayıncı adı yok, hizmetin adı Âyinedâr),
 K5 (fıkıhta hüküm yok), envanter (`docs/s14-envanter.md`; numaralar oradan). Ölçü: "eserlerin ne dediğini yansıtır",

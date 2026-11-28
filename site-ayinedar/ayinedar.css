@@ -24,8 +24,9 @@ nav .brand img { border-radius: 0; }
 .mirror-note { font-style: italic; color: var(--muted); text-align: center; max-width: 34em; margin: 18px auto 0; }
 
 .stats.four { grid-template-columns: repeat(4, 1fr); }
+.stats.five { grid-template-columns: repeat(5, 1fr); }
 /* kartlar sütundan geniş (sitedeki .plugins gibi) */
-.stats.four, .features, .projects { width: min(1000px, calc(100vw - 32px)); position: relative; left: 50%; transform: translateX(-50%); }
+.stats.four, .stats.five, .features, .projects { width: min(1000px, calc(100vw - 32px)); position: relative; left: 50%; transform: translateX(-50%); }
 .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 18px 0; }
 .features article { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; }
 .features h3 { margin: 4px 0 6px; font-size: 1.05rem; }
@@ -51,7 +52,11 @@ nav .brand img { border-radius: 0; }
 .policy-list td:first-child { font-weight: 600; white-space: nowrap; }
 
 @media (max-width: 760px) {
-  .stats.four { grid-template-columns: 1fr 1fr; }
+  .stats.four, .stats.five { grid-template-columns: 1fr 1fr; }
   .features, .projects { grid-template-columns: 1fr; }
-  .stats.four, .features, .projects { width: auto; left: auto; transform: none; }
+  .stats.four, .stats.five, .features, .projects { width: auto; left: auto; transform: none; }
 }
+
+/* S14.5: örnek cevaptaki Arapça alıntılar sağdan sola, sitenin Naskh'ıyla */
+.example .answer blockquote[dir="rtl"] { border-left: 0; border-right: 3px solid var(--accent); padding: 2px 12px 2px 0;
+  text-align: right; font-family: "Naskh Site", "Noto Naskh Arabic", "Amiri", serif; font-size: 1.25rem; line-height: 1.9; }

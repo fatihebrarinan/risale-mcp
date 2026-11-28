@@ -82,7 +82,7 @@ CHAT = "https://chat.ayinedar.org/"
 IMAGE = "/img/paylasim.png"                # iki sitede de aynı yolda, ayrı resim (çatınınki `--resim` ile değil,
                                            # scripts/paylasim-ayinedar.py ile)
 SHARED = ("style.css", "site.js", "fonts/naskh.woff2")   # site/'tan çatıya kopyalanır
-ASSET_VERSION = 13                      # style.css ve site.js sürümü (sayfalardaki ?v=N ile aynı tutulur)
+ASSET_VERSION = 14                      # style.css ve site.js sürümü (sayfalardaki ?v=N ile aynı tutulur)
 MONTHS = ("Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran", "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık")
 STATUSES = ("taslak", "yayinda")
 
@@ -307,9 +307,9 @@ def og_block(title: str, description: str, path: str, lang: str = "tr", kind: st
              cati: bool = False) -> str:
     base = CATI_BASE if cati else BASE
     if cati:
-        alt = ("Âyinedâr: Risale-i Nur, tefsir, hadis ve klasik eserlerden kaynağıyla cevaplayan yapay zekâ"
-               if lang == "tr" else "Âyinedâr: an AI that answers from the Risale-i Nur, tafsir, hadith and classical "
-               "works, with sources")
+        alt = ("Âyinedâr: Kur'ân, hadis, tefsir, Risale-i Nur ve klasik eserlerden kaynağıyla cevaplayan yapay zekâ"
+               if lang == "tr" else "Âyinedâr: an AI that answers from the Qur'an, hadith, tafsir, the Risale-i Nur "
+               "and classical works, with sources")
     else:
         alt = ("Risale-i Nur MCP: Risale-i Nur, Hadis ve Tefsir eklentileri" if lang == "tr"
                else "Risale-i Nur MCP: the Risale-i Nur, hadith and tafsir connectors")
@@ -363,14 +363,14 @@ NAV_CATI = [(CHAT, "Sohbet"), ("/#projeler", "Projeler"), ("/yenilikler.html", "
 CURRENT_CATI = {"yenilikler.html": "/yenilikler.html", "calismalar.html": "/calismalar.html",
                 "belgeler.html": "/belgeler.html"}
 INDEPENDENT = "gönüllü ve bağımsız bir hizmettir; herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir"
-FOOTER_CATI = (f"<footer>Âyinedâr: {INDEPENDENT}. Yayıncısı Nur Hadimleri. Ücretsizdir, reklam ve ziyaretçi sayacı "
+FOOTER_CATI = (f"<footer>Âyinedâr: {INDEPENDENT}. Ücretsizdir, reklam ve ziyaretçi sayacı "
                "yoktur.<br><a href=\"/gizlilik.html\">Gizlilik</a> · <a href=\"/kullanim-sartlari.html\">Kullanım "
                "şartları</a> · <a href=\"/belgeler.html\">Belgeler</a> · "
                "<a href=\"mailto:destek@ayinedar.org\">destek@ayinedar.org</a></footer>")
 NAV_CATI_EN = [(CHAT, "Chat"), ("/en/#projects", "Projects"), ("/en/privacy.html", "Privacy")]
 CURRENT_CATI_EN = {"privacy.html": "/en/privacy.html"}
 FOOTER_CATI_EN = ("<footer>Âyinedâr: a volunteer, independent service, not an official service of any publisher or "
-                  "community. Published by Nur Hadimleri. Free of charge, with no ads and no visitor tracking.<br>"
+                  "community. Free of charge, with no ads and no visitor tracking.<br>"
                   "<a href=\"/en/privacy.html\">Privacy</a> · <a href=\"/en/terms.html\">Terms of use</a> · "
                   "<a href=\"/yenilikler.html\" lang=\"tr\">News (Turkish)</a> · "
                   "<a href=\"mailto:destek@ayinedar.org\">destek@ayinedar.org</a></footer>")

@@ -74,8 +74,9 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
   Risale'ye ait kalır). S14.3 bitti: genel set dondu (`tests/golden/genel_sorular.json`,
   26 soru), temel ölçüm alındı. S14.4 bitti (2026-11-28): genel talimat, `search_all`, önekli Risale araçları,
   "Risale-i Nur'dan" modu; kullanıcı A'yı seçti (bütün kütüphaneler varsayılan açık), sayfaya bağlandı; hepsi
-  `SOHBET_GENEL`'in arkasında, yayın S14.6'da. İnce ayarlar S14.8'de. S14.5'in taslağı hazır (`docs/s14-anlatim-taslagi.md`); **kullanıcıdan beklenen:**
-  taslağın onayı, başlık (A/B) ve ana sayfadaki genel örneğin sorusu.
+  `SOHBET_GENEL`'in arkasında, yayın S14.6'da. İnce ayarlar S14.8'de. S14.5 bitti (2026-11-28): metinler işlendi (çatı tr/en, sohbetin
+  `SOHBET_GENEL`'e bağlı metinleri), genel örnek "Kişi imanını nasıl arttırır?" (22. üretim, kullanıcı seçti). **Önde:**
+  S14.6 (yayın: `SOHBET_GENEL=1` servis biriminde, çatı sitesi, duyuru taslağı).
 - **Önceki adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
@@ -131,7 +132,7 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
     bugünkü sistemle temel ölçüm.
   - S14.4 (bitti, 2026-11-28; `docs/s14-acilis-plani.md` › S14.4'ün denemeleri; A seçildi) **Sohbetin varsayılanları** (yerelde): A bütün kütüphaneler açık, B model seçer, C okuyucu seçer; iki setle
     ölçülür (Risale seti düşmemeli, maliyet); kullanıcı seçer.
-  - S14.5 **Anlatım** (S13.23.5 giriş sayfası buraya katıldı): çatı, sohbetin girişi, Hakkında, modlar, örnekler;
+  - S14.5 (bitti, 2026-11-28; yayına S14.6'da; `docs/s14-anlatim-taslagi.md`) **Anlatım** (S13.23.5 giriş sayfası buraya katıldı): çatı, sohbetin girişi, Hakkında, modlar, örnekler;
     önizlemede, kullanıcı okur.
   - S14.6 **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
   - S14.8 **İnce ayarlar ve iyileştirmeler** (kullanıcının kararı, 2026-11-28: S14.4'ten sonra ayrı adım): S14.4'ün
