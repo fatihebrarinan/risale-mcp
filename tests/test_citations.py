@@ -312,3 +312,33 @@ def test_bibliography_names_the_source(real_checker):
     assert lines[0].endswith("” (e-Risale)") and lines[1].endswith(" (risaleoku.com)")
     assert result["sources"][0]["source_name"] == "e-Risale"
     assert real_checker.check("> \"Teşkilce, sûretçe birbirinden ayrı, hiç şaşırtmaz.\" [1]\n\n" + lines[0])[0].status == "ok"
+
+
+def test_index_is_built_once_under_concurrency(small_db, monkeypatch):
+    """S14.8 (G5'in `KeyError`'ı): dizin kurulurken gelen ikinci istek yarım dizin görmez, kurulmasını bekler."""
+    import threading
+    lib = Library(small_db[0])
+    checker = CitationChecker(lib)
+    original = CitationChecker._index
+    entered, release, calls = threading.Event(), threading.Event(), []
+
+    def slow(self, conn):
+        calls.append(1)
+        entered.set()
+        release.wait(5)
+        original(self, conn)
+
+    monkeypatch.setattr(CitationChecker, "_index", slow)
+    first = threading.Thread(target=checker.refresh)
+    first.start()
+    assert entered.wait(5)
+    seen = []
+    second = threading.Thread(target=lambda: (checker.refresh(), seen.append(len(checker.nodes))))
+    second.start()
+    second.join(0.2)
+    assert not seen                      # ilk kurulum bitmeden dönmedi
+    release.set()
+    first.join(5)
+    second.join(5)
+    assert seen and seen[0] > 0 and len(calls) == 1
+    lib.close()

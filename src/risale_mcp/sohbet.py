@@ -2197,8 +2197,9 @@ def arabic_refs(library, passage: dict) -> dict:
 
 def section_opening(checker, ident: str) -> dict:
     """Bölüm atfının metni: bölümün ilk cümleleri (işaretli cümle yok)."""
+    conn = checker.refresh()                 # dizin önce kurulur (eşzamanlı ilk tur)
     node = checker.nodes[ident]
-    row = checker.refresh().execute("SELECT id FROM sentences WHERE (node_id = ? OR node_id LIKE ?) AND hasiye = 0 "
+    row = conn.execute("SELECT id FROM sentences WHERE (node_id = ? OR node_id LIKE ?) AND hasiye = 0 "
                                     "ORDER BY seq LIMIT 1", (ident, ident + "/%")).fetchone()
     if row is None:
         raise LookupError(ident)

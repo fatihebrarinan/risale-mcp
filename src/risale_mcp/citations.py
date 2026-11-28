@@ -41,6 +41,7 @@ ayrılamazsa atıf belirsizdir.
 
 import re
 import sqlite3
+import threading
 from bisect import bisect_left, bisect_right
 from dataclasses import dataclass, field
 
@@ -253,6 +254,7 @@ class CitationChecker:
     def __init__(self, library: Library) -> None:
         self.library = library
         self._conn: sqlite3.Connection | None = None
+        self._lock = threading.Lock()
 
     @property
     def conn(self) -> sqlite3.Connection:
@@ -262,19 +264,24 @@ class CitationChecker:
         """Güncel bağlantı; veritabanı yeniden kurulduysa önce dizin yenilenir."""
         conn = self.library.conn
         if conn is not self._conn:
-            self._conn = conn
-            self._index(conn)
+            # S14.8: sohbet aynı denetçiyi eşzamanlı turlarda kullanır (`asyncio.to_thread`). Dizin kilitle ve
+            # yerelde kurulup tek seferde yerine konur, bağlantı en son işaretlenir: öbür iş parçacığı yarım dizin
+            # görmez (G5'in `KeyError`'ı).
+            with self._lock:
+                if conn is not self._conn:
+                    self._index(conn)
+                    self._conn = conn
         return conn
 
     def _index(self, conn: sqlite3.Connection) -> None:
         ranks = {w: GROUP_RANK.get(g, len(GROUP_RANK)) for w, g in conn.execute("SELECT slug, group_name FROM works")}
         from risale_mcp.catalog.permissions import source_label
-        self.labels = {w: source_label(p) for w, p in conn.execute("SELECT slug, permission FROM works")}
-        self.nodes: dict[str, _Node] = {}
-        self.by_key: dict[str, list[_Node]] = {}
-        self.by_heading: dict[tuple[str, int], list[_Node]] = {}
-        self.children: dict[str, list[_Node]] = {}
-        self.in_order: dict[str, list[_Node]] = {}         # eser -> düğümler kitap sırasıyla
+        labels = {w: source_label(p) for w, p in conn.execute("SELECT slug, permission FROM works")}
+        nodes: dict[str, _Node] = {}
+        by_key: dict[str, list[_Node]] = {}
+        by_heading: dict[tuple[str, int], list[_Node]] = {}
+        children: dict[str, list[_Node]] = {}
+        in_order: dict[str, list[_Node]] = {}         # eser -> düğümler kitap sırasıyla
         for row in conn.execute("SELECT id, work, parent_id, ord, last_ord, depth, title, toc_title, subtitle, type,"
                                 " number, ref FROM nodes ORDER BY work, ord"):
             heading = (row["type"], row["number"]) if row["type"] and row["number"] is not None else None
@@ -282,15 +289,17 @@ class CitationChecker:
             keys = frozenset(_key(v) for t in titles for v in (t, _PARENTHETICAL.sub("", t)))
             node = _Node(row["id"], row["work"], row["parent_id"], row["ord"], row["last_ord"], row["depth"],
                          row["ref"], keys, row["subtitle"], heading, ranks.get(row["work"], len(GROUP_RANK)))
-            self.nodes[node.id] = node
+            nodes[node.id] = node
             for k in keys:
-                self.by_key.setdefault(k, []).append(node)
+                by_key.setdefault(k, []).append(node)
             if heading:
-                self.by_heading.setdefault(heading, []).append(node)
+                by_heading.setdefault(heading, []).append(node)
             if node.parent:
-                self.children.setdefault(node.parent, []).append(node)
-            self.in_order.setdefault(node.work, []).append(node)
-        self.ords = {work: [n.ord for n in nodes] for work, nodes in self.in_order.items()}
+                children.setdefault(node.parent, []).append(node)
+            in_order.setdefault(node.work, []).append(node)
+        ords = {work: [n.ord for n in group] for work, group in in_order.items()}
+        (self.labels, self.nodes, self.by_key, self.by_heading, self.children, self.in_order,
+         self.ords) = labels, nodes, by_key, by_heading, children, in_order, ords
 
     # ------------------------------------------------------------ metindeki atıflar
 
