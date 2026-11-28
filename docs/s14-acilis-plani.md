@@ -115,6 +115,30 @@ En riskli kütüphane: fıkıh sorusu amel için sorulur. Ayaktaki "fetva değil
 - **E10.3 Talimat ve ölçü:** fetva tuzaklı soru seti; talimat önce bununla ölçülür.
 - **E10.4 Ayrıştırma**, sonra istenirse ayrı eklenti (E10.5, ileride).
 
+## S14.3'ün temel ölçümü (2026-11-28; model Haiku 5.5 medium)
+
+Raporlar `data/interim/golden/` altında (git'e girmez); rapor aracı `risale_mcp.genel_olc`.
+
+| Ölçüm | Sonuç |
+|---|---|
+| Risale seti, bugünkü sistem (`20261128-092742-…`) | atıfların 314/329'u doğrulandı (%95,4); beklenen bölümlerin 27/34'ü okundu; 0,15 $ (soru başı 0,005 $), ortalama 21 sn |
+| Genel set, yalnız Risale (bugünkü varsayılan, `20261128-093350-…`) | bütün cevaplar yalnız Risale'den; beklenen yerlerin 28/132'si okundu, 11/132'si kaynakçada; 3 doğrulanamayan; 0,15 $ |
+| Genel set, bütün kütüphaneler açık (`20261128-094320-…`) | beklenen yerlerin 35/132'si okundu, 22/132'si kaynakçada; 2 doğrulanamayan; 0,16 $ |
+
+**Bulgular (S14.4'ün girdisi):**
+- Kütüphaneleri açmak tek başına yetmiyor: hepsi açıkken bile model hadis ve tefsir sorularının bir kısmı dışında
+  hep Risale'ye gidiyor. Klasik eserler yalnız G25'te (Kimyâ-yı Saâdet) açıldı; siyer, akaid, kavram ve ahlâk
+  sorularında Mevâhib, İhyâ, Şerhu'l-Mevâkıf, Ta'rîfât hiç okunmadı. Sebep talimat: "this page answers only from the
+  Risale-i Nur", "Keep the Risale-i Nur first". G12'de (Hendek) model "bu sayfa yalnızca Risale-i Nur'dan cevap
+  verdiği için savaşın tarihini anlatamam" dedi; Mevâhib açıktı.
+- Maliyet farkı küçük (0,15 → 0,16 $); asıl maliyet sorusu talimat değişince ölçülür.
+- Fıkıh tuzağında (G23) davranış iyi: kişiye özel hüküm yok, ehline yönlendirme var (Risale'nin kasr mektubuyla).
+- Küçük hatalar: G25'te klasik eserden yapılan alıntı kaynakçada "Adresi bulunamadı ⚠ doğrulanamadı" oldu; aynı
+  cevapta tırnak içindeki bir kitap adına "Risale'de bu sözlerle bulunamadı" uyarısı yanlışlıkla eklendi (S14.4'te
+  bakılır).
+- Rapor aracındaki bir hata (öneksiz Risale okuma araçları sayılmıyordu) ilk raporda düzeltildi; sayılar düzeltilmiş
+  hâlidir.
+
 ## Açık sorular (sırası gelince)
 
 - **Dil engeli:** Risale Türkçe, öbür kütüphaneler Arapça; genel Türk okuyucu Arapça alıntı ve "Yapay zekâ tercümesi"

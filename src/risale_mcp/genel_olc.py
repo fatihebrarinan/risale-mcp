@@ -26,6 +26,11 @@ def tool_library(name: str) -> str:
     return head if head in PREFIXES else "risale"
 
 
+def tool_name(name: str) -> str:
+    """`tefsir_read_section` -> `read_section`; Risale'nin araçları öneksizdir (`read_section`)."""
+    return name.split("_", 1)[1] if tool_library(name) != "risale" else name
+
+
 def bare(ident: str) -> str:
     """`tefsir:ibnkesir/2/255/c001..c004` -> `ibnkesir/2/255/c001`"""
     ident = ident.split(":", 1)[1] if ident.split(":", 1)[0] in PREFIXES else ident
@@ -80,7 +85,7 @@ def core_status(place: dict, calls: list[dict], sources: list[dict]) -> tuple[bo
             if sura == span[0] and (ayah == 0 or (ayah <= span[2] and end >= span[1])):
                 read = True
         return read, False
-    read = any(c["name"].split("_", 1)[-1] in READ_TOOLS and tool_library(c["name"]) == lib
+    read = any(tool_name(c["name"]) in READ_TOOLS and tool_library(c["name"]) == lib
                and any(_related(ident, v) for v in _ids_in(c)) for c in calls)
     cited = any((s.get("library") or "risale") == lib and _related(ident, s["id"]) for s in sources)
     return read, cited
