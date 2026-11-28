@@ -301,3 +301,14 @@ def test_libraries_used_earlier_stay_open():
                {"q": "devam", "a": "[[hadis:bukhari/1]] [[tefsir:alusi/2/255/c001]]"}]
     assert sohbet.used_libraries(history) == ("tefsir", "hadis")
     assert sohbet.used_libraries([]) == ()
+
+
+def test_s14_8_unknown_report_points_to_find_by_citation():
+    class Missing(FakeClient):
+        async def call(self, name, args):
+            return f"Error executing tool {name}: No report with id '{args.get('id')}'.", True
+    libs = k.Kutuphaneler({"hadis": Missing({})})
+    text, error = asyncio.run(libs.call("hadis", "get_hadith", {"id": "muslim:4927"}))
+    assert error and "hadis_find_by_citation" in text and "never build one from memory" in text
+    text, error = asyncio.run(libs.call("hadis", "search_hadith", {"query": "x"}))
+    assert "find_by_citation" not in text

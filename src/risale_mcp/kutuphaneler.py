@@ -103,6 +103,11 @@ KUTUPHANELER = {
                          "list_works": "Klasik eserlerin listesine bakılıyor"}),
 }
 ORDER = ("tefsir", "hadis", "klasik")
+# S14.8 (G5): model künyeden rivayet numarasını kendisi kurdu (`muslim:4927`); numaralar baskıdan baskıya değişir.
+# Kimlik yalnız sonuçlardan alınır, künye find_by_citation ile çözülür.
+UNKNOWN_REPORT_HINT = (" A report id comes only from a tool result (search_hadith, semantic_search, find_by_citation, "
+                       "read_chapter), written book/number (bukhari/1); never build one from memory, numbers differ "
+                       "between editions. For a citation such as \"Müslim, İmâra: 155\" call hadis_find_by_citation.")
 MARK_PREFIX = re.compile(r"^(risale|tefsir|hadis|klasik):(.+)$")
 
 
@@ -312,6 +317,8 @@ class Kutuphaneler:
         if len(text) > MAX_RESULT:
             text = (text[:MAX_RESULT] + f"\n[Result cut at {MAX_RESULT} characters: ask for less, e.g. a smaller "
                     "depth, a section or a limit.]")
+        if error and kutuphane == "hadis" and name == "get_hadith":
+            text += UNKNOWN_REPORT_HINT
         return text, error
 
     async def verify(self, kutuphane: str, items: list[dict]) -> list[dict]:
