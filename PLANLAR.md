@@ -65,6 +65,9 @@ Sıra kullanıcının kararıdır. Sıranın ve "Sıradaki"nin tarihli geçmiş 
 
 **Şimdi** (her adımda güncellenir; yalnız şu an yapılan iş, kullanıcıdan beklenen ve tarihli hatırlatmalar, kısa
 tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.md` › "Sıradaki'nin notları"):
+- **Son adım (2026-11-28): S14.8 bitti ve yayında.** Ayrıntı "Sıradaki" › S14 › S14.8. `search_all`'ın sırası
+  (tefsir, Risale, hadis, klasik) kesin değil: kullanıcı cevaplara göre yeniden bakabilir. Sonra S14.7 (yeni modlar) ya
+  da E9. **Kullanıcıdan beklenen:** Yenilikler duyurusunun taslağı (aşağıda).
 - **Son adım (2026-11-28): S13.23 bitti, S14 planlandı.** Kullanıcının fikri: Âyinedâr bütün İslâm âleminin
   platformu olsun, Risale cevapları bugünkü gibi kalsın. Plan `docs/s14-acilis-plani.md` (kapılı; S14.6'ya kadar
   yayında değişiklik yok); S13.23.5 (giriş sayfası) S14.5'e katıldı. S14.1'in beş kararı verildi (2026-11-28: Kur'ân
@@ -138,7 +141,7 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
   - S14.5 (bitti, 2026-11-28; yayına S14.6'da; `docs/s14-anlatim-taslagi.md`) **Anlatım** (S13.23.5 giriş sayfası buraya katıldı): çatı, sohbetin girişi, Hakkında, modlar, örnekler;
     önizlemede, kullanıcı okur.
   - S14.6 (yayında, 2026-11-28; duyuru taslağı kullanıcının okumasını bekliyor; izleme kullanıcının kararıyla yok) **Yayın ve izleme:** S14.4 ve S14.5 birlikte; duyuru taslağı; bir hafta izleme; geri dönüş yolu.
-  - S14.8 **İnce ayarlar ve iyileştirmeler** (kullanıcının kararı, 2026-11-28: S14.4'ten sonra ayrı adım; sıra ve
+  - S14.8 (bitti ve yayında, 2026-11-28, `deploy.sh --code`, araç çıktısında fark yok) **İnce ayarlar ve iyileştirmeler** (kullanıcının kararı, 2026-11-28: S14.4'ten sonra ayrı adım; sıra ve
     usul kullanıcının kararı, 2026-11-28: önce sorunların aslı, ara ölçüm yok, en sonda yalnız genel set). Sıra:
     1. (bitti) G5'in çökmesi: atıf dizini ilk kurulurken eşzamanlı istek yarım dizini görüyordu (yeniden üretildi;
        yayında da olabilirdi); kilit ve tek seferde yerine koyma, test.
@@ -156,13 +159,18 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
        değişebilir; `sohbet.SEARCH_ALL_ORDER`).
     5. (bitti) Meal: iki meal için tek kural (nâşirin meali, Türkiye Diyanet Vakfı meali; birleşmez, alıntı bloğunda
        durmaz), iki sayfada. Sayfada onarım yok (gerekirse sonra).
-    6. (bitti) Hizbü'l-Kur'âni'l-Muazzam yalnız sohbetin aramalarında yok (kullanıcının kararı; `Library.search_excluded`,
-       eser ya da grup verilirse aranır; MCP değişmez).
+    6. (bitti) Hizbü'l-Kur'âni'l-Muazzam sohbetin aramalarında ve `find_ayah`'ın yerlerinde yok (kullanıcının kararı;
+       `Library.search_excluded`, eser ya da grup verilirse aranır; MCP değişmez; G19 âyeti yine Hizb'den almıştı).
     7. (bitti) K3: model aynı metni Onuncu Söz'ün Zeylinde okuyordu (müellif oraya da koymuş, kelimelerin %97,8'i
        aynı); altın soruda eşdeğer yer `"a | b"`. D15: konum sorusunda başlık ağacı yetiyor, sorun yok.
     8. (bitti) Bilinmeyen rivayet kimliğinde ipucu (model `muslim:4927`'yi hafızadan kurmuştu): kimlik yalnız
        sonuçlardan, künye `hadis_find_by_citation` ile.
-    9. Genel set ve (meal kuralı iki sayfaya girdiği için) Risale seti bir kez; yayın (`deploy.sh --sohbet`).
+    9. (bitti) Ölçüm (tek koşu): genel set doğrulanamayan 0, ortalama 45 → 38 sn, beklenen yerlerden okunan 77 → 70,
+       kaynakçada 44 → 33 (düşüş sorulara dağılmış; G7'de aynı hadisin başka kitaptaki yolu okunmuş, set yalnız
+       Buhârî ve Müslim'i kabul ediyor), 0,22 $; karışık meal etiketi 1 → 0, bloktaki meal 3 → 0, uyarı 12 → 4.
+       Risale seti atıf %95,8 → %97,4, beklenen bölüm 28/34, 0,16 $; 3 doğrulanamayan modelin tek kelimelik
+       aktarım hatasıydı: işaretli alıntıya da yakın karşılık onarımı eklendi (≥0,8, sözün metinde geçen kelimeleri
+       kalır; o üçü ve bugünkü cevaplardaki iki tane daha metnin sözleriyle). Yayın `deploy.sh --code`.
   - S14.7 **Yeni modlar:** S13.18 ile birleşir (kavram, karşılaştırma, hadis kontrolü, siyer olayı), S14.6'dan sonra.
     Konu taramasının öbür kütüphanelere genişlemesi de burada (2.10).
 - E9 **Siyer kütüphanesi** (S14'ün parçası; `docs/s14-acilis-plani.md` › E9): E9.1 genel platform için yazılı seçim
