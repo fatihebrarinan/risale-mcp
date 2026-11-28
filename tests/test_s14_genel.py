@@ -94,3 +94,18 @@ def test_survey_is_risale_scope_in_general():
     assert general["tarama"]["title"] == "Risale-i Nur'da konu taraması" and general["tarama"]["risale_only"]
     assert general["risale"]["risale_only"] and "risale_only" not in general["serbest"]
     assert kipler.risale_only(kipler.get("tarama"), True) and not kipler.risale_only(kipler.get("tarama"), False)
+
+
+def test_s14_8_general_instructions_do_not_push_the_risale():
+    new = sohbet.instructions("X", general=True)
+    assert "fullest Turkish voice" not in new and "never leave it out" not in new
+    assert "no library has to be quoted" in new and "rests on one library" in new
+    assert "answer it from the Risale first" in new             # soru Risale'yi soruyorsa
+    general = kutuphaneler.instructions(("klasik",), general=True)
+    assert "only what the question needs" not in general
+    assert "only what the question needs" in kutuphaneler.instructions(("klasik",))     # Risale sayfası aynı
+
+
+def test_s14_8_one_rule_for_both_translations():
+    for text in (sohbet.instructions("X"), sohbet.instructions("X", general=True)):
+        assert "never join the two names in one label" in text and "never inside a block quote" in text

@@ -297,7 +297,7 @@ def test_earlier_reads_note(library):
     assert "get_outline(section=sozler/23, depth=2) = outline of: Sözler › " in last
     assert last.count(" = ") == 3
     assert "never say you have not read a place" in chat.system and "not even to say" in chat.system
-    assert chat.system.index("6. Verses quoted in the works") > chat.system.index("5. Earlier answers")
+    assert chat.system.index("6. Translations of verses") > chat.system.index("5. Earlier answers")
     assert "Writing dates: say when or where" in chat.system
 
 

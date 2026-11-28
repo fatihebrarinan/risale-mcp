@@ -418,6 +418,9 @@ def instructions(chosen: tuple[str, ...], unavailable: tuple[str, ...] = (), gen
     if general:
         lines[-1] = lines[-1].replace("Keep the Risale-i Nur first and apart: what each library says",
                                       "Keep each library apart: what each says")
+        # S14.8 (kullanıcının kararı, 2026-11-28): genel sayfada öbür kütüphaneleri okumaktan caydırmaz
+        lines[-1] = lines[-1].replace(" Read in these libraries only what the question needs: their results are long.",
+                                      "")
     if unavailable:
         lines.append("Not reachable now: " + ", ".join(KUTUPHANELER[k].label for k in unavailable)
                      + ". Say so if the question needs it.")
