@@ -89,6 +89,14 @@ kaynak adları ("e-Risale", "Kaynak: e-Risale" satırları, izinlerin şartı); 
 | 4.4 | Eklentilerin talimatları (`server.py`) ve araç açıklamaları | her eklenti kendi kütüphanesini anlatır | kalır: Risale eklentisi Risale'nindir; öbür eklentiler zaten kendi alanlarını anlatır | — | |
 | 4.5 | MCP adresleri, `risalemcp.com` alan adı | `mcp.`, `hadis.`, `tefsir.`, `klasik.risalemcp.com` | kalır (K4) | — | |
 
+## Kullanıcının işaretleri (2026-11-28)
+
+- **Öbür satırlar:** öneriler uygun.
+- **2.4 ve 2.14:** genel bir örnekle değişir. Altyapı (S14.4) hazır olana kadar bugünküler kalır. Soru, Risale-i Nur'un
+  da ele aldığı bir konudan seçilir: böylece cevapta âyet ve hadisin yanında Risale'den de alıntı bulunur. Örnek yine
+  sistemin gerçek cevabıdır (kısaltılmaz, düzeltilmez); soruyu kullanıcı seçer.
+- **2.10:** (cevap bekleniyor)
+
 ## Özet
 
 - **S14.5'in metin işleri:** 1.1–1.12, 1.14–1.20, 2.1–2.7, 2.11, 2.13, 2.16, 2.17 (çatı ve sohbetin görünen metinleri).
