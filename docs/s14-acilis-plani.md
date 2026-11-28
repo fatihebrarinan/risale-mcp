@@ -139,6 +139,42 @@ Raporlar `data/interim/golden/` altında (git'e girmez); rapor aracı `risale_mc
 - Rapor aracındaki bir hata (öneksiz Risale okuma araçları sayılmıyordu) ilk raporda düzeltildi; sayılar düzeltilmiş
   hâlidir.
 
+## S14.4'ün denemeleri (2026-11-28; Haiku 5.5 medium, hepsi `SOHBET_GENEL=1` ile yerelde)
+
+Genel set (26 soru; bütün kütüphaneler açık):
+
+| Deneme | Okundu | Kaynakçada | Doğrulanamayan | Yalnız Risale'den cevaplanan | $ |
+|---|---:|---:|---:|---|---:|
+| Temel (eski talimat) | 35/132 | 22/132 | 2 | 19 soru | 0,16 |
+| A1 genel talimat | 64 | 39 | 11 | 9 soru | 0,19 |
+| A2 + İhyâ ve hadis aramasını adıyla isteyen cümle | 74 | 45 | 6 | 0 (hadis 19 soruda: gereğinden çok) | 0,20 |
+| A3 search_all + Risale araçlarına etiket + "Risale varsayılan değildir" ilkesi | 67 | 40 | 0 | 2 (G10, G20) | 0,21 |
+| **A4 search_all + Risale araçları önekli (`risale_…`), ilke yok** | 66 | 45 | 2 | 2 (G10 kader, G24 kredi kartı) | 0,18 |
+
+Risale seti (29 soru): temel %95,4 atıf doğrulandı, beklenen bölümlerin 27/34'ü okundu; A4 iki koşuda %97,2 ve %96,8,
+25/34 ve 26/34 (fark tek koşunun gürültüsü içinde; D15 iki koşuda da adıyla anıldı, okunmadı); Risale soruları yine
+Risale'den (yalnız "Mi'rac nerede ele alınır" genel soru gibi klasik eserlere de baktı); doğrulanamayan 0.
+
+**Bulunan sebepler** (kullanıcının sorusu: "neden yalnız Risale?"): (1) iş akışının ilk adımı her soruyu Risale'nin
+anlamsal aramasına gönderiyordu; Türkçe soru Türkçe külliyatta yüksek puan alıyor (0,58'e karşı klasik 0,50, hadis
+0,42), model zengin sonuçla yetiniyordu: yalnız Risale'den cevaplanan yedi sorunun yedisinde ilk adım buydu; Arapça
+kütüphanelerde Türkçe arama iyi çalışıyor ("sabır nedir" İhyâ'nın sabır kitabını buluyor). (2) Risale'nin öneksiz
+araçları varsayılan gibi görünüyordu; model öbür kütüphanelerin kimliklerini onlarla okumaya çalışıp (7 soruda 11
+çağrı) hata alınca o kütüphaneyi bırakıyordu.
+
+**Düzeltmeler** (konu dayatmadan; A2'nin adıyla isteyen cümlesi kullanıcının itirazıyla geri alındı): `search_all`
+(anlamca arama bütün açık kütüphanelerde, sonuçlar kütüphane kütüphane); genel sayfada Risale araçları önekli
+(`risale_search`…, kullanıcının önerisi; Kur'ân'ın `get_ayah`'ı ortak adres olduğu için öneksiz; önek yalnız modelin
+yüzü, içeride bugünkü adlar); Risale aracına başka kütüphanenin kimliği gelirse hata iletisi doğru aracı söyler
+(yalnız o kütüphane açıksa); öbür kütüphanelerin alıntısında üç kalıp sayfada onarılır (tırnaklı Türkçe tercüme,
+alıntıyla işaret arasına yazılan tercüme, öneksiz kimlik); kitap adı gibi tırnaklı söz uyarı almaz. "Risale-i Nur'dan"
+kipi bugünkü sayfanın aynısıdır (talimat ve araçlar testle kilitli). Ölçüm paralel (`olc --paralel`, varsayılan 10):
+29 soru 2,5 dakika.
+
+**Seçenekler:** B (model kütüphane açar) denenmedi: bütün kütüphaneleri açmak maliyeti az artırıyor (soru başı
+≈0,007 $), `search_all` zaten soruya göre seçtiriyor. Öneri: A (genel sayfada bütün kütüphaneler varsayılan açık,
+okuyucu kapatabilir) + "Risale-i Nur'dan" kipi.
+
 ## Açık sorular (sırası gelince)
 
 - **Dil engeli:** Risale Türkçe, öbür kütüphaneler Arapça; genel Türk okuyucu Arapça alıntı ve "Yapay zekâ tercümesi"
