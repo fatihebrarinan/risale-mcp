@@ -1120,6 +1120,7 @@ function setBusy(on) {
 // `resume`: sunucunun `job` bilgisi (soru, kip, kütüphaneler); verilirse soru yeniden gönderilmez.
 async function ask(question, resume = null) {
   if (busy || !question.trim()) return;
+  hideTourNotice();                      // S13.23.7: soru sorulunca bildirim bu açılışta kalkar
   setBusy(true);
   els.empty.hidden = true;
   const owner = cur;                     // cevap bu konuşmaya yazılır
@@ -1310,7 +1311,10 @@ els.fresh.addEventListener("click", newConversation);
 // Kullanıcının kararı (2026-11-27): ilk girişte kısa bir tanıtım; önceden hazırlanmış bir soru ve cevap üzerinde
 // kaynağa dokunup metni okumayı gösterir. Cevap sistemin gerçek cevabıdır (`sohbet ornek`), kısaltılmaz ve düzeltilmez;
 // konuşma listesinin başında hep durur, salt okunurdur (soru sorulunca yeni konuşma açılır, geri bildirim yok).
-// Rehber ilk girişte kendiliğinden açılır, görüldüğü hesapta tutulur; Ayarlar › Belgeler'den ve `#tanitim` ile yeniden.
+// Rehber kendiliğinden açılmaz (S13.23.7, kullanıcının kararı 2026-11-28): ilk girişte sağ üstte "Nasıl kullanacağınızı
+// öğrenin" bildirimi çıkar, rehber "Başlayın" ile başlar. Rehber bitince ya da bildirim kapatılınca görüldüğü hesapta
+// tutulur; bildirime dokunmadan soru sorulursa yalnız bu açılışta gizlenir, sonraki girişte yine çıkar.
+// Ayarlar › Belgeler'den ve `#tanitim` ile rehber doğrudan açılır.
 const EXAMPLE_TITLE = "İmanımı nasıl arttırabilirim?";
 let exampleData = null;
 async function openExample({ push = true } = {}) {
@@ -1347,18 +1351,21 @@ let tourAt = -1;
 const tourBox = $("rehber"), tourLight = $("rehber-isik"), tourShade = $("rehber-perde");
 async function startTour() {
   if (busy) return;
+  hideTourNotice();
   await openExample({ push: location.hash !== "#ornek" });
   if (!cur.example) return;
   tourAt = 0;
   showTourStep();
 }
+function markTourSeen() {
+  if (state.tourSeen) return;
+  state.tourSeen = true;
+  api("ayarlar", { tour_seen: true }).catch(() => {});
+}
 function endTour({ fresh = false } = {}) {
   tourAt = -1;
   tourBox.hidden = tourLight.hidden = tourShade.hidden = true;
-  if (!state.tourSeen) {
-    state.tourSeen = true;
-    api("ayarlar", { tour_seen: true }).catch(() => {});
-  }
+  markTourSeen();
   if (location.hash === "#tanitim") history.replaceState(null, "", "#ornek");
   if (fresh) newConversation();
 }
@@ -1415,6 +1422,14 @@ document.addEventListener("scroll", placeTour, true);
 document.addEventListener("keydown", (ev) => { if (ev.key === "Escape" && tourAt >= 0) endTour(); });
 $("rehber-yeniden").addEventListener("click", () => { els.settings.close(); startTour(); });
 
+const tourNotice = $("rehber-bildirim");
+function showTourNotice() { if (tourAt < 0) tourNotice.hidden = false; }
+function hideTourNotice() { tourNotice.hidden = true; }
+function dismissTourNotice() { hideTourNotice(); markTourSeen(); }
+$("rehber-bildirim-basla").addEventListener("click", () => startTour());
+$("rehber-bildirim-kapat").addEventListener("click", dismissTourNotice);
+$("rehber-bildirim-sonra").addEventListener("click", dismissTourNotice);
+
 // ------------------------------------------------------------ açılış
 
 async function start() {
@@ -1437,7 +1452,9 @@ async function start() {
     renderAll();
   }
   await resumePending();
-  if (!busy && (location.hash === "#tanitim" || !state.tourSeen)) startTour();
+  if (busy) return;
+  if (location.hash === "#tanitim") startTour();
+  else if (!state.tourSeen) setTimeout(() => { if (!busy) showTourNotice(); }, 700);   // sayfa yerleşsin, sonra gelsin
 }
 
 // S13.15.4 (3): PWA. Servis çalışanı yalnız bağlantı yokken "çevrimdışısınız" sayfasını gösterir (önbellek yok).

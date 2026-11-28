@@ -469,6 +469,14 @@ alıntılarla gelir; her alıntının yeri Kaynaklar'dadır." cümlesi kalktı (
 değil **"mod"** (menüde "Mod · Serbest soru", rehberde ve Ayarlar › Kütüphaneler'de de). Koddaki adlar (`kipler.py`,
 `mode`) ve iç belgeler değişmedi.
 
+**S13.23.7. Rehber bildirimle başlar** (2026-11-28; kullanıcının önerisi). İlk girişte rehberin kendiliğinden açılması
+yerine sağ üstte, başlığın altında bir bildirim: "Nasıl kullanacağınızı öğrenin" (örnek konuşma üzerinde beş adım;
+sonra Ayarlar › Belgeler'den de açılır), düğmeler "Başlayın" ve "Şimdi değil" (× da aynı). "Başlayın" rehberi
+açar; rehber bitince ya da bildirim kapatılınca `tour_seen` yazılır. Bildirime dokunmadan soru sorulursa yalnız o
+açılışta kalkar, sonraki girişte yine çıkar. `#tanitim` ve Ayarlar › Belgeler rehberi doğrudan açar. Dar ekranda
+boydan boya. Başsız tarayıcıda geniş ve telefon genişliğinde denendi (görünür, Başlayın → rehber, Şimdi değil →
+kaydedildi, yeniden yüklemede çıkmıyor; sayfa hatası yok).
+
 **S13.23.4. Temalar, ayna figürü, dinamik karşılama** (2026-11-27; kullanıcının fikri ve kararları aynı gün).
 Kullanıcı başlığın üstünde "ayna, aynanın içinde kütüphane, logodan ayrıntılı" istedi; üç seçenek gösterildi (A raflar,
 kandil, rahle üstünde logonun kırmızı kapaklı kitabı; B iki yanı raflı koridor, sonda kemerli pencereden ışık; C A'nın

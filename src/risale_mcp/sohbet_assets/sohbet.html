@@ -198,7 +198,16 @@
   </div>
 </dialog>
 
-<!-- S13.23.6: ilk girişteki rehber (sohbet.js `TOUR`) -->
+<!-- S13.23.7: ilk girişte rehberi öneren bildirim (sağ üstte; rehber yalnız "Başlayın" ile açılır) -->
+<div id="rehber-bildirim" class="rehber-bildirim" role="status" aria-labelledby="rehber-bildirim-baslik" hidden>
+  <button type="button" id="rehber-bildirim-kapat" class="kapat" aria-label="Kapat" title="Kapat">×</button>
+  <h2 id="rehber-bildirim-baslik">Nasıl kullanacağınızı öğrenin</h2>
+  <p>Örnek bir konuşma üzerinde beş adımda gösterelim. Sonra Ayarlar › Belgeler'den de açabilirsiniz.</p>
+  <div class="rehber-dugmeler"><button type="button" id="rehber-bildirim-sonra" class="ghost">Şimdi değil</button>
+    <button type="button" id="rehber-bildirim-basla" class="dolu">Başlayın</button></div>
+</div>
+
+<!-- S13.23.6: rehber (sohbet.js `TOUR`) -->
 <div id="rehber-perde" class="rehber-perde" hidden><i></i><i></i><i></i><i></i></div>
 <div id="rehber-isik" class="rehber-isik" hidden></div>
 <div id="rehber" class="rehber" role="dialog" aria-modal="false" aria-labelledby="rehber-baslik" hidden>

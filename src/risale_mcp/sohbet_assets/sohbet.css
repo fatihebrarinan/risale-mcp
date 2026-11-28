@@ -387,5 +387,20 @@ legend { padding: 0; margin: 0 0 6px; font-size: .8rem; font-weight: 600; color:
 .rehber-dugmeler { display: flex; justify-content: flex-end; gap: 8px; }
 .rehber .dolu { border: 0; border-radius: 9px; padding: 7px 14px; background: var(--accent); color: var(--bg);
   font: inherit; font-weight: 600; cursor: pointer; }
+/* S13.23.7: rehberi öneren bildirim, sağ üstte başlığın altında; dar ekranda boydan boya */
+.rehber-bildirim { position: fixed; z-index: 58; top: 58px; right: 16px; width: min(320px, calc(100vw - 16px));
+  padding: 12px 16px 12px; background: var(--card); color: var(--fg); border: 1px solid var(--line);
+  border-left: 4px solid var(--accent); border-radius: 12px; box-shadow: 0 10px 32px rgba(0, 0, 0, .22);
+  animation: bildirim-gel .28s ease-out; }
+.rehber-bildirim h2 { font-size: 1rem; margin: 0 22px 4px 0; }
+.rehber-bildirim p { margin: 0 0 10px; font-size: .9rem; line-height: 1.5; color: var(--muted); }
+.rehber-bildirim .kapat { position: absolute; top: 6px; right: 8px; border: 0; background: none; color: var(--muted);
+  font-size: 1.25rem; line-height: 1; padding: 2px 6px; border-radius: 6px; }
+.rehber-bildirim .kapat:hover { background: var(--soft); color: var(--fg); }
+.rehber-bildirim .dolu { border: 0; border-radius: 9px; padding: 7px 14px; background: var(--accent); color: var(--bg);
+  font: inherit; font-weight: 600; cursor: pointer; }
+@keyframes bildirim-gel { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .rehber-bildirim { animation: none; } }
+@media (max-width: 559.98px) { .rehber-bildirim { left: 8px; right: 8px; width: auto; top: 54px; } }
 .belgeler button.link { background: none; border: 0; padding: 0; font: inherit; color: var(--accent);
   text-decoration: underline; cursor: pointer; }

@@ -68,7 +68,7 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
 - **Son adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
-  sohbet tarafı yayında (örnek cevabı kullanıcı onayladı; okuyucuya görünen ad "mod"). Açık kalan: okuma platformunun
+  sohbet tarafı yayında (örnek cevabı kullanıcı onayladı; okuyucuya görünen ad "mod"). S13.23.7 (rehber sağ üstteki bildirimle başlar) bitti, yayına gitmedi (`scripts/deploy.sh --sohbet`). Açık kalan: okuma platformunun
   karşılamasına aynı rehber (S13.23.6'nın ikinci yarısı); S13.23.5 (giriş sayfası) kullanıcının ayrıntısını bekliyor;
   ardından S13.20 (İngilizce ve Arapça arayüz). ≈2026-12-04 e-posta teslim süreleri ve spam yeniden bakılır
   (`sohbet_hesap eposta-sure`, Postmaster Tools). S13.22 dizin kararlarını bekliyor.
@@ -134,6 +134,9 @@ zaman. Önceki gerekçe (2026-11-22) `KAYIT.md` › "Sıradaki'nin notları"nda.
     açılır, haktan düşmez. Lügat gelince rehbere adım eklenir. Okuma platformunun karşılamasına (`#/~hosgeldin`) da
     aynı rehber. S13.23.3 ve S13.23.4'ten sonra, rehberin gösterdiği ekran değişmesin diye. İngilizce ve Arapça arayüz
     (S13.20) bunun ardından: yeni yazılar önce bitsin, sonra hepsi birlikte çevrilsin.
+  - S13.23.7 (bitti, 2026-11-28; `KAYIT.md` › S13.23.7; yayına gitmedi) **Rehber bildirimle başlar:** ilk girişte rehber
+    kendiliğinden açılmaz; sağ üstte "Nasıl kullanacağınızı öğrenin" bildirimi çıkar, "Başlayın" rehberi açar
+    (kullanıcının önerisi, 2026-11-28).
 - S13.22 **Göçün tamamlanması** (eski S13.15.7; kullanıcının kararı, 2026-11-27: S13.15'ten ayrı adım): eklentilerin
   tanıtımı ve kurulumu `connect.ayinedar.org`'a; risalemcp.com'un kalan sayfaları (eklenti sayfaları, kurulum,
   belgeler, hata bildirin, gizlilik ve şartlar, İngilizceleri) oraya 308 ile. Dizin başvuruları sonuçlandıktan sonra:
