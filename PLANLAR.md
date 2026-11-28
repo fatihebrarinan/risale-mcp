@@ -74,7 +74,8 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
   Risale'ye ait kalır). S14.3 bitti: genel set dondu (`tests/golden/genel_sorular.json`,
   26 soru), temel ölçüm alındı. S14.4 bitti (2026-11-28): genel talimat, `search_all`, önekli Risale araçları,
   "Risale-i Nur'dan" modu; kullanıcı A'yı seçti (bütün kütüphaneler varsayılan açık), sayfaya bağlandı; hepsi
-  `SOHBET_GENEL`'in arkasında, yayın S14.6'da. İnce ayarlar S14.8'de. **Önde:** S14.5 (anlatım).
+  `SOHBET_GENEL`'in arkasında, yayın S14.6'da. İnce ayarlar S14.8'de. S14.5'in taslağı hazır (`docs/s14-anlatim-taslagi.md`); **kullanıcıdan beklenen:**
+  taslağın onayı, başlık (A/B) ve ana sayfadaki genel örneğin sorusu.
 - **Önceki adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
