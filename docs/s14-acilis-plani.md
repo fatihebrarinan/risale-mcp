@@ -127,3 +127,8 @@ En riskli kütüphane: fıkıh sorusu amel için sorulur. Ayaktaki "fetva değil
 - **K1 (2026-11-28): Kur'ân ve Sünnet merkezli.** Tarif: "Kur'ân ve Sünnet etrafında, İslâm ilimlerinin kaynakları."
   (Kullanıcının sözü; önerideki "klasik" kelimesi yok.) Anlatımın ikinci yarısı usuldür: her söz kaynağıyla, alıntılar
   denetlenir. Risale bu çerçevenin içinde durur. Örnek cümleler S14.5'te yazılır.
+- **K2 (2026-11-28): önce Kur'ân ve Sünnet, sonra açıklayanlar.** Genel bir soruda cevabın iskeleti varsa ilgili âyet
+  ve hadisle başlar; ardından onları açıklayanlar (tefsirler, Risale, klasik eserler) ilgisine göre. Soru açıkça
+  Risale'ye dairse (eser adı, Bediüzzaman, "Risale'de…") Risale önce gelir, cevap bugünkü gibi kurulur. **"Risale-i
+  Nur'dan cevapla" seçeneği kesinlikle olacak** (Ayarlar'da ya da modlarda; açıkken bugünkü davranış aynen sürer).
+  Hangi sorunun "Risale'ye dair" sayılacağı ve kütüphanelerin kimin açtığı S14.4'te ölçüyle.
