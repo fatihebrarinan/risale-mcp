@@ -768,7 +768,41 @@ def _repair(checker, ident: str, quote: str, segment: str) -> tuple[str, list[tu
 # Kaynaklar'a girer), bulunmazsa sözün ardına uyarı konur; söz silinmez (hadis, atasözü, başkasının sözü olabilir).
 # Nâşirin ve Vakıf'ın meali, başlık adı ve bulunamayan Arapça dokunulmadan kalır.
 UNMARKED_WORDS = 4
-UNMARKED_QUOTE = re.compile(r"([\"“«])([^\"“”«»\n\[\]]{3,}?)([\"”»])(?![ \t]*\[\[)")
+# S14.8: tırnak çiftleri baştan sona eşlenir; işaretli söz (ardında `[[…]]`) ve çok kısa söz (tek Arapça kelime)
+# de eşlenip atlanır. Önceden ikisi eşleşmeden geçiliyordu, kapanış tırnakları yeni bir "söz" açıyordu (T2: "هم"
+# sözündeki … ").
+# Her tırnak türü kendi kapanışıyla eşlenir: "…«اَنَا»…" içteki «» dıştaki sözü bölmez (A5). Model “…" de, metnin
+# tırnaklı sözünü bir de düz tırnağa alarak "“…”" de yazabilir.
+UNMARKED_QUOTE = re.compile(r'(?P<o0>"[“«])(?P<q0>[^“”«»"\n\[\]]+?)(?P<c0>[”»]")|(?P<o1>")(?P<q1>[^"\n\[\]]+?)(?P<c1>")|(?P<o2>“)(?P<q2>[^“”"\n\[\]]+?)(?P<c2>[”"])'
+                            r'|(?P<o3>«)(?P<q3>[^«»\n\[\]]+?)(?P<c3>»)')
+
+
+class _Quote:
+    """`UNMARKED_QUOTE` eşleşmesi, tırnak türünden bağımsız: group(1..3) açılış, söz, kapanış."""
+
+    def __init__(self, m):
+        self.m, self.n = m, next(n for n in "0123" if m.group("q" + n) is not None)
+
+    def _name(self, i):
+        return ("o", "q", "c")[i - 1] + self.n
+
+    def group(self, i):
+        return self.m.group(self._name(i))
+
+    def start(self, i=0):
+        return self.m.start(self._name(i)) if i else self.m.start()
+
+    def end(self):
+        return self.m.end()
+
+
+def _unmarked_quotes_in(line: str):
+    return (_Quote(m) for m in UNMARKED_QUOTE.finditer(line))
+MARKED_AFTER = re.compile(r"[ \t]*\[\[")
+# S14.8 (kullanıcının kararı, 2026-11-28): Yorum başlığının altındaki tırnaklı söz çoğu zaman modelin kendi sözüdür
+# (örnek soru, kendi ifadesi); eserlerde bulunursa işaret alır, bulunmazsa uyarı almaz.
+OWN_HEADING = re.compile(r"^\s*(?:(#{1,6})\s+|\*\*)\s*(?:Yorum|Benim yorumum|Interpretation|My interpretation)\b", re.I)
+HEADING_LINE = re.compile(r"^\s*(?:(#{1,6})\s+\S|\*\*[^*\n]+\*\*:?\s*$)")
 UNMARKED_NOTE = " (⚠ eserlerde bu sözlerle bulunamadı)"
 # S13.17 (kullanıcının kararı, 2026-11-26): öbür kütüphaneler açıkken tırnaklı söz çoğu zaman Arapça kaynağın modelce
 # tercümesidir; "eserlerde" yanıltıyordu
@@ -797,6 +831,26 @@ def _translations_out_of_blocks(text: str) -> str:
             moving = False
             out.append(line)
     return "\n".join(out)
+
+
+def _own_lines(lines: list[str]) -> set[int]:
+    """Yorum başlığının altındaki satırlar. `#` başlığı kendi düzeyinden ya da üstten bir `#` başlığına kadar sürer
+    (içindeki kalın ara başlıklar Yorum'un parçasıdır); kalın satırla açılan Yorum sonraki başlık satırına kadar."""
+    zone, level = set(), None          # level: `#` düzeyi, 0: kalın satırla açılan Yorum, None: Yorum dışı
+    for i, line in enumerate(lines):
+        own = OWN_HEADING.match(line)
+        heading = HEADING_LINE.match(line)
+        if own:                        # "**Yorum:** …" satırının kendisi de Yorum'dur
+            level = len(own.group(1)) if own.group(1) else 0
+            zone.add(i)
+            continue
+        if heading and level is not None:
+            hashes = heading.group(1)
+            if (level and hashes and len(hashes) <= level) or (level == 0):
+                level = None
+        if level is not None:
+            zone.add(i)
+    return zone
 
 
 def _foreign_paragraphs(lines: list[str]) -> set[int]:
@@ -892,16 +946,21 @@ _TRANSLATIONS: dict[int, list[str]] = {}
 
 
 def _translations(checker) -> list[str]:
-    """Nâşirin mealleri ve Vakıf meali, karşılaştırma biçiminde (veritabanı başına bir kez)."""
+    """Alıntı sayılmayan metinler: nâşirin mealleri, Vakıf meali, lügat, alt başlıklar; karşılaştırma biçiminde
+    (veritabanı başına bir kez)."""
     from risale_mcp.citations import _key
     conn = checker.refresh()
     if id(conn) not in _TRANSLATIONS:
         _TRANSLATIONS.clear()
         rows = [r[0] for r in conn.execute("SELECT DISTINCT meal FROM arabic WHERE meal IS NOT NULL")]
-        try:
-            rows += [r[0] for r in conn.execute("SELECT text FROM quran_translations")]
-        except Exception:
-            pass
+        # S14.8: lügatın anlamları (nâşirin; `lookup_word`) ve bölümlerin alt başlıkları ("Mi'râc-ı Nebeviyeye
+        # Dairdir") da metnin sözü sayılmaz
+        for query in ("SELECT text FROM quran_translations", "SELECT meaning FROM lugat",
+                      "SELECT DISTINCT subtitle FROM nodes WHERE subtitle IS NOT NULL"):
+            try:
+                rows += [r[0] for r in conn.execute(query)]
+            except Exception:
+                pass
         _TRANSLATIONS[id(conn)] = [_key(r) for r in rows if r]
     return _TRANSLATIONS[id(conn)]
 
@@ -968,16 +1027,20 @@ def _place_unmarked(checker, quote: str, read) -> str | tuple[str, str] | None:
 
 def unmarked_quotes(checker, text: str, read=frozenset(), note: str = UNMARKED_NOTE) -> tuple[str, dict]:
     """İşaretsiz tırnaklı sözlere işaret ya da uyarı ekler; (yeni metin, sayılar)."""
-    counts = {"unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0, "unmarked_foreign": 0}
+    counts = {"unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0, "unmarked_foreign": 0, "unmarked_own": 0}
     lines = text.split("\n")
     foreign_zone = _foreign_paragraphs(lines)
+    own_zone = _own_lines(lines)
 
-    def place(quote: str, foreign: bool = False) -> tuple[str, str | None] | None:
+    def place(quote: str, foreign: bool = False, own: bool = False) -> tuple[str, str | None] | None:
         """(eklenecek işaret ya da uyarı, sözün yerine geçecek metin sözleri ya da None). `foreign`: öbür kütüphanenin
         paragrafında Risale'de bulunmayan söz uyarı almaz (S13.17: Arapça kaynağın sözlerinin modelce tercümesidir)."""
         where = _place_unmarked(checker, quote, read)
         if where == "" and foreign:
             counts["unmarked_foreign"] += 1
+            return None
+        if where == "" and own:
+            counts["unmarked_own"] += 1
             return None
         if isinstance(where, tuple):
             counts["unmarked_near"] += 1
@@ -998,7 +1061,7 @@ def unmarked_quotes(checker, text: str, read=frozenset(), note: str = UNMARKED_N
                 j += 1
             after = lines[j + 1] if j + 1 < len(lines) else ""
             if not any(MARK.search(line) for line in lines[i:j + 1]) and not MARK.search(after):
-                if (quote := _quote_text("\n".join(lines[i:j + 1]))) and (placed := place(quote)):
+                if (quote := _quote_text("\n".join(lines[i:j + 1]))) and (placed := place(quote, own=i in own_zone)):
                     add, words = placed
                     if words:                       # yakın karşılık: söz tek satırda aynen duruyorsa değişir
                         at = next((k for k in range(i, j + 1) if quote in lines[k]), None)
@@ -1015,14 +1078,18 @@ def unmarked_quotes(checker, text: str, read=frozenset(), note: str = UNMARKED_N
         if TRANSLATION_LINE.match(line):                # S13.17: modelin kendi tercümesi alıntı değildir
             i += 1
             continue
-        for m in UNMARKED_QUOTE.finditer(line):
+        for m in _unmarked_quotes_in(line):
+            if MARKED_AFTER.match(line, m.end()):      # işaretli söz: denetimi `check`'tedir
+                out.append(line[last:m.end()])
+                last = m.end()
+                continue
             # işaret aynı cümlede biraz sonra geliyorsa ("… sözü geçer [[…]].") söz işaretlidir
             tail = re.split(r"[\"“«]|[.!?](?:\s|$)", line[m.end():], maxsplit=1)[0]
             if TRANSLATION_BEFORE.search(line[:m.start()]):          # S13.17: satır içi tercüme
                 out.append(line[last:m.end()])
                 last = m.end()
                 continue
-            placed = None if MARK.search(tail) else place(m.group(2), i in foreign_zone)
+            placed = None if MARK.search(tail) else place(m.group(2), i in foreign_zone, i in own_zone)
             if placed and placed[1]:            # yakın karşılık: metnin sözleri
                 out.append(line[last:m.start(2)] + placed[1] + m.group(3))
             else:

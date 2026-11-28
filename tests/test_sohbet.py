@@ -87,7 +87,7 @@ def test_check_numbers_and_problems():
     assert checked.sources[2]["unverified"] and "unverified" not in checked.sources[0]
     assert checked.counts == {"fixed": 0, "repaired": 0, "unverified": 1, "dropped": 0, "leaks": 0, "paragraphs": 1,
                               "unmarked": 0, "unmarked_found": 0, "unmarked_near": 0, "unmarked_missing": 0,
-                              "unmarked_foreign": 0}
+                              "unmarked_foreign": 0, "unmarked_own": 0}
     assert checked.raw == text
 
 
@@ -904,3 +904,53 @@ def test_example_conversation_still_valid(library):
     assert turn["q"] == sohbet.EXAMPLE_QUESTION and turn["markdown"]
     for source in turn["sources"]:
         assert library.passage(source["id"])["sentences"], source["id"]
+
+
+# ------------------------------------------------------------ S14.8: işaretsiz sözün yanlış uyarıları
+
+def test_s14_8_own_lines_follow_the_interpretation_heading():
+    lines = ["## Metnin söylediği", '"a b c d"', "## Yorum", '"e f g h"', "**Ara başlık**", '"i j k l"',
+             "## Sonuç", '"m n o p"', "**Yorum (bana ait)**", '"q r s t"', "**Başka**", '"u v w x"']
+    assert sohbet._own_lines(lines) == {2, 3, 4, 5, 8, 9}
+
+
+@needs_db
+def test_s14_8_own_words_under_interpretation_get_no_warning(checker):
+    made_up = "Bu söz hiçbir eserde bulunmayan uydurma bir sözdür"
+    text = f'## Metnin söylediği\n\nMetin "{made_up}" der.\n\n## Yorum\n\nBugün "{made_up}" diye sorulur.'
+    checked = sohbet.check(checker, text)
+    assert checked.counts["unmarked_missing"] == 1 and checked.counts["unmarked_own"] == 1
+    assert checked.markdown.count("⚠") == 1
+    # Yorum'daki söz eserlerde bulunursa yine işaret alır
+    found = sohbet.check(checker, f'**Yorum**\n\nMetin "{TEXT_32}" der.')
+    assert found.counts["unmarked_found"] == 1 and "⚠" not in found.markdown
+
+
+@needs_db
+def test_s14_8_closing_quote_of_a_marked_or_short_quote_opens_no_new_quote(checker):
+    # T2 (2026-11-28): kısa Arapça sözün kapanış tırnağı ile sonraki tırnak arası "söz" sayılıyordu
+    text = ('Âyetteki "هم" sözündeki çoğul zamirin üç topluluğa işaret ettiği ve cümlenin "عليهم" ile bağlandığı. '
+            f'Metin "{SINEK[:60]}" [[{SINEK_A}]] der, sonra "tefekkür" gelir ve başka bir uzun ifade burada durur.')
+    checked = sohbet.check(checker, text)
+    assert checked.counts["unmarked_missing"] == 0 and "⚠" not in checked.markdown
+
+
+@needs_db
+def test_s14_8_subtitle_and_lugat_meaning_are_not_quotes(checker):
+    conn = checker.refresh()
+    subtitle = conn.execute("SELECT subtitle FROM nodes WHERE id = 'sozler/31'").fetchone()[0]
+    meaning = conn.execute("SELECT meaning FROM lugat WHERE meaning LIKE '% % % % %' LIMIT 1").fetchone()[0]
+    words = " ".join(meaning.split()[:6]).strip('".,;:')
+    checked = sohbet.check(checker, f'Bu söz "{subtitle}" diye anılır. Lügatte "{words}" denir.')
+    assert checked.counts["unmarked_missing"] == 0, checked.markdown
+
+
+def test_s14_8_nested_guillemets_do_not_split_the_outer_quote():
+    line = 'Dördüncü Kelâm, "«اَنَا» ile tâbir edilen benlik"i, yani kendisine bir vücut verme, "ikinci söz" der.'
+    assert [q.group(2) for q in sohbet._unmarked_quotes_in(line)] == ["«اَنَا» ile tâbir edilen benlik", "ikinci söz"]
+
+
+def test_s14_8_doubly_quoted_words_are_one_quote():
+    line = 'Kendi sınırını çizer: "“Buraya kadar benim, ondan sonra O’nundur.”" der ve "ikinci söz burada" gelir.'
+    assert [q.group(2) for q in sohbet._unmarked_quotes_in(line)] == ["Buraya kadar benim, ondan sonra O’nundur.",
+                                                                      "ikinci söz burada"]
