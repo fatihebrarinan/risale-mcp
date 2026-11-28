@@ -69,7 +69,8 @@ tutulur: kullanıcının kararı, 2026-11-19 ve 2026-11-27; eski notlar `KAYIT.m
   platformu olsun, Risale cevapları bugünkü gibi kalsın. Plan `docs/s14-acilis-plani.md` (kapılı; S14.6'ya kadar
   yayında değişiklik yok); S13.23.5 (giriş sayfası) S14.5'e katıldı. S14.1'in beş kararı verildi (2026-11-28: Kur'ân
   ve Sünnet merkezli; önce Kur'ân ve Sünnet, "Risale-i Nur'dan cevapla" seçeneği; Risale adıyla öne çıkan kütüphane;
-  çatıda Âyinedâr adı; fıkıhta "kitaplar ne diyor, mezhebiyle"). **Önde:** S14.2 envanteri.
+  çatıda Âyinedâr adı; fıkıhta "kitaplar ne diyor, mezhebiyle"). S14.2 envanteri hazır (`docs/s14-envanter.md`);
+  **kullanıcıdan beklenen:** satırları işaretlemek, üç karar satırı (2.4, 2.10, 2.14). Sonra S14.3.
 - **Önceki adım (2026-11-27 gecesi): S13.15 bitti.** Çatı sitesi `ayinedar.org` yayında (S13.15.6): ana sayfa sohbete
   çağırır, Yenilikler ve Çalışmalar çatıda (risalemcp.com'daki adresler 308), çatı ve sohbet arama motorlarına açık.
   Ayrıntı `KAYIT.md` › S13.15.6. **Önde (kullanıcının kararı, 2026-11-27):** S13.23. B13, S13.23.1–S13.23.4 ve S13.23.6'nın
@@ -120,7 +121,7 @@ S14 en önde; E9 S14.6'dan sonra, E10 en son.
   - S14.1 (bitti, 2026-11-28; kararlar `docs/s14-acilis-plani.md` › Kararlar) **Kararlar** (kullanıcı): K1 merkez (Kur'ân mı, nötr "İslâmî kaynaklar" mı), K2 genel soruda Risale'nin
     yeri, K3 Risale'nin anılışı (adıyla öne çıkan kütüphane), K4 adlar ("Risale MCP", `risalemcp.com`), K5 fıkıhta
     sınır (E10'dan önce).
-  - S14.2 **Envanter** (Claude): "Risale-i Nur" nerede geçiyor, ne olmalı (`docs/s14-envanter.md`); kullanıcı işaretler.
+  - S14.2 (hazır, 2026-11-28; kullanıcının işaretini bekliyor) **Envanter** (Claude): "Risale-i Nur" nerede geçiyor, ne olmalı (`docs/s14-envanter.md`); kullanıcı işaretler.
   - S14.3 **Ölçü setleri:** Risale seti (bugünkü altın sorular) ve yeni genel set (≈25 soru, kullanıcı onaylar);
     bugünkü sistemle temel ölçüm.
   - S14.4 **Sohbetin varsayılanları** (yerelde): A bütün kütüphaneler açık, B model seçer, C okuyucu seçer; iki setle
