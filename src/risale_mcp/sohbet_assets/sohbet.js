@@ -87,7 +87,7 @@ function renderLibraryChoices() {
   };
   if (GENEL) $("kutuphane-giris").textContent = "Cevaplar açık kütüphanelerden gelir: önce Kur'ân ve hadis, sonra "
     + "açıklayanlar. Yalnız Risale-i Nur'dan cevap için soru kutusunun üstündeki menüden “Risale-i Nur'dan” modunu seçin.";
-  row("Risale-i Nur", GENEL ? "Bediüzzaman Said Nursî'nin eserleri, her soruda açık." : "Bediüzzaman Said Nursî'nin eserleri; her soruda açık.", true, true);
+  row("Risale-i Nur", GENEL ? "Bediüzzaman Said Nursî'nin eserleri, her soruda açık." : "Bediüzzaman Said Nursî'nin eserleri, her soruda açık.", true, true);
   for (const k of KUTUPHANELER) {
     row(k.title, k.hint, state.libraries.includes(k.id), false, (on) => {
       state.libraries = on ? [...new Set([...state.libraries, k.id])] : state.libraries.filter((x) => x !== k.id);
@@ -699,7 +699,7 @@ function feedbackBox(turn) {
     form = el("div", "geri-form");
     form.innerHTML = `<textarea rows="2" maxlength="1000" aria-label="Not"
       placeholder="İsterseniz not ekleyin: ne iyiydi, ne eksik ya da yanlıştı? Yazdığınız kendiliğinden gönderilir."></textarea>
-      <label class="alt-bilgi"><input type="checkbox"> Soruyu ve bu cevabı da gönder (yalnız bu cevap; ekip
+      <label class="alt-bilgi"><input type="checkbox"> Soruyu ve bu cevabı da gönder (yalnız bu cevap, ekip
       saklanan konuşmalarınızı okumaz, yalnız böyle gönderdiklerinizi okur)</label>`;
     const area = form.querySelector("textarea");
     area.value = turn.fnote || ""; form.querySelector("input").checked = !!turn.fshare;
@@ -1114,7 +1114,7 @@ async function openText(piece, focus) {  // parça; `focus` metindeki atfın kay
     els.dpath.textContent = data.section_ref && piece && piece.node
       ? `${data.section_ref} › ${pieceLabel(piece)}` : data.section_ref || cite || "Adresi bulunamadı";
     const parts = [];
-    if (src.unverified) parts.push('<p class="uyari">⚠ Alıntının sözleri bu cümlelerde ve eserlerin başka bir yerinde bulunamadı; cevabın gösterdiği yer bu.</p>');
+    if (src.unverified) parts.push('<p class="uyari">⚠ Alıntının sözleri bu cümlelerde ve eserlerin başka bir yerinde bulunamadı, cevabın gösterdiği yer bu.</p>');
     for (const s of data.sentences || []) {
       const body = esc(s.text);
       const mark = !s.target ? body : strong(s.id) ? `<mark>${body}</mark>` : `<mark class="acik">${body}</mark>`;
@@ -1256,7 +1256,7 @@ async function ask(question, resume = null) {
       }
     }
   };
-  const lost = "Cevap yarıda kaldı ve alınamadı. Hakkınız düşmedi; soruyu yeniden sorabilirsiniz.";
+  const lost = "Cevap yarıda kaldı ve alınamadı. Hakkınız düşmedi, soruyu yeniden sorabilirsiniz.";
 
   try {
     if (!resume) {
@@ -1369,7 +1369,7 @@ async function openExample({ push = true } = {}) {
 const TOUR = [
   { target: () => els.list.querySelector(".cevap blockquote"), title: "Örnek bir konuşma",
     text: GENEL ? "Bu, sayfanın gerçek bir cevabı. Cevaplar kaynaklardan alıntılarla gelir, alıntılar eserdeki sözleriyle, olduğu gibi verilir."
-      : "Bu, sayfanın gerçek bir cevabı. Cevaplar Risale-i Nur'dan alıntılarla gelir; alıntılar eserdeki sözleriyle, olduğu gibi verilir." },
+      : "Bu, sayfanın gerçek bir cevabı. Cevaplar Risale-i Nur'dan alıntılarla gelir, alıntılar eserdeki sözleriyle, olduğu gibi verilir." },
   { target: () => els.list.querySelector(".cevap .ref"), title: "Her alıntının bir numarası var",
     text: "Alıntının ardındaki numara, onun eserdeki yeridir. Numaraya ya da alıntıya dokununca o yer açılır.",
     after: () => els.list.querySelector(".cevap .ref")?.click() },
@@ -1381,7 +1381,7 @@ const TOUR = [
       : "Serbest soru, konu taraması ya da âyet çalışması: modu buradan seçersiniz. Konu taraması bir konunun eserlerde geçtiği yerleri toplar." },
   { target: () => ($("kutuphaneler").hidden ? els.settingsOpen : $("kutuphaneler")), title: "Kütüphaneler ve ayarlar",
     text: GENEL ? "Cevaplar açık kütüphanelerden gelir: önce Kur'ân ve hadis, sonra açıklayanlar. Kütüphaneleri, temayı ve yazı boyutunu Ayarlar'dan değiştirirsiniz. Örnek konuşma solda durur, bu rehberi Ayarlar › Belgeler'den yeniden açabilirsiniz."
-      : "Cevaplar her zaman Risale-i Nur'a dayanır. Tefsir, Hadis ve Klasik eserleri, temayı ve yazı boyutunu Ayarlar'dan değiştirirsiniz. Örnek konuşma solda durur; bu rehberi Ayarlar › Belgeler'den yeniden açabilirsiniz." },
+      : "Cevaplar her zaman Risale-i Nur'a dayanır. Tefsir, Hadis ve Klasik eserleri, temayı ve yazı boyutunu Ayarlar'dan değiştirirsiniz. Örnek konuşma solda durur, bu rehberi Ayarlar › Belgeler'den yeniden açabilirsiniz." },
 ];
 let tourAt = -1;
 const tourBox = $("rehber"), tourLight = $("rehber-isik"), tourShade = $("rehber-perde");

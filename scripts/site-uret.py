@@ -112,12 +112,12 @@ KINDS = {
     "yenilikler": Kind("yenilikler", "Yenilikler",
                        "Sohbette ve eklentilerde yeni olanlar, iyileştirmeler ve duyurular. Her yazının sonunda "
                        "paylaşmak için kısa bir metin var.",
-                       "Âyinedâr'da yeni olanlar: sohbet, Risale-i Nur, Hadis, Tefsir ve Klasik Eserler eklentileri; "
+                       "Âyinedâr'da yeni olanlar: sohbet, Risale-i Nur, Hadis, Tefsir ve Klasik Eserler eklentileri, "
                        "iyileştirmeler ve duyurular.",
                        frozenset({"baslik", "tarih", "ozet", "whatsapp"})),
     "calismalar": Kind("calismalar", "Çalışmalar",
                        "Projenin ne denediği ve ne öğrendiği: usul, ölçüler, sonuçlar ve sınırlar. Uzun ve kaynaklı "
-                       "yazılar; hiçbiri tefsir değildir.",
+                       "yazılar, hiçbiri tefsir değildir.",
                        "Âyinedâr'ın çalışmaları: İşârâtü'l-İ'câz'ın usulü, yapay zekâ taslakları, ölçüler, sonuçlar "
                        "ve sınırlar.",
                        frozenset({"baslik", "tarih", "ozet"})),
@@ -328,7 +328,7 @@ NAV = [("/#eklentiler", "Eklentiler"), ("/#ekle", "Kurulum"), (CATI_BASE + "/yen
 CURRENT = {"risale.html": "/#eklentiler", "hadis.html": "/#eklentiler", "tefsir.html": "/#eklentiler",
            "klasik.html": "/#eklentiler",
            "claude.html": "/#ekle", "chatgpt.html": "/#ekle", "belgeler.html": "/belgeler.html"}
-FOOTER = ("<footer>Risale MCP: gönüllü ve bağımsız bir projedir; herhangi bir yayınevi ya da cemaatin resmî hizmeti "
+FOOTER = ("<footer>Risale MCP: gönüllü ve bağımsız bir projedir, herhangi bir yayınevi ya da cemaatin resmî hizmeti "
           "değildir.<br><a href=\"/gizlilik.html\">Gizlilik</a> · <a href=\"/kullanim-sartlari.html\">Kullanım "
           "şartları</a> · <a href=\"/katki.html\">Hata bildirin</a> · "
           "<a href=\"mailto:destek@risalemcp.com\">destek@risalemcp.com</a> · <a href=\"" + CATI_BASE + "/\">Âyinedâr"
@@ -362,7 +362,7 @@ NAV_CATI = [(CHAT, "Sohbet"), ("/#projeler", "Projeler"), ("/yenilikler.html", "
             ("/calismalar.html", "Çalışmalar"), ("/belgeler.html", "Belgeler")]
 CURRENT_CATI = {"yenilikler.html": "/yenilikler.html", "calismalar.html": "/calismalar.html",
                 "belgeler.html": "/belgeler.html"}
-INDEPENDENT = "gönüllü ve bağımsız bir hizmettir; herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir"
+INDEPENDENT = "gönüllü ve bağımsız bir hizmettir, herhangi bir yayınevi ya da cemaatin resmî hizmeti değildir"
 FOOTER_CATI = (f"<footer>Âyinedâr: {INDEPENDENT}. Ücretsizdir, reklam ve ziyaretçi sayacı "
                "yoktur.<br><a href=\"/gizlilik.html\">Gizlilik</a> · <a href=\"/kullanim-sartlari.html\">Kullanım "
                "şartları</a> · <a href=\"/belgeler.html\">Belgeler</a> · "

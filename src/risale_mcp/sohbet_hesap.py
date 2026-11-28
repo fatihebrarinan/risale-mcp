@@ -377,7 +377,7 @@ def code_message(config: Config, code: str, existing: bool) -> tuple[str, str]:
     # S13.15.4: bağlantı yok. Okuyucu kodu açık sayfaya yazar; yeni alan adına bağlantı Proton'un süzgecine takıldı
     # (2026-11-27: aynı ileti bağlantıyla reddedildi, bağlantısız geçti), bağlantısız kod e-postası oltalamaya da kapalı.
     text = (f"Merhaba,\n\n{purpose} doğrulama kodunuz:\n\n    {code}\n\n"
-            f"Kod {CODE_MINUTES} dakika geçerlidir. Bu isteği siz yapmadıysanız bu e-postayı yok sayın; "
+            f"Kod {CODE_MINUTES} dakika geçerlidir. Bu isteği siz yapmadıysanız bu e-postayı yok sayın, "
             f"hesabınızda bir şey değişmez.\n\n{config.name}\n")
     return subject, text
 
@@ -498,7 +498,7 @@ CODE_JS = """(() => {
     } else if (s && s.state === "gone") {
       box.hidden = true;
     } else if (tries < 40) {
-      if (tries === 10) say("E-posta hâlâ gönderim sırasında; biraz daha bekleyin.");
+      if (tries === 10) say("E-posta hâlâ gönderim sırasında, biraz daha bekleyin.");
       setTimeout(ask, tries < 10 ? 2000 : 5000);
     } else {
       say("E-postanın durumu öğrenilemedi. Birkaç dakika içinde gelmezse \u201cYeni kod gönder\u201de basın.");
@@ -619,15 +619,15 @@ HERO = """<aside class="tanitim" aria-label="Tanıtım">
 <p class="ust-yazi"><span class="ad">{name}</span> · Sohbet</p>
 <h2>Risale-i Nur'a sorun,<br>cevabı kaynağıyla okuyun.</h2>
 <p class="giris-yazi">Sorularınızı Bediüzzaman Said Nursî'nin eserlerinden, isterseniz klasik tefsirlerden, hadis
-kitaplarından ve klasik eserlerden cevaplayan bir yapay zekâ. Dayandığı her söz eserlerden alıntıdır; alıntılar eserlerin
+kitaplarından ve klasik eserlerden cevaplayan bir yapay zekâ. Dayandığı her söz eserlerden alıntıdır, alıntılar eserlerin
 metniyle denetlenir, yeri ve kaynağıyla gösterilir.</p>
 <ul class="ozellikler">
 <li>{i_kaynak}<div><strong>Her alıntı kaynağıyla</strong><span>Alıntıya dokunun, metni eserdeki yerinde, öncesi ve
 sonrasıyla okuyun.</span></div></li>
 <li>{i_kulliyat}<div><strong>Bütün külliyat, isterseniz daha fazlası</strong><span>Sözler'den Lâhikalara, Arapça eserlerden
-Hizblere; âyetler, hadisler ve eski kelimelerin lügat anlamı. Klasik tefsirleri, hadis kitaplarını ve klasik eserleri de
+Hizblere, âyetler, hadisler ve eski kelimelerin lügat anlamı. Klasik tefsirleri, hadis kitaplarını ve klasik eserleri de
 açabilirsiniz.</span></div></li>
-<li>{i_dil}<div><strong>Bugünün diliyle sorun</strong><span>Metindeki kelimeyi bilmeseniz de anlamca arar; konunun geçtiği
+<li>{i_dil}<div><strong>Bugünün diliyle sorun</strong><span>Metindeki kelimeyi bilmeseniz de anlamca arar, konunun geçtiği
 yerleri bulur.</span></div></li>
 </ul>
 <div class="ornek"><span class="etiket">Örnek</span>
@@ -635,7 +635,7 @@ yerleri bulur.</span></div></li>
 <blockquote>Karanlıklı ye'simi, nurlu bir ricâya çevirdi.<sup>[1]</sup></blockquote>
 <p class="kaynak">[1] Lem'alar › Yirmialtıncı Lem'a › Üçüncü Ricâ · Kaynak: e-Risale</p>
 </div>
-<p class="uyari-not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Ücretsizdir.
+<p class="uyari-not">Cevaplar yapay zekânındır, tefsir ve fetva değildir, müellife mal edilmez. Ücretsizdir.
 <a href="{p}hakkinda">Nasıl çalışır, sınırları neler?</a></p>
 </aside>
 """
@@ -653,7 +653,7 @@ sonrasıyla okuyun.</span></div></li>
 <li>{i_kulliyat}<div><strong>Kur'ân ve Sünnet etrafında</strong><span>Önce âyet ve hadis, sonra onları açıklayan
 tefsirler, Risale-i Nur ve klasik eserler, eski kelimelerin lügat anlamı. Dilerseniz cevabı yalnız Risale-i Nur'dan
 alırsınız.</span></div></li>
-<li>{i_dil}<div><strong>Bugünün diliyle sorun</strong><span>Metindeki kelimeyi bilmeseniz de anlamca arar; konunun geçtiği
+<li>{i_dil}<div><strong>Bugünün diliyle sorun</strong><span>Metindeki kelimeyi bilmeseniz de anlamca arar, konunun geçtiği
 yerleri bulur.</span></div></li>
 </ul>
 <div class="ornek"><span class="etiket">Örnek</span>
@@ -662,7 +662,7 @@ yerleri bulur.</span></div></li>
 <p class="tercume">Yapay zekâ tercümesi: "İmanınızı yenileyin." … "Lâ ilâhe illallah sözünü çok söyleyin."</p>
 <p class="kaynak">[1] Mecmaü'z-Zevâid (Nûreddîn el-Heysemî), no. 159 · Kaynak: OpenITI</p>
 </div>
-<p class="uyari-not">Cevaplar yapay zekânındır; tefsir ve fetva değildir, müellife mal edilmez. Ücretsizdir.
+<p class="uyari-not">Cevaplar yapay zekânındır, tefsir ve fetva değildir, müellife mal edilmez. Ücretsizdir.
 <a href="{p}hakkinda">Nasıl çalışır, sınırları neler?</a></p>
 </aside>
 """
@@ -849,7 +849,7 @@ LOGIN = """<h1>Giriş yapın</h1>
 <p class="gecis small"><a href="{p}kayit">Parolamı unuttum</a></p>"""
 
 REGISTER = """<h1>Hesap oluşturun</h1>
-<p>E-posta adresinizi yazın; adresinize 6 haneli bir doğrulama kodu gönderelim. Parolanızı unuttuysanız da aynı yoldan
+<p>E-posta adresinizi yazın, adresinize 6 haneli bir doğrulama kodu gönderelim. Parolanızı unuttuysanız da aynı yoldan
 yenisini belirlersiniz.</p>
 {message}
 <form method="post" action="{p}kayit">
@@ -863,7 +863,7 @@ CODE_FORM = """<h1>Kodu yazın</h1>
 varsa parolanız yenilenir.</p>
 <p class="small" id="eposta-durum" data-t="{token}" hidden></p>
 <p class="small">Gelen kutunuzda göremezseniz <strong>İstenmeyen (Spam)</strong> ya da <strong>Gereksiz</strong>
-klasörüne bakın. Orada bulursanız "Spam değil" diye işaretleyin; sonraki e-postalarımız gelen kutunuza düşer.</p>
+klasörüne bakın. Orada bulursanız "Spam değil" diye işaretleyin, sonraki e-postalarımız gelen kutunuza düşer.</p>
 {message}
 <form method="post" action="{p}kayit/kod">
 <input type="hidden" name="email" value="{email}">

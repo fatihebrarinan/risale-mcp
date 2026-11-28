@@ -121,7 +121,7 @@ def verse_places(page: dict | None, sources: list[dict], read: set[str]) -> str:
         return ""
     lines = []
     if tefsir:
-        lines.append("- **Bu âyeti işleyen öbür tefsirler** (vefat sırasıyla; okunmadı): " + "; ".join(
+        lines.append("- **Bu âyeti işleyen öbür tefsirler** (vefat sırasıyla, okunmadı): " + " · ".join(
             f"{w['author']}, {w['title']} ({w['words']} kelime)" for w in tefsir))
     if risale:
         lines.append("- **Âyetin Risale'de alıntılandığı öbür yerler:** " + "; ".join(

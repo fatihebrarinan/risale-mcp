@@ -66,11 +66,11 @@ KIPLER: dict[str, Kip] = {k.id: k for k in (
     Kip("serbest", "Serbest soru", "Risale-i Nur'a dair bir soru yazın", general_hint="Bir soru yazın"),
     # S14.1 K2 (kullanıcının kararı, 2026-11-28): "Risale-i Nur'dan cevapla" seçeneği; açıkken bugünkü davranış aynen
     Kip("risale", "Risale-i Nur'dan", "Cevap yalnız Risale-i Nur'dan gelsin", general_only=True, risale_only=True),
-    Kip("tarama", "Konu taraması", "Bir konu yazın; eserlerde geçtiği yerleri toplayalım",
+    Kip("tarama", "Konu taraması", "Bir konu yazın, eserlerde geçtiği yerleri toplayalım",
         instructions=SURVEY_INSTRUCTIONS, tools=("survey",), post=("other_places",),
         risale_scope=True, general_title="Risale-i Nur'da konu taraması",
         general_hint="Bir konu yazın, Risale-i Nur'da geçtiği yerleri toplayalım"),
-    Kip("ayet", "Âyet çalışması", "Bir âyet yazın (Bakara 255, Âyetü'l-Kürsî); Risale'de ve tefsirlerde birlikte bakalım",
+    Kip("ayet", "Âyet çalışması", "Bir âyet yazın (Bakara 255, Âyetü'l-Kürsî), Risale'de ve tefsirlerde birlikte bakalım",
         instructions=VERSE_INSTRUCTIONS, tools=("verse_file",), post=("verse_places",), libraries=("tefsir",),
         general_hint="Bir âyet yazın (Bakara 255, Âyetü'l-Kürsî), tefsirlerde ve Risale-i Nur'da birlikte bakalım"),
 )}

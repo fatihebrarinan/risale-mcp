@@ -772,7 +772,7 @@ UNMARKED_QUOTE = re.compile(r"([\"“«])([^\"“”«»\n\[\]]{3,}?)([\"”»])
 UNMARKED_NOTE = " (⚠ eserlerde bu sözlerle bulunamadı)"
 # S13.17 (kullanıcının kararı, 2026-11-26): öbür kütüphaneler açıkken tırnaklı söz çoğu zaman Arapça kaynağın modelce
 # tercümesidir; "eserlerde" yanıltıyordu
-UNMARKED_NOTE_LIBRARIES = " (⚠ Risale'de bu sözlerle bulunamadı; tercüme ya da özet olabilir)"
+UNMARKED_NOTE_LIBRARIES = " (⚠ Risale'de bu sözlerle bulunamadı, tercüme ya da özet olabilir)"
 # S13.17: modelin kendi tercümesinin satırı ("Yapay zekâ tercümesi: …"): alıntı değildir, denetlenmez
 TRANSLATION_LABEL = r"(?:Yapay zek[âa] tercümesi|AI translation|Translation \(AI\))(?:\s*\([^()\n]{0,40}\))?"
 TRANSLATION_LINE = re.compile(rf"^\s*(?:[*_]{{1,2}})?{TRANSLATION_LABEL}(?:[*_]{{1,2}})?\s*:", re.I)
@@ -1367,7 +1367,7 @@ class Chat:
         if len(question) > MAX_QUESTION:
             raise Refusal(f"Soru çok uzun (en çok {MAX_QUESTION} karakter).")
         if len(history) >= MAX_TURNS:
-            raise Refusal(f"Bu konuşma {MAX_TURNS} soruya ulaştı; yeni bir konuşma başlatın.")
+            raise Refusal(f"Bu konuşma {MAX_TURNS} soruya ulaştı, yeni bir konuşma başlatın.")
         out, size, notes = [], 0, []
         for turn in history:
             q, a = str(turn.get("q", "")).strip(), str(turn.get("a", "")).strip()
@@ -1377,7 +1377,7 @@ class Chat:
             out += [{"role": "user", "content": q}, {"role": "assistant", "content": a}]
             notes.append(reads_note(len(notes) + 1, turn.get("r"), self.library))
         if size > MAX_HISTORY:
-            raise Refusal("Bu konuşma çok uzadı; yeni bir konuşma başlatın.")
+            raise Refusal("Bu konuşma çok uzadı, yeni bir konuşma başlatın.")
         if notes:     # S13.4 (c): model önceki cevaplarının neye dayandığını görsün (sayfa notu, sorunun önünde)
             question = ("[Page note, not the reader's words: the tools you called for your earlier answers.\n"
                         + "\n".join(notes) + "]\n\n" + question)
@@ -1630,9 +1630,9 @@ class Chat:
 
 
 OTHER_PLACES = 15           # konu taramasının sonundaki aday listesinde en çok yer
-OTHER_PLACES_TITLE = "**Konunun geçtiği öbür yerler** (sayfanın aramasından adaylar; okunmadı, sırası hüküm değildir)"
+OTHER_PLACES_TITLE = "**Konunun geçtiği öbür yerler** (sayfanın aramasından adaylar, okunmadı, sırası hüküm değildir)"
 PAGE_ONLY = "_page"         # yerel aracın sonucunda API'ye gitmeyen kısım (S13.13)
-ALL_PLACES_TITLE = ("Kelimelerin geçtiği bütün yerler: {sentences} cümle, {places} yer (kelimeye göre sayıldı; aynı "
+ALL_PLACES_TITLE = ("Kelimelerin geçtiği bütün yerler: {sentences} cümle, {places} yer (kelimeye göre sayıldı, aynı "
                     "harflerle yazılan başka kelimeler de girmiş olabilir)")
 
 
@@ -1777,12 +1777,12 @@ def scope_note(calls: list, sources: list[dict], history: list[dict] | None = No
                 unread.append(ref)
     lines = []
     if partial:
-        lines.append("- **Kısmen okunanlar:** " + "; ".join(f"{ref} ({n}/{of} cümle)" for ref, n, of in partial[:SCOPE_ITEMS]))
+        lines.append("- **Kısmen okunanlar:** " + " · ".join(f"{ref} ({n}/{of} cümle)" for ref, n, of in partial[:SCOPE_ITEMS]))
     if pending:
         lines.append("- **Metnin gönderdiği, bu konuşmada okunmayan yerler:** "
-                     + "; ".join(f"{ref}" + (f" (gönderen: {src})" if src else "") for ref, src in pending[:SCOPE_ITEMS]))
+                     + " · ".join(f"{ref}" + (f" (gönderen: {src})" if src else "") for ref, src in pending[:SCOPE_ITEMS]))
     if unread:
-        lines.append("- **Okunmadan, yalnız arama sonucundan dayanılanlar:** " + "; ".join(unread[:SCOPE_ITEMS]))
+        lines.append("- **Okunmadan, yalnız arama sonucundan dayanılanlar:** " + " · ".join(unread[:SCOPE_ITEMS]))
     full = [pages[s]["ref"] for s in pages if s in whole]
     if full:
         lines.append("- **Okunanlar:** " + "; ".join(full[:SCOPE_ITEMS]) + (" …" if len(full) > SCOPE_ITEMS else ""))
@@ -1945,11 +1945,11 @@ def refusal(store: Store, email: str, limits: Limits, now: float | None = None) 
     """Soru sorulamıyorsa okuyucuya gösterilecek ileti."""
     today, month = spent(store, now)
     if month >= limits.monthly:
-        return "Bu ayın sohbet bütçesi doldu; sayfa gelecek ayın başında yeniden açılır."
+        return "Bu ayın sohbet bütçesi doldu, sayfa gelecek ayın başında yeniden açılır."
     if today >= limits.daily:
-        return "Bugünlük sohbet bütçesi doldu; yarın yeniden sorabilirsiniz."
+        return "Bugünlük sohbet bütçesi doldu, yarın yeniden sorabilirsiniz."
     if limits.counted(email) and asked_today(store, email, now) >= limits.questions:
-        return f"Bugünlük soru hakkınız ({limits.questions}) doldu; yarın yeniden sorabilirsiniz."
+        return f"Bugünlük soru hakkınız ({limits.questions}) doldu, yarın yeniden sorabilirsiniz."
     return None
 
 
@@ -2103,7 +2103,7 @@ def log_usage(store: Store, email: str | None, model: str, tally: Tally, seconds
 # ---------------------------------------------------------------- süren cevap (B13)
 
 JOB_KEEP = 3600
-INTERRUPTED = ("Cevap yarıda kaldı: sohbet servisi yeniden başladı. Hakkınız düşmedi; soruyu yeniden sorabilirsiniz.")               # biten ama sayfaya ulaşmamış cevabın bellekte bekleme süresi, sn
+INTERRUPTED = ("Cevap yarıda kaldı: sohbet servisi yeniden başladı. Hakkınız düşmedi, soruyu yeniden sorabilirsiniz.")               # biten ama sayfaya ulaşmamış cevabın bellekte bekleme süresi, sn
 
 
 class Job:
@@ -2320,7 +2320,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
                 conversation = str(conversation)[:64]
                 history = convs.turns(email, conversation)      # saklanan konuşmanın geçmişi sunucudan
                 if history is None:
-                    return reply({"error": "Bu konuşma bulunamadı; yeni bir konuşma başlatın."}, 404)
+                    return reply({"error": "Bu konuşma bulunamadı, yeni bir konuşma başlatın."}, 404)
                 keep = True
             else:
                 keep = convs.keeps(email)
@@ -2364,7 +2364,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             import logging
             logging.exception("sohbet: cevap yazılamadı")
             outcome = "error"
-            job.push("error", {"message": "Bir hata oldu; biraz sonra yeniden deneyin. Hakkınız düşmedi."})
+            job.push("error", {"message": "Bir hata oldu, biraz sonra yeniden deneyin. Hakkınız düşmedi."})
         finally:
             job.finish()
             if outcome != "refused":
@@ -2422,7 +2422,7 @@ def routes(chat: Chat, store: Store, config: Config, limits: Limits = Limits()):
             today = store._run("SELECT COUNT(*) FROM feedback WHERE email = ? AND ts >= ?",
                                (email, time.time() - 86400))[0][0]
             if today >= FEEDBACK_PER_DAY:
-                return JSONResponse({"error": "Bugün için yeterince geri bildirim gönderdiniz; teşekkürler."},
+                return JSONResponse({"error": "Bugün için yeterince geri bildirim gönderdiniz, teşekkürler."},
                                     status_code=429, headers=headers)
             ident = store._run(f"INSERT INTO feedback ({', '.join(row)}) VALUES ({', '.join('?' * len(row))}) "
                                "RETURNING rowid", tuple(row.values()))[0][0]
